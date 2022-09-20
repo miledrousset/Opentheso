@@ -6,7 +6,6 @@
 package fr.cnrs.opentheso.ws;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
@@ -948,10 +946,10 @@ public class RestRDFHelper {
      * @return
      */
     public String findDatasForWidgetByArk(HikariDataSource ds,
-            String lang, String[] idArks) {
+            String lang, String[] idArks, String format) {
 
         String datas = findDatasForWidgetByArk__(ds,
-                lang, idArks);
+                lang, idArks, format);
         if (datas == null) {
             return null;
         }
@@ -969,7 +967,7 @@ public class RestRDFHelper {
      */
     private String findDatasForWidgetByArk__(
             HikariDataSource ds,
-            String lang, String[] idArks) {
+            String lang, String[] idArks, String format) {
 
         ConceptHelper conceptHelper = new ConceptHelper();
         String idTheso;
@@ -997,7 +995,7 @@ public class RestRDFHelper {
                 pathHelper.getPathWithLabelAsJson(ds,
                         paths,
                         jsonArrayBuilder,
-                        idTheso, lang, idConcept, null);
+                        idTheso, lang, idConcept, format);
             }
         }
 
@@ -1021,6 +1019,7 @@ public class RestRDFHelper {
      * @param groups
      * @param value
      * @param format
+     * @param version
      * @return
      */
     public String findDatasForWidget(HikariDataSource ds,

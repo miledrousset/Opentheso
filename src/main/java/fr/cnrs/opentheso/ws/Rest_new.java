@@ -1577,7 +1577,7 @@ public class Rest_new {
     
     ///////////////////////////////////////////////////////////////////////////////////////
     //////////////Fonction qui permet de produire /////////////////////////////////////////  
-    //////////////des données Json pour le widget Aïoli////////////////////////////////////
+    //////////////des données Json pour le widget Koha////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////
     /**
      * Permet de rechercher une valeur en filtrant par theso, groupe et langue
@@ -1594,6 +1594,7 @@ public class Rest_new {
         String [] idArks = null;
         String idLang = "";
         String datas;
+        String format = null; // format = full (on renvoie les altLabel en plus)        
 
         for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
             for (String valeur : e.getValue()) {
@@ -1603,13 +1604,16 @@ public class Rest_new {
                 if (e.getKey().equalsIgnoreCase("q")) {
                     idArks = valeur.split(",");
                 }
+                if (e.getKey().equalsIgnoreCase("format")) {
+                    format = valeur;
+                }                  
             }
         }
         
         if(idArks == null || idArks.length == 0)
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         
-        datas = getDatasForWidgetByArk(idLang, idArks);
+        datas = getDatasForWidgetByArk(idLang, idArks, format);
         if (datas == null) {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
@@ -1620,7 +1624,7 @@ public class Rest_new {
         //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }      
     
-    private String getDatasForWidgetByArk(String idLang, String[] idArks) {
+    private String getDatasForWidgetByArk(String idLang, String[] idArks, String format) {
         String datas;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
@@ -1628,7 +1632,7 @@ public class Rest_new {
             }
             RestRDFHelper restRDFHelper = new RestRDFHelper();
             datas = restRDFHelper.findDatasForWidgetByArk(ds,
-                    idLang, idArks);
+                    idLang, idArks, format);
             ds.close();
         }
         if (datas == null) {

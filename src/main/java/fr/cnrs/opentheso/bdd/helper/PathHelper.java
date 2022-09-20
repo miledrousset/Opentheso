@@ -9,6 +9,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
+import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import java.util.ArrayList;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -52,12 +53,17 @@ public class PathHelper {
             String idTheso, String idLang, String selectedIdConcept, String format) {
         String label;
         ConceptHelper conceptHelper = new ConceptHelper();
-        GroupHelper groupHelper = new GroupHelper();
+    //    GroupHelper groupHelper = new GroupHelper();
         TermHelper termHelper = new TermHelper();
+        NoteHelper noteHelper = new NoteHelper();
        // ArrayList<NodeGroup> nodeGroup;
-        ArrayList<NodeUri> nodeGroup;
+    //    ArrayList<NodeUri> nodeGroup;
         int i = 0;
          
+        if(idLang == null || idLang.isEmpty()) {
+            idLang = new PreferencesHelper().getWorkLanguageOfTheso(ds, idTheso);
+        }
+                
         for (Path path1 : paths) {
             JsonArrayBuilder jsonArrayBuilderPath = Json.createArrayBuilder();            
             for (String idConcept : path1.getPath()) {
@@ -69,6 +75,115 @@ public class PathHelper {
                 job.add("id", idConcept);
                 job.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
                 job.add("label", label);
+                
+                
+                if(format != null && format.equalsIgnoreCase("full")) {
+                    if(i++ == path1.getPath().size() - 1){
+                        // synonymes
+                        ArrayList<String> altLabels = termHelper.getNonPreferredTermsLabel(ds, idConcept, idTheso, idLang);
+                        
+                        JsonArrayBuilder jsonArrayBuilderAltLabels = Json.createArrayBuilder();
+                        for (String altLabel : altLabels) {
+                            jsonArrayBuilderAltLabels.add(altLabel);
+                        }
+                        if(jsonArrayBuilderAltLabels != null && !altLabels.isEmpty())
+                            job.add("altLabel", jsonArrayBuilderAltLabels.build());  
+                        
+                        // défintion
+                        ArrayList<String> definitions = noteHelper.getDefinition(ds, idConcept, idTheso, idLang);
+                        JsonArrayBuilder jsonArrayBuilderDefinitions = Json.createArrayBuilder();
+                        for (String def : definitions) {
+                            jsonArrayBuilderDefinitions.add(def);
+                        }
+                        if(jsonArrayBuilderDefinitions != null && !definitions.isEmpty())
+                            job.add("definition", jsonArrayBuilderDefinitions.build());      
+                        
+                        // note d'application
+                        ArrayList<String> scopeNotes = noteHelper.getScopeNote(ds, idConcept, idTheso, idLang);
+                        JsonArrayBuilder jsonArrayBuilderScopeNotes = Json.createArrayBuilder();
+                        for (String scope : scopeNotes) {
+                            jsonArrayBuilderScopeNotes.add(scope);
+                        }
+                        if(jsonArrayBuilderScopeNotes != null && !scopeNotes.isEmpty())
+                            job.add("scopeNote", jsonArrayBuilderScopeNotes.build());
+                        
+                        // traductions
+                        ArrayList<NodeTermTraduction> traductions = termHelper.getTraductionsOfConcept(ds, idConcept, idTheso, idLang);
+
+                        JsonObjectBuilder jobTrad = Json.createObjectBuilder();
+                        for (NodeTermTraduction trad : traductions) {
+                            jobTrad.add(trad.getLang(), trad.getLexicalValue());                            
+                        }
+                        if(jobTrad != null){
+                            if(!traductions.isEmpty()) {
+                                job.add("labels", jobTrad.build());
+                            }
+                        }
+                    }
+                }
+                
+                // ajout des groups
+                // temps 2 secondes
+            /*    nodeGroup = groupHelper.getListGroupOfConceptArk(ds, idTheso, idConcept);//ListGroupOfConcept(ds, idTheso, idConcept, idLang);
+                JsonArrayBuilder jsonArrayBuilderGroup = Json.createArrayBuilder();
+                for (NodeUri nodeUri : nodeGroup) {
+                    JsonObjectBuilder jobGroup = Json.createObjectBuilder();
+                    jobGroup.add("id", nodeUri.getIdConcept());
+                    jobGroup.add("arkId", nodeUri.getIdArk());
+                    jobGroup.add("label", groupHelper.getLexicalValueOfGroup(ds, nodeUri.getIdConcept(), idTheso, idLang));
+                    jsonArrayBuilderGroup.add(jobGroup.build());
+                }       */         
+                
+                
+                // temps 6 secondes
+                /*
+                nodeGroup = groupHelper.getListGroupOfConcept(ds, idTheso, idConcept, idLang);
+                for (NodeGroup nodeGroup1 : nodeGroup) {
+                    job.add("group", nodeGroup1.getConceptGroup().getIdARk());
+                    job.add("group", nodeGroup1.getLexicalValue());
+                }
+                */
+             //   job.add("group", jsonArrayBuilderGroup.build());
+                jsonArrayBuilderPath.add(job.build());
+            }
+            jsonArrayBuilder.add(jsonArrayBuilderPath.build());//.toString());
+            i = 0;
+        }
+    }      
+    
+    public void getPathWithLabelAsJsonV2(HikariDataSource ds,
+            ArrayList<Path> paths, JsonArrayBuilder jsonArrayBuilder,
+            String idTheso, String idLang, String selectedIdConcept, String format) {
+        String label;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        GroupHelper groupHelper = new GroupHelper();
+        TermHelper termHelper = new TermHelper();
+       // ArrayList<NodeGroup> nodeGroup;
+        ArrayList<NodeUri> nodeGroup;
+        int i = 0;
+        
+        ArrayList<String> langs;
+        if(idLang == null || idLang.isEmpty()) {
+            langs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurus(ds, idTheso);
+        } else {
+            langs = new ArrayList<>();
+            langs.add(idLang);
+        }
+        
+        for (Path path1 : paths) {
+            JsonArrayBuilder jsonArrayBuilderPath = Json.createArrayBuilder();            
+            for (String idConcept : path1.getPath()) {
+                JsonObjectBuilder job = Json.createObjectBuilder();
+                
+                for (String lang : langs) {
+                    label = conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang);
+                    if(label.isEmpty())
+                        label = "("+ idConcept+")";
+                    job.add("id", idConcept);
+                    job.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
+                    job.add("label", label);                    
+                }
+
                 
                 // synonymes
                 if(format != null && format.equalsIgnoreCase("full")) {
@@ -110,7 +225,7 @@ public class PathHelper {
             jsonArrayBuilder.add(jsonArrayBuilderPath.build());//.toString());
             i = 0;
         }
-    }      
+    }     
     
     public ArrayList<Path> getPathOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus) {
