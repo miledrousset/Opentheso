@@ -259,19 +259,19 @@
                                         <f:facet name="footer">
                                             <span class="p-text-bold">
                                                 <h:outputText value="Graphe : "/>
-                                                <p:commandLink oncomplete="PF('conceptChart').show();" 
+                                                <p:commandLink onclick="PF('conceptChart').show();" 
                                                                value="#{langueBean.getMsg('statistique.concepts')}"
                                                                style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
 
-                                                <p:commandLink oncomplete="PF('termChart').show();" 
+                                                <p:commandLink onclick="PF('termChart').show();" 
                                                                value="#{langueBean.getMsg('statistique.untranslated_terms')}"
                                                                style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
 
-                                                <p:commandLink oncomplete="PF('synonymChart').show();" 
+                                                <p:commandLink onclick="PF('synonymChart').show();" 
                                                                value="#{langueBean.getMsg('statistique.synonyms')}"
                                                                style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
 
-                                                <p:commandLink oncomplete="PF('noteChart').show();" 
+                                                <p:commandLink onclick="PF('noteChart').show();" 
                                                                value="#{langueBean.getMsg('statistique.notes')}"
                                                                style="color: #f47b2a; margin-left: 10px; font-weight: bold;" />
                                             </span>
@@ -289,100 +289,100 @@
 
                     <ui:include src="../commun/footer.xhtml" />
 
+                    <p:dialog id="noteChartID" widgetVar="noteChart" modal="true" resizable="false" 
+                              position="top" width="600" style="margin-top: 50px" header="Diagramme des notes" >
+                        <div class="card">
+                            <p:donutChart widgetVar="chart" model="#{statistiqueBean.createChartModel(4)}" style="width: 100%; height: 500px;"/>
+                        </div>
+                        <div style="text-align: right" >
+                            <p:commandLink update="containerIndex" onclick="PF('noteChart').hide();" value="Fermer" />
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog id="termChartID" widgetVar="termChart" modal="true" resizable="false" 
+                              position="top" width="600" style="margin-top: 50px" header="Diagramme des termes non traduits" >
+                        <div class="card">
+                            <p:donutChart model="#{statistiqueBean.createChartModel(3)}" style="width: 100%; height: 500px;"/>
+                        </div>
+                        <div style="text-align: right" >
+                            <p:commandLink update="containerIndex" onclick="PF('termChart').hide();" value="Fermer" />
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog id="synonymChartID" widgetVar="synonymChart" modal="true" resizable="false" 
+                              position="top" width="600" style="margin-top: 50px" header="Diagramme des synonymes" >
+                        <div class="card">
+                            <p:donutChart model="#{statistiqueBean.createChartModel(2)}" style="width: 100%; height: 500px;"/>
+                        </div>
+                        <div style="text-align: right" >
+                            <p:commandLink update="containerIndex" onclick="PF('synonymChart').hide();" value="Fermer" />
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog id="conceptChartID" widgetVar="conceptChart" resizable="false" 
+                              position="top" width="600" style="margin-top: 50px" header="Diagramme des concepts"  >
+                        <div class="card">
+                            <p:donutChart model="#{statistiqueBean.createChartModel(1)}" style="width: 100%; height: 500px;"/>
+                        </div>
+                        <div style="text-align: right" >
+                            <p:commandLink update="containerIndex" onclick="PF('conceptChart').hide();" value="Fermer" />
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog id="idConceptStat" header="Détail du concept '#{statistiqueBean.canceptStatistiqueSelected.label}'" 
+                              widgetVar="conceptDdetail" modal="true" resizable="true" position="top" width="600" 
+                              style="margin-top: 50px" >         
+
+                        <h:form id="conceptDdetailForm">  
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <h:outputText style="float: right; font-weight: bold;" value="Id concept : "/>
+                                </div>
+                                <div class="col-6">
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.idConcept}"/>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-6">
+                                    <h:outputText style="float: right; font-weight: bold;" value="Type : "/>
+                                </div>
+                                <div class="col-6">
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.type}"/>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-6">
+                                    <h:outputText style="float: right; font-weight: bold;" value="Utilisateur : "/>
+                                </div>
+                                <div class="col-6">
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.utilisateur}"/>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-6">
+                                    <h:outputText style="float: right; font-weight: bold;" value="Date de création : "/>
+                                </div>
+                                <div class="col-6">
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.dateCreation}"/>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-6">
+                                    <h:outputText style="float: right; font-weight: bold;" value="Date de modification : "/>
+                                </div>
+                                <div class="col-6">
+                                    <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.dateModification}"/>
+                                </div>
+                            </div>
+                        </h:form>
+                    </p:dialog>
+
                 </h:form>
-
-                <p:dialog id="noteChartID" widgetVar="noteChart" modal="true" resizable="false" 
-                          position="top" width="600" style="margin-top: 50px" header="Diagramme des notes" >
-                    <div class="card">
-                        <p:donutChart widgetVar="chart" model="#{statistiqueBean.createChartModel(4)}" style="width: 100%; height: 500px;"/>
-                    </div>
-                    <div style="text-align: right" >
-                        <p:commandLink update="containerIndex" onclick="PF('noteChart').hide();" value="Fermer" />
-                    </div>
-                </p:dialog>
-
-                <p:dialog id="termChartID" widgetVar="termChart" modal="true" resizable="false" 
-                          position="top" width="600" style="margin-top: 50px" header="Diagramme des termes non traduits" >
-                    <div class="card">
-                        <p:donutChart model="#{statistiqueBean.createChartModel(3)}" style="width: 100%; height: 500px;"/>
-                    </div>
-                    <div style="text-align: right" >
-                        <p:commandLink update="containerIndex" onclick="PF('termChart').hide();" value="Fermer" />
-                    </div>
-                </p:dialog>
-
-                <p:dialog id="synonymChartID" widgetVar="synonymChart" modal="true" resizable="false" 
-                          position="top" width="600" style="margin-top: 50px" header="Diagramme des synonymes" >
-                    <div class="card">
-                        <p:donutChart model="#{statistiqueBean.createChartModel(2)}" style="width: 100%; height: 500px;"/>
-                    </div>
-                    <div style="text-align: right" >
-                        <p:commandLink update="containerIndex" onclick="PF('synonymChart').hide();" value="Fermer" />
-                    </div>
-                </p:dialog>
-
-                <p:dialog id="conceptChartID" widgetVar="conceptChart" resizable="false" 
-                          position="top" width="600" style="margin-top: 50px" header="Diagramme des concepts"  >
-                    <div class="card">
-                        <p:donutChart model="#{statistiqueBean.createChartModel(1)}" style="width: 100%; height: 500px;"/>
-                    </div>
-                    <div style="text-align: right" >
-                        <p:commandLink update="containerIndex" onclick="PF('conceptChart').hide();" value="Fermer" />
-                    </div>
-                </p:dialog>
-
-                <p:dialog id="idConceptStat" header="Détail du concept '#{statistiqueBean.canceptStatistiqueSelected.label}'" 
-                          widgetVar="conceptDdetail" modal="true" resizable="true" position="top" width="600" 
-                          style="margin-top: 50px" >         
-
-                    <h:form id="conceptDdetailForm">  
-
-                        <div class="row">
-                            <div class="col-6">
-                                <h:outputText style="float: right; font-weight: bold;" value="Id concept : "/>
-                            </div>
-                            <div class="col-6">
-                                <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.idConcept}"/>
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-6">
-                                <h:outputText style="float: right; font-weight: bold;" value="Type : "/>
-                            </div>
-                            <div class="col-6">
-                                <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.type}"/>
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-6">
-                                <h:outputText style="float: right; font-weight: bold;" value="Utilisateur : "/>
-                            </div>
-                            <div class="col-6">
-                                <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.utilisateur}"/>
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-6">
-                                <h:outputText style="float: right; font-weight: bold;" value="Date de création : "/>
-                            </div>
-                            <div class="col-6">
-                                <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.dateCreation}"/>
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-6">
-                                <h:outputText style="float: right; font-weight: bold;" value="Date de modification : "/>
-                            </div>
-                            <div class="col-6">
-                                <h:outputText style="float: left;" value="#{statistiqueBean.canceptStatistiqueSelected.dateModification}"/>
-                            </div>
-                        </div>
-                    </h:form>
-                </p:dialog>
             </div>
         </h:panelGroup>
     </h:body>
