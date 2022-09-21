@@ -382,7 +382,7 @@
                                          icon="fa fa-upload" class="btn btn-success"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
                                          style="float: right; color: white; background: #43B572; border: #43B572;">
-                            <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
+                            <p:fileDownload value="#{exportFileBean.exportNewGen()}" />
                         </p:commandButton>
                         <p:commandButton value="Exporter vers Vertuoso" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
