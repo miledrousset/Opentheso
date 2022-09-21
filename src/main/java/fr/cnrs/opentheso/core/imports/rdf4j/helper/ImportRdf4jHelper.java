@@ -264,7 +264,7 @@ public class ImportRdf4jHelper {
             if(idFacet == null) continue;
             for (SKOSRelation relation : facetSKOSResource.getRelationsList()) {
                 if(relation.getProperty() == SKOSProperty.superOrdinate) {
-                    idConceptParent = getIdFromUri(relation.getTargetUri());
+                    idConceptParent = getOriginalId(relation.getTargetUri());
                 }
             }
             if(idConceptParent == null) continue;

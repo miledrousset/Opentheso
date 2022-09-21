@@ -258,6 +258,62 @@
                 </h:panelGroup>
                 
                 
+                <!-- Export CSV Id -->
+                <h:panelGroup rendered="#{viewEditionBean.isViewExportCSV_id}">
+                    <div class="row">
+                        <div class="col-3" style="text-align: right">
+                            <h:outputText value="Délimiteur Csv" style="color: #000" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{viewExportBean.csvDelimiter}"
+                                             styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none;  box-shadow: none; ">
+                                <f:selectItem itemLabel=";" itemValue=";" />
+                                <f:selectItem itemLabel="," itemValue="," />
+                                <f:selectItem itemLabel="\t" itemValue="\t" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <div class="row" style="text-align: right; margin-top: 10px;">
+                        <div class="col-3" style="text-align: right">
+                            <h:outputText value="Langue" style="color: #000" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{viewExportBean.selectedIdLangTheso}"
+                                             styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none;  box-shadow: none; ">
+                                <f:selectItems value="#{viewExportBean.languagesOfTheso}" var="lang"
+                                               itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>                    
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-3" style="text-align: right">
+                            <h:outputText value="Filtre par collection/groupe" style="color: #000" title="Par défaut, tout est sélectionné !!"/>
+                        </div>
+
+                        <div class="col-5">
+                            <p:toggleSwitch value="#{viewExportBean.toogleFilterByGroup}" style="font-size: 12px;">
+                                <p:ajax update="containerIndex" />
+                            </p:toggleSwitch>
+                        </div>
+                    </div>
+
+                    <h:panelGroup rendered="#{viewExportBean.toogleFilterByGroup}">
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col-3" />
+
+                            <div class="col-5">
+                                <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="select" style="width: 100%; height: 28px; font-size: 12px;"
+                                                      filter="true" filterMatchMode="contains" panelStyle="width: 21rem; font-size: 0.8rem;" scrollHeight="250" >
+                                    <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup>                
+                
                 
                 
                 <!-- export des concepts dépréciés -->                
