@@ -566,9 +566,9 @@ BEGIN
 				AND concept_replacedby.id_concept1 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso
 		LOOP
-			replacedBy = replacedBy || opentheso_get_uri(theso_rec.original_uri_is_ark, replacedBy.id_ark, theso_rec.original_uri,
-					theso_rec.original_uri_is_handle, replacedBy.id_handle, theso_rec.original_uri_is_doi,
-					replacedBy.id_doi, replacedBy.id_concept2, id_theso, path) || seperateur;
+			replacedBy = replacedBy || opentheso_get_uri(theso_rec.original_uri_is_ark, replacedBy_rec.id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, replacedBy_rec.id_handle, theso_rec.original_uri_is_doi,
+					replacedBy_rec.id_doi, replacedBy_rec.id_concept2, id_theso, path) || seperateur;
 		END LOOP;
 
 		facets = '';
@@ -821,9 +821,9 @@ BEGIN
 				AND concept_replacedby.id_concept1 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso
 		LOOP
-			replacedBy = replacedBy || opentheso_get_uri(theso_rec.original_uri_is_ark, replacedBy.id_ark, theso_rec.original_uri,
-					theso_rec.original_uri_is_handle, replacedBy.id_handle, theso_rec.original_uri_is_doi,
-					replacedBy.id_doi, replacedBy.id_concept2, id_theso, path) || seperateur;
+			replacedBy = replacedBy || opentheso_get_uri(theso_rec.original_uri_is_ark, replacedBy_rec.id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, replacedBy_rec.id_handle, theso_rec.original_uri_is_doi,
+					replacedBy_rec.id_doi, replacedBy_rec.id_concept2, id_theso, path) || seperateur;
 		END LOOP;
 
 		facets = '';
