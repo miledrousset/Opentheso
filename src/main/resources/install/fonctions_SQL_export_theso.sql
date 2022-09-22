@@ -332,7 +332,7 @@ BEGIN
   		RETURN NEXT rec;
     END LOOP;
 END;
-$$
+$$;
 
 CREATE OR REPLACE FUNCTION opentheso_get_concepts_by_group (id_theso VARCHAR, path VARCHAR, id_group VARCHAR)
 	RETURNS SETOF RECORD
@@ -588,7 +588,7 @@ BEGIN
   		RETURN NEXT rec;
     END LOOP;
 END;
-$$
+$$;
 
 
 CREATE OR REPLACE FUNCTION opentheso_get_concepts (id_theso VARCHAR, path VARCHAR)
