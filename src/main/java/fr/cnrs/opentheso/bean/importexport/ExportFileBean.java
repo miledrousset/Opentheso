@@ -392,7 +392,7 @@ public class ExportFileBean implements Serializable {
             }
 
             try ( ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
+                System.out.println("total 1 = " + skosxd.getConceptList().size());
                 WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
                 Rio.write(writeRdf4j.getModel(), out, format);
                 writeRdf4j.closeCache();
@@ -403,6 +403,9 @@ public class ExportFileBean implements Serializable {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
                     out.close();
+                    System.out.println(">>> FIN 1 : " + System.currentTimeMillis());
+                    System.out.println(">>> FIN 1 : " + (System.currentTimeMillis() - start));
+                    System.out.println(">>> FIN (SEC) 1 : " + ((System.currentTimeMillis() - start) / 1000));                    
                     return DefaultStreamedContent.builder()
                             .contentType("application/xml")
                             .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)
@@ -590,7 +593,7 @@ public class ExportFileBean implements Serializable {
             }
 
             try ( ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
+                System.out.println("total 2 = " + skosxd.getConceptList().size());
                 WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
                 Rio.write(writeRdf4j.getModel(), out, format);
                 writeRdf4j.closeCache();
@@ -600,7 +603,7 @@ public class ExportFileBean implements Serializable {
                 System.gc();
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
-
+                    out.close();
                     System.out.println(">>> FIN 2 : " + System.currentTimeMillis());
                     System.out.println(">>> FIN 2 : " + (System.currentTimeMillis() - start));
                     System.out.println(">>> FIN (SEC) 2 : " + ((System.currentTimeMillis() - start) / 1000));

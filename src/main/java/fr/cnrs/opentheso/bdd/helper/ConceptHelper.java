@@ -1173,6 +1173,7 @@ public class ConceptHelper {
                 + " concept.id_concept = concept_group_concept.idconcept AND"
                 + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                + " concept.status != 'CA' AND "
                 + " concept_group_concept.idgroup = '" + idGroup + "'";
 
         return getConceptDetails(ds, query, idThesaurus);
