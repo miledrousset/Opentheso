@@ -840,6 +840,57 @@ public class NoteHelper {
         }
         return listDefinitions;
     }
+    
+    /**
+     * Cette fonction permet de retourner la note d'application d'un concept
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return ArrayList des notes sous forme de Class NodeNote
+     */
+    public ArrayList<String> getScopeNote(HikariDataSource ds,
+            String idConcept, String idThesaurus, String idLang) {
+
+        ArrayList<String> listDefinitions = new ArrayList<>();
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select lexicalvalue from note"
+                            + " where"
+                            + " note.notetypecode = 'scopeNote'"
+                            + " and"
+                            + " note.id_thesaurus = '" + idThesaurus + "'"
+                            + " and "
+                            + " note.lang = '" + idLang + "'"
+                            + " and"
+                            + " note.id_concept = '" + idConcept + "'";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        listDefinitions.add(resultSet.getString("lexicalvalue"));
+                    }
+
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting definition of concept : " + idConcept, sqle);
+        }
+        return listDefinitions;
+    }    
 
     /**
      * Cette fonction permet d'ajouter une Note Ã  un concept instert dans la

@@ -1012,7 +1012,7 @@ public class SearchHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept from concept where status = 'DEP'"
-                        + " and id_thesaurus = '" + idTheso + "'");
+                        + " and id_thesaurus = '" + idTheso + "' limit 200");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         idConcepts.add(resultSet.getString("id_concept"));
@@ -1041,7 +1041,7 @@ public class SearchHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept1 from hierarchical_relationship where role = 'BT'"
                         + " and id_thesaurus = '" + idTheso + "'"
-                        + " group by id_concept1 having count(id_concept1) > 1;");
+                        + " group by id_concept1 having count(id_concept1) > 1 limit 200;");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         idConcepts.add(resultSet.getString("id_concept1"));
@@ -1068,7 +1068,7 @@ public class SearchHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select idconcept from concept_group_concept where idthesaurus = '" + idTheso + "'"
-                        + " group by idconcept having count(idconcept) > 1 limit 500");
+                        + " group by idconcept having count(idconcept) > 1 limit 200");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         idConcepts.add(resultSet.getString("idconcept"));
@@ -1801,6 +1801,109 @@ public class SearchHelper {
         return nodeSearchMinis;
     }
     
+    
+    /**
+     * Cette fonction permet de faire une recherche par valeur sur les termes
+     * Préférés et les synonymes (la recherche porte sur les termes contenus
+     * dans une chaine) en utilisant la méthode PostgreSQL Trigram Index, le
+     * résultat est proche d'une recherche avec ElasticSearch
+     *
+     * Elle retourne la liste des termes + identifiants
+     *
+     * @param ds
+     * @param value
+     * @param idLang
+     * @param idThesaurus
+     * @return #MR
+     */
+    public ArrayList<String> searchFullTextElasticId(HikariDataSource ds,
+            String value, String idLang, String idThesaurus) {
+        if (value == null) {
+            return null;
+        }
+        StringPlus stringPlus = new StringPlus();
+
+        ArrayList<String> listIds = new ArrayList<>();
+        value = stringPlus.convertString(value);
+        //value = stringPlus.unaccentLowerString(value);
+
+        String preparedValuePT = " and unaccent(lower(term.lexical_value)) % (unaccent(lower('" + value + "')))";
+        String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) % (unaccent(lower('" + value + "')))";
+
+        String lang;
+        String langSynonyme;
+        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
+        if (idLang == null || idLang.isEmpty()) {
+            lang = "";
+            langSynonyme = "";
+        } else {
+            lang = " and term.lang ='" + idLang + "'";
+            langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
+        }
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT preferred_term.id_concept, term.lexical_value, term.id_term, concept.status "
+                        + " FROM term, preferred_term, concept "
+                        + " WHERE "
+                        + " concept.id_concept = preferred_term.id_concept"
+                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and preferred_term.id_term = term.id_term AND"
+                        + " preferred_term.id_thesaurus = term.id_thesaurus"
+                        + preparedValuePT
+                        + " and term.id_thesaurus = '" + idThesaurus + "'"
+                        + lang
+                        + " and concept.status != 'CA'"
+                        + " order by term.lexical_value <-> '" + value + "' limit 50");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        if(!listIds.contains(resultSet.getString("id_concept"))) 
+                            listIds.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT preferred_term.id_concept, term.id_term, "
+                        + " non_preferred_term.lexical_value as npt,"
+                        + " term.lexical_value as pt, concept.status"
+                        + " FROM"
+                        + " non_preferred_term, term, preferred_term, concept"
+                        + " WHERE"
+                        + " concept.id_concept = preferred_term.id_concept"
+                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and"
+                        + "  preferred_term.id_term = term.id_term AND"
+                        + "  preferred_term.id_thesaurus = term.id_thesaurus AND"
+                        + "   preferred_term.id_term = non_preferred_term.id_term AND"
+                        + "   term.lang = non_preferred_term.lang AND"
+                        + "   preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
+                        + preparedValueNPT
+                        + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
+                        + langSynonyme
+                        + " and concept.status != 'CA'"
+                        + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 50");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        if(!listIds.contains(resultSet.getString("id_concept"))) {
+                            listIds.add(resultSet.getString("id_concept"));
+                        }
+                    }
+                }
+            }
+            //// rechercher les collections
+            // à activer plus tard
+        //    nodeSearchMinis = searchCollections(conn, idThesaurus, value, idLang, nodeSearchMinis);
+            
+            /// rechercher les Facettes
+            //nodeSearchMinis = searchFacets(conn, idThesaurus, value, idLang, nodeSearchMinis);
+
+        } catch (SQLException sqle) {
+            log.error("Error searchFullTextElastic of theso : " + idThesaurus, sqle);
+        }
+        return listIds;
+    }   
+   
     private ArrayList<NodeSearchMini> searchCollections(Connection conn,
             String idTheso, String value, String idLang,
             ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException{
@@ -1840,6 +1943,7 @@ public class SearchHelper {
             }        
         return nodeSearchMinis;
     }
+    
     
     private ArrayList<NodeSearchMini> searchFacets(Connection conn,
             String idTheso, String value, String idLang,

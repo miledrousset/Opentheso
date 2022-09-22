@@ -484,14 +484,28 @@ public class ConceptView implements Serializable {
                     }
                 } else {
                     // recherche par Id
+                    
+                    /// pour le count par Id interne
                     if (nodeCorpuse.getUriCount().contains("##id##")) {
                         if (nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
                             nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
                         }
                     }
+                    /// pour le count par Id ark
+                    if (nodeCorpuse.getUriCount().contains("##arkid##")) {
+                        if (nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
+                            nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##arkid##", nodeConcept.getConcept().getIdArk()));
+                        }
+                    }                    
+                    
+                    /// pour la construction de l'URL avec Id interne
                     if (nodeCorpuse.getUriLink().contains("##id##")) {
                         nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
                     }
+                    /// pour la construction de l'URL avec Id Ark
+                    if (nodeCorpuse.getUriLink().contains("##arkid##")) {
+                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##arkid##", nodeConcept.getConcept().getIdArk()));
+                    }                    
 
                     // recherche par value
                     if (nodeCorpuse.getUriCount().contains("##value##")) {

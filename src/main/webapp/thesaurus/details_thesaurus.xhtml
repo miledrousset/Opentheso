@@ -5,8 +5,8 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <div class="row" style="margin-left: 10px; margin-right: 10px; margin-top: 5px;">
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 card shadow mb-1" style="overflow:hidden;">
+    <div class="row" style="margin-left: 10px; margin-right: 10px; margin-top: 5px;max-height: 2000px">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 card shadow mb-1" style="overflow:hidden; ">
             <h:form id="formLeftTab" >
                 <p:tabView id="tabTree" activeIndex="#{leftBodySetting.index}" style="border-style: none; width: 100%;" >
                     <p:ajax event="tabChange" listener="#{tree.onTabTreeChange}" update="containerIndex:formRightTab" />
@@ -56,7 +56,7 @@
         </div>
 
         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8">
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4" style="overflow:auto; overflow:auto; max-height: 1000px">
                 <h:panelGroup id="formRightTab">
                     <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
                                style="border-style: none; height: 100%">

@@ -43,12 +43,12 @@ import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
 import fr.cnrs.opentheso.ws.NodeDatas;
-//import fr.cnrs.opentheso.ws.ark.ArkHelper;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.collections.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -4744,8 +4744,10 @@ public class ConceptHelper {
         while (m.find()) {
             String link = "<a" + m.group(1) + "a>";
             ArrayList<HTMLLinkElement> result = new HtmlLinkExtraction().extractHTMLLinks(link);
-            initialStr = initialStr.replace(link, result.get(0).getLinkElement()
+            if (CollectionUtils.isNotEmpty(result)) {
+                initialStr = initialStr.replace(link, result.get(0).getLinkElement()
                     + " (" + result.get(0).getLinkAddress() + ")");
+            }
         }
         return initialStr;
     }

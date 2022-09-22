@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.proposition.helper;
 
 import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -157,6 +158,7 @@ public class PropositionHelper {
     }
 
     public int createNewProposition(HikariDataSource ds, PropositionDao proposition) {
+        proposition.setCommentaire(new StringPlus().convertString(proposition.getCommentaire()));
         try {
             PreparedStatement ps = ds.getConnection().prepareStatement("Insert into proposition_modification "
                     + "(id_concept, id_theso, lang, status, date, nom, email, commentaire) values ('"

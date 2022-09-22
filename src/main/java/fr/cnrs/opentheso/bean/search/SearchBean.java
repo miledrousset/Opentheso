@@ -298,8 +298,10 @@ public class SearchBean implements Serializable {
         if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
             Collections.sort(nodeConceptSearchs);
             if (nodeConceptSearchs.size() == 1) {
+                conceptBean.getConcept(nodeConceptSearchs.get(0).getIdTheso(), nodeConceptSearchs.get(0).getIdConcept(),nodeConceptSearchs.get(0).getCurrentLang());                
                 isSelectedItem = true;
                 setViewsConcept();
+
             } else {
                 setViewsSearch();
                 isSelectedItem = false;
@@ -360,46 +362,72 @@ public class SearchBean implements Serializable {
         if (withId) {
             nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(), searchValue, idTheso);
             for (String idConcept : nodeSearchsId) {
-                concepts.add(0, conceptHelper.getConceptForSearch(connect.getPoolConnexion(), idConcept, idTheso, idLang));
-            }
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                        idConcept, idTheso, idLang);
+                if (nodeConceptSearch != null) {
+                    nodeConceptSearch.setThesoName(thesaurusLabel);
+                }
+                concepts.add(0,nodeConceptSearch);
+            }            
         }
 
         if (withNote) {
             nodeSearchsId = searchHelper.searchIdConceptFromNotes(connect.getPoolConnexion(), searchValue, idLang, idTheso);
 
             for (String idConcept : nodeSearchsId) {
-                concepts.add(conceptHelper.getConceptForSearch(connect.getPoolConnexion(), idConcept, idTheso, idLang));
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                        idConcept, idTheso, idLang);
+                if (nodeConceptSearch != null) {
+                    nodeConceptSearch.setThesoName(thesaurusLabel);
+                }
+                concepts.add(nodeConceptSearch);
             }
         }
 
         if (exactMatch) {
-            ArrayList<NodeSearchMini> nodeSearchMini = searchHelper.searchExactMatch(connect.getPoolConnexion(),
+            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchExactMatch(connect.getPoolConnexion(),
                     searchValue, idLang, idTheso);
 
-            for (NodeSearchMini nodeSearchMini1 : nodeSearchMini) {
-                concepts.add(conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
-                        nodeSearchMini1.getIdConcept(), idTheso, idLang));
+            for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                        nodeSearchMini.getIdConcept(), idTheso, idLang);
+                if (nodeConceptSearch != null) {
+                    nodeConceptSearch.setThesoName(thesaurusLabel);
+                }
+                concepts.add(nodeConceptSearch);
             }
         }
 
         if (indexMatch) {
-            ArrayList<NodeSearchMini> nodeSearchMini = searchHelper.searchStartWith(connect.getPoolConnexion(),
+            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchStartWith(connect.getPoolConnexion(),
                     searchValue,
                     idLang,
                     idTheso);
-            for (NodeSearchMini nodeSearchMini1 : nodeSearchMini) {
-                concepts.add(conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
-                        nodeSearchMini1.getIdConcept(), idTheso, idLang));
+            for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                        nodeSearchMini.getIdConcept(), idTheso, idLang);
+                if (nodeConceptSearch != null) {
+                    nodeConceptSearch.setThesoName(thesaurusLabel);
+                }
+                concepts.add(nodeConceptSearch);
             }
 
         }
 
         if (!withId && !withNote && !exactMatch && !indexMatch) {
-            ArrayList<String> nodeSearchMinis = searchHelper.searchFullTextId(
+         /*   ArrayList<String> nodeSearchMinis = searchHelper.searchFullTextId(
                     connect.getPoolConnexion(), searchValue, idLang, idTheso);
-            for (String nodeSearchMini : nodeSearchMinis) {
+            */
+            
+            ArrayList<String> listIds = searchHelper.searchFullTextElasticId(connect.getPoolConnexion(),
+                        searchValue,
+                        idLang,
+                        idTheso);                    
+            
+            
+            for (String idConcept : listIds) {
                 nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
-                        nodeSearchMini, idTheso, idLang);
+                        idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
                 }
