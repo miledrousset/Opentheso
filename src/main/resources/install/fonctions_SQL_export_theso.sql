@@ -216,7 +216,6 @@ $BODY$;
 -- FUNCTION: public.opentheso_get_uri(boolean, character varying, character varying, boolean, character varying, boolean, character varying, character varying, character varying, character varying)
 
 -- DROP FUNCTION public.opentheso_get_uri(boolean, character varying, character varying, boolean, character varying, boolean, character varying, character varying, character varying, character varying);
-
 CREATE OR REPLACE FUNCTION public.opentheso_get_uri(
 	original_uri_is_ark boolean,
 	id_ark character varying,
@@ -233,31 +232,20 @@ CREATE OR REPLACE FUNCTION public.opentheso_get_uri(
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-DECLARE
-	uri varchar;
 BEGIN
-	IF (original_uri_is_ark = true) THEN
-		IF (id_ark IS NOT NULL) THEN
-			uri = original_uri || '/' || id_ark;
-		END IF;
-	ELSIF (original_uri_is_handle = true) THEN
-		IF (id_handle IS NOT NULL) THEN
-		  	uri = 'https://hdl.handle.net/' || id_handle;
-		END IF;
-	ELSIF (original_uri_is_doi = true) THEN
-		IF (id_doi IS NOT NULL) THEN
-		  	uri = 'https://doi.org/' || id_doi;
-		END IF;
-	ELSIF (original_uri IS NOT NULL) THEN
-		uri = original_uri || '/?idc=' || id_concept || '&idt=' || id_theso;
+	IF (original_uri_is_ark = true AND id_ark IS NOT NULL AND id_ark != '') THEN
+		return original_uri || '/' || id_ark;
+	ELSIF (original_uri_is_handle = true AND id_handle IS NOT NULL AND id_handle != '') THEN
+		return 'https://hdl.handle.net/' || id_handle;
+	ELSIF (original_uri_is_doi = true AND id_doi IS NOT NULL AND id_doi != '') THEN
+		return 'https://doi.org/' || id_doi;
+	ELSIF (original_uri IS NOT NULL AND original_uri != '') THEN
+		return original_uri || '/?idc=' || id_concept || '&idt=' || id_theso;
 	ELSE
-		uri = path || '/?idc=' || id_concept || '&idt=' || id_theso;
+		return path || '/?idc=' || id_concept || '&idt=' || id_theso;
 	end if;
-
-	return uri;
 end;
 $BODY$;
-
 
 
 -- FUNCTION: public.opentheso_get_alignements(character varying, character varying)
@@ -843,4 +831,4 @@ BEGIN
   		RETURN NEXT rec;
     END LOOP;
 END;
-$$
+$$0
