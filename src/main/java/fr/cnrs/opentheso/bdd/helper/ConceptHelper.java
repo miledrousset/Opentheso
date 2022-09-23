@@ -3522,6 +3522,10 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
      * qui n'ont pas d'identifiants Ark
+     * 
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public ArrayList<String> getAllIdConceptOfThesaurusWithoutArk(HikariDataSource ds, String idThesaurus) {
 
@@ -3530,7 +3534,7 @@ public class ConceptHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept from concept where id_thesaurus = '"
-                        + idThesaurus + "' and (id_ark = '' or id_ark = null)");
+                        + idThesaurus + "' and (id_ark = '' or id_ark = null) and status != 'CA'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         tabIdConcept.add(resultSet.getString("id_concept"));
