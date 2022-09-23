@@ -175,12 +175,13 @@ CREATE OR REPLACE FUNCTION public.opentheso_get_relations(
 AS $BODY$
 begin
 	return query
-		SELECT id_concept2, role, id_ark, id_handle, id_doi
-		FROM hierarchical_relationship as hr
-				LEFT JOIN concept AS con ON id_concept = id_concept2 AND hr.id_thesaurus = con.id_thesaurus
-		WHERE hr.id_thesaurus = id_theso
-		AND id_concept1 = id_con;
-
+                select id_concept2, role, id_ark, id_handle, id_doi
+                from hierarchical_relationship, concept
+                where  hierarchical_relationship.id_concept2 = concept.id_concept
+                and hierarchical_relationship.id_thesaurus = concept.id_thesaurus
+                and hierarchical_relationship.id_thesaurus = id_theso
+                and hierarchical_relationship.id_concept1 = id_con
+                and concept.status != 'CA';
 end;
 $BODY$;
 
@@ -233,7 +234,7 @@ CREATE OR REPLACE FUNCTION public.opentheso_get_uri(
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
 BEGIN
-	IF (original_uri_is_ark = true AND id_ark IS NOT NULL AND id_ark != '') THEN
+	IF (original_uri_is_ark = true AND (id_ark IS NOT NULL OR id_ark != '')) THEN
 		return original_uri || '/' || id_ark;
 	ELSIF (original_uri_is_handle = true AND id_handle IS NOT NULL AND id_handle != '') THEN
 		return 'https://hdl.handle.net/' || id_handle;
@@ -831,4 +832,4 @@ BEGIN
   		RETURN NEXT rec;
     END LOOP;
 END;
-$$0
+$$

@@ -381,15 +381,17 @@
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          icon="fa fa-upload" class="btn btn-success"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
+                                         title="Export rapide"
                                          style="float: right; color: white; background: #43B572; border: #43B572;">
                             <p:fileDownload value="#{exportFileBean.exportNewGen()}" />
                         </p:commandButton>
                         
                         <p:commandButton value="Ancienne méthode" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
-                                         icon="fa fa-upload" class="btn btn-success"
+                                         icon="fa fa-upload" class="btn btn-warning"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
-                                         style="margin-right: 20px;  float: right; color: white; background: #43B572; border: #43B572;">
+                                         title="Export classique plus long"
+                                         style="margin-right: 20px;  float: right; color: #ca2819; background-color: #FAEDE5">
                             <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                         </p:commandButton>      
                         
