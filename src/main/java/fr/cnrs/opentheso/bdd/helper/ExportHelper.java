@@ -315,7 +315,7 @@ public class ExportHelper {
             String[] tabs = textBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
-                sKOSResource.addMatch(tab, type);
+                sKOSResource.addReplaces(tab, type);
             }
         }
     }
