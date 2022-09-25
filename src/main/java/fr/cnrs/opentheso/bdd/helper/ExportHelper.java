@@ -110,14 +110,13 @@ public class ExportHelper {
 
                         addRelationsGiven(resultSet.getString("related"), sKOSResource);
 
-                        StringPlus stringPlus = new StringPlus();
-                        addDocumentation(stringPlus.normalizeStringForXml(resultSet.getString("definition")), sKOSResource, SKOSProperty.definition);
-                        addDocumentation(stringPlus.normalizeStringForXml(resultSet.getString("note")), sKOSResource, SKOSProperty.note);
-                        addDocumentation(stringPlus.normalizeStringForXml(resultSet.getString("editorialNote")), sKOSResource, SKOSProperty.editorialNote);
-                        addDocumentation(stringPlus.normalizeStringForXml(resultSet.getString("secopeNote")), sKOSResource, SKOSProperty.scopeNote);
-                        addDocumentation(stringPlus.normalizeStringForXml(resultSet.getString("historyNote")), sKOSResource, SKOSProperty.historyNote);
-                        addDocumentation(stringPlus.normalizeStringForXml(resultSet.getString("example")), sKOSResource, SKOSProperty.example);
-                        addDocumentation(stringPlus.normalizeStringForXml(resultSet.getString("changeNote")), sKOSResource, SKOSProperty.changeNote);
+                        addDocumentation(resultSet.getString("definition"), sKOSResource, SKOSProperty.definition);
+                        addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.note);
+                        addDocumentation(resultSet.getString("editorialNote"), sKOSResource, SKOSProperty.editorialNote);
+                        addDocumentation(resultSet.getString("secopeNote"), sKOSResource, SKOSProperty.scopeNote);
+                        addDocumentation(resultSet.getString("historyNote"), sKOSResource, SKOSProperty.historyNote);
+                        addDocumentation(resultSet.getString("example"), sKOSResource, SKOSProperty.example);
+                        addDocumentation(resultSet.getString("changeNote"), sKOSResource, SKOSProperty.changeNote);
 
                         addAlignementGiven(resultSet.getString("broadMatch"), sKOSResource, SKOSProperty.broadMatch);
                         addAlignementGiven(resultSet.getString("closeMatch"), sKOSResource, SKOSProperty.closeMatch);
@@ -346,8 +345,10 @@ public class ExportHelper {
 
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
-                String str = formatLinkTag(element[0]);
-                sKOSResource.addDocumentation(str.replaceAll(htmlTagsRegEx, ""), element[1], type);
+                String str = new StringPlus().normalizeStringForXml(element[0]);
+                //str = formatLinkTag(str);
+                //str = str.replaceAll(htmlTagsRegEx, "");
+                sKOSResource.addDocumentation(str, element[1], type);
             }
         }
     }
