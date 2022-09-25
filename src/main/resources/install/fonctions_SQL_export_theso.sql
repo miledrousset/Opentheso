@@ -147,14 +147,12 @@ AS $BODY$
 begin
 	return query
 		SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang
-		FROM note, note_type
-		WHERE note.notetypecode = note_type.code
-		AND note_type.isterm = true
+		FROM note
+		WHERE id_thesaurus = id_theso
 		AND note.id_term IN (SELECT id_term
 							 FROM preferred_term
 							 WHERE id_thesaurus = id_theso
 							 AND id_concept = id_con);
-
 end;
 $BODY$;
 
@@ -266,9 +264,9 @@ AS $BODY$
 begin
 	return query
 		SELECT uri_target, alignement_id_type
-		FROM concept con LEFT JOIN alignement ali ON ali.internal_id_concept = con.id_concept
-		WHERE id_thesaurus = id_theso
-		AND con.id_concept = id_con;
+		FROM alignement
+		where internal_id_concept = id_con
+		and internal_id_thesaurus = id_theso;
 end;
 $BODY$;
 
@@ -282,13 +280,11 @@ DECLARE
 	facet_rec record;
 	theso_rec record;
 	concept_rec record;
-	membre_rec record;
 
 	uri_membre VARCHAR;
 	id_ark VARCHAR;
 	id_handle VARCHAR;
 	uri_value VARCHAR;
-	membres TEXT;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -305,18 +301,8 @@ BEGIN
 		uri_value = opentheso_get_uri(theso_rec.original_uri_is_ark, concept_rec.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
 					 concept_rec.id_handle, theso_rec.original_uri_is_doi, concept_rec.id_doi, facet_rec.id_concept_parent, id_theso, path);
 
-		membres = '';
-
-		FOR membre_rec IN SELECT DISTINCT concept.* FROM concept_facet, concept WHERE concept_facet.id_concept = concept.id_concept
-				AND concept.id_thesaurus = id_theso and concept_facet.id_facet = facet_rec.id_facet
-		LOOP
-			uri_membre = opentheso_get_uri(theso_rec.original_uri_is_ark, membre_rec.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
-					 membre_rec.id_handle, theso_rec.original_uri_is_doi, membre_rec.id_doi, facet_rec.id_concept_parent, id_theso, path);
-			membres = membres || membre_rec.id_concept || '@' || uri_membre || '##';
-		END LOOP;
-
 		SELECT facet_rec.id_facet, facet_rec.lexical_value, facet_rec.created, facet_rec.modified, facet_rec.lang,
-				facet_rec.id_concept_parent, uri_value, membres INTO rec;
+				facet_rec.id_concept_parent, uri_value INTO rec;
 
   		RETURN NEXT rec;
     END LOOP;

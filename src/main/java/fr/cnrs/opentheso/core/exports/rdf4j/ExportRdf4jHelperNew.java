@@ -287,11 +287,9 @@ public class ExportRdf4jHelperNew {
     private void addFacetMembers(HikariDataSource ds, FacetHelper facetHelper, SKOSResource sKOSResource,
             NodeFacet nodeFacet, String idTheso){
 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        NodeUri nodeUri;
         List<String> members = facetHelper.getAllMembersOfFacet(ds, nodeFacet.getIdFacet(), idTheso);
         for (String idConcept : members) {
-            nodeUri = conceptHelper.getNodeUriOfConcept(ds, idConcept, idTheso);
+            NodeUri nodeUri = new ConceptHelper().getNodeUriOfConcept(ds, idConcept, idTheso);
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
         }
     }

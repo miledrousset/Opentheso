@@ -33,6 +33,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -638,8 +639,9 @@ public class ExportFileBean implements Serializable {
         
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
-        String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();        
-        String baseUrl = protocole + "://" + serverAdress + contextPath;
+        String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
+        HttpServletRequest request = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest());
+        String baseUrl = protocole + "://" + serverAdress + ":" + request.getLocalPort() + contextPath;
 
         List<SKOSResource> concepts = new ArrayList<>();
         
@@ -661,8 +663,8 @@ public class ExportFileBean implements Serializable {
             }            
         }
         
-         List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), 
-                        idTheso, baseUrl, nodePreference.getOriginalUri());
+        List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), idTheso, baseUrl, 
+                nodePreference.getOriginalUri(), nodePreference);
         for (SKOSResource facette : facettes) {
             exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
         }
