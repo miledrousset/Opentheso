@@ -33,7 +33,7 @@
             </f:facet>
         </p:dialog>
 
-        <h:panelGroup rendered="#{!currentUser.nodeUser.isSuperAdmin}">
+        <h:panelGroup rendered="#{(!currentUser.nodeUser.isSuperAdmin and !roleOnTheso.isAdminOnThisTheso)}">
             <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
                 <div class="list-group">
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
@@ -86,8 +86,8 @@
                 </div>
             </div>
         </h:panelGroup>
-
-        <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}">
+#{roleOnTheso.isAdminOnThisTheso}
+        <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}">
             <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
                 <div class="list-group">
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">

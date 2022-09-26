@@ -187,7 +187,7 @@ public class PropositionHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("UPDATE proposition_modification SET status = '" + status + "', approuve_par = '" 
-                        + approuvePar + "', approuve_date = '" + approuveDate + "' WHERE id = " + propositionId);
+                        + approuvePar + "', approuve_date = 'now()' WHERE id = " + propositionId);
                 updateStatus = true;
             }
         } catch (SQLException sqle) {

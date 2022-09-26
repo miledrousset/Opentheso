@@ -269,7 +269,7 @@ public class CurrentUser implements Serializable {
     }
 
     public boolean isAlertVisible() {
-        return ObjectUtils.isNotEmpty(nodeUser) && nodeUser.isIsSuperAdmin() && nodeUser.isIsActive();
+        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isIsSuperAdmin() || roleOnThesoBean.isIsAdminOnThisTheso()) && nodeUser.isIsActive();
     }
 
     public NodeUser getNodeUser() {

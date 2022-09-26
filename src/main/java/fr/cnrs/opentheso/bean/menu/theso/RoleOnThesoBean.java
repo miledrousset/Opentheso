@@ -197,6 +197,7 @@ public class RoleOnThesoBean implements Serializable {
     private void setOwnerThesos() {
         if (currentUser.getNodeUser() == null) {
             this.listTheso = new ArrayList();
+            setUserRoleOnThisTheso();
             return;
         }
         if(authorizedTheso == null)
@@ -387,6 +388,7 @@ public class RoleOnThesoBean implements Serializable {
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), withPrivateTheso);
         addAuthorizedThesoToHM();
+        setUserRoleOnThisTheso();
     }
 
     /**
@@ -415,15 +417,17 @@ public class RoleOnThesoBean implements Serializable {
      * #MR
      */
     private void setUserRoleOnThisTheso() {
+        initRoles();
         if (currentUser.getNodeUser() == null) {
             nodeUserRoleGroup = null;
             return;
         }
-        if (selectedTheso.getCurrentIdTheso() == null) {
+        if (selectedTheso.getSelectedIdTheso() == null || selectedTheso.getSelectedIdTheso().isEmpty()) {
             nodeUserRoleGroup = null;
+            setIsAdminOnThisTheso(false);
             return;
         }
-        initRoles();
+
         UserHelper currentUserHelper = new UserHelper();
 
         if (currentUser.getNodeUser().isIsSuperAdmin()) {
