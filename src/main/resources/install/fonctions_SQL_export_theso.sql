@@ -232,7 +232,7 @@ CREATE OR REPLACE FUNCTION public.opentheso_get_uri(
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
 BEGIN
-	IF (original_uri_is_ark = true AND (id_ark IS NOT NULL OR id_ark != '')) THEN
+	IF (original_uri_is_ark = true AND (id_ark IS NOT NULL AND id_ark != '')) THEN
 		return original_uri || '/' || id_ark;
 	ELSIF (original_uri_is_handle = true AND id_handle IS NOT NULL AND id_handle != '') THEN
 		return 'https://hdl.handle.net/' || id_handle;
