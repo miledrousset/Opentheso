@@ -715,6 +715,29 @@ body .ui-button.ui-button-text-only .ui-button-text {
 }
 
 
+body .ui-tabs.ui-tabs-top > .ui-tabs-nav {
+    padding: 0;
+    position: relative;
+    display: -ms-flexbox;
+    -ms-flex-wrap: wrap;
+    width: auto;
+    font-size: 13px;
+}
+
+body .ui-tabs .ui-tabs-nav li.ui-tabs-header {
+    padding: 10px;
+    margin-top: 3px;
+}
+
+body .ui-tabs.ui-tabs-top > .ui-tabs-nav li.ui-tabs-header.ui-state-active {
+    border-color: #f47b2a;
+}
+
+body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
+    color: #f47b2a;
+}
+
+
 /** Tab : multipanel **/
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight {
     background: #ecf8f1;
@@ -725,3 +748,22 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-high
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
     color: #F47B2A;
 }
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon {
+    width: 2rem;
+    height: 2rem;
+    margin: 0 0 0 0;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+body .ui-tree {
+    border-collapse: collapse;
+    padding: 0.1rem;
+    margin-left: -1rem;
+    margin-right: -0.8rem;
+    margin-bottom: -0.8rem;
+}
+
