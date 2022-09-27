@@ -10,6 +10,8 @@ public class PropositionDao implements Serializable {
     
     private String idTheso;
     
+    private String thesoName;
+    
     private String idConcept;
     
     private String lang;
@@ -150,6 +152,14 @@ public class PropositionDao implements Serializable {
 
     public void setCodeDrapeau(String codeDrapeau) {
         this.codeDrapeau = codeDrapeau;
+    }
+
+    public String getThesoName() {
+        return thesoName;
+    }
+
+    public void setThesoName(String thesoName) {
+        this.thesoName = thesoName;
     }
     
 }

@@ -19,9 +19,11 @@
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 7px; margin-left: 5px"/>
                     </div>
+                    <p:tooltip for="traductionProp" value="Cliquez ici pour proposer une modification" showDelay="500"
+                               position="top" />                    
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">  
 
-                        <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}"
+                        <p:menuButton id="traductionProp" icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}"
                                       style="color: #F7A269; background: none; border: none; box-shadow: none;  margin-left: -37px">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" actionListener="#{traductionBean.reset()}"

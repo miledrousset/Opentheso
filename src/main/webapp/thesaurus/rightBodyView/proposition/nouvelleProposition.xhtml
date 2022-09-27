@@ -4,7 +4,13 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGroup id="propositionView" styleClass="textOpentheso" style="margin: 20px">
+
+    <!-- Infos -->
+    <div class="col-12 md:col-4" style="margin-top: -10px;">
+        <p:staticMessage severity="warn" summary="Info" detail=" !! Le concept ne sera pas réellement modifié tant qu'un admin ne l'aura pas validé !!" style="width: 100%; font-size: 14px;"/>
+    </div>    
+    
+    <h:panelGroup id="propositionView" styleClass="textOpentheso" style="margin: 0px">
 
         <ui:include src="TermProposition.xhtml" />
 
@@ -74,7 +80,13 @@
             </div>
 
             <div class="row">
-                <div class="col-12" style="text-align: right;">
+                <!-- Infos -->
+                <div class="col-8">
+                    <p:staticMessage severity="warn" summary="Info" detail=" !! Vous serez averti par mail quand votre propostion sera traitée !!" style="width: 100%; font-size: 14px;"/>
+                </div>                 
+                
+                
+                <div class="col-4" style="text-align: right;">
                     <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" 
                                      style="margin-right: 10px" ajax="true" process="@this"
                                      update="containerIndex:rightTab" actionListener="#{propositionBean.preparerConfirmationDialog('annulerProposition')}" />
