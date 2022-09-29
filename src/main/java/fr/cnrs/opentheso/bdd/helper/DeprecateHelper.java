@@ -65,7 +65,11 @@ public class DeprecateHelper {
 
     /**
      * permet de retourner les concepts qui remplacent ce concept déprécié
-     */
+    * @param ds
+    * @param idTheso
+    * @param idConcept
+    * @return 
+    */
     public ArrayList<NodeHieraRelation> getAllReplacedByWithArk(HikariDataSource ds,
             String idTheso, String idConcept) {
 
@@ -74,7 +78,7 @@ public class DeprecateHelper {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept2, id_ark, id_handle, id_doi "
                         + " from concept_replacedby, concept"
-                        + " where concept.id_concept = concept_replacedby.id_concept1"
+                        + " where concept.id_concept = concept_replacedby.id_concept2"
                         + " and concept.id_thesaurus = concept_replacedby.id_thesaurus"
                         + " and concept_replacedby.id_concept1 = '" + idConcept + "'"
                         + " and concept_replacedby.id_thesaurus = '" + idTheso + "'");
@@ -147,14 +151,18 @@ public class DeprecateHelper {
 
     /**
      * permet de retourner les concepts dépréciés que ce concept remplace
-     */
+    * @param ds
+    * @param idTheso
+    * @param idConcept
+    * @return 
+    */
     public ArrayList<NodeHieraRelation> getAllReplacesWithArk(HikariDataSource ds, String idTheso, String idConcept) {
         ArrayList<NodeHieraRelation> nodeRelations = new ArrayList<>();
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept1, id_ark, id_handle, id_doi "
                         + " from concept_replacedby, concept"
-                        + " where concept.id_concept = concept_replacedby.id_concept2"
+                        + " where concept.id_concept = concept_replacedby.id_concept1"
                         + " and concept.id_thesaurus = concept_replacedby.id_thesaurus"
                         + " and concept_replacedby.id_concept2 = '" + idConcept + "'"
                         + " and concept_replacedby.id_thesaurus = '" + idTheso + "'");

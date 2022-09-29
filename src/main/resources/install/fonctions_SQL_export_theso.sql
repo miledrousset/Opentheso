@@ -232,8 +232,10 @@ CREATE OR REPLACE FUNCTION public.opentheso_get_uri(
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
 BEGIN
-	IF (original_uri_is_ark = true AND (id_ark IS NOT NULL OR id_ark != '')) THEN
+	IF (original_uri_is_ark = true AND id_ark IS NOT NULL AND id_ark != '') THEN
 		return original_uri || '/' || id_ark;
+	ELSIF (original_uri_is_ark = true AND (id_ark IS NULL or id_ark = '')) THEN
+		return path || '/?idc=' || id_concept || '&idt=' || id_theso;	
 	ELSIF (original_uri_is_handle = true AND id_handle IS NOT NULL AND id_handle != '') THEN
 		return 'https://hdl.handle.net/' || id_handle;
 	ELSIF (original_uri_is_doi = true AND id_doi IS NOT NULL AND id_doi != '') THEN
@@ -499,14 +501,16 @@ BEGIN
 		membre = '';
 		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
 		LOOP
-			IF (group_rec.group_id_ark IS NOT NULL) THEN
+			IF (theso_rec.original_uri_is_ark = true AND group_rec.group_id_ark IS NOT NULL  AND group_rec.group_id_ark != '') THEN
 				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
+			ELSIF (theso_rec.original_uri_is_ark = true AND (group_rec.group_id_ark IS NULL OR group_rec.group_id_ark = '')) THEN
+				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			ELSIF (group_rec.group_id_handle IS NOT NULL) THEN
 				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
 			ELSIF (theso_rec.original_uri IS NOT NULL) THEN
 				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			ELSE
-				membre = membre || path || '/?idc=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			END IF;
 		END LOOP;
 
@@ -523,9 +527,9 @@ BEGIN
 		replaces = '';
 		FOR replace_rec IN SELECT id_concept1, id_ark, id_handle, id_doi
 				FROM concept_replacedby, concept
-				WHERE concept.id_concept = concept_replacedby.id_concept2
+				WHERE concept.id_concept = concept_replacedby.id_concept1
 				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
-				AND concept_replacedby.id_concept2 = con.id_concept
+				AND concept_replacedby.id_concept1 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso
 		LOOP
 			replaces = replaces || opentheso_get_uri(theso_rec.original_uri_is_ark, replace_rec.id_ark, theso_rec.original_uri,
@@ -536,9 +540,9 @@ BEGIN
 		replacedBy = '';
 		FOR replacedBy_rec IN SELECT id_concept2, id_ark, id_handle, id_doi
 				FROM concept_replacedby, concept
-				WHERE concept.id_concept = concept_replacedby.id_concept1
+				WHERE concept.id_concept = concept_replacedby.id_concept2
 				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
-				AND concept_replacedby.id_concept1 = con.id_concept
+				AND concept_replacedby.id_concept2 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso
 		LOOP
 			replacedBy = replacedBy || opentheso_get_uri(theso_rec.original_uri_is_ark, replacedBy_rec.id_ark, theso_rec.original_uri,
@@ -754,14 +758,16 @@ BEGIN
 		membre = '';
 		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
 		LOOP
-			IF (group_rec.group_id_ark IS NOT NULL AND group_rec.group_id_ark != '') THEN
+			IF (theso_rec.original_uri_is_ark = true AND group_rec.group_id_ark IS NOT NULL  AND group_rec.group_id_ark != '') THEN
 				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
+			ELSIF (theso_rec.original_uri_is_ark = true AND (group_rec.group_id_ark IS NULL OR group_rec.group_id_ark = '')) THEN
+				membre = membre || path || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSIF (group_rec.group_id_handle IS NOT NULL AND group_rec.group_id_handle != '') THEN
 				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
 			ELSIF (theso_rec.original_uri IS NOT NULL AND theso_rec.original_uri != '') THEN
 				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSE
-				membre = membre || path || '/?idc=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || path || '/?idc=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			END IF;
 		END LOOP;
 
@@ -778,7 +784,7 @@ BEGIN
 		replaces = '';
 		FOR replace_rec IN SELECT id_concept1, id_ark, id_handle, id_doi
 				FROM concept_replacedby, concept
-				WHERE concept.id_concept = concept_replacedby.id_concept2
+				WHERE concept.id_concept = concept_replacedby.id_concept1
 				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
 				AND concept_replacedby.id_concept2 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso
@@ -791,7 +797,7 @@ BEGIN
 		replacedBy = '';
 		FOR replacedBy_rec IN SELECT id_concept2, id_ark, id_handle, id_doi
 				FROM concept_replacedby, concept
-				WHERE concept.id_concept = concept_replacedby.id_concept1
+				WHERE concept.id_concept = concept_replacedby.id_concept2
 				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
 				AND concept_replacedby.id_concept1 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso

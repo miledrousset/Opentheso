@@ -158,16 +158,16 @@
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
                             <ui:repeat var="em" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
-                                <h:outputText rendered="#{!em.hiden and conceptView.toggleSwitchAltLabelLang}" value="(#{em.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                <h:outputText rendered="#{!em.hiden and conceptView.toggleSwitchAltLabelLang}" value="(#{em.lang}) " style="font-size: 14px; font-weight: 300;"/>
                                 <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>
                                 <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
                             <br/>
                             <h:outputText rendered="#{(currentUser.nodeUser != null)}" value="" style="margin-left: 38px;" />
                             <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status1">
-
-
-                                <h:outputText rendered="#{(em2.hiden and conceptView.toggleSwitchAltLabelLang)}" value="(#{em2.lang}) " style="font-size: 14px; font-weight: bold; color: #78261f"/>
+                                
+                                
+                                <h:outputText rendered="#{(em2.hiden and conceptView.toggleSwitchAltLabelLang)}" value="(#{em2.lang}) " style="font-size: 14px; font-weight: 300;"/>
                                 <h:outputText rendered="#{em2.hiden}" value=" #{em2.lexical_value}" 
                                               title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}"
                                               styleClass="textOpentheso" style="color:#FF7979; font-style: italic; font-size: 14px;"/>                     
@@ -181,8 +181,8 @@
                         <p:inputSwitch id="commandOtherLangAltLabel" value="#{conceptView.toggleSwitchAltLabelLang}"
                                        style="color: #f47b2a; margin-left: 10px" >
                             <p:ajax listener="#{conceptView.getAltLabelWithAllLanguages()}" update="containerIndex:formRightTab messageIndex"/>
-                        </p:inputSwitch>    
-                        <p:tooltip for="commandOtherLangAltLabel" value="#{langueBean.getMsg('concept.showEMOtherLang')}" showDelay="1000" />                        
+                        </p:inputSwitch>
+                        <p:tooltip for="commandOtherLangAltLabel" value="#{langueBean.getMsg('concept.showEMOtherLang')}" showDelay="1000" />
                     </div>                    
 
 

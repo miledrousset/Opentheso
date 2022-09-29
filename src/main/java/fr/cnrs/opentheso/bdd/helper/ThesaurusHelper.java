@@ -928,6 +928,10 @@ public class ThesaurusHelper {
                         + "delete from thesaurus_alignement_source where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from concept_group_concept where idthesaurus = '" + idThesaurus + "';"
                         + "delete from relation_group where id_thesaurus = '" + idThesaurus + "';"
+                        + "delete from concept_facet where id_thesaurus = '" + idThesaurus + "';"
+                        + "delete from external_resources where id_thesaurus = '" + idThesaurus + "';"
+                        + "delete from external_images where id_thesaurus = '" + idThesaurus + "';"          
+                        + "delete from corpus_link where id_theso = '" + idThesaurus + "';"   
                         + "delete from preferences where id_thesaurus = '" + idThesaurus + "';");
                 state = true;
             }

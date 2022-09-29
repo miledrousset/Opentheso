@@ -302,7 +302,15 @@ public class PropositionBean implements Serializable {
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
 
         isRubriqueVisible = true;
-        rightBodySetting.setIndex(currentUser.getNodeUser() == null ? "2" : "3");
+        if(currentUser.getNodeUser() == null)
+            rightBodySetting.setIndex("2");
+        else {
+            if(roleOnThesoBean.getNodeUserRoleGroup().isIsContributor())
+                rightBodySetting.setIndex("2");
+            else
+                rightBodySetting.setIndex("3");
+        }
+ //       rightBodySetting.setIndex(currentUser.getNodeUser() == null ? "2" : "3");
 
         proposition = propositionService.selectProposition(nodeConcept);
 

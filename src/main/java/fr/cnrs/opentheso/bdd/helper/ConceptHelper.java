@@ -2447,12 +2447,18 @@ public class ConceptHelper {
                 conn.close();                  
                 return false;
             }
-
+            // supprime l'appartenance du concept à des facettes
+            if (!deleteConceptFromFacets(conn, idThesaurus, idConcept)) {
+                conn.rollback();
+                conn.close();                  
+                return false;
+            }            
             if (!deleteConceptReplacedby(conn, idThesaurus, idConcept)) {
                 conn.rollback();
                 conn.close();                  
                 return false;
             }
+            // supprime les facettes qui sont attachées à ce concept
             if (!deleteFacets(ds, idThesaurus, idConcept)) {
                 conn.rollback();
                 conn.close();                  
@@ -5457,10 +5463,36 @@ public class ConceptHelper {
             stmt.execute(query);
         }
     }
+  
+    /**
+     * permet de supprimer l'appartenance du concept à des facettes
+     * @param conn
+     * @param idTheso
+     * @param idConcept
+     * @return 
+     */
+    public boolean deleteConceptFromFacets(Connection conn, String idTheso, String idConcept) {
+        boolean status = false;
+        try ( Statement stmt = conn.createStatement()) {
+            String query = "delete from concept_facet WHERE id_concept = '" + idConcept
+                    + "' AND id_thesaurus = '" + idTheso + "'";
+            stmt.execute(query);
+            status = true;
 
+        } catch (SQLException ex) {
+            Logger.getLogger(ConceptHelper.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;
+    }        
+    
     /**
      * permet de supprimer un concept dans la table concept_replacedby
-     */
+    * @param conn
+    * @param idTheso
+    * @param idConcept
+    * @return 
+    */
     public boolean deleteConceptReplacedby(Connection conn, String idTheso, String idConcept) {
         boolean status = false;
         try ( Statement stmt = conn.createStatement()) {
