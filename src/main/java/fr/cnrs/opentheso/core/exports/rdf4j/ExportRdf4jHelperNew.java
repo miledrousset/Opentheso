@@ -762,17 +762,19 @@ public class ExportRdf4jHelperNew {
         // 1 seule URI est possible pour l'export par concept
         // URI de type Ark
         if(nodePreference.isOriginalUriIsArk()) {
-            if (nodeConceptExport.getConcept().getIdArk() != null) {
-                if (!nodeConceptExport.getConcept().getIdArk().trim().isEmpty()) {
-                    uri = nodePreference.getOriginalUri()+ "/" +nodeConceptExport.getConcept().getIdArk();
-                    return uri;
-                }
+            if (nodeConceptExport.getConcept().getIdArk() != null && !nodeConceptExport.getConcept().getIdArk().isEmpty()) {
+                uri = nodePreference.getOriginalUri()+ "/" +nodeConceptExport.getConcept().getIdArk();
+                return uri;
+            } else {
+                uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
+                            + "&idt=" + nodeConceptExport.getConcept().getIdThesaurus();                
+                return uri;
             }
         }
         
         if(nodePreference.isOriginalUriIsHandle()) {
             // URI de type Handle
-            if (nodeConceptExport.getConcept().getIdHandle() != null) {
+            if (nodeConceptExport.getConcept().getIdHandle() != null && !nodeConceptExport.getConcept().getIdHandle().isEmpty()) {
                 if (!nodeConceptExport.getConcept().getIdHandle().trim().isEmpty()) {
                     uri = "https://hdl.handle.net/" + nodeConceptExport.getConcept().getIdHandle();
                     return uri;
@@ -820,7 +822,9 @@ public class ExportRdf4jHelperNew {
 
     /**
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark : si renseigné sinon l'URL du Site
-     */
+    * @param nodeGroupLabel
+    * @return 
+    */
     public String getUriFromGroup(NodeGroupLabel nodeGroupLabel) {
         String uri = "";
         if (nodeGroupLabel == null) {
@@ -839,12 +843,15 @@ public class ExportRdf4jHelperNew {
         // 1 seule URI est possible pour l'export par concept
         // URI de type Ark
         if(nodePreference.isOriginalUriIsArk()) {
-            if (nodeGroupLabel.getIdArk() != null) {
-                if (!nodeGroupLabel.getIdArk().trim().isEmpty()) {
-                    uri = nodePreference.getUriArk() + nodeGroupLabel.getIdArk();
-                    return uri;
-                }
+            if (nodeGroupLabel.getIdArk() != null && !nodeGroupLabel.getIdArk().trim().isEmpty()) {
+                uri = nodePreference.getUriArk() + nodeGroupLabel.getIdArk();
+                return uri;
+            } else {
+                uri = getPath() + "/?idg=" + nodeGroupLabel.getIdGroup()
+                            + "&idt=" + nodeGroupLabel.getIdThesaurus();
+                return uri;
             }
+            
         }
         if(nodePreference.isOriginalUriIsHandle()) {        
             // URI de type Handle
@@ -897,9 +904,13 @@ public class ExportRdf4jHelperNew {
         // en dernier, on prend l'URL basique d'Opentheso
         // 1 seule URI est possible pour l'export par concept
         // URI de type Ark
-        if (nodeUri.getIdArk() != null) {
-            if (!nodeUri.getIdArk().trim().isEmpty()) {
+        if(nodePreference.isOriginalUriIsArk()) { 
+            if (nodeUri.getIdArk() != null && !nodeUri.getIdArk().isEmpty()) {
                 uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
+                return uri;
+            } else {
+                uri = getPath() + "/?idg=" + nodeUri.getIdConcept()
+                                + "&idt=" + idTheso;              
                 return uri;
             }
         }
@@ -947,11 +958,13 @@ public class ExportRdf4jHelperNew {
         // URI de type Ark
 
         if(nodePreference.isOriginalUriIsArk()) {
-            if (nodeUri.getIdArk() != null) {
-                if (!nodeUri.getIdArk().trim().isEmpty()) {
-                    uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
-                    return uri;
-                }
+            if (nodeUri.getIdArk() != null && !nodeUri.getIdArk().trim().isEmpty()) {
+                uri = nodePreference.getOriginalUri()+ "/" + nodeUri.getIdArk();
+                return uri;
+            } else {
+                uri = getPath() + "/?idc=" + nodeUri.getIdConcept().trim()
+                        + "&idt=" + idTheso;
+                return uri;
             }
         }
         if(nodePreference.isOriginalUriIsHandle()) {

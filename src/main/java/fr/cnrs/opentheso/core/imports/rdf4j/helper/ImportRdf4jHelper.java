@@ -287,7 +287,7 @@ public class ImportRdf4jHelper {
             for (SKOSRelation member : facetSKOSResource.getRelationsList()) {
                 if(member.getProperty() == SKOSProperty.member) {
                     facetHelper.addConceptToFacet(ds,
-                            idFacet, idTheso, getIdFromUri(member.getTargetUri()));
+                            idFacet, idTheso, getOriginalId(member.getTargetUri()));
                 }
             }
             first = true;
@@ -437,6 +437,7 @@ public class ImportRdf4jHelper {
 
         acs.conceptResource = conceptResource;
         acs.concept = new Concept();
+        String idArk;
 
         String idConcept = getOriginalId(conceptResource.getUri());
         acs.concept.setIdConcept(idConcept);
@@ -446,7 +447,9 @@ public class ImportRdf4jHelper {
 
         // option cochée
         if ("ark".equalsIgnoreCase(selectedIdentifier)) {
-            acs.concept.setIdArk(getIdArkFromUri(conceptResource.getUri()));
+         //   if(conceptResource.getArkId() != null && !conceptResource.getArkId().isEmpty())
+            idArk = getIdArkFromUri(conceptResource.getUri());
+            acs.concept.setIdArk(idArk);
         }
         if ("handle".equalsIgnoreCase(selectedIdentifier)) {
             acs.concept.setIdHandle(getIdHandleFromUri(conceptResource.getUri()));
@@ -1025,12 +1028,12 @@ public class ImportRdf4jHelper {
             switch (prop) {
                 case SKOSProperty.isReplacedBy:
                     NodeIdValue nodeIdValue = new NodeIdValue();
-                    nodeIdValue.setId(getIdFromUri(replace.getTargetUri()));
+                    nodeIdValue.setId(getOriginalId(replace.getTargetUri()));
                     acs.replacedBy.add(nodeIdValue);
                     break;
                 case SKOSProperty.replaces:
                     NodeIdValue nodeIdValue2 = new NodeIdValue();
-                    nodeIdValue2.setId(getIdFromUri(replace.getTargetUri()));
+                    nodeIdValue2.setId(getOriginalId(replace.getTargetUri()));
                     acs.replaces.add(nodeIdValue2);
                     break;
                 default:
@@ -1199,11 +1202,11 @@ public class ImportRdf4jHelper {
 
     private String getIdArkFromUri(String uri) {
         // URI de type Ark
-        String id = null;
+        String id = "";
         if (uri.contains("ark:/")) {
             id = uri.substring(uri.indexOf("ark:/") + 5, uri.length());
         }
-        if(id == null) return getIdFromUri(uri);
+//      if(id == null) return getIdFromUri(uri);
         return id;
     }
 

@@ -18,7 +18,6 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 
-import static fr.cnrs.opentheso.bdd.helper.ConceptHelper.formatLinkTag;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 
 
@@ -378,8 +377,11 @@ public class ExportHelper {
     private String getUriFromNodeUri(String idTheso, String originalUri, String idConcept, 
                 NodePreference nodePreference, NodeUri nodeUri) {
               
-        if(nodePreference.isOriginalUriIsArk() && !StringUtils.isEmpty(nodeUri.getIdArk())) {
+        if(nodePreference.isOriginalUriIsArk() && nodeUri.getIdArk()!= null && !StringUtils.isEmpty(nodeUri.getIdArk())) {
             return originalUri + '/' + nodeUri.getIdArk();
+        }
+        else if(nodePreference.isOriginalUriIsArk() && (nodeUri.getIdArk() == null || StringUtils.isEmpty(nodeUri.getIdArk())) ) {
+            return getPath(originalUri) + "/?idc=" + idConcept + "&idt=" + idTheso;      
         } else if(nodePreference.isOriginalUriIsHandle() && !StringUtils.isEmpty(nodeUri.getIdHandle())) {
             return "https://hdl.handle.net/" + nodeUri.getIdHandle();
         } else if (nodePreference.isOriginalUriIsDoi() && !StringUtils.isEmpty(nodeUri.getIdDoi())) {

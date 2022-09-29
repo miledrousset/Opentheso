@@ -79,7 +79,7 @@ public class WriteRdf4j {
     }
 
     private void writeConcept() {
-        int i = 0;
+    //    int i = 0;
         for (SKOSResource concept : xmlDocument.getConceptList()) {
             builder.subject(vf.createIRI(concept.getUri()));
             builder.add(RDF.TYPE, SKOS.CONCEPT);
@@ -100,10 +100,10 @@ public class WriteRdf4j {
 
             writeStatus(concept);
             writeReplaces(concept);
-            i++;
+         //   i++;
         //    System.out.println("compteur = " + i + "  concept = " + concept.getIdentifier() );
         }
-System.out.println("compteur = " + i );        
+//System.out.println("compteur = " + i );        
     }
 
     private void writeImageUri(SKOSResource resource) {
