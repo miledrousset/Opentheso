@@ -737,7 +737,6 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
     color: #f47b2a;
 }
 
-
 /** Tab : multipanel **/
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight {
     background: #ecf8f1;
@@ -747,23 +746,29 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-high
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
     color: #F47B2A;
-}
-
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon {
-    width: 2rem;
-    height: 2rem;
-    margin: 0 0 0 0;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
+    padding: 0;
 }
 
 body .ui-tree {
-    border-collapse: collapse;
-    padding: 0.1rem;
-    margin-left: -1rem;
-    margin-right: -0.8rem;
-    margin-bottom: -0.8rem;
+    padding: 0;
 }
 
+.ui-tree .ui-tree-container {
+    overflow: hidden;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode {
+    padding: 0em 0;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
+    height: 28px;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight{
+    padding: 0em 0;
+}
+
+.ui-button-icon-only .ui-icon {
+  font-size: 18px !important;
+}

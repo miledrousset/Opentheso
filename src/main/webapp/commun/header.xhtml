@@ -50,7 +50,8 @@
                     </p:badge>
                 </p:commandLink>
 
-                <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}" rendered="#{propositionBean.nbrNewPropositions == 0}">
+                <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}" 
+                               rendered="#{propositionBean.nbrNewPropositions == 0}" process="@this">
                     <i class="pi pi-bell" styleClass="p-mr-2" style="color: #d1d3e2; font-size: 1.1rem" />
                 </p:commandLink>
             </h:panelGroup>
@@ -140,7 +141,7 @@
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  update="logoutID"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" process="@this"
                                  ajax="true" actionListener="#{currentUser.disconnect(true)}"/>
             </div>
         </f:facet>

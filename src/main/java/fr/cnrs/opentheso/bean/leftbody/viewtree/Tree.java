@@ -159,7 +159,7 @@ public class Tree implements Serializable {
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
             data = new TreeNodeData(
                     nodeConceptTree.getIdConcept(),
-                    fr.cnrs.opentheso.utils.StringUtils.formatTitle(nodeConceptTree.getTitle()),
+                    nodeConceptTree.getTitle(),
                     nodeConceptTree.getNotation(),
                     false,//isgroup
                     false,//isSubGroup

@@ -33,7 +33,6 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
-import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.ws.RestRDFHelper;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,7 +45,6 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -55,8 +53,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -388,40 +386,56 @@ public class ConceptView implements Serializable {
      * permet de récupérer toutes les notes dans toutes les langues
      */
     public void getNotesWithAllLanguages(){
-        NoteHelper noteHelper = new NoteHelper();
+        
+        String msg;
         if(toggleSwitchNotesLang) {
-            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
+            msg = "Recherche des notes dans toutes les langue effectuée !";
+            nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTermAllLang(
                     connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));  
-            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
+            nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConceptAllLang(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));             
         } else {
-            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(
+            msg = "Recherche dans notes avec la langue '" + selectedLang + "' effectuée !";
+            nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTerm(
                     connect.getPoolConnexion(),
                     nodeConcept.getTerm().getId_term(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));             
                    
-            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConcept(
+            nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConcept(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));               
         }
         
-         
         setNotes();
+        
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", msg));
+        
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
-    public void getAltLabelWithAllLanguages(){
-        TermHelper termHelper = new TermHelper();
+    
+    public void getAltLabelWithAllLanguages(){   
         
-        if(toggleSwitchAltLabelLang)
-            nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
+        String msg = "";
+        
+        if(toggleSwitchAltLabelLang) {
+            msg = "Recherche dans toutes les langue effectuée !";
+            nodeConcept.setNodeEM(new TermHelper().getAllNonPreferredTerms(
                 connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));  
-        else
-            nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(connect.getPoolConnexion(),
+        } else {
+            msg = "Recherche dans la langue '" + selectedLang + "' effectuée !";
+            nodeConcept.setNodeEM(new TermHelper().getNonPreferredTerms(connect.getPoolConnexion(),
                     nodeConcept.getTerm().getId_term(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));
+        }
+        
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", msg));
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }    
     
     
@@ -728,25 +742,6 @@ public class ConceptView implements Serializable {
         this.step = step;
     }
     
-/*    private void setSizeToShowNT() {
-        // Max to show = step
-        if (nodeConcept.getNodeNT().size() > step) {
-            offset = step;
-        } else {
-            offset = nodeConcept.getNodeNT().size();
-        }
-    }
-
-
-
-    public int getSizeToShowNT() {
-        return offset;
-    }
-
-    public void setSizeToShowNT(int sizeToShowNT) {
-        this.offset = sizeToShowNT;
-    }*/
-
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
         ArrayList<Path> paths = pathHelper.getPathOfConcept(

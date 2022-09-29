@@ -79,10 +79,10 @@
         <h:panelGroup rendered="#{roleOnTheso.nodePreference.suggestion}" >
             <div class="col-12" style="vertical-align: central;
                  text-align: right">
-                <p:commandButton icon="pi pi-send" process="@this" value="#{langueBean.getMsg('rightbody.suggestImprovement')}"
+                <p:commandButton icon="pi pi-send" value="#{langueBean.getMsg('rightbody.suggestImprovement')}"
                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}"
                                  actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeConcept)}" onclick="scrollToPageTop();" 
-                                 ajax="true" update="containerIndex:formRightTab"/>
+                                 ajax="true" process="@this" update="containerIndex:formRightTab"/>
             </div>
         </h:panelGroup>
 
