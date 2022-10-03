@@ -181,7 +181,7 @@ public final class ArkClientRest {
         String naan = ark.substring(0, ark.indexOf("/"));
         WebTarget webTarget = client
                 .target(propertiesArk.getProperty("serverHost"))
-                .path("/rest/ark/naan=" + 
+                .path("/rest/v1/ark/exist=" + 
                         naan + 
                         "&id=" +
                         idArk1); 
@@ -208,8 +208,7 @@ public final class ArkClientRest {
             JsonString values = jsonObject.getJsonString("description");
             if(values != null){
                 if(values.getString().contains("Inexistant ARK")) return false;
-                else
-                    if(values.getString().contains("Ark retreived")) return true;
+                if(values.getString().contains("Ark exist")) return true;
             }            
         }
         message = "Erreur de format";

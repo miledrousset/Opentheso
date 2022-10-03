@@ -118,7 +118,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                 selectedTheso.getCurrentIdTheso()); 
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Copier "
-                + nodeConceptDrag.getTerm().getLexical_value() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
+                + nodeConceptDrag.getTerm().getLexical_value() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ") Total = " + conceptsToCopy.size());
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
     

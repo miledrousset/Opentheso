@@ -1788,9 +1788,14 @@ public class ConceptHelper {
 
             privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
 
-            /// cas où on n'a pas d'idArk dans le concept, il faut alors le créer sur Arkeo
+            /// test de tous les cas de figure pour la création d'un idArk
             if (concept.getIdArk() == null || concept.getIdArk().isEmpty()) {
-                // création d'un identifiant Ark + (Handle avec le serveur Ark de la MOM)
+                // cas où on a déja un identifiant Ark en local, donc on doit vérifier :
+                // - si l'idArk est présent sur le serveur, on applique une mise à jour de l'URL
+                // - si l'idArk n'est pas présent sur le serveur, il y a 2 cas :
+                //      - on vérifie si l'URL liée au Ark fourni existe sur le serveur, alors on retourne une erreur (il y a confusion)
+                //      - si l'URL n'existe pas sur le serveur, alors on procède à une création d'un identifiant Ark
+                // 
                 if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
                     message = arkHelper2.getMessage();
                     message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
