@@ -171,14 +171,6 @@ body .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
     font-size: 12px;
 }
 
-.buttonIconOrange {
-    color:#F7A269 !important;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    font-size: 12px !important;
-}
-
 .cbLite {
     background: none !important;
     border: none !important;
@@ -278,22 +270,6 @@ body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
 
 /**********************************************************************/
 
-body .ui-button.ui-button-text-icon-left .ui-button-text {
-    font-size: 14px;
-}
-
-body .ui-button.ui-button-text-icon-left .ui-icon {
-    font-size: 14px;
-}
-
-body .ui-button.rounded-button.ui-button-icon-only {
-    height: 1.77rem;
-}
-
-body .ui-button.ui-button-icon-only {
-    width: 1.7rem;
-}
-
 /** Checkbox**/
 body .ui-chkbox .ui-chkbox-box.ui-state-active {
     border-color: #f47b2a;
@@ -346,13 +322,6 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active.ui-state-hover {
     border-color: #f47b2a;
     background: #f47b2a;
     background-color: #f47b2a;
-}
-
-
-/** BOUTON **/
-.ui-button .ui-widget .ui-state-default .ui-corner-all .ui-button-icon-only {
-    width: 5px;
-    height: 5px;
 }
 
 /** Lien **/
@@ -426,29 +395,6 @@ body .ui-button {
     outline: 0 none;
     border-radius: 4px;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-}
-
-/** accordion  **/
-body .ui-accordion .ui-accordion-header {
-    border: none;
-    border-top: none;
-    padding: 5px;
-}
-
-body .ui-accordion .ui-accordion-header.ui-state-hover {
-    border: none;
-    background: #ecf8f1;
-    color: #43B572;
-}
-
-body .ui-accordion .ui-accordion-header.ui-state-active {
-    border-color: #f47b2a;
-    background: #f47b2a;
-    color: #FFF;
-}
-
-body .ui-accordion .ui-accordion-content {
-    padding: auto;
 }
 
 /*  DATATABLE */
@@ -616,7 +562,6 @@ body .ui-sidebar .ui-sidebar-close .ui-icon {
     top: 2px;
     animation-name: growIn;
     animation-duration: 200ms;
-    animation-timing-function: transform cubic-bezier(0.18, 1.25, 0.4, 1), opacity cubic-bezier(0, 1, 0.4, 1);
 }
 
 body .ui-badge {
@@ -694,7 +639,7 @@ body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
     color: #f47b2a;
 }
 
-/** Tab : multipanel **/
+/** Tree **/
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight {
     background: #ecf8f1;
     color: #143a1e;

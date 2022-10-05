@@ -10,30 +10,29 @@
         <h:form id="addSynonymForm">
             <p:defaultCommand target="validateAddSynonym" />
             <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')}: " class="dialog-titre" /> 
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
                 </div>
                 <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" 
-                                  style="margin-left: 10px; color: #C63632; margin-left: 5px" />
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
                 </div>
             </div>
 
-            <div class="row" style="margin-top: 5px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('candidat.value')}: " class="dialog-titre" /> 
+            <div class="row" style="margin-top: 8px">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('candidat.value')} : " /> 
                 </div>
                 <div class="col-7">
                     <p:inputText label="#{langueBean.getMsg('rightbody.concept.synonym')}"
                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."  
-                                 value="#{synonymBean.value}" style="background: white; border-color: #43B572; color: #000; width: 100%">
+                                 value="#{synonymBean.value}" style="width: 100%">
                         <p:focus rendered="true" />
                     </p:inputText>
                 </div>
             </div>            
-            <div class="row" style="margin-top: 5px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}: " class="dialog-titre" /> 
+            <div class="row" style="margin-top: 8px">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')} : " /> 
                 </div>
                 <div class="col-7">
                     <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{synonymBean.selectedLang}" 
@@ -43,45 +42,38 @@
                 </div>
             </div>
 
-            <div class="row" style="margin-top: 5px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')}: " class="dialog-titre" /> 
+            <div class="row" style="margin-top: 8px">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')}: " /> 
                 </div>
                 <div class="col-7">
-                    <p:toggleSwitch value="#{synonymBean.isHidden}" style="color: #f47b2a"/> 
+                    <p:inputSwitch value="#{synonymBean.isHidden}" style="margin-top: 10px"/>
                 </div>
             </div>
 
-
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:separator/>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                        <p:messages id="addNTMessage" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
-                            <p:autoUpdate/>
-                        </p:messages>
-                    </div>
-                </div>                        
-                <p:commandButton rendered="#{!synonymBean.duplicate}" value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+            <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
+                <p:commandButton rendered="#{!synonymBean.duplicate}" value="#{langueBean.getMsg('candidat.close')}" 
+                                 styleClass="ui-button-secondary button" style="margin-right: 10px"
                                  actionListener="PF('addSynonym').hide();" update="containerIndex:idAddSynonym"
-                                 ajax="true" process="@form"/>
+                                 ajax="true" process="@form" icon="fas fa-undo-alt"/>
 
-                <p:commandButton rendered="#{!synonymBean.duplicate}"
-                                id="validateAddSynonym"  
+                <p:commandButton rendered="#{!synonymBean.duplicate}" id="validateAddSynonym"  
                                  value="#{langueBean.getMsg('btnValidate')}" update="messageIndex containerIndex:idAddSynonym"
-                                 styleClass="ui-button-primary" oncomplete="PF('addSynonym').show();"
-                                 ajax="true" process="@form"
+                                 styleClass="ui-button-success" oncomplete="PF('addSynonym').show();"
+                                 ajax="true" process="@form" icon="pi pi-check"
                                  actionListener="#{synonymBean.addNewSynonym(currentUser.nodeUser.idUser)}"/>                   
 
-
                 <!-- concept duppliqué, forcer la création ou annuler -->
-                <p:commandButton rendered="#{synonymBean.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="#{synonymBean.setDuplicate(false)}" update="containerIndex:idAddSynonym" oncomplete="PF('addSynonym').show();"
-                                 ajax="true" process="@form"/>
+                <p:commandButton rendered="#{synonymBean.duplicate}" value="#{langueBean.getMsg('btnCancel')}" 
+                                 styleClass="ui-button-secondary button" style="margin-right: 10px"
+                                 actionListener="#{synonymBean.setDuplicate(false)}" 
+                                 update="containerIndex:idAddSynonym" oncomplete="PF('addSynonym').show();"
+                                 ajax="true" process="@form" icon="fas fa-undo-alt"/>
 
-                <p:commandButton rendered="#{synonymBean.duplicate}" styleClass="ui-button-danger" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
+                <p:commandButton rendered="#{synonymBean.duplicate}" styleClass="ui-button-success" 
+                                 value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
                                  update="messageIndex containerIndex:idAddSynonym" oncomplete="PF('addSynonym').show();"
-                                 ajax="true" process="@form"
+                                 ajax="true" process="@form" icon="pi pi-check"
                                  action="#{synonymBean.addForced(currentUser.nodeUser.idUser)}" />   
             </div>
         </h:form>            
