@@ -5,11 +5,11 @@
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
     <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeAlignments.size() != 0) or (conceptView.nodeCorpuses != null and conceptView.haveCorpus)}">
-        <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
-            <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+        <div class="card mb-4 py-3 border-left-success">
+            <div class="list-group">
                 <!-- ligne Alignements -->
                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeAlignments.size() != 0)}">
-                    <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.alignment')}" 

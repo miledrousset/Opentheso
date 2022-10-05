@@ -12,7 +12,7 @@
             </div>
             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                 <p:link id="graph" href="#{request.contextPath}/graph/index.xhtml"
-                        target="_blank"  disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
+                        target="_blank" disabled="#{tree.isGraphVisible()}"
                         style="color: #F47B2A; float: right; margin-top: 2px;">
                     <i class="pi pi-share-alt" style="font-size: 1rem" />
                 </p:link>
@@ -60,7 +60,7 @@
 
         <div class="row">
             <div class="col-12">
-                <p:tree id="tree" value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="single" selection="#{tree.selectedNode}"
+                <p:tree id="tree" value="#{tree.root}" dynamic="true" var="nodetree" selectionMode="multiple" selection="#{tree.clickselectedNodes}"
                         style="width: auto; border: none; min-height: 925px; max-height: 925px; overflow: auto;font-size: 12px;" 
                         cache="#{roleOnTheso.nodePreference.tree_cache}" draggable="#{tree.isDragAndDrop(currentUser.nodeUser)}" 
                         droppable="#{tree.isDragAndDrop(currentUser.nodeUser)}" widgetVar="treeWidget">

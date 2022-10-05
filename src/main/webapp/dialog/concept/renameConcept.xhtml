@@ -26,7 +26,7 @@
                 </div>
                 <div class="col-7">
                     <p:inputText id="newPrefLabel" value="#{editConcept.prefLabel}" 
-                                 style="width: 100%; border-color: #43B572; color: #000"/>
+                                 style="width: 100%; color: #000"/>
                 </div>
             </div>
 
@@ -50,19 +50,17 @@
                                  ajax="true" process="@form"
                                  action="#{editConcept.updateForced(selectedTheso.currentIdTheso, selectedTheso.currentLang,
                                            currentUser.nodeUser.idUser)}"/>   
-
-
                 
                 
-                
-
-                <p:commandButton rendered="#{!editConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                <p:commandButton rendered="#{!editConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" 
+                                 styleClass="ui-button-secondary button" 
+                                 icon="fas fa-undo-alt" style="margin-right: 10px"
                                  ajax="true" process="@form"
                                  actionListener="PF('renameConcept').hide();" update="containerIndex:idRenameConcept"/>
 
                 <p:commandButton rendered="#{!editConcept.duplicate}" id="renameConceptSubmit" 
-                                 styleClass="ui-button-primary" value="#{langueBean.getMsg('btnValidate')}"
-                                 update="messageIndex containerIndex:idRenameConcept"  ajax="true" process="@form" 
+                                 icon="pi pi-check" value="#{langueBean.getMsg('btnValidate')}"
+                                 update="messageIndex containerIndex:idRenameConcept" ajax="true" process="@form" 
                                  action="#{editConcept.updateLabel(selectedTheso.currentIdTheso, 
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
             </div>

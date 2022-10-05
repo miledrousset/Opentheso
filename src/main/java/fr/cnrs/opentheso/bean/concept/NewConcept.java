@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
@@ -19,7 +14,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeTypeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -35,6 +29,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -451,7 +446,7 @@ public class NewConcept implements Serializable {
             TreeNodeData data = new TreeNodeData(idNewConcept, prefLabel, "", false,
                     false, true, false, "term");
             data.setIdFacetParent(idFacet);
-            tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+            tree.getDataService().addNodeWithoutChild("file", data, tree.getClickselectedNodes().get(0));
 
             tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
             tree.expandTreeToPath2(idBTfacet,
@@ -471,27 +466,28 @@ public class NewConcept implements Serializable {
         }
 
         PrimeFaces pf = PrimeFaces.current();
-        if (tree.getSelectedNode() == null) {
+        if (CollectionUtils.isEmpty(tree.getClickselectedNodes())) {
             return;
         }
         // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-        if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
+        if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
             tree.expandTreeToPath(idConceptParent, idTheso, idLang);
         }
 
         // cas où l'arbre est déjà déplié ou c'est un concept sans fils
         /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
         // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
-        if (tree.getSelectedNode().getChildCount() == 0) {
-            tree.getSelectedNode().setType("concept");
+        if (tree.getClickselectedNodes().get(0).getChildCount() == 0) {
+            tree.getClickselectedNodes().get(0).setType("concept");
         }
-        if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
-            tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
+        if (tree.getClickselectedNodes().get(0).isExpanded() 
+                || tree.getClickselectedNodes().get(0).getChildCount() == 0) {
+            tree.addNewChild(tree.getClickselectedNodes().get(0), idNewConcept, idTheso, idLang);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("containerIndex:formLeftTab");
                 pf.executeScript("srollToSelected()");
             }
-            tree.getSelectedNode().setExpanded(true);
+            tree.getClickselectedNodes().get(0).setExpanded(true);
         }
         conceptBean.getConcept(idTheso, idConceptParent, idLang);
         isCreated = true;

@@ -7,7 +7,6 @@
 
         #FAFAFA blanc (couleur de fonds)
         #ecf8f1 vert clair
-
 */
 
 .ui-orderlist .ui-orderlist-list {
@@ -16,25 +15,25 @@
 }
 
 /*** MenuButton ***/
-.ui-menubutton .ui-widget {
+body .ui-menubutton .ui-widget {
     background: transparent !important;
     border: transparent !important;
     color: #f47b2a !important;
     box-shadow: none !important;
 }
 
-.ui-menu.ui-menu-dynamic {
-    width: auto;
-    padding-left: 5px;
-    padding-right: 5px;
+body .ui-stat-hover .ui-menuitem-link .ui-corner-all .ui-menuitem-active {
+    background-color: #495057;
+    color: #495057;
 }
 
-.ui-stat-hover .ui-menuitem-link .ui-corner-all .ui-menuitem-active {
-    background-color: #f47b2a;
-    color: #f47b2a;
+.ui-filter-column .ui-column-customfilter .custom-filter {
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/*** Dialog ***/
+
+/****************** Dialog /******************/
 .ui-dialog-wrapper {
     position: fixed;
     top: 0;
@@ -60,6 +59,15 @@ body .ui-dialog .ui-dialog-footer {
     /*border-top: 1px solid #858796;*/
 }
 
+.input-dialog {
+    width: 100%;
+    font-size: 12px;
+    background: white;
+    border-color: #43B572;
+    color: #000;
+    border-color: #43B572;
+}
+
 /********************************************/
 
 /*** InputText ***/
@@ -77,6 +85,11 @@ body .ui-inputfield.ui-state-hover {
 
 body .ui-inputfield.ui-state-focus {
     border-color: #43B572;
+}
+
+body .ui-inputfield.ui-state-focus {
+    box-shadow: 0 0 0 0.1em #f47b2a;
+    border-color: #f47b2a;
 }
 
 /************************** selectonemenu **************************/
@@ -134,17 +147,10 @@ body .ui-inputfiled.ui-state-hover {
     border-color: #f47b2a;
 }
 
+/**********************************************************************/
 
 
-.input-dialog {
-    width: 100%;
-    font-size: 12px;
-    background: white;
-    border-color: #43B572;
-    color: #000;
-    border-color: #43B572;
-}
-
+/**********************************************************************/
 /** Switch **/
 body .ui-inputswitch.ui-inputswitch-checked {
     background: #dee2e6; /*#43B572 */
@@ -185,7 +191,10 @@ body .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
     background: #f47b2a;
     border-color: #f47b2a;
 }
+/**********************************************************************/
 
+
+/**********************************************************************/
 /*** Panel Header ***/
 body .ui-panel .ui-panel-titlebar {
     border: 5px;
@@ -220,6 +229,7 @@ body .ui-panel .ui-panel-content {
 }
 
 
+/**********************************************************************/
 /** Menu **/
 .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
     font-size: 12px;
@@ -235,8 +245,10 @@ body .ui-panel .ui-panel-content {
     color: #ffffff;
 }
 
+/**********************************************************************/
 
 
+/**********************************************************************/
 /** MENU ITEM**/
 body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link {
     padding-top: 4px;
@@ -264,8 +276,7 @@ body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
     font-size: 12px;
 }
 
-
-
+/**********************************************************************/
 
 body .ui-button.ui-button-text-icon-left .ui-button-text {
     font-size: 14px;
@@ -275,24 +286,13 @@ body .ui-button.ui-button-text-icon-left .ui-icon {
     font-size: 14px;
 }
 
-body .ui-button.ui-button-icon-only .ui-button-text {
-    padding: 0px;
-}
-
-.ui-button-icon-only .ui-button-text {
-    padding: 0px;
-}
-
-/** Icons et boutons ronds **/
-body .ui-button.ui-button-icon-only .ui-icon {
-    margin-top: -0.43rem;
-    margin-left: -0.4rem;
-}
 body .ui-button.rounded-button.ui-button-icon-only {
-    height: 1.8rem;
-    width: 1.8rem;
+    height: 1.77rem;
 }
 
+body .ui-button.ui-button-icon-only {
+    width: 1.7rem;
+}
 
 /** Checkbox**/
 body .ui-chkbox .ui-chkbox-box.ui-state-active {
@@ -452,8 +452,6 @@ body .ui-accordion .ui-accordion-content {
 }
 
 /*  DATATABLE */
-
-
 body .ui-datatable .ui-datatable-data > tr > td {
     padding: 5px 5px;
 }
@@ -466,7 +464,7 @@ body .ui-datatable thead th {
     background: #ecf8f1;
     color: #43B572;
     padding: 7px 7px;
-    border: 1px solid #f47b2a;
+    border: 1px solid #43B572;
     border-width: 0 0 1px 0;
     text-align: left;
     font-size: 13px;
@@ -476,7 +474,6 @@ body .ui-datatable thead th {
 
 body .ui-datatable .ui-datatable-footer {
     background: #ecf8f1;
-    border: 1px solid #f47b2a;
     border-width: 1px 0 0 0;
     color: #43B572;
     padding: 7px 7px;
@@ -492,10 +489,10 @@ body .ui-datatable .ui-datatable-data > tr.ui-state-highlight {
 }
 
 body .ui-datatable .ui-datatable-header {
-    background: #ecf8f1;
-    border: 1px solid #ecf8f1;
+    background: #43B572;
+    border: 1px solid #43B572;
     border-width: 1px 0 1px 0;
-    color: #495057;
+    color: #FFF;
     padding: 5px;
     font-weight: 600;
     border-top-left-radius: 4px;
@@ -526,6 +523,15 @@ body .ui-datatable thead th.ui-state-highlight{
     color: #43B572;
 }
 
+body .ui-datatable.ui-datatable-sm .ui-datatable-data > tr > td {
+    padding: 1px 1px;
+    vertical-align: central;
+    padding-left: 10px;
+}
+
+body .ui-datatable.ui-datatable-striped .ui-datatable-data>tr.ui-datatable-odd {
+    background: #ecf8f1;
+}
 
 
 
@@ -731,12 +737,6 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     margin-left: -10px;
 }
 
-
-.ui-button-icon-only .ui-icon {
-  font-size: 18px !important;
-}
-
-
 /**Button*/
 .ui-button-success {
     background-color: #F47B2A !important;
@@ -763,3 +763,14 @@ body .ui-button.ui-button-text-icon-left .ui-button-text {
     font-size: 16px;
 }
 
+
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
+    background: #ecf8f1;
+    color: #226b40;
+    font-weight: bold;
+}
+
+body .ui-paginator {
+    background: #fff;
+    border: solid #226b40;
+}

@@ -4,115 +4,129 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <div class="card shadow mb-4" style="padding-left: 25px; padding-right: 25px; padding-top: 30px; margin: 20px; margin-bottom: 70px;">
+    <div class="col-12" style="height: 100%; padding-bottom: 70px">
+        <div class="card shadow mb-4" style="height: 100%; padding-top: 20px">
 
-        <div class="row" style="margin-right: 20px; margin-right: 20px">
-            <div class="col-12">
-                <h:outputText value="Modifier le thésaurus :  " class="h5 mb-0 text-gray-800"/>
-                <h:outputText value="#{editThesoBean.nodeIdValueOfTheso.value} (#{editThesoBean.nodeIdValueOfTheso.id})" 
-                              class="h5 mb-0 text-gray-800" style="color: #C63632 !important"/>
-            </div>
-        </div>
-
-        <div class="card mb-4 py-3 border-left-success" style="color: #000; margin-top: 10px">
-            <!-- choix de la langue par defaut -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-3" style="text-align: right">
-                    <h:outputText value="Langue par defaut" />
-                </div>
-
-                <div class="col-5" > 
-                    <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
-                        <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
-                                         panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 500px; background: none;  box-shadow: none; "
-                                         panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                            <f:selectItems value="#{editThesoBean.languagesOfTheso}" itemValue="#{lang.code}"
-                                           itemLabelEscaped="false" var="lang" 
-                                           itemLabel="&lt;img height='15' width='20' src='#{conceptView.getDrapeauImg(lang.codeFlag)}' /&gt; #{lang.value}" />  
-                            <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
-                        </p:selectOneMenu>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
-                        <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
-                                         panelStyleClass="selectOneMenu_panelStyle_custom"
-                                         style="width: 500px; background: none;  box-shadow: none; "
-                                         panelStyle="border: none; box-shadow: none; max-width: 300px" >
-                            <f:selectItems value="#{editThesoBean.languagesOfTheso}" itemValue="#{lang.code}"
-                                           itemLabelEscaped="false" var="lang" 
-                                           itemLabel="#{lang.value}" />  
-                            <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
-                        </p:selectOneMenu>
-                    </h:panelGroup>
-                </div>       
-            </div>
-
-            <!-- Status du thésaurus -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-3" style="text-align: right">
-                    <h:outputText value="Status du thésaurus" />
-                </div>
-                <div class="col-5" >
-                    <p:inputSwitch label="Public/Privé" value="#{editThesoBean.isPrivateTheso}" style="color: #f47b2a; margin-left: 10px" >
-                        <p:ajax listener="#{editThesoBean.changeStatus()}" update="containerIndex messageIndex"/>
-                    </p:inputSwitch>
-                </div>           
-            </div>
-        </div>
-
-        <div class="card mb-4 py-3 border-left-success" style="color: #000; margin-top: 10px">
-
-            <!-- Ajout d'une langue au thésaurus -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-12" style="text-align: right">
-                    <h:outputText value="Ajouter langue" />
-                    <p:commandButton update="idAddLangToTheso" 
-                                     actionListener="#{editThesoBean.setLangSelected(null)}"
-                                     oncomplete="PF('addLangToTheso').show();" icon="fas fa-plus-circle" process="@this"/>     
-                </div>
-            </div>
-            <!-- Liste des langues à modifier -->
-            <div class="row" style="margin: 20px">
+            <div class="row" style="margin-left: 20px; margin-top: 10px">
                 <div class="col-12">
-                    <p:dataTable id="listLangThes" value="#{editThesoBean.languagesOfTheso}" var="langOfTheso" scrollable="true" 
-                                 resizableColumns="true" scrollHeight="450" reflow="true">
-
-                        <p:column width="55" headerText="Label">
-                            <h:outputLabel value="#{langOfTheso.labelTheso}"/>
-                        </p:column>
-
-                        <p:column width="15" headerText="Langue"> 
-                            <img src="#{conceptView.getDrapeauImg(langOfTheso.codeFlag)}" width="25" height="20"/>
-                            <h:outputLabel value=" (#{langOfTheso.code})" style="font-size: 14px; margin-left: 10px;" />
-                        </p:column>
-
-                        <p:column width="15" headerText="Modifier">
-                            <p:commandButton icon="pi pi-pencil" update="containerIndex:manage-theso-content"
-                                             oncomplete="PF('editLangToTheso').show()" process="@this"
-                                             actionListener="#{editThesoBean.setLangSelected(langOfTheso)}"
-                                             styleClass="edit-button rounded-button ui-button-success">
-                                <p:resetInput target="containerIndex:manage-theso-content"/>
-                            </p:commandButton>
-                        </p:column>
-
-                        <p:column width="15" headerText="Supprimer" >
-                            <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash"
-                                             actionListener="#{editThesoBean.deleteLangFromTheso(langOfTheso.code)}" 
-                                             update="containerIndex:listLangThes messageIndex" process="@this" />
-                        </p:column>
-                        <a href="../../setting/corpus.xhtml"></a>
-                    </p:dataTable>
-                </div>  
+                    <h:outputText value="Modifier le thésaurus :  " class="h5 mb-0 text-gray-800"/>
+                    <h:outputText value="#{editThesoBean.nodeIdValueOfTheso.value} (#{editThesoBean.nodeIdValueOfTheso.id})" 
+                                  class="h5 mb-0 text-gray-800" style="color: #C63632 !important"/>
+                </div>
             </div>
-        </div>
 
-        <ui:include src="../../toolbox/edition/editLangToTheso.xhtml" />
+            <div class="card mb-4 py-3 border-left-success" style="margin-left: 30px; margin-right: 30px;
+                 margin-top: 10px; border-color: #43B572">
+                <!-- choix de la langue par defaut -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right">
+                        <h:outputText value="Langue par defaut" />
+                    </div>
 
-        <div class="row" style="margin: 10px">
-            <div class="col-2"> 
-                <p:commandButton value="#{langueBean.getMsg('btnBack')}" icon="fas fa-undo-alt"  ajax="true" process="@this"
-                                 actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" update="containerIndex" />
-            </div>    
+                    <div class="col-5" > 
+                        <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
+                            <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
+                                             panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 500px; background: none;  box-shadow: none; "
+                                             panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                                <f:selectItems value="#{editThesoBean.languagesOfTheso}" itemValue="#{lang.code}"
+                                               itemLabelEscaped="false" var="lang" 
+                                               itemLabel="&lt;img height='15' width='20' src='#{conceptView.getDrapeauImg(lang.codeFlag)}' /&gt; #{lang.value}" />  
+                                <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
+                            <p:selectOneMenu value="#{editThesoBean.preferredLang}" styleClass="selectOneMenu_custom" 
+                                             panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 500px; background: none;  box-shadow: none; "
+                                             panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                                <f:selectItems value="#{editThesoBean.languagesOfTheso}" itemValue="#{lang.code}"
+                                               itemLabelEscaped="false" var="lang" 
+                                               itemLabel="#{lang.value}" />  
+                                <p:ajax event="change" listener="#{editThesoBean.changeSourceLang()}" update="containerIndex messageIndex"  />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                    </div>       
+                </div>
+
+                <!-- Status du thésaurus -->
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-3" style="text-align: right">
+                        <h:outputText value="Status du thésaurus" />
+                    </div>
+                    <div class="col-5" >
+                        <p:inputSwitch label="Public/Privé" value="#{editThesoBean.isPrivateTheso}" style="color: #f47b2a; margin-left: 10px" >
+                            <p:ajax listener="#{editThesoBean.changeStatus()}" update="containerIndex messageIndex"/>
+                        </p:inputSwitch>
+                    </div>           
+                </div>
+            </div>
+
+            <div class="card mb-4 py-3 border-left-success" style="margin-left: 30px; margin-right: 30px; margin-top: 20px; border-color: #43B572">
+
+                <p:dataTable id="listLangThes" value="#{editThesoBean.languagesOfTheso}" var="langOfTheso"
+                             filteredValue="#{roleOnTheso.nodeListThesoAsAdminFiltered}" size="small"
+                             widgetVar="langOfTheso" styleClass="products-table"
+                             resizableColumns="true" reflow="true"
+                             paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
+                             emptyMessage="Aucune langue disponible..."
+                             stripedRows="true" scrollable="true" 
+                             style="margin-bottom: -17px; margin-top: -16px;">
+
+                    <f:facet name="header">
+                        <div class="flex align-items-center justify-content-between">
+                            <div>
+                                <p:commandButton value="Ajouter une langue" styleClass="ui-button-success" update="idAddLangToTheso" 
+                                                 actionListener="#{editThesoBean.setLangSelected(null)}"
+                                                 oncomplete="PF('addLangToTheso').show();" process="@this"/>
+                            </div>
+                        </div>
+                    </f:facet>
+
+                    <p:column width="55" headerText="Label">
+                        <h:outputLabel value="#{langOfTheso.labelTheso}"/>
+                    </p:column>
+
+                    <p:column width="15" headerText="Langue"> 
+                        <img src="#{conceptView.getDrapeauImg(langOfTheso.codeFlag)}" width="25" height="20"/>
+                        <h:outputLabel value=" (#{langOfTheso.code})" style="font-size: 14px; margin-left: 10px;" />
+                    </p:column>
+
+                    <p:column width="15" headerText="Modifier">
+                        <p:commandButton icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined" 
+                                         update="containerIndex:manage-theso-content"
+                                         oncomplete="PF('editLangToTheso').show()" process="@this"
+                                         actionListener="#{editThesoBean.setLangSelected(langOfTheso)}">
+                            <p:resetInput target="containerIndex:manage-theso-content"/>
+                        </p:commandButton>
+                    </p:column>
+
+                    <p:column width="15" headerText="Supprimer">
+                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined" 
+                                         actionListener="#{editThesoBean.deleteLangFromTheso(langOfTheso.code)}" 
+                                         update="containerIndex:listLangThes messageIndex" process="@this" />
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <span class="p-text-bold">
+                            <h:outputText value="Nombre total des langues disponible : " style="font-size: 14px;"/>
+                            <h:outputText value="#{editThesoBean.languagesOfTheso.size()}" style="font-size: 16px; color: #f47b2a"/>
+                        </span>
+                    </f:facet>
+
+                    <a href="../../setting/corpus.xhtml"></a>
+                </p:dataTable>
+            </div>
+
+            <ui:include src="../../toolbox/edition/editLangToTheso.xhtml" />
+
+            <div class="row" style="margin-left: 20px; margin-top: 15px; margin-bottom: 15px">
+                <div class="col-2">
+                    <p:commandButton value="#{langueBean.getMsg('btnBack')}" styleClass="ui-button-secondary button" 
+                                     icon="fas fa-undo-alt" update="containerIndex" ajax="true" process="@this"
+                                     actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" />
+                </div>    
+            </div>
         </div>
     </div>
 </ui:fragment>

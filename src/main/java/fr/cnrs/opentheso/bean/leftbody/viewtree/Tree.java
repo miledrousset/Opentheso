@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
 import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
-
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
@@ -32,6 +32,7 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.collections.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -84,7 +85,7 @@ public class Tree implements Serializable {
     private AlignmentManualBean alignmentManualBean;
 
     private DataService dataService;
-    private TreeNode selectedNode; // le neoud sélectionné par clique
+    private List<TreeNode> clickselectedNodes;
     private TreeNode root;
     private String idTheso, idConceptParent, idLang, idConceptSelected;
     private TreeNodeData treeNodeDataSelect;
@@ -103,7 +104,6 @@ public class Tree implements Serializable {
             selectedNodes = null;
         }
         root = null;
-        selectedNode = null;
         rightBodySetting.init();
         dataService = null;
         treeNodeDataSelect = null;
@@ -181,12 +181,12 @@ public class Tree implements Serializable {
         return root;
     }
 
-    public TreeNode getSelectedNode() {
-        return selectedNode;
+    public List<TreeNode> getClickselectedNodes() {
+        return clickselectedNodes;
     }
 
-    public void setSelectedNode(TreeNode selectedNode) {
-        this.selectedNode = selectedNode;
+    public void setClickselectedNodes(List<TreeNode> clickselectedNodes) {
+        this.clickselectedNodes = clickselectedNodes;
     }
 
     public void onNodeExpand(NodeExpandEvent event) {
@@ -499,7 +499,7 @@ public class Tree implements Serializable {
         FacetHelper facetHelper = new FacetHelper();
         String idConceptParentOfFacet = facetHelper.getIdConceptParentOfFacet(connect.getPoolConnexion(), idFacet, idTheso);         
         expandTreeToPath(idConceptParentOfFacet, idTheso, idLang);
-        onNodeExpand_((DefaultTreeNode)selectedNode);
+        onNodeExpand_((DefaultTreeNode)clickselectedNodes.get(0));
         
         // rechercher la facette dans les fils et la sélectionner
         expandToFacet(idFacet);
@@ -510,15 +510,15 @@ public class Tree implements Serializable {
     }
 
     private void expandToFacet(String idFacet){
-        selectedNode.setExpanded(true);
-        List<TreeNode> treeNodes = selectedNode.getChildren();
+        clickselectedNodes.get(0).setExpanded(true);
+        List<TreeNode> treeNodes = clickselectedNodes.get(0).getChildren();
         for (TreeNode treeNode : treeNodes) {
             if (((TreeNodeData) treeNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
                 try {
                     if(((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idFacet)){
-                        selectedNode.setSelected(false);
-                        selectedNode = treeNode;
-                        selectedNode.setSelected(true);
+                        clickselectedNodes.get(0).setSelected(false);
+                        clickselectedNodes.add(treeNode);
+                        clickselectedNodes.get(0).setSelected(true);
                     }
                 } catch (Exception e) {
                 }
@@ -550,17 +550,17 @@ public class Tree implements Serializable {
         
         
         leftBodySetting.setIndex("0");
-        treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
+        treeNodeDataSelect = (TreeNodeData) clickselectedNodes.get(0).getData();
 
         if (!"facet".equals(node.getType())) {
             indexSetting.setIsFacetSelected(false);
-            idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
+            idConceptParent = ((TreeNodeData) clickselectedNodes.get(0).getData()).getNodeId();
             
             rightBodySetting.setShowConceptToOn();
             conceptBean.getConceptForTree(idTheso,
-                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+                    ((TreeNodeData) clickselectedNodes.get(0).getData()).getNodeId(), idLang);
 
-            idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
+            idConceptSelected = ((TreeNodeData) clickselectedNodes.get(0).getData()).getNodeId();
             if(rightBodySetting.getIndex().equalsIgnoreCase("2")){
                 indexSetting.setIsValueSelected(true);            
 
@@ -654,8 +654,10 @@ public class Tree implements Serializable {
             selectedNodes.forEach((selectedNode1) -> {
                 selectedNode1.setSelected(false);
             });
-            if (selectedNode != null) {
-                selectedNode.setSelected(false);
+            if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
+                for (TreeNode treeNode : clickselectedNodes) {
+                    treeNode.setSelected(false);
+                }
             }
             selectedNodes.clear();
         }
@@ -676,7 +678,6 @@ public class Tree implements Serializable {
             }
             treeNodeParent.setSelected(true);
             selectedNodes.add(treeNodeParent);
-            selectedNode = treeNodeParent;
             treeNodeParent = root;
         }
     //    leftBodySetting.setIndex("0");
@@ -703,8 +704,10 @@ public class Tree implements Serializable {
             selectedNodes.forEach((selectedNode1) -> {
                 selectedNode1.setSelected(false);
             });
-            if (selectedNode != null) {
-                selectedNode.setSelected(false);
+            if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
+                for (TreeNode treeNode : clickselectedNodes) {
+                    treeNode.setSelected(false);
+                }
             }
             selectedNodes.clear();
         }
@@ -725,29 +728,17 @@ public class Tree implements Serializable {
             }
             treeNodeParent.setSelected(true);
             selectedNodes.add(treeNodeParent);
-            selectedNode = treeNodeParent;
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
         PrimeFaces.current().executeScript("srollToSelected();");
     }
-
-    // deselectionner et fermer toutes les noeds de l'arbres
- /*   private void initialiserEtatNoeuds(TreeNode nodeRoot) {
-        for (TreeNode node :  List<TreeNode<TreeNode>> nodeRoot.getChildren()) {
-            try {
-                TreeNodeData treeNodeData = (TreeNodeData) node.getData();
-                node.setExpanded(false);
-                node.setSelected(false);
-
-                if (!treeNodeData.isIsConcept()) {
-                    initialiserEtatNoeuds(node);
-                }
-            } catch (Exception ex) {
-
-            }
-        }
-    }*/
+    
+    public boolean isGraphVisible() {
+        return CollectionUtils.isNotEmpty(clickselectedNodes) 
+                && clickselectedNodes.size() == 1 
+                && clickselectedNodes.get(0).isLeaf();
+    }
 
     /**
      * permet de déplier l'arbre suivant le Path ou les paths en paramètre On
@@ -772,8 +763,10 @@ public class Tree implements Serializable {
             selectedNodes.forEach((selectedNode1) -> {
                 selectedNode1.setSelected(false);
             });
-            if (selectedNode != null) {
-                selectedNode.setSelected(false);
+            if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
+                for (TreeNode treeNode : clickselectedNodes) {
+                    treeNode.setSelected(false);
+                }
             }
             selectedNodes.clear();
         }
@@ -795,7 +788,6 @@ public class Tree implements Serializable {
             }
             treeNodeParent.setSelected(true);
             selectedNodes.add(treeNodeParent);
-            selectedNode = treeNodeParent;
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
@@ -886,25 +878,7 @@ public class Tree implements Serializable {
     public void setIdConcept(String idConcept) {
         this.idConceptParent = idConcept;
     }
-
-    /*    public void showDiagram(boolean status) throws IOException {
-        if (treeNodeDataSelect == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "", "Vous devez selectioner un élement de l'arbre"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
-            return;
-        }
-
-        diagramVisisble = status;
-        if(status)
-            conceptsDiagramBean.init(treeNodeDataSelect.getNodeId(), idTheso, idLang);
-        else
-            conceptsDiagramBean.clear();
-
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-        ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
-    }*/
+    
     public TreeNodeData getTreeNodeDataSelect() {
         return treeNodeDataSelect;
     }
@@ -948,12 +922,6 @@ public class Tree implements Serializable {
             node.getChildren().remove(0);
             addConceptsChild(node);
         }
-/*        for (TreeNode child : node.getChildren()) {
-
-//            addConceptsChild(node);
-            expandedAllRecursively(child, expanded);
-        }
-        node.setExpanded(expanded);*/
     }
 
 //////////////////////////////////////////////////////////////////////////////////////

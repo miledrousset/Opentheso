@@ -54,6 +54,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
@@ -61,6 +62,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
@@ -670,9 +672,7 @@ public class ImportFileBean implements Serializable {
                 while ((line = reader.readLine()) != null) {
                     lines.add(line.split(delimiterChar));
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) {}
 
             int nbrMaxElement = lines.get(0).length;
             for (int i = 0; i < lines.size(); i++) {
@@ -697,7 +697,7 @@ public class ImportFileBean implements Serializable {
 
             for (int i = 0; i < matrix.length; i++) {
                 if (!StringUtils.isEmpty(matrix[i][0])) {
-                    racine.getChildrens().add(createTree(matrix, i, 0, matrix[i][0]));
+                    racine.getChildrens().add(createTree(matrix, i, 0));
                 }
             }
 
@@ -796,7 +796,7 @@ public class ImportFileBean implements Serializable {
         }
     }
 
-    private NodeTree createTree(String[][] matrix, int ligne, int colone, String parent) {
+    private NodeTree createTree(String[][] matrix, int ligne, int colone) {
 
         NodeTree element = new NodeTree();
         element.setPreferredTerm(matrix[ligne][colone]);
@@ -808,7 +808,7 @@ public class ImportFileBean implements Serializable {
                     break;
                 }
                 if (matrix[ligne][colone].length() > 0) {
-                    element.getChildrens().add(createTree(matrix, ligne, colone, element.getPreferredTerm()));
+                    element.getChildrens().add(createTree(matrix, ligne, colone));
                 }
                 ligne++;
             }
@@ -919,7 +919,6 @@ public class ImportFileBean implements Serializable {
         }
 
         conceptObjects = null;
-        csvImportHelper = null;
         System.gc();
         System.gc();
 
@@ -983,7 +982,6 @@ public class ImportFileBean implements Serializable {
         }
 
         conceptObjects = null;
-        csvImportHelper = null;
         System.gc();
         System.gc();
 
@@ -1624,7 +1622,7 @@ public class ImportFileBean implements Serializable {
 
             // mise à jour
             PrimeFaces pf = PrimeFaces.current();
-            if (tree.getSelectedNode() != null) {
+            if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
                 tree.initAndExpandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(),
                         nodeConcept.getConcept().getIdThesaurus(),
                         conceptView.getSelectedLang());
@@ -1846,7 +1844,7 @@ public class ImportFileBean implements Serializable {
             info = info + "\n" + importRdf4jHelper.getMessage().toString();
             roleOnThesoBean.showListTheso();
             viewEditionBean.init();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             error.append(System.getProperty("line.separator"));
             error.append(e.toString());
         } finally {
@@ -1892,9 +1890,7 @@ public class ImportFileBean implements Serializable {
                 candidatBean.getAllCandidatsByThesoAndLangue();
                 candidatBean.setIsListCandidatsActivate(true);
             }
-        } catch (Exception e) {
-
-        } finally {
+        } catch (IOException e) {
 
         }
         onComplete();
@@ -1903,7 +1899,6 @@ public class ImportFileBean implements Serializable {
     private Integer progress1;
 
     public void action() {
-        PrimeFaces pf = PrimeFaces.current();
         PrimeFaces.current().executeScript("PF('pbAjax1').start();");
         PrimeFaces.current().executeScript("PF('startButton2').disable();");
         progressStep = 0;
@@ -1923,20 +1918,6 @@ public class ImportFileBean implements Serializable {
             progress1 = (int) progress;
         }
         return progress1;
-    }
-
-    private Integer updateProgress(Integer progress) {
-        if (progress == null) {
-            progress = 0;
-        } else {
-            progress = progress + (int) (Math.random() * 35);
-
-            if (progress > 100) {
-                progress = 100;
-            }
-        }
-
-        return progress;
     }
 
     public void setProgress1(Integer progress1) {

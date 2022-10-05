@@ -4,112 +4,118 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-    <div class="col-12" style="height: 100%">
-        <div class="card shadow mb-4" style="height: 100%;">
-            <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin: 30px;">
-                <p:toolbar rendered="#{currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin}"
-                           style="margin-left: 20px; margin-right: 20px">
-                    <p:toolbarGroup align="left">
-                        <p:commandButton value="Nouveau" icon="fas fa-plus-circle"
-                                         title="Créer un nouveau thésaurus"
-                                         styleClass="ui-button-success"
-                                         actionListener="#{newThesoBean.init()}"
-                                         action="#{viewEditionBean.setIsViewNewTheso(true)}"
-                                         update="containerIndex" />
-                    </p:toolbarGroup>                    
-                    <p:toolbarGroup align="right">
-                        <p:menuButton icon="fas fa-download" value="Importer"  >
-                            <p:menuitem value="Format SKOS" icon="fas fa-download" actionListener="#{importFileBean.init()}"
-                                        action="#{viewEditionBean.setIsViewImportSkos(true)}" ajax="true" process="@this"
-                                        update="containerIndex" />
+    <div class="col-12" style="height: 100%;">
+        <div class="card shadow mb-4" style="height: 100%; padding-top: 20px">
 
-                            <p:menuitem value="Format CSV" icon="fas fa-download" actionListener="#{importFileBean.init()}"
-                                        action="#{viewEditionBean.setIsViewImportCsv(true)}"
-                                        update="containerIndex" />
+            <p:toolbar rendered="#{currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.nodeUser.isSuperAdmin}"
+                       style="margin-left: 30px; margin-right: 30px; margin-top: 10px; margin-bottom: -10px">
+                <p:toolbarGroup align="left">
+                    <p:commandButton value="Nouveau" icon="fas fa-plus-circle"
+                                     title="Créer un nouveau thésaurus"
+                                     styleClass="ui-button-success"
+                                     actionListener="#{newThesoBean.init()}"
+                                     action="#{viewEditionBean.setIsViewNewTheso(true)}"
+                                     update="containerIndex" />
+                </p:toolbarGroup>                    
+                <p:toolbarGroup align="right">
+                    <p:menuButton icon="fas fa-download" value="Importer"  >
+                        <p:menuitem value="Format SKOS" icon="fas fa-download" actionListener="#{importFileBean.init()}"
+                                    action="#{viewEditionBean.setIsViewImportSkos(true)}" ajax="true" process="@this"
+                                    update="containerIndex" />
 
-                            <p:menuitem value="Format CSV Structuré" icon="fas fa-download" actionListener="#{importFileBean.init()}"
-                                        action="#{viewEditionBean.setIsViewImportCSVStructure(true)}"
-                                        update="containerIndex" />
-                        </p:menuButton>
-                    </p:toolbarGroup>
+                        <p:menuitem value="Format CSV" icon="fas fa-download" actionListener="#{importFileBean.init()}"
+                                    action="#{viewEditionBean.setIsViewImportCsv(true)}"
+                                    update="containerIndex" />
 
-                </p:toolbar>
+                        <p:menuitem value="Format CSV Structuré" icon="fas fa-download" actionListener="#{importFileBean.init()}"
+                                    action="#{viewEditionBean.setIsViewImportCSVStructure(true)}"
+                                    update="containerIndex" />
+                    </p:menuButton>
+                </p:toolbarGroup>
 
-                <p:scrollPanel id="listThesoDatas" mode="native" style="min-height: 300px; max-height: 600px; border: #FAFAFA; background-color: #FFFFFF; ">
-                    <div class="row" style="margin-left: 20px; margin-right: 20px; font-size: 14px">
-                        <div class="col-12">
+            </p:toolbar>
 
-                            <p:dataTable value="#{roleOnTheso.nodeListThesoAsAdmin}" var="listTheso" scrollable="true" 
-                                         filteredValue="#{roleOnTheso.nodeListThesoAsAdminFiltered}"
-                                         widgetVar="listThesoTable"
-                                         resizableColumns="true" scrollHeight="450" reflow="true" 
-                                         emptyMessage="Pas de résultat">
+            <div class="card mb-4 py-3 border-left-success" style="margin: 30px; border-color: #43B572">
 
-                                <p:column width="10" headerText="Id"  sortOrder="descending" sortBy="#{listTheso.id}">
-                                    <h:outputText value="#{listTheso.id}" style="font-size: 14px"/>
-                                </p:column>                                
-                                <p:column width="60" headerText="Nom du thésaurus"  sortBy="#{listTheso.value}">
-                                    <h:outputText value="#{listTheso.value}" style="font-size: 14px"/>
-                                </p:column>
+                <p:dataTable value="#{roleOnTheso.nodeListThesoAsAdmin}" var="listTheso" scrollable="true" 
+                             filteredValue="#{roleOnTheso.nodeListThesoAsAdminFiltered}" size="small"
+                             widgetVar="listThesoTable" styleClass="products-table"
+                             resizableColumns="true" scrollHeight="450" reflow="true"
+                             paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
+                             emptyMessage="Aucun thésaurus disponible..."
+                             stripedRows="true"
+                             style="margin-bottom: -17px; margin-top: -16px;">
 
-                                <p:column width="10" headerText="Public/Privé">
-                                    <p:toggleSwitch value="#{listTheso.status}" disabled="true" />
-                                </p:column>
-
-                                <p:column width="10" headerText="Exporter">
-                                    <p:menuButton icon="fas fa-upload" style="background-color: #FFFFFF;" value="Export" >
-                                        <p:menuitem value="Format Skos" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
-                                                    action="#{viewEditionBean.setIsViewExportSkos(true)}" icon="fas fa-upload"
-                                                    title="Exporter le thésaurus au format Skos" update="containerIndex" />
-
-                                        <p:menuitem value="Format PDF" actionListener="#{viewExportBean.init(listTheso, 'PDF')}"
-                                                    action="#{viewEditionBean.setIsViewExportPDF(true)}" update="containerIndex"
-                                                    title="Exporter le thésaurus au format PDF" icon="fas fa-upload" />
-
-                                        <p:menuitem value="Format CSV" actionListener="#{viewExportBean.init(listTheso, 'CSV')}"
-                                                    action="#{viewEditionBean.setIsViewExportCSV(true)}" update="containerIndex"
-                                                    title="Exporter le thésaurus au format CSV" icon="fas fa-upload" />
-
-                                        <p:menuitem value="Format CSV Structurée" actionListener="#{viewExportBean.init(listTheso, 'CSV_STRUC')}"
-                                                    action="#{viewEditionBean.setIsViewExportCSVStructure(true)}" update="containerIndex" icon="fas fa-upload"
-                                                    title="Exporter les labels avec leurs arborescences au format CSV"/>
-
-                                        <p:menuitem value="Identifiants en CSV" actionListener="#{viewExportBean.init(listTheso, 'CSV_id')}"
-                                                    action="#{viewEditionBean.setIsViewExportCSV_id(true)}" update="containerIndex" icon="fas fa-upload"
-                                                    title="Exporter les labels, identifiants, definitions au format CSV"/>
-
-                                        <p:menuitem value="Concepts dépréciés en CSV" update="containerIndex" icon="fas fa-upload"
-                                                    actionListener="#{viewExportBean.init(listTheso, 'deprecated')}"
-                                                    action="#{viewEditionBean.setIsViewExportCSV(true)}" />
-
-                                        <p:menuitem value="Virtuoso (SKOS)" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
-                                                    action="#{viewEditionBean.setIsViewExportVirtuoso(true)}" update="containerIndex"
-                                                    title="Exporter le thésaurus dans vertuoso au format RDF" icon="fas fa-upload"/>
-                                    </p:menuButton>
-                                </p:column>
-
-                                <p:column width="10" headerText="Modifier" >
-                                    <p:commandButton icon="pi pi-pencil" style="background-color: #F47B2A; color: #FFFFFF; border-color: #F47B2A" update="containerIndex" process="@this"
-                                                     actionListener="#{editThesoBean.init(listTheso)}"
-                                                     action="#{viewEditionBean.setIsViewModifyTheso(true)}"
-                                                     styleClass="edit-button rounded-button ui-button-success"/>
-                                </p:column>
-
-                                <p:column width="10" headerText="Supprimer">
-                                    <p:commandButton icon="pi pi-trash" update="idConfirmDelete" process="@this" ajax="true"
-                                                     actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
-                                                     oncomplete="PF('confirmDelete').show();" class="ui-button-danger rounded-button" />
-                                </p:column>
-
-                                <f:facet name="footer">
-                                    <span class="p-text-bold">
-                                        <h:outputText value="Nombre total des thésaurus: #{roleOnTheso.nodeListThesoAsAdmin.size()}" style="font-size: 14px;"/>
-                                    </span>
-                                </f:facet>
-                            </p:dataTable>
+                    <f:facet name="header">
+                        <div class="products-table-header">
+                            <span style="font-weight: bold">Liste des thésaurus</span>
                         </div>
-                    </div>
-                </p:scrollPanel>
+                    </f:facet>
+
+                    <p:column width="10" headerText="Id"  sortOrder="descending" sortBy="#{listTheso.id}">
+                        <h:outputText value="#{listTheso.id}" style="font-size: 14px"/>
+                    </p:column>                                
+                    <p:column width="60" headerText="Nom du thésaurus"  sortBy="#{listTheso.value}">
+                        <h:outputText value="#{listTheso.value}" style="font-size: 14px"/>
+                    </p:column>
+
+                    <p:column width="10" headerText="Public/Privé">
+                        <p:toggleSwitch value="#{listTheso.status}" disabled="true" style="margin-top: 5px" />
+                    </p:column>
+
+                    <p:column width="10" headerText="Exporter">
+                        <p:menuButton icon="fas fa-upload" value="Export" >
+                            <p:menuitem value="Format Skos" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
+                                        action="#{viewEditionBean.setIsViewExportSkos(true)}" icon="fas fa-upload"
+                                        title="Exporter le thésaurus au format Skos" update="containerIndex" />
+
+                            <p:menuitem value="Format PDF" actionListener="#{viewExportBean.init(listTheso, 'PDF')}"
+                                        action="#{viewEditionBean.setIsViewExportPDF(true)}" update="containerIndex"
+                                        title="Exporter le thésaurus au format PDF" icon="fas fa-upload" />
+
+                            <p:menuitem value="Format CSV" actionListener="#{viewExportBean.init(listTheso, 'CSV')}"
+                                        action="#{viewEditionBean.setIsViewExportCSV(true)}" update="containerIndex"
+                                        title="Exporter le thésaurus au format CSV" icon="fas fa-upload" />
+
+                            <p:menuitem value="Format CSV Structurée" actionListener="#{viewExportBean.init(listTheso, 'CSV_STRUC')}"
+                                        action="#{viewEditionBean.setIsViewExportCSVStructure(true)}" update="containerIndex" icon="fas fa-upload"
+                                        title="Exporter les labels avec leurs arborescences au format CSV"/>
+
+                            <p:menuitem value="Identifiants en CSV" actionListener="#{viewExportBean.init(listTheso, 'CSV_id')}"
+                                        action="#{viewEditionBean.setIsViewExportCSV_id(true)}" update="containerIndex" icon="fas fa-upload"
+                                        title="Exporter les labels, identifiants, definitions au format CSV"/>
+
+                            <p:menuitem value="Concepts dépréciés en CSV" update="containerIndex" icon="fas fa-upload"
+                                        actionListener="#{viewExportBean.init(listTheso, 'deprecated')}"
+                                        action="#{viewEditionBean.setIsViewExportCSV(true)}" />
+
+                            <p:menuitem value="Virtuoso (SKOS)" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
+                                        action="#{viewEditionBean.setIsViewExportVirtuoso(true)}" update="containerIndex"
+                                        title="Exporter le thésaurus dans vertuoso au format RDF" icon="fas fa-upload"/>
+                        </p:menuButton>
+                    </p:column>
+
+                    <p:column width="10" headerText="Modifier" style="margin-top: 5px" >
+                        <p:commandButton icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
+                                         update="containerIndex" process="@this"
+                                         actionListener="#{editThesoBean.init(listTheso)}"
+                                         action="#{viewEditionBean.setIsViewModifyTheso(true)}"/>
+                    </p:column>
+
+                    <p:column width="10" headerText="Supprimer" style="margin-top: 5px">
+                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined" 
+                                         update="idConfirmDelete" process="@this" ajax="true"
+                                         actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
+                                         oncomplete="PF('confirmDelete').show();" />
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <span class="p-text-bold">
+                            <h:outputText value="Nombre total des thésaurus disponible : " style="font-size: 14px;"/>
+                            <h:outputText value="#{roleOnTheso.nodeListThesoAsAdmin.size()}" style="font-size: 16px; color: #f47b2a"/>
+                        </span>
+                    </f:facet>
+                </p:dataTable>
             </div>
         </div>
     </div>

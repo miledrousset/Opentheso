@@ -66,6 +66,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
@@ -719,10 +720,14 @@ public class ConceptView implements Serializable {
     }
     
     public void getNextNT(String idTheso, String idConcept, String idLang) {
-        if(tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
+        if(tree != null 
+                && CollectionUtils.isNotEmpty(tree.getClickselectedNodes()) 
+                && tree.getClickselectedNodes().get(0) != null 
+                && tree.getClickselectedNodes().get(0).getData() != null) {
+            
             RelationsHelper relationsHelper = new RelationsHelper();
             ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
-                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
+                    ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId(),
                     idTheso,
                     idLang, step+1, offset);
             if(nodeNTs != null && !nodeNTs.isEmpty()) {

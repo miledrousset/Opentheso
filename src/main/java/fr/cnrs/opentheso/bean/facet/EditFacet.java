@@ -315,9 +315,9 @@ public class EditFacet implements Serializable {
         data.setIdFacetParent(facetSelected.getIdFacet());
         if(conceptHelper.haveChildren(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), conceptSelected.getId())) {
-            tree.getDataService().addNodeWithChild("concept", data, tree.getSelectedNode());
+            tree.getDataService().addNodeWithChild("concept", data, tree.getClickselectedNodes().get(0));
         } else {
-            tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+            tree.getDataService().addNodeWithoutChild("file", data, tree.getClickselectedNodes().get(0));
         }
 
         initDataAfterAction();
@@ -491,7 +491,7 @@ public class EditFacet implements Serializable {
         }
         showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec succès !");
 
-        tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");
+        tree.addNewFacet(tree.getClickselectedNodes().get(0), newFacetName, idFacet+"");
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -528,7 +528,7 @@ public class EditFacet implements Serializable {
 
         showMessage(FacesMessage.SEVERITY_INFO, "Facette modifiée avec sucée !");
 
-        ((TreeNodeData) tree.getSelectedNode().getData()).setName(newFacetName);
+        ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(newFacetName);
 
         facetSelected = facetHelper.getThisFacet(connect.getPoolConnexion(),
                 facetSelected.getIdFacet(),

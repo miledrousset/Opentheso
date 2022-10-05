@@ -7752,7 +7752,7 @@ button.bg-dark:focus {
 
 .mb-4,
 .my-4 {
-    margin-bottom: 1.2rem !important;
+    /*margin-bottom: 1.2rem !important;*/
 }
 
 .ml-4,

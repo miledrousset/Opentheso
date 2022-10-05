@@ -2,16 +2,13 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
-
-
+    
     <!-- ligne Notes -->
     <h:panelGroup >
-
-        <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central; font-size: 12px;">
-            <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
-
-                <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
-                    <div class="row" style="padding: 2px">
+        <div class="card mb-4 py-3 border-left-success">
+            <div class="list-group">
+                <div class="list-group-item list-group-item-action">
+                    <div class="row">
                         <div class="col-3" >
                             <h:panelGroup id="notesActions" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
 
@@ -41,7 +38,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <h:panelGroup id="idConceptNotes" style="margin-top: 5px;" rendered="#{(conceptView.notes.size() != 0 || conceptView.changeNotes.size() != 0 || conceptView.definitions.size() != 0
                                                                                        || conceptView.editorialNotes.size() != 0 || conceptView.examples.size() != 0 || conceptView.historyNotes.size() != 0
