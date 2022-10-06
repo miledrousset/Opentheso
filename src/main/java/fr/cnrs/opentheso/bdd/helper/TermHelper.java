@@ -269,18 +269,11 @@ public class TermHelper {
             boolean isHidden,
             int idUser) {
 
-        Connection conn = null;
         boolean isPassed = false;
-
-        Statement stmt;
         value = new StringPlus().convertString(value);
-        try {
-            conn = ds.getConnection();
-            conn.setAutoCommit(false);
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into non_preferred_term "
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("Insert into non_preferred_term "
                             + "(id_term, lexical_value, lang, "
                             + "id_thesaurus, source, status, hiden)"
                             + " values ("
@@ -290,33 +283,12 @@ public class TermHelper {
                             + ",'" + idTheso + "'"
                             + ",'" + source + "'"
                             + ",'" + status + "'"
-                            + "," + isHidden + ")";
-
-                    stmt.executeUpdate(query);
-                    if (addNonPreferredTermHistorique(conn, idTerm, value, idLang, idTheso, source, status, isHidden, "ADD", idUser)) {
-                        conn.commit();
-                        isPassed = true;
-                    } else {
-                        isPassed = false;
-                        conn.rollback();
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+                            + "," + isHidden + ")");
             }
+            addNonPreferredTermHistorique(conn, idTerm, value, idLang, idTheso, source, status, isHidden, "ADD", idUser);            
+            isPassed = true;
         } catch (SQLException sqle) {
-            Logger.getLogger(TermHelper.class.getName()).log(Level.SEVERE, null, sqle);
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(TermHelper.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            log.error("Error while adding NonPreferredTerm : " + idTerm, sqle);
         }
         return isPassed;
     }

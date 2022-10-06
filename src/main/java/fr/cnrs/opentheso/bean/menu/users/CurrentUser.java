@@ -199,7 +199,7 @@ public class CurrentUser implements Serializable {
 
     private void showErrorMessage(String msg) {
         // utilisateur ou mot de passe n'existent pas
-        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", msg);
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Login Error!", msg);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
     }
 

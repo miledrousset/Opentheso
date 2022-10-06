@@ -245,11 +245,12 @@ public class ImportRdf4jHelper {
     private void setOriginalUri(String idTheso, String uri){
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         if (nodePreference == null) return;
-
-        nodePreference.setCheminSite(uri);
-        nodePreference.setPreferredName(idTheso);
-        nodePreference.setOriginalUri(uri);
-        preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
+        if(nodePreference.getCheminSite().isEmpty() && nodePreference.getPreferredName().isEmpty() && nodePreference.getOriginalUri().isEmpty()) {
+            nodePreference.setCheminSite(uri);
+            nodePreference.setPreferredName(idTheso);
+            nodePreference.setOriginalUri(uri);
+            preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
+        }
     }
 
     public void addFacets(ArrayList<SKOSResource> facetResources, String idTheso) {
