@@ -195,6 +195,7 @@
                                     </div>
                                     <div class="col-1" style="text-align: right; ">
                                         <p:commandLink id="applySearch" class="btn btn-base" actionListener="#{searchBean.applySearch()}"
+                                                       ajax="true" process="@form"
                                                        update="containerIndex:notificationPanel messageIndex">
                                             <i class="fas fa-search fa-1x" style="color: #f47b2a; font-size: 14px;"/>
                                         </p:commandLink>

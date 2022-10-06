@@ -90,6 +90,9 @@ public class SynonymBean implements Serializable {
         selectedLang = conceptBean.getSelectedLang();
 
         nodeEMs = conceptBean.getNodeConcept().getNodeEM();
+        
+        prepareNodeEMForEdit();
+        
         value = "";
         duplicate = false;
         this.nodeEM = null;
@@ -103,7 +106,6 @@ public class SynonymBean implements Serializable {
 
     public void prepareNodeEMForEdit() {
         nodeEMsForEdit = new ArrayList<>();
-        System.out.println(">> " + conceptBean.getNodeConcept().getNodeEM().size());
         for (NodeEM nodeEM1 : conceptBean.getNodeConcept().getNodeEM()) {
             nodeEM1.setOldValue(nodeEM1.getLexical_value());
             nodeEM1.setOldHiden(nodeEM1.isHiden());

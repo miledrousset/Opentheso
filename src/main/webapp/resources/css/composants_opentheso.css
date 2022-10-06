@@ -9,6 +9,8 @@
         #ecf8f1 vert clair
 */
 
+
+
 body .ui-button.ui-button-text-icon-left .ui-button-text {
     padding: 0rem 0rem 0rem 0rem;
 }
@@ -709,4 +711,14 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
 body .ui-paginator {
     background: #fff;
     border: solid #226b40;
+}
+
+
+body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-autocomplete-row>td {
+    padding: 0.3rem 0.6rem;
+}
+
+body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-state-highlight {
+    background: #ecf8f1;
+    color: #226b40;
 }
