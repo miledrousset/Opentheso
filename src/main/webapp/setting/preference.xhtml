@@ -63,11 +63,12 @@
                                                                   title="L'URL local du serveur qui héberge Opentheso, permet le rebond entre les concepts dans la même instance (exp: https://monsite.fr/opentheso/)"/>
                                                 </div>
                                                 <div class="col-6">
-                                                    <p:inputText value="#{preferenceBean.nodePreference.cheminSite}" style="width: 100%;"
-                                                                 title="L'URL local du serveur qui héberge Opentheso, permet le rebond entre les concepts dans la même instance (exp: https://monsite.fr/opentheso/)"/>
+                                                    <p:inputText id="inputTextCheminSite" value="#{preferenceBean.nodePreference.cheminSite}" style="width: 100%;"/>
                                                 </div>
                                             </div>
                                         </div>
+                                        <p:tooltip for="inputTextCheminSite" value="L'URL local du serveur qui héberge Opentheso, permet le rebond entre les concepts dans la même instance (exp: https://monsite.fr/opentheso/)" 
+                                                   position="top" showDelay="500"/>
 
                                         <!-- Uri d'export -->
                                         <div class="list-group-item list-group-item-action" style="margin-top: 20px; margin-bottom: 20px; background-color: #ecf8f1">

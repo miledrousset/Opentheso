@@ -147,14 +147,12 @@ AS $BODY$
 begin
 	return query
 		SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang
-		FROM note, note_type
-		WHERE note.notetypecode = note_type.code
-		AND note_type.isterm = true
+		FROM note
+		WHERE id_thesaurus = id_theso
 		AND note.id_term IN (SELECT id_term
 							 FROM preferred_term
 							 WHERE id_thesaurus = id_theso
 							 AND id_concept = id_con);
-
 end;
 $BODY$;
 
@@ -175,12 +173,13 @@ CREATE OR REPLACE FUNCTION public.opentheso_get_relations(
 AS $BODY$
 begin
 	return query
-		SELECT id_concept2, role, id_ark, id_handle, id_doi
-		FROM hierarchical_relationship as hr
-				LEFT JOIN concept AS con ON id_concept = id_concept2 AND hr.id_thesaurus = con.id_thesaurus
-		WHERE hr.id_thesaurus = id_theso
-		AND id_concept1 = id_con;
-
+                select id_concept2, role, id_ark, id_handle, id_doi
+                from hierarchical_relationship, concept
+                where  hierarchical_relationship.id_concept2 = concept.id_concept
+                and hierarchical_relationship.id_thesaurus = concept.id_thesaurus
+                and hierarchical_relationship.id_thesaurus = id_theso
+                and hierarchical_relationship.id_concept1 = id_con
+                and concept.status != 'CA';
 end;
 $BODY$;
 
@@ -216,7 +215,6 @@ $BODY$;
 -- FUNCTION: public.opentheso_get_uri(boolean, character varying, character varying, boolean, character varying, boolean, character varying, character varying, character varying, character varying)
 
 -- DROP FUNCTION public.opentheso_get_uri(boolean, character varying, character varying, boolean, character varying, boolean, character varying, character varying, character varying, character varying);
-
 CREATE OR REPLACE FUNCTION public.opentheso_get_uri(
 	original_uri_is_ark boolean,
 	id_ark character varying,
@@ -233,31 +231,22 @@ CREATE OR REPLACE FUNCTION public.opentheso_get_uri(
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
-DECLARE
-	uri varchar;
 BEGIN
-	IF (original_uri_is_ark = true) THEN
-		IF (id_ark IS NOT NULL) THEN
-			uri = original_uri || '/' || id_ark;
-		END IF;
-	ELSIF (original_uri_is_handle = true) THEN
-		IF (id_handle IS NOT NULL) THEN
-		  	uri = 'https://hdl.handle.net/' || id_handle;
-		END IF;
-	ELSIF (original_uri_is_doi = true) THEN
-		IF (id_doi IS NOT NULL) THEN
-		  	uri = 'https://doi.org/' || id_doi;
-		END IF;
-	ELSIF (original_uri IS NOT NULL) THEN
-		uri = original_uri || '/?idc=' || id_concept || '&idt=' || id_theso;
+	IF (original_uri_is_ark = true AND id_ark IS NOT NULL AND id_ark != '') THEN
+		return original_uri || '/' || id_ark;
+	ELSIF (original_uri_is_ark = true AND (id_ark IS NULL or id_ark = '')) THEN
+		return path || '/?idc=' || id_concept || '&idt=' || id_theso;	
+	ELSIF (original_uri_is_handle = true AND id_handle IS NOT NULL AND id_handle != '') THEN
+		return 'https://hdl.handle.net/' || id_handle;
+	ELSIF (original_uri_is_doi = true AND id_doi IS NOT NULL AND id_doi != '') THEN
+		return 'https://doi.org/' || id_doi;
+	ELSIF (original_uri IS NOT NULL AND original_uri != '') THEN
+		return original_uri || '/?idc=' || id_concept || '&idt=' || id_theso;
 	ELSE
-		uri = path || '/?idc=' || id_concept || '&idt=' || id_theso;
+		return path || '/?idc=' || id_concept || '&idt=' || id_theso;
 	end if;
-
-	return uri;
 end;
 $BODY$;
-
 
 
 -- FUNCTION: public.opentheso_get_alignements(character varying, character varying)
@@ -277,9 +266,9 @@ AS $BODY$
 begin
 	return query
 		SELECT uri_target, alignement_id_type
-		FROM concept con LEFT JOIN alignement ali ON ali.internal_id_concept = con.id_concept
-		WHERE id_thesaurus = id_theso
-		AND con.id_concept = id_con;
+		FROM alignement
+		where internal_id_concept = id_con
+		and internal_id_thesaurus = id_theso;
 end;
 $BODY$;
 
@@ -293,13 +282,11 @@ DECLARE
 	facet_rec record;
 	theso_rec record;
 	concept_rec record;
-	membre_rec record;
 
 	uri_membre VARCHAR;
 	id_ark VARCHAR;
 	id_handle VARCHAR;
 	uri_value VARCHAR;
-	membres TEXT;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -316,23 +303,13 @@ BEGIN
 		uri_value = opentheso_get_uri(theso_rec.original_uri_is_ark, concept_rec.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
 					 concept_rec.id_handle, theso_rec.original_uri_is_doi, concept_rec.id_doi, facet_rec.id_concept_parent, id_theso, path);
 
-		membres = '';
-
-		FOR membre_rec IN SELECT DISTINCT concept.* FROM concept_facet, concept WHERE concept_facet.id_concept = concept.id_concept
-				AND concept.id_thesaurus = id_theso and concept_facet.id_facet = facet_rec.id_facet
-		LOOP
-			uri_membre = opentheso_get_uri(theso_rec.original_uri_is_ark, membre_rec.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
-					 membre_rec.id_handle, theso_rec.original_uri_is_doi, membre_rec.id_doi, facet_rec.id_concept_parent, id_theso, path);
-			membres = membres || membre_rec.id_concept || '@' || uri_membre || '##';
-		END LOOP;
-
 		SELECT facet_rec.id_facet, facet_rec.lexical_value, facet_rec.created, facet_rec.modified, facet_rec.lang,
-				facet_rec.id_concept_parent, uri_value, membres INTO rec;
+				facet_rec.id_concept_parent, uri_value INTO rec;
 
   		RETURN NEXT rec;
     END LOOP;
 END;
-$$
+$$;
 
 CREATE OR REPLACE FUNCTION opentheso_get_concepts_by_group (id_theso VARCHAR, path VARCHAR, id_group VARCHAR)
 	RETURNS SETOF RECORD
@@ -524,14 +501,16 @@ BEGIN
 		membre = '';
 		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
 		LOOP
-			IF (group_rec.group_id_ark IS NOT NULL) THEN
+			IF (theso_rec.original_uri_is_ark = true AND group_rec.group_id_ark IS NOT NULL  AND group_rec.group_id_ark != '') THEN
 				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
+			ELSIF (theso_rec.original_uri_is_ark = true AND (group_rec.group_id_ark IS NULL OR group_rec.group_id_ark = '')) THEN
+				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			ELSIF (group_rec.group_id_handle IS NOT NULL) THEN
 				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
 			ELSIF (theso_rec.original_uri IS NOT NULL) THEN
 				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			ELSE
-				membre = membre || path || '/?idc=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
 			END IF;
 		END LOOP;
 
@@ -548,9 +527,9 @@ BEGIN
 		replaces = '';
 		FOR replace_rec IN SELECT id_concept1, id_ark, id_handle, id_doi
 				FROM concept_replacedby, concept
-				WHERE concept.id_concept = concept_replacedby.id_concept2
+				WHERE concept.id_concept = concept_replacedby.id_concept1
 				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
-				AND concept_replacedby.id_concept2 = con.id_concept
+				AND concept_replacedby.id_concept1 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso
 		LOOP
 			replaces = replaces || opentheso_get_uri(theso_rec.original_uri_is_ark, replace_rec.id_ark, theso_rec.original_uri,
@@ -561,9 +540,9 @@ BEGIN
 		replacedBy = '';
 		FOR replacedBy_rec IN SELECT id_concept2, id_ark, id_handle, id_doi
 				FROM concept_replacedby, concept
-				WHERE concept.id_concept = concept_replacedby.id_concept1
+				WHERE concept.id_concept = concept_replacedby.id_concept2
 				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
-				AND concept_replacedby.id_concept1 = con.id_concept
+				AND concept_replacedby.id_concept2 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso
 		LOOP
 			replacedBy = replacedBy || opentheso_get_uri(theso_rec.original_uri_is_ark, replacedBy_rec.id_ark, theso_rec.original_uri,
@@ -588,7 +567,7 @@ BEGIN
   		RETURN NEXT rec;
     END LOOP;
 END;
-$$
+$$;
 
 
 CREATE OR REPLACE FUNCTION opentheso_get_concepts (id_theso VARCHAR, path VARCHAR)
@@ -779,14 +758,16 @@ BEGIN
 		membre = '';
 		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
 		LOOP
-			IF (group_rec.group_id_ark IS NOT NULL AND group_rec.group_id_ark != '') THEN
+			IF (theso_rec.original_uri_is_ark = true AND group_rec.group_id_ark IS NOT NULL  AND group_rec.group_id_ark != '') THEN
 				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
+			ELSIF (theso_rec.original_uri_is_ark = true AND (group_rec.group_id_ark IS NULL OR group_rec.group_id_ark = '')) THEN
+				membre = membre || path || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSIF (group_rec.group_id_handle IS NOT NULL AND group_rec.group_id_handle != '') THEN
 				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
 			ELSIF (theso_rec.original_uri IS NOT NULL AND theso_rec.original_uri != '') THEN
 				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSE
-				membre = membre || path || '/?idc=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || path || '/?idc=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			END IF;
 		END LOOP;
 
@@ -803,7 +784,7 @@ BEGIN
 		replaces = '';
 		FOR replace_rec IN SELECT id_concept1, id_ark, id_handle, id_doi
 				FROM concept_replacedby, concept
-				WHERE concept.id_concept = concept_replacedby.id_concept2
+				WHERE concept.id_concept = concept_replacedby.id_concept1
 				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
 				AND concept_replacedby.id_concept2 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso
@@ -816,7 +797,7 @@ BEGIN
 		replacedBy = '';
 		FOR replacedBy_rec IN SELECT id_concept2, id_ark, id_handle, id_doi
 				FROM concept_replacedby, concept
-				WHERE concept.id_concept = concept_replacedby.id_concept1
+				WHERE concept.id_concept = concept_replacedby.id_concept2
 				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
 				AND concept_replacedby.id_concept1 = con.id_concept
 				AND concept_replacedby.id_thesaurus = id_theso

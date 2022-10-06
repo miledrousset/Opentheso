@@ -550,6 +550,7 @@ public class NoteBean implements Serializable {
         if (selectedTypeNote == null) {
             return new ArrayList<>();
         }
+        if(propositionBean.getProposition() == null) return new ArrayList<>();
         switch (selectedTypeNote) {
             case "note":
                 return propositionBean.getProposition().getNotes();

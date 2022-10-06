@@ -268,12 +268,17 @@ public class RelationsHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "select id_concept2, role, id_ark, id_handle, id_doi "
-                            + " from hierarchical_relationship as hr"
-                            + " left join concept as con on id_concept = id_concept2"
-                            + " and hr.id_thesaurus = con.id_thesaurus"
-                            + " where hr.id_thesaurus = '" + idThesaurus + "'"
-                            + " and id_concept1 = '" + idConcept + "'";
+                    String query = "select id_concept2, role, id_ark, id_handle, id_doi  " +
+                            " from hierarchical_relationship, concept " +
+                            " where " +
+                            " hierarchical_relationship.id_concept2 = concept.id_concept" +
+                            " and" +
+                            " hierarchical_relationship.id_thesaurus = concept.id_thesaurus " +
+                            " and" +
+                            " hierarchical_relationship.id_thesaurus = '" + idThesaurus + "' " +
+                            " and" +
+                            " hierarchical_relationship.id_concept1 = '" + idConcept + "'" +
+                            " and concept.status != 'CA'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {

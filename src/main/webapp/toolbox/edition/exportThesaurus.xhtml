@@ -183,16 +183,17 @@
                             </p:toggleSwitch>
                         </div>
                     </div>
-
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col-3" />
-                        <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
-                            <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="select" style="width: 100%; height: 28px; font-size: 12px;"
-                                                  filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
-                                <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
-                            </p:selectCheckboxMenu>
+                    <h:panelGroup id="filerByGroup" rendered="#{viewExportBean.toogleFilterByGroup}" >
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col-3" />
+                            <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
+                                <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="select" style="width: 100%; height: 28px; font-size: 12px;"
+                                                      filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
+                                    <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
                         </div>
-                    </div>
+                    </h:panelGroup>
                 </h:panelGroup>
 
                 <h:panelGroup rendered="#{viewExportBean.isCsvStrucExport()}" >
@@ -381,9 +382,20 @@
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          icon="fa fa-upload" class="btn btn-success"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
+                                         title="Export rapide"
                                          style="float: right; color: white; background: #43B572; border: #43B572;">
                             <p:fileDownload value="#{exportFileBean.exportNewGen()}" />
                         </p:commandButton>
+                        
+                        <p:commandButton value="Ancienne méthode" ajax="false"
+                                         onclick="PrimeFaces.monitorDownload(start, stop);"
+                                         icon="fa fa-upload" class="btn btn-warning"
+                                         rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
+                                         title="Export classique plus long"
+                                         style="margin-right: 20px;  float: right; color: #ca2819; background-color: #FAEDE5">
+                            <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
+                        </p:commandButton>      
+                        
                         <p:commandButton value="Exporter vers Vertuoso" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          icon="fa fa-upload" class="btn btn-success"

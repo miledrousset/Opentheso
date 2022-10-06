@@ -16,7 +16,7 @@
                                 <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
                                               style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
-                                <p:menuButton icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
+                                <p:menuButton id="notesProp" icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
                                               rendered="${propositionBean.showButtonAction()}">
                                     <p:menuitem value="Proposer une nouvelle note"
                                                 actionListener="#{noteBean.reset()}" update="containerIndex:rightTab:idAddNoteProp"
@@ -28,7 +28,8 @@
                         </div>
                     </div>
                 </h:panelGroup>                
-
+                <p:tooltip for="notesProp noteProp" value="Cliquez ici pour proposer une modification" showDelay="500"
+                           position="top" />  
                 <h:panelGroup style="margin-top: 5px;">
 
                     <h:panelGroup rendered="#{propositionBean.proposition.notes.size() != 0}">
@@ -42,7 +43,7 @@
                                                   and propositionBean.showButtonAction()}"/>
                                     
                                     <h:panelGroup>
-                                        <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
+                                        <p:menuButton id="noteProp" icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
                                                       rendered="${propositionBean.showButtonAction()}">
                                             <p:menuitem value="Modifier une note" actionListener="#{noteBean.reset()}"
                                                         action = "#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNoteProp').show();"

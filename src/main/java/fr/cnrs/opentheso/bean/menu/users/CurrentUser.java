@@ -114,15 +114,18 @@ public class CurrentUser implements Serializable {
             searchBean.setSearchResultVisible(false);
             searchBean.setSearchVisibleControle(false);
         }
-        //selectedTheso.get
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:contentConcept");
-            pf.ajax().update("containerIndex:searchBar");
-            pf.ajax().update("containerIndex:header");
-            pf.ajax().update("menuBar");
-            pf.ajax().update("messageIndex");
+        
+        if (!"index".equals(menuBean.getActivePageName())) {
+            menuBean.redirectToThesaurus();
+        } else {
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("containerIndex:contentConcept");
+                pf.ajax().update("containerIndex:searchBar");
+                pf.ajax().update("containerIndex:header");
+                pf.ajax().update("menuBar");
+                pf.ajax().update("messageIndex");
+            }
         }
     }
 
@@ -196,7 +199,7 @@ public class CurrentUser implements Serializable {
 
     private void showErrorMessage(String msg) {
         // utilisateur ou mot de passe n'existent pas
-        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error!", msg);
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Login Error!", msg);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
     }
 
@@ -269,7 +272,7 @@ public class CurrentUser implements Serializable {
     }
 
     public boolean isAlertVisible() {
-        return ObjectUtils.isNotEmpty(nodeUser) && nodeUser.isIsSuperAdmin() && nodeUser.isIsActive();
+        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isIsSuperAdmin() || roleOnThesoBean.isIsAdminOnThisTheso()) && nodeUser.isIsActive();
     }
 
     public NodeUser getNodeUser() {

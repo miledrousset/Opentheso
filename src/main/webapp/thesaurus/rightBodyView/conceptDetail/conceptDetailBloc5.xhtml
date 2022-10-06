@@ -122,6 +122,8 @@
                 </div>
             </div>            
 
+            <p:spacer height="1px" width="98%" style="margin-left: 10px; margin-top: 5px; margin-bottom: -5px; background-color: #CBD1DC; font-weight: 100"  />
+            
             <div class="list-group-item list-group-item-action" style="margin-top: 10px;">
                 <div class="row">
                     <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
@@ -155,7 +157,7 @@
                                         </div>
                                         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
                                             <!-- Cas d'uri de type Ark -->
-                                            <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
+                                            <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk and conceptView.nodeConcept.concept.idArk != ''}">
                                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
                                                 <p:link href="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}"
                                                         value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeConcept.concept.idArk}" style="color: #164A78; font-size: 13px;">

@@ -1173,6 +1173,7 @@ public class ConceptHelper {
                 + " concept.id_concept = concept_group_concept.idconcept AND"
                 + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                + " concept.status != 'CA' AND "
                 + " concept_group_concept.idgroup = '" + idGroup + "'";
 
         return getConceptDetails(ds, query, idThesaurus);
@@ -1787,9 +1788,14 @@ public class ConceptHelper {
 
             privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
 
-            /// cas où on n'a pas d'idArk dans le concept, il faut alors le créer sur Arkeo
+            /// test de tous les cas de figure pour la création d'un idArk
             if (concept.getIdArk() == null || concept.getIdArk().isEmpty()) {
-                // création d'un identifiant Ark + (Handle avec le serveur Ark de la MOM)
+                // cas où on a déja un identifiant Ark en local, donc on doit vérifier :
+                // - si l'idArk est présent sur le serveur, on applique une mise à jour de l'URL
+                // - si l'idArk n'est pas présent sur le serveur, il y a 2 cas :
+                //      - on vérifie si l'URL liée au Ark fourni existe sur le serveur, alors on retourne une erreur (il y a confusion)
+                //      - si l'URL n'existe pas sur le serveur, alors on procède à une création d'un identifiant Ark
+                // 
                 if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
                     message = arkHelper2.getMessage();
                     message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
@@ -2446,12 +2452,18 @@ public class ConceptHelper {
                 conn.close();                  
                 return false;
             }
-
+            // supprime l'appartenance du concept à des facettes
+            if (!deleteConceptFromFacets(conn, idThesaurus, idConcept)) {
+                conn.rollback();
+                conn.close();                  
+                return false;
+            }            
             if (!deleteConceptReplacedby(conn, idThesaurus, idConcept)) {
                 conn.rollback();
                 conn.close();                  
                 return false;
             }
+            // supprime les facettes qui sont attachées à ce concept
             if (!deleteFacets(ds, idThesaurus, idConcept)) {
                 conn.rollback();
                 conn.close();                  
@@ -3521,6 +3533,10 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
      * qui n'ont pas d'identifiants Ark
+     * 
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public ArrayList<String> getAllIdConceptOfThesaurusWithoutArk(HikariDataSource ds, String idThesaurus) {
 
@@ -3529,7 +3545,7 @@ public class ConceptHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept from concept where id_thesaurus = '"
-                        + idThesaurus + "' and (id_ark = '' or id_ark = null)");
+                        + idThesaurus + "' and (id_ark = '' or id_ark = null) and status != 'CA'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         tabIdConcept.add(resultSet.getString("id_concept"));
@@ -5452,10 +5468,36 @@ public class ConceptHelper {
             stmt.execute(query);
         }
     }
+  
+    /**
+     * permet de supprimer l'appartenance du concept à des facettes
+     * @param conn
+     * @param idTheso
+     * @param idConcept
+     * @return 
+     */
+    public boolean deleteConceptFromFacets(Connection conn, String idTheso, String idConcept) {
+        boolean status = false;
+        try ( Statement stmt = conn.createStatement()) {
+            String query = "delete from concept_facet WHERE id_concept = '" + idConcept
+                    + "' AND id_thesaurus = '" + idTheso + "'";
+            stmt.execute(query);
+            status = true;
 
+        } catch (SQLException ex) {
+            Logger.getLogger(ConceptHelper.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;
+    }        
+    
     /**
      * permet de supprimer un concept dans la table concept_replacedby
-     */
+    * @param conn
+    * @param idTheso
+    * @param idConcept
+    * @return 
+    */
     public boolean deleteConceptReplacedby(Connection conn, String idTheso, String idConcept) {
         boolean status = false;
         try ( Statement stmt = conn.createStatement()) {
