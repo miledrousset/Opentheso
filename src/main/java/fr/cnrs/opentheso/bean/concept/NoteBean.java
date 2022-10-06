@@ -330,7 +330,7 @@ public class NoteBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 

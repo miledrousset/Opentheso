@@ -1,50 +1,51 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idUpdateExternalResource" header="#{langueBean.getMsg('rightbody.concept.modifyExternalResource')}" widgetVar="updateExternalResource" 
-              width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >      
+    <p:dialog id="idUpdateExternalResource" header="#{langueBean.getMsg('rightbody.concept.modifyExternalResource')}" 
+              widgetVar="updateExternalResource" width="550" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >      
+
         <h:form id="updateExternalResourceForm">
+
             <div class="row">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-                </div>
-            </div>        
-
-            <div class="row" style="margin-top: 10px">
                 <div class="col-12">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.externalResources')} : " class="dialog-titre"/>  
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
                 </div>
-            </div>
+            </div>  
 
-            <p:panel >
-                <ui:repeat var="resources" value="#{externalResources.nodeImages}" >
-                    <div class="row" style="margin-top: 10px">
-                        <div class="col-8">
-                            <p:inputText value="#{resources.uri}" style="width: 100%; color: #000"/>  
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
+                <p:dataTable size="small" var="resources" value="#{externalResources.nodeImages}"
+                             widgetVar="listThesoTable" styleClass="products-table"
+                             style="margin-bottom: -17px; margin-top: -16px;">
+                    
+                    <f:facet name="header">
+                        <div class="products-table-header">
+                            <span style="font-weight: bold">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.externalResources')}" class="dialog-titre"/>
+                            </span>
                         </div>
-                        <div class="col-3">
-                            <p:inputText value="#{resources.imageName}" style="width: 100%; color: #000"/>
-                        </div>
-                        <div class="col-1">
-                            <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex" ajax="true" process="@form"
-                                           action="#{externalResources.updateExternalResource(resources, currentUser.nodeUser.idUser)}" >
-                                <i class="pi pi-check-circle" />
-                            </p:commandLink>
-                        </div>
-                    </div>
-                </ui:repeat>
-            </p:panel>  
-            <p:spacer height="10px;" />
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                    </f:facet>
 
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('updateExternalResource').hide();" update="containerIndex:idUpdateExternalResource"/>  
-            </div>            
+                    <p:column headerText="URI">
+                        <p:inputText value="#{resources.uri}" style="width: 100%;"/>            
+                    </p:column>
+
+                    <p:column headerText="Label">
+                        <p:inputText value="#{resources.imageName}" style="width: 100%;"/>
+                    </p:column>
+
+                    <p:column width="60" headerText="Action" style="color: black">
+                        <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex" ajax="true" process="@form"
+                                       action="#{externalResources.updateExternalResource(resources, currentUser.nodeUser.idUser)}" >
+                            <i class="pi pi-check-circle" />
+                        </p:commandLink>
+                    </p:column>                        
+                </p:dataTable>
+            </div>        
         </h:form>
     </p:dialog> 
 </ui:fragment>

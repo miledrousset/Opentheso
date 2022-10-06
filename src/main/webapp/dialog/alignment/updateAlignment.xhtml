@@ -19,7 +19,7 @@
                 <p:dataTable var="alignment" value="#{conceptView.nodeConcept.nodeAlignments}" size="small"
                              style="margin-bottom: -17px; margin-top: -16px;">
 
-                    <p:column width="40" headerText="Type Relation">
+                    <p:column width="50" headerText="Type Relation">
                         <p:selectOneMenu id="relationType"  value="#{alignment.alignement_id_type}" 
                                          style="width: 100%; background: white; border-color: #43B572; font-size: 13px;">
                             <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
@@ -32,13 +32,13 @@
                                      style="color: #43B572; width: 100%; font-size: 13px;"/>  
                     </p:column>
 
-                    <p:column width="20" headerText="Modifier">
+                    <p:column width="10" headerText="Modifier">
                         <p:commandButton update="containerIndex:formRightTab containerIndex:idUpdateAlignment"
-                                         action="#{alignmentManualBean.reset()}" icon="pi pi-check"
+                                         action="#{alignmentManualBean.reset()}"
                                          actionListener="#{alignmentManualBean.updateAlignement(alignment)}"
                                          oncomplete="PF('updateAlignment').hide();"
-                                         styleClass="rounded-button ui-button-raised"
-                                         style="font-size: 13px" />
+                                         icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
+                                         style="font-size: 13px; color: #43B572" ajax="true" process="@form" />
                     </p:column>                    
                 </p:dataTable>
             </div>
