@@ -5,10 +5,10 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog id="idCopyAndPasteBetweenThesoToTop" header="Validation copier/coller" widgetVar="copyAndPasteBetweenThesoToTop" 
+    <p:dialog id="idCopyAndPasteBetweenThesoToTop" header="Validation copier/coller to root" widgetVar="copyAndPasteBetweenThesoToTop" 
               modal="true" resizable="true" position="top" width="500" style="margin-top: 50px" >         
-
-        <p:panelGrid columns="1" id="copyAndPasteBetweenThesoToTopForm">         
+        <h:form id="copyAndPasteBetweenThesoToTopForm" >
+        <p:panelGrid columns="1" id="copyAndPasteBetweenThesoToTopForm2">         
 
             <h:outputText value="Copier : #{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value} 
                           (#{copyAndPasteBetweenTheso.nodeConceptDrag.concept.idConcept})"/> 
@@ -25,14 +25,14 @@
                     <f:selectItem itemLabel="Handle" itemValue="handle" />
                 </p:selectOneMenu> 
             </p:column>
-
-            <p:commandButton value="Confirmer" title="Coller la branche qui a été copié d'un autre thésaurus"
-                             ajax="true" class="btn btn-primary"
-                             action="#{copyAndPasteBetweenTheso.paste()}"
-                             style="width:100%; font-size: 12px;color: white; background: #43B572;" 
-                             update="idCopyAndPasteBetweenThesoToTop containerIndex:formRightTab messageIndex"
-                             oncomplete="PF('copyAndPasteBetweenThesoToTop').hide();"/>  
-
-        </p:panelGrid>          
+                <p:commandButton value="Confirmer" title="Coller la branche qui a été copié d'un autre thésaurus"
+                                 class="btn btn-primary"
+                                 ajax="true" process="@this"
+                                 action="#{copyAndPasteBetweenTheso.paste()}"
+                                 style="width:100%; font-size: 12px;color: white; background: #43B572;" 
+                                 update=" containerIndex:formRightTab messageIndex"
+                                 oncomplete="PF('copyAndPasteBetweenThesoToTop').hide();"/>  
+        </p:panelGrid>
+</h:form>            
     </p:dialog>  
 </ui:composition>

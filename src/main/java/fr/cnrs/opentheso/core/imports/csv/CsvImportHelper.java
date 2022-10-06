@@ -695,28 +695,29 @@ public class CsvImportHelper {
         conceptObject.setIdTerm(new TermHelper().getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso));        
         
         if (!updatePrefLabel(ds, idTheso, conceptObject, idUser1)) {
-            return false;
+          //  return false;
         }
         // synonymes et cachés
         if (!updateAltLabel(ds, idTheso, conceptObject, idUser1)) {
-            return false;
+        //    return false;
         }
         // notes
         if (!updateNotes(ds, idTheso, conceptObject, idUser1)) {
-            return false;
+      //      return false;
         }
         // alignements
         if (!updateAlignments(ds, idTheso, conceptObject, idUser1)) {
-            return false;
+            
+            //return false;
         }
         // géolocalisation
         if (!updateGeoLocalisation(ds, idTheso, conceptObject, idUser1)) {
-            return false;
+          //  return false;
         }        
 
         // images
         if (!updateImages(ds, idTheso, conceptObject, idUser1)) {
-            return false;
+        //    return false;
         }   
 
         // ressources externes
@@ -752,6 +753,10 @@ public class CsvImportHelper {
         for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
             // on supprime les preflabels dans cette langue
             oldLabel = termHelper.getLexicalValue(ds, idTerm, idTheso, prefLabel.getLang());
+            
+            // on test si c'est identique, on ne fait rien.
+            if(oldLabel.trim().equals(prefLabel.getLabel().trim())) continue;
+            
             if(!oldLabel.isEmpty()) {
                 if(!termHelper.deleteTraductionOfTerm(ds, idTerm, oldLabel, prefLabel.getLang(), idTheso, idUser1)) 
                     return false;
@@ -780,16 +785,16 @@ public class CsvImportHelper {
         for (String lang : langs) {
             oldLabels = termHelper.getLexicalValueOfAltLabel(ds, idTerm, idTheso, lang);
             for (String oldLabel : oldLabels) {
-                if(!termHelper.deleteNonPreferedTerm(ds, idTerm, lang, oldLabel, idTheso, "", idUser1))
-                    return false;
+                termHelper.deleteNonPreferedTerm(ds, idTerm, lang, oldLabel, idTheso, "", idUser1);
+                    //return false;
             }
         }
         
         for (CsvReadHelper.Label altLabel : conceptObject.getAltLabels()) {
             // on ajoute les nouveaux prefLabels dans cette langue
             if(!altLabel.getLabel().isEmpty()){
-                if(!termHelper.addNonPreferredTerm(ds, idTerm, altLabel.getLabel(), altLabel.getLang(), idTheso, "import", "", false, idUser))
-                    return false;
+                termHelper.addNonPreferredTerm(ds, idTerm, altLabel.getLabel(), altLabel.getLang(), idTheso, "import", "", false, idUser);
+                //    return false;
             }
         }
         return true;
@@ -924,7 +929,7 @@ public class CsvImportHelper {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(1);
             if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
-                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+         //       message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
         
@@ -936,7 +941,7 @@ public class CsvImportHelper {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(2);
             if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
-                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+        //        message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
         
@@ -948,7 +953,7 @@ public class CsvImportHelper {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(3);
             if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
-                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+     //           message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
         
@@ -960,7 +965,7 @@ public class CsvImportHelper {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(4);
             if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
-                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+      //          message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
         
@@ -972,7 +977,7 @@ public class CsvImportHelper {
             nodeAlignment.setUri_target(uri);
             nodeAlignment.setAlignement_id_type(5);
             if (!alignmentHelper.addNewAlignment(ds, nodeAlignment)) {
-                message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
+       //         message = message + "\n" + "erreur dans l'ajout de l'alignement : " + conceptObject.getIdConcept();
             }
         }
 
