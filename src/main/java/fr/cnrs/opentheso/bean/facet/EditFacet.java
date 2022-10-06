@@ -340,22 +340,23 @@ public class EditFacet implements Serializable {
      * permet d'ajouter un concept à la facette en passant par l'autocomplétion
      */
     public void addConceptToFacet() {
-        FacetHelper facetHelper = new FacetHelper();
-        FacesMessage msg;
 
-        if(facetSelectedAutocomplete == null || facetSelectedAutocomplete.getId() == null || facetSelectedAutocomplete.getId().isEmpty()){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " pas de facette sélectionnée !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(facetSelectedAutocomplete == null || facetSelectedAutocomplete.getId() == null 
+                || facetSelectedAutocomplete.getId().isEmpty()){
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucune facette sélectionnée !");
             return;
         }
 
-        if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
-                facetSelectedAutocomplete.getId(), selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " L'ajout a échoué !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(!new FacetHelper().addConceptToFacet(connect.getPoolConnexion(),
+                facetSelectedAutocomplete.getId(), selectedTheso.getCurrentIdTheso(), 
+                conceptBean.getNodeConcept().getConcept().getIdConcept())){
+            
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'ajout de la facette a échoué !");
             return;
         }
-        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
+        
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept()
+                .getConcept().getIdConcept(), conceptBean.getSelectedLang());
         showMessage(FacesMessage.SEVERITY_INFO, "Concept ajouté à la facette avec succès !");
     }
 

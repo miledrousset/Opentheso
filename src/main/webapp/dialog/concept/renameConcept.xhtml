@@ -8,25 +8,20 @@
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         
         <h:form id="renameConceptForm">
-            <p:defaultCommand target="renameConceptSubmit" />
             
             <div class="row">
-                <div class="col-5" style="text-align: right">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.actualName')}" 
-                                  style="margin-left: 10px;" /> 
-                </div>
-                <div class="col-7" >
+                <div class="col-12">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.actualName')} :  " /> 
                     <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" /> 
                 </div>
             </div>
 
-            <div class="row" style="margin-top: 15px">
-                <div class="col-5" style="text-align: right">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')}" 
-                                  style="margin-left: 10px; margin-top: 5px" /> 
+            <div class="row" style="margin-top: 15px; width: 100%">
+                <div class="col-4">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')}" style="margin-top: 5px" /> 
                 </div>
-                <div class="col-7">
-                    <p:inputText id="newPrefLabel" value="#{editConcept.prefLabel}" style="width: 100%;"/>
+                <div class="col-8">
+                    <p:inputText value="#{editConcept.prefLabel}" style="margin-left: 10px; width: 100%"/>
                 </div>
             </div>
 
@@ -55,7 +50,6 @@
                                  action="#{editConcept.updateLabel(selectedTheso.currentIdTheso, 
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
             </div>
-
         </h:form>
     </p:dialog>
 </ui:fragment>

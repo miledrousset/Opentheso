@@ -8,17 +8,21 @@
         <h:form id="removeConceptFromFracetsForm">
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
-                    <h:outputText value="Concept: #{conceptView.nodeConcept.term.lexical_value}"
-                                  style="font-size: 13px; color: black;" />
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " />
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />  
                 </div>
             </div>
           
-            <p:panel id="listFacettes" style="max-height: 350px; margin-top: 20px;">
-                <p:dataTable var="facets" value="#{conceptView.nodeFacets}" style="font-size: 12px;">
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
+                <p:dataTable size="small" var="facets" value="#{conceptView.nodeFacets}"
+                         widgetVar="listThesoTable" styleClass="products-table"
+                         style="margin-bottom: -17px; margin-top: -16px;">
+                    
                     <p:column headerText="#{langueBean.getMsg('leftbody.isPartOfFacets')}" style="color: black">
                         <h:outputText rendered="#{facets.value != ''}" value="#{facets.value}" title="#{facets.id}"/> 
                         <h:outputText rendered="#{facets.value == ''}" value="(#{facets.id})" style="color: #FF7979"/>                        
-                    </p:column>    
+                    </p:column>
+                    
                     <p:column width="60" headerText="action" style="color: black">
                         <p:commandLink style="color: #FF7979; text-align: center " 
                                        action="#{editFacet.removeConceptFromFacet(conceptView.nodeConcept.concept.idConcept, facets.id)}"
@@ -28,7 +32,7 @@
                         </p:commandLink>                            
                     </p:column>                        
                 </p:dataTable>
-            </p:panel>
+            </div>
         </h:form>
     </p:dialog> 
 </ui:fragment>

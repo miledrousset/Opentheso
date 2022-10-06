@@ -828,6 +828,7 @@ public class ExportFileBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
         }
+        
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference(), DATE_FORMAT, false, false);
         exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);

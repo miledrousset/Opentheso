@@ -9,6 +9,10 @@
         #ecf8f1 vert clair
 */
 
+body .ui-button.ui-button-text-icon-left .ui-button-text {
+    padding: 0rem 0rem 0rem 0rem;
+}
+
 .ui-orderlist .ui-orderlist-list {
     width: 100%;
     height: 500px;
@@ -51,12 +55,11 @@ body .ui-stat-hover .ui-menuitem-link .ui-corner-all .ui-menuitem-active {
 }
 
 body .ui-dialog .ui-dialog-content {
-    padding: 0 1rem 1rem 1rem !important;
+    padding: 0rem 1rem 1rem 1rem;
 }
 
-body .ui-dialog .ui-dialog-footer {
-    padding: 5px !important;
-    /*border-top: 1px solid #858796;*/
+body .ui-dialog .ui-dialog-titlebar {
+    padding: 1rem 1rem 1rem 1rem;
 }
 
 .input-dialog {
@@ -130,21 +133,6 @@ body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-s
     background: #ECF8F1;
     color: #143a1e;
     overflow: auto;
-}
-
-/**********************************************************************/
-
-/** Autocomplete **/
-.ui-autocomplete-input .ui-inputfield .ui-widget .ui-state-default .ui-corner-all .ui-state-hover {
-    border: #f47b2a;
-}
-
-body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-autocomplete-row > td {
-    padding: 6px;
-}
-
-body .ui-inputfiled.ui-state-hover {
-    border-color: #f47b2a;
 }
 
 /**********************************************************************/
@@ -227,14 +215,15 @@ body .ui-panel .ui-panel-content {
     font-size: 12px;
 }
 
-.ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link {
-    padding: 0.25rem 0.75rem;
-}
-
 .ui-menuitem-link .ui-corner-all .ui-state-hover {
     border-color: #f47b2a;
     background: #f47b2a;
     color: #ffffff;
+}
+
+body .ui-menu {
+    padding: 0.25rem;
+    width: auto;
 }
 
 /**********************************************************************/
@@ -687,6 +676,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     background-color: #F47B2A !important;
     border-color: #F47B2A !important;
     font-size: 30px !important;
+    padding: 0.5rem 1rem 0.5rem 2rem;
 }
 
 .ui-button-success:hover {
@@ -702,10 +692,11 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
 
 .ui-button-secondary {
     min-width: 100px;
+    padding: 0.5rem 1rem 0.5rem 2rem;
 }
 
 body .ui-button.ui-button-text-icon-left .ui-button-text {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 

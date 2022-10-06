@@ -5,7 +5,7 @@
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px;">
-        <div class="list-group" style="margin-top: -10px; margin-bottom: -5px">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
             <!-- ligne PrefLabel -->
             <div class="list-group-item list-group-item-action">
                 <div class="row" style="margin-left: 0px;">
@@ -37,8 +37,7 @@
                                          action="#{tree.expandTreeToPath(conceptView.nodeConcept.concept.idConcept,
                                                    conceptView.nodeConcept.concept.idThesaurus, conceptView.nodeConcept.term.lang)}"
                                          actionListener="#{selectedTheso.actionFromConceptToOn()}" update="containerIndex"
-                                         style="color:#f47b2a; background: none; border: none; box-shadow: none; margin-left: 20px;" 
-                                         styleClass="buttonIconOrange" />
+                                         style="color:#f47b2a; background: none; border: none; box-shadow: none; margin-left: 20px;" />
                     </div>
                 </div>
             </div>
@@ -130,19 +129,19 @@
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="fas fa-cog" style="margin-top: -4px;">
 
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_synonym')}" 
-                                            actionListener="#{synonymBean.reset()}"
+                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_synonym')}"
+                                            onclick="#{synonymBean.reset()}"
                                             update="containerIndex:idAddSynonym" icon="fas fa-plus"
                                             oncomplete="PF('addSynonym').show();" />
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.modify_synonym')}" 
-                                            actionListener="#{synonymBean.reset()}" action="#{synonymBean.prepareNodeEMForEdit()}"
+                                            onclick="#{synonymBean.reset()}" process="@this" ajax="true"
                                             oncomplete="PF('renameSynonym').show();" update="containerIndex:idRenameSynonym" icon="fas fa-edit"
                                             disabled="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" />
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
-                                            actionListener="#{synonymBean.reset()}" oncomplete="PF('deleteSynonym').show();"
-                                            update="idDeleteSynonym" icon="fas fa-minus"
+                                            onclick="#{synonymBean.reset()}" oncomplete="PF('deleteSynonym').show();"
+                                            update="containerIndex:idDeleteSynonym" icon="fas fa-minus"
                                             disabled="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" />
                             </p:menuButton>
                         </h:panelGroup>
@@ -157,22 +156,26 @@
                                 <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>
                                 <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
+                            
                             <br/>
-                            <h:outputText rendered="#{(currentUser.nodeUser != null)}" value="" style="margin-left: 38px;" />
+                            
                             <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status1">
                                 
+                                <h:outputText rendered="#{(em2.hiden and conceptView.toggleSwitchAltLabelLang)}" value="(#{em2.lang}) " 
+                                              style="font-size: 14px; font-weight: 300;"/>
                                 
-                                <h:outputText rendered="#{(em2.hiden and conceptView.toggleSwitchAltLabelLang)}" value="(#{em2.lang}) " style="font-size: 14px; font-weight: 300;"/>
                                 <h:outputText rendered="#{em2.hiden}" value=" #{em2.lexical_value}" 
                                               title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}"
-                                              styleClass="textOpentheso" style="color:#FF7979; font-style: italic; font-size: 14px;"/>                     
-                                <h:outputText rendered="#{(!status1.last) and (em2.hiden)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                              styleClass="textOpentheso" style="color:#FF7979; font-style: italic; font-size: 14px;"/>     
+                                
+                                <h:outputText rendered="#{(!status1.last) and (em2.hiden)}" value=" , " 
+                                              style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
                         </h:panelGroup>
                     </div>
                     
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right ">
-                        <p:inputSwitch id="commandOtherLangAltLabel" value="#{conceptView.toggleSwitchAltLabelLang}" style="margin-top: 10px">
+                        <p:inputSwitch id="commandOtherLangAltLabel" value="#{conceptView.toggleSwitchAltLabelLang}" style="margin-top: 7px">
                             <p:ajax listener="#{conceptView.getAltLabelWithAllLanguages()}" update="containerIndex:formRightTab messageIndex"/>
                         </p:inputSwitch>
                         <p:tooltip for="commandOtherLangAltLabel" value="#{langueBean.getMsg('concept.showEMOtherLang')}" showDelay="1000" />
@@ -195,22 +198,24 @@
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_to_group')}" 
                                             action="#{addConceptToGroupBean.init()}" icon="fas fa-plus"
-                                            oncomplete="PF('addConceptToGroup').show();" update="idAddConceptToGroup" />
+                                            oncomplete="PF('addConceptToGroup').show();" 
+                                            update="containerIndex:idAddConceptToGroup" />
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.remove_from_group')}" 
-                                            actionListener="#{removeFromGroupBean.init()}" oncomplete="PF('removeConceptFromGroup').show();"
-                                            update="idRemoveConceptFromGroup" icon="fas fa-minus"
+                                            actionListener="#{removeFromGroupBean.init()}" 
+                                            oncomplete="PF('removeConceptFromGroup').show();"
+                                            update="containerIndex:idRemoveConceptFromGroup" icon="fas fa-minus"
                                             disabled="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}"/>
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_concept_to_group')}" 
                                             action="#{removeConceptAndChildFromGroupBean.init()}"
                                             oncomplete="PF('addConceptAndChildToGroup').show();"
-                                            update="idAddConceptAndChildToGroup" icon="fas fa-plus" />
+                                            update="containerIndex:idAddConceptAndChildToGroup" icon="fas fa-plus" />
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.remove_concept_fom_group')}" 
                                             action="#{removeConceptAndChildFromGroupBean.init()}"
                                             oncomplete="PF('removeConceptAndChildFromGroup').show();"
-                                            update="idRemoveConceptAndChildFromGroup" icon="fas fa-minus"
+                                            update="containerIndex:idRemoveConceptAndChildFromGroup" icon="fas fa-minus"
                                             disabled="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}" />
                             </p:menuButton>
                         </h:panelGroup>
@@ -234,7 +239,6 @@
                                            value="#{domaine.conceptGroup.idgroup}"
                                            showDelay="500" style="font-size: 12px;" />                                
                             </ui:repeat>
-
                         </h:panelGroup>
                     </div>
                 </div>
@@ -250,10 +254,11 @@
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 10px"/>
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">                     
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">                     
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
+                                                          or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="fas fa-cog" style="margin-top: -4px">
-
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addConceptTofacet')}"
                                                 icon="fas fa-magnet" update="containerIndex:idAddConceptToFacet"
@@ -263,9 +268,8 @@
                                                 oncomplete="PF('removeConceptFromFracets').show();"
                                                 update="containerIndex:idRemoveConceptFromFracets"
                                                 disabled="#{conceptView.nodeFacets.size() == 0}"/>                                      
-
-
                                 </p:menuButton>
+                                
                                 <h:panelGroup rendered="#{conceptView.nodeFacets.size() == 0}" >                          
                                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                                 </h:panelGroup>                            
@@ -300,15 +304,16 @@
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                     </div>
 
-                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px; ">
+                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7">
                         <p:commandLink rendered="#{(currentUser.nodeUser != null)}" actionListener="#{conceptView.countTheTotalOfBranch()}"
                                        title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
-                                       update="containerIndex:formRightTab" style="margin-left: 12px;">
-                            <i class="fas fa-calculator" style="color: #F7A269; font-size: 14px;" />
+                                       update="containerIndex:formRightTab" process="@this" ajax="true">
+                            <i class="fas fa-calculator" style="color: #F7A269; font-size: 14px; margin-left: 5px" />
                         </p:commandLink>  
+                        
                         <p:commandLink rendered="#{(currentUser.nodeUser == null)}" actionListener="#{conceptView.countTheTotalOfBranch()}"
                                        title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
-                                       update="containerIndex:formRightTab">
+                                       update="containerIndex:formRightTab" process="@this" ajax="true">
                             <i class="fas fa-calculator" style="color: #F7A269; font-size: 14px;" />
                         </p:commandLink>                         
 
@@ -363,19 +368,4 @@
             </h:panelGroup>            
         </div>        
     </div>
-
-
-
-
-
-
-    <ui:include src="../../../dialog/group/addConceptToGroup.xhtml" />
-    <ui:include src="../../../dialog/group/removeConceptFromGroup.xhtml" />
-    <ui:include src="../../../dialog/group/removeConceptAndChildFromGroup.xhtml" />
-    <ui:include src="../../../dialog/group/addConceptAndChildToGroup.xhtml" />
-
-
-    <ui:include src="../../../dialog/synonym/deleteSynonym.xhtml" /> 
-
-
 </ui:fragment>

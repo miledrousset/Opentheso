@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -81,11 +82,10 @@ public class SynonymBean implements Serializable {
         nodeEM = null;
     }
 
-    public SynonymBean() {
-    }
-
     public void reset() {
-        nodeLangs = selectedTheso.getNodeLangs();
+        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), 
+                selectedTheso.getCurrentIdTheso());
+        
         isHidden = false;
         selectedLang = conceptBean.getSelectedLang();
 
@@ -103,7 +103,8 @@ public class SynonymBean implements Serializable {
 
     public void prepareNodeEMForEdit() {
         nodeEMsForEdit = new ArrayList<>();
-        for (NodeEM nodeEM1 : nodeEMs) {
+        System.out.println(">> " + conceptBean.getNodeConcept().getNodeEM().size());
+        for (NodeEM nodeEM1 : conceptBean.getNodeConcept().getNodeEM()) {
             nodeEM1.setOldValue(nodeEM1.getLexical_value());
             nodeEM1.setOldHiden(nodeEM1.isHiden());
             nodeEMsForEdit.add(nodeEM1);
