@@ -16,9 +16,11 @@
 
                         <p:menuButton icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
                                       rendered="${propositionBean.showButtonAction()}">
-                            <p:menuitem value="Proposer une nouvelle note"
-                                        actionListener="#{noteBean.reset()}" update="containerIndex:rightTab:addNotePropForm"
-                                        oncomplete="PF('addNoteProp').show();" icon="fas fa-plus" />
+                            <p:menuitem value="Proposer une nouvelle note" process="@form" ajax="true"
+                                        onstart="#{noteBean.reset()}" 
+                                        update="containerIndex:rightTab:addNotePropForm"
+                                        oncomplete="PF('addNoteProp').show();" 
+                                        icon="fas fa-plus" />
                         </p:menuButton>
                     </div>
                     <div class="col-9" />
@@ -40,12 +42,15 @@
                                 <h:panelGroup>
                                     <p:menuButton id="noteProp" icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
                                                   rendered="${propositionBean.showButtonAction()}">
-                                        <p:menuitem value="Modifier une note" actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNoteProp').show();"
-                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />                                            
+                                        <p:menuitem value="Modifier une note" 
+                                                    actionListener="#{noteBean.initNoteProp('note')}"
+                                                    oncomplete="PF('editNoteProp').show();"
+                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />   
+                                        
                                         <p:menuitem value="Supprimer une note" 
-                                                    actionListener="#{noteBean.reset()}" action="#{noteBean.setSelectedTypeNote('note')}"
-                                                    update="containerIndex:rightTab:idDeleteNoteProp" oncomplete="PF('deleteNoteProp').show();" icon="fas fa-minus"/>
+                                                    actionListener="#{noteBean.initNoteProp('note')}"
+                                                    update="containerIndex:rightTab:idDeleteNoteProp" 
+                                                    oncomplete="PF('deleteNoteProp').show();" icon="fas fa-minus"/>
                                     </p:menuButton>
                                 </h:panelGroup>
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
@@ -96,12 +101,13 @@
 
                                 <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
                                               rendered="${propositionBean.showButtonAction()}">
-                                    <p:menuitem value="Modifier une note de changement" actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('changeNote')}"                                          
+                                    <p:menuitem value="Modifier une note de changement" 
+                                                actionListener="#{noteBean.initNoteProp('changeNote')}"                                         
                                                 oncomplete="PF('editNoteProp').show();"
                                                 update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />                                        
-                                    <p:menuitem value="Supprimer une note de changement" actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('changeNote')}" oncomplete="PF('deleteNoteProp').show();"
+                                    <p:menuitem value="Supprimer une note de changement" 
+                                                actionListener="#{noteBean.initNoteProp('changeNote')}"   
+                                                oncomplete="PF('deleteNoteProp').show();"
                                                 update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />                                        
                                 </p:menuButton>
 
@@ -160,13 +166,16 @@
 
                                 <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;" >
+                                    
                                     <p:menuitem value="Modifier une définition" 
-                                                actionListener="#{noteBean.reset()}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
+                                                actionListener="#{noteBean.initNoteProp('definition')}"
                                                 oncomplete="PF('editNoteProp').show();"
                                                 update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit"/>
-                                    <p:menuitem value="Supprimer une définition" actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('definition')}"
-                                                oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp"
+                                    
+                                    <p:menuitem value="Supprimer une définition" 
+                                                actionListener="#{noteBean.initNoteProp('definition')}"
+                                                oncomplete="PF('deleteNoteProp').show();" 
+                                                update="containerIndex:rightTab:idDeleteNoteProp"
                                                 icon="fas fa-minus"/>
                                 </p:menuButton>
 
@@ -229,13 +238,13 @@
                                 <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}"
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="Modifier une édite note" 
-                                                actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
+                                                actionListener="#{noteBean.initNoteProp('editorialNote')}"                                       
                                                 oncomplete="PF('editNoteProp').show();"
                                                 update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
+                                    
                                     <p:menuitem value="Supprimer une édite note" 
-                                                actionListener="#{noteBean.reset()}" icon="fas fa-minus"
-                                                action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
+                                                icon="fas fa-minus"
+                                                actionListener="#{noteBean.initNoteProp('editorialNote')}"  
                                                 oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp" />
                                 </p:menuButton>
 
@@ -295,15 +304,16 @@
                                 <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="Modifier un example" 
-                                                actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('example')}"                                          
+                                                actionListener="#{noteBean.initNoteProp('example')}"                                       
                                                 oncomplete="PF('editNoteProp').show();"
-                                                update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
+                                                update="containerIndex:rightTab:idEditNoteProp" 
+                                                icon="fas fa-edit" />
+                                    
                                     <p:menuitem value="Supprimer un example" 
-                                                actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('example')}"
+                                                actionListener="#{noteBean.initNoteProp('example')}"     
                                                 oncomplete="PF('deleteNoteProp').show();"
-                                                update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
+                                                update="containerIndex:rightTab:idDeleteNoteProp" 
+                                                icon="fas fa-minus" />
                                 </p:menuButton> 
 
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" 
@@ -362,15 +372,15 @@
                                 <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="Modifier une note historique" 
-                                                actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
+                                                actionListener="#{noteBean.initNoteProp('historyNote')}"                                      
                                                 oncomplete="PF('editNoteProp').show();"
                                                 update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
+                                    
                                     <p:menuitem value="Supprimer une note historique" 
-                                                actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('historyNote')}"
+                                                actionListener="#{noteBean.initNoteProp('historyNote')}"   
                                                 oncomplete="PF('deleteNoteProp').show();"
-                                                update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
+                                                update="containerIndex:rightTab:idDeleteNoteProp" 
+                                                icon="fas fa-minus" />
                                 </p:menuButton> 
 
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
@@ -429,15 +439,16 @@
                                 <p:menuButton rendered="${propositionBean.showButtonAction()}" icon="fas fa-cog" 
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="Modifier une scope note" 
-                                                actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          
+                                                actionListener="#{noteBean.initNoteProp('scopeNote')}"                                        
                                                 oncomplete="PF('editNoteProp').show();"
-                                                update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
+                                                update="containerIndex:rightTab:idEditNoteProp" 
+                                                icon="fas fa-edit" />
+                                    
                                     <p:menuitem value="Supprimer une scope note" 
-                                                actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('scopeNote')}"
+                                                actionListener="#{noteBean.initNoteProp('scopeNote')}"   
                                                 oncomplete="PF('deleteNoteProp').show();"
-                                                update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
+                                                update="containerIndex:rightTab:idDeleteNoteProp" 
+                                                icon="fas fa-minus" />
                                 </p:menuButton>
 
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
@@ -559,7 +570,7 @@
     <p:dialog id="idDeleteNoteProp" header="#{langueBean.getMsg('rightbody.concept.delete_note')}" widgetVar="deleteNoteProp" 
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >  
         <h:form id="deleteNotePropForm" >
-            <p:dataTable var="noteToDelete" lazy="true" value="#{noteBean.nodePropToEdit()}" style="font-size: 12px;">
+            <p:dataTable var="noteToDelete" value="#{noteBean.nodePropToEdit()}">
                 <f:facet name="header">
                     <center>
                         <b>
@@ -596,7 +607,7 @@
     <p:dialog id="idEditNoteProp" header="#{langueBean.getMsg('rightbody.concept.edit_note')}" widgetVar="editNoteProp" 
               width="650" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >       
         <h:form id="editNotePropForm" >
-            <p:dataTable lazy="true" var="noteToEdit" value="#{noteBean.nodePropToEdit()}" style="font-size: 12px;">
+            <p:dataTable var="noteToEdit" value="#{noteBean.nodePropToEdit()}">
                 <f:facet name="header">
                     <center>
                         <b>

@@ -51,9 +51,9 @@
 
             <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
                 <p:commandButton rendered="#{!synonymBean.duplicate}" value="#{langueBean.getMsg('candidat.close')}" 
-                                 styleClass="ui-button-secondary button" style="margin-right: 10px"
+                                 styleClass="ui-button-secondary button"  icon="fas fa-undo-alt"
                                  actionListener="PF('addSynonym').hide();" update="containerIndex:idAddSynonym"
-                                 ajax="true" process="@form" icon="fas fa-undo-alt"/>
+                                 ajax="true" process="@form" style="margin-right: 10px" />
 
                 <p:commandButton rendered="#{!synonymBean.duplicate}" id="validateAddSynonym"  
                                  value="#{langueBean.getMsg('btnValidate')}" 

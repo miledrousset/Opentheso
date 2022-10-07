@@ -88,6 +88,9 @@ public class TraductionBean implements Serializable {
     }
 
     public void setTraductionsForEdit() {
+        
+        reset();
+        
         if (nodeTermTraductionsForEdit == null) {
             nodeTermTraductionsForEdit = new ArrayList<>();
         } else {
@@ -124,6 +127,9 @@ public class TraductionBean implements Serializable {
     }
 
     public void setLangWithNoTraductionProp() {
+        
+        reset();
+        
         nodeLangs.forEach((nodeLang) -> {
             nodeLangsFiltered.add(nodeLang);
         });

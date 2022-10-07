@@ -68,7 +68,7 @@
                 </div>                 
 
                 <div class="col-4" style="text-align: right;">
-                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" rendered="#{propositionBean.showButtonDecision()}"
+                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
                                      actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept" 
                                      style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
                                      icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
@@ -76,8 +76,7 @@
 
                     <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="containerIndex messageIndex"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}" 
-                                     ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" 
-                                     rendered="#{propositionBean.showButtonDecision()}" />
+                                     styleClass="ui-button-success" icon="pi pi-check-circle" />
                 </div>
             </div>
         </h:panelGroup>

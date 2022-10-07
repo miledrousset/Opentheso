@@ -66,14 +66,18 @@ public class NoteBean implements Serializable {
         noteValue = null;
         selectedNodeNote = null;
     }
-
+    
     public void reset() {
         noteTypes = new NoteHelper().getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
         selectedTypeNote = null;
-        System.out.println(">> " + nodeLangs.size());
+    }
+    
+    public void initNoteProp(String noteType) {
+        reset();
+        setSelectedTypeNote(noteType);
     }
 
     public void infos() {
