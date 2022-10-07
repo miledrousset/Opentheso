@@ -10,12 +10,12 @@
             <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
                 <div class="row" style="margin-left: 0px;">
                     <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
-                        
+
                         <p:selectBooleanCheckbox value="#{propositionBean.traductionAccepted}" title="Accepter cette proposition"
-                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)
-                                                    and propositionBean.showButtonAction()}"/>
-                        
+                                                 rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                             or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)
+                                                             and propositionBean.showButtonAction()}"/>
+
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 7px; margin-left: 5px"/>
                     </div>
@@ -46,14 +46,14 @@
 
                         <h:panelGroup rendered="#{propositionBean.proposition.traductionsProp.size() != 0}"> 
                             <ui:repeat var="trad" value="#{propositionBean.proposition.traductionsProp}" varStatus="status2">
-                                
+
                                 <p:spacer width="1" rendered="#{!status2.first and propositionBean.showButtonAction()}" />
-                                
+
                                 <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
                                     <img src="#{conceptView.getDrapeauImg(trad.lang)}" width="20" height="15" 
                                          title="#{trad.nomLang}" style="margin-right: 10px"/>
                                 </h:panelGroup>
-                                
+
                                 <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
                                     <p:commandLink value="[#{trad.lang.toUpperCase()}] " update="containerIndex indexTitle"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, 
@@ -61,15 +61,15 @@
                                 </h:panelGroup>
 
                                 <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
-                                                   rendered="#{!trad.toAdd and !trad.toRemove and !trad.toUpdate}"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                                   update="containerIndex indexTitle" /> 
-                                
+                                               rendered="#{!trad.toAdd and !trad.toRemove and !trad.toUpdate}"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
+                                               update="containerIndex indexTitle" /> 
+
                                 <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                                   style="font-size: 14px; color: green;" rendered="#{trad.toAdd}"
-                                                   update="containerIndex indexTitle"/>
-                                
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
+                                               style="font-size: 14px; color: green;" rendered="#{trad.toAdd}"
+                                               update="containerIndex indexTitle"/>
+
                                 <h:panelGroup rendered="#{trad.toUpdate}">
                                     <p:commandLink value="#{trad.lexicalValue} " title="#{propositionBean.proposition.conceptID}"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
@@ -81,9 +81,9 @@
                                 </h:panelGroup> 
 
                                 <p:commandLink value="#{trad.lexicalValue}" title="#{propositionBean.proposition.conceptID}"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                                   style="font-size: 14px; text-decoration: line-through; color: red;"
-                                                   update="containerIndex indexTitle" rendered="#{trad.toRemove}" />  
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
+                                               style="font-size: 14px; text-decoration: line-through; color: red;"
+                                               update="containerIndex indexTitle" rendered="#{trad.toRemove}" />  
 
                                 <br/>                                 
                             </ui:repeat>
@@ -127,69 +127,71 @@
         </h:form>
     </p:dialog>    
 
-    <p:dialog id="idAddTraductionProp" header="#{langueBean.getMsg('rightbody.conceptdialog.add_translation')}" widgetVar="addTraductionProp" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+    <p:dialog id="idAddTraductionProp" header="#{langueBean.getMsg('rightbody.conceptdialog.add_translation')}" 
+              widgetVar="addTraductionProp" width="450" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="addTraductionPropForm" >
-            <p:defaultCommand target="validateAddTraduction" />            
+        <h:form id="addTraductionPropForm" >          
             <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value.toUpperCase()}" class="dialog-titre"/>
+                <div class="col-12">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
                 </div>
             </div>
 
-            <div class="row" style="margin-top: 5px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Traduction : " class="dialog-titre" /> 
+            <div class="row" style="margin-top: 10px">
+                <div class="col-5">
+                    <h:outputText value="Traduction : " /> 
                 </div>
                 <div class="col-7">
-                    <p:inputText label="#{langueBean.getMsg('candidat.traduction')}" style="color: #000; border-color: #43B572;"
+                    <p:inputText label="#{langueBean.getMsg('candidat.traduction')}" style="width: 100%;"
                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."     
-                                 value="#{traductionBean.traductionValue}" styleClass="input-dialog"/>   
+                                 value="#{traductionBean.traductionValue}"/>   
                 </div>
             </div>        
 
-            <div class="row" style="margin-top: 5px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " class="dialog-titre" /> 
+            <div class="row" style="margin-top: 10px">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " /> 
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionBean.selectedLang}"
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" 
+                                     value="#{traductionBean.selectedLang}" style="width: 100%;">
                         <f:selectItems value="#{traductionBean.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                     </p:selectOneMenu>     
                 </div>
             </div>    
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addTraductionProp').hide();" update="containerIndex:formRightTab"/>
+            <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
+                                 icon="fas fa-undo-alt" style="margin-right: 10px"
+                                 styleClass="ui-button-secondary button" update="containerIndex:formRightTab"
+                                 actionListener="PF('addTraductionProp').hide();" />
 
                 <p:commandButton id="validateAddTraduction"
-                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success"
                                  ajax="true" process="@form" update="containerIndex:formRightTab messageIndex" 
-                                 oncomplete="PF('addTraductionProp').hide();"                               
+                                 oncomplete="PF('addTraductionProp').hide();" icon="pi pi-check"
                                  actionListener="#{traductionBean.addNewTraductionProposition()}" />
             </div>
         </h:form>            
     </p:dialog>
 
-    <p:dialog id="idDeleteTraductionProp" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_translation')}" widgetVar="deleteTraductionProp" 
-              width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+    <p:dialog id="idDeleteTraductionProp" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_translation')}" 
+              widgetVar="deleteTraductionProp" width="550" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
+
+        <div class="row">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
+            </div>
+        </div>
 
         <p:panel style="max-height: 350px; margin-top: 20px;">
             <p:dataTable var="traduction" lazy="true" value="#{propositionBean.proposition.traductionsProp}" style="font-size: 12px;">
                 <f:facet name="header">
-                    <center>
-                        <b>
-                            #{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : 
-                            #{conceptView.nodeConcept.term.lexical_value.toUpperCase()}
-                        </b>
-                    </center>
+                    Liste des 
                 </f:facet>
                 <p:column headerText="label">
                     <h:outputText value="#{traduction.lexicalValue}" style="color: #43B572; font-size: 14px;"/>
@@ -199,13 +201,13 @@
                 </p:column>     
                 <p:column width="60" headerText="#{langueBean.getMsg('profile.action')}">
                     <p:commandLink style="color: #FF7979" oncomplete="PF('deleteTraductionProp').hide();"
-                                   ajax="true" process="@form" update="containerIndex messageIndex"
+                                   ajax="true" process="@this" update="containerIndex messageIndex"
                                    action="#{traductionBean.deleteTraductionProp(traduction)}"
                                    rendered="#{!traduction.toRemove}">
                         <i class="pi pi-trash" style="color: red" />
                     </p:commandLink>
                     <p:commandLink style="color: #FF7979" oncomplete="PF('deleteTraductionProp').hide();"
-                                   ajax="true" process="@form" update="containerIndex messageIndex"
+                                   ajax="true" process="@this" update="containerIndex messageIndex"
                                    action="#{traductionBean.deleteTraductionProp(traduction)}"
                                    rendered="#{traduction.toRemove}">
                         <i class="pi pi-pencil" style="color: #43B572" />

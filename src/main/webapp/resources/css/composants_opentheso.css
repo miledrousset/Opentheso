@@ -9,8 +9,6 @@
         #ecf8f1 vert clair
 */
 
-
-
 body .ui-button.ui-button-text-icon-left .ui-button-text {
     padding: 0rem 0rem 0rem 0rem;
 }
@@ -121,7 +119,7 @@ body .ui-selectonemenu.ui-state-focus {
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item {
-    padding: 0.25rem 0.5rem;
+    padding: 0.15rem 0.25rem;
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-highlight {

@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTypeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -45,6 +46,8 @@ public class AddConcept implements Serializable {
     private SelectedTheso selectedTheso;
     @Inject
     private Tree tree;
+    @Inject
+    private EditFacet editFacet;
 
     private String prefLabel;
     private String notation;
@@ -135,6 +138,11 @@ public class AddConcept implements Serializable {
             
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
+    }
+    
+    public void addMembre(String idConceptParent, String idLang, String status, String idTheso, int idUser) {
+        addNewConcept(idConceptParent, idLang, status, idTheso, idUser);
+        editFacet.initEditFacet(editFacet.getFacetSelected().getIdFacet(), idTheso, idLang);
     }
 
     public void resetForFacet(NodeFacet nodeFacet) {
@@ -248,6 +256,7 @@ public class AddConcept implements Serializable {
             PrimeFaces pf = PrimeFaces.current();
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
+                pf.ajax().update("containerIndex");
             }
             FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concept ajouté avec succès !");
             FacesContext.getCurrentInstance().addMessage(null, msg2);
@@ -315,10 +324,11 @@ public class AddConcept implements Serializable {
                 idGroup = nodeGroup.getConceptGroup().getIdgroup();
             }
         }
-        RelationsHelper relationsHelper = new RelationsHelper();
-        typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
+        
+        typesRelationsNT = new RelationsHelper().getTypesRelationsNT(connect.getPoolConnexion());
         nodeGroups = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        System.out.println(">>> Size : " + typesRelationsNT.size());
     }
 
     private void init() {

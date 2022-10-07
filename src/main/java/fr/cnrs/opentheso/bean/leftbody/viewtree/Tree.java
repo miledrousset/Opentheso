@@ -542,12 +542,7 @@ public class Tree implements Serializable {
     public void onNodeSelectByNode(DefaultTreeNode node) {
         
         alignmentManualBean.reset();
-        propositionBean.setIsRubriqueVisible(false);
-        
-        /// #MR ne plus l'activer, elle affecte le module d'alignement 
-        //    rightBodySetting.setIndex("0");
-        
-        
+        propositionBean.setIsRubriqueVisible(false);         
         
         leftBodySetting.setIndex("0");
         treeNodeDataSelect = (TreeNodeData) clickselectedNodes.get(0).getData();

@@ -56,7 +56,8 @@
                                  ajax="true" process="@form" icon="fas fa-undo-alt"/>
 
                 <p:commandButton rendered="#{!synonymBean.duplicate}" id="validateAddSynonym"  
-                                 value="#{langueBean.getMsg('btnValidate')}" update="messageIndex containerIndex:idAddSynonym"
+                                 value="#{langueBean.getMsg('btnValidate')}" 
+                                 update="messageIndex containerIndex:idAddSynonym"
                                  styleClass="ui-button-success" oncomplete="PF('addSynonym').show();"
                                  ajax="true" process="@form" icon="pi pi-check"
                                  actionListener="#{synonymBean.addNewSynonym(currentUser.nodeUser.idUser)}"/>                   

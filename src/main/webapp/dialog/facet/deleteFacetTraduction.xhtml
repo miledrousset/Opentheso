@@ -4,27 +4,32 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idDeleteFacetTraduction" header="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" widgetVar="deleteFacetTraduction"
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+    <p:dialog id="idDeleteFacetTraduction" header="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
+              widgetVar="deleteFacetTraduction" width="450" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
             <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: black;"/>
+                <h:outputText value="#{editFacet.facetSelected.lexicalValue} (#{editFacet.facetSelected.lang})" /> 
             </div>
         </div>
 
-        <ui:repeat var="traductions" value="#{editFacet.facetTraductions}" >
-            <div class="row">
-                <div class="col-10" offset="1" style="background: #FAFAFA">
-                    <h:outputText value="#{traductions.lexicalValue} (#{traductions.lang})" style="color: #43B572"/>
-                </div>
-                <div class="col-2" style="background: #FAFAFA">
+        <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
+            <p:dataTable size="small" var="traductions" value="#{editFacet.facetTraductions}"
+                         widgetVar="listThesoTable" styleClass="products-table"
+                         style="margin-bottom: -17px; margin-top: -16px;">
+
+                <p:column width="90" headerText="Label">
+                    <h:outputText value="#{traductions.lexicalValue} (#{traductions.lang})" />
+                </p:column>
+
+                <p:column width="10">
                     <p:commandLink style="color: #FF7979" action="#{editFacet.deleteTraduction(traductions)}"
-                                    update="containerIndex messageIndex">
+                                   update="containerIndex messageIndex">
                         <i class="pi pi-trash" />
                     </p:commandLink>
-                </div>
-            </div>
-        </ui:repeat>
+                </p:column>
+            </p:dataTable>
+        </div>
     </p:dialog> 
 </ui:fragment>

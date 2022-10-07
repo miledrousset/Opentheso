@@ -7,32 +7,34 @@
     <p:dialog id="idRenameFacet" header="#{langueBean.getMsg('leftbody.renamefacet')}" widgetVar="renameFacet" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <h:form id="renameFacetForm">
-            <p:defaultCommand target="validateRenameFacet" />        
+            <p:defaultCommand target="validateRenameFacet" />  
+            
             <div class="row">
-                <div class="col-4">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.facetdialog.facet_name')} " style="font-weight: bold" /> 
-                </div>
-                <div class="col-8">            
-                    <h:outputText value="#{editFacet.facetSelected.lexicalValue}" />
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.facetdialog.facet_name')} " /> 
+                    <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="color: #C63632;" /> 
                 </div>
             </div>
 
             <div class="row" style="margin-top: 10px;">
                 <div class="col-4">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')} " style="font-weight: bold;" /> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')} " /> 
                 </div>
                 <div class="col-8">
-                    <p:inputText value="#{editFacet.newFacetName}" style="font-size: 12px; width: 100%; color: #000" />
+                    <p:inputText value="#{editFacet.newFacetName}" style="width: 100%;" />
                 </div>
             </div>   
-            <p:spacer />
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary"
+            
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                  style="margin-right: 10px"
-                                 actionListener="PF('renameFacet').hide();" update="containerIndex:idRenameFacet"/>
+                                 actionListener="PF('renameFacet').hide();" 
+                                 update="containerIndex:idRenameFacet"/>
 
-                <p:commandButton id="validateRenameFacet" 
-                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                <p:commandButton id="validateRenameFacet" icon="pi pi-check" 
+                                 value="#{langueBean.getMsg('btnValidate')}" 
+                                 styleClass="ui-button-success" 
                                  update="containerIndex messageIndex"
                                  oncomplete="PF('renameFacet').hide();"
                                  ajax="true" process="@form"

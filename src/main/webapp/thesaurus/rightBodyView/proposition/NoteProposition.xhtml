@@ -7,27 +7,24 @@
     <!-- ligne Notes -->
     <div class="card mb-4 py-3 border-left-success" style="margin: 10px;">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
-            <h:panelGroup>
-                <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
-                    <div class="row" style="padding: 2px">
-                        <div class="col-3" style="margin-left: 10px">
-                            <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
-                                          style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
-                            <p:menuButton id="notesProp" icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
-                                          rendered="${propositionBean.showButtonAction()}">
-                                <p:menuitem value="Proposer une nouvelle note"
-                                            actionListener="#{noteBean.reset()}" update="containerIndex:rightTab:idAddNoteProp"
-                                            oncomplete="PF('addNoteProp').show();" icon="fas fa-plus" />
-                            </p:menuButton>
-                        </div>
+            <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
+                <div class="row" style="padding: 2px">
+                    <div class="col-3" style="margin-left: 10px">
+                        <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                                      style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
-                        <div class="col-9" />
+                        <p:menuButton icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
+                                      rendered="${propositionBean.showButtonAction()}">
+                            <p:menuitem value="Proposer une nouvelle note"
+                                        actionListener="#{noteBean.reset()}" update="containerIndex:rightTab:addNotePropForm"
+                                        oncomplete="PF('addNoteProp').show();" icon="fas fa-plus" />
+                        </p:menuButton>
                     </div>
+                    <div class="col-9" />
                 </div>
-            </h:panelGroup>                
-            <p:tooltip for="notesProp noteProp" value="Cliquez ici pour proposer une modification" showDelay="500"
-                       position="top" />  
+            </div>  
+            
             <h:panelGroup style="margin-top: 5px;">
 
                 <h:panelGroup rendered="#{propositionBean.proposition.notes.size() != 0}">
@@ -490,32 +487,32 @@
         </div>
     </div>
 
-    <p:dialog id="idAddNoteProp" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNoteProp" 
-              width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+    <p:dialog id="idAddNoteProp" header="#{langueBean.getMsg('rightbody.concept.add_note')}" 
+              widgetVar="addNoteProp" width="650" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form id="addNotePropForm" >
 
             <div class="row">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
-                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/>
+
+                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" 
+                                   update="messageIndex" ajax="true" process="@form">
                         <i class="pi pi-exclamation-circle" />
                     </p:commandLink>
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="margin-left: 10px; color: black; margin-left: 5px" /> 
                 </div>
             </div>
 
             <!-- type note -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-5">
-                    <h:outputText value="Type : " class="dialog-titre" /> 
+                    <h:outputText value="Type : " /> 
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" value="#{noteBean.selectedTypeNote}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" 
+                                     value="#{noteBean.selectedTypeNote}" style="width: 100%;">
 
                         <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
                                        itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
@@ -526,11 +523,11 @@
             <!-- Langue de la note -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " class="dialog-titre" /> 
+                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " /> 
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{noteBean.selectedLang}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}"
+                                     style="width: 100%;" value="#{noteBean.selectedLang}" >
                         <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                     </p:selectOneMenu>    
                 </div>
@@ -538,28 +535,22 @@
 
             <div class="row" style="margin-top: 10px">
                 <div class="col-12">
-                    <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" 
-                                  secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
-                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
-                        <f:facet name="toolbar" >
-                            <span class="ql-formats" >
-                                <button class="ql-link" title="#{langueBean.getMsg('rightbody.conceptdialog.add_link')}"></button>
-                                <button class="ql-unlink" title="#{langueBean.getMsg('rightbody.conceptdialog.delete_link')}"></button>
-                            </span>
-                        </f:facet>
-                    </p:textEditor>    
+                    <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" secure="false" height="200"
+                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />   
                 </div>
             </div>
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
 
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                                 style="margin-right: 10px" icon="fas fa-undo-alt" 
+                                 styleClass="ui-button-secondary button" 
                                  actionListener="PF('addNoteProp').hide();"
                                  update="containerIndex messageIndex"/>
 
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
-                                 ajax="true" process="@form"
-                                 styleClass="ui-button-primary" oncomplete="PF('addNoteProp').hide();"
+                                 ajax="true" process="@form" icon="pi pi-check" 
+                                 styleClass="ui-button-success" oncomplete="PF('addNoteProp').hide();"
                                  actionListener="#{noteBean.addNewNoteProp()}"/>
             </div>   
         </h:form>

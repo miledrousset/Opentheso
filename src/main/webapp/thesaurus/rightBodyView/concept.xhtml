@@ -76,11 +76,11 @@
 
         <!--  -->
         <h:panelGroup rendered="#{roleOnTheso.nodePreference.suggestion}" >
-            <div class="col-12" style="vertical-align: central;
-                 text-align: right">
+            <div class="col-12" style="text-align: right; padding-top: 20px">
                 <p:commandButton icon="pi pi-send" value="#{langueBean.getMsg('rightbody.suggestImprovement')}"
                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}"
-                                 actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeConcept)}" onclick="scrollToPageTop();" 
+                                 actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeConcept)}" 
+                                 styleClass="ui-button-success"
                                  ajax="true" process="@this" update="containerIndex:formRightTab"/>
             </div>
         </h:panelGroup>

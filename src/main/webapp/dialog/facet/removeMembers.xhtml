@@ -8,24 +8,27 @@
 
         <div class="row">
             <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                              style="font-size: 13px; color: black;" />
+                <h:outputText value="#{langueBean.getMsg('leftbody.facet')} : " /> 
+                <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="color: #C63632;"/>
             </div>
         </div>
-        
-        <ui:repeat var="member" value="#{editFacet.conceptList}" >
-            <div class="row">
-                <div class="col-2" style="background: #FAFAFA">
-                    <p:commandLink style="color: #FF7979" action="#{editFacet.removeMemberFromFacet(member.id)}"
-                                      update="containerIndex messageIndex">
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
-                </div>
-                <div class="col-8" offset="1" style="background: #FAFAFA">
+
+        <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
+            <p:dataTable size="small" var="member" value="#{editFacet.conceptList}" styleClass="products-table"
+                         style="margin-bottom: -17px; margin-top: -16px;">
+
+                <p:column width="90" headerText="Membre">
                     <h:outputText rendered="#{member.value != ''}" value="#{member.value}" title="#{member.id}" style="color: #43B572"/>                    
                     <h:outputText rendered="#{member.value == ''}" value="(#{member.id})" style="color: #FF7979"/>
-                </div>
-            </div>
-        </ui:repeat>
+                </p:column>
+
+                <p:column width="10">
+                    <p:commandLink style="color: #FF7979" action="#{editFacet.removeMemberFromFacet(member.id)}"
+                                   update="containerIndex messageIndex">
+                        <i class="pi pi-trash" />
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </div>
     </p:dialog> 
 </ui:fragment>

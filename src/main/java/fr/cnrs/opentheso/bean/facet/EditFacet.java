@@ -242,7 +242,7 @@ public class EditFacet implements Serializable {
         traductionValue = "";
     }
 
-    private void initDataAfterAction() {
+    public void initDataAfterAction() {
         initEditFacet(facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

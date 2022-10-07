@@ -73,6 +73,7 @@ public class NoteBean implements Serializable {
         selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
         selectedTypeNote = null;
+        System.out.println(">> " + nodeLangs.size());
     }
 
     public void infos() {

@@ -2,15 +2,18 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
+    
     <div style="margin: 20px; color: #000">
+        
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso 
                                   or roleOnTheso.isSuperAdmin) and !(viewEditorThesoHomeBean.isInEditing)}">
-
             <div class="row">
                 <div class="col-2 offset-10" style="text-align: right">
-                    <p:commandButton value="#{langueBean.getMsg('candidat.edit')}" update="containerIndex:formRightTab"
-                                     styleClass="ui-button-primary" ajax="true" actionListener="#{viewEditorThesoHomeBean.initText()}"
-                                     style="font-size: 12px;"/>
+                    <p:commandButton value="#{langueBean.getMsg('candidat.edit')}" 
+                                     update="containerIndex:formRightTab"
+                                     icon="pi pi-pencil"
+                                     styleClass="ui-button-success" ajax="true" 
+                                     actionListener="#{viewEditorThesoHomeBean.initText()}"/>
                 </div>
             </div>    
             <p:separator />            
@@ -58,15 +61,15 @@
                                                style="font-size: 13px; color: #601e18;"
                                                title="#{value.id}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.id, selectedTheso.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>                                
+                                                         value.id, selectedTheso.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>                           
                                 <h:outputText rendered="#{!status1.last}" value=", " style="color: #FF7979"/>
                             </ui:repeat>
                         </div>                
                     </div>                    
                 </div>                
             </div>
+            
             <p:separator style="color: #F47B2A" />
-
 
             <div class="row">
                 <div class="col-12">
@@ -83,13 +86,13 @@
             <div class="row">
                 <div class="col-3" >
                     <p:commandButton value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
-                                     update="containerIndex"  styleClass="ui-button-primary"
-                                     action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"
-                                     style="font-size: 12px;"/>
+                                     update="containerIndex" styleClass="ui-button-success"
+                                     action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"/>
                 </div>
+                
                 <div class="col-3 offset-6" style="font-size: 12px; text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
-                                     styleClass="ui-button-primary" update="containerIndex"
+                                     styleClass="ui-button-success" update="containerIndex"
                                      action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"
                                      style="font-size: 12px;"/>
                 </div>
@@ -111,12 +114,14 @@
             </h:panelGroup>
             <div class="row">
                 <div class="col-12" style="text-align: right">
-                    <p:commandButton id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" update="containerIndex"
-                                     style=" margin-right: 20px" styleClass="ui-button-secondary" 
+                    <p:commandButton id="buttonCancel" value="#{langueBean.getMsg('btnCancel')}" 
+                                     style=" margin-right: 20px" update="containerIndex"
+                                     styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
                                      actionListener="#{viewEditorThesoHomeBean.reset()}"/>
 
-                    <p:commandButton value="#{langueBean.getMsg('candidat.save')}" update="containerIndex messageIndex"
-                                     styleClass="ui-button-primary" 
+                    <p:commandButton value="#{langueBean.getMsg('candidat.save')}" 
+                                     update="containerIndex messageIndex"
+                                     styleClass="ui-button-success" icon="pi pi-check"
                                      action="#{viewEditorThesoHomeBean.updateThesoHomePage()}" />
                 </div>
             </div>

@@ -205,11 +205,3 @@ function initMenu() {
         settingButton1.style.display = "none"
     }
 }
-
-function scrollToPageTop() {
-    var $anchor = $(this);
-    $('html, body').stop().animate({
-        scrollTop: ($($anchor.attr('href')).offset().top)
-    }, 1000, 'easeInOutExpo');
-    e.preventDefault();
-}
