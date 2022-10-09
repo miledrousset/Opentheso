@@ -9,6 +9,9 @@
         #ecf8f1 vert clair
 */
 
+body .ui-datatable thead th.ui-state-active.ui-state-hover {
+    color: #43B572;
+}
 
 body .ui-button.ui-button-text-icon-left .ui-button-text {
     padding: 0rem 0rem 0rem 0rem;
