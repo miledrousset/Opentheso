@@ -18,18 +18,18 @@
                                      update="containerIndex" />
                 </p:toolbarGroup>                    
                 <p:toolbarGroup align="right">
-                    <p:menuButton icon="fas fa-download" value="Importer"  >
+                    <p:menuButton icon="fas fa-download" value="Importer" style="padding-left: 35px" >
                         <p:menuitem value="Format SKOS" icon="fas fa-download" actionListener="#{importFileBean.init()}"
                                     action="#{viewEditionBean.setIsViewImportSkos(true)}" ajax="true" process="@this"
-                                    update="containerIndex" />
+                                    update="containerIndex"  style="padding-left: 35px" />
 
                         <p:menuitem value="Format CSV" icon="fas fa-download" actionListener="#{importFileBean.init()}"
                                     action="#{viewEditionBean.setIsViewImportCsv(true)}"
-                                    update="containerIndex" />
+                                    update="containerIndex"  style="padding-left: 35px"  />
 
                         <p:menuitem value="Format CSV Structuré" icon="fas fa-download" actionListener="#{importFileBean.init()}"
                                     action="#{viewEditionBean.setIsViewImportCSVStructure(true)}"
-                                    update="containerIndex" />
+                                    update="containerIndex" style="padding-left: 35px"  />
                     </p:menuButton>
                 </p:toolbarGroup>
 
@@ -64,7 +64,7 @@
                     </p:column>
 
                     <p:column width="10" headerText="Exporter">
-                        <p:menuButton icon="fas fa-upload" value="Export" >
+                        <p:menuButton icon="fas fa-upload" value="Export" style="padding-left: 33px;" >
                             <p:menuitem value="Format Skos" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
                                         action="#{viewEditionBean.setIsViewExportSkos(true)}" icon="fas fa-upload"
                                         title="Exporter le thésaurus au format Skos" update="containerIndex" />

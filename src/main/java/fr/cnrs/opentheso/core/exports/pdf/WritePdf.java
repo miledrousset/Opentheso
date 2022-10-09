@@ -5,10 +5,13 @@
  */
 package fr.cnrs.opentheso.core.exports.pdf;
 
+import com.itextpdf.text.Anchor;
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Rectangle;
@@ -32,11 +35,12 @@ import fr.cnrs.opentheso.skosapi.SKOSMatch;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
+import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import java.net.URL;
+import org.apache.commons.collections.CollectionUtils;
+
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
-import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
-import javax.ws.rs.core.Link;
-
 
 /**
  *
@@ -55,6 +59,7 @@ public class WritePdf {
     HashMap<String, ArrayList<String>> idToDocumentation = new HashMap<>();
     HashMap<String, ArrayList<String>> idToDocumentation2 = new HashMap<>();
     HashMap<String, ArrayList<String>> idToMatch = new HashMap<>();
+    HashMap<String, ArrayList<String>> idToImg = new HashMap<>();
     HashMap<String, String> idToGPS = new HashMap<>();
 
     HashMap<String, ArrayList<Integer>> idToIsTrad = new HashMap<>();
@@ -72,7 +77,6 @@ public class WritePdf {
     Font textFont;
     Font relationFont;
     Font hieraInfoFont;
-
 
     public byte[] createPdfFile(SKOSXmlDocument xmlDocument, String codeLang, String codeLang2, int type) {
         try {
@@ -97,7 +101,7 @@ public class WritePdf {
             document.setPageSize(PageSize.LETTER.rotate());
         }
 
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+        try ( ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             PdfWriter.getInstance(document, output);
 
             document.open();
@@ -162,7 +166,8 @@ public class WritePdf {
 
         ArrayList<SKOSResource> conceptList = xmlDocument.getConceptList();
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
-        Collections.sort(conceptList, sortForHiera(isTrad, langue, langue2, idToNameHashMap, idToChildId, idToDoc, idToMatch, idToGPS, resourceChecked, idToIsTradDiff));
+        Collections.sort(conceptList, sortForHiera(isTrad, langue, langue2, idToNameHashMap, 
+                idToChildId, idToDoc, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff));
 
         for (SKOSResource concept : conceptList) {
 
@@ -189,8 +194,13 @@ public class WritePdf {
                 if (name == null) {
                     name = "";
                 }
-                
-                paragraphs.add(new Paragraph(name + " (" + conceptID + ")", termFont));
+
+                Paragraph paragraph = new Paragraph();
+                Anchor anchor = new Anchor(name + " (" + conceptID + ")", termFont);
+                anchor.setReference(xmlDocument.getConceptScheme().getUri() + "&idc=" + conceptID);
+                paragraph.add(anchor);
+                paragraphs.add(paragraph);
+
                 String indentation = "";
                 writeHieraTermInfo(conceptID, indentation, paragraphs, idToDoc);
                 writeHieraTermRecursif(conceptID, indentation, paragraphs, idToDoc);
@@ -220,7 +230,13 @@ public class WritePdf {
             if (name == null) {
                 name = "";
             }
-            paragraphs.add(new Paragraph(indentation + name + " (" + idFils + ")", textFont));
+
+            Paragraph paragraph = new Paragraph();
+            Anchor anchor = new Anchor(indentation + name + " (" + idFils + ")", textFont);
+            anchor.setReference(xmlDocument.getConceptScheme().getUri() + "&idc=" + idFils);
+            paragraph.add(anchor);
+            paragraphs.add(paragraph);
+
             writeHieraTermInfo(idFils, indentation, paragraphs, idToDoc);
             writeHieraTermRecursif(idFils, indentation, paragraphs, idToDoc);
 
@@ -283,7 +299,17 @@ public class WritePdf {
         if (gps != null) {
             paragraphs.add(new Paragraph(space + gps, hieraInfoFont));
         }
-
+        
+        if (CollectionUtils.isNotEmpty(idToImg.get(key))) {
+            for (String img : idToImg.get(key)) {
+                try {
+                    Image image = Image.getInstance(new URL(img));
+                    image.scaleAbsolute(200f, 200f);                    
+                    paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
+                    paragraphs.add(new Paragraph(""));
+                } catch (BadElementException | IOException ex) {}
+            }
+        }
     }
 
     /**
@@ -316,8 +342,12 @@ public class WritePdf {
                 if (label.getLanguage().equals(codeLang)) {
                     String labelValue = label.getLabel();
                     if (label.getProperty() == SKOSProperty.prefLabel) {
-                        cell1.addElement(new Paragraph(labelValue + " (" + codeLang + ")", titleFont));
 
+                        Paragraph paragraph = new Paragraph();
+                        Anchor anchor = new Anchor(labelValue + " (" + codeLang + ")", titleFont);
+                        anchor.setReference(xmlDocument.getConceptScheme().getUri());
+                        paragraph.add(anchor);
+                        cell1.addElement(paragraph);
                     }
                 }
 
@@ -330,8 +360,12 @@ public class WritePdf {
                     if (label.getLanguage().equals(codeLang2)) {
                         String labelValue = label.getLabel();
                         if (label.getProperty() == SKOSProperty.prefLabel) {
-                            cell2.addElement(new Paragraph(labelValue + " (" + codeLang2 + ")", titleFont));
 
+                            Paragraph paragraph = new Paragraph();
+                            Anchor anchor = new Anchor(labelValue + " (" + codeLang2 + ")", titleFont);
+                            anchor.setReference(xmlDocument.getConceptScheme().getUri());
+                            paragraph.add(anchor);
+                            cell2.addElement(paragraph);
                         }
                     }
 
@@ -340,7 +374,6 @@ public class WritePdf {
             cell2.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell2);
 
-            document.add(new Paragraph(thesaurus.getUri(), subTitleFont));
             document.add(table);
             document.add(new Paragraph(" "));
             document.add(new Paragraph(" "));
@@ -401,10 +434,12 @@ public class WritePdf {
                 }
 
                 if (label.getProperty() == SKOSProperty.prefLabel && !prefIsTrad) {
-
-                    Chunk chunk = new Chunk(labelValue, termFont);
-                    chunk.setLocalDestination(id);
-                    paragraphs.add(new Paragraph(chunk));
+                    
+                    Paragraph paragraph = new Paragraph();
+                    Anchor anchor = new Anchor(labelValue, termFont);
+                    anchor.setReference(xmlDocument.getConceptScheme().getUri() + "&idc=" + id);
+                    paragraph.add(anchor);
+                    paragraphs.add(paragraph);
 
                 } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {
                     paragraphs.add(new Paragraph("    USE: " + labelValue, textFont));
@@ -570,7 +605,17 @@ public class WritePdf {
             paragraphs.add(new Paragraph("    lat: " + lon, textFont));
 
         }
-
+        
+        if (CollectionUtils.isNotEmpty(concept.getImageUris())) {
+            for(String imageURL : concept.getImageUris()) {
+                try {
+                    Image image = Image.getInstance(new URL(imageURL));
+                    image.scaleAbsolute(200f, 200f);                    
+                    paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
+                    paragraphs.add(new Paragraph(""));
+                } catch (BadElementException | IOException ex) {}
+            }
+        }
     }
 
     public static String getIdFromUri(String uri) {

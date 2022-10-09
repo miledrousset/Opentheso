@@ -9,6 +9,7 @@
         #ecf8f1 vert clair
 */
 
+
 body .ui-button.ui-button-text-icon-left .ui-button-text {
     padding: 0rem 0rem 0rem 0rem;
 }
@@ -24,6 +25,7 @@ body .ui-menubutton .ui-widget {
     border: transparent !important;
     color: #f47b2a !important;
     box-shadow: none !important;
+    padding-left: 35px;
 }
 
 body .ui-stat-hover .ui-menuitem-link .ui-corner-all .ui-menuitem-active {
@@ -36,6 +38,12 @@ body .ui-stat-hover .ui-menuitem-link .ui-corner-all .ui-menuitem-active {
     box-sizing: border-box;
 }
 
+body .ui-button.rounded-button.ui-button-icon-only {
+    border-radius: 50%;
+    height: 1.8rem;
+    width: 1.8rem;
+    margin-top: 3px;
+}
 
 /****************** Dialog /******************/
 .ui-dialog-wrapper {

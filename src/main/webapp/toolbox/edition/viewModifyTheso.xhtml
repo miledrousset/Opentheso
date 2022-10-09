@@ -76,7 +76,8 @@
                     <f:facet name="header">
                         <div class="flex align-items-center justify-content-between">
                             <div>
-                                <p:commandButton value="Ajouter une langue" styleClass="ui-button-success" update="idAddLangToTheso" 
+                                <p:commandButton value="Ajouter une langue" icon="fas fa-plus-circle"
+                                                 styleClass="ui-button-success" update="idAddLangToTheso" 
                                                  actionListener="#{editThesoBean.setLangSelected(null)}"
                                                  oncomplete="PF('addLangToTheso').show();" process="@this"/>
                             </div>
@@ -94,7 +95,7 @@
 
                     <p:column width="15" headerText="Modifier">
                         <p:commandButton icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined" 
-                                         update="containerIndex:manage-theso-content"
+                                         update="containerIndex:manage-theso-content" style="color: #43B572"
                                          oncomplete="PF('editLangToTheso').show()" process="@this"
                                          actionListener="#{editThesoBean.setLangSelected(langOfTheso)}">
                             <p:resetInput target="containerIndex:manage-theso-content"/>

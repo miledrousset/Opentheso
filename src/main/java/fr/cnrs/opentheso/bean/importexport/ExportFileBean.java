@@ -217,10 +217,7 @@ public class ExportFileBean implements Serializable {
     }
 
     public StreamedContent exportThesorus() throws SQLException {
-
-        /*   long start = System.currentTimeMillis();
-        System.out.println(">>> DEBUT 1 : " + start);
-         */
+        
         /// export des concepts dépréciés
         if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) {
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
@@ -356,10 +353,6 @@ public class ExportFileBean implements Serializable {
                 skosxd = null;
                 System.gc();
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-
-                /*      System.out.println(">>> FIN 1 : " + System.currentTimeMillis());
-                System.out.println(">>> FIN 1 : " + (System.currentTimeMillis() - start));
-                System.out.println(">>> FIN (SEC) 1 : " + ((System.currentTimeMillis() - start) / 1000));*/
                 return DefaultStreamedContent.builder().contentType("text/csv")
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> flux)
@@ -402,10 +395,6 @@ public class ExportFileBean implements Serializable {
                 System.gc();
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
-                    out.close();
-                    /*    System.out.println(">>> FIN 1 : " + System.currentTimeMillis());
-                    System.out.println(">>> FIN 1 : " + (System.currentTimeMillis() - start));
-                    System.out.println(">>> FIN (SEC) 1 : " + ((System.currentTimeMillis() - start) / 1000)); */
                     return DefaultStreamedContent.builder()
                             .contentType("application/xml")
                             .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)

@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  *
@@ -499,13 +500,18 @@ public class SKOSResource {
      * @param idToDocumentation
      * @param idToMatch
      * @param idToGPS
+     * @param idToImg
      * @param resourceChecked
      * @param idToIsTradDiff
      * @return
      */
-    public static Comparator<SKOSResource> sortForHiera(boolean isTrad, String langCode, String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, ArrayList<String>> idToChildId,
-            HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS, ArrayList<String> resourceChecked, HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
-        return new HieraComparator(isTrad, langCode, langCode2, idToNameHashMap, idToChildId, idToDocumentation, idToMatch, idToGPS, resourceChecked, idToIsTradDiff);
+    public static Comparator<SKOSResource> sortForHiera(boolean isTrad, String langCode, 
+            String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, 
+                    ArrayList<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation, 
+                    HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS, 
+                    HashMap<String, ArrayList<String>> idToImg, ArrayList<String> resourceChecked, 
+                    HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
+        return new HieraComparator(isTrad, langCode, langCode2, idToNameHashMap, idToChildId, idToDocumentation, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff);
     }
 
     private static class HieraComparator implements Comparator<SKOSResource> {
@@ -517,11 +523,17 @@ public class SKOSResource {
         HashMap<String, ArrayList<String>> idToDocumentation;
         HashMap<String, ArrayList<String>> idToMatch;
         HashMap<String, String> idToGPS;
+        HashMap<String, ArrayList<String>> idToImg;
         boolean isTrad;
         ArrayList<String> resourceChecked;
         HashMap<String, ArrayList<Integer>> idToIsTradDiff;
 
-        public HieraComparator(boolean isTrad, String langCode, String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, ArrayList<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS, ArrayList<String> resourceChecked, HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
+        public HieraComparator(boolean isTrad, String langCode, String langCode2, 
+                HashMap<String, String> idToNameHashMap, HashMap<String, ArrayList<String>> idToChildId, 
+                HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch, 
+                HashMap<String, String> idToGPS, HashMap<String, ArrayList<String>> idToImg, ArrayList<String> resourceChecked, 
+                HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
+            
             this.langCode = langCode;
             this.langCode2 = langCode2;
             this.idToNameHashMap = idToNameHashMap;
@@ -529,6 +541,7 @@ public class SKOSResource {
             this.idToDocumentation = idToDocumentation;
             this.idToMatch = idToMatch;
             this.idToGPS = idToGPS;
+            this.idToImg = idToImg;
             this.isTrad = isTrad;
             this.resourceChecked = resourceChecked;
             this.idToIsTradDiff = idToIsTradDiff;
@@ -550,6 +563,7 @@ public class SKOSResource {
                 writeIdToChild(r1);
                 writeIdToMatch(r1);
                 writeIdToGPS(r1);
+                writeIdToImg(r2);
                 checkTrad(r1);
                 resourceChecked.add(id1);
             }
@@ -560,6 +574,7 @@ public class SKOSResource {
                 writeIdToChild(r2);
                 writeIdToMatch(r2);
                 writeIdToGPS(r2);
+                writeIdToImg(r2);
                 checkTrad(r2);
                 resourceChecked.add(id2);
             }
@@ -616,6 +631,14 @@ public class SKOSResource {
 
             if (lat != null && lon != null) {
                 idToGPS.put(key, "gps : lat =" + lat + " long =" + lon);
+            }
+        }
+
+        private void writeIdToImg(SKOSResource resource) {
+            String key = getIdFromUri(resource.getUri());
+
+            if (CollectionUtils.isNotEmpty(resource.getImageUris())) {
+                idToImg.put(key, resource.getImageUris());
             }
         }
 
