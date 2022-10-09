@@ -97,7 +97,7 @@ public class SynonymBean implements Serializable {
         duplicate = false;
         this.nodeEM = null;
         
-        System.out.println(">> " + propositionBean.getProposition().getSynonymsProp().size());
+        System.out.println(">> " + nodeEMsForEdit.size());
     }
 
     private void init() {

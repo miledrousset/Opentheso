@@ -64,6 +64,8 @@ public class DragAndDrop implements Serializable {
 
     private ArrayList<NodeGroup> nodeGroupsToCut;
     private ArrayList<NodeGroup> nodeGroupsToAdd;
+    
+    private List<TreeNode> nodesToConfirme = new ArrayList<>();
 
     private NodeConcept nodeConceptDrop;
 
@@ -416,6 +418,8 @@ public class DragAndDrop implements Serializable {
         reset();
         dragNode = (TreeNode) event.getDragNode();
         dropNode = (TreeNode) event.getDropNode();
+        
+        nodesToConfirme = new ArrayList<>();
 
         List<TreeNode> nodes = tree.getClickselectedNodes();
 
@@ -537,9 +541,10 @@ public class DragAndDrop implements Serializable {
                     // si oui, on affiche une boite de dialogue pour choisir les branches à couper
                     ///choix de l'option pour deplacer la collection ou non 
                     isGroupToCut = true;
-                    PrimeFaces.current().ajax().update("containerIndex:formLeftTab:idDragAndDrop");
-                    PrimeFaces.current().executeScript("PF('dragAndDrop').show();");
-                    return;
+                    nodesToConfirme.add(node);
+                    PrimeFaces.current().ajax().update("containerIndex:formLeftTab:idDragAndDropGroupe");
+                    PrimeFaces.current().executeScript("PF('dragAndDropGroupe').show();");
+                    continue;
                 }
 
                 // on controle s'il y a plusieurs branches, 
@@ -547,12 +552,21 @@ public class DragAndDrop implements Serializable {
                     // sinon, on applique le changement direct 
                     drop();
                 } else {
+                    nodesToConfirme.add(node);
                     // si oui, on affiche une boite de dialogue pour choisir les branches à couper
-                    PrimeFaces.current().ajax().update("idDragAndDrop");
-                    PrimeFaces.current().executeScript("PF('dragAndDrop').show();");
+                    PrimeFaces.current().ajax().update("idDragAndDropGroupe");
+                    PrimeFaces.current().executeScript("PF('dragAndDropGroupe').show();");
                 }
             }
         }
+    }
+    
+    public String getNodeNameFromData(TreeNode node) {
+        return ((TreeNodeData) node.getData()).getName();
+    }
+    
+    public String getNodeIdFromData(TreeNode node) {
+        return ((TreeNodeData) node.getData()).getNodeId();
     }
 
     private void showMessage(FacesMessage.Severity severity, String message) {
@@ -954,6 +968,14 @@ public class DragAndDrop implements Serializable {
 
     public void setDropNode(TreeNode dropNode) {
         this.dropNode = dropNode;
+    }
+
+    public List<TreeNode> getNodesToConfirme() {
+        return nodesToConfirme;
+    }
+
+    public void setNodesToConfirme(List<TreeNode> nodesToConfirme) {
+        this.nodesToConfirme = nodesToConfirme;
     }
 
 }

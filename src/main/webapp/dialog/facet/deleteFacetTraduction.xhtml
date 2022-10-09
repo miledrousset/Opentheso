@@ -15,7 +15,7 @@
         </div>
 
         <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-            <p:dataTable size="small" var="traductions" value="#{editFacet.facetTraductions}"
+            <p:dataTable id="traductionFacetToDelete" size="small" var="traductions" value="#{editFacet.facetTraductions}"
                          widgetVar="listThesoTable" styleClass="products-table"
                          style="margin-bottom: -17px; margin-top: -16px;">
 
@@ -25,7 +25,7 @@
 
                 <p:column width="10">
                     <p:commandLink style="color: #FF7979" action="#{editFacet.deleteTraduction(traductions)}"
-                                   update="containerIndex messageIndex">
+                                   update="containerIndex:formRightTab containerIndex:traductionFacetToDelete messageIndex">
                         <i class="pi pi-trash" />
                     </p:commandLink>
                 </p:column>

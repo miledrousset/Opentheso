@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.skosapi.SKOSResource;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import javax.ws.rs.core.Link;
 
 
 /**
@@ -181,7 +182,6 @@ public class WritePdf {
                         isAtRoot = false;
                     }
                 }
-
             }
 
             if (isAtRoot) {
@@ -189,6 +189,7 @@ public class WritePdf {
                 if (name == null) {
                     name = "";
                 }
+                
                 paragraphs.add(new Paragraph(name + " (" + conceptID + ")", termFont));
                 String indentation = "";
                 writeHieraTermInfo(conceptID, indentation, paragraphs, idToDoc);

@@ -34,7 +34,7 @@
                     <p:column width="80" headerText="Supprimer">
                         <p:commandLink style="color: #FF7979" ajax="true" process="@form"
                                        action="#{narrowerBean.deleteNarrowerLink( narrower, currentUser.nodeUser.idUser)}"
-                                       update="messageIndex containerIndex:idDeleteNarrowerLink">
+                                       update="messageIndex containerIndex:idDeleteNarrowerLink containerIndex:formRightTab">
                             <i class="pi pi-trash" />
                         </p:commandLink>
                     </p:column>                    

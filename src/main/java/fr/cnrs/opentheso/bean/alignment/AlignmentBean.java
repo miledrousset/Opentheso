@@ -623,6 +623,7 @@ public class AlignmentBean implements Serializable {
 
         counter = 0;
         initAlignmentSources(idTheso, idConcept, currentLang);
+        reset();
     }
 
     public void initAlignmentSources(String idTheso,

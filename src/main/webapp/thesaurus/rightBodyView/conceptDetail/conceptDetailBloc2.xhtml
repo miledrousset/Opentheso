@@ -240,7 +240,9 @@
 
                                 <p:commandLink value="#{trad.lexicalValue} " title="#{conceptView.nodeConcept.concept.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch containerIndex:searchBar indexTitle"/>
+                                               update="containerIndex:contentConcept containerIndex:thesoSelect 
+                                               containerIndex:sideBarSearch 
+                                               containerIndex:searchBar indexTitle"/>
                                 <h:outputText value=" (#{trad.lang})" style="font-size: 14px; font-weight: 300; margin-left: 5px; "/>
                                 <br/>                                
                             </ui:repeat>

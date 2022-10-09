@@ -5,7 +5,7 @@
 
     <p:dialog id="idDeleteAlignment" header="#{langueBean.getMsg('rightbody.concept.delete_alignment')}" widgetVar="deleteAlignment" 
               width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        <h:form>
+        <h:form id="deleteAlignment">
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
@@ -14,7 +14,7 @@
             </div>
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
-                <p:dataTable var="alignment" value="#{conceptView.nodeConcept.nodeAlignments}" size="small"
+                <p:dataTable id="deleteAlignment" var="alignment" value="#{conceptView.nodeConcept.nodeAlignments}" size="small"
                              style="margin-bottom: -17px; margin-top: -16px;">
 
                     <p:column width="80" headerText="Label">
@@ -24,7 +24,7 @@
 
                     <p:column width="20" headerText="Supprimer">
                         <p:commandLink style="color: #FF7979" action="#{alignmentManualBean.deleteAlignment(alignment)}"
-                                       update="containerIndex:formRightTab containerIndex:idDeleteAlignment"
+                                       update="containerIndex:deleteAlignment containerIndex:formRightTab"
                                        ajax="true" process="@form">
                             <i class="pi pi-trash" style="font-size: 13px;"/>
                         </p:commandLink>

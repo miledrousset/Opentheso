@@ -31,7 +31,8 @@
                     <p:column width="80" headerText="Supprimer">
                         <p:commandLink style="color: #F7A269; "
                                        ajax="true" process="@form"
-                                       action="#{traductionBean.updateTraduction(traductionToEdit, currentUser.nodeUser.idUser)}">
+                                       update="messageIndex containerIndex:idDeleteTraduction containerIndex:formRightTab"
+                                       actionListener="#{traductionBean.updateTraduction(traductionToEdit, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-check-circle" />
                         </p:commandLink>
                     </p:column>                    
@@ -46,8 +47,9 @@
 
                 <p:commandButton id="validateRenameTraduction"
                                  value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}"
-                                 icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form" 
+                                 icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  oncomplete="PF('renameTraduction').show();"
+                                 update="messageIndex containerIndex:idDeleteTraduction containerIndex:formRightTab"
                                  actionListener="#{traductionBean.updateAllTraduction(currentUser.nodeUser.idUser)}" />
             </div>
         </h:form>

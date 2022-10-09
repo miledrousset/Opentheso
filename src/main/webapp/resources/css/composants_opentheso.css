@@ -642,10 +642,12 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
 
 body .ui-tree {
     padding: 0;
+    font-size: 0.8rem;
 }
 
 .ui-tree .ui-tree-container {
     overflow: hidden;
+    font-size: 0.8rem;
 }
 
 body .ui-tree .ui-tree-container .ui-treenode {
@@ -654,10 +656,32 @@ body .ui-tree .ui-tree-container .ui-treenode {
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
     height: 28px;
+    font-size: 0.8rem;
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight{
     padding: 0em 0;
+    font-size: 0.8rem;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler {
+    margin: 0 0.3rem 0 0;
+    font-size: 0.8rem;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight .ui-tree-toggler, 
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight .ui-treenode-icon {
+    color: #f47b2a;
+    font-size: 0.8rem;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-s {
+    color: #f47b2a;
+    font-size: 0.8rem;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
+    font-size: 0.8rem;
 }
 
 /* Espacement entre elements */

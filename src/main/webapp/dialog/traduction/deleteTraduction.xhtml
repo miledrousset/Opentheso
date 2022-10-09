@@ -29,7 +29,7 @@
                     <p:column width="60" headerText="Action">
                         <p:commandLink style="color: #FF7979; text-align: center"
                                        ajax="true" process="@form"
-                                       update="messageIndex containerIndex:idDeleteTraduction"
+                                       update="messageIndex containerIndex:idDeleteTraduction containerIndex:formRightTab"
                                        oncomplete="PF('deleteTraduction').show();"
                                        action="#{traductionBean.deleteTraduction(traductions, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-trash" style="font-size: 1rem; padding-top: 5px; color: #C63632;" />

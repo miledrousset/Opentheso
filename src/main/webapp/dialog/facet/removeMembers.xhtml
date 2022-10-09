@@ -14,7 +14,7 @@
         </div>
 
         <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-            <p:dataTable size="small" var="member" value="#{editFacet.conceptList}" styleClass="products-table"
+            <p:dataTable id="memebreToDelete" size="small" var="member" value="#{editFacet.conceptList}" styleClass="products-table"
                          style="margin-bottom: -17px; margin-top: -16px;">
 
                 <p:column width="90" headerText="Membre">
@@ -24,7 +24,7 @@
 
                 <p:column width="10">
                     <p:commandLink style="color: #FF7979" action="#{editFacet.removeMemberFromFacet(member.id)}"
-                                   update="containerIndex messageIndex">
+                                   update="containerIndex:formRightTab containerIndex:memebreToDelete messageIndex">
                         <i class="pi pi-trash" />
                     </p:commandLink>
                 </p:column>

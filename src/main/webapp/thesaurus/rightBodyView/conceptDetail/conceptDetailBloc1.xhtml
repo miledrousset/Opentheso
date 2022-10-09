@@ -63,7 +63,7 @@
                                             action="#{relatedBean.reset()}" actionListener="#{editConcept.reset('')}"
                                             oncomplete="PF('deleteReplaceBy').show();"/>
                             </p:menuButton>  
-                            
+
                             <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() == 0}">
                                 <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                             </h:panelGroup>
@@ -144,7 +144,7 @@
                                             disabled="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" />
                             </p:menuButton>
                         </h:panelGroup>
-                        
+
                         <h:panelGroup rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" >            
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />              
                         </h:panelGroup>
@@ -155,24 +155,24 @@
                                 <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>
                                 <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
-                            
+
                             <br/>
-                            
+
                             <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status1">
-                                
+
                                 <h:outputText rendered="#{(em2.hiden and conceptView.toggleSwitchAltLabelLang)}" value="(#{em2.lang}) " 
                                               style="font-size: 14px; font-weight: 300;"/>
-                                
+
                                 <h:outputText rendered="#{em2.hiden}" value=" #{em2.lexical_value}" 
                                               title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}"
                                               styleClass="textOpentheso" style="color:#FF7979; font-style: italic; font-size: 14px;"/>     
-                                
+
                                 <h:outputText rendered="#{(!status1.last) and (em2.hiden)}" value=" , " 
                                               style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
                         </h:panelGroup>
                     </div>
-                    
+
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right ">
                         <p:inputSwitch id="commandOtherLangAltLabel" value="#{conceptView.toggleSwitchAltLabelLang}" style="margin-top: 7px">
                             <p:ajax listener="#{conceptView.getAltLabelWithAllLanguages()}" update="containerIndex:formRightTab messageIndex"/>
@@ -268,7 +268,7 @@
                                                 update="containerIndex:idRemoveConceptFromFracets"
                                                 disabled="#{conceptView.nodeFacets.size() == 0}"/>                                      
                                 </p:menuButton>
-                                
+
                                 <h:panelGroup rendered="#{conceptView.nodeFacets.size() == 0}" >                          
                                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                                 </h:panelGroup>                            
@@ -277,17 +277,16 @@
                             <h:panelGroup rendered="#{conceptView.nodeFacets.size() != 0}" > 
                                 <ui:repeat var="facets" value="#{conceptView.nodeFacets}" varStatus="status">
                                     <p:commandLink id="commandFacets" rendered="#{facets.value != ''}"
-                                                   value="#{facets.value}"
+                                                   value="#{facets.value}" ajax="true"
                                                    update="containerIndex indexTitle"/>
                                     <p:commandLink rendered="#{facets.value == ''}"
-                                                   value="(#{facets.id})"
+                                                   value="(#{facets.id})" ajax="true"
                                                    update="containerIndex indexTitle" />                                        
                                     <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
                                     <p:tooltip for="commandFacets"
                                                value="#{facets.id}"
                                                showDelay="500" style="font-size: 12px;" />                                
                                 </ui:repeat>
-
                             </h:panelGroup>
                         </div>
                     </div>
@@ -309,7 +308,7 @@
                                        update="containerIndex:formRightTab" process="@this" ajax="true">
                             <i class="fas fa-calculator" style="color: #F7A269; font-size: 14px; margin-left: 5px" />
                         </p:commandLink>  
-                        
+
                         <p:commandLink rendered="#{(currentUser.nodeUser == null)}" actionListener="#{conceptView.countTheTotalOfBranch()}"
                                        title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
                                        update="containerIndex:formRightTab" process="@this" ajax="true">
