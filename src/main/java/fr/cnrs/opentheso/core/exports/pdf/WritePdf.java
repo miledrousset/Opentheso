@@ -19,6 +19,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.zaxxer.hikari.HikariDataSource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
+import java.util.List;
 
 /**
  *
@@ -55,7 +57,7 @@ public class WritePdf {
     ArrayList<Paragraph> paragraphTradList = new ArrayList<>();
 
     HashMap<String, String> idToNameHashMap;
-    HashMap<String, ArrayList<String>> idToChildId = new HashMap<>();
+    HashMap<String, List<String>> idToChildId = new HashMap<>();
     HashMap<String, ArrayList<String>> idToDocumentation = new HashMap<>();
     HashMap<String, ArrayList<String>> idToDocumentation2 = new HashMap<>();
     HashMap<String, ArrayList<String>> idToMatch = new HashMap<>();
@@ -78,7 +80,8 @@ public class WritePdf {
     Font relationFont;
     Font hieraInfoFont;
 
-    public byte[] createPdfFile(SKOSXmlDocument xmlDocument, String codeLang, String codeLang2, int type) {
+    public byte[] createPdfFile(HikariDataSource hikariDataSource, SKOSXmlDocument xmlDocument, 
+            String codeLang, String codeLang2, int type) {
         try {
             bf = BaseFont.createFont(FONT, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (DocumentException | IOException ex) {
@@ -110,7 +113,7 @@ public class WritePdf {
             if (type == 1) {
                 writeAlphabetiquePDF(paragraphList, codeLang, codeLang2, false);
             } else if (type == 0) {
-                writeHieraPDF(paragraphList, codeLang, codeLang2, false, idToDocumentation);
+                writeHieraPDF(hikariDataSource, paragraphList, codeLang, codeLang2, false, idToDocumentation);
             }
 
             if (codeLang2 != null && codeLang2.equals("")) {
@@ -121,7 +124,7 @@ public class WritePdf {
                 if (type == 1) {
                     writeAlphabetiquePDF(paragraphTradList, codeLang2, codeLang, true);
                 } else if (type == 0) {
-                    writeHieraPDF(paragraphTradList, codeLang2, codeLang, true, idToDocumentation2);
+                    writeHieraPDF(hikariDataSource, paragraphTradList, codeLang2, codeLang, true, idToDocumentation2);
                 }
 
                 PdfPTable table = new PdfPTable(2);
@@ -162,11 +165,12 @@ public class WritePdf {
     /**
      * ecri un thésaurus en PDF par ordre hiérarchique
      */
-    private void writeHieraPDF(ArrayList<Paragraph> paragraphs, String langue, String langue2, boolean isTrad, HashMap<String, ArrayList<String>> idToDoc) {
+    private void writeHieraPDF(HikariDataSource hikariDataSource, ArrayList<Paragraph> paragraphs, 
+            String langue, String langue2, boolean isTrad, HashMap<String, ArrayList<String>> idToDoc) {
 
         ArrayList<SKOSResource> conceptList = xmlDocument.getConceptList();
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
-        Collections.sort(conceptList, sortForHiera(isTrad, langue, langue2, idToNameHashMap, 
+        Collections.sort(conceptList, sortForHiera(hikariDataSource, isTrad, langue, langue2, idToNameHashMap, 
                 idToChildId, idToDoc, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff));
 
         for (SKOSResource concept : conceptList) {
@@ -220,7 +224,7 @@ public class WritePdf {
 
         indentation += ".......";
 
-        ArrayList<String> childList = idToChildId.get(id);
+        List<String> childList = idToChildId.get(id);
         if (childList == null) {
             return;
         }

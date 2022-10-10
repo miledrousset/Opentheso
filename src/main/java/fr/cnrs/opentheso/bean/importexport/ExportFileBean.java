@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.importexport;
 
+import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.ExportHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
@@ -325,7 +326,9 @@ public class ExportFileBean implements Serializable {
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(
+                    connect.getPoolConnexion(),
+                    skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
                     viewExportBean.getSelectedLang2_PDF(),
                     viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
@@ -512,7 +515,9 @@ public class ExportFileBean implements Serializable {
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(skosxd,
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(
+                    connect.getPoolConnexion(),
+                    skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
                     viewExportBean.getSelectedLang2_PDF(),
                     viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
@@ -536,11 +541,7 @@ public class ExportFileBean implements Serializable {
             byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
 
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
-
-                /*        System.out.println(">>> FIN 2 : " + System.currentTimeMillis());
-                System.out.println(">>> FIN 2 : " + (System.currentTimeMillis() - start));
-                System.out.println(">>> FIN (SEC) 2 : " + ((System.currentTimeMillis() - start) / 1000));
-                 */
+                
                 return DefaultStreamedContent.builder().contentType("text/csv")
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> flux)
