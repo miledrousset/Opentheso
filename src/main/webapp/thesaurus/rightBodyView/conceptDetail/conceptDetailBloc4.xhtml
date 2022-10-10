@@ -18,7 +18,7 @@
 
     <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages.size() !=0) or (conceptView.nodeConcept.nodeExternalResources.size() !=0)
                               or (conceptView.nodeConcept.nodeGps != null)}"> 
-        <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px">
+        <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                 <!-- ligne ressources externes -->
                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeExternalResources.size() !=0)}"> 

@@ -9,6 +9,11 @@
         #ecf8f1 vert clair
 */
 
+body .ui-tabs .ui-tabs-panels .ui-tabs-panel {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
 
 body .ui-datatable thead th.ui-state-active.ui-state-hover {
     color: #43B572;
@@ -681,7 +686,7 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
     font-size: 0.8rem;
 }
 
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight .ui-tree-toggler, 
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight .ui-tree-toggler,
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-highlight .ui-treenode-icon {
     color: #f47b2a;
     font-size: 0.8rem;
