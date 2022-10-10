@@ -563,7 +563,7 @@ public class SKOSResource {
                 writeIdToChild(r1);
                 writeIdToMatch(r1);
                 writeIdToGPS(r1);
-                writeIdToImg(r2);
+                writeIdToImg(r1);
                 checkTrad(r1);
                 resourceChecked.add(id1);
             }

@@ -306,7 +306,6 @@ public class WritePdf {
                     Image image = Image.getInstance(new URL(img));
                     image.scaleAbsolute(200f, 200f);                    
                     paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
-                    paragraphs.add(new Paragraph(""));
                 } catch (BadElementException | IOException ex) {}
             }
         }
@@ -612,7 +611,6 @@ public class WritePdf {
                     Image image = Image.getInstance(new URL(imageURL));
                     image.scaleAbsolute(200f, 200f);                    
                     paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
-                    paragraphs.add(new Paragraph(""));
                 } catch (BadElementException | IOException ex) {}
             }
         }

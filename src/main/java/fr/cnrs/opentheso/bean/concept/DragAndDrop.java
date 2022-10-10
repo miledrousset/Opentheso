@@ -705,7 +705,7 @@ public class DragAndDrop implements Serializable {
                 }
             } else {
                 /// Vérifier si le dépalcement est valide (controle des relations interdites)
-                /*
+                
                 ValidateActionHelper validateActionHelper = new ValidateActionHelper();
                 if (!validateActionHelper.isMoveConceptToConceptValid(
                         connect.getPoolConnexion(),
@@ -717,7 +717,7 @@ public class DragAndDrop implements Serializable {
                             + " - Relation non permise : "
                             + validateActionHelper.getMessage());
                     continue;
-                }*/
+                }
 
                 // cas de déplacement d'un concept à concept        
                 if ((!nodeConceptDrag.getConcept().isTopConcept())) {
