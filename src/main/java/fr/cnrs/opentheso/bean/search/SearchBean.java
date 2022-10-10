@@ -828,7 +828,11 @@ public class SearchBean implements Serializable {
 
         conceptBean.getConcept(idTheso, idConcept, idLang);
         rightBodySetting.setIndex("0");
-
+        
+        PrimeFaces.current().ajax().update("containerIndex:contentConcept");
+        PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
+        PrimeFaces.current().ajax().update("containerIndex:sideBarSearch");
+        PrimeFaces.current().ajax().update("containerIndex:searchBar");
     }
 
     public NodeSearchMini getSearchSelected() {

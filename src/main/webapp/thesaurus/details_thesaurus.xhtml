@@ -6,9 +6,9 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <div class="row" style="margin-left: 15px; margin-right: 15px; margin-top: 5px;">
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 card shadow mb-1" style="overflow:hidden; padding-right: 0rem; padding-left: 0rem">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 card shadow mb-1" style="overflow:hidden; padding-right: 0rem; padding-left: 0rem;">
             <h:form id="formLeftTab" >
-                <p:tabView id="tabTree" activeIndex="#{leftBodySetting.index}" style="border-style: none; width: 100%;" >
+                <p:tabView id="tabTree" activeIndex="#{leftBodySetting.index}">
                     <p:ajax event="tabChange" listener="#{tree.onTabTreeChange}" update="containerIndex:formRightTab" />
                     <div class="col-xl-2 col-lg-2 col-md-1 col-sm-1" style="overflow: auto;">
                         <p:tab id="viewTabTree">
@@ -195,110 +195,102 @@
 
 
     <p:dialog id="idDragAndDropGroupe" header="Drag and Drop control" widgetVar="dragAndDropGroupe" 
-              modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >
+              modal="true" resizable="true" position="top" width="600" style="margin-top: 50px" >
 
         <h:form id="dragAndDropFormGroupe">
 
-            <div class="row" style="font-size: 14px; color: black">
-                <div class="col-5" style="margin-left: 10px;">
-                    <h:outputText value="Déplacer le concept/branche: " title="terme à couper"/>
-                </div>           
-                <div class="col-6" >
-                    <i class="pi pi-cut" style="color: red; margin-right: 20px;"/>
-                    <h:outputText value="  #{dragAndDrop.cuttedConcept.term.lexical_value} (#{dragAndDrop.cuttedConcept.concept.idConcept})  "
-                                  title="terme à couper" style="background-color: #C63632; color: #ffffff"/>
-                </div>                   
-            </div>
-
-            <div class="row" style="font-size: 14px; color: black">
-                <div class="col-5" style="margin-left: 10px;">
-                    <h:outputText value="vers le concept : " title="Vers ce concept" />
-                </div>                  
-                <div class="col-6">
-                    <i class="pi pi-arrow-right" style="color: green; margin-right: 20px;"/>
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="Concept cible : " title="Vers ce concept" />
                     <h:outputText value=" #{dragAndDrop.dropppedConcept.term.lexical_value} (#{dragAndDrop.dropppedConcept.concept.idConcept})" 
-                                  title="Vers ce concept" style="background-color: #54a90a; color: #ffffff"/>
+                                  title="Vers ce concept" style="background-color: #54a90a; color: #ffffff; font-size: 14px"/>
                 </div>                  
-            </div>            
+            </div>    
 
-            <h:panelGroup rendered="#{dragAndDrop.nodeBTsToCut.size() > 0}" style="margin-top: 30px"> 
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
+                <p:dataTable size="small" value="#{dragAndDrop.nodesToConfirme}" var="node" styleClass="products-table"
+                             style="margin-bottom: -17px; margin-top: -16px;">
+                    <f:facet name="header">
+                        <h:outputText value="Le(s) concept(s)/branche(s) à déplacer" title="terme à couper"/>
+                    </f:facet>
+
+                    <p:column headerText="ID" width="30">
+                        <h:outputText value="#{dragAndDrop.getNodeIdFromData(node)}" />
+                    </p:column>
+
+                    <p:column headerText="Nom" width="70">
+                        <h:outputText value="#{dragAndDrop.getNodeNameFromData(node)}" />
+                    </p:column>
+                </p:dataTable>
+            </div>        
+
+            <h:panelGroup rendered="#{dragAndDrop.groupNodeBtToCut.size() > 0}" style="margin-top: 30px"> 
                 <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                    <p:dataTable size="small" value="#{dragAndDrop.nodeBTsToCut}" var="broader"
+                    <p:dataTable size="small" value="#{dragAndDrop.groupNodeBtToCut}" var="broader"
                                  widgetVar="nodeBTsToCut" styleClass="products-table"
                                  style="margin-bottom: -17px; margin-top: -16px;">
 
                         <f:facet name="header">
-                            <div class="products-table-header">
-                                <span style="font-weight: bold">
-                                    <h:outputText value="Poly-hiérarchie à supprimer / garder ? : " 
-                                                  title="Cochez la case pour supprimer la relation"/>
-                                </span>
-                            </div>
+                            <h:outputText value="Poly-hiérarchie à supprimer / garder" 
+                                          title="Cochez la case pour supprimer la relation"/>
                         </f:facet>
 
-                        <p:column headerText="id" width="100">
-                            <h:outputText value="#{broader.idConcept}" />
-                        </p:column>                        
+                        <p:column headerText="Nom Concept" width="100">
+                            <h:outputText value="#{dragAndDrop.getNodeNameFromData(broader.node)}" />
+                        </p:column>                 
                         <p:column headerText="Terme générique">
-                            <h:outputText value="#{broader.title}" />
+                            <h:outputText value="#{broader.nodeBT.title}" />
                         </p:column>
-                        <p:column headerText="à couper" width="80">
-                            <p:selectBooleanCheckbox value="#{broader.isSelected}" />
+                        <p:column headerText="A couper" width="80">
+                            <p:selectBooleanCheckbox value="#{broader.nodeBT.isSelected}" />
                         </p:column>
                     </p:dataTable>
                 </div>
             </h:panelGroup>           
 
-            <h:panelGroup rendered="#{dragAndDrop.nodeGroupsToCut.size() > 0}" style="margin-top: 30px"> 
+            <h:panelGroup rendered="#{dragAndDrop.groupNodeToCut.size() > 0}" style="margin-top: 30px"> 
                 <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                    <p:dataTable size="small" value="#{dragAndDrop.nodeGroupsToCut}" var="group"
+                    <p:dataTable size="small" value="#{dragAndDrop.groupNodeToCut}" var="group"
                                  widgetVar="nodeGroupsToCut" styleClass="products-table"
                                  style="margin-bottom: -17px; margin-top: -16px;">
 
                         <f:facet name="header">
-                            <div class="products-table-header">
-                                <span style="font-weight: bold">
-                                    <h:outputText value="Collections à supprimer ? " 
-                                                  title="Cochez la case pour supprimer la relation"/>
-                                </span>
-                            </div>
+                            <h:outputText value="Collections à supprimer" 
+                                          title="Cochez la case pour supprimer la relation"/>
                         </f:facet>
 
-                        <p:column headerText="id" width="100">
-                            <h:outputText value="#{group.conceptGroup.idgroup}" />
+                        <p:column headerText="Nom Concept" width="100">
+                            <h:outputText value="#{dragAndDrop.getNodeNameFromData(group.node)}" />
                         </p:column>                        
-                        <p:column headerText="Collection/groupe">
-                            <h:outputText value="#{group.lexicalValue}"/>
+                        <p:column headerText="Terme générique">
+                            <h:outputText value="#{group.nodeGroup.lexicalValue}" />
                         </p:column>
-                        <p:column headerText="à supprimer" width="80">
-                            <p:selectBooleanCheckbox value="#{group.isSelected}" />
+                        <p:column headerText="A couper" width="80">
+                            <p:selectBooleanCheckbox value="#{group.nodeGroup.isSelected}" />
                         </p:column>
                     </p:dataTable>
                 </div>
             </h:panelGroup>        
 
-            <h:panelGroup rendered="#{dragAndDrop.nodeGroupsToAdd.size() > 0}" style="margin-top: 30px"> 
+            <h:panelGroup rendered="#{dragAndDrop.groupNodeToAdd.size() > 0}" style="margin-top: 30px"> 
                 <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                    <p:dataTable size="small" value="#{dragAndDrop.nodeGroupsToAdd}" var="group"
+                    <p:dataTable size="small" value="#{dragAndDrop.groupNodeToAdd}" var="group"
                                  widgetVar="nodeGroupsToAdd" styleClass="products-table"
                                  style="margin-bottom: -17px; margin-top: -16px;">
 
                         <f:facet name="header">
-                            <div class="products-table-header">
-                                <span style="font-weight: bold">
-                                    <h:outputText value="Collections à ajouter ? " title="Cochez la case pour ajouter la relation"/>
-                                </span>
-                            </div>
+                            <h:outputText value="Collections à ajouter"
+                                          title="Cochez la case pour ajouter la relation"/>
                         </f:facet>
 
-                        <p:column headerText="id" width="100">
-                            <h:outputText value="#{broader.idConcept}" />
+                        <p:column headerText="Nom Concept" width="100">
+                            <h:outputText value="#{dragAndDrop.getNodeNameFromData(group.node)}" />
                         </p:column>                        
                         <p:column headerText="Terme générique">
-                            <h:outputText value="#{broader.title}" />
+                            <h:outputText value="#{group.nodeGroup.lexicalValue}" />
                         </p:column>
-                        <p:column headerText="à couper" width="80">
-                            <p:selectBooleanCheckbox value="#{broader.isSelected}" />
+                        <p:column headerText="A couper" width="80">
+                            <p:selectBooleanCheckbox value="#{group.nodeGroup.isSelected}" />
                         </p:column>
                     </p:dataTable>
                 </div>
@@ -318,7 +310,7 @@
                                  icon="pi pi-check" 
                                  styleClass="ui-button-success"
                                  oncomplete="PF('dragAndDrop').hide();"
-                                 actionListener="#{dragAndDrop.drop()}" 
+                                 actionListener="#{dragAndDrop.dropV2()}" 
                                  process="@this" ajax="true"/>
             </div>
         </h:form>
