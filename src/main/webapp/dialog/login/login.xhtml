@@ -77,12 +77,14 @@
                 <p:commandButton title="Se connecter" class="formLogin-button"
                                  ajax="true" action="#{currentUser.login()}" 
                                  update="messageIndex containerIndex:header containerIndex:notificationProp 
-                                 menuBar containerIndex:searchBar containerIndex:contentConcept" />
+                                 menuBar containerIndex:searchBar containerIndex:contentConcept">
+                </p:commandButton>
                 <p class="message">
                     <p:commandLink update="idForgetPass forgetPassForm" oncomplete="PF('forgetPass').show();"
                                    value="#{langueBean.getMsg('menu.forgotten_pass')}" />
                 </p>
             </h:form>
+            <p:effect type="drop"  event="click" />
         </div>
     </p:dialog>   
 </ui:fragment>

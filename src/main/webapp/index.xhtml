@@ -30,6 +30,14 @@
             <meta name="description" content="#{langueBean.getMsg('index.Opentheso_info')}"/>
         </h:panelGroup>
 
+        <style>
+            body .ui-selectonemenu .ui-selectonemenu-label {
+                font-size: 13px;
+                font-weight: bold;
+                color: #43B572;
+            }
+        </style>
+
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
     </h:head>
 
@@ -52,7 +60,7 @@
                 margin-top: -40px;
             }
         </style>
-        
+
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"  />
 
         <div id="wrapper" style="height: 100%">
