@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -778,7 +779,9 @@ public class SKOSResource {
                         conceptIdsTemps.add(termTemp);
                     }
                 }
-                conceptIdsTemps.sort((o1, o2) -> o1.term.compareTo(o2.term));
+                
+                NodeConceptTree nodeConceptTree = new NodeConceptTree();
+                conceptIdsTemps.sort((o1, o2) -> nodeConceptTree.naturalCompare(o1.term, o2.term, true));
                 idToChildId.put(key, conceptIdsTemps.stream().map(c -> c.idConcept).collect(Collectors.toList()));
             }
 
@@ -908,9 +911,8 @@ public class SKOSResource {
             if (r2_name.length() == 0) {
                 return -1;                  // empty string sorts last                  
             }
-
-            return r1_name.compareTo(r2_name);
-
+            
+            return new NodeConceptTree().naturalCompare(r1_name, r2_name, true);
         }
 
         private void checkTrad(SKOSResource resource) {
