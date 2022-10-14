@@ -18,6 +18,7 @@
             height: 1.2rem;
         }        
         
+
     </style>
     <p:panel rendered="#{candidatBean.isListCandidatsActivate()}">
 
@@ -50,11 +51,14 @@
             </p:toolbar>
 
             <div class="row" style="margin-top: 10px; font-size: 13px;">
-                <div class="col-6">
+                <div class="col-2">
                     <p:selectBooleanCheckbox value="#{candidatBean.myCandidatsSelected1}">
                         <p:ajax update="tabViewCandidat" listener="#{candidatBean.selectMyCandidats()}" />
                     </p:selectBooleanCheckbox>
                     <h:outputLabel value="#{langueBean.getMsg('candidat.my_candidats')}" style="color: #000; margin-left: 10px; margin-top: 5px" />
+                </div>
+                <div class="col-4">
+                    <h:outputText value="#{candidatBean.getOuntOfCandidats()} #{langueBean.getMsg('candidat.titre')}(s)" style="color: #601e18; font-size: 14px; " />                    
                 </div>
                 <div class="col-6" style="text-align: right">
                     <h:outputText class="col-md-6 control-label" style="color: #000; height: 34px; margin-top: 7px; text-align: right; vertical-align: central" 
@@ -68,6 +72,7 @@
             <!-- tableau des candidats -->
             <p:dataTable id="listCandidats" var="listCandidats" value="#{candidatBean.candidatList}" paginator="true" rows="15"
                          selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}" style="font-size: 13px;"
+                         
                          emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}">
 
                 <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="tabViewCandidat:panelCandidateList"  />

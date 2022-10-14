@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
@@ -97,6 +98,7 @@ public class CandidatBean implements Serializable {
         domaines = null;
         selectedLanguages = null;
         languagesOfTheso = null;
+        definition = null;
     }
 
     public void setStateForSelectedCandidate() {
@@ -251,6 +253,10 @@ public class CandidatBean implements Serializable {
         }
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
+    }
+    
+    public String getOuntOfCandidats(){
+        return "" + candidatList.size();
     }
 
     public void selectMyRejectCandidats() {
@@ -438,12 +444,18 @@ public class CandidatBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg1"));
             return;
         }
+        if (StringUtils.isEmpty(definition)) {
+            showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.def"));
+            return;
+        }        
+        
 
         if (roleOnThesoBean.getNodePreference() == null) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg2"));
             return;
         }
         TermHelper termHelper = new TermHelper();
+        NoteHelper noteHelper = new NoteHelper();        
         if (initialCandidat == null) {
             ConceptHelper conceptHelper = new ConceptHelper();
 
@@ -487,8 +499,15 @@ public class CandidatBean implements Serializable {
             terme.setSource("candidat");
             terme.setStatus("D");
 
-            candidatService.saveNewTerm(connect, terme,
-                    candidatSelected.getIdConcepte(), candidatSelected.getUserId());
+            candidatSelected.setIdTerm(candidatService.saveNewTerm(connect, terme,
+                    candidatSelected.getIdConcepte(), candidatSelected.getUserId()));
+            if(candidatSelected.getIdTerm() != null) {
+                noteHelper.addTermNote(connect.getPoolConnexion(), candidatSelected.getIdTerm(),
+                        selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
+                        definition, "definition", currentUser.getNodeUser().getIdUser());
+            }
+           
+            
             setIsListCandidatsActivate(true);
 
         } else {
@@ -512,6 +531,8 @@ public class CandidatBean implements Serializable {
             }
         }
 
+
+        
         candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat, allTermes, domaines, currentUser.getNodeUser().getIdUser());
 
         getAllCandidatsByThesoAndLangue();
