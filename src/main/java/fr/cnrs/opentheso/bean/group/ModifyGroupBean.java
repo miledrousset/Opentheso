@@ -115,20 +115,35 @@ public class ModifyGroupBean implements Serializable {
             }
             return;
         }
-
-        if (!groupHelper.renameGroup(
-                connect.getPoolConnexion(),
-                titleGroup,
-                selectedTheso.getCurrentLang(),
-                idGroup,
-                selectedTheso.getCurrentIdTheso(),
-                currentUser.getNodeUser().getIdUser())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
+        if(groupHelper.isHaveTraduction(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
+            if (!groupHelper.renameGroup(
+                    connect.getPoolConnexion(),
+                    titleGroup,
+                    selectedTheso.getCurrentLang(),
+                    idGroup,
+                    selectedTheso.getCurrentIdTheso(),
+                    currentUser.getNodeUser().getIdUser())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
+                return;
+            }            
+        } else {
+            if (!groupHelper.addGroupTraduction(
+                    connect.getPoolConnexion(),
+                    idGroup,
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(),
+                    titleGroup)) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " Erreur lors de la modification du label !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
+                return;
             }
-            return;
         }
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());

@@ -105,11 +105,11 @@ public class PropositionService implements Serializable {
                     + "L'équipe " + propositionDao.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
 
             if(!sendEmail(propositionDao.getEmail(), subject, contentFile)) {
-                showMessage(FacesMessage.SEVERITY_ERROR, "!! votre propostion n'a pas été pas envoyée !!");
+                showMessage(FacesMessage.SEVERITY_ERROR, "!! votre propostion n'a pas été envoyée !!");
                 return false;
             }
         } catch (IOException ex) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion n'a pas été pas envoyée !");
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion n'a pas été envoyée !");
             return false;
         }
 

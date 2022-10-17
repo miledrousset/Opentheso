@@ -8,7 +8,7 @@
     <artifactId>opentheso2</artifactId>
     <version>22.10</version>
     <packaging>war</packaging>
-    <name>opentheso2_dev</name>
+    <name>opentheso2</name>
 
     <dependencies>
 
