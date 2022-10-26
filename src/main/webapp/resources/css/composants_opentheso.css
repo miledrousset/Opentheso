@@ -14,6 +14,9 @@ body .ui-tabs .ui-tabs-panels .ui-tabs-panel {
     padding-right: 0rem;
 }
 
+body .ui-fileupload .ui-fileupload-buttonbar .ui-button.ui-fileupload-choose .ui-icon:before {
+    content: " ";
+}
 
 body .ui-datatable thead th.ui-state-active.ui-state-hover {
     color: #43B572;

@@ -133,12 +133,10 @@
                     <div class="row" style="margin-top: 5px">
                         <div class="col-12" > 
                             <p:fileUpload listener="#{importFileBean.loadFileSkos}" 
-                                          label="parcourir" 
+                                          label="Parcourir" style="padding-left: 10px; padding-right: 10px"
                                           mode="advanced" auto="true"
                                           allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
-                                          update="viewImportSkosForm" disabled="#{importFileBean.loadDone}">
-                                <f:attribute name="isCandidatImport" value="false" />
-                            </p:fileUpload>
+                                          update="viewImportSkosForm" disabled="#{importFileBean.loadDone}" />
                         </div>
                     </div>
 
