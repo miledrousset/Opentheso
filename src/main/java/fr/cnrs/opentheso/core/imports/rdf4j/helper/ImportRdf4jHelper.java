@@ -510,8 +510,10 @@ public class ImportRdf4jHelper {
             }
         }
 
+        boolean isGpsPresent = false;
         String longitude = null, altitude = null;
         if (conceptResource.getGPSCoordinates() != null) {
+            isGpsPresent = true;
             altitude = conceptResource.getGPSCoordinates().getLat();
             longitude = conceptResource.getGPSCoordinates().getLon();
         }
@@ -707,6 +709,7 @@ public class ImportRdf4jHelper {
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
                     + (images == null ? null : "'" + images + "'") + ", "
                     + (isReplacedBy == null ? null : "'" + isReplacedBy + "'") + ", "
+                    + isGpsPresent + ", " 
                     + (altitude == null ? null : Double.parseDouble(altitude)) + ", "
                     + (longitude == null ? null : Double.parseDouble(longitude)) + ")";
             stmt.executeUpdate(sql);

@@ -188,6 +188,7 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	alignements text,
 	images text,
 	idsConceptsReplaceBy text,
+	isGpsPresent Boolean,
 	altitude double precision,
 	longitude double precision)
     LANGUAGE 'plpgsql'
@@ -200,8 +201,8 @@ DECLARE
     replaces_rec record;
 BEGIN
 
-	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor) 
-		values (id_con, id_thesaurus, id_ark, CURRENT_DATE, CURRENT_DATE, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user);
+	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor, gps) 
+		values (id_con, id_thesaurus, id_ark, CURRENT_DATE, CURRENT_DATE, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
 		
 	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
 		
@@ -238,17 +239,17 @@ BEGIN
 		END IF;
 		
 		IF (idsConceptsReplaceBy IS NOT NULL AND idsConceptsReplaceBy != 'null') THEN
-                    FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
-                    LOOP
-                        Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user) 
-                                values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
-                    END LOOP;
+        	FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
+            LOOP
+				Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user) 
+							values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
+            END LOOP;
 		END IF;
 		
        	IF (altitude > 0 AND longitude > 0) THEN
-            insert into gps values(id_new_concet, id_thesaurus, altitude, longitude);
+			insert into gps values(id_new_concet, id_thesaurus, altitude, longitude);
         END IF;		
-    END IF;
+	END IF;
 END;
 $BODY$;
 

@@ -687,6 +687,7 @@ public class CsvImportHelper {
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
                     + (images == null ? null : "'" + images + "'") + ", "
                     + null + ", "
+                    + (conceptObject.getLatitude() != null) + ", " 
                     + (conceptObject.getLatitude() == null ? null : "'" + conceptObject.getLatitude() + "'") + ", "
                     + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ")";
             System.out.println("SQL : " + sql);
