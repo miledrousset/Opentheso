@@ -672,7 +672,8 @@ public class ImportFileBean implements Serializable {
                 while ((line = reader.readLine()) != null) {
                     lines.add(line.split(delimiterChar));
                 }
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
 
             int nbrMaxElement = lines.get(0).length;
             for (int i = 0; i < lines.size(); i++) {
@@ -804,7 +805,7 @@ public class ImportFileBean implements Serializable {
         colone++;
         if (ligne < matrix.length && colone < matrix[ligne].length) {
             while (matrix[ligne][colone] != null) {
-                if (matrix[ligne][colone-1] != null && matrix[ligne][colone-1].length() > 0 && !matrix[ligne][colone-1].equals(element.getPreferredTerm())) {
+                if (matrix[ligne][colone - 1] != null && matrix[ligne][colone - 1].length() > 0 && !matrix[ligne][colone - 1].equals(element.getPreferredTerm())) {
                     break;
                 }
                 if (matrix[ligne][colone].length() > 0) {
@@ -813,7 +814,7 @@ public class ImportFileBean implements Serializable {
                 ligne++;
             }
         }
-        
+
         return element;
     }
 
@@ -923,6 +924,78 @@ public class ImportFileBean implements Serializable {
         System.gc();
 
         onComplete();
+    }
+
+    public void addCsvThesoToBDDV2() {
+
+        if (conceptObjects == null || conceptObjects.isEmpty()) {
+            return;
+        }
+
+        if (importInProgress) {
+            return;
+        }
+
+        // préparer le projet pour le thésaurus
+        int idProject;
+        if (selectedUserProject == null || selectedUserProject.isEmpty()) {
+            idProject = -1;
+        } else {
+            idProject = Integer.parseInt(selectedUserProject);
+        }
+
+        // préparer la langue source 
+        if (selectedLang == null || selectedLang.isEmpty()) {
+            selectedLang = connect.getWorkLanguage();
+        }
+
+        // création du thésaurus
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+        String idNewTheso = csvImportHelper.createTheso(connect.getPoolConnexion(), thesaurusName, selectedLang,
+                idProject, currentUser.getNodeUser());
+        if (idNewTheso == null || idNewTheso.isEmpty()) {
+            return;
+        }
+
+        csvImportHelper.addLangsToThesaurus(connect.getPoolConnexion(), langs, idNewTheso);
+
+        // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours, ou on initialise des nouvelles.
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
+
+        if (nodePreference == null) {
+            preferencesHelper.initPreferences(connect.getPoolConnexion(), idNewTheso, selectedLang);
+        } else {
+            nodePreference.setPreferredName(thesaurusName);
+            nodePreference.setSourceLang(selectedLang);
+            preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
+        }
+
+        // ajout des concepts et collections
+        for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+            switch (conceptObject.getType().trim().toLowerCase()) {
+                case "skos:concept":
+                    // ajout de concept
+                    csvImportHelper.addConceptV2(connect.getPoolConnexion(), 
+                            idNewTheso, conceptObject, currentUser.getNodeUser().getIdUser());
+                    break;
+                case "skos:collection":
+                    // ajout de groupe
+                    csvImportHelper.addGroup(connect.getPoolConnexion(), idNewTheso, conceptObject);
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        roleOnThesoBean.showListTheso();
+        viewEditionBean.init();
+
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "Le thesaurus " + idNewTheso + " est correctement ajouté !", "import réussi"));
+        PrimeFaces.current().ajax().update("messageIndex");
+        
+        System.gc();
     }
 
     /**
@@ -1780,6 +1853,9 @@ public class ImportFileBean implements Serializable {
      * permet d'importer le thésaurus chargé en SKOS
      */
     public void addSkosThesoToBDD() {
+        long tempsDebut, tempsFin;
+        double seconds;
+        tempsDebut = System.currentTimeMillis();
         error = new StringBuffer();
         info = "";
         warning = "";
@@ -1852,6 +1928,66 @@ public class ImportFileBean implements Serializable {
         }
         onComplete();
 
+        tempsFin = System.currentTimeMillis();
+        seconds = (tempsFin - tempsDebut) / 1000F;
+        System.out.println("Ancienne méthode : Opération effectuée en: " + Double.toString(seconds) + " secondes.");
+
+    }
+
+    public void addSkosThesoToBDDV2() throws SQLException {
+        long tempsDebut, tempsFin;
+        double seconds;
+        tempsDebut = System.currentTimeMillis();
+
+        int idGroup;
+        if (selectedUserProject == null || selectedUserProject.isEmpty()) {
+            idGroup = -1;
+        } else {
+            idGroup = Integer.parseInt(selectedUserProject);
+        }
+
+        ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
+        importRdf4jHelper.setInfos(connect.getPoolConnexion(),
+                formatDate,
+                currentUser.getNodeUser().getIdUser(),
+                idGroup,
+                connect.getWorkLanguage());
+
+        importRdf4jHelper.setSelectedIdentifier(selectedIdentifier);
+        importRdf4jHelper.setPrefixHandle(prefixHandle);
+        importRdf4jHelper.setPrefixDoi(prefixDoi);
+        importRdf4jHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);
+
+        String idTheso = importRdf4jHelper.addThesaurus();
+        if (idTheso == null) {
+            error.append(importRdf4jHelper.getMessage());
+            showError();
+            return;
+        }
+
+        for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
+            progressStep++;
+            progress = progressStep / total * 100;
+            if (!sKOSResource.getLabelsList().isEmpty()) {
+                importRdf4jHelper.addConceptV2(sKOSResource, idTheso);
+            }
+        }
+
+        importRdf4jHelper.addFacetsV2(sKOSXmlDocument.getFacetList(), idTheso);
+        importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
+        importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);
+
+        roleOnThesoBean.showListTheso();
+        viewEditionBean.init();
+
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "Le thesaurus " + idTheso + " est correctement ajouté !", "import réussi"));
+        PrimeFaces.current().ajax().update("messageIndex");
+
+        tempsFin = System.currentTimeMillis();
+        seconds = (tempsFin - tempsDebut) / 1000F;
+        System.out.println("Nouvelle méthode : Opération effectuée en: " + Double.toString(seconds) + " secondes.");
     }
 
     /**
