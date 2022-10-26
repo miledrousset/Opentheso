@@ -188,8 +188,8 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	alignements text,
 	images text,
 	idsConceptsReplaceBy text,
-	altitude character varying,
-	longitude character varying)
+	altitude double precision,
+	longitude double precision)
     LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
@@ -238,19 +238,20 @@ BEGIN
 		END IF;
 		
 		IF (idsConceptsReplaceBy IS NOT NULL AND idsConceptsReplaceBy != 'null') THEN
-        	FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
-            LOOP
-				Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user) 
-							values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
-            END LOOP;
+                    FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
+                    LOOP
+                        Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user) 
+                                values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
+                    END LOOP;
 		END IF;
 		
-		if (altitude IS NOT NULL AND altitude != 'null' AND longitude IS NOT NULL AND longitude != 'null') THEN
-			Insert into gps values(id_new_concet, id_thesaurus, cast(altitude as double precision), cast(longitude as double precision));
-		END IF;		
-	END IF;
+       	IF (altitude > 0 AND longitude > 0) THEN
+            insert into gps values(id_new_concet, id_thesaurus, altitude, longitude);
+        END IF;		
+    END IF;
 END;
 $BODY$;
+
 
 
 

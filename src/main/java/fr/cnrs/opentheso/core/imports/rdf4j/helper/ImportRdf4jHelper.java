@@ -522,13 +522,11 @@ public class ImportRdf4jHelper {
         String prefTerm = null;
         if (CollectionUtils.isNotEmpty(conceptResource.getLabelsList())) {
             nonPrefTerm = "";
+            prefTerm = "";
             for (SKOSLabel label : conceptResource.getLabelsList()) {
                 if (label.getProperty() == SKOSProperty.prefLabel) {
-                    if (StringUtils.isEmpty(prefTerm)) {
-                        prefTerm = label.getLabel() + SOUS_SEPERATEUR + label.getLanguage();
-                    } else {
-                        prefTerm = prefTerm + SEPERATEUR + label.getLabel() + SOUS_SEPERATEUR + label.getLanguage();
-                    }
+                    prefTerm += SEPERATEUR + label.getLabel() 
+                            + SOUS_SEPERATEUR + label.getLanguage();
                 } else {
                     String status = null;
                     boolean hiden = false;
@@ -538,9 +536,12 @@ public class ImportRdf4jHelper {
                         status = "Hidden";
                         hiden = true;
                     }
-                    nonPrefTerm = nonPrefTerm + SEPERATEUR + idConcept + SOUS_SEPERATEUR + label.getLabel()
-                            + SOUS_SEPERATEUR + label.getLanguage() + SOUS_SEPERATEUR + idTheso
-                            + SOUS_SEPERATEUR + idUser + SOUS_SEPERATEUR + status
+                    nonPrefTerm += SEPERATEUR + idConcept 
+                            + SOUS_SEPERATEUR + label.getLabel()
+                            + SOUS_SEPERATEUR + label.getLanguage() 
+                            + SOUS_SEPERATEUR + idTheso
+                            + SOUS_SEPERATEUR + idUser 
+                            + SOUS_SEPERATEUR + status
                             + SOUS_SEPERATEUR + hiden;
                 }
                 appendNewLang(label.getLanguage());
@@ -706,8 +707,8 @@ public class ImportRdf4jHelper {
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
                     + (images == null ? null : "'" + images + "'") + ", "
                     + (isReplacedBy == null ? null : "'" + isReplacedBy + "'") + ", "
-                    + (altitude == null ? null : "'" + altitude + "'") + ", "
-                    + (longitude == null ? null : "'" + longitude + "'") + ")";
+                    + (altitude == null ? null : Double.parseDouble(altitude)) + ", "
+                    + (longitude == null ? null : Double.parseDouble(longitude)) + ")";
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);

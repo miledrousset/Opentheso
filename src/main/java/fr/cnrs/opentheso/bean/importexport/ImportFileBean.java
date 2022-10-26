@@ -1967,8 +1967,6 @@ public class ImportFileBean implements Serializable {
         }
 
         for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
-            progressStep++;
-            progress = progressStep / total * 100;
             if (!sKOSResource.getLabelsList().isEmpty()) {
                 importRdf4jHelper.addConceptV2(sKOSResource, idTheso);
             }
