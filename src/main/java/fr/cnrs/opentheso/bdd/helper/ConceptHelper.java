@@ -2159,7 +2159,14 @@ public class ConceptHelper {
      * Cette fonction permet d'ajouter un Concept complet à la base avec le
      * libellé et les relations Si l'opération échoue, elle envoi un NULL et ne
      * modifie pas la base de données
-     */
+    * @param ds
+    * @param idParent
+    * @param relationType
+    * @param concept
+    * @param term
+    * @param idUser
+    * @return 
+    */
     public String addConcept(HikariDataSource ds, String idParent, String relationType,
             Concept concept, Term term, int idUser) {
 

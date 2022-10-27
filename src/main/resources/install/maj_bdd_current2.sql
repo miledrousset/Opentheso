@@ -771,7 +771,7 @@ INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_na
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('cu', 'chu', 'Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic', 'vieux slave; vieux bulgare', 183, 'bg');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('st', 'sot', 'Sotho, Southern', 'sotho du Sud', 146, 'za');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('ia', 'ina', 'Interlingua (International Auxiliary Language Association)', 'interlingua', 184, NULL);
-
+INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('metadata', 'Metadata', 'métadonnées', 'Metadata', 2000, NULL);
 
 ALTER TABLE ONLY public.languages_iso639
     ADD CONSTRAINT languages_iso639_iso639_1_key UNIQUE (iso639_1);

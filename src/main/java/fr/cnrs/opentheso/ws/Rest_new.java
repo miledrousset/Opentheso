@@ -2011,33 +2011,61 @@ public class Rest_new {
                 format = "application/rdf+xml";
                 datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.ACCEPTED).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                       
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response
+                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                  
             }
             case "jsonld":
                 format = "application/ld+json";
                 datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.ACCEPTED).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                    
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                  
             case "turtle":
                 format = "text/turtle";
                 datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.ACCEPTED).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                       
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response
+                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                  
             case "json":
                 format = "application/json";
                 datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.ACCEPTED).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                      
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
         }
-        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        
+        return Response
+                .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();        
     }
 
     private String getAllBrancheOfGroup__(String idtheso,
