@@ -188,7 +188,7 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	alignements text,
 	images text,
 	idsConceptsReplaceBy text,
-	altitude double precision,
+	latitude double precision,
 	longitude double precision)
     LANGUAGE 'plpgsql'
 AS $BODY$
@@ -200,53 +200,52 @@ DECLARE
     replaces_rec record;
 BEGIN
 
-	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor) 
-		values (id_con, id_thesaurus, id_ark, CURRENT_DATE, CURRENT_DATE, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user);
-		
-	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
-		
-	IF (id_new_concet IS NOT NULL) THEN
-		
-		IF (prefterms IS NOT NULL AND prefterms != 'null') THEN
-			-- 'lexical_value@lang@source@status@createed@modified'
-			CALL opentheso_add_terms(id_new_concet, id_thesaurus, id_new_concet, id_user, prefterms);
-		END IF;
+    Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor) 
+            values (id_con, id_thesaurus, id_ark, CURRENT_DATE, CURRENT_DATE, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user);
 
-		IF (relation_hiarchique IS NOT NULL AND relation_hiarchique != 'null') THEN
-			-- 'id_concept1@role@id_concept2'
-			CALL opentheso_add_hierarchical_relations(id_thesaurus, relation_hiarchique);
-		END IF;
+    SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
+
+    IF (id_new_concet IS NOT NULL) THEN
+        IF (prefterms IS NOT NULL AND prefterms != 'null') THEN
+                -- 'lexical_value@lang@source@status@createed@modified'
+                CALL opentheso_add_terms(id_new_concet, id_thesaurus, id_new_concet, id_user, prefterms);
+        END IF;
+
+        IF (relation_hiarchique IS NOT NULL AND relation_hiarchique != 'null') THEN
+                -- 'id_concept1@role@id_concept2'
+                CALL opentheso_add_hierarchical_relations(id_thesaurus, relation_hiarchique);
+        END IF;
+
+        IF (notes IS NOT NULL AND notes != 'null') THEN
+                -- 'value@typeCode@lang@id_term'
+                CALL opentheso_add_notes(id_new_concet, id_thesaurus, id_user, notes);
+        END IF;
+
+        IF (non_pref_terms IS NOT NULL AND non_pref_terms != 'null') THEN
+                -- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
+                CALL opentheso_add_non_preferred_term(id_thesaurus, id_user, non_pref_terms);
+        END IF;
+
+        IF (images IS NOT NULL AND images != 'null') THEN
+                -- 'url1##url2'
+                CALL opentheso_add_external_images(id_thesaurus, id_new_concet, id_user, images);
+        END IF;
+
+        IF (alignements IS NOT NULL AND alignements != 'null') THEN
+                -- 'author@concept_target@thesaurus_target@uri_target@alignement_id_type@internal_id_thesaurus@internal_id_concept'
+                CALL opentheso_add_alignements(alignements);
+        END IF;
+
+        IF (idsConceptsReplaceBy IS NOT NULL AND idsConceptsReplaceBy != 'null') THEN
+            FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
+            LOOP
+                Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user) 
+                        values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
+            END LOOP;
+        END IF;
 		
-		IF (notes IS NOT NULL AND notes != 'null') THEN
-			-- 'value@typeCode@lang@id_term'
-			CALL opentheso_add_notes(id_new_concet, id_thesaurus, id_user, notes);
-		END IF;
-		
-		IF (non_pref_terms IS NOT NULL AND non_pref_terms != 'null') THEN
-			-- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
-			CALL opentheso_add_non_preferred_term(id_thesaurus, id_user, non_pref_terms);
-		END IF;
-		
-		IF (images IS NOT NULL AND images != 'null') THEN
-			-- 'url1##url2'
-			CALL opentheso_add_external_images(id_thesaurus, id_new_concet, id_user, images);
-		END IF;
-		
-		IF (alignements IS NOT NULL AND alignements != 'null') THEN
-			-- 'author@concept_target@thesaurus_target@uri_target@alignement_id_type@internal_id_thesaurus@internal_id_concept'
-			CALL opentheso_add_alignements(alignements);
-		END IF;
-		
-		IF (idsConceptsReplaceBy IS NOT NULL AND idsConceptsReplaceBy != 'null') THEN
-                    FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
-                    LOOP
-                        Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user) 
-                                values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
-                    END LOOP;
-		END IF;
-		
-       	IF (altitude > 0 AND longitude > 0) THEN
-            insert into gps values(id_new_concet, id_thesaurus, altitude, longitude);
+       	IF (latitude > 0 AND longitude > 0) THEN
+            insert into gps values(id_new_concet, id_thesaurus, latitude, longitude);
         END IF;		
     END IF;
 END;

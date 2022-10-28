@@ -106,7 +106,7 @@ public class GpsHelper {
         return existe;
     }
 
-    public boolean isHaveCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
+/*    public boolean isHaveCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
         boolean existe = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -120,14 +120,19 @@ public class GpsHelper {
             log.error("Error while Add coordonnes : " + id_concept, sqle);
         }
         return existe;
-    }
+    }*/
 
     /**
      * permet de retourner les coordonnées GPS d'un concept
+     * 
+     * @param ds
+     * @param id_concept
+     * @param id_theso
+     * @return 
      */
     public NodeGps getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
         NodeGps coordonnees = null;
-        if (isHaveCoordinate(ds, id_concept, id_theso)) {
+      //  if (isHaveCoordinate(ds, id_concept, id_theso)) {
             try ( Connection conn = ds.getConnection()) {
                 try ( Statement stmt = conn.createStatement()) {
                     stmt.executeQuery("select latitude, longitude from gps where id_concept ='"
@@ -143,7 +148,7 @@ public class GpsHelper {
             } catch (SQLException sqle) {
                 log.error("Error while Add coordonnes : " + id_concept, sqle);
             }
-        }
+//        }
 
         return coordonnees;
     }
