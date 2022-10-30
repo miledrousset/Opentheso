@@ -760,7 +760,8 @@ public class ImportFileBean implements Serializable {
             insertDB(nodeTree, idNewTheso, null, conceptHelper);
         }
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Thesaurus correctement importé !");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Le thésaurus " 
+                + thesaurusName + " (" + idNewTheso + ") est correctement importé !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         roleOnThesoBean.showListTheso();

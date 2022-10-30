@@ -69,7 +69,7 @@
                                           style="font-size: 12px;" />  
                         </div>
                     </div> 
-                    
+
                     <h:panelGroup id="resultImportCSVStructure">
                         <div class="row" style="margin: 20px">
                             <div class="col-12">
@@ -87,103 +87,23 @@
                         </div>                
                     </div>
 
-                    <div class="row" style="margin: 20px; text-align: right">
-                        <div class="col-12"> 
-                            <p:commandButton icon="fa fa-undo"  
-                                             value="#{langueBean.getMsg('btnBack')}"
-                                             class="btn btn-success"
-                                             style="background-color: #FFC107; color: black; border: none; margin-right: 10px"
+                    <div class="row" style="margin: 20px">
+                        <div class="col-12" style="text-align: center">
+
+                            <p:commandButton value="#{langueBean.getMsg('btnBack')}"
+                                             icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                              actionListener="#{viewEditionBean.init()}"
                                              action="#{importFileBean.init()}"
-                                             update="containerIndex messageIndex" />
+                                             update="containerIndex"/>
 
-                            <p:commandButton class="btn btn-success" widgetVar="buttonImportCsv"
-                                             icon="fa fa-download" update="containerIndex messageIndex"
-                                             onclick="PrimeFaces.monitorDownload(start, stop);"
-                                             style="background-color: #5CB85C; border: none;"
+                            <p:commandButton value="Importer" ajax="false" update="containerIndex"
                                              actionListener="#{importFileBean.addCsvStrucToDB()}"
-                                             ajax="true" process="@form"
-                                             value="Importer" />  
+                                             styleClass="ui-button-success" icon="fa fa-download"
+                                             title="Import classique plus long" style="margin-left: 20px" />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </h:panelGroup>
-
-    <script type="text/javascript">
-        function start() {
-            PF('statusDialog').show();
-        }
-
-        function stop() {
-            PF('statusDialog').hide();
-        }
-    </script>
-
-    <p:dialog modal="true" widgetVar="statusDialog" header="     Importation du fichier     " draggable="false" closable="false" resizable="false"
-              style="width: 400px">
-
-        <div id='laodingDiv' class="loader" >Loading...</div>
-
-        <style type="text/css">
-            .loader,
-            .loader:before,
-            .loader:after {
-                border-radius: 50%;
-                width: 2.5em;
-                height: 2.5em;
-                -webkit-animation-fill-mode: both;
-                animation-fill-mode: both;
-                -webkit-animation: load7 1.8s infinite ease-in-out;
-                animation: load7 1.8s infinite ease-in-out;
-            }
-            .loader {
-                color: #f47b2a;
-                font-size: 10px;
-                margin: 80px auto;
-                position: relative;
-                text-indent: -9999em;
-                -webkit-transform: translateZ(0);
-                -ms-transform: translateZ(0);
-                transform: translateZ(0);
-                -webkit-animation-delay: -0.16s;
-                animation-delay: -0.16s;
-            }
-            .loader:before,
-            .loader:after {
-                content: '';
-                position: absolute;
-                top: 0;
-            }
-            .loader:before {
-                left: -3.5em;
-                -webkit-animation-delay: -0.32s;
-                animation-delay: -0.32s;
-            }
-            .loader:after {
-                left: 3.5em;
-            }
-            @-webkit-keyframes load7 {
-                0%,
-                80%,
-                100% {
-                    box-shadow: 0 2.5em 0 -1.3em;
-                }
-                40% {
-                    box-shadow: 0 2.5em 0 0;
-                }
-            }
-            @keyframes load7 {
-                0%,
-                80%,
-                100% {
-                    box-shadow: 0 2.5em 0 -1.3em;
-                }
-                40% {
-                    box-shadow: 0 2.5em 0 0;
-                }
-            }
-        </style>
-    </p:dialog>
 </ui:fragment>
