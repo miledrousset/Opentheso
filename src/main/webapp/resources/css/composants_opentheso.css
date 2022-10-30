@@ -40,6 +40,22 @@ body .ui-menubutton .ui-widget {
     padding-left: 35px;
 }
 
+body .ui-widget {
+    font-size: 0.8rem;
+}
+
+body .ui-selectonemenu-panel .ui-selectonemenu-filter-container .ui-icon:before {
+    content: "";
+}
+
+body .ui-selectonemenu-panel .ui-selectonemenu-filter-container {
+    padding: 0.4rem 0.4rem;
+}
+            
+body .ui-selectonemenu-panel .ui-selectonemenu-filter-container .ui-selectonemenu-filter.ui-inputfield {
+    padding: 3px
+}
+
 body .ui-stat-hover .ui-menuitem-link .ui-corner-all .ui-menuitem-active {
     background-color: #495057;
     color: #495057;
