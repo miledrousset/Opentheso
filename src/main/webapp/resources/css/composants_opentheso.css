@@ -138,6 +138,8 @@ body .ui-selectonemenu {
     outline: 0 none;
     border-radius: 4px;
     appearance: none;
+    font-size: 12px;
+    color: #43B572;
 }
 
 body .ui-selectonemenu .ui-selectonemenu-label {

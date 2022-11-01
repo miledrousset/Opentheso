@@ -105,6 +105,7 @@ public class ConceptView implements Serializable {
     private int offset;
     private int step;    
     private boolean haveNext;
+    private boolean dejaAfficher;
     
     // total de la branche
     private int countOfBranch;
@@ -361,12 +362,10 @@ public class ConceptView implements Serializable {
         }
         
         setOffset();
-
-
+        
         // récupération des informations sur les corpus liés
-        CorpusHelper corpusHelper = new CorpusHelper();
         haveCorpus = false;
-        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
@@ -417,15 +416,14 @@ public class ConceptView implements Serializable {
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
-    
     public void getAltLabelWithAllLanguages(){   
         
-        String msg = "";
-        
+        String msg;
         if(toggleSwitchAltLabelLang) {
             msg = "Recherche dans toutes les langue effectuée !";
             nodeConcept.setNodeEM(new TermHelper().getAllNonPreferredTerms(
-                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));  
+                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), 
+                    nodeConcept.getConcept().getIdThesaurus()));  
         } else {
             msg = "Recherche dans la langue '" + selectedLang + "' effectuée !";
             nodeConcept.setNodeEM(new TermHelper().getNonPreferredTerms(connect.getPoolConnexion(),
@@ -434,11 +432,14 @@ public class ConceptView implements Serializable {
                     selectedLang));
         }
         
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", msg));
-        PrimeFaces.current().ajax().update("messageIndex");
+        if (!dejaAfficher) {
+            dejaAfficher = true;
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", msg));
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
+        
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }    
-    
     
     
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang){

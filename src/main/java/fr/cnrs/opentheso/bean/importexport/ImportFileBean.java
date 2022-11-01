@@ -118,7 +118,7 @@ public class ImportFileBean implements Serializable {
 
     private String formatDate = "yyyy-MM-dd";
     private String uri;
-    private double total;
+    private int total;
 
     private boolean loadDone = false;
     private boolean BDDinsertEnable = false;
@@ -666,14 +666,16 @@ public class ImportFileBean implements Serializable {
             }
 
             List<String[]> lines = new ArrayList<>();
-            try ( InputStreamReader isr = new InputStreamReader(event.getFile().getInputStream(), StandardCharsets.UTF_8);  BufferedReader reader = new BufferedReader(isr)) {
+            try ( InputStreamReader isr = new InputStreamReader(event.getFile().getInputStream(), StandardCharsets.UTF_8);
+                    BufferedReader reader = new BufferedReader(isr)) {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    lines.add(line.split(delimiterChar));
+                    if(StringUtils.isNoneEmpty(line)) {
+                        lines.add(line.split(delimiterChar));
+                    }
                 }
-            } catch (IOException e) {
-            }
+            } catch (IOException e) {}
 
             int nbrMaxElement = lines.get(0).length;
             for (int i = 0; i < lines.size(); i++) {
@@ -682,13 +684,13 @@ public class ImportFileBean implements Serializable {
                 }
             }
 
-            String[][] matrix = new String[lines.size()][nbrMaxElement];
+            String[][] matrix = new String[lines.size()+1][nbrMaxElement+1];
             for (int i = 0; i < lines.size(); i++) {
                 for (int j = 0; j < nbrMaxElement; j++) {
                     if (lines.get(i).length > j) {
                         matrix[i][j] = lines.get(i)[j];
                         if (!StringUtils.isEmpty(lines.get(i)[j])) {
-                            total++;
+                            total = total + 1;
                         }
                     }
                 }
@@ -706,8 +708,8 @@ public class ImportFileBean implements Serializable {
 
             PrimeFaces.current().executeScript("PF('waitDialog').hide()");
         }
-
-        PrimeFaces.current().ajax().update("containerIndex:resultExportCsvStructre");
+        
+        PrimeFaces.current().ajax().update("containerIndex:resultImportCSVStructure");
     }
 
     public void addCsvStrucToDB() {
@@ -2127,7 +2129,7 @@ public class ImportFileBean implements Serializable {
         return total;
     }
 
-    public void setTotal(double total) {
+    public void setTotal(int total) {
         this.total = total;
     }
 
