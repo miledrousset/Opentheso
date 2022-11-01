@@ -693,7 +693,7 @@ body .ui-tree .ui-tree-container .ui-treenode {
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content {
-    height: 28px;
+    height: 23px;
     font-size: 0.8rem;
 }
 
@@ -715,17 +715,17 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-high
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-s {
     color: #f47b2a;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
 }
 
 /* Espacement entre elements */
-.ui-tree-droppoint {
+/*.ui-tree-droppoint {
     height: 0px;
-}
+}*/
 
 /* Espacement entre sous elements */
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-icon {
