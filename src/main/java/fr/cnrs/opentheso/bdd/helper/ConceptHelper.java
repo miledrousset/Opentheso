@@ -1752,9 +1752,10 @@ public class ConceptHelper {
      * @param ds
      * @param idTheso
      * @param idConcepts
+     * @param idLang
      * @return 
      */
-    public boolean generateArkId(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts) {
+    public boolean generateArkId(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts, String idLang) {
 
         ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
         if (!arkHelper2.login()) {
@@ -1776,8 +1777,7 @@ public class ConceptHelper {
         for (String idConcept : idConcepts) {
 
             //    System.out.println("génération ARK pour le concept : " + idConcept);
-            nodeMetaData = getNodeMetaData(ds, idConcept,
-                    nodePreference.getSourceLang(), idTheso);
+            nodeMetaData = initNodeMetaData();
             if (nodeMetaData == null) {
                 return false;
             }
@@ -1785,7 +1785,10 @@ public class ConceptHelper {
             if (concept == null) {
                 return false;
             }
-
+            nodeMetaData.setTitle(getLexicalValueOfConcept(ds, idConcept, idTheso,idLang));
+            nodeMetaData.setSource(nodePreference.getPreferredName());
+            nodeMetaData.setCreator(concept.getCreatorName());
+            
             privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
 
             /// test de tous les cas de figure pour la création d'un idArk
@@ -1998,16 +2001,15 @@ public class ConceptHelper {
     /**
      * Pour préparer les données pour la création d'un idArk
      */
-    private NodeMetaData getNodeMetaData(HikariDataSource ds,
-            String idConcept, String idLang, String idTheso) {
-        NodeConcept nodeConcept;
+    private NodeMetaData initNodeMetaData() {
+/*        NodeConcept nodeConcept;
         nodeConcept = getConcept(ds, idConcept, idTheso, idLang, 21, 0);
         if (nodeConcept == null) {
             return null;
-        }
+        }*/
         NodeMetaData nodeMetaData = new NodeMetaData();
-        nodeMetaData.setCreator(nodeConcept.getTerm().getSource());
-        nodeMetaData.setTitle(nodeConcept.getTerm().getLexical_value());
+   //     nodeMetaData.setCreator(nodeConcept.getTerm().getSource());
+   //     nodeMetaData.setTitle(nodeConcept.getTerm().getLexical_value());
         nodeMetaData.setDcElementsList(new ArrayList<>());
         return nodeMetaData;
     }
@@ -2262,7 +2264,7 @@ public class ConceptHelper {
                 // alors c'est le moment de récupérer le code ARK
                 if (nodePreference.isUseArk()) {
                     idConcepts.add(idConcept);
-                    if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts)) {
+                    if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts, term.getLang())) {
                         //    conn.rollback();
                         //    conn.close();
                         message = message + "La création Ark a échoué";
@@ -2371,7 +2373,7 @@ public class ConceptHelper {
                 // alors c'est le moment de récupérer le code ARK
                 if (nodePreference.isUseArk()) {
                     idConcepts.add(idConcept);
-                    if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts)) {
+                    if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts, term.getLang())) {
                         //    conn.rollback();
                         //    conn.close();
                         message = message + "La création Ark a échouée";

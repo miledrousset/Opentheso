@@ -588,7 +588,8 @@ public class EditConcept implements Serializable {
         if (!conceptHelper.generateArkId(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                idConcepts)) {
+                idConcepts,
+                selectedTheso.getCurrentLang())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
