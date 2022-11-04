@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
@@ -671,6 +672,29 @@ public class CandidatBean implements Serializable {
         UserHelper userHelper = new UserHelper();
         return userHelper.getNameUser(connect.getPoolConnexion(), idUser);
 
+    }
+    
+    public void reactivateRejectedCandidat(){
+        if(candidatSelected == null || candidatSelected.getIdConcepte() == null || candidatSelected.getIdConcepte().isEmpty()) return;
+        
+        CandidateHelper candidateHelper = new CandidateHelper();
+        if(!candidateHelper.reactivateRejectedCandidat(connect.getPoolConnexion(),
+                candidatSelected.getIdThesaurus(),
+                candidatSelected.getIdConcepte())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "l'action a échoué");          
+        } else {
+            try {
+                showMessage(FacesMessage.SEVERITY_INFO, "l'action a réussi");
+                initCandidatModule();
+                getAllCandidatsByThesoAndLangue();                
+                setIsListCandidatsActivate(true);
+                //menuBean.redirectToCandidatPage();
+            } catch (IOException ex) {
+                Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+        
     }
 
     /**

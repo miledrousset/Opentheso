@@ -41,6 +41,27 @@ public class CandidateHelper {
      * /**************************************************************
      * /*************************************************************
      */
+    
+    /**
+     * permet de réactiver un candidat s'il a été rejeté
+     * @param ds
+     * @param idTheso
+     * @param idCandidat
+     * @return 
+     */
+    public boolean reactivateRejectedCandidat (HikariDataSource ds, String idTheso, String idCandidat){
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update candidat_status set id_status = 1" +
+                        " WHERE id_concept = '" + idCandidat + "' and id_thesaurus = '" + idTheso + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting List Group or Domain of thesaurus : " + idTheso, sqle);
+        }
+        return false;        
+    }
+    
     public ArrayList<String> getAllCandidatId(HikariDataSource ds, String idTheso) {
 
         ArrayList tabIdCandidat = new ArrayList();
