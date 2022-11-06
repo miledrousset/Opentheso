@@ -85,6 +85,7 @@ public class Tree implements Serializable {
     private AlignmentManualBean alignmentManualBean;
 
     private DataService dataService;
+    private TreeNode selectedNode;
     private List<TreeNode> clickselectedNodes;
     private TreeNode root;
     private String idTheso, idConceptParent, idLang, idConceptSelected;
@@ -918,10 +919,20 @@ public class Tree implements Serializable {
             addConceptsChild(node);
         }
     }
+    
+    
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 ////// pour tester la mémoire occupée par l'arbre ////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////      
+
+    public TreeNode getSelectedNode() {
+        return selectedNode;
+    }
+
+    public void setSelectedNode(TreeNode selectedNode) {
+        this.selectedNode = selectedNode;
+    }
 }
