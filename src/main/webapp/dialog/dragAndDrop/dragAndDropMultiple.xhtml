@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idDragAndDropGroupe" header="Drag and Drop control" widgetVar="dragAndDropGroupe"
+    <p:dialog id="idDragAndDropMultiple" header="Drag and Drop control" widgetVar="dragAndDropMultiple"
               modal="true" resizable="true" position="top" width="600" style="margin-top: 50px" >
 
         <h:form id="dragAndDropFormGroupe">
@@ -119,7 +119,7 @@
                                  update="containerIndex messageIndex"
                                  icon="pi pi-check"
                                  styleClass="ui-button-success"
-                                 oncomplete="PF('dragAndDrop').hide();"
+                                 oncomplete="PF('dragAndDropMultiple').hide();"
                                  actionListener="#{dragAndDrop.dropV2()}"
                                  process="@this" ajax="true"/>
             </div>
