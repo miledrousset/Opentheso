@@ -8,6 +8,9 @@
               widgetVar="addManualAlignment" width="450" showEffect="fade" 
               modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <h:form>
+            
+            <p:defaultCommand target="addAlignementManuelBtn" />
+            
             <div class="row">
                 <div class="col-12">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
@@ -51,7 +54,8 @@
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                  actionListener="PF('addManualAlignment').hide();" update="containerIndex:idAddManualAlignment"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
+                <p:commandButton id="addAlignementManuelBtn" value="#{langueBean.getMsg('btnValidate')}" 
+                                 update="containerIndex:formRightTab messageIndex"
                                  oncomplete="PF('addManualAlignment').hide();"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{alignmentManualBean.addManualAlignement(conceptView.nodeConcept.concept.idConcept)}" />

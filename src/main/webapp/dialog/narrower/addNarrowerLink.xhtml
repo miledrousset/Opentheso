@@ -8,6 +8,9 @@
               widgetVar="addNarrowerLink" width="450" showEffect="fade" modal="true" 
               resizable="false" position="top" style="margin-top: 30px" >
         <h:form>
+            
+            <p:defaultCommand target="addNarrowerLinkBtn" />
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -46,7 +49,7 @@
                                  actionListener="PF('addNarrowerLink').hide();" update="containerIndex:idAddNarrowerLink"/>
 
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:formRightTab messageIndex"
-                                 oncomplete="PF('addNarrowerLink').hide();"
+                                 oncomplete="PF('addNarrowerLink').hide();" id="addNarrowerLinkBtn"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{narrowerBean.addNewNarrowerLink(currentUser.nodeUser.idUser)}"/>
             </div>

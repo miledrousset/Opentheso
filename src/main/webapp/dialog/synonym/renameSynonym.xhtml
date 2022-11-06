@@ -6,6 +6,9 @@
     <p:dialog id="idRenameSynonym" header="Modifier synonyme" widgetVar="renameSynonym" 
               width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <h:form>
+            
+            <p:defaultCommand target="renameSynonymValidate" />
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 

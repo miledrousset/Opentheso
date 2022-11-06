@@ -8,6 +8,9 @@
               widgetVar="setGps" width="450" showEffect="fade" modal="true" resizable="false" 
               position="top" style="margin-top: 30px" >
         <h:form>
+            
+            <p:defaultCommand target="addGpsBtn" />
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -39,7 +42,7 @@
                                  ajax="true" process="@form" icon="fas fa-undo-alt"                              
                                  actionListener="PF('setGps').hide();" update="containerIndex:idSetGps"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}"
+                <p:commandButton id="addGpsBtn" value="#{langueBean.getMsg('btnValidate')}"
                                  update="containerIndex:formRightTab messageIndex"
                                  ajax="true" process="@form" icon="pi pi-check" 
                                  styleClass="ui-button-success" oncomplete="PF('setGps').hide();"

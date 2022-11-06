@@ -543,20 +543,21 @@ public class Tree implements Serializable {
     public void onNodeSelectByNode(DefaultTreeNode node) {
         
         alignmentManualBean.reset();
-        propositionBean.setIsRubriqueVisible(false);         
+        propositionBean.setIsRubriqueVisible(false);
+        rightBodySetting.setIndex("0");        
         
         leftBodySetting.setIndex("0");
-        treeNodeDataSelect = (TreeNodeData) clickselectedNodes.get(0).getData();
+        treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
 
         if (!"facet".equals(node.getType())) {
             indexSetting.setIsFacetSelected(false);
-            idConceptParent = ((TreeNodeData) clickselectedNodes.get(0).getData()).getNodeId();
+            idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
             
             rightBodySetting.setShowConceptToOn();
             conceptBean.getConceptForTree(idTheso,
-                    ((TreeNodeData) clickselectedNodes.get(0).getData()).getNodeId(), idLang);
+                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
 
-            idConceptSelected = ((TreeNodeData) clickselectedNodes.get(0).getData()).getNodeId();
+            idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             if(rightBodySetting.getIndex().equalsIgnoreCase("2")){
                 indexSetting.setIsValueSelected(true);            
 

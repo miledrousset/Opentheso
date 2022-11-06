@@ -7,6 +7,9 @@
               widgetVar="addConceptAndChildToGroup" width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form>
+            
+            <p:defaultCommand target="addConceptAndChildToGroupBtn" />
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -45,7 +48,9 @@
                                  style="margin-right: 10px" update="containerIndex:formRightTab messageIndex"
                                  oncomplete="PF('addConceptAndChildToGroup').hide();" />
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" ajax="true" process="@form"
+                <p:commandButton id="addConceptAndChildToGroupBtn"
+                                 value="#{langueBean.getMsg('btnValidate')}" 
+                                 ajax="true" process="@form"
                                  update="containerIndex:formRightTab messageIndex"
                                  icon="pi pi-check" styleClass="ui-button-success" 
                                  oncomplete="PF('addConceptAndChildToGroup').hide();"

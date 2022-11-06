@@ -9,6 +9,8 @@
 
         <h:form id="addTraductionForm" >
             
+            <p:defaultCommand target="addTraductionBtn" />
+            
             <div class="row">
                 <div class="col-12">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -46,7 +48,7 @@
                                  actionListener="PF('addTraduction').hide();" 
                                  update="containerIndex:idAddTraduction"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" 
+                <p:commandButton id="addTraductionBtn" value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" 
                                  ajax="true" process="@form" icon="pi pi-check" oncomplete="PF('addTraduction').show();"
                                  update="messageIndex containerIndex:idAddTraduction"                            
                                  actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" />

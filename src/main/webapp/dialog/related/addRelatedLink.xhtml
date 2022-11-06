@@ -9,6 +9,9 @@
               resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form rendered="#{conceptView.nodeConcept != null}" id="addRelatedLinkForm" >
+            
+            <p:defaultCommand target="addRelatedLinkBtn" />
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -54,7 +57,7 @@
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" style="margin-right: 10px"
                                  actionListener="PF('addRelatedLink').hide();" update="containerIndex:idAddRelatedLink"/>
 
-                <p:commandButton update="messageIndex containerIndex:idAddRelatedLink"
+                <p:commandButton id="addRelatedLinkBtn" update="messageIndex containerIndex:idAddRelatedLink"
                                  oncomplete="PF('addRelatedLink').show();" value="#{langueBean.getMsg('btnValidate')}"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{relatedBean.addNewRelatedLink(currentUser.nodeUser.idUser)}" />

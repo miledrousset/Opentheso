@@ -7,6 +7,9 @@
     <p:dialog id="idAddNT" header="#{langueBean.getMsg('rightbody.conceptdialog.add_specific_concept')}" widgetVar="addNT" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
         <h:form id="addNTForm">
+            
+            <p:defaultCommand target="addNtBtn" />
+             
             <div class="row">
                 <div class="col-5" >
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.generic_term')} : " />
@@ -79,7 +82,7 @@
                                  actionListener="PF('addNT').hide();" update="containerIndex:idAddNT"
                                  ajax="true" process="@form"/>
 
-                <p:commandButton rendered="#{!addConcept.duplicate}" 
+                <p:commandButton rendered="#{!addConcept.duplicate}" id="addNtBtn" 
                                  icon="pi pi-check" styleClass="ui-button-success"
                                  value="#{langueBean.getMsg('btnAdd')}"
                                  update="messageIndex containerIndex:idAddNT" oncomplete="PF('addNT').show();"
@@ -89,8 +92,10 @@
                 
                 <!-- concept duppliqué, forcer la création ou annuler -->
                 <p:commandButton rendered="#{addConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" 
-                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button"  style="margin-right: 10px"
-                                 actionListener="#{addConcept.setDuplicate(false)}" update="containerIndex:idAddNT" oncomplete="PF('addNT').show();"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                 style="margin-right: 10px"
+                                 actionListener="#{addConcept.setDuplicate(false)}" 
+                                 update="containerIndex:idAddNT" oncomplete="PF('addNT').show();"
                                  ajax="true" process="@form"/>
 
                 <p:commandButton rendered="#{addConcept.duplicate}" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"

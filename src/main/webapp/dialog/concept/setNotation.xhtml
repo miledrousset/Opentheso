@@ -9,6 +9,9 @@
               modal="true" resizable="false" style="margin-top: 30px" >   
 
         <h:form>
+            
+            <p:defaultCommand target="addNotationBtn" />
+                        
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -33,7 +36,7 @@
                                  style="margin-right: 10px" actionListener="PF('setNotation').hide();" 
                                  update="containerIndex:idSetNotation"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" id="addNotationBtn"
                                  ajax="true" process="@form" icon="pi pi-check" 
                                  styleClass="ui-button-success" 
                                  update="containerIndex:formRightTab messageIndex"

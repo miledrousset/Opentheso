@@ -9,6 +9,9 @@
               resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form>
+            
+            <p:defaultCommand target="ajouterConceptGroupe" />
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " />
@@ -46,7 +49,8 @@
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                  oncomplete="PF('addConceptToGroup').hide();" update="containerIndex:idAddConceptToGroup"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
+                <p:commandButton id="ajouterConceptGroupe"
+                                 value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  oncomplete="PF('addConceptToGroup').hide();"
                                  actionListener="#{addConceptToGroupBean.addConceptToGroup(currentUser.nodeUser.idUser)}" />

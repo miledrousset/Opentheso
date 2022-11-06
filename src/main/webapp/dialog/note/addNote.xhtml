@@ -7,7 +7,10 @@
     <p:dialog id="idAddNote" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNote" 
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="addNoteForm" >            
+        <h:form id="addNoteForm" >  
+            
+            <p:defaultCommand target="addNoteBtn" />
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -61,9 +64,9 @@
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                  actionListener="PF('addNote').hide();" update="containerIndex:idAddNote"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" icon="pi pi-check" 
+                <p:commandButton id="addNoteBtn" value="#{langueBean.getMsg('btnValidate')}" icon="pi pi-check" 
                                  update="containerIndex:formRightTab messageIndex" styleClass="ui-button-success" 
-                                 oncomplete="PF('addNote').hide();" ajax="true" process="@form"                              
+                                 ajax="true" process="@form"                              
                                  actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
             </div> 
         </h:form>

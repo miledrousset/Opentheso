@@ -8,6 +8,9 @@
               widgetVar="addBroaderLink" width="450" showEffect="fade" modal="true" resizable="false" 
               position="top" style="margin-top: 30px" >  
         <h:form>
+            
+            <p:defaultCommand target="addBroaderLinkBtn" />
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -44,7 +47,8 @@
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                  actionListener="PF('addBroaderLink').hide();" update="containerIndex:idAddBroaderLink"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
+                <p:commandButton id="addBroaderLinkBtn" value="#{langueBean.getMsg('btnValidate')}" 
+                                 update="containerIndex messageIndex"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  oncomplete="PF('addBroaderLink').hide();"
                                  actionListener="#{broaderBean.addNewBroaderLink(currentUser.nodeUser.idUser)}"/>
