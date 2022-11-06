@@ -29,12 +29,12 @@
             </title>
             <meta name="description" content="#{langueBean.getMsg('index.Opentheso_info')}"/>
         </h:panelGroup>
-
+        
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
-
     </h:head>
 
     <h:body id="page-top" onload="initMenu()" style="overflow-x: hidden;">
+
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
@@ -52,9 +52,8 @@
                 margin-top: -40px;
             }
         </style>
+
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"  />
-
-
 
         <div id="wrapper" style="height: 100%">
 
@@ -93,7 +92,7 @@
                         </h:panelGroup>
                     </div>
 
-                    <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative;">
+                    <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative; padding-bottom: 25px">
 
                         <p:panel id="searchBar">
                             <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px; width: 100%; margin: 25px;">

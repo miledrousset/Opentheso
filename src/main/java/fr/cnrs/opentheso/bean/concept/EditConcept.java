@@ -28,6 +28,7 @@ import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 
@@ -59,9 +60,9 @@ public class EditConcept implements Serializable {
 
     @Inject
     private Tree tree;
-
-    @Inject private RelatedBean relatedBean;
-    @Inject private ConceptView conceptBean;
+    
+    @Inject 
+    private ConceptView conceptBean;
     
     private String prefLabel;
     private String notation;
@@ -251,17 +252,13 @@ public class EditConcept implements Serializable {
             PrimeFaces.current().executeScript("PF('renameConcept').hide();");
         }        
 
-
-
-
-
-        if (tree.getSelectedNode() != null) {
+        if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+            if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(
                     conceptView.getNodeConcept().getConcept().getIdConcept())) {
                 tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idLang);
             }
-            ((TreeNodeData) tree.getSelectedNode().getData()).setName(prefLabel);
+            ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(prefLabel);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
             }
@@ -284,6 +281,9 @@ public class EditConcept implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention !", message);
         FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
         PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+        }  
         forDelete = true;
     }
 
@@ -326,17 +326,17 @@ public class EditConcept implements Serializable {
 
         // mise à jour
         PrimeFaces pf = PrimeFaces.current();
-        if (tree.getSelectedNode() != null) {
+        if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+            if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(
                     conceptView.getNodeConcept().getConcept().getIdConcept())) {
                 tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(),
                         idTheso,
                         selectedTheso.getCurrentLang());
             }
-            TreeNode parent = tree.getSelectedNode().getParent();
+            TreeNode parent = tree.getClickselectedNodes().get(0).getParent();
             if (parent != null) {
-                parent.getChildren().remove(tree.getSelectedNode());
+                parent.getChildren().remove(tree.getClickselectedNodes().get(0));
 
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("formLeftTab:tabTree:tree");

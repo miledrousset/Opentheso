@@ -155,35 +155,26 @@
                     </h:panelGroup>
 
                     <div class="row" style="margin: 20px">
-                        <div class="col-12">
-                            <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" 
-                                           labelTemplate="{value}%" styleClass="animated" global="false"
-                                           style="height: 20px;" />
-                        </div>                
-                    </div>
+                        <div class="col-12" style="text-align: center">
 
-                    <div class="row" style="margin: 20px">
-                        <div class="col-6"> 
-                            <p:commandButton id="cancelCsv" icon="fa fa-undo"  
-                                             value="#{langueBean.getMsg('btnBack')}"
-                                             class="btn btn-success"
-                                             style="width: 100%; background-color: #FFC107; color: black; border: none;"
+                            <p:commandButton value="#{langueBean.getMsg('btnBack')}"
+                                             icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                              actionListener="#{viewEditionBean.init()}"
                                              action="#{importFileBean.init()}"
-                                             update="containerIndex">
-                            </p:commandButton>
-                        </div>
-                        <div class="col-6"> 
-                            <p:commandButton id="buttonImportCsv" class="btn btn-success" widgetVar="buttonImportCsv"
-                                             icon="fa fa-download" update="containerIndex"
-                                             onclick="PrimeFaces.monitorDownload(start, stop);"
-                                             style="width: 100%; background-color: #5CB85C; border: none;"
+                                             update="containerIndex"/>
+
+                            <p:commandButton value="Importer" ajax="false"
+                                             actionListener="#{importFileBean.addCsvThesoToBDDV2()}"
+                                             styleClass="ui-button-success" icon="fa fa-upload" 
+                                             disabled="#{!importFileBean.loadDone}"
+                                             title="Import rapide" style="margin-left: 20px"/>
+
+                            <p:commandButton value="Ancienne méthode" ajax="false" update="containerIndex"
                                              actionListener="#{importFileBean.addCsvThesoToBDD()}"
-                                             ajax="true"
-                                             value="Importer"
-                                             disabled="#{!importFileBean.loadDone}">
-                            </p:commandButton>                       
-                        </div> 
+                                             styleClass="ui-button-success" icon="fa fa-upload"
+                                             disabled="#{!importFileBean.loadDone}"
+                                             title="Import classique plus long" style="margin-left: 20px" />
+                        </div>
                     </div>
                 </div>
             </div>

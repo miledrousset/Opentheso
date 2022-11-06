@@ -1,35 +1,45 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idDeleteNarrowerLink" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_specific_relationship')}" widgetVar="deleteNarrowerLink" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" /> 
+    <p:dialog id="idDeleteNarrowerLink" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_specific_relationship')}" 
+              widgetVar="deleteNarrowerLink" width="450" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
+        <h:form>
+            <div class="row">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "  /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/> 
+                </div>
             </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-            </div>
-        </div>            
 
-        <p:panel id="listNarrowerLink">
-            <h:outputText value="rightbody.concept.NarrowerLists')} : " class="dialog-titre" /> 
-            <ui:repeat var="narrower" value="#{narrowerBean.nodeNTs}" >
-                <div class="row">
-                    <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #FF7979" ajax="true"
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
+                <p:dataTable var="narrower" value="#{narrowerBean.nodeNTs}" size="small"
+                             style="margin-bottom: -17px; margin-top: -16px;">
+
+                    <f:facet name="header">
+                        <div class="products-table-header">
+                            <span style="font-weight: bold">
+                                <h:outputText value="rightbody.concept.NarrowerLists')}" />
+                            </span>
+                        </div>
+                    </f:facet>
+
+                    <p:column headerText="Label">
+                        <h:outputText value="#{narrower.title} (#{narrower.idConcept})" style="color: #43B572"/>
+                    </p:column>
+
+                    <p:column width="80" headerText="Supprimer">
+                        <p:commandLink style="color: #FF7979" ajax="true" process="@form"
                                        action="#{narrowerBean.deleteNarrowerLink( narrower, currentUser.nodeUser.idUser)}"
-                                       update="containerIndex:formRightTab messageIndex">
+                                       update="messageIndex containerIndex:idDeleteNarrowerLink containerIndex:formRightTab">
                             <i class="pi pi-trash" />
                         </p:commandLink>
-                    </div>
-                    <div class="col-11" style="margin-top: 3px">
-                        <h:outputText value="#{narrower.title} (#{narrower.idConcept})" style="color: #43B572"/> 
-                    </div>
-                </div>
-            </ui:repeat>
-        </p:panel>
+                    </p:column>                    
+                </p:dataTable>
+            </div>
+        </h:form>  
     </p:dialog>  
 </ui:fragment>

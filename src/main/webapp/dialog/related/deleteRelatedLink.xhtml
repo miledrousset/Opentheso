@@ -6,24 +6,23 @@
     <p:dialog id="idDeleteRelatedLink" header="#{langueBean.getMsg('rightbody.conceptdialog.delete_association_relationship')}"
               widgetVar="deleteRelatedLink" width="550" showEffect="fade" modal="true" position="top" resizable="false" style="margin-top: 30px">   
 
-        <h:form rendered="#{conceptView.nodeConcept != null}" id="deleteRelatedLinkForm" >
+        <h:form>
             <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Nom du concept : " class="dialog-titre" /> 
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "  /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/> 
                 </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-                </div>
-            </div>           
+            </div>
 
-            <p:panel id="listConceptSpecAssocies" style="max-height: 350px; margin-top: 20px;">
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
+                <p:dataTable var="related" value="#{conceptView.nodeConcept.nodeRT}" size="small"
+                             style="margin-bottom: -17px; margin-top: -16px;">
 
-                <p:dataTable var="related" value="#{conceptView.nodeConcept.nodeRT}" style="font-size: 12px;">
-                    <p:column headerText="label">
+                    <p:column headerText="Label">
                         <h:outputText value="#{related.title} (#{related.idConcept})" style="color: #43B572; font-size: 14px;"/>
-                    </p:column>    
+                    </p:column>
 
-                    <p:column width="60" headerText="action">
+                    <p:column width="80" headerText="Supprimer">
                         <p:commandLink style="color: #FF7979; text-align: center"
                                        ajax="true" process="@form"
                                        update="messageIndex containerIndex:idDeleteRelatedLink"
@@ -32,15 +31,8 @@
                             <i class="pi pi-trash" style="font-size: 1rem; padding-top: 5px; color: #C63632;" />
                         </p:commandLink>
                     </p:column>                    
-                </p:dataTable>             
-            </p:panel>
-            <p:spacer height="20px;" />
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('deleteRelatedLink').hide();" update="containerIndex:idDeleteRelatedLink"/>
+                </p:dataTable>
             </div>
-
         </h:form>
     </p:dialog> 
 </ui:fragment>

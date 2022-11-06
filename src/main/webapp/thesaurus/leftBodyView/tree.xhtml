@@ -12,11 +12,12 @@
             </div>
             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                 <p:link id="graph" href="#{request.contextPath}/graph/index.xhtml"
-                        target="_blank"  disabled="#{tree.selectedNode.leaf or tree.selectedNode == null}"
+                        target="_blank" disabled="#{tree.isGraphVisible()}"
                         style="color: #F47B2A; float: right; margin-top: 2px;">
                     <i class="pi pi-share-alt" style="font-size: 1rem" />
                 </p:link>
             </div>
+            
             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                 <p:menuButton style="background-color: transparent" icon="pi pi-align-justify" >
 
@@ -55,7 +56,9 @@
             </div>
         </div>
     </h:panelGroup>
+    
     <p:separator style="color: #F47B2A"/>
+    
     <h:panelGroup>
         
 

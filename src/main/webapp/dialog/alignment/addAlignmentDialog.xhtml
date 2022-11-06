@@ -38,14 +38,14 @@
                 </div>
 
                 <div class="col-1">
-                    <p:commandButton icon="pi pi-search"
+                    <p:commandButton icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
                                      actionListener="#{alignmentBean.searchAlignments(
                                                        selectedTheso.selectedIdTheso, 
                                                        alignmentBean.idConceptSelectedForAlignment,
                                                        alignmentBean.conceptValueForAlignment,
                                                        conceptView.selectedLang)}"
-                                     update=":containerIndex:searchAlignementForm messageIndex"
-                                     styleClass="edit-button rounded-button ui-button-success" />
+                                     style="color: #f47b2a; margin-left: 5px"
+                                     update=":containerIndex:searchAlignementForm messageIndex" />
                 </div>
             </div>
 

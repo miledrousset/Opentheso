@@ -5,26 +5,32 @@
 
     <p:dialog id="idDeleteAlignment" header="#{langueBean.getMsg('rightbody.concept.delete_alignment')}" widgetVar="deleteAlignment" 
               width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
-        <div class="row">
-            <div class="col-12" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " class="dialog-titre" />
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/>  
-            </div>
-        </div>         
-
-        <ui:repeat var="alignment" value="#{conceptView.nodeConcept.nodeAlignments}" >
+        <h:form id="deleteAlignment">
             <div class="row">
-                <div class="col-11" style="margin-top: 3px">
-                    <h:outputText value="#{alignment.uri_target} (#{alignment.thesaurus_target})" style="color: #43B572; font-size: 13px"/> 
-                </div>
-                <div class="col-1">
-                    <p:commandLink style="color: #FF7979" action="#{alignmentManualBean.deleteAlignment(alignment)}"
-                                      update="containerIndex:formRightTab">
-                        <i class="pi pi-trash" style="font-size: 13px;"/>
-                    </p:commandLink>
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" /> 
                 </div>
             </div>
-        </ui:repeat>
+
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
+                <p:dataTable id="deleteAlignment" var="alignment" value="#{conceptView.nodeConcept.nodeAlignments}" size="small"
+                             style="margin-bottom: -17px; margin-top: -16px;">
+
+                    <p:column width="80" headerText="Label">
+                        <h:outputText value="#{alignment.uri_target} (#{alignment.thesaurus_target})" 
+                                      style="color: #43B572; font-size: 13px"/> 
+                    </p:column>
+
+                    <p:column width="20" headerText="Supprimer">
+                        <p:commandLink style="color: #FF7979" action="#{alignmentManualBean.deleteAlignment(alignment)}"
+                                       update="containerIndex:deleteAlignment containerIndex:formRightTab"
+                                       ajax="true" process="@form">
+                            <i class="pi pi-trash" style="font-size: 13px;"/>
+                        </p:commandLink>
+                    </p:column>                    
+                </p:dataTable>
+            </div>
+        </h:form>
     </p:dialog> 
 </ui:fragment>

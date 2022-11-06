@@ -5,521 +5,525 @@
              xmlns:p="http://primefaces.org/ui">
 
     <!-- ligne Notes -->
-    <h:panelGroup>
+    <div class="card mb-4 py-3 border-left-success" style="margin: 10px;">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
 
-        <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central; font-size: 12px;">
-            <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
-                <h:panelGroup>
-                    <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
-                        <div class="row" style="padding: 2px">
-                            <div class="col-3" style="margin-left: 10px">
-                                <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
-                                              style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
+            <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
+                <div class="row" style="padding: 2px">
+                    <div class="col-3" style="margin-left: 10px">
+                        <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                                      style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
-                                <p:menuButton id="notesProp" icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
-                                              rendered="${propositionBean.showButtonAction()}">
-                                    <p:menuitem value="Proposer une nouvelle note"
-                                                actionListener="#{noteBean.reset()}" update="containerIndex:rightTab:idAddNoteProp"
-                                                oncomplete="PF('addNoteProp').show();" icon="fas fa-plus" />
-                                </p:menuButton>
+                        <p:menuButton icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
+                                      rendered="${propositionBean.showButtonAction()}">
+                            <p:menuitem value="Proposer une nouvelle note" process="@form" ajax="true"
+                                        onstart="#{noteBean.reset()}" 
+                                        update="containerIndex:rightTab:addNotePropForm"
+                                        oncomplete="PF('addNoteProp').show();" 
+                                        icon="fas fa-plus" />
+                        </p:menuButton>
+                    </div>
+                    <div class="col-9" />
+                </div>
+            </div>  
+            
+            <h:panelGroup style="margin-top: 5px;">
+
+                <h:panelGroup rendered="#{propositionBean.proposition.notes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+
+                                <p:selectBooleanCheckbox value="#{propositionBean.noteAccepted}" title="Accepter cette proposition"
+                                                         rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)
+                                                                     and propositionBean.showButtonAction()}"/>
+
+                                <h:panelGroup>
+                                    <p:menuButton id="noteProp" icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
+                                                  rendered="${propositionBean.showButtonAction()}">
+                                        <p:menuitem value="Modifier une note" 
+                                                    actionListener="#{noteBean.initNoteProp('note')}"
+                                                    oncomplete="PF('editNoteProp').show();"
+                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />   
+                                        
+                                        <p:menuitem value="Supprimer une note" 
+                                                    actionListener="#{noteBean.initNoteProp('note')}"
+                                                    update="containerIndex:rightTab:idDeleteNoteProp" 
+                                                    oncomplete="PF('deleteNoteProp').show();" icon="fas fa-minus"/>
+                                    </p:menuButton>
+                                </h:panelGroup>
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.note')}"
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
+                                <ui:repeat var="note" value="#{propositionBean.proposition.notes}" varStatus="status">
 
-                            <div class="col-9" />
+                                    <h:panelGroup rendered="#{!note.toAdd and !note.toRemove and !note.toUpdate}"  >
+                                        <h:outputText value="[#{note.lang.toUpperCase()}] " style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                        <h:outputText value="#{note.lexicalvalue}" style="color: #666666; font-size: 14px;"/> 
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{note.toAdd}" >
+                                        <h:outputText value="[#{note.lang.toUpperCase()}] " style="font-size: 14px; font-weight: bold; color: green;"/> 
+                                        <h:outputText value="#{note.lexicalvalue}" style="font-size: 14px; color: green;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{note.toUpdate}" >
+                                        <h:outputText value="[#{note.lang.toUpperCase()}] " style="font-size: 14px; font-weight: bold; color: blue;"/> 
+                                        <h:outputText value="#{note.lexicalvalue} " style="font-size: 14px; color: blue;"/>
+                                        <h:outputText value="(#{note.oldValue})" style="font-size: 14px; text-decoration : line-through; color: blue;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{note.toRemove}" >
+                                        <h:outputText value="[#{note.lang.toUpperCase()}] " 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
+
+                                        <h:outputText value="#{note.lexicalvalue}" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red;"/>
+                                    </h:panelGroup>
+                                    <br/>      
+                                </ui:repeat>
+                            </div>
                         </div>
                     </div>
-                </h:panelGroup>                
-                <p:tooltip for="notesProp noteProp" value="Cliquez ici pour proposer une modification" showDelay="500"
-                           position="top" />  
-                <h:panelGroup style="margin-top: 5px;">
-
-                    <h:panelGroup rendered="#{propositionBean.proposition.notes.size() != 0}">
-                        <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    
-                                    <p:selectBooleanCheckbox value="#{propositionBean.noteAccepted}" title="Accepter cette proposition"
-                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)
-                                                  and propositionBean.showButtonAction()}"/>
-                                    
-                                    <h:panelGroup>
-                                        <p:menuButton id="noteProp" icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
-                                                      rendered="${propositionBean.showButtonAction()}">
-                                            <p:menuitem value="Modifier une note" actionListener="#{noteBean.reset()}"
-                                                        action = "#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNoteProp').show();"
-                                                        update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />                                            
-                                            <p:menuitem value="Supprimer une note" 
-                                                        actionListener="#{noteBean.reset()}" action="#{noteBean.setSelectedTypeNote('note')}"
-                                                        update="containerIndex:rightTab:idDeleteNoteProp" oncomplete="PF('deleteNoteProp').show();" icon="fas fa-minus"/>
-                                        </p:menuButton>
-                                    </h:panelGroup>
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.note')}"
-                                                  style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
-                                    <ui:repeat var="note" value="#{propositionBean.proposition.notes}" varStatus="status">
-                                        
-                                        <h:panelGroup rendered="#{!note.toAdd and !note.toRemove and !note.toUpdate}"  >
-                                            <h:outputText value="[#{note.lang.toUpperCase()}] " style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                            <h:outputText value="#{note.lexicalvalue}" style="color: #666666; font-size: 14px;"/> 
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{note.toAdd}" >
-                                            <h:outputText value="[#{note.lang.toUpperCase()}] " style="font-size: 14px; font-weight: bold; color: green;"/> 
-                                            <h:outputText value="#{note.lexicalvalue}" style="font-size: 14px; color: green;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{note.toUpdate}" >
-                                            <h:outputText value="[#{note.lang.toUpperCase()}] " style="font-size: 14px; font-weight: bold; color: blue;"/> 
-                                            <h:outputText value="#{note.lexicalvalue} " style="font-size: 14px; color: blue;"/>
-                                            <h:outputText value="(#{note.oldValue})" style="font-size: 14px; text-decoration : line-through; color: blue;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{note.toRemove}" >
-                                            <h:outputText value="[#{note.lang.toUpperCase()}] " 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
-
-                                            <h:outputText value="#{note.lexicalvalue}" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red;"/>
-                                        </h:panelGroup>
-                                        <br/>      
-                                    </ui:repeat>
-                                </div>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{propositionBean.proposition.changeNotes.size() != 0}">
-                        <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    
-                                    <p:selectBooleanCheckbox value="#{propositionBean.changeNoteAccepted}" title="Accepter cette proposition"
-                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
-                                    
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
-                                                  rendered="${propositionBean.showButtonAction()}">
-                                        <p:menuitem value="Modifier une note de changement" actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('changeNote')}"                                          
-                                                    oncomplete="PF('editNoteProp').show();"
-                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />                                        
-                                        <p:menuitem value="Supprimer une note de changement" actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('changeNote')}" oncomplete="PF('deleteNoteProp').show();"
-                                                    update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />                                        
-                                    </p:menuButton>
-
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.change_note')}"
-                                                  style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                                
-                                    <ui:repeat var="changeNote" value="#{propositionBean.proposition.changeNotes}" varStatus="status">
-                                        <h:panelGroup rendered="#{!changeNote.toAdd and !changeNote.toRemove and !changeNote.toUpdate}"  >
-                                            <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                            <h:outputText value="#{changeNote.lexicalvalue}" escape="false" 
-                                                          style="color: #666666; font-size: 14px;"/> 
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{changeNote.toAdd}" >
-                                            <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: green;"/> 
-
-                                            <h:outputText value="#{changeNote.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; color: green;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{changeNote.toUpdate}" >
-                                            <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: blue;"/> 
-                                            <h:outputText value="#{changeNote.lexicalvalue} " escape="false" 
-                                                          style="font-size: 14px; color: blue;"/>
-                                            <h:outputText value="(#{changeNote.oldValue})" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: blue;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{changeNote.toRemove}" >
-                                            <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
-
-                                            <h:outputText value="#{changeNote.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red;"/>
-                                        </h:panelGroup>
-                                        <br/>
-                                    </ui:repeat>
-                                </div>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{propositionBean.proposition.definitions.size() != 0}">
-                        <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                                    
-                                    <p:selectBooleanCheckbox value="#{propositionBean.definitionAccepted}" title="Accepter cette proposition"
-                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
-                                    
-                                    <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;" >
-                                        <p:menuitem value="Modifier une définition" 
-                                                    actionListener="#{noteBean.reset()}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
-                                                    oncomplete="PF('editNoteProp').show();"
-                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit"/>
-                                        <p:menuitem value="Supprimer une définition" actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('definition')}"
-                                                    oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp"
-                                                    icon="fas fa-minus"/>
-                                    </p:menuButton>
-                                    
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.definition')}"
-                                                  style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">     
-                                    <ui:repeat var="def" value="#{propositionBean.proposition.definitions}" varStatus="status">
-                                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                            <h:panelGroup rendered="#{!def.toAdd and !def.toRemove and !def.toUpdate}"  >
-                                                <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
-                                                              style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                                <h:outputText value="#{def.lexicalvalue}" escape="false" 
-                                                              style="color: #666666; font-size: 14px;"/> 
-                                            </h:panelGroup>
-
-                                            <h:panelGroup rendered="#{def.toAdd}" >
-                                                <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
-                                                              style="font-size: 14px; font-weight: bold; color: green;"/> 
-
-                                                <h:outputText value="#{def.lexicalvalue}" escape="false" 
-                                                              style="font-size: 14px; color: green;"/>
-                                            </h:panelGroup>
-
-                                            <h:panelGroup rendered="#{def.toUpdate}" >
-                                                <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
-                                                              style="font-size: 14px; font-weight: bold; color: blue;"/> 
-                                                <h:outputText value="#{def.lexicalvalue} " escape="false" 
-                                                              style="font-size: 14px; color: blue;"/>
-                                                <h:outputText value="(#{def.oldValue})" escape="false" 
-                                                              style="font-size: 14px; text-decoration : line-through; color: blue;"/>
-                                            </h:panelGroup>
-
-                                            <h:panelGroup rendered="#{def.toRemove}" >
-                                                <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
-                                                              style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
-
-                                                <h:outputText value="#{def.lexicalvalue}" escape="false" 
-                                                              style="font-size: 14px; text-decoration : line-through; color: red;"/>
-                                            </h:panelGroup>
-
-                                            <br/>
-                                        </div>
-                                    </ui:repeat>
-                                </div>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{propositionBean.proposition.editorialNotes.size() != 0}">
-                        <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                                    
-                                    <p:selectBooleanCheckbox value="#{propositionBean.editorialNotesAccepted}" title="Accepter cette proposition"
-                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
-                                    
-                                    <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}"
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="Modifier une édite note" 
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
-                                                    oncomplete="PF('editNoteProp').show();"
-                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
-                                        <p:menuitem value="Supprimer une édite note" 
-                                                    actionListener="#{noteBean.reset()}" icon="fas fa-minus"
-                                                    action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
-                                                    oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp" />
-                                    </p:menuButton>
-                                    
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                    <ui:repeat var="editorialNote" value="#{propositionBean.proposition.editorialNotes}" varStatus="status">
-                                        <h:panelGroup rendered="#{!editorialNote.toAdd and !editorialNote.toRemove and !editorialNote.toUpdate}"  >
-                                            <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                            <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" 
-                                                          style="color: #666666; font-size: 14px;"/> 
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{editorialNote.toAdd}" >
-                                            <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: green;"/> 
-
-                                            <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; color: green;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{editorialNote.toUpdate}" >
-                                            <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: blue;"/> 
-                                            <h:outputText value="#{editorialNote.lexicalvalue} " escape="false" 
-                                                          style="font-size: 14px; color: blue;"/>
-                                            <h:outputText value="(#{editorialNote.oldValue})" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: blue;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{editorialNote.toRemove}" >
-                                            <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
-
-                                            <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red;"/>
-                                        </h:panelGroup>
-                                        <br/>
-                                    </ui:repeat>
-                                </div>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{propositionBean.proposition.examples.size() != 0}">
-                        <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                                    
-                                    <p:selectBooleanCheckbox value="#{propositionBean.examplesAccepted}" title="Accepter cette proposition"
-                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
-
-                                    <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="Modifier un example" 
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('example')}"                                          
-                                                    oncomplete="PF('editNoteProp').show();"
-                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
-                                        <p:menuitem value="Supprimer un example" 
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('example')}"
-                                                    oncomplete="PF('deleteNoteProp').show();"
-                                                    update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
-                                    </p:menuButton> 
-
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.example')}" 
-                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                    <ui:repeat var="example" value="#{propositionBean.proposition.examples}" varStatus="status">
-                                        <h:panelGroup rendered="#{!example.toAdd and !example.toRemove and !example.toUpdate}"  >
-                                            <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
-                                                          style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                            <h:outputText value="#{example.lexicalvalue}" escape="false" 
-                                                          style="color: #666666; font-size: 14px;"/> 
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{example.toAdd}" >
-                                            <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: green;"/> 
-
-                                            <h:outputText value="#{example.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; color: green;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{example.toUpdate}" >
-                                            <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: blue;"/> 
-                                            <h:outputText value="#{example.lexicalvalue} " escape="false" 
-                                                          style="font-size: 14px; color: blue;"/>
-                                            <h:outputText value="(#{example.oldValue})" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: blue;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{example.toRemove}" >
-                                            <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
-
-                                            <h:outputText value="#{example.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red;"/>
-                                        </h:panelGroup>
-                                        <br/>
-                                    </ui:repeat>
-                                </div>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{propositionBean.proposition.historyNotes.size() != 0}">
-                        <div class="list-group-item list-group-item-action" >                        
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                    
-                                    <p:selectBooleanCheckbox value="#{propositionBean.historyAccepted}" title="Accepter cette proposition"
-                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
-                                    
-                                    <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="Modifier une note historique" 
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
-                                                    oncomplete="PF('editNoteProp').show();"
-                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
-                                        <p:menuitem value="Supprimer une note historique" 
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('historyNote')}"
-                                                    oncomplete="PF('deleteNoteProp').show();"
-                                                    update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
-                                    </p:menuButton> 
-
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.history_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                    <ui:repeat var="historyNote" value="#{propositionBean.proposition.historyNotes}" varStatus="status">
-                                        <h:panelGroup rendered="#{!historyNote.toAdd and !historyNote.toRemove and !historyNote.toUpdate}"  >
-                                            <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                            <h:outputText value="#{historyNote.lexicalvalue}" escape="false" 
-                                                          style="color: #666666; font-size: 14px;"/> 
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{historyNote.toAdd}" >
-                                            <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: green;"/> 
-
-                                            <h:outputText value="#{historyNote.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; color: green;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{historyNote.toUpdate}" >
-                                            <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: blue;"/> 
-                                            <h:outputText value="#{historyNote.lexicalvalue} " escape="false" 
-                                                          style="font-size: 14px; color: blue;"/>
-                                            <h:outputText value="(#{historyNote.oldValue})" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: blue;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{historyNote.toRemove}" >
-                                            <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
-
-                                            <h:outputText value="#{historyNote.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red;"/>
-                                        </h:panelGroup>
-                                        <br/>
-                                    </ui:repeat>
-                                </div>
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{propositionBean.proposition.scopeNotes.size() != 0}">
-                        <div class="list-group-item list-group-item-action" >
-                            <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                                <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
-                                    
-                                    <p:selectBooleanCheckbox value="#{propositionBean.scopeAccepted}" title="Accepter cette proposition"
-                                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
-                                                  or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
-                                    
-                                    <p:menuButton rendered="${propositionBean.showButtonAction()}" icon="fas fa-cog" 
-                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="Modifier une scope note" 
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          
-                                                    oncomplete="PF('editNoteProp').show();"
-                                                    update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
-                                        <p:menuitem value="Supprimer une scope note" 
-                                                    actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('scopeNote')}"
-                                                    oncomplete="PF('deleteNoteProp').show();"
-                                                    update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />
-                                    </p:menuButton>
-
-                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
-                                                  title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
-                                                  style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
-                                </div>
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                    <ui:repeat var="scopeNote" value="#{propositionBean.proposition.scopeNotes}" varStatus="status">
-                                        <h:panelGroup rendered="#{!scopeNote.toAdd and !scopeNote.toRemove and !scopeNote.toUpdate}"  >
-                                            <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="color: #666666; font-size: 14px; font-weight: bold"/> 
-                                            <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" 
-                                                          style="color: #666666; font-size: 14px;"/> 
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{scopeNote.toAdd}" >
-                                            <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: green;"/> 
-
-                                            <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; color: green;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{scopeNote.toUpdate}" >
-                                            <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; font-weight: bold; color: blue;"/> 
-                                            <h:outputText value="#{scopeNote.lexicalvalue} " escape="false" 
-                                                          style="font-size: 14px; color: blue;"/>
-                                            <h:outputText value="(#{scopeNote.oldValue})" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: blue;"/>
-                                        </h:panelGroup>
-
-                                        <h:panelGroup rendered="#{scopeNote.toRemove}" >
-                                            <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
-
-                                            <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" 
-                                                          style="font-size: 14px; text-decoration : line-through; color: red;"/>
-                                        </h:panelGroup>
-                                        <br/>
-                                    </ui:repeat>
-                                </div>
-                            </div>
-                        </div>            
-                    </h:panelGroup>
                 </h:panelGroup>
-            </div>
+
+                <h:panelGroup rendered="#{propositionBean.proposition.changeNotes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+
+                                <p:selectBooleanCheckbox value="#{propositionBean.changeNoteAccepted}" title="Accepter cette proposition"
+                                                         rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+
+                                <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
+                                              rendered="${propositionBean.showButtonAction()}">
+                                    <p:menuitem value="Modifier une note de changement" 
+                                                actionListener="#{noteBean.initNoteProp('changeNote')}"                                         
+                                                oncomplete="PF('editNoteProp').show();"
+                                                update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />                                        
+                                    <p:menuitem value="Supprimer une note de changement" 
+                                                actionListener="#{noteBean.initNoteProp('changeNote')}"   
+                                                oncomplete="PF('deleteNoteProp').show();"
+                                                update="containerIndex:rightTab:idDeleteNoteProp" icon="fas fa-minus" />                                        
+                                </p:menuButton>
+
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.change_note')}"
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                                
+                                <ui:repeat var="changeNote" value="#{propositionBean.proposition.changeNotes}" varStatus="status">
+                                    <h:panelGroup rendered="#{!changeNote.toAdd and !changeNote.toRemove and !changeNote.toUpdate}"  >
+                                        <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                        <h:outputText value="#{changeNote.lexicalvalue}" escape="false" 
+                                                      style="color: #666666; font-size: 14px;"/> 
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{changeNote.toAdd}" >
+                                        <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: green;"/> 
+
+                                        <h:outputText value="#{changeNote.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; color: green;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{changeNote.toUpdate}" >
+                                        <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: blue;"/> 
+                                        <h:outputText value="#{changeNote.lexicalvalue} " escape="false" 
+                                                      style="font-size: 14px; color: blue;"/>
+                                        <h:outputText value="(#{changeNote.oldValue})" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: blue;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{changeNote.toRemove}" >
+                                        <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
+
+                                        <h:outputText value="#{changeNote.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red;"/>
+                                    </h:panelGroup>
+                                    <br/>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{propositionBean.proposition.definitions.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
+
+                                <p:selectBooleanCheckbox value="#{propositionBean.definitionAccepted}" title="Accepter cette proposition"
+                                                         rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+
+                                <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
+                                              style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;" >
+                                    
+                                    <p:menuitem value="Modifier une définition" 
+                                                actionListener="#{noteBean.initNoteProp('definition')}"
+                                                oncomplete="PF('editNoteProp').show();"
+                                                update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit"/>
+                                    
+                                    <p:menuitem value="Supprimer une définition" 
+                                                actionListener="#{noteBean.initNoteProp('definition')}"
+                                                oncomplete="PF('deleteNoteProp').show();" 
+                                                update="containerIndex:rightTab:idDeleteNoteProp"
+                                                icon="fas fa-minus"/>
+                                </p:menuButton>
+
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.definition')}"
+                                              style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">     
+                                <ui:repeat var="def" value="#{propositionBean.proposition.definitions}" varStatus="status">
+                                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                        <h:panelGroup rendered="#{!def.toAdd and !def.toRemove and !def.toUpdate}"  >
+                                            <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
+                                                          style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                            <h:outputText value="#{def.lexicalvalue}" escape="false" 
+                                                          style="color: #666666; font-size: 14px;"/> 
+                                        </h:panelGroup>
+
+                                        <h:panelGroup rendered="#{def.toAdd}" >
+                                            <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
+                                                          style="font-size: 14px; font-weight: bold; color: green;"/> 
+
+                                            <h:outputText value="#{def.lexicalvalue}" escape="false" 
+                                                          style="font-size: 14px; color: green;"/>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup rendered="#{def.toUpdate}" >
+                                            <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
+                                                          style="font-size: 14px; font-weight: bold; color: blue;"/> 
+                                            <h:outputText value="#{def.lexicalvalue} " escape="false" 
+                                                          style="font-size: 14px; color: blue;"/>
+                                            <h:outputText value="(#{def.oldValue})" escape="false" 
+                                                          style="font-size: 14px; text-decoration : line-through; color: blue;"/>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup rendered="#{def.toRemove}" >
+                                            <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
+                                                          style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
+
+                                            <h:outputText value="#{def.lexicalvalue}" escape="false" 
+                                                          style="font-size: 14px; text-decoration : line-through; color: red;"/>
+                                        </h:panelGroup>
+
+                                        <br/>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{propositionBean.proposition.editorialNotes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
+
+                                <p:selectBooleanCheckbox value="#{propositionBean.editorialNotesAccepted}" title="Accepter cette proposition"
+                                                         rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+
+                                <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}"
+                                              style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="Modifier une édite note" 
+                                                actionListener="#{noteBean.initNoteProp('editorialNote')}"                                       
+                                                oncomplete="PF('editNoteProp').show();"
+                                                update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
+                                    
+                                    <p:menuitem value="Supprimer une édite note" 
+                                                icon="fas fa-minus"
+                                                actionListener="#{noteBean.initNoteProp('editorialNote')}"  
+                                                oncomplete="PF('deleteNoteProp').show();" update="containerIndex:rightTab:idDeleteNoteProp" />
+                                </p:menuButton>
+
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
+                                              style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <ui:repeat var="editorialNote" value="#{propositionBean.proposition.editorialNotes}" varStatus="status">
+                                    <h:panelGroup rendered="#{!editorialNote.toAdd and !editorialNote.toRemove and !editorialNote.toUpdate}"  >
+                                        <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                        <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" 
+                                                      style="color: #666666; font-size: 14px;"/> 
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{editorialNote.toAdd}" >
+                                        <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: green;"/> 
+
+                                        <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; color: green;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{editorialNote.toUpdate}" >
+                                        <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: blue;"/> 
+                                        <h:outputText value="#{editorialNote.lexicalvalue} " escape="false" 
+                                                      style="font-size: 14px; color: blue;"/>
+                                        <h:outputText value="(#{editorialNote.oldValue})" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: blue;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{editorialNote.toRemove}" >
+                                        <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
+
+                                        <h:outputText value="#{editorialNote.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red;"/>
+                                    </h:panelGroup>
+                                    <br/>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{propositionBean.proposition.examples.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
+
+                                <p:selectBooleanCheckbox value="#{propositionBean.examplesAccepted}" title="Accepter cette proposition"
+                                                         rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+
+                                <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
+                                              style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="Modifier un example" 
+                                                actionListener="#{noteBean.initNoteProp('example')}"                                       
+                                                oncomplete="PF('editNoteProp').show();"
+                                                update="containerIndex:rightTab:idEditNoteProp" 
+                                                icon="fas fa-edit" />
+                                    
+                                    <p:menuitem value="Supprimer un example" 
+                                                actionListener="#{noteBean.initNoteProp('example')}"     
+                                                oncomplete="PF('deleteNoteProp').show();"
+                                                update="containerIndex:rightTab:idDeleteNoteProp" 
+                                                icon="fas fa-minus" />
+                                </p:menuButton> 
+
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.example')}" 
+                                              style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <ui:repeat var="example" value="#{propositionBean.proposition.examples}" varStatus="status">
+                                    <h:panelGroup rendered="#{!example.toAdd and !example.toRemove and !example.toUpdate}"  >
+                                        <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
+                                                      style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                        <h:outputText value="#{example.lexicalvalue}" escape="false" 
+                                                      style="color: #666666; font-size: 14px;"/> 
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{example.toAdd}" >
+                                        <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: green;"/> 
+
+                                        <h:outputText value="#{example.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; color: green;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{example.toUpdate}" >
+                                        <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: blue;"/> 
+                                        <h:outputText value="#{example.lexicalvalue} " escape="false" 
+                                                      style="font-size: 14px; color: blue;"/>
+                                        <h:outputText value="(#{example.oldValue})" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: blue;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{example.toRemove}" >
+                                        <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
+
+                                        <h:outputText value="#{example.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red;"/>
+                                    </h:panelGroup>
+                                    <br/>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{propositionBean.proposition.historyNotes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >                        
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+
+                                <p:selectBooleanCheckbox value="#{propositionBean.historyAccepted}" title="Accepter cette proposition"
+                                                         rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+
+                                <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
+                                              style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="Modifier une note historique" 
+                                                actionListener="#{noteBean.initNoteProp('historyNote')}"                                      
+                                                oncomplete="PF('editNoteProp').show();"
+                                                update="containerIndex:rightTab:idEditNoteProp" icon="fas fa-edit" />
+                                    
+                                    <p:menuitem value="Supprimer une note historique" 
+                                                actionListener="#{noteBean.initNoteProp('historyNote')}"   
+                                                oncomplete="PF('deleteNoteProp').show();"
+                                                update="containerIndex:rightTab:idDeleteNoteProp" 
+                                                icon="fas fa-minus" />
+                                </p:menuButton> 
+
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.history_note')}"
+                                              style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <ui:repeat var="historyNote" value="#{propositionBean.proposition.historyNotes}" varStatus="status">
+                                    <h:panelGroup rendered="#{!historyNote.toAdd and !historyNote.toRemove and !historyNote.toUpdate}"  >
+                                        <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                        <h:outputText value="#{historyNote.lexicalvalue}" escape="false" 
+                                                      style="color: #666666; font-size: 14px;"/> 
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{historyNote.toAdd}" >
+                                        <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: green;"/> 
+
+                                        <h:outputText value="#{historyNote.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; color: green;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{historyNote.toUpdate}" >
+                                        <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: blue;"/> 
+                                        <h:outputText value="#{historyNote.lexicalvalue} " escape="false" 
+                                                      style="font-size: 14px; color: blue;"/>
+                                        <h:outputText value="(#{historyNote.oldValue})" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: blue;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{historyNote.toRemove}" >
+                                        <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
+
+                                        <h:outputText value="#{historyNote.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red;"/>
+                                    </h:panelGroup>
+                                    <br/>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{propositionBean.proposition.scopeNotes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
+
+                                <p:selectBooleanCheckbox value="#{propositionBean.scopeAccepted}" title="Accepter cette proposition"
+                                                         rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso 
+                                                                     or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and propositionBean.showButtonAction()}"/>
+
+                                <p:menuButton rendered="${propositionBean.showButtonAction()}" icon="fas fa-cog" 
+                                              style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="Modifier une scope note" 
+                                                actionListener="#{noteBean.initNoteProp('scopeNote')}"                                        
+                                                oncomplete="PF('editNoteProp').show();"
+                                                update="containerIndex:rightTab:idEditNoteProp" 
+                                                icon="fas fa-edit" />
+                                    
+                                    <p:menuitem value="Supprimer une scope note" 
+                                                actionListener="#{noteBean.initNoteProp('scopeNote')}"   
+                                                oncomplete="PF('deleteNoteProp').show();"
+                                                update="containerIndex:rightTab:idDeleteNoteProp" 
+                                                icon="fas fa-minus" />
+                                </p:menuButton>
+
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
+                                              style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <ui:repeat var="scopeNote" value="#{propositionBean.proposition.scopeNotes}" varStatus="status">
+                                    <h:panelGroup rendered="#{!scopeNote.toAdd and !scopeNote.toRemove and !scopeNote.toUpdate}"  >
+                                        <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="color: #666666; font-size: 14px; font-weight: bold"/> 
+                                        <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" 
+                                                      style="color: #666666; font-size: 14px;"/> 
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{scopeNote.toAdd}" >
+                                        <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: green;"/> 
+
+                                        <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; color: green;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{scopeNote.toUpdate}" >
+                                        <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; font-weight: bold; color: blue;"/> 
+                                        <h:outputText value="#{scopeNote.lexicalvalue} " escape="false" 
+                                                      style="font-size: 14px; color: blue;"/>
+                                        <h:outputText value="(#{scopeNote.oldValue})" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: blue;"/>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{scopeNote.toRemove}" >
+                                        <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red; font-weight: bold;"/> 
+
+                                        <h:outputText value="#{scopeNote.lexicalvalue}" escape="false" 
+                                                      style="font-size: 14px; text-decoration : line-through; color: red;"/>
+                                    </h:panelGroup>
+                                    <br/>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>            
+                </h:panelGroup>
+            </h:panelGroup>
         </div>
-    </h:panelGroup>
+    </div>
 
-
-    <p:dialog id="idAddNoteProp" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNoteProp" 
-              width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+    <p:dialog id="idAddNoteProp" header="#{langueBean.getMsg('rightbody.concept.add_note')}" 
+              widgetVar="addNoteProp" width="650" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form id="addNotePropForm" >
 
             <div class="row">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
-                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/>
+
+                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" 
+                                   update="messageIndex" ajax="true" process="@form">
                         <i class="pi pi-exclamation-circle" />
                     </p:commandLink>
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="margin-left: 10px; color: black; margin-left: 5px" /> 
                 </div>
             </div>
 
             <!-- type note -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-5">
-                    <h:outputText value="Type : " class="dialog-titre" /> 
+                    <h:outputText value="Type : " /> 
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" value="#{noteBean.selectedTypeNote}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" 
+                                     value="#{noteBean.selectedTypeNote}" style="width: 100%;">
 
                         <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
                                        itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
@@ -530,11 +534,11 @@
             <!-- Langue de la note -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " class="dialog-titre" /> 
+                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " /> 
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{noteBean.selectedLang}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}"
+                                     style="width: 100%;" value="#{noteBean.selectedLang}" >
                         <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                     </p:selectOneMenu>    
                 </div>
@@ -542,28 +546,22 @@
 
             <div class="row" style="margin-top: 10px">
                 <div class="col-12">
-                    <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" 
-                                  secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
-                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
-                        <f:facet name="toolbar" >
-                            <span class="ql-formats" >
-                                <button class="ql-link" title="#{langueBean.getMsg('rightbody.conceptdialog.add_link')}"></button>
-                                <button class="ql-unlink" title="#{langueBean.getMsg('rightbody.conceptdialog.delete_link')}"></button>
-                            </span>
-                        </f:facet>
-                    </p:textEditor>    
+                    <p:textEditor widgetVar="NoteEditor" value="#{noteBean.noteValue}" allowLinks="true" secure="false" height="200"
+                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />   
                 </div>
             </div>
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
 
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                                 style="margin-right: 10px" icon="fas fa-undo-alt" 
+                                 styleClass="ui-button-secondary button" 
                                  actionListener="PF('addNoteProp').hide();"
                                  update="containerIndex messageIndex"/>
 
                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
-                                 ajax="true" process="@form"
-                                 styleClass="ui-button-primary" oncomplete="PF('addNoteProp').hide();"
+                                 ajax="true" process="@form" icon="pi pi-check" 
+                                 styleClass="ui-button-success" oncomplete="PF('addNoteProp').hide();"
                                  actionListener="#{noteBean.addNewNoteProp()}"/>
             </div>   
         </h:form>
@@ -572,7 +570,7 @@
     <p:dialog id="idDeleteNoteProp" header="#{langueBean.getMsg('rightbody.concept.delete_note')}" widgetVar="deleteNoteProp" 
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >  
         <h:form id="deleteNotePropForm" >
-            <p:dataTable var="noteToDelete" lazy="true" value="#{noteBean.nodePropToEdit()}" style="font-size: 12px;">
+            <p:dataTable var="noteToDelete" value="#{noteBean.nodePropToEdit()}">
                 <f:facet name="header">
                     <center>
                         <b>
@@ -609,7 +607,7 @@
     <p:dialog id="idEditNoteProp" header="#{langueBean.getMsg('rightbody.concept.edit_note')}" widgetVar="editNoteProp" 
               width="650" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >       
         <h:form id="editNotePropForm" >
-            <p:dataTable lazy="true" var="noteToEdit" value="#{noteBean.nodePropToEdit()}" style="font-size: 12px;">
+            <p:dataTable var="noteToEdit" value="#{noteBean.nodePropToEdit()}">
                 <f:facet name="header">
                     <center>
                         <b>

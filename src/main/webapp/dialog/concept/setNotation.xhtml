@@ -4,40 +4,42 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idSetNotation" header="#{langueBean.getMsg('rightbody.concept.notation')}" widgetVar="setNotation" 
-              position="top" width="450" showEffect="fade" modal="true" resizable="false" style="margin-top: 30px" >   
+    <p:dialog id="idSetNotation" header="#{langueBean.getMsg('rightbody.concept.notation')}" 
+              widgetVar="setNotation" position="top" width="450" showEffect="fade" 
+              modal="true" resizable="false" style="margin-top: 30px" >   
 
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
+        <h:form>
+            <div class="row">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/> 
+                </div>
             </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                              style="margin-left: 10px; color: black; margin-left: 5px" />
-            </div>
-        </div>
-        
-        <div class="row" style="margin-top: 5px">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="Note : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.new_notation')} ..." 
-                             value="#{notationBean.notation}" style="font-size: 12px; width: 100%; border-color: #43B572"/>
-            </div>
-        </div>
-        
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('setNotation').hide();" update="idSetNotation"/>
+            <div class="row" style="margin-top: 5px">
+                <div class="col-4" style="margin-top: 3px">
+                    <h:outputText value="Note : " /> 
+                </div>
+                <div class="col-8">
+                    <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.new_notation')} ..."  
+                                 value="#{notationBean.notation}" style="width: 100%;"/>
+                </div>
+            </div>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                                 styleClass="ui-button-secondary button"
+                                 ajax="true" process="@form" icon="fas fa-undo-alt" 
+                                 style="margin-right: 10px" actionListener="PF('setNotation').hide();" 
+                                 update="containerIndex:idSetNotation"/>
+
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}"
+                                 ajax="true" process="@form" icon="pi pi-check" 
+                                 styleClass="ui-button-success" 
                                  update="containerIndex:formRightTab messageIndex"
                                  oncomplete="PF('setNotation').hide();"
                                  actionListener="#{notationBean.updateNotation(selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}" />
             </div>
-        </f:facet> 
+        </h:form>
     </p:dialog>  
 </ui:fragment>

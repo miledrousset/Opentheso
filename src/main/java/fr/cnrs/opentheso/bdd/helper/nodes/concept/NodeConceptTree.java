@@ -106,7 +106,7 @@ public class NodeConceptTree implements Comparable {
         //return str1.toUpperCase().compareTo(str2.toUpperCase());
     }
 
-    private int naturalCompare(String a, String b, boolean ignoreCase) {
+    public int naturalCompare(String a, String b, boolean ignoreCase) {
         if (ignoreCase) {
             a = a.toLowerCase();
             b = b.toLowerCase();

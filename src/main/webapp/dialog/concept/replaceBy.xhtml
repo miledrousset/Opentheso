@@ -5,15 +5,18 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idReplaceBy" header="#{langueBean.getMsg('rightbody.conceptdialog.replace_by')}" widgetVar="replaceBy" 
-              modal="true" resizable="true" position="top" width="450" style="margin-top: 50px" >      
+              modal="true" resizable="true" position="top" width="450" style="margin-top: 50px" > 
+        
         <h:form id="replaceByForm">
             <p:defaultCommand target="validateReplaceBy" />
+            
             <div class="row">
                 <div class="col-12" >
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.replace_concept')} : " style="font-size: 14px;"/>  
-                    <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value} " style="font-size: 14px; color: #C63632;"/>                    
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.replace_concept')} : "/>  
+                    <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value} " style="color: #C63632;"/>                    
                 </div>
             </div>
+            
             <div class="row" style="margin-top: 20px;">
                 <div class="col-2">
                     <h:outputText value=" #{langueBean.getMsg('rightbody.conceptdialog.by')} :" style="font-size: 14px;"/> 
@@ -39,12 +42,14 @@
                 </div>                
             </div>
 
-            <p:spacer/>
-
-            <div style="width: 100%; text-align: right;">
-
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('replaceBy').hide();" update="containerIndex:idReplaceBy"/>
+            <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
+                
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
+                                 styleClass="ui-button-secondary button"
+                                 style="margin-right: 10px"
+                                 icon="fas fa-undo-alt"
+                                 actionListener="PF('replaceBy').hide();" 
+                                 update="containerIndex:idReplaceBy"/>
 
                 <p:commandButton id="validateReplaceBy"
                                  title="#{langueBean.getMsg('btnAdd')}" 

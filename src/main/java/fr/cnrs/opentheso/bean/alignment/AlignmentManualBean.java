@@ -169,7 +169,7 @@ public class AlignmentManualBean implements Serializable {
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "alignement modifié avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         PrimeFaces pf = PrimeFaces.current();

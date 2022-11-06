@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
@@ -12,12 +7,12 @@ import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,6 +26,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -40,11 +36,18 @@ import org.primefaces.PrimeFaces;
 @Named(value = "relatedBean")
 @SessionScoped
 public class RelatedBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private Tree tree;
+    
+    @Inject 
+    private Connect connect;
+    
+    @Inject 
+    private ConceptView conceptBean;
+    
+    @Inject 
+    private SelectedTheso selectedTheso;
+    
+    @Inject 
+    private Tree tree;
    
     private NodeSearchMini searchSelected;
     private ArrayList<NodeRT> nodeRTs;
@@ -181,15 +184,15 @@ public class RelatedBean implements Serializable {
                 pf.ajax().update("containerIndex:formRightTab:viewTabConcept:idPrefLabelRow");
             }
 
-            if (tree.getSelectedNode() != null) {
+            if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
                 // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-                if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+                if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(
                         conceptBean.getNodeConcept().getConcept().getIdConcept())) {
                     tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(), 
                             selectedTheso.getCurrentIdTheso(),
                             conceptBean.getSelectedLang());
                 }
-                ((TreeNodeData) tree.getSelectedNode().getData()).setName(conceptBean.getNodeConcept().getTerm().getLexical_value());
+                ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(conceptBean.getNodeConcept().getTerm().getLexical_value());
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("formLeftTab:tabTree:tree");
                 }
@@ -249,14 +252,6 @@ public class RelatedBean implements Serializable {
             pf.ajax().update("conceptForm:listConceptSpecAssocies");
             pf.executeScript("PF('deleteRelatedLink').show();");            
         }  
-    }
-    public void addReplacedBy() {
-        FacesMessage msg;
-        
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "");
-            FacesContext.getCurrentInstance().addMessage(null, msg);        
-        NodeSearchMini nodeSearchMini = searchSelected;
-
     }
 
     public NodeSearchMini getSearchSelected() {

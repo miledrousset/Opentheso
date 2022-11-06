@@ -4,50 +4,54 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idAddFacetTraduction" header="#{langueBean.getMsg('rightbody.concept.add_traduction')}" widgetVar="addFacetTraduction"
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+    <p:dialog id="idAddFacetTraduction" header="#{langueBean.getMsg('rightbody.concept.add_traduction')}" 
+              widgetVar="addFacetTraduction" width="450" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
+        
         <h:form id="addFacetTraductionForm">
             <p:defaultCommand target="validateAddFacetTraduction" />     
+            
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " style="font-size: 12px;"/>
-                    <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="font-size: 13px; color: #f47b2a; margin-left: 10px;"/>
-                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " /> 
+                    <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="color: #C63632;"/>
+                    
+                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" 
+                                   update="messageIndex" ajax="true" process="@form">
                         <i class="pi pi-exclamation-circle" />
                     </p:commandLink>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-12" style="margin-top: 3px">
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12">
                     <p:focus for="inputLabelAddTrad"/>
                     <p:inputText id="inputLabelAddTrad" label="traduction" placeholder="tapez votre traduction ..."
-                                 value="#{editFacet.traductionValue}" style="width: 100%" >
-                        
-                    </p:inputText>
+                                 value="#{editFacet.traductionValue}" style="width: 100%" />
                 </div>
             </div>
-            <p:spacer/>
-            <div class="row">
-                <div class="col-12" style="margin-top: 3px">
-                    <p:selectOneMenu label="Langue" value="#{editFacet.selectedLang}"
-                                     style=" width: 100%; font-size: 12px; background: white; border-color: #43B572">
+            
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12">
+                    <p:selectOneMenu label="Langue" value="#{editFacet.selectedLang}" style=" width: 100%;">
                         <f:selectItems  value="#{editFacet.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                     </p:selectOneMenu>
                 </div>
             </div>
+            
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
 
-
-            <p:spacer />
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addFacetTraduction').hide();" update="containerIndex:idAddFacetTraduction"/>
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 style="margin-right: 10px"
+                                 actionListener="PF('addFacetTraduction').hide();" 
+                                 update="containerIndex:idAddFacetTraduction"/>
 
                 <p:commandButton id="validateAddFacetTraduction"
-                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" update="containerIndex:idAddFacetTraduction containerIndex:formRightTab messageIndex"
+                                 value="#{langueBean.getMsg('btnValidate')}" 
+                                 styleClass="ui-button-success" icon="pi pi-check" 
+                                 update="containerIndex:idAddFacetTraduction containerIndex:formRightTab messageIndex"
                                  ajax="true" process="@form"
-                                 
                                  actionListener="#{editFacet.addNewTraduction()}"/>
             </div>
         </h:form>

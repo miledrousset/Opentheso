@@ -1,36 +1,43 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idDeleteSynonym" header="#{langueBean.getMsg('rightbody.conceptdialog.synonym_deletion')}" widgetVar="deleteSynonym" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
+            <div class="col-12" style="margin-top: 3px">
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" /> 
             </div>
         </div>
 
-        <p:panel id="listSynonimesToDelete">
-            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.listOfSynonyms')} : " class="dialog-titre" /> 
-            <ui:repeat var="synonymes" value="#{synonymBean.nodeEMs}" >
-                <div class="row">
-                    <div class="col-1" style="margin-top: 3px">
-                        <p:commandLink style="color: #FF7979" 
-                                       action="#{synonymBean.deleteSynonym(synonymes, currentUser.nodeUser.idUser)}"
-                                       update="containerIndex:formRightTab">
-                            <i class="pi pi-trash" />
-                        </p:commandLink>
+        <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
+            <p:dataTable id="listSynonimesToDelete" size="small" var="synonyme" 
+                         value="#{conceptView.nodeConcept.nodeEM}"
+                         widgetVar="listThesoTable" styleClass="products-table"
+                         style="margin-bottom: -17px; margin-top: -16px;">
+
+                <f:facet name="header">
+                    <div class="products-table-header">
+                        <span style="font-weight: bold"><h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.listOfSynonyms')}" /></span>
                     </div>
-                    <div class="col-11" style="margin-top: 3px">
-                        <h:outputText value="#{synonymes.lexical_value} (#{synonymes.lang})" style="color: #43B572"/> 
-                    </div>
-                </div>
-            </ui:repeat>
-        </p:panel>
+                </f:facet>
+
+                <p:column headerText="Label">
+                    <h:outputText value="#{synonyme.lexical_value} (#{synonyme.lang})" /> 
+                </p:column>
+
+                <p:column width="80" headerText="Supprimer">
+                    <p:commandLink style="color: #FF7979" ajax="true" process="@this"
+                                   action="#{synonymBean.deleteSynonym(synonyme, currentUser.nodeUser.idUser)}"
+                                   update="containerIndex">
+                        <i class="pi pi-trash" />
+                    </p:commandLink>
+                </p:column>                    
+            </p:dataTable>
+        </div>
     </p:dialog>  
 </ui:fragment>

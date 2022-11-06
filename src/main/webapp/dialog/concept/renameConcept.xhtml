@@ -6,41 +6,26 @@
 
     <p:dialog id="idRenameConcept" header="#{langueBean.getMsg('rightbody.conceptdialog.rename_concept')}" widgetVar="renameConcept" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        
         <h:form id="renameConceptForm">
-            <p:defaultCommand target="renameConceptSubmit" />
+            
             <div class="row">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.actualName')}: " 
-                                  style="margin-left: 10px; color: black;" /> 
-                </div>
-                <div class="col-7" >
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" 
-                                  style="margin-left: 10px; color: black; margin-left: 5px" /> 
+                <div class="col-12">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.actualName')} :  " /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" /> 
                 </div>
             </div>
 
-            <div class="row" style="margin-top: 6px">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')}: " 
-                                  style="margin-left: 10px; color: black;" /> 
+            <div class="row" style="margin-top: 15px; width: 100%">
+                <div class="col-4">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.newName')}" style="margin-top: 5px" /> 
                 </div>
-                <div class="col-7">
-                    <p:inputText id="newPrefLabel" value="#{editConcept.prefLabel}" 
-                                 style="width: 100%; border-color: #43B572; color: #000"/>
+                <div class="col-8">
+                    <p:inputText value="#{editConcept.prefLabel}" style="margin-left: 10px; width: 100%"/>
                 </div>
             </div>
 
-
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:separator/>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                        <p:messages id="renameConceptMessage" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
-                            <p:autoUpdate/>
-                        </p:messages>
-                    </div>
-                </div>                  
-
+            <div style="width: 100%; text-align: right; margin-top: 20px; margin-bottom: 5px;">            
                 <p:commandButton rendered="#{editConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
                                  actionListener="#{editConcept.setDuplicate(false)}" update="containerIndex:idRenameConcept" oncomplete="PF('renameConcept').show();"
                                  ajax="true" process="@form"/>
@@ -50,23 +35,21 @@
                                  ajax="true" process="@form"
                                  action="#{editConcept.updateForced(selectedTheso.currentIdTheso, selectedTheso.currentLang,
                                            currentUser.nodeUser.idUser)}"/>   
-
-
                 
                 
-                
-
-                <p:commandButton rendered="#{!editConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                <p:commandButton rendered="#{!editConcept.duplicate}" value="#{langueBean.getMsg('btnCancel')}" 
+                                 styleClass="ui-button-secondary button" 
+                                 icon="fas fa-undo-alt" style="margin-right: 10px"
                                  ajax="true" process="@form"
                                  actionListener="PF('renameConcept').hide();" update="containerIndex:idRenameConcept"/>
 
                 <p:commandButton rendered="#{!editConcept.duplicate}" id="renameConceptSubmit" 
-                                 styleClass="ui-button-primary" value="#{langueBean.getMsg('btnValidate')}"
-                                 update="messageIndex containerIndex:idRenameConcept"  ajax="true" process="@form" 
+                                 styleClass="ui-button-success" ajax="true" process="@form" 
+                                 icon="pi pi-check" value="#{langueBean.getMsg('btnValidate')}"
+                                 update="messageIndex containerIndex:idRenameConcept" 
                                  action="#{editConcept.updateLabel(selectedTheso.currentIdTheso, 
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>
             </div>
-
         </h:form>
     </p:dialog>
 </ui:fragment>

@@ -13,15 +13,16 @@ import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
@@ -39,23 +40,36 @@ import org.primefaces.model.TreeNode;
  */
 @Named(value = "dragAndDrop")
 @SessionScoped
-//@ViewScoped
 public class DragAndDrop implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;
-    @Inject private Tree tree;
+
+    @Inject
+    private Connect connect;
+
+    @Inject
+    private ConceptView conceptBean;
+
+    @Inject
+    private SelectedTheso selectedTheso;
+
+    @Inject
+    private CurrentUser currentUser;
+
+    @Inject
+    private Tree tree;
 
     private boolean isCopyOn;
     private boolean isValidPaste;
     private NodeConcept nodeConceptDrag;
     private ArrayList<NodeBT> nodeBTsToCut;
-    
+
     private ArrayList<NodeGroup> nodeGroupsToCut;
-    private ArrayList<NodeGroup> nodeGroupsToAdd;    
-    
+    private ArrayList<NodeGroup> nodeGroupsToAdd;
+
+    private List<TreeNode> nodesToConfirme;
+    private List<GroupNode> groupNodeToAdd;
+    private List<GroupNode> groupNodeToCut;
+    private List<BTNode> groupNodeBtToCut;
+
     private NodeConcept nodeConceptDrop;
 
     private boolean isdragAndDrop;
@@ -131,17 +145,13 @@ public class DragAndDrop implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    public void initInfo() {
-
-    }
-
-
     public void setBTsToCut() {
         if (nodeConceptDrag == null) {
             return;
         }
-        if(nodeBTsToCut == null)
+        if (nodeBTsToCut == null) {
             nodeBTsToCut = new ArrayList<>();
+        }
         for (NodeBT nodeBT : nodeConceptDrag.getNodeBT()) {
             NodeBT nodeBT1 = new NodeBT();
             nodeBT1.setIdConcept(nodeBT.getIdConcept());
@@ -149,8 +159,22 @@ public class DragAndDrop implements Serializable {
             nodeBT1.setIsSelected(true);
             nodeBTsToCut.add(nodeBT1);
         }
-    } 
-    
+    }
+
+    public List<NodeBT> setBTsToCut(NodeConcept concept) {
+
+        List<NodeBT> Bts = new ArrayList<>();
+
+        for (NodeBT nodeBT : concept.getNodeBT()) {
+            NodeBT nodeBT1 = new NodeBT();
+            nodeBT1.setIdConcept(nodeBT.getIdConcept());
+            nodeBT1.setTitle(nodeBT.getTitle());
+            nodeBT1.setIsSelected(true);
+            Bts.add(nodeBT1);
+        }
+        return Bts;
+    }
+
     public void setGroupsToCut() {
         if (nodeConceptDrag == null) {
             return;
@@ -466,7 +490,6 @@ public class DragAndDrop implements Serializable {
                     termeParentAssocie.getId(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang());
-
             conceptParentTerme = concepParent.getTerm().getLexical_value();
             */
             PrimeFaces pf = PrimeFaces.current();
@@ -1017,5 +1040,90 @@ public class DragAndDrop implements Serializable {
     public void setDropNode(TreeNode dropNode) {
         this.dropNode = dropNode;
     }
+    
+    public List<TreeNode> getNodesToConfirme() {
+        return nodesToConfirme;
+    }
 
+    public void setNodesToConfirme(List<TreeNode> nodesToConfirme) {
+        this.nodesToConfirme = nodesToConfirme;
+    }
+
+    public List<GroupNode> getGroupNodeToAdd() {
+        return groupNodeToAdd;
+    }
+
+    public void setGroupNodeToAdd(List<GroupNode> groupNodeToAdd) {
+        this.groupNodeToAdd = groupNodeToAdd;
+    }
+
+    public List<GroupNode> getGroupNodeToCut() {
+        return groupNodeToCut;
+    }
+
+    public void setGroupNodeToCut(List<GroupNode> groupNodeToCut) {
+        this.groupNodeToCut = groupNodeToCut;
+    }
+
+    public List<BTNode> getGroupNodeBtToCut() {
+        return groupNodeBtToCut;
+    }
+
+    public void setGroupNodeBtToCut(List<BTNode> groupNodeBtToCut) {
+        this.groupNodeBtToCut = groupNodeBtToCut;
+    }
+
+    public class GroupNode {
+
+        private TreeNode node;
+        private NodeGroup nodeGroup;
+
+        public GroupNode(TreeNode node, NodeGroup nodeGroup) {
+            this.node = node;
+            this.nodeGroup = nodeGroup;
+        }
+
+        public TreeNode getNode() {
+            return node;
+        }
+
+        public void setNode(TreeNode node) {
+            this.node = node;
+        }
+
+        public NodeGroup getNodeGroup() {
+            return nodeGroup;
+        }
+
+        public void setNodeGroup(NodeGroup nodeGroup) {
+            this.nodeGroup = nodeGroup;
+        }
+    }
+
+    public class BTNode {
+
+        private TreeNode node;
+        private NodeBT nodeBT;
+
+        public BTNode(TreeNode node, NodeBT nodeBT) {
+            this.node = node;
+            this.nodeBT = nodeBT;
+        }
+
+        public TreeNode getNode() {
+            return node;
+        }
+
+        public void setNode(TreeNode node) {
+            this.node = node;
+        }
+
+        public NodeBT getNodeBT() {
+            return nodeBT;
+        }
+
+        public void setNodeBT(NodeBT nodeBT) {
+            this.nodeBT = nodeBT;
+        }
+    }
 }

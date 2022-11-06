@@ -56,10 +56,16 @@ public class AlignmentBean implements Serializable {
 
     @Inject
     private Connect connect;
+    
     @Inject
     private ConceptView conceptView;
+    
     @Inject
     private SelectedTheso selectedTheso;
+
+    @Inject
+    private ConceptView conceptBean;
+    
     @Inject
     private AlignmentManualBean alignmentManualBean;
 
@@ -79,8 +85,7 @@ public class AlignmentBean implements Serializable {
     private ArrayList<NodeAlignment> listAlignValues;
     private ArrayList<AlignementElement> allignementsList, filteredAlignement;
     private AlignementElement selectedLastPositionReportDtos;
-    
-    
+
     private NodeAlignment selectedNodeAlignment;
     private ArrayList<Map.Entry<String, String>> alignmentTypes;
     private int selectedAlignementType;
@@ -136,12 +141,17 @@ public class AlignmentBean implements Serializable {
     }
 
     public void deleteAlignemen() {
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-        alignmentHelper.deleteAlignment(connect.getPoolConnexion(),
+        new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
                 alignementElementSelected.getIdAlignment(),
                 selectedTheso.getCurrentIdTheso());
 
         getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+
+        initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                conceptBean.getSelectedLang());
+
+        getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Erreur !", "Alignement supprimé avec succès !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -358,7 +368,9 @@ public class AlignmentBean implements Serializable {
     }
 
     public void getIdsAndValues(String idLang, String idTheso) {
-        if(idsToGet == null) return;
+        if (idsToGet == null) {
+            return;
+        }
         ConceptHelper conceptHelper = new ConceptHelper();
         idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(
                 connect.getPoolConnexion(),
@@ -400,13 +412,13 @@ public class AlignmentBean implements Serializable {
 
         sortDatatableAlignementByColor();
     }
-    
+
     /**
-     * Permet de charger les données des concepts à aligner 
-     * ###### remplace la focntion ci-dessus aprsè vérification #####
+     * Permet de charger les données des concepts à aligner ###### remplace la
+     * focntion ci-dessus aprsè vérification #####
+     *
      * @param idLang
-     * @param idTheso 
-     * #MR
+     * @param idTheso #MR
      */
     public void getIdsAndValues2(String idLang, String idTheso) {
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -449,23 +461,23 @@ public class AlignmentBean implements Serializable {
         }
 
         sortDatatableAlignementByColor();
-    }    
-    
+    }
+
     public void sortDatatableAlignementByColor() {
-        
+
         if (allignementsList.size() > 1) {
-        
+
             allignementsList.get(0).setCodeColor(0);
             int pos = 1;
             while (pos < allignementsList.size()) {
-                
-                if (allignementsList.get(pos-1).getIdConceptOrig()
+
+                if (allignementsList.get(pos - 1).getIdConceptOrig()
                         .equals(allignementsList.get(pos).getIdConceptOrig())) {
-                    
+
                     allignementsList.get(pos)
-                            .setCodeColor(allignementsList.get(pos-1).getCodeColor());
+                            .setCodeColor(allignementsList.get(pos - 1).getCodeColor());
                 } else {
-                    if (allignementsList.get(pos-1).getCodeColor() == 0) {
+                    if (allignementsList.get(pos - 1).getCodeColor() == 0) {
                         allignementsList.get(pos).setCodeColor(1);
                     } else {
                         allignementsList.get(pos).setCodeColor(0);
@@ -473,9 +485,9 @@ public class AlignmentBean implements Serializable {
                 }
                 pos++;
             }
-            
+
         }
-        
+
     }
 
     public ArrayList<AlignementElement> getAllignementsList() {
@@ -611,6 +623,7 @@ public class AlignmentBean implements Serializable {
 
         counter = 0;
         initAlignmentSources(idTheso, idConcept, currentLang);
+        reset();
     }
 
     public void initAlignmentSources(String idTheso,
@@ -1364,7 +1377,9 @@ public class AlignmentBean implements Serializable {
             String idTheso) {
         alignmentInProgress = true;
 
-        if(idConceptSelectedForAlignment == null) return;
+        if (idConceptSelectedForAlignment == null) {
+            return;
+        }
         isViewResult = false;
         isViewSelection = true;
 
@@ -2120,5 +2135,5 @@ public class AlignmentBean implements Serializable {
     public void setSelectedLastPositionReportDtos(AlignementElement selectedLastPositionReportDtos) {
         this.selectedLastPositionReportDtos = selectedLastPositionReportDtos;
     }
-    
+
 }

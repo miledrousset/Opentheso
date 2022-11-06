@@ -4,7 +4,8 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
-    <h:panelGroup id="conceptView" rendered="#{conceptView.nodeConcept != null}" styleClass="textOpentheso">
+    <h:panelGroup id="conceptView" rendered="#{conceptView.nodeConcept != null}" 
+                  style="margin-bottom: 70px">
 
         <!-- Style pour le toggle des notes et altLabel -->
         <style>
@@ -32,9 +33,7 @@
         <!-- Partie pour distinguer les concepts dépréciés -->
 
         <p:panel id="idDeprecated" rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
-                 style="background-color: #C63632;
-                 font-size: 12px;
-                 margin-top: -10px">
+                 style="background-color: #C63632; font-size: 12px; margin-top: -10px">
 
             <div class="p-grid" style="color: white">
                 <div class="p-col-6">
@@ -77,12 +76,12 @@
 
         <!--  -->
         <h:panelGroup rendered="#{roleOnTheso.nodePreference.suggestion}" >
-            <div class="col-12" style="vertical-align: central;
-                 text-align: right">
-                <p:commandButton icon="pi pi-send" process="@this" value="#{langueBean.getMsg('rightbody.suggestImprovement')}"
+            <div class="col-12" style="text-align: right; padding-top: 20px">
+                <p:commandButton icon="pi pi-send" value="#{langueBean.getMsg('rightbody.suggestImprovement')}"
                                  rendered="#{!(currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin))}"
-                                 actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeConcept)}" onclick="scrollToPageTop();" 
-                                 ajax="true" update="containerIndex:formRightTab"/>
+                                 actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeConcept)}" 
+                                 styleClass="ui-button-success"
+                                 ajax="true" process="@this" update="containerIndex:formRightTab"/>
             </div>
         </h:panelGroup>
 

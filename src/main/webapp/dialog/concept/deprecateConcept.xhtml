@@ -6,27 +6,29 @@
 
     <p:dialog id="idDeprecateConcept" header="Déprécier le concept" widgetVar="deprecateConcept"
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >        
-        <div class="row">
-            <div class="col-12">
-                <h:outputText value="Déprécier le concept : " style="font-size: 14px;"/>
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value} (#{conceptView.nodeConcept.concept.idConcept})"
-                              style="font-size: 14px; color: #C63632; margin-left: 10px;"/>
+        <h:form>
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
+                </div>
             </div>
-        </div>
 
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
+                <p:commandButton value="Fermer" styleClass="ui-button-secondary button"
+                                 style="margin-right: 10px" icon="fas fa-undo-alt"
+                                 ajax="true" process="@form"
+                                 actionListener="PF('deprecateConcept').hide();" update="containerIndex:idDeprecateConcept"/>
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('deprecateConcept').hide();" update="idDeprecateConcept"/>
-
-                <p:commandButton title="Valider" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('deprecateConcept').hide();"
+                <p:commandButton value="Valider" update="containerIndex messageIndex"
+                                 ajax="true" process="@form" icon="pi pi-check"
+                                 styleClass="ui-button-success"
+                                 oncomplete="PF('deprecateConcept').hide();"
                                  actionListener="#{editConcept.deprecateConcept(
                                                    conceptView.nodeConcept.concept.idConcept,
                                                    selectedTheso.currentIdTheso,
                                                    currentUser.nodeUser.idUser)}" style="color: white;"/>
             </div>
-        </f:facet>
+        </h:form>
     </p:dialog>   
 </ui:fragment>

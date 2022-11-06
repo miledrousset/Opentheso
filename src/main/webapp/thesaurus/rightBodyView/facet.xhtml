@@ -4,7 +4,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-    <h:panelGroup id="facetView" styleClass="textOpentheso" style="margin: 20px"> 
+    <h:panelGroup id="facetView" styleClass="textOpentheso" style="margin: 30px"> 
         <!-- Facet title -->
         <div class="row" style="margin-left: 0px;">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12" style="text-align:left;">
@@ -12,9 +12,8 @@
                               style="font-size: 14px; font-weight: bold; font-style: italic"/>
             </div> 
         </div> 
-        <div class="card mb-4 py-3 border-left-success" style="margin: 10px; vertical-align: central">
 
-
+        <div class="card mb-4 py-3 border-left-success" style="margin: 30px; vertical-align: central">
             <div class="list-group" >
                 <!-- Label -->
                 <div class="list-group-item list-group-item-action" style="">
@@ -48,9 +47,12 @@
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                       or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                           icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
-                                <p:menuitem value="#{langueBean.getMsg('leftbody.modify_ParentConcept')}" oncomplete="PF('addConceptParentToFacet').show();" 
+
+                                <p:menuitem value="#{langueBean.getMsg('leftbody.modify_ParentConcept')}" 
+                                            oncomplete="PF('addConceptParentToFacet').show();" 
                                             icon="fas fa-pencil-alt" update="containerIndex:modifierFacet"/>
                             </p:menuButton>
+
                             <h:outputText rendered="#{editFacet.concepParent.term.lexical_value == ''}"
                                           value="(#{editFacet.concepParent.concept.idConcept})"
                                           title="#{editFacet.concepParent.concept.idConcept}" />
@@ -82,6 +84,7 @@
 
                                 <p:menuitem value="#{langueBean.getMsg('leftbody.removeFacetMembers')}" icon="far fa-trash-alt"
                                             oncomplete="PF('removeMembersFacette').show();"
+                                            disabled="#{editFacet.conceptList.size() == 0}"
                                             update="containerIndex:idRemoveMembersFacette"/>  
                             </p:menuButton>
 
@@ -120,17 +123,22 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" oncomplete="PF('addFacetTraduction').show();"
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" 
+                                                oncomplete="PF('addFacetTraduction').show();"
                                                 action = "#{editFacet.setLangListForTraduction()}"
                                                 update="containerIndex:idAddFacetTraduction"
                                                 icon="fas fa-plus"/>
 
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" oncomplete="PF('renameFacetTraduction').show();"
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" 
+                                                oncomplete="PF('renameFacetTraduction').show();"
                                                 update="containerIndex:idRenameFacetTraduction"
+                                                disabled="#{editFacet.facetTraductions.size() == 0}"
                                                 icon="fas fa-pencil-alt"/>
 
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" oncomplete="PF('deleteFacetTraduction').show();"
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" 
+                                                oncomplete="PF('deleteFacetTraduction').show();"
                                                 update="containerIndex:idDeleteFacetTraduction"
+                                                disabled="#{editFacet.facetTraductions.size() == 0}"
                                                 icon="far fa-trash-alt"/>
                                 </p:menuButton> 
 
@@ -140,14 +148,11 @@
 
                                 <h:panelGroup rendered="#{editFacet.facetTraductions.size() != 0}">
                                     <ui:repeat var="trad" value="#{editFacet.facetTraductions}" >
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <p:commandLink value="#{trad.lexicalValue} (#{trad.lang})"
-                                                               style="color: #43B572;" styleClass="textOpentheso"
-                                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}" 
-                                                               update="containerIndex:formRightTab indexTitle"/>
-                                            </div>
-                                        </div> 
+                                        <p:commandLink value="[#{trad.lang}] #{trad.lexicalValue}"
+                                                       style="color: #43B572;" styleClass="textOpentheso"
+                                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}" 
+                                                       update="containerIndex:formRightTab indexTitle"/>
+                                        <br/>
                                     </ui:repeat>
 
                                 </h:panelGroup>
@@ -157,34 +162,19 @@
                 </h:panelGroup>
             </div>
         </div>
-
-        <div class="mb-4 " style="margin-right: 30px">          
-            <div class="row">
-                <div class="col-12" style="text-align: right;">
-                    <p:commandButton title="Supprimer la facette" actionListener="#{editFacet.supprimerFacette}"
-                                     update="containerIndex messageIndex" class="btn btn-danger"
-                                     rendered="#{(currentUser.nodeUser != null) and  (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
-                        <p:confirm header="Confirmation" message="Vous êtes sûr ?" icon="pi pi-exclamation-triangle" />
-                    </p:commandButton>
-
-                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                        <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
-                        <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
-                    </p:confirmDialog>
+        <h:form>
+            <div class="mb-4 " style="margin-right: 30px">          
+                <div class="row">
+                    <div class="col-12" style="text-align: right;">
+                        <p:commandButton title="Supprimer la facette" 
+                                         actionListener="#{editFacet.supprimerFacette}"
+                                         update="containerIndex messageIndex" 
+                                         class="btn btn-danger" ajax="true" process="@this"
+                                         rendered="#{(currentUser.nodeUser != null) 
+                                                     and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
+                    </div>
                 </div>
             </div>
-        </div>
+        </h:form>
     </h:panelGroup>
-
-
-
-    <ui:include src="../../dialog/facet/addConceptParentToFacet.xhtml" />
-
-    <ui:include src="../../dialog/facet/addNT.xhtml" />
-    <ui:include src="../../dialog/facet/addMembers.xhtml" />
-    <ui:include src="../../dialog/facet/removeMembers.xhtml" />
-
-    <ui:include src="../../dialog/facet/renameFacetTraduction.xhtml" />
-    <ui:include src="../../dialog/facet/deleteFacetTraduction.xhtml" />
-
 </ui:fragment>

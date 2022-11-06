@@ -66,13 +66,18 @@ public class NoteBean implements Serializable {
         noteValue = null;
         selectedNodeNote = null;
     }
-
+    
     public void reset() {
         noteTypes = new NoteHelper().getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
         selectedTypeNote = null;
+    }
+    
+    public void initNoteProp(String noteType) {
+        reset();
+        setSelectedTypeNote(noteType);
     }
 
     public void infos() {
@@ -330,7 +335,7 @@ public class NoteBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 

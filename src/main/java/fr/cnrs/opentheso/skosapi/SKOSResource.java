@@ -1,11 +1,18 @@
 package fr.cnrs.opentheso.skosapi;
 
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  *
@@ -20,14 +27,12 @@ public class SKOSResource {
     private String arkId;
     private SKOSdc sdc;
     private int property;
-    
+
     /// le status du concept : CA=candidat, DEP=déprécié, autre=concept
-    private int status; 
+    private int status;
 
     private ArrayList<SKOSReplaces> sKOSReplaces;
-    
-    
-    
+
     private SKOSStatus skosStatus;
     private ArrayList<SKOSDiscussion> messages;
     private ArrayList<SKOSVote> votes;
@@ -39,16 +44,16 @@ public class SKOSResource {
     private SKOSGPSCoordinates GPSCoordinates;
     private ArrayList<SKOSNotation> notationList;
     private ArrayList<SKOSMatch> matchList;
-    
+
     // Autopostage the complete path to the concept
     private ArrayList<String> paths;
-    
+
     // images
     private ArrayList<String> imageUris;
-    
+
     // pour les labels et le DC du thésaurus
     private Thesaurus thesaurus;
-    
+
     /**
      *
      */
@@ -86,40 +91,40 @@ public class SKOSResource {
         messages = new ArrayList<>();
         votes = new ArrayList<>();
         status = 80;
-        sKOSReplaces = new ArrayList<>();  
-        thesaurus = new Thesaurus();       
-        
+        sKOSReplaces = new ArrayList<>();
+        thesaurus = new Thesaurus();
+
         this.property = property;
         this.uri = uri;
     }
-    
+
     public void clear(){
         skosStatus = null;
-        
+
         if(labelsList != null)
             labelsList.clear();
         if(relationsList != null)
-            relationsList.clear();        
+            relationsList.clear();
         if(documentationsList != null)
-            documentationsList.clear();        
+            documentationsList.clear();
         if(dateList != null)
-            dateList.clear();        
+            dateList.clear();
         if(creatorList != null)
-            creatorList.clear();        
+            creatorList.clear();
         GPSCoordinates = null;
         if(notationList != null)
-            notationList.clear();        
+            notationList.clear();
         if(matchList != null)
-            matchList.clear();        
+            matchList.clear();
         if(imageUris != null)
-            imageUris.clear();        
+            imageUris.clear();
         if(messages != null)
-            messages.clear();        
+            messages.clear();
         if(votes != null)
-            votes.clear();        
+            votes.clear();
         if(sKOSReplaces != null)
-            sKOSReplaces.clear();        
-        thesaurus = null;  
+            sKOSReplaces.clear();
+        thesaurus = null;
     }
 
     public String getArkId() {
@@ -129,7 +134,7 @@ public class SKOSResource {
     public void setArkId(String arkId) {
         this.arkId = arkId;
     }
-    
+
     public int getProperty() {
         return property;
     }
@@ -181,8 +186,6 @@ public class SKOSResource {
     public void setThesaurus(Thesaurus thesaurus) {
         this.thesaurus = thesaurus;
     }
-
-
 
     /**
      *
@@ -267,7 +270,7 @@ public class SKOSResource {
     }
 
     /**
-     * Méthode d'ajout des relations pour les concepts dépréciés 
+     * Méthode d'ajout des relations pour les concepts dépréciés
      *
      * @param uri un String URI
      * @param prop un int SKOSProperty
@@ -279,8 +282,8 @@ public class SKOSResource {
         } catch (Exception e) {
             e.getMessage();
         }
-    }    
-    
+    }
+
     /**
      * Méthode d'ajout des relations à la ressource, dans une ArrayList
      *
@@ -360,21 +363,21 @@ public class SKOSResource {
             e.getMessage();
         }
     }
-    
+
     /**
      * Méthode d'ajout des Idetifier type DC
+     *
      * @param identifier
      * @param prop un int SKOSProperty
      */
-    public void addIdentifier(String identifier, int prop){
-        try{
-            SKOSdc dc = new SKOSdc(identifier,prop);
+    public void addIdentifier(String identifier, int prop) {
+        try {
+            SKOSdc dc = new SKOSdc(identifier, prop);
             this.sdc = dc;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
-    }    
+    }
 
     public void setGPSCoordinates(SKOSGPSCoordinates GPSCoordinates) {
         this.GPSCoordinates = GPSCoordinates;
@@ -387,7 +390,7 @@ public class SKOSResource {
     public void setImageUris(ArrayList<String> imageUris) {
         this.imageUris = imageUris;
     }
-    
+
     public void addImageUri(String uri) {
         this.imageUris.add(uri);
     }
@@ -399,9 +402,6 @@ public class SKOSResource {
     public void setStatus(int status) {
         this.status = status;
     }
-
-
-
 
     /**
      *
@@ -422,12 +422,12 @@ public class SKOSResource {
     public void setPaths(ArrayList<String> paths) {
         this.paths = paths;
     }
-   
-    
+
     /**
      * Surcharge de la méthode toString() afin de mettre au format xml la
      * ressource
-     * @return 
+     *
+     * @return
      */
     public String toString() {
         String xmlRessource;
@@ -452,17 +452,16 @@ public class SKOSResource {
         while (itDate.hasNext()) {
             xmlRessource += "        " + itDate.next().toString();
         }
-        if(sdc != null) {
-            if(sdc.getIdentifier() != null){
-                if(!sdc.getIdentifier().isEmpty()){
-                    xmlRessource += "        "+sdc.toString();
+        if (sdc != null) {
+            if (sdc.getIdentifier() != null) {
+                if (!sdc.getIdentifier().isEmpty()) {
+                    xmlRessource += "        " + sdc.toString();
                 }
             }
         }
-        if(arkId != null && !arkId.isEmpty()) {
+        if (arkId != null && !arkId.isEmpty()) {
             xmlRessource += "        " + "<arkId>" + arkId + "<arkId>\n";
         }
-       
 
         xmlRessource += "    </skos:Concept>\n";
 
@@ -499,13 +498,18 @@ public class SKOSResource {
      * @param idToDocumentation
      * @param idToMatch
      * @param idToGPS
+     * @param idToImg
      * @param resourceChecked
      * @param idToIsTradDiff
      * @return
      */
-    public static Comparator<SKOSResource> sortForHiera(boolean isTrad, String langCode, String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, ArrayList<String>> idToChildId,
-            HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS, ArrayList<String> resourceChecked, HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
-        return new HieraComparator(isTrad, langCode, langCode2, idToNameHashMap, idToChildId, idToDocumentation, idToMatch, idToGPS, resourceChecked, idToIsTradDiff);
+    public static Comparator<SKOSResource> sortForHiera(HikariDataSource hikariDataSource, boolean isTrad, String langCode,
+            String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation,
+            HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS,
+            HashMap<String, ArrayList<String>> idToImg, ArrayList<String> resourceChecked,
+            HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
+        return new HieraComparator(hikariDataSource, isTrad, langCode, langCode2, idToNameHashMap,
+                idToChildId, idToDocumentation, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff);
     }
 
     private static class HieraComparator implements Comparator<SKOSResource> {
@@ -513,15 +517,23 @@ public class SKOSResource {
         String langCode;
         String langCode2;
         HashMap<String, String> idToNameHashMap;
-        HashMap<String, ArrayList<String>> idToChildId;
+        HashMap<String, List<String>> idToChildId;
         HashMap<String, ArrayList<String>> idToDocumentation;
         HashMap<String, ArrayList<String>> idToMatch;
         HashMap<String, String> idToGPS;
+        HashMap<String, ArrayList<String>> idToImg;
         boolean isTrad;
         ArrayList<String> resourceChecked;
+        HikariDataSource hikariDataSource;
         HashMap<String, ArrayList<Integer>> idToIsTradDiff;
 
-        public HieraComparator(boolean isTrad, String langCode, String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, ArrayList<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS, ArrayList<String> resourceChecked, HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
+        public HieraComparator(HikariDataSource hikariDataSource, boolean isTrad, String langCode, String langCode2,
+                HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId,
+                HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch,
+                HashMap<String, String> idToGPS, HashMap<String, ArrayList<String>> idToImg, ArrayList<String> resourceChecked,
+                HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
+
+            this.hikariDataSource = hikariDataSource;
             this.langCode = langCode;
             this.langCode2 = langCode2;
             this.idToNameHashMap = idToNameHashMap;
@@ -529,10 +541,11 @@ public class SKOSResource {
             this.idToDocumentation = idToDocumentation;
             this.idToMatch = idToMatch;
             this.idToGPS = idToGPS;
+            this.idToImg = idToImg;
             this.isTrad = isTrad;
             this.resourceChecked = resourceChecked;
             this.idToIsTradDiff = idToIsTradDiff;
-            
+
             this.idToNameHashMap.clear();
 
         }
@@ -550,6 +563,7 @@ public class SKOSResource {
                 writeIdToChild(r1);
                 writeIdToMatch(r1);
                 writeIdToGPS(r1);
+                writeIdToImg(r1);
                 checkTrad(r1);
                 resourceChecked.add(id1);
             }
@@ -560,6 +574,7 @@ public class SKOSResource {
                 writeIdToChild(r2);
                 writeIdToMatch(r2);
                 writeIdToGPS(r2);
+                writeIdToImg(r2);
                 checkTrad(r2);
                 resourceChecked.add(id2);
             }
@@ -616,6 +631,14 @@ public class SKOSResource {
 
             if (lat != null && lon != null) {
                 idToGPS.put(key, "gps : lat =" + lat + " long =" + lon);
+            }
+        }
+
+        private void writeIdToImg(SKOSResource resource) {
+            String key = getIdFromUri(resource.getUri());
+
+            if (CollectionUtils.isNotEmpty(resource.getImageUris())) {
+                idToImg.put(key, resource.getImageUris());
             }
         }
 
@@ -714,10 +737,58 @@ public class SKOSResource {
             }
         }
 
+        private class TermTemp {
+
+            public String term;
+            public String idConcept;
+        }
+
         private void writeIdToChild(SKOSResource resource) {
+
+            String key = getIdFromUri(resource.getUri());
+            for (SKOSRelation relation : resource.getRelationsList()) {
+                if (relation.getProperty() == SKOSProperty.narrower
+                        || relation.getProperty() == SKOSProperty.narrowerGeneric
+                        || relation.getProperty() == SKOSProperty.narrowerInstantial
+                        || relation.getProperty() == SKOSProperty.narrowerPartitive) {
+
+                    if (idToChildId.get(key) == null) {
+                        ArrayList<String> temp = new ArrayList<>();
+                        temp.add(getIdFromUri(relation.getTargetUri()));
+                        idToChildId.put(key, temp);
+                    } else {
+                        String childId = getIdFromUri(relation.getTargetUri());
+                        if (!idToChildId.get(key).contains(childId)) {
+                            idToChildId.get(key).add(childId);
+                        }
+                    }
+
+                }
+            }
+
+            List<String> childs = idToChildId.get(key);
+            if (CollectionUtils.isNotEmpty(childs)) {
+                ArrayList<TermTemp> conceptIdsTemps = new ArrayList<>();
+                for (String child : childs) {
+                    String idTheso = resource.getUri().substring(resource.getUri().indexOf("idt=") + 4); 
+                    Term term = new TermHelper().getThisTerm(hikariDataSource, child, idTheso, langCode);
+                    if (term != null) {
+                        TermTemp termTemp = new TermTemp();
+                        termTemp.idConcept = child;
+                        termTemp.term = term.getLexical_value();
+                        conceptIdsTemps.add(termTemp);
+                    }
+                }
+                
+                NodeConceptTree nodeConceptTree = new NodeConceptTree();
+                conceptIdsTemps.sort((o1, o2) -> nodeConceptTree.naturalCompare(o1.term, o2.term, true));
+                idToChildId.put(key, conceptIdsTemps.stream().map(c -> c.idConcept).collect(Collectors.toList()));
+            }
+
+            /*
             for (SKOSRelation relation : resource.getRelationsList()) {
                 String key;
-                if (relation.getProperty() == SKOSProperty.narrower 
+                if (relation.getProperty() == SKOSProperty.narrower
                         || relation.getProperty() == SKOSProperty.narrowerGeneric
                         || relation.getProperty() == SKOSProperty.narrowerInstantial
                         || relation.getProperty() == SKOSProperty.narrowerPartitive) {
@@ -735,7 +806,7 @@ public class SKOSResource {
                     }
 
                 }
-            }
+            }*/
         }
 
         private void checkTrad(SKOSResource resource) {
@@ -782,7 +853,7 @@ public class SKOSResource {
             this.langCode2 = langCode2;
             this.idToIsTrad = idToIsTrad;
             this.resourceChecked = resourceChecked;
-            
+
             this.idToNameHashMap.clear();
         }
 
@@ -840,9 +911,8 @@ public class SKOSResource {
             if (r2_name.length() == 0) {
                 return -1;                  // empty string sorts last                  
             }
-
-            return r1_name.compareTo(r2_name);
-
+            
+            return new NodeConceptTree().naturalCompare(r1_name, r2_name, true);
         }
 
         private void checkTrad(SKOSResource resource) {
@@ -974,7 +1044,7 @@ public class SKOSResource {
         skosStatus.setIdUser(statusDatas[2]);
         skosStatus.setDate(statusDatas[3]);
         skosStatus.setIdConcept(identifier);
-        skosStatus.setIdThesaurus(uri.substring(uri.indexOf("idt=")+4, uri.length()));
+        skosStatus.setIdThesaurus(uri.substring(uri.indexOf("idt=") + 4, uri.length()));
     }
 
     public void setSkosStatus(SKOSStatus skosStatus) {
@@ -1027,6 +1097,4 @@ public class SKOSResource {
         this.sKOSReplaces = sKOSReplaces;
     }
 
-    
-    
 }
