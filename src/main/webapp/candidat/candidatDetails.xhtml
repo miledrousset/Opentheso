@@ -26,7 +26,7 @@
     <!-- prefLabel -->
     <div class="row" style="margin-top: 10px">
         <div class="col-12">
-            <h:outputText value="#{langueBean.getMsg('candidat.title')}"/>
+            <h:outputText value="#{langueBean.getMsg('candidat.title')} *"/>
         </div>
     </div>
     <div class="row" id="vote">
@@ -57,6 +57,26 @@
             </div>
         </h:panelGroup>
     </div>
+    
+    
+    <!-- pour la première définition qui est obligatoire-->      
+    <h:panelGroup id="candidateDef" rendered="#{candidatBean.isNewCandidatActivate()}">
+        <div class="row" style="margin-top: 10px;">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('candidat.definition')} *" style="margin-top: 15px;"/>
+            </div>
+        </div>
+        <div class="row">    
+            <div class="col-10">
+                <p:textEditor id="textEditorDef" widgetVar="Definition1"
+                              value="#{candidatBean.definition}" allowLinks="true" 
+                              secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
+                              placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
+                </p:textEditor>   
+            </div>
+        </div>          
+    </h:panelGroup>
+    
 
     <!-- collection -->
     <div class="row" style="margin-top: 7px">
@@ -128,6 +148,8 @@
         </div>
     </div>
 
+  
+    
     <!-- Validation et enregistrement des nouvelles données ci-dessus -->
     <div class="row" style="margin-top: 10px">
         <div class="col-12" style="text-align: right" >
@@ -176,24 +198,24 @@
                     <div class="col-1" >
                         <h:outputText value="#{note.lang}" style="font-size: 14px;"/>
                     </div>
-                    <div class="col-1" style="margin-top: -2px;">                        
+                    <div class="col-1" >                        
                         <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" class="ui-button-success rounded-button" icon="fas fa-pen" process="@this"
                                          actionListener="#{noteBeanCandidat.resetEditNode(note)}" update="editNoteForm"
                                          oncomplete="PF('editNote').show();"/>
                         
                     </div>
-                    <div class="col-1" style="margin-top: -2px;">
+                    <div class="col-1" >
                         <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" icon="pi pi-trash" styleClass="rounded-button ui-button-danger" process="@this" ajax="true"
                                          actionListener="#{noteBeanCandidat.setSelectedNodeNote(note)}" update="idDeleteNote"
                                          oncomplete="PF('deleteNote').show();" />
                     </div>
-                    <div class="col-1" style="margin-top: -2px;">
+                    <div class="col-1" >
                         <p:commandButton rendered="#{note.voted}" actionListener="#{candidatBean.addNoteVote(note)}"
                                          update="tabViewCandidat messageIndex" ajax="true" process="@this" styleClass="rounded-button"
                                          icon="fas fa-thumbs-up" style="background-color: #f47b2a;"/>
 
                         <p:commandButton rendered="#{!note.voted}" update="tabViewCandidat messageIndex"
-                                         icon="fa fa-thumbs-up fa-xs" styleClass="rounded-button ui-button-secondary"
+                                         icon="fas fa-thumbs-up" styleClass="rounded-button ui-button-secondary"
                                          actionListener="#{candidatBean.addNoteVote(note)}" ajax="true" process="@this"
                                          style="background-color: #EEF4FF; color: #000"/>
                     </div>

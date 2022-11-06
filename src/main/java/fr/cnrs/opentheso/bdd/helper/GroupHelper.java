@@ -114,50 +114,22 @@ public class GroupHelper {
             String idGroup,
             String idTheso,
             int idUser) {
-
-        Connection conn = null;
-        Statement stmt;
         boolean status = false;
         label = new StringPlus().convertString(label);
 
-        try {
-            conn = ds.getConnection();
-            conn.setAutoCommit(false);
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "UPDATE concept_group_label "
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept_group_label "
                             + "set lexicalvalue='" + label + "',"
                             + " modified = current_date"
                             + " WHERE lang ='" + idLang + "'"
                             + " AND idthesaurus='" + idTheso + "'"
-                            + " AND idgroup ='" + idGroup + "'";
-
-                    stmt.executeUpdate(query);
-                    if (!addGroupTraductionHistoriqueRollBack(conn, idGroup, idTheso, idLang, label, idUser)) {
-                        conn.rollback();
-                        conn.close();
-                    }
-                    conn.commit();
-                    conn.close();
-                    status = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+                            + " AND idgroup ='" + idGroup + "'");
+                status = true;
+                addGroupTraductionHistoriqueRollBack(conn, idGroup, idTheso, idLang, label, idUser);
             }
         } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while updating group : " + idGroup, sqle);
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, sqle);
         }
         return status;
     }
@@ -458,6 +430,42 @@ public class GroupHelper {
         return status;
     }
 
+    /**
+     * Cette fonction permet d'ajouter un libellé pour un group (MT, domaine
+     * etc..)
+     *
+     * @param ds
+     * @param idGroup
+     * @param idLang
+     * @param value
+     * @param idTheso
+     * @return
+     */
+    public boolean addGroupTraduction(HikariDataSource ds,
+            String idGroup, String idTheso,
+            String idLang, String value) {
+        boolean status = false;
+        value = new StringPlus().convertString(value);
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("Insert into concept_group_label "
+                        + "(lexicalvalue, created, modified,lang, idthesaurus, idgroup)"
+                        + "values ("
+                        + "'" + value + "'"
+                        + ",current_date"
+                        + ",current_date"
+                        + ",'" + idLang + "'"
+                        + ",'" + idTheso + "'"
+                        + ",'" + idGroup + "'" + ")");
+                status = true;                
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while adding traduction of Group : " + idGroup, sqle);
+        }
+        return status;
+    }    
+    
     /**
      * Cette fonction permet d'ajouter une ligne historisque du chagement dans
      * les traductions du groupe

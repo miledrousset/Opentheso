@@ -777,12 +777,13 @@ public class ImportFileBean implements Serializable {
         concept.setIdThesaurus(idNewTheso);
         concept.setStatus("D");
         //concept.setNotation(notation);
-        ToolsHelper toolsHelper = new ToolsHelper();
+    
+    /*  ToolsHelper toolsHelper = new ToolsHelper();
         String id = toolsHelper.getNewId(15);
         while (conceptHelper.isIdExiste(connect.getPoolConnexion(), id)) {
             id = toolsHelper.getNewId(15);
-        }
-        concept.setIdConcept(id);
+        }*/
+        concept.setIdConcept(null);//id);
 
         Term terme = new Term();
         terme.setId_thesaurus(idNewTheso);
@@ -792,7 +793,7 @@ public class ImportFileBean implements Serializable {
         terme.setStatus("D");
         concept.setTopConcept(false);
 
-        String idConcept = new ConceptHelper().addConcept(connect.getPoolConnexion(),
+        String idConcept = conceptHelper.addConcept(connect.getPoolConnexion(),
                 idConceptParent, "NT", concept, terme, currentUser.getNodeUser().getIdUser());
 
         for (NodeTree node : nodeTree.getChildrens()) {

@@ -149,7 +149,8 @@
                                         </p:selectOneMenu>
                                     </div>
                                     <div class="col-8">
-                                        <p:autoComplete class="form-control" value="#{searchBean.searchSelected}" var="values" placeholder="Rechercher..." 
+                                        <p:autoComplete class="form-control" value="#{searchBean.searchSelected}" var="values"
+                                                        placeholder="#{langueBean.getMsg('candidat.search')}..." 
                                                         completeMethod="#{searchBean.completTermFullText}" minQueryLength="1" itemLabel="#{values.prefLabel}" 
                                                         itemValue="#{values}" converter="searchConverterAdvanced" scrollHeight="600"
                                                         inputStyle="font-size: 16px; width: 100%; height: 100%; box-shadow: none; padding-top: 10px"

@@ -10,7 +10,7 @@
             <div class="row" style="margin-left: 20px; margin-top: 10px">
                 <div class="col-12">
                     <h:outputText value="Modifier le thésaurus :  " class="h5 mb-0 text-gray-800"/>
-                    <h:outputText value="#{editThesoBean.nodeIdValueOfTheso.value} (#{editThesoBean.nodeIdValueOfTheso.id})" 
+                    <h:outputText value="#{editThesoBean.nodeIdValueOfTheso.value} (#{editThesoBean.nodeIdValueOfTheso.id})"
                                   class="h5 mb-0 text-gray-800" style="color: #C63632 !important"/>
                 </div>
             </div>
@@ -70,14 +70,14 @@
                              resizableColumns="true" reflow="true"
                              paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
                              emptyMessage="Aucune langue disponible..."
-                             stripedRows="true" scrollable="true" 
+                             stripedRows="true" scrollable="true"
                              style="margin-bottom: -17px; margin-top: -16px;">
 
                     <f:facet name="header">
                         <div class="flex align-items-center justify-content-between">
                             <div>
                                 <p:commandButton value="Ajouter une langue" icon="fas fa-plus-circle"
-                                                 styleClass="ui-button-success" update="idAddLangToTheso" 
+                                                 styleClass="ui-button-success" update="idAddLangToTheso"
                                                  actionListener="#{editThesoBean.setLangSelected(null)}"
                                                  oncomplete="PF('addLangToTheso').show();" process="@this"/>
                             </div>
@@ -88,13 +88,13 @@
                         <h:outputLabel value="#{langOfTheso.labelTheso}"/>
                     </p:column>
 
-                    <p:column width="15" headerText="Langue"> 
+                    <p:column width="15" headerText="Langue">
                         <img src="#{conceptView.getDrapeauImg(langOfTheso.codeFlag)}" width="25" height="20"/>
                         <h:outputLabel value=" (#{langOfTheso.code})" style="font-size: 14px; margin-left: 10px;" />
                     </p:column>
 
                     <p:column width="15" headerText="Modifier">
-                        <p:commandButton icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined" 
+                        <p:commandButton icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
                                          update="containerIndex:manage-theso-content" style="color: #43B572"
                                          oncomplete="PF('editLangToTheso').show()" process="@this"
                                          actionListener="#{editThesoBean.setLangSelected(langOfTheso)}">
@@ -103,8 +103,8 @@
                     </p:column>
 
                     <p:column width="15" headerText="Supprimer">
-                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined" 
-                                         actionListener="#{editThesoBean.deleteLangFromTheso(langOfTheso.code)}" 
+                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
+                                         actionListener="#{editThesoBean.deleteLangFromTheso(langOfTheso.code)}"
                                          update="containerIndex:listLangThes messageIndex" process="@this" />
                     </p:column>
 
@@ -123,7 +123,7 @@
 
             <div class="row" style="margin-left: 20px; margin-top: 15px; margin-bottom: 15px">
                 <div class="col-2">
-                    <p:commandButton value="#{langueBean.getMsg('btnBack')}" styleClass="ui-button-secondary button" 
+                    <p:commandButton value="#{langueBean.getMsg('btnBack')}" styleClass="ui-button-secondary button"
                                      icon="fas fa-undo-alt" update="containerIndex" ajax="true" process="@this"
                                      actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" />
                 </div>    

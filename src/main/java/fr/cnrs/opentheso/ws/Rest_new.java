@@ -123,9 +123,9 @@ public class Rest_new {
                 "application/rdf+xml");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 
     /**
@@ -163,9 +163,9 @@ public class Rest_new {
                 "application/rdf+xml");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 
     /**
@@ -205,9 +205,9 @@ public class Rest_new {
                 "application/json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -246,9 +246,9 @@ public class Rest_new {
                 "application/json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -286,9 +286,9 @@ public class Rest_new {
                 "application/ld+json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -327,9 +327,9 @@ public class Rest_new {
                 "application/ld+json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -367,9 +367,9 @@ public class Rest_new {
                 "text/turtle");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
 
     /**
@@ -408,9 +408,9 @@ public class Rest_new {
                 "text/turtle");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
 
 /////////////////////////////////////////////////////
@@ -464,9 +464,9 @@ public class Rest_new {
                 "application/rdf+xml");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -533,9 +533,9 @@ public class Rest_new {
                 "application/rdf+xml");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 
     /**
@@ -578,9 +578,9 @@ public class Rest_new {
                 "application/rdf+xml");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 
     /**
@@ -623,9 +623,9 @@ public class Rest_new {
                 "application/json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -668,9 +668,9 @@ public class Rest_new {
                 "application/json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -713,9 +713,9 @@ public class Rest_new {
                 "application/ld+json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -758,9 +758,9 @@ public class Rest_new {
                 "application/ld+json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -803,9 +803,9 @@ public class Rest_new {
                 "text/turtle");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
 
     /**
@@ -848,9 +848,9 @@ public class Rest_new {
                 "text/turtle");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
 
 /////////////////////////////////////////////////////
@@ -899,13 +899,13 @@ public class Rest_new {
                 "application/rdf+xml");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-//        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+//        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 
     /**
@@ -938,13 +938,13 @@ public class Rest_new {
                 "application/rdf+xml");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
     }
 
     /**
@@ -977,13 +977,13 @@ public class Rest_new {
                 "application/json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -1016,13 +1016,13 @@ public class Rest_new {
                 "application/json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //     return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //     return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -1055,13 +1055,13 @@ public class Rest_new {
                 "application/ld+json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -1094,13 +1094,13 @@ public class Rest_new {
                 "application/ld+json");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -1133,13 +1133,13 @@ public class Rest_new {
                 "text/turtle");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
+                .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
 
     /**
@@ -1172,13 +1172,13 @@ public class Rest_new {
                 "text/turtle");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
+                .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
     }
 
 
@@ -1232,9 +1232,9 @@ public class Rest_new {
         String datas = restRDFHelper.getPrefLabelFromArk(ds, naan, arkId, idLang);
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
 /////////////////////////////////////////////////////
@@ -1357,10 +1357,10 @@ public class Rest_new {
             }
             datas = getDatasFromArk(idTheso, idLang, idArk, showLabels);
             if (datas == null) {
-                return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
             }
             return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
         }
@@ -1372,45 +1372,45 @@ public class Rest_new {
                 format = "application/rdf+xml";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
-                    return Response.status(Status.NO_CONTENT).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
                 return Response
-                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML)
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
                         .header("Access-Control-Allow-Origin", "*")
                         .build();
-                //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+                //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
             }
             case "jsonld":
                 format = "application/ld+json";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
-                    return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
                 return Response
-                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                         .header("Access-Control-Allow-Origin", "*")
                         .build();
             case "turtle":
                 format = "text/turtle";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
-                    return Response.status(Status.NO_CONTENT).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+                    return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
                 }
-                // return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                // return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
                 return Response
-                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN)
+                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
                         .header("Access-Control-Allow-Origin", "*")
                         .build();
             case "json":
                 format = "application/json";
                 datas = getDatas(idTheso, idLang, group, value, format, filter);
                 if (datas == null) {
-                    return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
                 return Response
-                        .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                         .header("Access-Control-Allow-Origin", "*")
                         .build();
         }
@@ -1550,10 +1550,10 @@ public class Rest_new {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }    
     
     private String[] getIdGroupFromArk(String[] arkGroups) {
@@ -1618,10 +1618,10 @@ public class Rest_new {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }      
     
     private String getDatasForWidgetByArk(String idLang, String[] idArks, String format) {
@@ -1692,10 +1692,16 @@ public class Rest_new {
             }
         }
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build(); 
         }
         if (value == null || value.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();               
         }
 
         String datas;
@@ -1706,11 +1712,15 @@ public class Rest_new {
         }
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();            
+            
         }
-        //      return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //      return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
         //  return Response.ok(skos.toString()).header("Access-Control-Allow-Origin", "*").build();
@@ -1780,15 +1790,15 @@ public class Rest_new {
         }
 
         if (datas == null) {
-            //    return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            //    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
             return Response
-                    .status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         }
-        // return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        // return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
     }
@@ -1907,7 +1917,7 @@ public class Rest_new {
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
             }
             case "jsonld":
                 format = "application/ld+json";
@@ -1915,21 +1925,21 @@ public class Rest_new {
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
             case "turtle":
                 format = "text/turtle";
                 datas = getBranchOfConcepts(idConcept, idTheso, way, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
             case "json":
                 format = "application/json";
                 datas = getBranchOfConcepts(idConcept, idTheso, way, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
         }
         return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
     }
@@ -2011,33 +2021,61 @@ public class Rest_new {
                 format = "application/rdf+xml";
                 datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                       
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                  
             }
             case "jsonld":
                 format = "application/ld+json";
                 datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                    
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                  
             case "turtle":
                 format = "text/turtle";
                 datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                       
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                  
             case "json":
                 format = "application/json";
                 datas = getAllBrancheOfGroup__(idTheso, groups, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                      
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
         }
-        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        
+        return Response
+                .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();        
     }
 
     private String getAllBrancheOfGroup__(String idtheso,
@@ -2088,7 +2126,7 @@ public class Rest_new {
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
             }
             case "jsonld":
                 format = "application/ld+json";
@@ -2096,21 +2134,21 @@ public class Rest_new {
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
             case "turtle":
                 format = "text/turtle";
                 datas = getAllTheso__(idTheso, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
             case "json":
                 format = "application/json";
                 datas = getAllTheso__(idTheso, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
         }
         return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
     }
@@ -2169,7 +2207,7 @@ public class Rest_new {
         if (datas == null) {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }    
 
     private String getAllIdValueTheso__(String idtheso, String lang) {
@@ -2257,9 +2295,9 @@ public class Rest_new {
         }
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     private String getlistAllPublicTheso__(HikariDataSource ds) {
@@ -2404,9 +2442,9 @@ public class Rest_new {
         ds.close();
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     private String getlistLangOfTheso__(HikariDataSource ds, String idTheso) {
@@ -2461,9 +2499,9 @@ public class Rest_new {
         ds.close();
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
     private String getInfoLastUpdate__(HikariDataSource ds, String idTheso) {
@@ -2521,7 +2559,7 @@ public class Rest_new {
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
             }
             case "jsonld":
                 format = "application/ld+json";
@@ -2529,21 +2567,21 @@ public class Rest_new {
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
             case "turtle":
                 format = "text/turtle";
                 datas = getLastConcepts__(idTheso, fromDate, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
             case "json":
                 format = "application/json";
                 datas = getLastConcepts__(idTheso, fromDate, format);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
-                return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
         }
         return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();        
     }
@@ -2611,10 +2649,10 @@ public class Rest_new {
         }
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
     }
@@ -2668,11 +2706,11 @@ public class Rest_new {
         String datas = getTopterms__(idTheso, idLang);
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
 
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
     }
@@ -2720,11 +2758,11 @@ public class Rest_new {
         String datas = getNarrower__(idTheso, idConcept, idLang);
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
 
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
     }
@@ -2769,13 +2807,13 @@ public class Rest_new {
                 idTheso, idConcept, "fr");
         ds.close();
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //     return Response.status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        //     return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }
 
 
@@ -2838,11 +2876,11 @@ public class Rest_new {
         String datas = getDatasForGraph__(idTheso, idConcept, idLang, idGroup);
 
         if (datas == null) {
-            return Response.status(Status.NO_CONTENT).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
 
         return Response
-                .status(Response.Status.ACCEPTED).entity(datas).type(MediaType.APPLICATION_JSON)
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
     }
