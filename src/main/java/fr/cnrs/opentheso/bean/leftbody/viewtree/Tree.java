@@ -575,6 +575,8 @@ public class Tree implements Serializable {
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("indexTitle");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");
+        
+        PrimeFaces.current().executeScript("setHeightRightDivt()");
     }
 
     public void onTabConceptChange(TabChangeEvent event) {
