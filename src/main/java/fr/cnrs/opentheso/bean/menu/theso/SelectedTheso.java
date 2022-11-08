@@ -100,7 +100,7 @@ public class SelectedTheso implements Serializable {
         thesoName = null;   
         localUri = null;
         System.gc();
-        System.runFinalization();        
+    //    System.runFinalization();        
     }      
     
     @PostConstruct
@@ -112,14 +112,14 @@ public class SelectedTheso implements Serializable {
         
         isNetworkAvailable = hostAvailabilityCheck();
         
-        ///////
+        ///////#MR désactivé, ce n'est plus utile
         ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+/*        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         HttpServletRequest req = (HttpServletRequest) externalContext.getRequest();
         if(!req.getSession().isNew()){
             System.gc();
-            System.runFinalization();
-        }        
+      //      System.runFinalization();
+        }     */   
         ///////
         ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire        
         

@@ -446,9 +446,9 @@ public class ThesaurusHelper {
             try ( Statement stmt = conn.createStatement()) {
                 String query = "";
                 if (withPrivateTheso) {
-                    query = "select id_thesaurus from thesaurus order by id_thesaurus";
+                    query = "select id_thesaurus from thesaurus order by created desc";
                 } else { // uniquement pour les SuperAdmin
-                    query = "select id_thesaurus from thesaurus where thesaurus.private != true order by id_thesaurus";
+                    query = "select id_thesaurus from thesaurus where thesaurus.private != true order by created desc";
                 }
                 try ( ResultSet resultSet = stmt.executeQuery(query)) {
                     while (resultSet.next()) {

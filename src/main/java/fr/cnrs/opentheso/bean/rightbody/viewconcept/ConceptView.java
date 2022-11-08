@@ -386,58 +386,41 @@ public class ConceptView implements Serializable {
      * permet de récupérer toutes les notes dans toutes les langues
      */
     public void getNotesWithAllLanguages(){
-        
-        String msg;
+        NoteHelper noteHelper = new NoteHelper();
         if(toggleSwitchNotesLang) {
-            msg = "Recherche des notes dans toutes les langue effectuée !";
-            nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTermAllLang(
+            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
                     connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));  
-            nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConceptAllLang(
+            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));             
         } else {
-            msg = "Recherche dans notes avec la langue '" + selectedLang + "' effectuée !";
-            nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTerm(
+            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(
                     connect.getPoolConnexion(),
                     nodeConcept.getTerm().getId_term(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));             
                    
-            nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConcept(
+            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConcept(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));               
         }
-        
         setNotes();
-        
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", msg));
-        
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
     public void getAltLabelWithAllLanguages(){   
+        TermHelper termHelper = new TermHelper();
         
-        String msg;
-        if(toggleSwitchAltLabelLang) {
-            msg = "Recherche dans toutes les langue effectuée !";
-            nodeConcept.setNodeEM(new TermHelper().getAllNonPreferredTerms(
-                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), 
-                    nodeConcept.getConcept().getIdThesaurus()));  
-        } else {
-            msg = "Recherche dans la langue '" + selectedLang + "' effectuée !";
-            nodeConcept.setNodeEM(new TermHelper().getNonPreferredTerms(connect.getPoolConnexion(),
+        if(toggleSwitchAltLabelLang)
+            nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
+                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));  
+        else
+            nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(connect.getPoolConnexion(),
                     nodeConcept.getTerm().getId_term(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));
-        }
-        
-        if (!dejaAfficher) {
-            dejaAfficher = true;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", msg));
-            PrimeFaces.current().ajax().update("messageIndex");
-        }
-        
+        PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }    
     

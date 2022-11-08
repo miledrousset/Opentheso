@@ -147,8 +147,9 @@ body .ui-selectonemenu .ui-selectonemenu-label {
     padding-right: -20px;
     min-height: 0px;
     margin-top: -1px;
-    font-size: 14px;
-    color: #43B572;
+    font-size: 0.8rem;
+/*    color: #8A3B05;*/
+    color: #601e18;
 }
 
 body .ui-selectonemenu.ui-state-hover {
@@ -160,14 +161,15 @@ body .ui-selectonemenu.ui-state-focus {
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item {
-    padding: 0.15rem 0.25rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 12px;
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-highlight {
     background: #F47B2A;
     color: #FFF;
     overflow: auto;
-    font-weight: bold;
+/*    font-weight: bold;*/
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-hover {

@@ -737,6 +737,7 @@ public class CsvImportHelper {
         Term term = new Term();
         term.setId_thesaurus(idTheso);
         term.setId_term(conceptObject.getIdConcept());
+        conceptObject.setIdTerm(conceptObject.getIdConcept());
         term.setContributor(idUser);
         term.setCreator(idUser);
         term.setSource("");
@@ -755,14 +756,14 @@ public class CsvImportHelper {
             // ajout des PrefLabel
             for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
                 // ajout des traductions
-                term.setId_thesaurus(idTheso);
+         //       term.setId_thesaurus(idTheso);
                 term.setLang(prefLabel.getLang());
                 term.setLexical_value(prefLabel.getLabel());
-                term.setId_term(conceptObject.getIdConcept());
-                term.setContributor(idUser);
-                term.setCreator(idUser);
-                term.setSource("");
-                term.setStatus("");
+          //      term.setId_term(conceptObject.getIdConcept());
+          //      term.setContributor(idUser);
+          //      term.setCreator(idUser);
+          //      term.setSource("");
+          //      term.setStatus("");
                 if (!termHelper.addTermTraduction(conn, term, idUser)) {
                     conn.rollback();
                     conn.close();
