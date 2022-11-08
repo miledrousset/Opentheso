@@ -302,7 +302,7 @@
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                     </div>
 
-                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7">
+                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px;">
                         <p:commandLink rendered="#{(currentUser.nodeUser != null)}" actionListener="#{conceptView.countTheTotalOfBranch()}"
                                        title="#{langueBean.getMsg('rightbody.concept.tootltip_branch_count')}"
                                        update="containerIndex:formRightTab" process="@this" ajax="true">

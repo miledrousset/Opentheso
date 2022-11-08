@@ -298,6 +298,17 @@ public class NoteBean implements Serializable {
     public void updateNote(NodeNote nodeNote, int idUser) {
         NoteHelper noteHelper = new NoteHelper();
         FacesMessage msg;
+        
+        if(nodeNote.getLexicalvalue().isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne peut pas être vide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            conceptBean.getConcept(
+                    selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getSelectedLang());            
+            return;            
+        }
         if (selectedTypeNote.equalsIgnoreCase("note") || selectedTypeNote.equalsIgnoreCase("scopeNote") || selectedTypeNote.equalsIgnoreCase("historyNote")) {
             if (!noteHelper.updateConceptNote(connect.getPoolConnexion(),
                     nodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
