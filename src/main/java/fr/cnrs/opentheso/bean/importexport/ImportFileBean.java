@@ -877,6 +877,9 @@ public class ImportFileBean implements Serializable {
             nodePreference.setSourceLang(selectedLang);
             preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }
+        csvImportHelper.setNodePreference(nodePreference);
+        csvImportHelper.setFormatDate(formatDate);
+        
 
         // ajout des concepts et collections
         try {
@@ -974,7 +977,8 @@ public class ImportFileBean implements Serializable {
             nodePreference.setSourceLang(selectedLang);
             preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }
-
+        csvImportHelper.setNodePreference(nodePreference);
+        csvImportHelper.setFormatDate(formatDate);
         // ajout des concepts et collections
         for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
             switch (conceptObject.getType().trim().toLowerCase()) {
