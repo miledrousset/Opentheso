@@ -8,6 +8,9 @@
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form>
+
+            <p:defaultCommand target="addUserBtn" />
+
             <div class="row"> 
                 <!-- Nom Pseudo -->
                 <div class="col-5" >
@@ -83,13 +86,16 @@
                 </div> 
             </div>
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 ajax="true" actionListener="PF('newUser').hide();" update="idNewUser" />
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('newUser').hide();" update="idNewUser" process="@this" />
-
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('newUser').hide();" actionListener="#{newUSerBean.addUser()}" />
+                <p:commandButton id="addUserBtn" value="#{langueBean.getMsg('btnValidate')}"
+                                 icon="pi pi-check" oncomplete="PF('newUser').hide();"
+                                 styleClass="ui-button-success"
+                                 update="messageIndex containerIndex" 
+                                 actionListener="#{newUSerBean.addUser()}" />
             </div>
         </h:form>
     </p:dialog>   

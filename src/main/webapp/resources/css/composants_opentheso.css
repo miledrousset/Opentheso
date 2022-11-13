@@ -501,12 +501,6 @@ body .ui-datatable thead th.ui-state-highlight{
     color: #43B572;
 }
 
-body .ui-datatable.ui-datatable-sm .ui-datatable-data > tr > td {
-    padding: 1px 1px;
-    vertical-align: central;
-    padding-left: 10px;
-}
-
 body .ui-datatable.ui-datatable-striped .ui-datatable-data>tr.ui-datatable-odd {
     background: #ecf8f1;
 }
@@ -786,4 +780,40 @@ body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-auto
 body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-item.ui-state-highlight {
     background: #ecf8f1;
     color: #226b40;
+}
+
+
+/******************************* ui-accordion *****************************/
+body .ui-accordion .ui-accordion-header {
+    border: 1px solid #226b40;
+    border-top: 0 none;
+    background: #ecf8f1;
+    color: #43B572;
+    padding: 0.5em;
+}
+
+body .ui-accordion .ui-accordion-header.ui-state-active {
+    background: #226b40;
+    border-color: #226b40;
+    color: #ecf8f1;
+}
+
+body .ui-accordion .ui-accordion-header:first-child {
+    margin-top: 0;
+    border-top: 1px solid #226b40;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
+body .ui-accordion .ui-accordion-header {
+    border: 1px solid #226b40;
+    border-top: 0 none;
+    color: #43B572;
+    padding: 0.5em;
+}
+
+body .ui-accordion .ui-accordion-content {
+    border: 1px solid #226b40;
+    background: #fff;
+    color: #43B572;
 }
