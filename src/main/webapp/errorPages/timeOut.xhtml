@@ -25,48 +25,39 @@
                     </div>
                 </a>
                 <hr class="sidebar-divider my-0"/>
-                <li class="nav-item active">
-                    <a class="nav-link" href="../index.xhtml">
-                        <i class="fas fa-fw fa-tachometer-alt"></i>
-                        <span style="font-size: 12px;">Thésaurus</span></a>
-                </li>
+                
+               
                 <div class="text-center d-none d-md-inline" style="margin-top: 30px">
                     <button class="rounded-circle border-0" id="sidebarToggle" />
                 </div>
                 <div class="text-center d-none d-md-inline" style="height: 100%; width: 100%; position: relative; ">
                     <div style="position: absolute; bottom: 0; left: 0; align-content: center;
-                         width: 100%; margin-bottom: 30px; margin-left: -10px">
-                        <img src="../resources/img/logo1.png" style="width:80px;" />
+                         width: 100%; margin-bottom: 30px; text-align: center;">
+                        <img src="#{request.contextPath}/resources/img/logo1.png" style="width:50px;" />
                     </div>
                 </div>
             </ul>
 
             <div id="content-wrapper" style="width: 100%;">
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
 
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <li class="nav-item dropdown no-arrow">
-                            <p:commandLink class="nav-link dropdown-toggle" actionListener="#{menuBean.redirectToProjetsPage()}">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px;">Se connecter</span>
-                                <img class="img-profile rounded-circle" src="../resources/img/logout.png" />
-                            </p:commandLink>
-                        </li>
-                    </ul>
-                </nav>
-
-                <div style="text-align: center">
+                <div style="text-align: center; margin-top: 60px;">
                     <link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:100,200,300,400" rel="stylesheet"/>
                     <h1>Time OUT</h1>
                     <h2>Votre session a expirée / Session expired</h2><br/>
 
                     <img src="../resources/img/session_timeout.gif" width="300px"/>
+                    
+                    <a  href="../index.xhtml">
+                        <div >
+                            <img src="../resources/img/logo_Opentheso.png" style="height: 35px"/>
+                        </div>
+                    </a>      
+                    <div >
+                        <h:outputText value="retour à l'accueil / Back to Home" style="height: 35px"/>
+                    </div>                    
                 </div>
+                
+                
             </div>
         </div>
 
