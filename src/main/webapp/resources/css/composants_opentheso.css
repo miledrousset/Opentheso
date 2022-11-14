@@ -817,3 +817,9 @@ body .ui-accordion .ui-accordion-content {
     background: #fff;
     color: #43B572;
 }
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon {
+    width: 2rem;
+    height: 2rem;
+    margin: 0 0.3rem 0 0;
+}
