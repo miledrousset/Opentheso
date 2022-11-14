@@ -40,7 +40,7 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex" style="min-height:100%; position:relative;">
-                    
+
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
@@ -51,47 +51,57 @@
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_thesauri')}</span></h1>
                         </div>
 
-                        <div class="col-12" style="height: 100%">
+                        <!-- Compte d'utilisateur -->
+                        <div class="card shadow mb-4" style="height: 100%;"> 
+                            <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
+                                <p:dataTable rendered="#{superAdminBean.allThesoProject != null}"
+                                             value="#{superAdminBean.allThesoProject}" var="listTheso"
+                                             filteredValue="#{roleOnTheso.nodeListThesoAsAdminFiltered}" size="small"
+                                             widgetVar="listThesoTable" styleClass="products-table"
+                                             resizableColumns="true" scrollHeight="450" reflow="true"
+                                             paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
+                                             emptyMessage="Aucun thésaurus disponible..."
+                                             stripedRows="true"
+                                             style="margin-bottom: -17px; margin-top: -16px;">
 
-                            <!-- Compte d'utilisateur -->
-                            <div class="card shadow mb-4" style="height: 100%;"> 
-                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
-                                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
-                                        <div class="col-12">
-                                            <!-- Vue liste de tous les utilisateurs -->
-                                            <p:dataTable id="tabThesoProject" rendered="#{superAdminBean.allThesoProject != null}"
-                                                         value="#{superAdminBean.allThesoProject}" var="listTheso" scrollable="true" resizableColumns="true" scrollHeight="600">
-                                                <p:column width="100px" headerText="Id" sortBy="#{listTheso.idThesaurus}" >
-                                                    <h:outputText value="#{listTheso.idThesaurus}"/>
-                                                </p:column>
-
-                                                <p:column headerText="#{langueBean.getMsg('profile.name')}" sortBy="#{listTheso.thesaurusName}" >
-                                                    <h:outputText value="#{listTheso.thesaurusName}"/>
-                                                </p:column>
-
-                                                <p:column width="250px" headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
-                                                    <h:outputText value="#{listTheso.groupName}"/>
-                                                </p:column>
-
-                                                <p:column width="60px" headerText="Action"> 
-                                                    <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
-                                                                     actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName,  listTheso.idGroup)}"
-                                                                     update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();"
-                                                                     icon="fas fa-people-carry"
-                                                                     styleClass="edit-button rounded-button ui-button-success" 
-                                                                     style="background-color: #f47b2a; color: #FFFFFF; border-color: #f47b2a"/>                                                    
-                                                </p:column>
-
-                                                <f:facet name="footer">
-                                                    <span class="p-text-bold">Nombre total des thésaurus : #{superAdminBean.allThesoProject.size()}</span>
-                                                </f:facet>
-                                            </p:dataTable>                                          
+                                    <f:facet name="header">
+                                        <div class="products-table-header">
+                                            <span style="font-weight: bold">Liste des thésaurus</span>
                                         </div>
-                                    </div>
-                                </div>
+                                    </f:facet>
 
-                                <ui:include src="../dialog/profile/moveThesoToAnotherProjectSA.xhtml" />
+                                    <p:column width="100px" headerText="Id" sortBy="#{listTheso.idThesaurus}" >
+                                        <h:outputText value="#{listTheso.idThesaurus}" style="font-weight: bold"/>
+                                    </p:column>
+
+                                    <p:column headerText="#{langueBean.getMsg('profile.name')}" sortBy="#{listTheso.thesaurusName}" >
+                                        <h:outputText value="#{listTheso.thesaurusName}"/>
+                                    </p:column>
+
+                                    <p:column width="250px" headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
+                                        <h:outputText value="#{listTheso.groupName}"/>
+                                    </p:column>
+
+                                    <p:column width="60px" headerText="Action"> 
+
+                                        <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
+                                                         icon="fas fa-people-carry" styleClass="rounded-button ui-button-outlined"
+                                                         process="@this" style="color: #43B572" 
+                                                         update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();"
+                                                         actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName, listTheso.idGroup)}"/>
+
+                                    </p:column>
+
+                                    <f:facet name="footer">
+                                        <span class="p-text-bold">
+                                            <h:outputText value="Nombre total des thésaurus : " style="font-size: 14px;"/>
+                                            <h:outputText value="#{superAdminBean.allThesoProject.size()}" style="font-size: 16px; color: #f47b2a"/>
+                                        </span>
+                                    </f:facet>
+                                </p:dataTable> 
                             </div>
+
+                            <ui:include src="../dialog/profile/moveThesoToAnotherProjectSA.xhtml" />
                         </div>
                     </div>
 

@@ -51,12 +51,11 @@
                         <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">#{langueBean.getMsg('candidat.titre')}</span></h1>
                     </div>
 
-                    <div class="col-12">
-                        <div class="card shadow mb-4">
-                            
+                    <div class="row" style="margin-left: 15px; margin-right: 15px; margin-top: 5px;">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 card shadow mb-1">
                             <p:tabView id="tabViewCandidat" activeIndex="#{candidatBean.tabViewIndexSelected}"
                                        style="background-color: #FAFAFA;">
-                                
+
                                 <p:tab id="tab1" title="#{langueBean.getMsg('candidat.proposal')}" titleStyleClass="tab1">
                                     <h:panelGroup rendered="#{candidatBean.isListCandidatsActivate() || 
                                                               candidatBean.isExportViewActivate() || candidatBean.isImportViewActivate()}">

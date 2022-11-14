@@ -246,10 +246,8 @@ public class SearchBean implements Serializable {
         }
         isSelectedItem = true;
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     /**

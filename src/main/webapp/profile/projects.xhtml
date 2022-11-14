@@ -40,7 +40,7 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex" style="min-height:100%; position:relative;">
-                    
+
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
@@ -51,31 +51,38 @@
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_projects')}</span></h1>
                         </div>
 
-                        <div class="col-12" style="height: 100%">
+                        <div class="card shadow mb-4" style="height: 100%;"> 
+                            <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
+                                <p:dataTable rendered="#{superAdminBean.allProjects != null}"
+                                             value="#{superAdminBean.allProjects}" var="listProject" size="small"
+                                             widgetVar="listProject" styleClass="products-table"
+                                             resizableColumns="true" scrollHeight="450" reflow="true"
+                                             paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
+                                             emptyMessage="Aucun projet disponible..."
+                                             stripedRows="true"
+                                             style="margin-bottom: -17px; margin-top: -16px;">
 
-                            <!-- Compte d'utilisateur -->
-                            <div class="card shadow mb-4" style="height: 100%;"> 
-                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
-                                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
-                                        <div class="col-12">
-                                            <!-- Vue liste de tous les utilisateurs -->
-                                            <p:dataTable id="tabUser" rendered="#{superAdminBean.allProjects != null}" value="#{superAdminBean.allProjects}" 
-                                                         var="listProject" scrollable="true" resizableColumns="true" scrollHeight="600">
-                                                
-                                                <p:column width="60px" headerText="Id" >
-                                                    <h:outputText value="#{listProject.idGroup}"/>
-                                                </p:column>                                                
-                                                <p:column headerText="#{langueBean.getMsg('profile.name')}" >
-                                                    <h:outputText value="#{listProject.groupName}"/>
-                                                </p:column>
-
-                                                <f:facet name="footer">
-                                                    <span class="p-text-bold">Nombre total des projects :  #{superAdminBean.allProjects.size()}</span>
-                                                </f:facet>
-                                            </p:dataTable>                                          
+                                    <f:facet name="header">
+                                        <div class="products-table-header">
+                                            <span style="font-weight: bold">Liste des projets</span>
                                         </div>
-                                    </div>
-                                </div>
+                                    </f:facet>
+
+                                    <p:column width="60px" headerText="Id" >
+                                        <h:outputText value="#{listProject.idGroup}"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="#{langueBean.getMsg('profile.name')}" >
+                                        <h:outputText value="#{listProject.groupName}"/>
+                                    </p:column>
+
+                                    <f:facet name="footer">
+                                        <span class="p-text-bold">
+                                            <h:outputText value="Nombre total des projects : " style="font-size: 14px;"/>
+                                            <h:outputText value="#{superAdminBean.allProjects.size()}" style="font-size: 16px; color: #f47b2a"/>
+                                        </span>
+                                    </f:facet>
+                                </p:dataTable>
                             </div>
                         </div>
                     </div>
