@@ -190,7 +190,9 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	idsConceptsReplaceBy text,
 	isGpsPresent Boolean,
 	altitude double precision,
-	longitude double precision)
+	longitude double precision,
+        created Date,
+        modified Date)
     LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
@@ -202,7 +204,7 @@ DECLARE
 BEGIN
 
 	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
-		values (id_con, id_thesaurus, id_ark, CURRENT_DATE, CURRENT_DATE, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
+		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
 		
 	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
 		

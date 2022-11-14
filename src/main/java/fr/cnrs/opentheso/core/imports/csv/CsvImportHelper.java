@@ -26,6 +26,9 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,7 +43,7 @@ public class CsvImportHelper {
 
     private String langueSource;
     private int idUser;
-
+    private String formatDate;
 
     public CsvImportHelper(NodePreference nodePreference) {
         this.nodePreference = nodePreference;
@@ -64,12 +67,30 @@ public class CsvImportHelper {
             String langueSource) {
         this.idUser = idUser;
         this.langueSource = langueSource;
+        this.formatDate = formatDate;
         return true;
     }
 
     public String getMessage() {
         return message;
     }
+
+    public NodePreference getNodePreference() {
+        return nodePreference;
+    }
+
+    public void setNodePreference(NodePreference nodePreference) {
+        this.nodePreference = nodePreference;
+    }
+
+    public String getFormatDate() {
+        return formatDate;
+    }
+
+    public void setFormatDate(String formatDate) {
+        this.formatDate = formatDate;
+    }
+    
 
     /**
      * Cette fonction permet de créer un thésaurus avec ses traductions (Import)
@@ -414,6 +435,21 @@ public class CsvImportHelper {
         String idHandle = "";
         String idDoi = "";
         boolean isTopConcept = true;
+        Date created = null;
+        Date modified = null;
+        
+        if (StringUtils.isEmpty(formatDate)) {
+            formatDate = "dd-mm-yyyy";
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);        
+        try {
+            created = simpleDateFormat.parse(conceptObject.getCreated());
+            modified = simpleDateFormat.parse(conceptObject.getModified());            
+        } catch (ParseException ex) {
+            Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        
 
         // IMAGES
         //-- 'url1##url2'
@@ -689,8 +725,11 @@ public class CsvImportHelper {
                     + null + ", "
                     + (conceptObject.getLatitude() != null) + ", " 
                     + (conceptObject.getLatitude() == null ? null : "'" + conceptObject.getLatitude() + "'") + ", "
-                    + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ")";
-            System.out.println("SQL : " + sql);
+                    + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ", "
+                    + "'" + created + "', "
+                    + "'" + modified + "'"
+                    + ")";
+//            System.out.println("SQL : " + sql);
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);
@@ -700,7 +739,7 @@ public class CsvImportHelper {
 
         return true;
     }
-
+    
     private boolean addPrefLabel(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
@@ -727,6 +766,19 @@ public class CsvImportHelper {
         concept.setNotation(conceptObject.getNotation());
         concept.setIdConcept(conceptObject.getIdConcept());
         concept.setIdArk(conceptObject.getArkId());
+        
+        if (StringUtils.isEmpty(formatDate)) {
+            formatDate = "dd-mm-yyyy";
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);        
+        try {
+            concept.setCreated(simpleDateFormat.parse(conceptObject.getCreated()));
+            concept.setModified(simpleDateFormat.parse(conceptObject.getModified()));            
+        } catch (ParseException ex) {
+            Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
 
         // ajout du concept
         if (!conceptHelper.insertConceptInTable(ds, concept, idUser)) {

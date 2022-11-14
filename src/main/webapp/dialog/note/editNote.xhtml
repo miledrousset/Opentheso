@@ -26,11 +26,13 @@
                             <p:commandButton update="containerIndex:formRightTab containerIndex:idEditNote messageIndex"
                                          action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}"
                                          icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
-                                         style="font-size: 13px; color: #43B572" ajax="true" process="@form" />
+                                         style="font-size: 13px; color: #43B572" ajax="true" process="@form" 
+                                         oncomplete="PF('editNote').show();"/>
                         </div>
                     </div>                    
                 </ui:repeat>
             </p:panel>
+            <p:spacer height= "20px;"/>  
         </h:form>
     </p:dialog> 
 </ui:fragment>
