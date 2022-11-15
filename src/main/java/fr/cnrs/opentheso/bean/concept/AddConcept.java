@@ -289,10 +289,6 @@ public class AddConcept implements Serializable {
         conceptBean.getConcept(idTheso, idConceptParent, idLang);
         isCreated = true;
 
-   /*     if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab");
-        }*/
-
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         if (!conceptHelper.getMessage().isEmpty()) {
@@ -302,6 +298,9 @@ public class AddConcept implements Serializable {
 
         init();
         update();
+        
+        tree.reset();
+        tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
     private void update(){
         if (PrimeFaces.current().isAjaxRequest()) {

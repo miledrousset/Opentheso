@@ -486,19 +486,25 @@ public class EditFacet implements Serializable {
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 newFacetName, selectedTheso.getCurrentLang(),
                 null);
+        
         if(idFacet == null) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la création de la Facette !");
             return;
         }
-        showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec succès !");
-
-        tree.addNewFacet(tree.getClickselectedNodes().get(0), newFacetName, idFacet+"");
-
+        
+        FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Facette enregistrée avec succès !"));
         PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("formLeftTab:tabTree:tree");
-            pf.ajax().update("formRightTab:facetView");
-        }
+        pf.ajax().update("messageIndex");
+
+        //tree.addNewFacet(tree.getClickselectedNodes().get(0), newFacetName, idFacet);  
+        tree.reset();
+        tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+        
         PrimeFaces.current().executeScript("PF('addFacet').hide();");
         newFacetName = "";
     }
