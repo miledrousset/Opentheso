@@ -301,6 +301,7 @@ public class AddConcept implements Serializable {
         
         tree.reset();
         tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        tree.expandTreeToPath(idConceptParent, idTheso, idLang);
     }
     private void update(){
         if (PrimeFaces.current().isAjaxRequest()) {

@@ -500,11 +500,12 @@ public class EditFacet implements Serializable {
         //tree.addNewFacet(tree.getClickselectedNodes().get(0), newFacetName, idFacet);  
         tree.reset();
         tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), 
+                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
-        
         PrimeFaces.current().executeScript("PF('addFacet').hide();");
         newFacetName = "";
     }
