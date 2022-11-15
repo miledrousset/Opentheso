@@ -177,7 +177,6 @@ public class SelectedTheso implements Serializable {
      * l'application
      * @throws java.io.IOException
      */
-//    public void setSelectedTheso() throws IOException {
     public void setSelectedTheso() throws IOException {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
@@ -194,9 +193,7 @@ public class SelectedTheso implements Serializable {
                 PrimeFaces.current().executeScript("disparaitre();");
             }
             
-            //if (!"index".equals(menuBean.getActivePageName())) {
-                menuBean.redirectToThesaurus();
-            //}
+            menuBean.redirectToThesaurus();
             return;
         }
 
@@ -209,6 +206,7 @@ public class SelectedTheso implements Serializable {
             listIndex.reset();
             conceptBean.init();
             init();
+            
             indexSetting.setIsSelectedTheso(false); 
             
             roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());
@@ -222,21 +220,7 @@ public class SelectedTheso implements Serializable {
                 PrimeFaces.current().executeScript("disparaitre();");
             }
             
-            //if (!"index".equals(menuBean.getActivePageName())) {
-                menuBean.redirectToThesaurus();
-            //}
-        /*
-            PrimeFaces pf = PrimeFaces.current();
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:contentConcept");
-                pf.ajax().update("containerIndex:thesoSelect");
-                pf.ajax().update("containerIndex:sideBarSearch");
-                pf.ajax().update("containerIndex:searchBar");
-                pf.ajax().update("containerIndex:header");
-                pf.ajax().update("containerIndex:notificationPanel");
-                pf.ajax().update("containerIndex:contentConcept");
-            }
-            */
+            menuBean.redirectToThesaurus();
             return;
         }
 
@@ -252,9 +236,7 @@ public class SelectedTheso implements Serializable {
                 PrimeFaces.current().executeScript("disparaitre();");
             }
             
-            //if (!"index".equals(menuBean.getActivePageName())) {
-                menuBean.redirectToThesaurus();
-            //}
+            menuBean.redirectToThesaurus();
             return;
         }
 
@@ -278,18 +260,8 @@ public class SelectedTheso implements Serializable {
             searchBean.setBarVisisble(false);
             PrimeFaces.current().executeScript("disparaitre();");
         }
+        
         menuBean.redirectToThesaurus();
-        /*
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:contentConcept");
-            pf.ajax().update("containerIndex:thesoSelect");
-            pf.ajax().update("containerIndex:sideBarSearch");
-            pf.ajax().update("containerIndex:searchBar");
-            pf.ajax().update("containerIndex:header");
-            pf.ajax().update("containerIndex:notificationPanel");
-            pf.ajax().update("containerIndex:contentConcept");
-        }*/
     }
     
     
