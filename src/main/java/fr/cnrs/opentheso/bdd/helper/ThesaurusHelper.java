@@ -676,20 +676,23 @@ public class ThesaurusHelper {
     * Concepts d'un thésaurus (sous forme de NodeLang, un objet complet)
     * @param ds
     * @param idThesaurus
+     * @param idLang
     * @return 
     */
     public ArrayList<NodeLangTheso> getAllUsedLanguagesOfThesaurusNode(HikariDataSource ds,
-            String idThesaurus) {
+            String idThesaurus, String idLang) {
 
+        if(idLang == null || idLang.isEmpty())
+            idLang = "fr";
         ArrayList<NodeLangTheso> nodeLangs = new ArrayList<>();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                    stmt.executeQuery("SELECT code_pays, iso639_1, french_name, title "
-                            + "FROM thesaurus_label, languages_iso639 "
-                            + "WHERE thesaurus_label.lang = languages_iso639.iso639_1 "
-                            + "AND thesaurus_label.id_thesaurus = '" + idThesaurus + "'"
-                            + "order by languages_iso639.french_name");
+                    stmt.executeQuery("SELECT code_pays, iso639_1, french_name, english_name, title "
+                            + " FROM thesaurus_label, languages_iso639 "
+                            + " WHERE thesaurus_label.lang = languages_iso639.iso639_1 "
+                            + " AND thesaurus_label.id_thesaurus = '" + idThesaurus + "'"
+                            + " order by languages_iso639.french_name");
 
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     int i = 0;
@@ -698,7 +701,10 @@ public class ThesaurusHelper {
                         nodeLang.setId("" + i);
                         nodeLang.setCodeFlag(resultSet.getString("code_pays"));
                         nodeLang.setCode(resultSet.getString("iso639_1"));
-                        nodeLang.setValue(resultSet.getString("french_name"));
+                        if(idLang.equalsIgnoreCase("fr"))
+                            nodeLang.setValue(resultSet.getString("french_name"));
+                        else
+                            nodeLang.setValue(resultSet.getString("english_name"));
                         nodeLang.setLabelTheso(resultSet.getString("title"));
                         nodeLangs.add(nodeLang);
                         i++;
@@ -710,8 +716,7 @@ public class ThesaurusHelper {
             log.error("Error while getting All Used languages of Concepts of thesaurus  : " + idThesaurus, sqle);
         }
         return nodeLangs;
-    }
-
+    }  
 
     /**
      * Cette fonction permet de retourner toutes les langues utilisées par les

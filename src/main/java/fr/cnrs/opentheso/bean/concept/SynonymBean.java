@@ -83,11 +83,12 @@ public class SynonymBean implements Serializable {
     }
 
     public void reset() {
-        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), 
-                selectedTheso.getCurrentIdTheso());
+
         
         isHidden = false;
         selectedLang = conceptBean.getSelectedLang();
+        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), 
+                selectedTheso.getCurrentIdTheso(), selectedLang);        
 
         nodeEMs = conceptBean.getNodeConcept().getNodeEM();
         

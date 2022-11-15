@@ -47,7 +47,7 @@
             <div class="col-1" style="margin-top: 8px">
                 <p:commandButton rendered="#{candidatBean.candidatSelected.voted}"
                                  actionListener="#{candidatBean.addVote()}"  update="votePanel"
-                                 styleClass="rounded-button col-lg-5"
+                                 styleClass="rounded-button"
                                  icon="fas fa-thumbs-up" style="background-color: #f47b2a; border-color: #C8EAD6;"/>
 
                 <p:commandButton rendered="#{!candidatBean.candidatSelected.voted}"
@@ -199,7 +199,7 @@
                         <h:outputText value="#{note.lang}" style="font-size: 14px;"/>
                     </div>
                     <div class="col-1" >                        
-                        <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" class="ui-button-success rounded-button" icon="fas fa-pen" process="@this"
+                        <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" styleClass="rounded-button" icon="fas fa-pen" process="@this"
                                          actionListener="#{noteBeanCandidat.resetEditNode(note)}" update="editNoteForm"
                                          oncomplete="PF('editNote').show();"/>
                         
@@ -211,11 +211,12 @@
                     </div>
                     <div class="col-1" >
                         <p:commandButton rendered="#{note.voted}" actionListener="#{candidatBean.addNoteVote(note)}"
-                                         update="tabViewCandidat messageIndex" ajax="true" process="@this" styleClass="rounded-button"
-                                         icon="fas fa-thumbs-up" style="background-color: #f47b2a;"/>
+                                         update="tabViewCandidat messageIndex" ajax="true" process="@this"
+                                         styleClass="rounded-button"
+                                         icon="fas fa-thumbs-up" style="background-color: #f47b2a; border-color: #C8EAD6;"/>
 
                         <p:commandButton rendered="#{!note.voted}" update="tabViewCandidat messageIndex"
-                                         icon="fas fa-thumbs-up" styleClass="rounded-button ui-button-secondary"
+                                         icon="fas fa-thumbs-up" styleClass="rounded-button"
                                          actionListener="#{candidatBean.addNoteVote(note)}" ajax="true" process="@this"
                                          style="background-color: #EEF4FF; color: #000"/>
                     </div>

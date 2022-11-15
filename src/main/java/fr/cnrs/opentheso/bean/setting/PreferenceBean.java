@@ -71,7 +71,7 @@ public class PreferenceBean implements Serializable {
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         // les langues du thésaurus
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
 
         uriType = "uri";
         if (nodePreference.isOriginalUriIsHandle()) {

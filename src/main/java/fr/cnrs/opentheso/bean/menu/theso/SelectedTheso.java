@@ -413,14 +413,14 @@ public class SelectedTheso implements Serializable {
         // setting des préférences du thésaurus sélectionné
         roleOnThesoBean.initNodePref();
         roleOnThesoBean.showListTheso();
-        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), selectedIdTheso);
-
         if (idLang == null) {
             idLang = getIdLang();
             if (idLang == null || idLang.isEmpty()) {
                 return;
             }
         }
+        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), selectedIdTheso, idLang);
+
         currentLang = idLang;
         selectedLang = idLang;
         setThesoName();

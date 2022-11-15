@@ -119,13 +119,14 @@ public class ViewExportBean implements Serializable {
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+
 
         String idLang = selectedTheso.getCurrentLang();
         if (idLang == null || idLang.isEmpty()) {
             idLang = connect.getWorkLanguage();
         }
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);        
 
         types = Arrays.asList("Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);

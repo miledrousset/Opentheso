@@ -165,7 +165,7 @@ public class CandidatBean implements Serializable {
 
         try {
             languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
-                    connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+                    connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
             languagesOfTheso.forEach((nodeLang) -> {
                 selectedLanguages.add(nodeLang);
             });

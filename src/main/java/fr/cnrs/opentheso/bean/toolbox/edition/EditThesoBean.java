@@ -93,8 +93,7 @@ public class EditThesoBean implements Serializable {
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         // les langues du thésaurus
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+
 
         isPrivateTheso = thesaurusHelper.isThesoPrivate(
                 connect.getPoolConnexion(),
@@ -105,6 +104,8 @@ public class EditThesoBean implements Serializable {
                 connect.getPoolConnexion(),
                 nodeIdValueOfTheso.getId());
         preferredLang = nodePreference.getSourceLang();
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), preferredLang);        
         selectedLang = null;
         langSelected = null;
         langSelected = new NodeLangTheso();
@@ -125,8 +126,7 @@ public class EditThesoBean implements Serializable {
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         // les langues du thésaurus
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+
 
         isPrivateTheso = thesaurusHelper.isThesoPrivate(
                 connect.getPoolConnexion(),
@@ -137,6 +137,9 @@ public class EditThesoBean implements Serializable {
                 connect.getPoolConnexion(),
                 nodeIdValueOfTheso.getId());
         preferredLang = nodePreference.getSourceLang();
+        
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), preferredLang);        
         selectedLang = null;
         langSelected = null;
         langSelected = new NodeLangTheso();
@@ -285,7 +288,7 @@ public class EditThesoBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         
         languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), roleOnThesoBean.getNodePreference().getSourceLang());
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

@@ -156,7 +156,7 @@ public class StatistiqueBean implements Serializable {
     
     private void initChamps() {
         languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso());
+                connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
 
         groupList = new GroupHelper().getAllGroupsByThesaurusAndLang(connect, selectedTheso.getSelectedIdTheso(),
                 languageBean.getIdLangue());

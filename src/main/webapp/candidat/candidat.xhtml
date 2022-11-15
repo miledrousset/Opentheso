@@ -93,8 +93,10 @@
 
                                             <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and candidatBean.isShowCandidatActivate()}">
                                                 <div class="row">
-                                                    <div class="col-12" style="align-content: center">
-                                                        <p:commandButton title="#{langueBean.getMsg('candidat.submit')}" class="btn btn-primary" ajax="true" process="@this"
+                                                    <div class="col-12" style="align-content: center; margin-top: 10px;">
+                                                        <p:commandButton value="#{langueBean.getMsg('candidat.submit')}"
+                                                                         icon="pi pi-check" styleClass="ui-button-success"
+                                                                         ajax="true" process="@this"
                                                                          actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"
                                                                          update="idProcessCandidate processCandidateForm" oncomplete="PF('processCandidate').show();"/>
                                                     </div>
