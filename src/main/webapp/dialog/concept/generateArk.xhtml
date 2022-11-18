@@ -9,7 +9,7 @@
 
         <div class="row">
             <div class="col-12" >
-                <h:outputText value="Générer l'identifiant Ark pour : "
+                <h:outputText value="#{langueBean.getMsg('rightbody.concept.generate_ark')} #{langueBean.getMsg('search.for')} : "
                               style="font-size: 13px; margin-left: 10px; color: black;"/>
 
                 <h:outputText value=" #{conceptView.nodeConcept.term.lexical_value}"
@@ -20,11 +20,13 @@
         
         <f:facet name="footer">
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('generateArk').hide();" />
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button"
+                                 style="margin-right: 10px"
+                                 oncomplete="PF('generateArk').hide();" />
                 
-                <p:commandButton class="btn btn-primary" title="Générer" update="containerIndex messageIndex" 
-                                 style="color: white;" actionListener="#{editConcept.generateArk()}" oncomplete="PF('generateArk').hide();"/>
+                <p:commandButton value="#{langueBean.getMsg('service.generate')}" styleClass="ui-button-success"
+                                 update="containerIndex messageIndex" 
+                                 actionListener="#{editConcept.generateArk()}" oncomplete="PF('generateArk').hide();"/>
             </div>
         </f:facet>
     </p:dialog> 

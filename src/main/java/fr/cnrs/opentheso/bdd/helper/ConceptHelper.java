@@ -2802,22 +2802,24 @@ public class ConceptHelper {
             }
             if(idConcept == null) return null;
             if(idSequenceConcept == -1) {
-                stmt.executeUpdate("Insert into concept (id_concept, id_thesaurus, id_ark, status, notation, top_concept, creator)"
+                stmt.executeUpdate("Insert into concept (id_concept, id_thesaurus, id_ark, created ,status, notation, top_concept, creator)"
                         + " values ("
                         + "'" + idConcept + "'"
                         + ",'" + concept.getIdThesaurus() + "'"
                         + ",'" + idArk + "'"
+                        + ", current_date"
                         + ",'" + concept.getStatus() + "'"
                         + ",'" + concept.getNotation() + "'"
                         + "," + concept.isTopConcept() 
                         + "," + idUser + ")");                
             } else {
-                stmt.executeUpdate("Insert into concept (id, id_concept, id_thesaurus, id_ark, status, notation, top_concept, creator)"
+                stmt.executeUpdate("Insert into concept (id, id_concept, id_thesaurus, id_ark, created, status, notation, top_concept, creator)"
                         + " values (" 
                         + idSequenceConcept
                         + ",'" + idConcept + "'"
                         + ",'" + concept.getIdThesaurus() + "'"
                         + ",'" + idArk + "'"
+                        + ", current_date"
                         + ",'" + concept.getStatus() + "'"
                         + ",'" + concept.getNotation() + "'"
                         + "," + concept.isTopConcept() 
@@ -3209,15 +3211,25 @@ public class ConceptHelper {
     /**
      * Cette fonction permet d'insérrer un Concept dans la table Concept avec un
      * idConcept existant (Import) avec Rollback
-     */
+    * 
+    * @param ds
+    * @param concept
+    * @param idUser
+    * @return 
+    */
     public boolean insertConceptInTable(HikariDataSource ds, Concept concept, int idUser) {
 
+        String created;
+        String modified;
         if (concept.getCreated() == null) {
-            concept.setCreated(new java.util.Date());
+            created = null;
+        } else {
+            created = "'" + concept.getCreated() + "'";
         }
         if (concept.getModified() == null) {
-            //concept.setModified(new java.util.Date());
-            concept.setModified(concept.getCreated());
+            modified = null;
+        } else {
+            modified = "'" + concept.getModified() + "'";
         }
         if (concept.getStatus() == null) {
             concept.setStatus("D");
@@ -3244,8 +3256,8 @@ public class ConceptHelper {
                         + "'" + concept.getIdConcept() + "'"
                         + ",'" + concept.getIdThesaurus() + "'"
                         + ",'" + concept.getIdArk() + "'"
-                        + ",'" + concept.getCreated() + "'"
-                        + ",'" + concept.getModified() + "'"
+                        + "," + created
+                        + "," + modified
                         + ",'" + concept.getStatus() + "'"
                         + ",'" + concept.getNotation() + "'"
                         + "," + concept.isTopConcept()

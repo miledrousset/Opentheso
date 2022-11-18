@@ -250,8 +250,19 @@ public class EditConcept implements Serializable {
             pf.ajax().update("messageIndex");
             PrimeFaces.current().ajax().update("containerIndex::idRenameConcept");                
             PrimeFaces.current().executeScript("PF('renameConcept').hide();");
+        }      
+        if (tree.getSelectedNode() != null) {
+            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+                    conceptView.getNodeConcept().getConcept().getIdConcept())) {
+                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso, idLang);
+            }
+            ((TreeNodeData) tree.getSelectedNode().getData()).setName(prefLabel);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+            }
         }        
-
+/*
         if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(
@@ -262,7 +273,7 @@ public class EditConcept implements Serializable {
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
             }
-        }
+        }*/
         reset("");
     }
 
@@ -326,6 +337,24 @@ public class EditConcept implements Serializable {
 
         // mise à jour
         PrimeFaces pf = PrimeFaces.current();
+        if (tree.getSelectedNode() != null) {
+            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+                    conceptView.getNodeConcept().getConcept().getIdConcept())) {
+                tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(),
+                        idTheso,
+                        selectedTheso.getCurrentLang());
+            }
+            TreeNode parent = tree.getSelectedNode().getParent();
+            if (parent != null) {
+                parent.getChildren().remove(tree.getSelectedNode());
+
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("formLeftTab:tabTree:tree");
+                }
+            }
+        }        
+        /*
         if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(
@@ -342,7 +371,7 @@ public class EditConcept implements Serializable {
                     pf.ajax().update("formLeftTab:tabTree:tree");
                 }
             }
-        }
+        }*/
         if (!conceptView.getNodeConcept().getNodeBT().isEmpty()) {
             conceptView.getConcept(idTheso,
                     conceptView.getNodeConcept().getNodeBT().get(0).getIdConcept(),

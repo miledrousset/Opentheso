@@ -245,7 +245,9 @@ public class AddConcept implements Serializable {
             TreeNodeData data = new TreeNodeData(idNewConcept, prefLabel, "", false,
                     false, true, false, "term");
             data.setIdFacetParent(idFacet);
-            tree.getDataService().addNodeWithoutChild("file", data, tree.getClickselectedNodes().get(0));
+            tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+            
+           // tree.getDataService().addNodeWithoutChild("file", data, tree.getClickselectedNodes().get(0));
 
             tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
             tree.expandTreeToPath2(idBTfacet,
@@ -266,7 +268,27 @@ public class AddConcept implements Serializable {
         }
 
         PrimeFaces pf = PrimeFaces.current();
-        if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
+        if (tree.getSelectedNode() != null) {
+            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
+                tree.expandTreeToPath(idConceptParent, idTheso, idLang);
+            }
+
+            // cas où l'arbre est déjà déplié ou c'est un concept sans fils
+            /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
+            // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
+            if (tree.getSelectedNode().getChildCount() == 0) {
+                tree.getSelectedNode().setType("concept");
+            }
+            if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
+                tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
+                if (pf.isAjaxRequest()) {
+                    pf.executeScript("srollToSelected()");
+                }
+                tree.getSelectedNode().setExpanded(true);
+            }
+        }        
+/*        if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
             // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
             if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
                 tree.expandTreeToPath(idConceptParent, idTheso, idLang);
@@ -285,7 +307,7 @@ public class AddConcept implements Serializable {
                 }
                 tree.getClickselectedNodes().get(0).setExpanded(true);
             }
-        }
+        }*/
         conceptBean.getConcept(idTheso, idConceptParent, idLang);
         isCreated = true;
 
@@ -298,10 +320,6 @@ public class AddConcept implements Serializable {
 
         init();
         update();
-        
-        tree.reset();
-        tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        tree.expandTreeToPath(idConceptParent, idTheso, idLang);
     }
     private void update(){
         if (PrimeFaces.current().isAjaxRequest()) {
@@ -328,7 +346,7 @@ public class AddConcept implements Serializable {
         typesRelationsNT = new RelationsHelper().getTypesRelationsNT(connect.getPoolConnexion());
         nodeGroups = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        System.out.println(">>> Size : " + typesRelationsNT.size());
+  //      System.out.println(">>> Size : " + typesRelationsNT.size());
     }
 
     private void init() {

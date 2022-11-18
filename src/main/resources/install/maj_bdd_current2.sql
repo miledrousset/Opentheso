@@ -297,25 +297,12 @@ ALTER TABLE languages_iso639 ALTER COLUMN iso639_1 Type character varying;
 ALTER TABLE concept_group_label ALTER COLUMN lang Type character varying;
 ALTER TABLE preferences ALTER COLUMN generate_handle SET DEFAULT false;
 
+-- enlever la contrainte des dates not null
+ALTER TABLE concept ALTER COLUMN created DROP DEFAULT;
+ALTER TABLE concept ALTER COLUMN modified DROP DEFAULT;
+ALTER TABLE concept ALTER COLUMN created drop not null;
+ALTER TABLE concept ALTER COLUMN modified drop not null;
 
--- Modification de la table des langues iso630, ajout des nouvelles langues
---
-create or replace function update_table_languages() returns void as $$
-begin
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Hans') THEN
-        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Hans'', ''zh-Hans'', ''chinese (simplified)'', ''chinois (simplifié)'');';
-    END IF;
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Hant') THEN
-        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Hant'', ''zh-Hant'', ''chinese (traditional)'', ''chinois (traditionnel)'');';
-    END IF;
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Latn-pinyin') THEN
-        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Latn-pinyin'', ''zh-Latn-pinyin'', ''chinese (pinyin)'', ''chinois (pinyin)'');';
-    END IF;
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'bo-x-ewts') THEN
-        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''bo-x-ewts'', ''bo-x-ewts'', ''tibetan (ewts)'', ''tibétain (ewts)'');';
-    END IF;
-end
-$$language plpgsql;
 
 
 -- mise à jour des types de notes --

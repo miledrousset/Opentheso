@@ -773,12 +773,13 @@ public class CsvImportHelper {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);        
         try {
-            concept.setCreated(simpleDateFormat.parse(conceptObject.getCreated()));
-            concept.setModified(simpleDateFormat.parse(conceptObject.getModified()));            
+            if(conceptObject.getCreated() != null && !conceptObject.getCreated().isEmpty())
+                concept.setCreated(simpleDateFormat.parse(conceptObject.getCreated()));
+            if(conceptObject.getModified() != null && !conceptObject.getModified().isEmpty())
+                concept.setModified(simpleDateFormat.parse(conceptObject.getModified()));            
         } catch (ParseException ex) {
             Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
 
         // ajout du concept
         if (!conceptHelper.insertConceptInTable(ds, concept, idUser)) {

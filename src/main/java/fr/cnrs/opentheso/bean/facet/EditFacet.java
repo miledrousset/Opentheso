@@ -315,11 +315,18 @@ public class EditFacet implements Serializable {
         data.setIdFacetParent(facetSelected.getIdFacet());
         if(conceptHelper.haveChildren(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), conceptSelected.getId())) {
+            tree.getDataService().addNodeWithChild("concept", data, tree.getSelectedNode());
+        } else {
+            tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+        }        
+        /*
+        if(conceptHelper.haveChildren(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), conceptSelected.getId())) {
             tree.getDataService().addNodeWithChild("concept", data, tree.getClickselectedNodes().get(0));
         } else {
             tree.getDataService().addNodeWithoutChild("file", data, tree.getClickselectedNodes().get(0));
         }
-
+*/
         initDataAfterAction();
 
         tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
@@ -491,21 +498,15 @@ public class EditFacet implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la création de la Facette !");
             return;
         }
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec sucée !");
         
-        FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Facette enregistrée avec succès !"));
+        tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");
+
         PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("messageIndex");
-
-        //tree.addNewFacet(tree.getClickselectedNodes().get(0), newFacetName, idFacet);  
-        tree.reset();
-        tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        tree.expandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(), 
-                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-
-        PrimeFaces.current().ajax().update("messageIndex");
-        PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
-        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("formLeftTab:tabTree:tree");
+            pf.ajax().update("formRightTab:facetView");
+        }
         PrimeFaces.current().executeScript("PF('addFacet').hide();");
         newFacetName = "";
     }
@@ -535,8 +536,8 @@ public class EditFacet implements Serializable {
         }
 
         showMessage(FacesMessage.SEVERITY_INFO, "Facette modifiée avec sucée !");
-
-        ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(newFacetName);
+        ((TreeNodeData) tree.getSelectedNode().getData()).setName(newFacetName);
+        //((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(newFacetName);
 
         facetSelected = facetHelper.getThisFacet(connect.getPoolConnexion(),
                 facetSelected.getIdFacet(),

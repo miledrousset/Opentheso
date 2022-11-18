@@ -105,6 +105,7 @@ public class Tree implements Serializable {
             selectedNodes = null;
         }
         root = null;
+        selectedNode = null;
         rightBodySetting.init();
         dataService = null;
         treeNodeDataSelect = null;
@@ -180,6 +181,14 @@ public class Tree implements Serializable {
 
     public TreeNode getRoot() {
         return root;
+    }
+    
+    public TreeNode getSelectedNode() {
+        return selectedNode;
+    }
+
+    public void setSelectedNode(TreeNode selectedNode) {
+        this.selectedNode = selectedNode;
     }
 
     public List<TreeNode> getClickselectedNodes() {
@@ -651,11 +660,15 @@ public class Tree implements Serializable {
             selectedNodes.forEach((selectedNode1) -> {
                 selectedNode1.setSelected(false);
             });
+            if (selectedNode != null) {
+                selectedNode.setSelected(false);
+            }            
+            /*
             if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
                 for (TreeNode treeNode : clickselectedNodes) {
                     treeNode.setSelected(false);
                 }
-            }
+            }*/
             selectedNodes.clear();
         }
 
@@ -675,6 +688,7 @@ public class Tree implements Serializable {
             }
             treeNodeParent.setSelected(true);
             selectedNodes.add(treeNodeParent);
+            selectedNode = treeNodeParent;
             treeNodeParent = root;
         }
     //    leftBodySetting.setIndex("0");
@@ -701,11 +715,15 @@ public class Tree implements Serializable {
             selectedNodes.forEach((selectedNode1) -> {
                 selectedNode1.setSelected(false);
             });
+            if (selectedNode != null) {
+                selectedNode.setSelected(false);
+            }            
+            /*
             if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
                 for (TreeNode treeNode : clickselectedNodes) {
                     treeNode.setSelected(false);
                 }
-            }
+            }*/
             selectedNodes.clear();
         }
 
@@ -725,6 +743,7 @@ public class Tree implements Serializable {
             }
             treeNodeParent.setSelected(true);
             selectedNodes.add(treeNodeParent);
+            selectedNode = treeNodeParent;
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
@@ -760,11 +779,15 @@ public class Tree implements Serializable {
             selectedNodes.forEach((selectedNode1) -> {
                 selectedNode1.setSelected(false);
             });
+            if (selectedNode != null) {
+                selectedNode.setSelected(false);
+            }            
+            /*
             if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
                 for (TreeNode treeNode : clickselectedNodes) {
                     treeNode.setSelected(false);
                 }
-            }
+            }*/
             selectedNodes.clear();
         }
 
@@ -785,6 +808,7 @@ public class Tree implements Serializable {
             }
             treeNodeParent.setSelected(true);
             selectedNodes.add(treeNodeParent);
+            selectedNode = treeNodeParent;
             treeNodeParent = root;
         }
         leftBodySetting.setIndex("0");
@@ -929,11 +953,5 @@ public class Tree implements Serializable {
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////      
 
-    public TreeNode getSelectedNode() {
-        return selectedNode;
-    }
 
-    public void setSelectedNode(TreeNode selectedNode) {
-        this.selectedNode = selectedNode;
-    }
 }
