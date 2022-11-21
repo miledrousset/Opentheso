@@ -443,13 +443,15 @@ public class CsvImportHelper {
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);        
+    
         try {
-            created = simpleDateFormat.parse(conceptObject.getCreated());
-            modified = simpleDateFormat.parse(conceptObject.getModified());            
+            if(conceptObject.getCreated() != null && !conceptObject.getCreated().isEmpty())
+                created = simpleDateFormat.parse(conceptObject.getCreated());
+            if(conceptObject.getModified() != null && !conceptObject.getModified().isEmpty())
+                modified = simpleDateFormat.parse(conceptObject.getModified());            
         } catch (ParseException ex) {
             Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
         }        
-        
 
         // IMAGES
         //-- 'url1##url2'
@@ -726,9 +728,14 @@ public class CsvImportHelper {
                     + (conceptObject.getLatitude() != null) + ", " 
                     + (conceptObject.getLatitude() == null ? null : "'" + conceptObject.getLatitude() + "'") + ", "
                     + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ", "
-                    + "'" + created + "', "
-                    + "'" + modified + "'"
+                    
+                    //+ "'" + created + "', "
+                    + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
+
+                    //+ "'" + modified + "'"
+                     + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'")
                     + ")";
+
 //            System.out.println("SQL : " + sql);
             stmt.executeUpdate(sql);
         } catch (SQLException e) {

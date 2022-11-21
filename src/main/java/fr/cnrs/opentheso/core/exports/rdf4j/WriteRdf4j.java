@@ -56,7 +56,7 @@ public class WriteRdf4j {
         model = null;
         vf = null;
         builder = null;
-        System.gc();
+    //    System.gc();
     }
 
     private void loadModel() {

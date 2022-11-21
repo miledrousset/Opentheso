@@ -354,7 +354,7 @@ public class ExportFileBean implements Serializable {
 
                 str = null;
                 skosxd = null;
-                System.gc();
+            //    System.gc();
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent.builder().contentType("text/csv")
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
@@ -395,7 +395,7 @@ public class ExportFileBean implements Serializable {
 
                 skosxd.clear();
                 skosxd = null;
-                System.gc();
+            //    System.gc();
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
                     return DefaultStreamedContent.builder()
@@ -580,7 +580,7 @@ public class ExportFileBean implements Serializable {
 
                 skosxd.clear();
                 skosxd = null;
-                System.gc();
+            //    System.gc();
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
                     out.close();

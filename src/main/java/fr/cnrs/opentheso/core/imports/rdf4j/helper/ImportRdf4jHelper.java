@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
 import fr.cnrs.opentheso.skosapi.*;
 import java.sql.Statement;
+import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.logging.Level;
@@ -691,6 +692,28 @@ public class ImportRdf4jHelper {
             }
         }
 
+        Date created = null;
+        Date modified = null;
+        
+        if (StringUtils.isEmpty(formatDate)) {
+            formatDate = "dd-mm-yyyy";
+        }
+        try {                
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);
+            for (SKOSDate date : conceptResource.getDateList()) {
+                if(date.getDate() != null && !date.getDate().isEmpty()) {
+                    if (date.getProperty() == SKOSProperty.created) {
+                        created = simpleDateFormat.parse(date.getDate());
+                    } 
+                    if ((date.getProperty() == SKOSProperty.modified)) {
+                        modified = simpleDateFormat.parse(date.getDate());
+                    }
+                }
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(ImportRdf4jHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+
         String sql = "";
         try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
             sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
@@ -711,7 +734,13 @@ public class ImportRdf4jHelper {
                     + (isReplacedBy == null ? null : "'" + isReplacedBy + "'") + ", "
                     + isGpsPresent + ", " 
                     + (altitude == null ? null : Double.parseDouble(altitude)) + ", "
-                    + (longitude == null ? null : Double.parseDouble(longitude)) + ")";
+                    + (longitude == null ? null : Double.parseDouble(longitude)) + ", "
+                    //+ "'" + created + "', "
+                    + (created == null ? null : "'" + created + "'") + ", "
+
+                    //+ "'" + modified + "'"
+                     + (modified== null ? null : "'" + modified + "'")                    
+                    + ")";
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);

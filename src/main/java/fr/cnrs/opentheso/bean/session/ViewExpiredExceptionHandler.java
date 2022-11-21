@@ -51,7 +51,7 @@ public class ViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
                             .handleNavigation(facesContext, null,
                                     "/errorPages/timeOut.xhtml?faces-redirect=true");//"viewExpired");
                     facesContext.renderResponse();
-                    System.gc();
+            //        System.gc();
       //              System.gc();
                //     System.runFinalization ();
                 } finally {

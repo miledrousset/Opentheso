@@ -341,7 +341,7 @@ public class FusionService implements Serializable {
             uri = sourceSkos.getTitle();
             loadDone = true;
             readRdf4j.clean();
-            System.gc();
+        //    System.gc();
         } catch (Exception e) {
 
         }

@@ -927,8 +927,8 @@ public class ImportFileBean implements Serializable {
         }
 
         conceptObjects = null;
-        System.gc();
-        System.gc();
+    //    System.gc();
+    //    System.gc();
 
         onComplete();
     }
@@ -1003,7 +1003,7 @@ public class ImportFileBean implements Serializable {
                 "Le thesaurus " + idNewTheso + " est correctement ajouté !", "import réussi"));
         PrimeFaces.current().ajax().update("messageIndex");
         
-        System.gc();
+    //    System.gc();
     }
 
     /**
@@ -1063,8 +1063,8 @@ public class ImportFileBean implements Serializable {
         }
 
         conceptObjects = null;
-        System.gc();
-        System.gc();
+    //    System.gc();
+    //    System.gc();
 
         onComplete();
     }
@@ -1774,7 +1774,7 @@ public class ImportFileBean implements Serializable {
                 BDDinsertEnable = true;
                 info = "File correctly loaded";
                 readRdf4j.clean();
-                System.gc();
+        //        System.gc();
             } catch (Exception e) {
                 error.append(System.getProperty("line.separator"));
                 error.append(e.toString());
