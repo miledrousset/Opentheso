@@ -347,7 +347,7 @@
         <treelayout.version>1.0.3</treelayout.version>
         <all.themes.version>1.0.8</all.themes.version>
         <javax.json.version>1.1.4</javax.json.version>
-        <postgresql.version>42.5.0</postgresql.version>
+        <postgresql.version>42.5.1</postgresql.version>
         <font-awesome.version>6.1.2</font-awesome.version>
         <primefaces.version>11.0.0</primefaces.version>
         <javaee-web-api.version>8.0.1</javaee-web-api.version>
