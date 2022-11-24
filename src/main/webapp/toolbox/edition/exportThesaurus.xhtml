@@ -383,19 +383,19 @@
                                          actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
                                          update="containerIndex"/>
                         
-                        <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" ajax="false"
+                        <p:commandButton value="#{langueBean.getMsg('candidat.export')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
                                          styleClass="ui-button-success" icon="fa fa-upload" 
-                                         title="Export rapide" style="margin-left: 20px">
+                                         title="#{langueBean.getMsg('toolbox.newExportMethod')}" style="margin-left: 20px">
                             <p:fileDownload value="#{exportFileBean.exportNewGen()}" />
                         </p:commandButton>
                         
-                        <p:commandButton value="Ancienne méthode" ajax="false"
+                        <p:commandButton value="#{langueBean.getMsg('toolbox.oldMethod')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
                                          styleClass="ui-button-success" icon="fa fa-upload" 
-                                         title="Export classique plus long" style="margin-left: 20px">
+                                         title="#{langueBean.getMsg('toolbox.oldMethodTooltip')}" style="margin-left: 20px">
                             <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                         </p:commandButton>      
                         

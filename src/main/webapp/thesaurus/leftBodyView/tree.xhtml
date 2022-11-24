@@ -12,9 +12,9 @@
             </div>
             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                 <p:link id="graph" href="#{request.contextPath}/graph/index.xhtml"
-                        target="_blank" disabled="#{tree.isGraphVisible()}"
+                        target="_blank" disabled="#{tree.isGraphNotVisible()}"
                         style="color: #F47B2A; float: right; margin-top: 2px;">
-                    <i class="pi pi-share-alt" style="font-size: 1rem" />
+                    <i class="pi pi-share-alt" style="font-size: 1rem; color: #{tree.getColor()}" />
                 </p:link>
             </div>
             

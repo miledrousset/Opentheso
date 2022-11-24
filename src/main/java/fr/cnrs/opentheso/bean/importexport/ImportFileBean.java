@@ -875,6 +875,8 @@ public class ImportFileBean implements Serializable {
         } else {
             nodePreference.setPreferredName(thesaurusName);
             nodePreference.setSourceLang(selectedLang);
+            if(nodePreference.getOriginalUri() == null || nodePreference.getOriginalUri().isEmpty())
+                nodePreference.setOriginalUri("http://mondomaine.fr");
             preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }
         csvImportHelper.setNodePreference(nodePreference);

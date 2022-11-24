@@ -989,7 +989,7 @@ public class SearchHelper {
                         + " or"
                         + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%ʿ" + value + "%'))"
                         + " or"
-                        + " unaccent(lower(lexical_value)) like unaccent(lower('%[" + value + "%')) "                                  
+                        + " unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%[" + value + "%')) "                                  
                         + "	)"
                         + "order by non_preferred_term.lexical_value limit 50");
 

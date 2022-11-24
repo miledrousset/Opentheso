@@ -509,7 +509,8 @@ public class Tree implements Serializable {
         FacetHelper facetHelper = new FacetHelper();
         String idConceptParentOfFacet = facetHelper.getIdConceptParentOfFacet(connect.getPoolConnexion(), idFacet, idTheso);         
         expandTreeToPath(idConceptParentOfFacet, idTheso, idLang);
-        onNodeExpand_((DefaultTreeNode)clickselectedNodes.get(0));
+        onNodeExpand_((DefaultTreeNode)selectedNode);        
+        //onNodeExpand_((DefaultTreeNode)clickselectedNodes.get(0));
         
         // rechercher la facette dans les fils et la sélectionner
         expandToFacet(idFacet);
@@ -520,6 +521,21 @@ public class Tree implements Serializable {
     }
 
     private void expandToFacet(String idFacet){
+        selectedNode.setExpanded(true);
+        List<TreeNode> treeNodes = selectedNode.getChildren();
+        for (TreeNode treeNode : treeNodes) {
+            if (((TreeNodeData) treeNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
+                try {
+                    if(((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idFacet)){
+                        selectedNode.setSelected(false);
+                        selectedNode = treeNode;
+                        selectedNode.setSelected(true);
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }         
+        /*
         clickselectedNodes.get(0).setExpanded(true);
         List<TreeNode> treeNodes = clickselectedNodes.get(0).getChildren();
         for (TreeNode treeNode : treeNodes) {
@@ -533,7 +549,7 @@ public class Tree implements Serializable {
                 } catch (Exception e) {
                 }
             }
-        }        
+        }   */     
     }
     
     /**
@@ -750,10 +766,18 @@ public class Tree implements Serializable {
         PrimeFaces.current().executeScript("srollToSelected();");
     }
     
-    public boolean isGraphVisible() {
-        return CollectionUtils.isNotEmpty(clickselectedNodes) 
+    public boolean isGraphNotVisible() {
+        if(selectedNode == null || selectedNode.isLeaf()) return true;
+        return false;
+    /*    return CollectionUtils.isNotEmpty(clickselectedNodes) 
                 && clickselectedNodes.size() == 1 
-                && clickselectedNodes.get(0).isLeaf();
+                && clickselectedNodes.get(0).isLeaf();*/
+    }
+    
+    public String getColor(){
+        if(isGraphNotVisible()) return "#d1d3e2";
+        else 
+            return "#F47B2A";
     }
 
     /**
