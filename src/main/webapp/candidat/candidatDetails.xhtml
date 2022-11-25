@@ -152,9 +152,20 @@
     
     <!-- Validation et enregistrement des nouvelles données ci-dessus -->
     <div class="row" style="margin-top: 10px">
-        <div class="col-12" style="text-align: right" >
-            <p:commandButton title="#{langueBean.getMsg('candidat.save')}" ajax="true"
-                             class="btn btn-primary" actionListener="#{candidatBean.saveConcept()}"
+        <div class="col-8" style="text-align: right" >
+            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                             icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                             oncomplete="PF('addTraduction').hide();" 
+                             ajax="true" process="@this"
+                             actionListener="#{candidatBean.setIsListCandidatsActivate(true)}"
+                             action="#{candidatBean.getAllCandidatsByThesoAndLangue()}"
+                             update="tabViewCandidat"/>
+            
+        </div>        
+        <div class="col-2" style="text-align: right" >
+            <p:commandButton value="#{langueBean.getMsg('candidat.save')}" ajax="true"
+                             icon="pi pi-check"
+                             styleClass="ui-button-success" actionListener="#{candidatBean.saveConcept()}"
                              update="messageIndex" />
         </div>
     </div>

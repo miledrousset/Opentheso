@@ -445,11 +445,12 @@ public class CandidatBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg1"));
             return;
         }
-        if (StringUtils.isEmpty(definition)) {
-            showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.def"));
-            return;
+        if(isNewCandidatActivate) {
+            if (StringUtils.isEmpty(definition)) {
+                showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.def"));
+                return;
+            }
         }        
-        
 
         if (roleOnThesoBean.getNodePreference() == null) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg2"));
@@ -537,7 +538,7 @@ public class CandidatBean implements Serializable {
         candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat, allTermes, domaines, currentUser.getNodeUser().getIdUser());
 
         getAllCandidatsByThesoAndLangue();
-
+        definition = "";
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
     }
 

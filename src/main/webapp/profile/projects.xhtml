@@ -64,7 +64,7 @@
 
                                     <f:facet name="header">
                                         <div class="products-table-header">
-                                            <span style="font-weight: bold">Liste des projets</span>
+                                            <span style="font-weight: bold">#{langueBean.getMsg('profile.listOfProjects')}</span>
                                         </div>
                                     </f:facet>
 
@@ -78,7 +78,7 @@
 
                                     <f:facet name="footer">
                                         <span class="p-text-bold">
-                                            <h:outputText value="Nombre total des projects : " style="font-size: 14px;"/>
+                                            <h:outputText value="#{langueBean.getMsg('profile.totalOfProjects')} : " style="font-size: 14px;"/>
                                             <h:outputText value="#{superAdminBean.allProjects.size()}" style="font-size: 16px; color: #f47b2a"/>
                                         </span>
                                     </f:facet>

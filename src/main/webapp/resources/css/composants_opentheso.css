@@ -67,12 +67,7 @@ body .ui-stat-hover .ui-menuitem-link .ui-corner-all .ui-menuitem-active {
 }
 
 
-body .ui-button.rounded-button.ui-button-icon-only {
-    border-radius: 50%;
-    height: 1.8rem;
-    width: 1.8rem;
-    margin-top: 3px;
-}
+
 
 /****************** Dialog /******************/
 .ui-dialog-wrapper {
@@ -591,6 +586,8 @@ body .ui-sidebar .ui-sidebar-close .ui-icon {
     animation-duration: 200ms;
 }
 
+
+/* badge */
 body .ui-badge {
     background: #ff0000;
     color: #ffffff;
@@ -601,10 +598,27 @@ body .ui-badge {
     line-height: 1rem;
 }
 
+
+body .ui-overlay-badge .ui-badge {
+    position: absolute;
+    top: 5px;
+    right: -2px;
+    transform: translate(50%, -50%);
+    margin: 0;
+    font-size: 0.6rem;
+}
+
+body .ui-button.rounded-button.ui-button-icon-only {
+    border-radius: 50%;
+    height: 1.8rem;
+    width: 1.8rem;
+    margin-top: 3px;
+}
+
 element.style {
     width: 100%;
     height: 100%;
-    overflow: overlay;
+/*    overflow: overlay;*/
     border: none;
     padding: -10px;
 }
@@ -681,11 +695,14 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
 body .ui-tree {
     padding: 0;
     font-size: 0.8rem;
+/*    display: table;*/
 }
 
 .ui-tree .ui-tree-container {
     overflow: hidden;
     font-size: 0.8rem;
+    /* pour permettre d'écrire des lignes longues sans déformer l'abre*/
+    display: table;
 }
 
 body .ui-tree .ui-tree-container .ui-treenode {

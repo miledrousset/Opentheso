@@ -415,7 +415,7 @@ public class AlignmentBean implements Serializable {
 
     /**
      * Permet de charger les données des concepts à aligner ###### remplace la
-     * focntion ci-dessus aprsè vérification #####
+     * fonction ci-dessus après vérification #####
      *
      * @param idLang
      * @param idTheso #MR
@@ -616,7 +616,7 @@ public class AlignmentBean implements Serializable {
             String currentLang) {
         // liste des NT de la branche pour l'alignement par lot
         ConceptHelper conceptHelper = new ConceptHelper();
-        allIdsOfBranch = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(), idConcept, idTheso);
+        allIdsOfBranch = conceptHelper.getIdsOfBranchLimited(connect.getPoolConnexion(), idConcept, idTheso, 2000);
         idConceptSelectedForAlignment = idConcept;
         idsToGet = new ArrayList<>();
         listAlignValues = null;

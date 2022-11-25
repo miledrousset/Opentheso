@@ -133,11 +133,11 @@
               
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12" style="text-align: right"> 
-                        <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" 
+                        <p:commandButton value="#{langueBean.getMsg('candidat.close')}" icon="fas fa-undo-alt" styleClass="ui-button-secondary button"  
                                          actionListener="#{importFileBean.init()}" style="margin-right: 10px"
                                          update="listAlignmentCsvForm" oncomplete="PF('listAlignmentCsv').hide();"/>
 
-                        <p:commandButton  value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-primary"
+                        <p:commandButton  value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-success" icon="pi pi-check"
                                           widgetVar="buttonImportCsv"
                                           update="listAlignmentCsvForm" actionListener="#{importFileBean.addAlignmentList()}"
                                           process="@this" disabled="#{!importFileBean.loadDone}" />   

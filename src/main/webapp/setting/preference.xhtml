@@ -251,13 +251,12 @@
                                         </div>                                            
 
                                         <div class="row" style="padding-top: 5px;">
-                                            <div class="col-3" />
-                                            <div class="col-6" style="text-align: right;">
-                                                <p:commandButton title="Enregistrer" class="btn btn-primary"
+                                            <div class="col-12" style="text-align: center;">
+                                                <p:commandButton value="#{langueBean.getMsg('candidat.save')}" styleClass="ui-button-success"
                                                                  actionListener="#{preferenceBean.savePreference()}"
                                                                  oncomplete="PF('waitDialog').hide();"
-                                                                 update="containerIndex messageIndex">
-                                                    <p:tooltip value="Enregistrer les modifications" showDelay="1000" />
+                                                                 update="containerIndex messageIndex"
+                                                                 icon="fas fa-save">
                                                 </p:commandButton>
                                             </div>
                                         </div>

@@ -118,13 +118,13 @@
                 </h:panelGroup>
 
                 <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary"
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
                                      style="margin-right: 10px"
                                      actionListener="#{importFileBean.init()}"
                                      oncomplete="PF('listImageCsv').hide();"
                                      update="listImageCsvForm"/>
 
-                    <p:commandButton value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-primary"
+                    <p:commandButton value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-success" icon="pi pi-check"
                                      process="@this"
                                      update="messageIndex listImageCsvForm"
                                      disabled="#{!importFileBean.loadDone}"

@@ -51,7 +51,6 @@
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_thesauri')}</span></h1>
                         </div>
 
-                        <!-- Compte d'utilisateur -->
                         <div class="card shadow mb-4" style="height: 100%;"> 
                             <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
                                 <p:dataTable rendered="#{superAdminBean.allThesoProject != null}"
@@ -60,13 +59,13 @@
                                              widgetVar="listThesoTable" styleClass="products-table"
                                              resizableColumns="true" scrollHeight="450" reflow="true"
                                              paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
-                                             emptyMessage="Aucun thésaurus disponible..."
+                                             emptyMessage="#{langueBean.getMsg('toolbox.noThesaurus')}"
                                              stripedRows="true"
                                              style="margin-bottom: -17px; margin-top: -16px;">
 
                                     <f:facet name="header">
                                         <div class="products-table-header">
-                                            <span style="font-weight: bold">Liste des thésaurus</span>
+                                            <span style="font-weight: bold">#{langueBean.getMsg('profile.list_of_thesauri')}</span>
                                         </div>
                                     </f:facet>
 
@@ -85,8 +84,9 @@
                                     <p:column width="60px" headerText="Action"> 
 
                                         <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
-                                                         icon="fas fa-people-carry" styleClass="rounded-button ui-button-outlined"
-                                                         process="@this" style="color: #43B572" 
+                                                         icon="fas fa-people-carry" styleClass="edit-button rounded-button"
+                                                         process="@this"
+                                                         title="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}"
                                                          update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();"
                                                          actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName, listTheso.idGroup)}"/>
 
@@ -94,7 +94,7 @@
 
                                     <f:facet name="footer">
                                         <span class="p-text-bold">
-                                            <h:outputText value="Nombre total des thésaurus : " style="font-size: 14px;"/>
+                                            <h:outputText value="#{langueBean.getMsg('toolbox.totalOfTheso')} : " style="font-size: 14px;"/>
                                             <h:outputText value="#{superAdminBean.allThesoProject.size()}" style="font-size: 16px; color: #f47b2a"/>
                                         </span>
                                     </f:facet>

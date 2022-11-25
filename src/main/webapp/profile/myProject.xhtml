@@ -75,15 +75,15 @@
                                     <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
                                                      actionListener="#{newProjectBean.init()}" oncomplete="PF('newProject').show();" 
                                                      class="btn btn-primary" icon="fas fa-plus" update="idNewProject" process="@this"
-                                                     style="color: #FFF; background-color: #f47b2a; border-color: #f47b2a; height: 100%; margin-left: -5px">
-                                        <p:tooltip value="#{langueBean.getMsg('profile.create_new_project')}" showDelay="1000" />
+                                                     style="color: #FFF; background-color: #f47b2a; border-color: #f47b2a; height: 100%; margin-left: -5px"
+                                                     title="#{langueBean.getMsg('profile.create_new_project')}">
                                     </p:commandButton>
 
                                     <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
                                                      actionListener="#{newProjectBean.init()}" oncomplete="PF('modifyProject').show();" 
                                                      class="btn btn-primary" update="idModifyProject" icon="fas fa-pen" process="@this"
+                                                     title="#{langueBean.getMsg('profile.change_label_projects')}"
                                                      style="color: #FFF; background-color: #f47b2a; border-color: #f47b2a; height: 100%; margin-left: 5px">
-                                        <p:tooltip value="#{langueBean.getMsg('profile.change_label_projects')}" showDelay="1000" /> 
                                     </p:commandButton>
                                 </div>               
                             </div>
@@ -136,33 +136,32 @@
                                                                     <h:outputText value="#{listUser.roleName}" />
                                                                 </p:column>
 
-                                                                <p:column headerText="Modifier utilisateur">
+                                                                <p:column headerText="#{langueBean.getMsg('profile.modify_user')}">
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                                      actionListener="#{modifyUSerBean.selectUser(listUser.idUser)}"
-                                                                                     icon="fas fa-user-edit" update="idModifyUser"
+                                                                                     icon="pi pi-user-edit" update="idModifyUser"
                                                                                      oncomplete="PF('modifyUser').show()" process="@this"
-                                                                                     styleClass="edit-button rounded-button ui-button-success" 
-                                                                                     style="background-color: #f47b2a; color: #FFFFFF; border-color: #f47b2a"/>
+                                                                                     styleClass="edit-button rounded-button" />
                                                                 </p:column>
 
-                                                                <p:column headerText="Modifier rôle">
+                                                                <p:column headerText="#{langueBean.getMsg('profile.modify_roles')}">
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                                      actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
-                                                                                     icon="fas fa-users" update="idModifyRole"
+                                                                                     icon="pi pi-users" update="idModifyRole"
                                                                                      oncomplete="PF('modifyRole').show()" process="@this"
-                                                                                     styleClass="edit-button rounded-button ui-button-success"
-                                                                                     style="background-color: #f47b2a; color: #FFFFFF; border-color: #f47b2a"/>
+                                                                                     styleClass="edit-button rounded-button"/>
                                                                 </p:column>
 
-                                                                <p:column headerText="Supprimer">
-                                                                    <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
+                                                                <p:column headerText="#{langueBean.getMsg('profile.removeUserFromProjet')}">
+                                                                    <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-user-minus" process="@this"
                                                                                      actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
                                                                                      update="idConfirmRemoveUserFromProject"
+                                                                                     title="#{langueBean.getMsg('profile.removeUserFromProjet')}"
                                                                                      oncomplete="PF('confirmRemoveUserFromProject').show()"/>
                                                                 </p:column>
 
                                                                 <f:facet name="footer">
-                                                                    <span class="p-text-bold">Nombre total des utilisateurs:  #{myProjectBean.listeUser.size()}</span>
+                                                                    <span class="p-text-bold">#{langueBean.getMsg('profile.totalOfUsers')}:  #{myProjectBean.listeUser.size()}</span>
                                                                 </f:facet>
                                                             </p:dataTable>
                                                         </div>
@@ -180,7 +179,7 @@
                                                                          widgetVar="listTheso" styleClass="products-table"
                                                                          resizableColumns="true" scrollHeight="450" reflow="true"
                                                                          paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
-                                                                         emptyMessage="Aucun thésorus disponible..."
+                                                                         emptyMessage="#{langueBean.getMsg('toolbox.noThesaurus')}"
                                                                          stripedRows="true"
                                                                          style="margin-bottom: -17px; margin-top: -16px;">
 
@@ -195,10 +194,10 @@
                                                                 <p:column width="20%" headerText="#{langueBean.getMsg('profile.action')}" >
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                                      actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
-                                                                                     icon="fas fa-people-carry" update="idMoveThesoToAnotherProject"
+                                                                                     update="idMoveThesoToAnotherProject"
                                                                                      oncomplete="PF('moveThesoToAnotherProject').show();" process="@this"
-                                                                                     styleClass="edit-button rounded-button ui-button-success" 
-                                                                                     style="background-color: #f47b2a; color: #FFFFFF; border-color: #f47b2a"/>
+                                                                                     title="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}"
+                                                                                     icon="fas fa-people-carry" styleClass="edit-button rounded-button" />
                                                                 </p:column>
 
                                                             </p:dataTable>

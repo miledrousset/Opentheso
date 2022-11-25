@@ -5,16 +5,28 @@
 
     <h:panelGroup id="treeActions">
         <div align="write" class="row" style=" height: 28px; margin-top: -15px; margin-bottom: -20px;">
-            <div class="col-xl-9 col-lg-8 col-md-6 col-sm-8">
+            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6">
                 <h:outputText rendered="#{tree.manySiblings}" value="#{langueBean.getMsg('tree.manySiblings')}"
                               title="#{langueBean.getMsg('tree.tooltip_manySiblings')}"
                               style="color: red; font-style: italic; background-color: yellow;  font-size: 12px;"/>
             </div>
+            
+            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                <p:commandLink id="reloadTree"
+                        process="@this" ajax="true"
+                        action="#{selectedTheso.reloadSelectedTheso()}"
+                        style="color: #F47B2A; float: right;"
+                        title="#{langueBean.getMsg('menu.reload_thesaurus')}">
+                    <i class="fas fa-refresh" style="color: #F47B2A; font-size: 0.8rem"   />
+                </p:commandLink>
+            </div>
+
             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                 <p:link id="graph" href="#{request.contextPath}/graph/index.xhtml"
                         target="_blank" disabled="#{tree.isGraphNotVisible()}"
-                        style="color: #F47B2A; float: right; margin-top: 2px;">
-                    <i class="pi pi-share-alt" style="font-size: 1rem; color: #{tree.getColor()}" />
+                        style="color: #F47B2A; float: right; margin-top: 2px;"
+                        title="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}">
+                    <i class="pi pi-share-alt" style="font-size: 0.8rem; color: #{tree.getColor()}" />
                 </p:link>
             </div>
             

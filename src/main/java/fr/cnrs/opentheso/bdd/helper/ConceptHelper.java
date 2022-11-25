@@ -1561,7 +1561,6 @@ public class ConceptHelper {
         lisIds = getIdsOfBranch__(hd, idConceptDeTete, idTheso, lisIds);
         return lisIds;
     }
-
     private ArrayList<String> getIdsOfBranch__(HikariDataSource hd, String idConceptDeTete,
             String idTheso, ArrayList<String> lisIds) {
 
@@ -1572,7 +1571,35 @@ public class ConceptHelper {
             getIdsOfBranch__(hd, listIdsOfConceptChildren1, idTheso, lisIds);
         }
         return lisIds;
-    }
+    }    
+
+    /**
+     * Cette fonction permet de retrouver tous tes identifiants d'une branche en
+     * partant du concept en paramètre avec limit pour le nombre de résultat
+     * @param hd
+     * @param idConceptDeTete
+     * @param idTheso
+     * @param limit
+     * @return 
+     */
+    public ArrayList<String> getIdsOfBranchLimited(HikariDataSource hd, String idConceptDeTete, String idTheso, int limit) {
+        ArrayList<String> lisIds = new ArrayList<>();
+        lisIds = getIdsOfBranchLimited__(hd, idConceptDeTete, idTheso, lisIds, limit);
+        return lisIds;
+    }    
+    private ArrayList<String> getIdsOfBranchLimited__(HikariDataSource hd, String idConceptDeTete,
+            String idTheso, ArrayList<String> lisIds, int limit) {
+
+        if(lisIds.size() > limit) return lisIds;
+        lisIds.add(idConceptDeTete);
+
+        ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(hd, idConceptDeTete, idTheso);
+        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
+            getIdsOfBranchLimited__(hd, listIdsOfConceptChildren1, idTheso, lisIds, limit);
+        }
+        return lisIds;
+    }    
+
 
     /**
      * permet de modifier l'identifiant du concept en numérique, la fonction

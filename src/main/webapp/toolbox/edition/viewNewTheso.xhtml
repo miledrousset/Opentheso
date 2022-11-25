@@ -8,24 +8,24 @@
 
         <div class="row" >
             <div class="col-12" style="padding-left: 30px">
-                <h:outputText value="Nouveau thésaurus" class="h5 mb-0 text-gray-800"/>
+                <h:outputText value="#{langueBean.getMsg('toolbox.newTheso')}" class="h5 mb-0 text-gray-800"/>
             </div>
         </div>
 
         <!-- Nom du thésaurus -->
         <div class="row" style="margin-top: 10px">
             <div class="col-3" style="text-align: right; padding-top: 4px">
-                <h:outputText value="Nom" style="margin-right: -6px" />
+                <h:outputText value="#{langueBean.getMsg('statistique.label')}" style="margin-right: -6px" />
             </div>
             <div class="col-5">
-                <p:inputText placeholder="Nom du thésaurus" value="#{newThesoBean.title}" style="width: 100%"/>
+                <p:inputText placeholder="#{langueBean.getMsg('statistique.thesaurus.name')}" value="#{newThesoBean.title}" style="width: 100%"/>
             </div>
         </div>
 
         <!-- Langue par defaut -->
         <div class="row" style="margin-top: 10px">
             <div class="col-3" style="text-align: right; padding-top: 4px">
-                <h:outputText value="langue ISO_639" style="margin-right: -6px"/>
+                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" style="margin-right: -6px"/>
             </div>
 
             <div class="col-5" >
@@ -42,7 +42,8 @@
         <!-- dans quel projet ajouter le thesaurus -->
         <div class="row" style="margin-top: 10px">
             <div class="col-3" style="text-align: right; padding-top: 4px">
-                <h:outputText value="Projet" title="A quel projet ajouter le thésaurus à importer"
+                <h:outputText value="#{langueBean.getMsg('profile.project')}" 
+                              title="#{langueBean.getMsg('profile.projectTooltip')}"
                               style="margin-right: -6px"/>
             </div>
             <div class="col-5">

@@ -64,7 +64,7 @@
 
                                     <f:facet name="header">
                                         <div class="products-table-header">
-                                            <span style="font-weight: bold">Liste des utilisateurs</span>
+                                            <span style="font-weight: bold">#{langueBean.getMsg('profile.list_of_all_users')}</span>
                                         </div>
                                     </f:facet>
 
@@ -85,7 +85,7 @@
 
                                     <f:facet name="footer">
                                         <span class="p-text-bold">
-                                            <h:outputText value="Nombre total des utilisateurs : " style="font-size: 14px;"/>
+                                            <h:outputText value="#{langueBean.getMsg('profile.totalOfUsers')} : " style="font-size: 14px;"/>
                                             <h:outputText value="#{superAdminBean.nodeUserGroupUsers.size()}" style="font-size: 16px; color: #f47b2a"/>
                                         </span>
                                     </f:facet>

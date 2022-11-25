@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
 import fr.cnrs.opentheso.bean.proposition.model.Proposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -59,6 +60,9 @@ public class PropositionBean implements Serializable {
 
     @Inject
     private SearchBean searchBean;
+    
+    @Inject
+    private LanguageBean languageBean;    
 
     private boolean isRubriqueVisible;
     private Proposition proposition;
@@ -83,7 +87,8 @@ public class PropositionBean implements Serializable {
         NodePreference preference = new PreferencesHelper().getThesaurusPreferences(
                 connect.getPoolConnexion(), propositionDao.getIdTheso());
         if (!preference.isSuggestion()) {
-            showMessage(FacesMessage.SEVERITY_WARN, "La suggestion est désactivée pour le thesaurus dans lequel la proposition selectionnée appartienne !");
+            showMessage(FacesMessage.SEVERITY_WARN, 
+                    languageBean.getMsg("rightbody.proposal.avertissement"));
             return;
         }
 
@@ -242,20 +247,19 @@ public class PropositionBean implements Serializable {
         actionNom = action;
         switch (actionNom) {
             case "envoyerProposition":
-                message = "Est ce que vous êtes sur de vouloir ENVOYER votre proposition ?";
+                message =languageBean.getMsg("rightbody.proposal.confirmSendProposal");
                 break;
             case "approuverProposition":
-                message = "Est ce que vous êtes sur de vouloir VALIDER la proposition ?";
+                message =languageBean.getMsg("rightbody.proposal.confirmValidateProposal");                
                 break;
             case "refuserProposition":
-                message = "Est ce que vous êtes sur de vouloir REFUSER la proposition ?";
+                message =languageBean.getMsg("rightbody.proposal.confirmRejectProposal");                
                 break;
             case "supprimerProposition":
-                message = "Est ce que vous êtes sur de vouloir SUPPRIMER la proposition ?";
+                message =languageBean.getMsg("rightbody.proposal.confirmDeleteProposal");                
                 break;
             default:
-                message = "Est ce que vous êtes sur de vouloir ANNULER la proposition ?";
-                ;
+                message = languageBean.getMsg("rightbody.proposal.confirmCancelProposal");                
         }
         PrimeFaces.current().executeScript("PF('confirmDialog').show();");
     }
@@ -272,20 +276,20 @@ public class PropositionBean implements Serializable {
                             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
                             editorialNotesAccepted, examplesAccepted, historyAccepted);
                     switchToConceptInglet();
-                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition integrée avec succès dans le concept '"
+                    showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmIntegratedProposal") + " '"
                             + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
                     break;
                 case "refuserProposition":
                     propositionService.refuserProposition(propositionSelected, commentaireAdmin);
                     switchToConceptInglet();
-                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept '"
+                    showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmProposalForConcept") + " '"
                             + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") a été refusée avec succès !");
                     break;
                 case "supprimerProposition":
                     propositionService.supprimerPropostion(propositionSelected);
                     switchToConceptInglet();
-                    showMessage(FacesMessage.SEVERITY_INFO, "Proposition pour le concept  '" + propositionSelected.getNomConcept()
-                            + "' (" + propositionSelected.getIdTheso() + ") a été suppprimée avec succès !");
+                    showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmProposalForConcept") + " '" + propositionSelected.getNomConcept()
+                            + "' (" + propositionSelected.getIdTheso() + ") " + languageBean.getMsg("rightbody.proposal.confirmProposalWasDeleted") + "!");
                     break;
                 case "annulerProposition":
                     annulerPropostion();
@@ -328,7 +332,8 @@ public class PropositionBean implements Serializable {
         if (StringUtils.isEmpty(proposition.getNomConceptProp())) {
             proposition.setNomConceptProp("");
             proposition.setUpdateNomConcept(false);
-            showMessage(FacesMessage.SEVERITY_ERROR, "Le label est oubligatoire !");
+            
+            showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("rightbody.proposal.alertEmptyLabel"));
         } else {
             if (propositionService.updateNomConcept(proposition.getNomConceptProp())) {
                 proposition.setUpdateNomConcept(true);
@@ -357,12 +362,12 @@ public class PropositionBean implements Serializable {
     private void envoyerProposition() {
 
         if (StringUtils.isEmpty(nom)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Le champs nom est oubligatoire !");
+            showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("rightbody.proposal.alertEmptyName"));
             return;
         }
 
         if (StringUtils.isEmpty(email)) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Le champs email est oubligatoire !");
+            showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("rightbody.proposal.alertEmptyMail"));
             return;
         }
 
@@ -370,12 +375,12 @@ public class PropositionBean implements Serializable {
                 && !isNoteProPresent() && !isChangeNoteProPresent() && !isDefinitionProPresent()
                 && !isEditorialNoteProPresent() && !isExempleNoteProPresent()
                 && !isHistoryNoteProPresent() && !isScopeNoteProPresent()) {
-            showMessage(FacesMessage.SEVERITY_WARN, "Vous devez proposer au moins une modification !");
+            showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("rightbody.proposal.alertEmptyProposal"));
             return;
         }
 
         if (propositionService.envoyerProposition(proposition, nom, email, commentaire)) {
-            showMessage(FacesMessage.SEVERITY_INFO, "Proposition envoyée !");
+            showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmProposalSent"));
         }
 
         switchToConceptInglet();

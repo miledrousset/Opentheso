@@ -14,7 +14,8 @@
             border-color: #F47B2A !important;
             font-size: 12px !important; 
             /* padding: 0.5rem 1rem 0.5rem 2rem; */
-        }        
+        }  
+      
     </style>
 
 
@@ -106,7 +107,7 @@
                                 <p:commandButton icon="pi pi-pencil" update="containerIndex:manage-theso-content"
                                                  oncomplete="PF('editLangToTheso').show()" process="@this"
                                                  actionListener="#{editThesoBean.setLangSelected(langOfTheso)}"
-                                                 styleClass="ui-button-success rounded-button">
+                                                 styleClass="rounded-button" >
                                     <p:resetInput target="containerIndex:manage-theso-content"/>
                                 </p:commandButton>
                             </p:column>
@@ -123,9 +124,10 @@
             </div>
             <ui:include src="../../toolbox/edition/editLangToTheso.xhtml" />
 
-            <div class="row" style="margin: 10px">
-                <div class="col-2">
+            <div class="row" style="margin: 10px;">
+                <div class="col-12" style="text-align: center">
                     <p:commandButton value="#{langueBean.getMsg('btnBack')}" icon="fas fa-undo-alt"  ajax="true" process="@this"
+                                     styleClass="ui-button-secondary button"
                                      actionListener="#{viewEditionBean.init()}" action="#{newThesoBean.init()}" update="containerIndex" />
                 </div>
             </div>
