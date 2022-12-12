@@ -722,18 +722,18 @@ public class RestRDFHelper {
      * @param ds
      * @param idTheso
      * @param lang
-     * @param group
+     * @param groups
      * @param format
      * @param value
      * @return
      */
     public String findConcepts(HikariDataSource ds,
-            String idTheso, String lang, String group,
+            String idTheso, String lang, String [] groups,
             String value, String format) {
 
         RDFFormat rDFFormat = getRDFFormat(format);
         WriteRdf4j writeRdf4j = findConcepts__(ds,
-                value, idTheso, lang, group);
+                value, idTheso, lang, groups);
         if (writeRdf4j == null) {
             return null;
         }
@@ -751,12 +751,12 @@ public class RestRDFHelper {
      * @param value
      * @param idTheso
      * @param lang
-     * @param group
+     * @param groups
      * @return
      */
     private WriteRdf4j findConcepts__(
             HikariDataSource ds,
-            String value, String idTheso, String lang, String group) {
+            String value, String idTheso, String lang,  String [] groups) {
 
         if (value == null || idTheso == null) {
             return null;
@@ -768,26 +768,26 @@ public class RestRDFHelper {
 
         SearchHelper searchHelper = new SearchHelper();
 
-        ArrayList<String> idConcepts = new ArrayList<>();
 
-        ArrayList<String> idConcepts1 = searchHelper.searchExactTermNew(ds, value, lang, idTheso, group);
+    /*    ArrayList<String> idConcepts1 = searchHelper.searchExactTermNew(ds, value, lang, idTheso, groups);
 
         if (idConcepts1 != null) {
             idConcepts.addAll(idConcepts1);
         }
 
-        ArrayList<String> idConcepts2 = searchHelper.searchTermNew(ds, value, lang, idTheso, group);
+        ArrayList<String> idConcepts2 = searchHelper.searchTermNew(ds, value, lang, idTheso, groups);
         if (idConcepts2 != null) {
             idConcepts.addAll(idConcepts2);
-        }
-
+        }*/
+        ArrayList<String> idConcepts = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
+        
         // pour enlever les doublons.
-        List<String> deDupStringList = idConcepts.stream().distinct().collect(Collectors.toList());
+       // List<String> deDupStringList = idConcepts.stream().distinct().collect(Collectors.toList());
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
 
-        for (String idConcept : deDupStringList) {
+        for (String idConcept : idConcepts) {
             exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
         }
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
@@ -1019,7 +1019,6 @@ public class RestRDFHelper {
      * @param groups
      * @param value
      * @param format
-     * @param version
      * @return
      */
     public String findDatasForWidget(HikariDataSource ds,
@@ -1301,6 +1300,7 @@ public class RestRDFHelper {
                 JsonObjectBuilder jobLine = Json.createObjectBuilder();
                 jobLine.add("conceptId", idConcept);
                 jobLine.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
+                jobLine.add("handleId", conceptHelper.getIdHandleOfConcept(ds, idConcept, idTheso));
                 jobLine.add("notation", conceptHelper.getNotationOfConcept(ds, idConcept, idTheso));
                 jobLine.add("prefLabel", conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, lang));
                 jsonArrayBuilderLine.add(jobLine.build());
@@ -1312,6 +1312,7 @@ public class RestRDFHelper {
                 JsonObjectBuilder jobLine = Json.createObjectBuilder();
                 jobLine.add("conceptId", idConcept);
                 jobLine.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
+                jobLine.add("handleId", conceptHelper.getIdHandleOfConcept(ds, idConcept, idTheso));                
                 jobLine.add("notation", conceptHelper.getNotationOfConcept(ds, idConcept, idTheso));
 
                 termTraductions = termHelper.getAllTraductionsOfConcept(ds, idConcept, idTheso);

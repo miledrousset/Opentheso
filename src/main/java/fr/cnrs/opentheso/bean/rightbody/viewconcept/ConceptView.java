@@ -271,6 +271,14 @@ public class ConceptView implements Serializable {
         
         return "https://countryflagsapi.com/png/" + codePays;      
     }
+    public String getDrapeauImgLocal(String codePays) {
+        if (StringUtils.isEmpty(codePays)) {
+            return FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequestContextPath() + "/resources/img/No_flag.png";
+        }
+        return FacesContext.getCurrentInstance().getExternalContext()
+                .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";   
+    }    
     
     /**
      * récuparation des informations pour le concept sélectionné c'est pour la
@@ -704,16 +712,20 @@ public class ConceptView implements Serializable {
     }
     
     public void getNextNT(String idTheso, String idConcept, String idLang) {
-        if(tree != null 
+    /*    if(tree != null 
                 && CollectionUtils.isNotEmpty(tree.getClickselectedNodes()) 
                 && tree.getClickselectedNodes().get(0) != null 
-                && tree.getClickselectedNodes().get(0).getData() != null) {
-            
+                && tree.getClickselectedNodes().get(0).getData() != null) {*/
+            if(tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {            
             RelationsHelper relationsHelper = new RelationsHelper();
-            ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
+          /*  ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
                     ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId(),
                     idTheso,
-                    idLang, step+1, offset);
+                    idLang, step+1, offset);*/
+            ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
+                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
+                    idTheso,
+                    idLang, step+1, offset);            
             if(nodeNTs != null && !nodeNTs.isEmpty()) {
                 nodeConcept.getNodeNT().addAll(nodeNTs);
                 setOffset();

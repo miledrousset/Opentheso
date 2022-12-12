@@ -277,7 +277,7 @@ public class NewConcept implements Serializable {
 
   //      PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
 
-        tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
+        tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang, notation);
         tree.expandTreeToPath(idNewConcept, idTheso, idLang);
 
         init();
@@ -482,7 +482,7 @@ public class NewConcept implements Serializable {
         }
         if (tree.getClickselectedNodes().get(0).isExpanded() 
                 || tree.getClickselectedNodes().get(0).getChildCount() == 0) {
-            tree.addNewChild(tree.getClickselectedNodes().get(0), idNewConcept, idTheso, idLang);
+            tree.addNewChild(tree.getClickselectedNodes().get(0), idNewConcept, idTheso, idLang, notation);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("containerIndex:formLeftTab");
                 pf.executeScript("srollToSelected()");

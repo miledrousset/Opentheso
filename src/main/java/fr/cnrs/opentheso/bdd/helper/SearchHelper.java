@@ -2665,11 +2665,12 @@ public class SearchHelper {
      * @param value
      * @param idLang
      * @param idThesaurus
-     * @param idGroup
+     * @param idGroups
      * @return
+     * #MR DÉPRÉCIÉ, Il faut utiliser searchAutoCompletionWSForWidget
      */
-    public ArrayList<String> searchExactTermNew(HikariDataSource ds,
-            String value, String idLang, String idThesaurus, String idGroup) {
+/*    public ArrayList<String> searchExactTermNew(HikariDataSource ds,
+            String value, String idLang, String idThesaurus, String [] idGroups) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -2682,7 +2683,7 @@ public class SearchHelper {
         String query;
         String lang;
         String langSynonyme;
-        String group;
+        
         String multivaluesTerm = "";
         String multivaluesSynonyme = "";
         multivaluesTerm
@@ -2700,31 +2701,26 @@ public class SearchHelper {
             lang = " and term.lang ='" + idLang + "'";
             langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
         }
-
-        // cas du choix d'un group
-        if (idGroup.isEmpty()) {
-            group = "";
-        } else {
-            group = " and idgroup = '" + idGroup + "'";
-        }
+        
+        // filter by group, c'est très important 
+        if (idGroups != null && idGroups.length != 0) {
+            String groupSearch = "";
+            for (String idGroup : idGroups) {
+                if(groupSearch.isEmpty())
+                    groupSearch = "'" + idGroup + "'";
+                else
+                    groupSearch = groupSearch + ",'" + idGroup + "'";
+            }
+            multivaluesTerm += " and concept_group_concept.idgroup in (" + groupSearch + ")";
+            multivaluesSynonyme += " and concept_group_concept.idgroup in (" + groupSearch + ")";
+        }        
 
         try {
             conn = ds.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
-                    if (group.isEmpty()) {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM term, preferred_term, concept WHERE "
-                                + " concept.id_concept = preferred_term.id_concept AND"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                                + " preferred_term.id_term = term.id_term AND"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus"
-                                + multivaluesTerm
-                                + " and term.id_thesaurus = '" + idThesaurus + "'"
-                                + lang
-                                + " order by lexical_value ASC LIMIT 200";
-                    } else {
+                    if (idGroups != null && idGroups.length != 0) {
                         query = "SELECT preferred_term.id_concept"
                                 + " FROM term, preferred_term, concept,concept_group_concept WHERE "
                                 + "concept_group_concept.idthesaurus  = term.id_thesaurus AND "
@@ -2736,20 +2732,41 @@ public class SearchHelper {
                                 + multivaluesTerm
                                 + " and term.id_thesaurus = '" + idThesaurus + "'"
                                 + lang
-                                + group
-                                + " order by lexical_value ASC LIMIT 200";
+                                + " order by "
+                                + " CASE unaccent(lower(lexical_value)) "
+                                + " WHEN '" + value + "' THEN 1" 
+                                + " END, lexical_value" 
+                                + " limit 100";                        
+
+                    } else {
+                        query = "SELECT preferred_term.id_concept"
+                                + " FROM term, preferred_term, concept WHERE "
+                                + " concept.id_concept = preferred_term.id_concept AND"
+                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
+                                + " preferred_term.id_term = term.id_term AND"
+                                + " preferred_term.id_thesaurus = term.id_thesaurus"
+                                + multivaluesTerm
+                                + " and term.id_thesaurus = '" + idThesaurus + "'"
+                                + lang                        
+                                + " order by "
+                                + " CASE unaccent(lower(lexical_value)) "
+                                + " WHEN '" + value + "' THEN 1" 
+                                + " END, lexical_value" 
+                                + " limit 100";
                     }
 
                     resultSet = stmt.executeQuery(query);
                     idConcepts = new ArrayList<>();
                     while (resultSet.next()) {
-                        idConcepts.add(resultSet.getString("id_concept"));
+                        if (!idConcepts.contains(resultSet.getString("id_concept"))) {
+                            idConcepts.add(resultSet.getString("id_concept"));
+                        }
                     }
 
                     /**
                      * recherche de Synonymes
                      */
-                    if (group.isEmpty()) {
+  /*                  if (group.isEmpty()) {
                         query = "SELECT preferred_term.id_concept"
                                 + " FROM non_preferred_term, preferred_term, concept WHERE "
                                 + "  preferred_term.id_term = non_preferred_term.id_term AND"
@@ -2792,7 +2809,7 @@ public class SearchHelper {
             Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return idConcepts;
-    }
+    }*/
 
     /**
      * Cette fonction permet de faire une recherche par value sur les termes
@@ -2806,11 +2823,12 @@ public class SearchHelper {
      * @param value
      * @param idLang
      * @param idThesaurus
-     * @param idGroup
+     * @param groups
      * @return
+     *      * #MR DÉPRÉCIÉ, Il faut utiliser searchAutoCompletionWSForWidget
      */
-    public ArrayList<String> searchTermNew(HikariDataSource ds,
-            String value, String idLang, String idThesaurus, String idGroup) {
+ /*   public ArrayList<String> searchTermNew(HikariDataSource ds,
+            String value, String idLang, String idThesaurus,  String [] groups) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -2896,7 +2914,7 @@ public class SearchHelper {
                     /**
                      * recherche de Synonymes
                      */
-                    if (group == null || group.isEmpty()) {
+     /*               if (group == null || group.isEmpty()) {
                         query = "SELECT preferred_term.id_concept"
                                 + " FROM non_preferred_term, preferred_term, concept WHERE "
                                 + "  preferred_term.id_term = non_preferred_term.id_term AND"
@@ -2937,7 +2955,7 @@ public class SearchHelper {
             Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return idConcepts;
-    }
+    }*/
 
     /**
      * Cette fonction permet de faire une recherche par value sur les termes

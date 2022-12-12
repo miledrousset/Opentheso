@@ -647,7 +647,7 @@ public class ImportFileBean implements Serializable {
         }
     }
 
-    public void loadFileCsvStrecture(FileUploadEvent event) throws IOException {
+    public void loadFileCsvStructured(FileUploadEvent event) throws IOException {
         total = 0;
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
@@ -715,7 +715,7 @@ public class ImportFileBean implements Serializable {
     public void addCsvStrucToDB() {
 
         if (StringUtils.isEmpty(selectedLang)) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le nom du thésorus est obligatoire !!!");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le nom du thésaurus est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
@@ -750,13 +750,12 @@ public class ImportFileBean implements Serializable {
 
         if (nodePreference == null) {
             preferencesHelper.initPreferences(connect.getPoolConnexion(), idNewTheso, selectedLang);
-            conceptHelper.setNodePreference(preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idNewTheso));
         } else {
             nodePreference.setPreferredName(thesaurusName);
             nodePreference.setSourceLang(selectedLang);
             preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }
-
+        conceptHelper.setNodePreference(preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idNewTheso));
         // ajout des concepts et collections
         for (NodeTree nodeTree : racine.getChildrens()) {
             insertDB(nodeTree, idNewTheso, null, conceptHelper);

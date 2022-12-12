@@ -74,7 +74,7 @@
                                 <div class="col-2" style="height: 35px">
                                     <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
                                                      actionListener="#{newProjectBean.init()}" oncomplete="PF('newProject').show();" 
-                                                     class="btn btn-primary" icon="fas fa-plus" update="idNewProject" process="@this"
+                                                     class="btn btn-primary" icon="fas fa-plus" update="idNewProject" 
                                                      style="color: #FFF; background-color: #f47b2a; border-color: #f47b2a; height: 100%; margin-left: -5px"
                                                      title="#{langueBean.getMsg('profile.create_new_project')}">
                                     </p:commandButton>

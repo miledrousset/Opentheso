@@ -41,7 +41,7 @@
                             <p:tag styleClass="p-mr-1" severity="success" value="#{proposition.idTheso}" style="margin-right: 5px" />
                             
                             <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
-                                <img src="#{conceptView.getDrapeauImg(proposition.codeDrapeau)}" width="20" height="15" style="margin-right: 7px"/>
+                                <img src="#{conceptView.getDrapeauImgLocal(proposition.codeDrapeau)}" width="20" height="15" style="margin-right: 7px"/>
                             </h:panelGroup>
                             
                             <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">

@@ -3944,7 +3944,11 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie une
      * chaine vide
-     */
+    * @param ds
+    * @param idConcept
+    * @param idThesaurus
+    * @return 
+    */
     public String getIdArkOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
         String ark = "";
@@ -3982,7 +3986,8 @@ public class ConceptHelper {
                         + "' and id_concept = '" + idConcept + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
-                        notation = resultSet.getString("notation").trim();
+                        notation = resultSet.getString("notation") == null ? "" : resultSet.getString("notation").trim();
+                        //notation = resultSet.getString("notation").trim();
                     }
                 }
             }
@@ -3995,7 +4000,11 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer les identifiants d'un concept idArk,
      * idHandle, idConcept sous forme de nodeUri
-     */
+    * @param ds
+    * @param idConcept
+    * @param idThesaurus
+    * @return 
+    */
     public NodeUri getNodeUriOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
         NodeUri nodeUri = new NodeUri();
@@ -4021,7 +4030,11 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer l'identifiant Handle sinon renvoie une
      * chaine vide
-     */
+    * @param ds
+    * @param idConcept
+    * @param idThesaurus
+    * @return 
+    */
     public String getIdHandleOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
         String handle = "";

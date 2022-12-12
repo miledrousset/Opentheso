@@ -6,27 +6,28 @@
 
     <p:dialog id="idNewProject" header="#{langueBean.getMsg('profile.create_new_project')}" widgetVar="newProject" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
-        <div class="row"> 
-            <div class="col-5">
-                <h:outputText value="#{langueBean.getMsg('profile.project')} : " /> 
+        <h:form id="newProjectForm">
+            <div class="row"> 
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('profile.project')} : " /> 
+                </div>
+                <div class="col-7">
+                    <p:inputText value="#{newProjectBean.projectName}" style="width: 100%;"/>
+                </div> 
             </div>
-            <div class="col-7">
-                <p:inputText value="#{newProjectBean.projectName}" style="width: 100%;"/>
-            </div> 
-        </div>
 
-        <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
-            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
-                             icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
-                             actionListener="PF('newProject').hide();" ajax="true"
-                             update="idNewProject"/>
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 oncomplete="PF('newProject').hide();" 
+                                 update="idNewProject"/>
 
-            <p:commandButton value="#{langueBean.getMsg('btnAdd')}" styleClass="ui-button-success" 
-                             ajax="true" process="@this" icon="pi pi-check" 
-                             oncomplete="PF('newProject').hide();"
-                             update="messageIndex containerIndex"                            
-                             actionListener="#{newProjectBean.addNewProject()}" />
-        </div>
+                <p:commandButton value="#{langueBean.getMsg('btnAdd')}" styleClass="ui-button-success" 
+                                 icon="pi pi-check" 
+                                 oncomplete="PF('newProject').hide();"
+                                 update="messageIndex containerIndex"                            
+                                 action="#{newProjectBean.addNewProject()}" />
+            </div>
+        </h:form>
     </p:dialog>   
 </ui:fragment>

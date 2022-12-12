@@ -30,6 +30,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -407,6 +408,21 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 idConcept, idUser);
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
+        
+        
+        if (tree.getSelectedNode() != null) {
+            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+                    conceptBean.getNodeConcept().getConcept().getIdConcept())) {
+                tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(), idTheso, conceptBean.getSelectedLang());
+            }
+            ((DefaultTreeNode) tree.getSelectedNode()).setType("deprecated");
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+            }
+        }         
+        
+        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept a bien été déprécié");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
@@ -420,6 +436,7 @@ public class EditConcept implements Serializable {
     public void approveConcept(String idConcept, String idTheso, int idUser){
         DeprecateHelper deprecateHelper = new DeprecateHelper();
         FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
         if (!deprecateHelper.approveConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été approuvé !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -439,6 +456,23 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 idConcept, idUser);
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
+        
+        if (tree.getSelectedNode() != null) {
+            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+            if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+                    conceptBean.getNodeConcept().getConcept().getIdConcept())) {
+                tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(), idTheso, conceptBean.getSelectedLang());
+            }
+            if(((DefaultTreeNode) tree.getSelectedNode()).getChildCount() == 0)
+                ((DefaultTreeNode) tree.getSelectedNode()).setType("file"); 
+            else 
+                ((DefaultTreeNode) tree.getSelectedNode()).setType("concept");
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+            }
+        }          
+        
+        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "le concept a bien été approuvé");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }

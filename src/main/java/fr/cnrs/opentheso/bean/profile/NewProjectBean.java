@@ -203,9 +203,5 @@ public class NewProjectBean implements Serializable {
 
     public void setListeProjectOfUser(ArrayList<NodeUserGroup> listeProjectOfUser) {
         this.listeProjectOfUser = listeProjectOfUser;
-    }
-    
-
-    
-    
+    }    
 }

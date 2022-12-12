@@ -1269,7 +1269,8 @@ public class Rest_new {
         String idLang = "";
         String idTheso = null;
         String format = null;
-        String group = "";
+//        String group = "";
+        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)        
 
         String filter = null;
         boolean showLabels = false;
@@ -1314,8 +1315,11 @@ public class Rest_new {
                     idTheso = valeur;
                 }
                 if (e.getKey().equalsIgnoreCase("group")) {
+                    groups = valeur.split(",");
+                }                
+         /*       if (e.getKey().equalsIgnoreCase("group")) {
                     group = valeur;
-                }
+                }*/
                 if (e.getKey().equalsIgnoreCase("format")) {
                     format = valeur;
                 }
@@ -1370,7 +1374,7 @@ public class Rest_new {
         switch (format) {
             case "rdf": {
                 format = "application/rdf+xml";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
@@ -1382,7 +1386,7 @@ public class Rest_new {
             }
             case "jsonld":
                 format = "application/ld+json";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
@@ -1393,7 +1397,7 @@ public class Rest_new {
                         .build();
             case "turtle":
                 format = "text/turtle";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
                 }
@@ -1404,7 +1408,7 @@ public class Rest_new {
                         .build();
             case "json":
                 format = "application/json";
-                datas = getDatas(idTheso, idLang, group, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
@@ -1429,7 +1433,8 @@ public class Rest_new {
     //////////////////////////////////////////////////
     //////////////////////////////////////////////////
     private String getDatas(
-            String idTheso, String idLang, String group,
+            String idTheso, String idLang,
+            String [] groups,
             String value,
             String format, String filter) {
         HikariDataSource ds = connect();
@@ -1450,7 +1455,7 @@ public class Rest_new {
         }
 
         datas = restRDFHelper.findConcepts(ds,
-                idTheso, idLang, group, value, format);
+                idTheso, idLang, groups, value, format);
         ds.close();
         if (datas == null) {
             return null;
@@ -2171,7 +2176,7 @@ public class Rest_new {
     
     /**
      * Pour retourner un thesaurus complet à partir de son identifiant
-     * le thesaurus retourné ne comporte pas de relations, maisn uniquement Id et value en Json
+     * le thesaurus retourné ne comporte pas de relations, mais uniquement Id et value en Json
      * On peut préciser la langue 
      *
      * @param uri

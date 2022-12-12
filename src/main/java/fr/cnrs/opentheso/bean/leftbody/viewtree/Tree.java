@@ -437,7 +437,7 @@ public class Tree implements Serializable {
     }
 
     /////// pour l'ajout d'un fils supplementaire après un ajout de concept
-    public void addNewChild(TreeNode parent, String idConcept, String idTheso, String idLang) {
+    public void addNewChild(TreeNode parent, String idConcept, String idTheso, String idLang, String notation) {
         ConceptHelper conceptHelper = new ConceptHelper();
         TreeNodeData data;
         String label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
@@ -447,7 +447,7 @@ public class Tree implements Serializable {
         data = new TreeNodeData(
                 idConcept,
                 label,
-                "",
+                notation,
                 false,//isgroup
                 false,//isSubGroup
                 true,//isConcept

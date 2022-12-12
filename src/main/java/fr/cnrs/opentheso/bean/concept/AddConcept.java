@@ -281,7 +281,7 @@ public class AddConcept implements Serializable {
                 tree.getSelectedNode().setType("concept");
             }
             if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
-                tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
+                tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang, notation);
                 if (pf.isAjaxRequest()) {
                     pf.executeScript("srollToSelected()");
                 }

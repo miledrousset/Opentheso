@@ -9,7 +9,7 @@ public class NodeTree {
     private String idConcept;
     private String preferredTerm;
     private String idParent;
-    private List<NodeTree> childrens = new ArrayList<NodeTree>();
+    private List<NodeTree> childrens = new ArrayList<>();
 
     public String getIdConcept() {
         return idConcept;
