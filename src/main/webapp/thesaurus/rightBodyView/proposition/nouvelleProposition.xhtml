@@ -77,9 +77,9 @@
                                      icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
                                      ajax="true" process="@this"/>
 
-                    <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="containerIndex messageIndex"
-                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}" 
-                                     styleClass="ui-button-success" icon="pi pi-check-circle" />
+                    <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="messageIndex"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}"
+                                     ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" />
                 </div>
             </div>
 
@@ -186,7 +186,7 @@
                              ajax="true" process="@this"/>
 
             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success"
-                             ajax="true" process="@this" icon="pi pi-check"
+                             icon="pi pi-check"
                              update="containerIndex:contentConcept containerIndex:notificationPanel messageIndex"
                              actionListener="#{propositionBean.executionAction()}"/>
         </div>

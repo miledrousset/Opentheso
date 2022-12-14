@@ -129,7 +129,7 @@ public class PropositionBean implements Serializable {
     }
 
     public void checkSynonymPropositionStatus() {
-        for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
+        for (SynonymPropBean synonymPropBean : proposition.getSynonymsPropV2()) {
             if (synonymPropBean.isToAdd() || synonymPropBean.isToRemove()
                     || synonymPropBean.isToUpdate()) {
                 varianteAccepted = true;
@@ -314,7 +314,6 @@ public class PropositionBean implements Serializable {
             else
                 rightBodySetting.setIndex("3");
         }
- //       rightBodySetting.setIndex(currentUser.getNodeUser() == null ? "2" : "3");
 
         proposition = propositionService.selectProposition(nodeConcept);
 
@@ -387,8 +386,8 @@ public class PropositionBean implements Serializable {
     }
 
     private boolean isSynchroProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getSynonymsProp())) {
-            for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
+        if (CollectionUtils.isNotEmpty(proposition.getSynonymsPropV2())) {
+            for (SynonymPropBean synonymProp : proposition.getSynonymsPropV2()) {
                 if (synonymProp.isToAdd() || synonymProp.isToRemove() || synonymProp.isToUpdate()) {
                     return true;
                 }

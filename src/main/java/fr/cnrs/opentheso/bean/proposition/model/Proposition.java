@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Proposition implements Serializable {
 
     private String conceptID;
@@ -16,21 +17,17 @@ public class Proposition implements Serializable {
     private String nomConceptProp;
     private Term nomConcept;
 
-    private List<SynonymPropBean> synonymsProp = new ArrayList<>();
+    //private List<SynonymPropBean> synonymsProp;
+    private List<SynonymPropBean> synonymsPropV2;
+    private List<TraductionPropBean> traductionsProp;
 
-    private List<TraductionPropBean> traductionsProp = new ArrayList<>();
-
-    private List<NotePropBean> notes = new ArrayList<>();
-    private List<NotePropBean> scopeNotes = new ArrayList<>();
-    private List<NotePropBean> historyNotes = new ArrayList<>();
-    private List<NotePropBean> examples = new ArrayList<>();
-    private List<NotePropBean> editorialNotes = new ArrayList<>();
-    private List<NotePropBean> definitions = new ArrayList<>();
-    private List<NotePropBean> changeNotes = new ArrayList<>();
+    private List<NotePropBean> notes, scopeNotes, historyNotes, examples,
+            editorialNotes, definitions, changeNotes;
 
     
     public Proposition() {
-        synonymsProp = new ArrayList<>();
+        //synonymsProp = new ArrayList<>();
+        synonymsPropV2 = new ArrayList<>();
         traductionsProp = new ArrayList<>();
         notes = new ArrayList<>();
         scopeNotes = new ArrayList<>();
@@ -48,14 +45,14 @@ public class Proposition implements Serializable {
     public void setNomConcept(Term nomConcept) {
         this.nomConcept = nomConcept;
     }
-
+/*
     public List<SynonymPropBean> getSynonymsProp() {
         return synonymsProp;
     }
 
     public void setSynonymsProp(List<SynonymPropBean> synonymsProp) {
         this.synonymsProp = synonymsProp;
-    }
+    }*/
 
     public String getNomConceptProp() {
         return nomConceptProp;
@@ -145,4 +142,13 @@ public class Proposition implements Serializable {
         this.notes = notes;
     }
 
+    public List<SynonymPropBean> getSynonymsPropV2() {
+        return synonymsPropV2;
+    }
+
+    public void setSynonymsPropV2(List<SynonymPropBean> synonymsPropV2) {
+        this.synonymsPropV2 = synonymsPropV2;
+    }
+
+    
 }
