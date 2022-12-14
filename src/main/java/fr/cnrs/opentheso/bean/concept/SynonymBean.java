@@ -615,7 +615,6 @@ public class SynonymBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        //    PrimeFaces.current().executeScript("PF('addNote').hide();");
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
@@ -684,18 +683,16 @@ public class SynonymBean implements Serializable {
             return;
         }
 
-        for (int i = 0; i < propositionBean.getProposition().getSynonymsPropV2().size(); i++) {
-            if (spb.getLexical_value().equals(propositionBean.getProposition().getSynonymsPropV2().get(i).getLexical_value())) {
-                if (propositionBean.getProposition().getSynonymsPropV2().get(i).isToAdd()) {
-                    propositionBean.getProposition().getSynonymsPropV2().remove(i);
-                } else if (propositionBean.getProposition().getSynonymsPropV2().get(i).isToUpdate()) {
-                    propositionBean.getProposition().getSynonymsPropV2().get(i).setToRemove(true);
-                    propositionBean.getProposition().getSynonymsPropV2().get(i).setToUpdate(false);
-                    propositionBean.getProposition().getSynonymsPropV2().get(i)
-                            .setLexical_value(propositionBean.getProposition().getSynonymsPropV2().get(i).getOldValue());
+        for (SynonymPropBean synonym : propositionBean.getProposition().getSynonymsProp()) {
+            if (spb.getLexical_value().equals(synonym.getLexical_value())) {
+                if (synonym.isToAdd()) {
+                    propositionBean.getProposition().getSynonymsProp().remove(synonym);
+                } else if (synonym.isToUpdate()) {
+                    synonym.setToRemove(true);
+                    synonym.setToUpdate(false);
+                    synonym.setLexical_value(synonym.getOldValue());
                 } else {
-                    propositionBean.getProposition().getSynonymsPropV2().get(i).setToRemove(!propositionBean.getProposition()
-                            .getSynonymsPropV2().get(i).isToRemove());
+                    synonym.setToRemove(!synonym.isToRemove());
                 }
             }
         }

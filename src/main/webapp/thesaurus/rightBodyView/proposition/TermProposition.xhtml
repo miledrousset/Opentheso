@@ -92,7 +92,7 @@
                                         disabled="#{(propositionBean.proposition.synonymsPropV2 == null) or (propositionBean.proposition.synonymsPropV2.size() == 0)}" />
                         </p:menuButton> 
 
-                        <h:panelGroup rendered="#{(propositionBean.proposition.synonymsPropV2 == null) or (propositionBean.proposition.synonymsPropV2.size() == 0)}" >            
+                        <h:panelGroup rendered="#{(propositionBean.proposition.synonymsPropV2 == null) or (propositionBean.proposition.synonymsPropV2.size() == 0)}" >
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />              
                         </h:panelGroup>
 
@@ -124,7 +124,7 @@
                                 </h:panelGroup>
                             </ui:repeat>
 
-                            <ui:repeat var="em2" value="#{propositionBean.proposition.synonymsProp}" varStatus="status">
+                            <ui:repeat var="em2" value="#{propositionBean.proposition.synonymsPropV2}" varStatus="status">
 
                                 <h:panelGroup rendered="#{em2.hiden and !em2.toAdd and !em2.toRemove and !em2.toUpdate}">
                                     <h:outputText value=" #{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
@@ -289,7 +289,7 @@
             </div>
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsProp}"
+                <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsPropV2}"
                              widgetVar="listThesoTable" styleClass="products-table"
                              style="margin-bottom: -16px; margin-top: -16px;">
                     <f:facet name="header">
@@ -337,7 +337,7 @@
             </div>
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsProp}"
+                <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsPropV2}"
                              styleClass="products-table" style="margin-bottom: -16px; margin-top: -16px;">
                     <f:facet name="header">
                         <div class="products-table-header">
