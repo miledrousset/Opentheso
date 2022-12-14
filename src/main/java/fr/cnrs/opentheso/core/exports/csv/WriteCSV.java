@@ -95,6 +95,11 @@ public class WriteCSV {
                 header.append("skos:historyNote@").append(lang).append(seperate);
             });
 
+            //skos:editorialNote
+            langs.forEach((lang) -> {
+                header.append("skos:editorialNote@").append(lang).append(seperate);
+            });            
+
             header.append("skos:notation").append(seperate)
                     .append("skos:narrower").append(seperate)
                     .append("narrowerId").append(seperate)
@@ -205,7 +210,14 @@ public class WriteCSV {
             def = def.replaceAll(";", ",");
             stringBuffer.append(def).append(seperate);//historyNote
         }
-
+        //skos:editorialNote
+        for (String lang : langs) {
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.editorialNote);
+            def = def.replaceAll("amp;", "");
+            def = def.replaceAll(";", ",");
+            stringBuffer.append(def).append(seperate);//editorialNote
+        }        
+        
         stringBuffer
                 .append(getNotation(skosResource.getNotationList())).append(seperate) //notation
 

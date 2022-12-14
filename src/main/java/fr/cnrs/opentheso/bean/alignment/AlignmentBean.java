@@ -1641,11 +1641,8 @@ public class AlignmentBean implements Serializable {
         selectedNodeAlignment = null;
         alignmentInProgress = false;
         //conceptView.getConcept(idTheso, idConcept, conceptView.getSelectedLang());
-        ConceptHelper conceptHelper = new ConceptHelper();
-
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                idTheso,
-                idConcept, idUser);
+        
+        updateDateOfConcept(idTheso, idConcept, idUser);
 
         PrimeFaces pf = PrimeFaces.current();
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
@@ -1661,6 +1658,20 @@ public class AlignmentBean implements Serializable {
         resetVariables();
     }
 
+    /**
+     * 
+     * @param idTheso
+     * @param idConcept
+     * @param idUser 
+     */
+    private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                idTheso,
+                idConcept, idUser);    
+    }
+    
     /**
      * Permet d'ajouter les coordonnées GPS pour les lieux
      *

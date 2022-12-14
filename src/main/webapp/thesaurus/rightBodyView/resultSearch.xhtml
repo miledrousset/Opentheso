@@ -46,12 +46,12 @@
                                                value="#{result.prefLabel}" 
                                                style="color: #601e18; font-size: 12px; font-weight: bold;" ajax="true" process="@form"
                                                actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
-                                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch containerIndex:searchBar" />    
+                                               update="containerIndex:contentConcept containerIndex:thesoSelect  containerIndex:searchBar containerIndex:formRightTab" />    
                                 <p:commandLink rendered="#{result.prefLabel == null or result.prefLabel == ''}"
                                                value=" (#{result.idConcept})" 
                                                style="color: #601e18; font-size: 12px; font-weight: bold;" ajax="true" process="@form"
                                                actionListener="#{searchBean.onSelectConcept(result.idTheso, result.idConcept, result.currentLang)}"
-                                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch containerIndex:searchBar" />                                      
+                                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:searchBar containerIndex:formRightTab" />                                      
                             </h:panelGroup>
                         </div>
                     </div>

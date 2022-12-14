@@ -3445,6 +3445,64 @@ public class ConceptHelper {
         }
         return tabIdConcept;
     }
+    
+    /**
+     * Temporaire à supprimer par la suite ou à faire évoluer pour un export par utilisateur
+     */
+    public ArrayList<String> getAllIdConceptOfThesaurusByUser(HikariDataSource ds, String idThesaurus) {
+
+        ArrayList<String> tabIdConcept = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select DISTINCT id_concept from concept\n" +
+                                "where \n" +
+                                "concept.id_thesaurus = 'th17'\n" +
+                                "and\n" +
+                                "concept.status != 'CA'\n" +
+                                "and \n" +
+                                "( \n" +
+                                "	(concept.creator in (78,83)) \n" +
+                                "	or   \n" +
+                                "	(concept.contributor in (78,83))\n" +
+                                ")");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        tabIdConcept.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus : " + idThesaurus, sqle);
+        }
+        return tabIdConcept;
+    }    
+    /**
+     * Temporaire à supprimer par la suite ou à faire évoluer pour un export par utilisateur
+     */
+    public ArrayList<String> getAllIdConceptOfThesaurusByUser2(HikariDataSource ds, String idThesaurus) {
+
+        ArrayList<String> tabIdConcept = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select DISTINCT internal_id_concept from alignement\n" +
+                        "where \n" +
+                        "internal_id_thesaurus = 'th17'\n" +
+                        "and \n" +
+                        "alignement.author in (78,83)");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        tabIdConcept.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus : " + idThesaurus, sqle);
+        }
+        return tabIdConcept;
+    }    
+    
 
     /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus

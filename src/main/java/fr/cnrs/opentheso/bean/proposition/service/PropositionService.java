@@ -393,8 +393,18 @@ public class PropositionService implements Serializable {
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
 
-        return mailBean.sendMail(emailDestination, subject,  contentFile);
-            //showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail!");
+        return true;
+//        return mailBean.sendMail(emailDestination, subject,  contentFile);
+  
+
+
+
+
+
+
+
+
+        //showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail!");
         
         /// désactivé par #MR Miled pour utiliser la méthode officielle d'envoie de Mail
         /*

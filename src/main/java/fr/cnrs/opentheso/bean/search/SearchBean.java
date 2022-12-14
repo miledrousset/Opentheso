@@ -356,6 +356,8 @@ public class SearchBean implements Serializable {
         List<NodeConceptSearch> concepts = new ArrayList<>();
         String thesaurusLabel = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), idTheso, idLang);
         NodeConceptSearch nodeConceptSearch;
+        if(searchValue == null)
+            searchValue = "";
 
         if (withId) {
             nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(), searchValue, idTheso);
@@ -396,7 +398,7 @@ public class SearchBean implements Serializable {
             }
         }
 
-        if (indexMatch) {
+        if (indexMatch || searchValue.isEmpty()) {
             ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchStartWith(connect.getPoolConnexion(),
                     searchValue,
                     idLang,
@@ -829,8 +831,8 @@ public class SearchBean implements Serializable {
         
         PrimeFaces.current().ajax().update("containerIndex:contentConcept");
         PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
-        PrimeFaces.current().ajax().update("containerIndex:sideBarSearch");
-        PrimeFaces.current().ajax().update("containerIndex:searchBar");
+    //    PrimeFaces.current().ajax().update("containerIndex:sideBarSearch");
+    //    PrimeFaces.current().ajax().update("containerIndex:searchBar");
     }
 
     public NodeSearchMini getSearchSelected() {
