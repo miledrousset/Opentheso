@@ -211,11 +211,11 @@ public class SynonymBean implements Serializable {
             return;
         }
 
-        if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsPropV2())) {
-            propositionBean.getProposition().setSynonymsPropV2(new ArrayList<>());
+        if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
+            propositionBean.getProposition().setSynonymsProp(new ArrayList<>());
          }
         
-        for (SynonymPropBean synonym : propositionBean.getProposition().getSynonymsPropV2()) {
+        for (SynonymPropBean synonym : propositionBean.getProposition().getSynonymsProp()) {
             if (synonym.getLexical_value().equalsIgnoreCase(value)
                     && synonym.getLang().equalsIgnoreCase(selectedLang)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
@@ -231,7 +231,7 @@ public class SynonymBean implements Serializable {
         synonymPropBean.setLang(selectedLang);
         synonymPropBean.setLexical_value(value);
         synonymPropBean.setOldValue(value);
-        propositionBean.getProposition().getSynonymsPropV2().add(synonymPropBean);
+        propositionBean.getProposition().getSynonymsProp().add(synonymPropBean);
         propositionBean.setVarianteAccepted(true);
     }
 
@@ -475,42 +475,42 @@ public class SynonymBean implements Serializable {
 
     public void updateAllSynonymsProp() {
 
-        if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsPropV2())) {
+        if (CollectionUtils.isEmpty(propositionBean.getProposition().getSynonymsProp())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
 
-        for (int i = 0; i < propositionBean.getProposition().getSynonymsPropV2().size(); i++) {
-            if (!propositionBean.getProposition().getSynonymsPropV2().get(i).getOldValue()
-                    .equals(propositionBean.getProposition().getSynonymsPropV2().get(i).getLexical_value())) {
+        for (int i = 0; i < propositionBean.getProposition().getSynonymsProp().size(); i++) {
+            if (!propositionBean.getProposition().getSynonymsProp().get(i).getOldValue()
+                    .equals(propositionBean.getProposition().getSynonymsProp().get(i).getLexical_value())) {
                 if (new TermHelper().isTermExist(connect.getPoolConnexion(),
-                        propositionBean.getProposition().getSynonymsPropV2().get(i).getLexical_value(),
+                        propositionBean.getProposition().getSynonymsProp().get(i).getLexical_value(),
                         selectedTheso.getCurrentIdTheso(),
-                        propositionBean.getProposition().getSynonymsPropV2().get(i).getLang())) {
+                        propositionBean.getProposition().getSynonymsProp().get(i).getLang())) {
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     PrimeFaces.current().ajax().update("messageIndex");
                     return;
                 }
                 if (new TermHelper().isAltLabelExist(connect.getPoolConnexion(),
-                        propositionBean.getProposition().getSynonymsPropV2().get(i).getLexical_value(),
+                        propositionBean.getProposition().getSynonymsProp().get(i).getLexical_value(),
                         selectedTheso.getCurrentIdTheso(),
-                        propositionBean.getProposition().getSynonymsPropV2().get(i).getLang())) {
+                        propositionBean.getProposition().getSynonymsProp().get(i).getLang())) {
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     PrimeFaces.current().ajax().update("messageIndex");
                     return;
                 }
-                if (!propositionBean.getProposition().getSynonymsPropV2().get(i).isToAdd()) {
-                    propositionBean.getProposition().getSynonymsPropV2().get(i).setToUpdate(true);
+                if (!propositionBean.getProposition().getSynonymsProp().get(i).isToAdd()) {
+                    propositionBean.getProposition().getSynonymsProp().get(i).setToUpdate(true);
                 }
             } else {
-                if (propositionBean.getProposition().getSynonymsPropV2().get(i).isOldHiden()
-                        != propositionBean.getProposition().getSynonymsPropV2().get(i).isHiden()) {
-                    if (!propositionBean.getProposition().getSynonymsPropV2().get(i).isToAdd()) {
-                        propositionBean.getProposition().getSynonymsPropV2().get(i).setToUpdate(true);
+                if (propositionBean.getProposition().getSynonymsProp().get(i).isOldHiden()
+                        != propositionBean.getProposition().getSynonymsProp().get(i).isHiden()) {
+                    if (!propositionBean.getProposition().getSynonymsProp().get(i).isToAdd()) {
+                        propositionBean.getProposition().getSynonymsProp().get(i).setToUpdate(true);
                     }
                 }
             }

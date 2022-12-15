@@ -18,7 +18,6 @@ public class Proposition implements Serializable {
     private Term nomConcept;
 
     private List<SynonymPropBean> synonymsProp;
-    private List<SynonymPropBean> synonymsPropV2;
     private List<TraductionPropBean> traductionsProp;
 
     private List<NotePropBean> notes, scopeNotes, historyNotes, examples,
@@ -27,7 +26,6 @@ public class Proposition implements Serializable {
     
     public Proposition() {
         synonymsProp = new ArrayList<>();
-        synonymsPropV2 = new ArrayList<>();
         traductionsProp = new ArrayList<>();
         notes = new ArrayList<>();
         scopeNotes = new ArrayList<>();
@@ -140,13 +138,5 @@ public class Proposition implements Serializable {
 
     public void setNotes(List<NotePropBean> notes) {
         this.notes = notes;
-    }
-    
-    public List<SynonymPropBean> getSynonymsPropV2() {
-        return synonymsPropV2;
-    }
-
-    public void setSynonymsPropV2(List<SynonymPropBean> synonymsPropV2) {
-        this.synonymsPropV2 = synonymsPropV2;
     }
 }

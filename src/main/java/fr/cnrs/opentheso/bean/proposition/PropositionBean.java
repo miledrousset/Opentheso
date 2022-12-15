@@ -129,7 +129,7 @@ public class PropositionBean implements Serializable {
     }
 
     public void checkSynonymPropositionStatus() {
-        for (SynonymPropBean synonymPropBean : proposition.getSynonymsPropV2()) {
+        for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
             if (synonymPropBean.isToAdd() || synonymPropBean.isToRemove()
                     || synonymPropBean.isToUpdate()) {
                 varianteAccepted = true;
@@ -386,8 +386,8 @@ public class PropositionBean implements Serializable {
     }
 
     private boolean isSynchroProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getSynonymsPropV2())) {
-            for (SynonymPropBean synonymProp : proposition.getSynonymsPropV2()) {
+        if (CollectionUtils.isNotEmpty(proposition.getSynonymsProp())) {
+            for (SynonymPropBean synonymProp : proposition.getSynonymsProp()) {
                 if (synonymProp.isToAdd() || synonymProp.isToRemove() || synonymProp.isToUpdate()) {
                     return true;
                 }

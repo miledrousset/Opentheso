@@ -84,20 +84,20 @@
                                         oncomplete="PF('renameSynonymProp').show();" 
                                         update="containerIndex:rightTab:renameSynonymFormProp" 
                                         icon="fas fa-edit"
-                                        disabled="#{(propositionBean.proposition.synonymsPropV2 == null) or (propositionBean.proposition.synonymsPropV2.size() == 0)}" />
+                                        disabled="#{(propositionBean.proposition.synonymsProp == null) or (propositionBean.proposition.synonymsProp.size() == 0)}" />
 
-                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" ajax="true" process="@this"
                                         actionListener="#{synonymBean.reset()}" oncomplete="PF('deleteSynonymProp').show();"
                                         update="containerIndex:rightTab:idDeleteSynonymProp" icon="fas fa-minus"
-                                        disabled="#{(propositionBean.proposition.synonymsPropV2 == null) or (propositionBean.proposition.synonymsPropV2.size() == 0)}" />
+                                        disabled="#{(propositionBean.proposition.synonymsProp == null) or (propositionBean.proposition.synonymsProp.size() == 0)}" />
                         </p:menuButton> 
 
-                        <h:panelGroup rendered="#{(propositionBean.proposition.synonymsPropV2 == null) or (propositionBean.proposition.synonymsPropV2.size() == 0)}" >
+                        <h:panelGroup rendered="#{(propositionBean.proposition.synonymsProp == null) or (propositionBean.proposition.synonymsProp.size() == 0)}" >
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />              
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{propositionBean.proposition.synonymsPropV2 != null and propositionBean.proposition.synonymsPropV2.size() != 0}">
-                            <ui:repeat var="em" value="#{propositionBean.proposition.synonymsPropV2}" varStatus="status">
+                        <h:panelGroup rendered="#{propositionBean.proposition.synonymsProp != null and propositionBean.proposition.synonymsProp.size() != 0}">
+                            <ui:repeat var="em" value="#{propositionBean.proposition.synonymsProp}" varStatus="status">
 
                                 <h:panelGroup rendered="#{!em.hiden and !em.toAdd and !em.toRemove and !em.toUpdate}"  >
                                     <h:outputText value="[#{em.lang.toUpperCase()}] "
@@ -124,7 +124,7 @@
                                 </h:panelGroup>
                             </ui:repeat>
 
-                            <ui:repeat var="em2" value="#{propositionBean.proposition.synonymsPropV2}" varStatus="status">
+                            <ui:repeat var="em2" value="#{propositionBean.proposition.synonymsProp}" varStatus="status">
 
                                 <h:panelGroup rendered="#{em2.hiden and !em2.toAdd and !em2.toRemove and !em2.toUpdate}">
                                     <h:outputText value=" #{langueBean.getMsg('rightbody.concept.hidden_synonym')} : " 
@@ -289,7 +289,7 @@
             </div>
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsPropV2}"
+                <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsProp}"
                              widgetVar="listThesoTable" styleClass="products-table"
                              style="margin-bottom: -16px; margin-top: -16px;">
                     <f:facet name="header">
@@ -307,14 +307,14 @@
                     </p:column>     
                     <p:column width="70" headerText="#{langueBean.getMsg('profile.action')}">
                         <p:commandLink style="color: #FF7979" oncomplete="PF('deleteSynonymProp').hide();"
-                                       ajax="true" process="@form" update="containerIndex messageIndex"
-                                       onstart="#{synonymBean.deleteSynonymPropo(synonymes)}"
+                                       ajax="true" process="@this" update="containerIndex messageIndex"
+                                       action="#{synonymBean.deleteSynonymPropo(synonymes)}"
                                        rendered="#{!synonymes.toRemove}">
                             <i class="pi pi-trash" style="color: red" />
                         </p:commandLink>
                         <p:commandLink style="color: #FF7979" oncomplete="PF('deleteSynonymProp').hide();"
                                        ajax="true" process="@form" update="containerIndex messageIndex"
-                                       onstart="#{synonymBean.deleteSynonymPropo(synonymes)}"
+                                       action="#{synonymBean.deleteSynonymPropo(synonymes)}"
                                        rendered="#{synonymes.toRemove}">
                             <i class="pi pi-pencil" style="color: #43B572" />
                         </p:commandLink>
@@ -337,7 +337,7 @@
             </div>
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsPropV2}"
+                <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsProp}"
                              styleClass="products-table" style="margin-bottom: -16px; margin-top: -16px;">
                     <f:facet name="header">
                         <div class="products-table-header">
