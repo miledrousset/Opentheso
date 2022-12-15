@@ -350,10 +350,14 @@ public class ExportFileBean implements Serializable {
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
 
-            char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+            //char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+            //byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
 
-            byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
-
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] str = csvWriteHelper.writeCsv(skosxd,
+                        viewExportBean.getSelectedLanguages(),
+                        viewExportBean.getCsvDelimiterChar());            
+            
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
 
                 str = null;
@@ -540,9 +544,13 @@ public class ExportFileBean implements Serializable {
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
 
-            char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
-
-            byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
+            //char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
+            //byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
+            
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] str = csvWriteHelper.writeCsv(skosxd,
+                        viewExportBean.getSelectedLanguages(),
+                        viewExportBean.getCsvDelimiterChar());               
 
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
                 

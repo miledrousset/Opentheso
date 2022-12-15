@@ -391,9 +391,7 @@ public class PropositionService implements Serializable {
     }
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
-
-        return true;
-//        return mailBean.sendMail(emailDestination, subject,  contentFile);
+        return mailBean.sendMail(emailDestination, subject,  contentFile);
   
 
 
