@@ -275,7 +275,6 @@ public class ArkHelper2 {
         
         if(!arkClientRest.updateUriArk(nodeJson2.getJsonString())) {
             message = message + arkClientRest.getMessage();
-            System.out.println(message);
             return false;
         }
         return true;

@@ -1500,11 +1500,9 @@ public class RestRDFHelper {
             NodeAutoCompletion nodeAutoCompletion1, String idTheso) {
         String uri = "";
         if (nodeAutoCompletion1 == null) {
-            //      System.out.println("nodeConcept = Null");
             return uri;
         }
         if (nodeAutoCompletion1.getIdConcept() == null) {
-            //    System.out.println("nodeConcept.getConcept = Null");
             return uri;
         }
 

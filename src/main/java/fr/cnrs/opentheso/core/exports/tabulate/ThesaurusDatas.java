@@ -60,7 +60,6 @@ public class ThesaurusDatas {
         ArrayList<String> idGroups = new GroupHelper().getListIdOfGroup(ds, idThesaurus);
         for (String idGroup : idGroups) {
             this.nodeGroupLabels.add(new GroupHelper().getNodeGroupLabel(ds, idGroup, idThesaurus));
-    //        System.out.println("idGroup = : " + idGroup);
         }
         
         // récupération des ids des Tops Concepts
@@ -99,7 +98,6 @@ public class ThesaurusDatas {
         ArrayList<String> idGroups = new GroupHelper().getListIdOfGroup(ds, idThesaurus);
         for (String idGroup : idGroups) {
             this.nodeGroupLabels.add(new GroupHelper().getNodeGroupLabel(ds, idGroup, idThesaurus));
-    //        System.out.println("idGroup = : " + idGroup);
         }
         
         // récupération des ids des Tops Concepts
@@ -134,16 +132,9 @@ public class ThesaurusDatas {
         this.nodeThesaurus = new ThesaurusHelper().getNodeThesaurus(ds, idThesaurus);
         
         // récupération des groupes suivant le filtre selectedGroups
-     //   ArrayList<String> idGroups = new GroupHelper().getListIdOfGroup(ds, idThesaurus);
-            for (NodeGroup nodeGroup : selectedGroups) {
-                this.nodeGroupLabels.add(new GroupHelper().getNodeGroupLabel(ds,
-                        nodeGroup.getConceptGroup().getIdgroup(),
-                        idThesaurus));
-        //        System.out.println("idGroup = : " + idGroup);
-            }
-        
-        // récupération des ids des Tops Concepts
-     //   nodeTTs = new ConceptHelper().getAllListIdsOfTopConcepts(ds, idThesaurus);
+        for (NodeGroup nodeGroup : selectedGroups) {
+            this.nodeGroupLabels.add(new GroupHelper().getNodeGroupLabel(ds, nodeGroup.getConceptGroup().getIdgroup(), idThesaurus));
+        }
         
         ArrayList<String> listTopConcept;
         for (NodeGroup nodeGroup : selectedGroups) {

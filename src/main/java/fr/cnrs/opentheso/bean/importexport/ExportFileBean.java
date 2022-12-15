@@ -392,14 +392,12 @@ public class ExportFileBean implements Serializable {
             }
 
             try ( ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            //    System.out.println("total 1 = " + skosxd.getConceptList().size());
                 WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
                 Rio.write(writeRdf4j.getModel(), out, format);
                 writeRdf4j.closeCache();
 
                 skosxd.clear();
                 skosxd = null;
-            //    System.gc();
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
                     return DefaultStreamedContent.builder()

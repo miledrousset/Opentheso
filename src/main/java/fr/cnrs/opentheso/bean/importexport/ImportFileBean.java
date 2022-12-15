@@ -2200,10 +2200,7 @@ public class ImportFileBean implements Serializable {
     }
 
     public void stateChangeListener(AjaxBehaviorEvent e) {
-        /*    System.out.println("State Listener executed");
-    SelectOneMenu x = (SelectOneMenu)e.getSource();
-    String[] s = ((String)x.getValue()).split(" - ");
-    //state = s[1];*/
+
     }
 
     public void setTypeImport(int typeImport) {

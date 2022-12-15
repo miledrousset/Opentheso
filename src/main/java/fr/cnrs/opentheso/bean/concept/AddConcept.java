@@ -346,7 +346,6 @@ public class AddConcept implements Serializable {
         typesRelationsNT = new RelationsHelper().getTypesRelationsNT(connect.getPoolConnexion());
         nodeGroups = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-  //      System.out.println(">>> Size : " + typesRelationsNT.size());
     }
 
     private void init() {
