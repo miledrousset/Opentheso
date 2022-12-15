@@ -89,7 +89,6 @@ public class ExportTabulateHelper {
      */
     public boolean exportToTabulate() {
 
-        //   System.out.println("Arrive à l'export Tabulé !!! ");
         if (thesaurusDatas == null) {
             return false;
         }

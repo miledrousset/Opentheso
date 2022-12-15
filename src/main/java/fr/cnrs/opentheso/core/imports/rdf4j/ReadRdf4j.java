@@ -102,7 +102,7 @@ public class ReadRdf4j {
                     currentObject = st.getSubject().stringValue();
                 }
             }
-    //        st.getContext(); st.getObject();st.getPredicate();st.getSubject();
+
             readStruct.value = st.getObject();
             readStruct.property = st.getPredicate();
 
@@ -149,8 +149,7 @@ public class ReadRdf4j {
                             readStruct.resource.setProperty(prop);
                             readStruct.resource.setUri(uri);
                         } 
-                            
-                    //    readStruct.resource = new SKOSResource(uri, prop);
+
                         if (prop == SKOSProperty.ConceptScheme) {
                             sKOSXmlDocument.setConceptScheme(readStruct.resource);
                         } else if (prop == SKOSProperty.FACET) {
@@ -182,10 +181,6 @@ public class ReadRdf4j {
                     if(readStruct.resource == null)
                         readStruct.resource = new SKOSResource();
                     //Dates
-                  /* désactivé par Miled (pose problèe avec les notations  
-                    if (!isCandidatImport) {
-                        readNote(readStruct);
-                    }*/
                     if (readDate(readStruct)) {
                         //Semantic Relationships
                         if (readRelationships(readStruct)) {
@@ -201,8 +196,7 @@ public class ReadRdf4j {
                                                             if (readConceptStatus(readStruct)) { // pour le reconnaitre le status du concept
                                                                 //debug
                                                                 if (!nonReco.contains(readStruct.property.getLocalName())) {
-                                                                    //System.out.println("non reconue : " + readStruct.property.getLocalName());
-                                                                    if(!readStruct.property.getLocalName().contains("superOrdinate") 
+                                                                    if(!readStruct.property.getLocalName().contains("superOrdinate")
                                                                             && !readStruct.property.getLocalName().contains("subordinateArray")
                                                                             && !readStruct.property.getLocalName().contains("description"))
                                                                        nonReco.add(readStruct.property.getLocalName());
@@ -603,7 +597,6 @@ public class ReadRdf4j {
         if (readStruct.property.getLocalName().equals("identifier")) {
             readStruct.resource.setIdentifier(readStruct.literal.getLabel());
             addEquivalenceIdArk(readStruct);
-    //        System.out.println("id = " +  readStruct.literal.getLabel());
             return false;
         } else {
             return true;

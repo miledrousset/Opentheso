@@ -77,7 +77,7 @@
                                      icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
                                      ajax="true" process="@this"/>
 
-                    <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="containerIndex messageIndex"
+                    <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="confirmDialogId"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}"
                                      ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" />
                 </div>
@@ -151,15 +151,15 @@
                 <div class="col-9" style="text-align: right;">
                     <p:commandButton value="#{langueBean.getMsg('candidat.remove')}"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}"
-                                     ajax="true" process="@this" icon="fa fa-regular fa-trash" update="messageIndex" 
+                                     ajax="true" process="@this" icon="fa fa-regular fa-trash" update="messageIndex confirmDialogId" 
                                      style="margin-right: 10px;" styleClass="ui-button-secondary button" />
 
                     <p:commandButton value="#{langueBean.getMsg('proposition.refuser')}" rendered="#{propositionBean.showButtonDecision()}"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('refuserProposition')}" ajax="true" process="@this"
-                                     update="messageIndex" style="margin-right: 10px; background-color: red; border-color: red"
+                                     update="messageIndex confirmDialogId" style="margin-right: 10px; background-color: red; border-color: red"
                                      styleClass="ui-button-secondary button" icon="pi pi-times-circle" />
 
-                    <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="messageIndex"
+                    <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="messageIndex confirmDialogId"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('approuverProposition')}"
                                      style="background-color: #43B572; border-color: #43B572;" ajax="true" process="@this"
                                      styleClass="ui-button-success" icon="pi pi-check-circle" 
@@ -186,7 +186,7 @@
                              ajax="true" process="@this"/>
 
             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success"
-                             ajax="true" process="@this" icon="pi pi-check"
+                             icon="pi pi-check"
                              update="containerIndex:contentConcept containerIndex:notificationPanel messageIndex"
                              actionListener="#{propositionBean.executionAction()}"/>
         </div>

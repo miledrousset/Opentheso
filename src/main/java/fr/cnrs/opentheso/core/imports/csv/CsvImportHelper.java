@@ -728,15 +728,9 @@ public class CsvImportHelper {
                     + (conceptObject.getLatitude() != null) + ", " 
                     + (conceptObject.getLatitude() == null ? null : "'" + conceptObject.getLatitude() + "'") + ", "
                     + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ", "
-                    
-                    //+ "'" + created + "', "
                     + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
+                    + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ")";
 
-                    //+ "'" + modified + "'"
-                     + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'")
-                    + ")";
-
-//            System.out.println("SQL : " + sql);
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);
