@@ -326,6 +326,16 @@ public class ViewExportBean implements Serializable {
     public void setCsvDelimiter(String csvDelimiter) {
         this.csvDelimiter = csvDelimiter;
     }
+    
+    public char getCsvDelimiterChar() {
+        if (csvDelimiter.equalsIgnoreCase(";")) {
+            return ';';
+        } 
+        if (csvDelimiter.equalsIgnoreCase("\\t")) {
+            return '\t';
+        }
+        return ',';
+    }  
 
     public boolean isIsAllGroupsSelected() {
         return isAllGroupsSelected;

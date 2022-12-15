@@ -10,14 +10,18 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -30,10 +34,137 @@ public class CsvWriteHelper {
     public CsvWriteHelper() {
     }
 
-    public byte[] writeCsvById(HikariDataSource ds, String idTheso, String idLang, List<String> idGroups ){
+    /**
+     * Export en CSV avec tous les champs 
+     * @param xmlDocument
+     * @param selectedLanguages
+     * @param seperate
+     * @return 
+     */
+  /*  public byte[] writeCsv(SKOSXmlDocument xmlDocument, List<NodeLangTheso> selectedLanguages, char seperate) {
+        if (selectedLanguages == null || selectedLanguages.isEmpty()) {
+            return null;
+        }
+        try ( ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+
+            this.writer = new BufferedWriter(new OutputStreamWriter(output));
+            this.seperate = seperate;
+
+            // write header record
+            //URI rdf:type
+            StringBuilder header = new StringBuilder();
+            header.append("URI").append(seperate)
+                    .append("rdf:type").append(seperate);
+
+            header.append("localURI").append(seperate);
+
+            header.append("identifier").append(seperate)
+                    .append("arkId").append(seperate);
+
+            List<String> langs = selectedLanguages.stream().map(lang -> lang.getCode()).collect(Collectors.toList());
+
+            //skos:prefLabel
+            langs.forEach((lang) -> {
+                header.append("skos:prefLabel@").append(lang).append(seperate);
+            });
+
+            //skos:altLabel
+            langs.forEach((lang) -> {
+                header.append("skos:altLabel@").append(lang).append(seperate);
+            });
+
+            //skos:hiddenLabel
+            langs.forEach((lang) -> {
+                header.append("skos:hiddenLabel@").append(lang).append(seperate);
+            });
+
+            //skos:definition
+            langs.forEach((lang) -> {
+                header.append("skos:definition@").append(lang).append(seperate);
+            });
+
+            //skos:scopeNote
+            langs.forEach((lang) -> {
+                header.append("skos:scopeNote@").append(lang).append(seperate);
+            });
+
+            //skos:note
+            langs.forEach((lang) -> {
+                header.append("skos:note@").append(lang).append(seperate);
+            });
+
+            //skos:historyNote
+            langs.forEach((lang) -> {
+                header.append("skos:historyNote@").append(lang).append(seperate);
+            });
+
+            //skos:editorialNote
+            langs.forEach((lang) -> {
+                header.append("skos:editorialNote@").append(lang).append(seperate);
+            });            
+
+            header.append("skos:notation").append(seperate)
+                    .append("skos:narrower").append(seperate)
+                    .append("narrowerId").append(seperate)
+                    .append("skos:broader").append(seperate)
+                    .append("broaderId").append(seperate)
+                    .append("skos:related").append(seperate)
+                    .append("relatedId").append(seperate)
+                    .append("skos:exactMatch").append(seperate)
+                    .append("skos:closeMatch").append(seperate)
+                    .append("geo:lat").append(seperate)
+                    .append("geo:long").append(seperate)
+                    .append("skos:member").append(seperate)
+                    .append("dct:created").append(seperate)
+                    .append("dct:modified");
+
+            writer.write(header.toString());
+            writer.newLine();
+
+            xmlDocument.getGroupList().forEach(groupe -> {
+                try {
+                    writeResource(groupe, "skos:Collection", langs);
+                } catch (IOException e) {
+                    System.err.println(e.toString());
+                }
+            });
+
+            // write all concepts
+            xmlDocument.getConceptList().forEach(concept -> {
+                try {
+                    writeResource(concept, "skos:Concept", langs);
+                } catch (IOException e) {
+                    System.err.println(e.toString());
+                }
+            });
+
+            writer.close();
+
+            return output.toByteArray();
+
+        } catch (IOException ex) {
+            return null;
+        }
+    }*/
+    
+    
+
+    
+    
+    /**
+     * Export des données limitées en CSV
+     * @param ds
+     * @param idTheso
+     * @param idLang
+     * @param idGroups
+     * @param delimiter
+     * @return 
+     */
+    public byte[] writeCsvById(HikariDataSource ds, String idTheso, String idLang, List<String> idGroups, char delimiter){
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180)) {
+            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+                    CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().setDelimiter(delimiter).build())) {
 
                 /// écriture des headers
                 ArrayList<String> header = new ArrayList<>();
@@ -134,12 +265,14 @@ public class CsvWriteHelper {
      * @param idTheso
      * @param idLang
      * @param idGroups
+     * @param delimiter
      * @return 
      */
-    public byte[] writeCsvGragh(HikariDataSource ds, String idTheso, String idLang, List<String> idGroups){
+    public byte[] writeCsvGragh(HikariDataSource ds, String idTheso, String idLang, List<String> idGroups, char delimiter){
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180)) {
+            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); 
+                    CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().setDelimiter(delimiter).build())) {
 
                 ConceptHelper conceptHelper = new ConceptHelper();
                 ArrayList <String> idConcepts = null;
@@ -228,12 +361,14 @@ public class CsvWriteHelper {
      * @param idTheso
      * @param idLang
      * @param idGroups
+     * @param delimiter
      * @return
      */
-    public byte[] writeCsvByDeprecated(HikariDataSource ds, String idTheso, String idLang, List<String> idGroups ){
+    public byte[] writeCsvByDeprecated(HikariDataSource ds, String idTheso, String idLang, List<String> idGroups, char delimiter ){
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180)) {
+            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+                    CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().setDelimiter(delimiter).build())) {
 
                 /// écriture des headers
                 ArrayList<String> header = new ArrayList<>();

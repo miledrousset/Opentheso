@@ -29,6 +29,7 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -41,6 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.*;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.Rio;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
@@ -220,17 +222,19 @@ public class ExportFileBean implements Serializable {
     public StreamedContent exportThesorus() throws SQLException {
         
         /// export des concepts dépréciés
-        if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) {
+        if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) { 
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
             byte[] datas;
             if (viewExportBean.isToogleFilterByGroup()) {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups(),
+                        viewExportBean.getCsvDelimiterChar());
             } else {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null);
+                        viewExportBean.getSelectedIdLangTheso(), null,
+                        viewExportBean.getCsvDelimiterChar());
             }
             if (datas == null) {
                 return null;
@@ -292,11 +296,11 @@ public class ExportFileBean implements Serializable {
             if (viewExportBean.isToogleFilterByGroup()) {
                 datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups(), viewExportBean.getCsvDelimiterChar());
             } else {
                 datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null);
+                        viewExportBean.getSelectedIdLangTheso(), null, viewExportBean.getCsvDelimiterChar());
             }
             if (datas == null) {
                 return null;
@@ -418,11 +422,13 @@ public class ExportFileBean implements Serializable {
             if (viewExportBean.isToogleFilterByGroup()) {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups(),
+                        viewExportBean.getCsvDelimiterChar());
             } else {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null);
+                        viewExportBean.getSelectedIdLangTheso(), null,
+                        viewExportBean.getCsvDelimiterChar());
             }
             if (datas == null) {
                 return null;
@@ -484,11 +490,11 @@ public class ExportFileBean implements Serializable {
             if (viewExportBean.isToogleFilterByGroup()) {
                 datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups());
+                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups(), viewExportBean.getCsvDelimiterChar());
             } else {
                 datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null);
+                        viewExportBean.getSelectedIdLangTheso(), null, viewExportBean.getCsvDelimiterChar());
             }
             if (datas == null) {
                 return null;
@@ -666,27 +672,25 @@ public class ExportFileBean implements Serializable {
             VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <" + nomGraphe + ">", virtGraph);
             vur.exec();
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            Rio.write(new WriteRdf4j(skosxd).getModel(), out, RDFFormat.RDFXML);
-
-            Model model = ModelFactory.createDefaultModel();
-            model.read(new ByteArrayInputStream(out.toByteArray()), null);
-            StmtIterator iter = model.listStatements();
-            while (iter.hasNext()) {
-                Statement stmt = iter.nextStatement();
-                Resource subject = stmt.getSubject();
-                Property predicate = stmt.getPredicate();
-                RDFNode object = stmt.getObject();
-                Triple tri = new Triple(subject.asNode(), predicate.asNode(), object.asNode());
-                virtGraph.add(tri);
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                Rio.write(new WriteRdf4j(skosxd).getModel(), out, RDFFormat.RDFXML);
+                
+                Model model = ModelFactory.createDefaultModel();
+                model.read(new ByteArrayInputStream(out.toByteArray()), null);
+                StmtIterator iter = model.listStatements();
+                while (iter.hasNext()) {
+                    Statement stmt = iter.nextStatement();
+                    Resource subject = stmt.getSubject();
+                    Property predicate = stmt.getPredicate();
+                    RDFNode object = stmt.getObject();
+                    Triple tri = new Triple(subject.asNode(), predicate.asNode(), object.asNode());
+                    virtGraph.add(tri);
+                }
             }
-            out.close();
-            if (virtGraph != null) {
-                virtGraph.close();
-            }
+            virtGraph.close();
             PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             return true;
-        } catch (Exception e) {
+        } catch (IOException | NoSuchElementException | RDFHandlerException e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                     "Problème de communication avec le serveur Virtuoso !"));
             PrimeFaces pf = PrimeFaces.current();
@@ -712,7 +716,7 @@ public class ExportFileBean implements Serializable {
         ArrayList<String> allConcepts = new ArrayList<>();
         if (!viewExportBean.isToogleFilterByGroup()) {
             allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
-/*            allConcepts = conceptHelper.getAllIdConceptOfThesaurusByUser(connect.getPoolConnexion(), idTheso);
+     /*       allConcepts = conceptHelper.getAllIdConceptOfThesaurusByUser(connect.getPoolConnexion(), idTheso);
             ArrayList<String> allConcepts2 = conceptHelper.getAllIdConceptOfThesaurusByUser2(connect.getPoolConnexion(), idTheso);
             for (String id : allConcepts2) {
                 if(!allConcepts.contains(id))
