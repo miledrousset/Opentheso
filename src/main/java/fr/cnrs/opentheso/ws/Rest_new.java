@@ -891,7 +891,6 @@ public class Rest_new {
         if (ds == null) {
             return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
         }
-        //    System.out.println("Get idTheso = " + idTheso + " idConcept = " + idConcept);
 
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         String datas = restRDFHelper.exportConceptFromId(ds,

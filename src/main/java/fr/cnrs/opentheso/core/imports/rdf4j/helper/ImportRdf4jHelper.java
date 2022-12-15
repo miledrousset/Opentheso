@@ -914,7 +914,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
                             hierarchicalRelationship.getIdConcept2())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -927,7 +927,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             "BT",
                             hierarchicalRelationship.getIdConcept1())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -941,7 +941,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
                             hierarchicalRelationship.getIdConcept2())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -954,7 +954,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             "NT",
                             hierarchicalRelationship.getIdConcept1())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -968,7 +968,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
                             hierarchicalRelationship.getIdConcept2())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -981,7 +981,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             "RT",
                             hierarchicalRelationship.getIdConcept1())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -995,7 +995,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
                             hierarchicalRelationship.getIdConcept2())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -1008,7 +1008,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTP",
                             hierarchicalRelationship.getIdConcept1())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -1022,7 +1022,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
                             hierarchicalRelationship.getIdConcept2())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -1035,7 +1035,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTG",
                             hierarchicalRelationship.getIdConcept1())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -1049,7 +1049,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             hierarchicalRelationship.getRole(),
                             hierarchicalRelationship.getIdConcept2())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());
@@ -1062,7 +1062,7 @@ public class ImportRdf4jHelper {
                             hierarchicalRelationship.getIdThesaurus(),
                             "BTI",
                             hierarchicalRelationship.getIdConcept1())) {
-                        //System.out.println("Erreur sur la relation = " + acs.concept.getIdConcept() + " ## " + hierarchicalRelationship.getRole());
+
                         message.append(System.getProperty("line.separator"));
                         message.append("Erreur sur la relation = ");
                         message.append(acs.concept.getIdConcept());

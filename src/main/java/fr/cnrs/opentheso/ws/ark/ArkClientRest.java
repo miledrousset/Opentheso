@@ -411,7 +411,6 @@ public final class ArkClientRest {
   
     private boolean setForUriUpdate(){
         if(jsonArk == null) return false;
-    //    System.out.println("avant la lecture : " + jsonArk);
         JsonReader reader;
         try {
             reader = Json.createReader(new StringReader(jsonArk));
@@ -434,7 +433,6 @@ public final class ArkClientRest {
     
     private boolean setForUpdate(){
         if(jsonArk == null) return false;
-    //    System.out.println("avant la lecture : " + jsonArk);
         JsonReader reader;
         try {
             reader = Json.createReader(new StringReader(jsonArk));
@@ -460,7 +458,6 @@ public final class ArkClientRest {
     
     private boolean setForGet(){
         if(jsonArk == null) return false;
-    //    System.out.println("avant la lecture : " + jsonArk);
         JsonReader reader;
         try {
             reader = Json.createReader(new StringReader(jsonArk));
