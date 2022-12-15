@@ -6,13 +6,15 @@
 
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 /**
  *
  * @author miled.rousset
  */
-public class NodeEM {
+public class NodeEM implements Serializable {
+    
     private String lexical_value;
     private Date created;
     private Date  modified;

@@ -78,8 +78,8 @@
                                      ajax="true" process="@this"/>
 
                     <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="containerIndex messageIndex"
-                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}" 
-                                     styleClass="ui-button-success" icon="pi pi-check-circle" />
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}"
+                                     ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" />
                 </div>
             </div>
 

@@ -314,7 +314,6 @@ public class PropositionBean implements Serializable {
             else
                 rightBodySetting.setIndex("3");
         }
- //       rightBodySetting.setIndex(currentUser.getNodeUser() == null ? "2" : "3");
 
         proposition = propositionService.selectProposition(nodeConcept);
 

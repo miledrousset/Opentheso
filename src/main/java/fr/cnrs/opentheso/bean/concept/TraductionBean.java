@@ -145,8 +145,13 @@ public class TraductionBean implements Serializable {
                 nodeLangsFiltered.remove(nodeLang);
             }
         }
+        
+        PrimeFaces pf = PrimeFaces.current();
         if (nodeLangsFiltered.isEmpty()) {
             infoNoTraductionToAdd();
+            pf.ajax().update("containerIndex:rightTab:idAddTraduction");
+        } else {
+            pf.executeScript("PF('addTraductionProp').show();");
         }
     }
 

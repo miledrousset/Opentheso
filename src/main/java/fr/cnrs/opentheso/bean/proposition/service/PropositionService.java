@@ -92,7 +92,6 @@ public class PropositionService implements Serializable {
         propositionDao.setStatus(PropositionStatusEnum.ENVOYER.name());
         propositionDao.setThesoName(new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
 
-
         try {
             String subject = "[Opentheso] Confirmation de l'envoie de votre proposition";
             String contentFile = "<html><body>"
