@@ -6,13 +6,14 @@
 
 package fr.cnrs.opentheso.bdd.helper.nodes.notes;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 /**
  *
  * @author miled.rousset
  */
-public class NodeNote {
+public class NodeNote implements Serializable {
     
     private int id_note;
     

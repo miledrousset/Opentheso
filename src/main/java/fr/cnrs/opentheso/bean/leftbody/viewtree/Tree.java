@@ -32,7 +32,6 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.collections.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -281,9 +280,7 @@ public class Tree implements Serializable {
         if (nodeConceptTrees.size() >= 2000) {
             manySiblings = true;
         }
-
-//        boolean haveConceptChild;
-//        boolean haveFacet;
+        
         for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
             if (nodeConceptTree.getIdConcept() == null) {
                 continue;
@@ -319,16 +316,6 @@ public class Tree implements Serializable {
                 dataService.addNodeWithoutChild("deprecated", data, parent);
             else
                 dataService.addNodeWithoutChild("file", data, parent);
-//            haveConceptChild = conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso,
-//                    nodeConceptTree.getIdConcept());
-//
-//            haveFacet = facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), nodeConceptTree.getIdConcept(), idTheso);
-//
-//            if (haveConceptChild || haveFacet) {
-//                dataService.addNodeWithChild("concept", data, parent);
-//            } else {
-//                dataService.addNodeWithoutChild("file", data, parent);
-//            }
         }
         return true;
     }
@@ -509,8 +496,7 @@ public class Tree implements Serializable {
         FacetHelper facetHelper = new FacetHelper();
         String idConceptParentOfFacet = facetHelper.getIdConceptParentOfFacet(connect.getPoolConnexion(), idFacet, idTheso);         
         expandTreeToPath(idConceptParentOfFacet, idTheso, idLang);
-        onNodeExpand_((DefaultTreeNode)selectedNode);        
-        //onNodeExpand_((DefaultTreeNode)clickselectedNodes.get(0));
+        onNodeExpand_((DefaultTreeNode)selectedNode);
         
         // rechercher la facette dans les fils et la sélectionner
         expandToFacet(idFacet);
@@ -534,22 +520,7 @@ public class Tree implements Serializable {
                 } catch (Exception e) {
                 }
             }
-        }         
-        /*
-        clickselectedNodes.get(0).setExpanded(true);
-        List<TreeNode> treeNodes = clickselectedNodes.get(0).getChildren();
-        for (TreeNode treeNode : treeNodes) {
-            if (((TreeNodeData) treeNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
-                try {
-                    if(((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idFacet)){
-                        clickselectedNodes.get(0).setSelected(false);
-                        clickselectedNodes.add(treeNode);
-                        clickselectedNodes.get(0).setSelected(true);
-                    }
-                } catch (Exception e) {
-                }
-            }
-        }   */     
+        }
     }
     
     /**
@@ -589,7 +560,8 @@ public class Tree implements Serializable {
                         conceptBean.getNodeConcept().getConcept().getIdConcept(),
                         conceptBean.getSelectedLang());
                 alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());        
-            } else
+            }
+            
             rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
@@ -706,7 +678,7 @@ public class Tree implements Serializable {
             selectedNode = treeNodeParent;
             treeNodeParent = root;
         }
-    //    leftBodySetting.setIndex("0");
+        
         PrimeFaces.current().executeScript("srollToSelected();");
     }
   
@@ -732,13 +704,8 @@ public class Tree implements Serializable {
             });
             if (selectedNode != null) {
                 selectedNode.setSelected(false);
-            }            
-            /*
-            if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
-                for (TreeNode treeNode : clickselectedNodes) {
-                    treeNode.setSelected(false);
-                }
-            }*/
+            }
+            
             selectedNodes.clear();
         }
 
@@ -768,9 +735,6 @@ public class Tree implements Serializable {
     public boolean isGraphNotVisible() {
         if(selectedNode == null || selectedNode.isLeaf()) return true;
         return false;
-    /*    return CollectionUtils.isNotEmpty(clickselectedNodes) 
-                && clickselectedNodes.size() == 1 
-                && clickselectedNodes.get(0).isLeaf();*/
     }
     
     public String getColor(){
@@ -885,7 +849,6 @@ public class Tree implements Serializable {
                 }
             }
             //// fin 
-
             if (((TreeNodeData) treeNode.getData()).getNodeId().equalsIgnoreCase(idConceptChildToFind)) {
                 return treeNode;
             }
