@@ -57,7 +57,7 @@
                 <p:panel visible="false" header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
                          closeSpeed="500" style="margin-bottom:20px" collapsed="true">
                     <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}"
-                                 selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                                 selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0" lazy="false">
                         <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllLangsSelect}" process="@this" partialSubmit="true" />
                         <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
                         <p:column headerText="Code" width="60">
@@ -72,7 +72,7 @@
                 <p:panel visible="false" header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500"
                          closeSpeed="500" style="margin-bottom:20px" collapsed="true">
                     <p:dataTable id="listGroupe" var="groupOfTheso" value="#{viewExportBean.groupList}" style=";margin-bottom:0"
-                                 selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}">
+                                 selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}" lazy="false">
                         <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllGroupsSelect}" process="@this" partialSubmit="true" />
 
                         <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
@@ -94,7 +94,7 @@
                          closeSpeed="500" style="margin-bottom:20px;" collapsed="false">
                     <h:outputLabel style="color: #000;" value="Types :"/>
                     <p:dataTable id="listType" var="type" value="#{viewExportBean.types}"
-                                 selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0">
+                                 selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0" lazy="false">
                         <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
                         <p:column headerText="Code">
                             <h:outputText value="#{type}" />

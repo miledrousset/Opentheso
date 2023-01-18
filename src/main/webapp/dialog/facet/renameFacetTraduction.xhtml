@@ -17,7 +17,7 @@
         <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
             <p:dataTable size="small" var="traductionToEdit" value="#{editFacet.facetTraductions}"
                          widgetVar="listThesoTable" styleClass="products-table"
-                         style="margin-bottom: -17px; margin-top: -16px;">
+                         style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                 <p:column width="60" headerText="Label">
                     <p:inputText value="#{traductionToEdit.lexicalValue}" style="width: 100%"/>

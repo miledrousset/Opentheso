@@ -1512,7 +1512,7 @@ public class Rest_new {
         String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
         String [] arkGroups = null; // group peut être de la forme suivante pour multiGroup (psrbfdfdjsfh,fdsfdsfsf,kdhfjsdfhjhf)        
         String format = null; // format = full (on renvoie les altLabel en plus)
-//        String filter = null;
+        boolean match = false; // match=exact (pour limiter la recherche aux termes exactes)
 
         String datas;
 
@@ -1535,7 +1535,10 @@ public class Rest_new {
                 }
                 if (e.getKey().equalsIgnoreCase("format")) {
                     format = valeur;
-                }                
+                }
+                if (e.getKey().equalsIgnoreCase("match")) {
+                    match = true;
+                }                 
             }
         }
 
@@ -1548,11 +1551,15 @@ public class Rest_new {
         if(arkGroups != null && arkGroups.length != 0){
             groups = getIdGroupFromArk(arkGroups);
         }
+
+        datas = getDatasForWidget(idTheso, idLang, groups, value, format, match);
         
-        datas = getDatasForWidget(idTheso, idLang, groups, value, format);
         if (datas == null) {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
+        
+        
+        
         return Response
                 .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
@@ -1826,7 +1833,7 @@ public class Rest_new {
     
     private String getDatasForWidget(String idTheso,
                                      String idLang, String[] groups, String value,
-                                     String format) {
+                                     String format, boolean match) {
         String datas;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
@@ -1834,7 +1841,7 @@ public class Rest_new {
             }
             RestRDFHelper restRDFHelper = new RestRDFHelper();
             datas = restRDFHelper.findDatasForWidget(ds,
-                    idTheso, idLang, groups, value, format);
+                    idTheso, idLang, groups, value, format, match);
             ds.close();
         }
         if (datas == null) {
@@ -2637,7 +2644,10 @@ public class Rest_new {
         }
 
         if (idTheso == null || idTheso.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
 
         String datas;
@@ -2653,7 +2663,10 @@ public class Rest_new {
         }
 
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();            
         }
         return Response
                 .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)

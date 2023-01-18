@@ -291,7 +291,7 @@
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsProp}"
                              widgetVar="listThesoTable" styleClass="products-table"
-                             style="margin-bottom: -16px; margin-top: -16px;">
+                             style="margin-bottom: -16px; margin-top: -16px;" lazy="false">
                     <f:facet name="header">
                         <div class="products-table-header">
                             <span style="font-weight: bold">
@@ -338,7 +338,7 @@
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable var="synonymes" value="#{propositionBean.proposition.synonymsProp}"
-                             styleClass="products-table" style="margin-bottom: -16px; margin-top: -16px;">
+                             styleClass="products-table" style="margin-bottom: -16px; margin-top: -16px;" lazy="false">
                     <f:facet name="header">
                         <div class="products-table-header">
                             <span style="font-weight: bold">

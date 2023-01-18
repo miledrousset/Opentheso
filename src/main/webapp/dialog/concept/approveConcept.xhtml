@@ -25,7 +25,7 @@
                 <div class="col-12">
                     <p:panel>
                         <p:dataTable value="#{conceptView.nodeConcept.replacedBy}" var="replacedBy"  scrollable="true" resizableColumns="true" scrollHeight="450"
-                                     style="font-size: 12px;">
+                                     style="font-size: 12px;" lazy="false">
                             <p:column width="30%" headerText="idConcept">
                                 <h:outputText value="#{replacedBy.id}" style="font-size: 12px;" />
                             </p:column>

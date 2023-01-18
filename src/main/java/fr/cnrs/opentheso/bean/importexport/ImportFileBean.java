@@ -64,6 +64,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.locationtech.jts.util.Debug;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
@@ -273,12 +274,12 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
-            try ( Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.setLangs(reader1)) {
                     error.append(csvReadHelper.getMessage());
                 } else {
-                    try ( Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
+                    try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
                         if (!csvReadHelper.readFileNote(reader2)) {
                             error.append(csvReadHelper.getMessage());
                         }
@@ -324,7 +325,7 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
-            try ( Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
                 if (!csvReadHelper.readFileImage(reader1)) {
                     error.append(csvReadHelper.getMessage());
                 }
@@ -368,7 +369,7 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
-            try ( Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.readFileNotation(reader)) {
                     error.append(csvReadHelper.getMessage());
@@ -415,7 +416,7 @@ public class ImportFileBean implements Serializable {
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
 
-            try ( Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.readFileArk(reader)) {
                     error.append(csvReadHelper.getMessage());
@@ -462,7 +463,7 @@ public class ImportFileBean implements Serializable {
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
 
-            try ( Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.readFileAlignmentToDelete(reader)) {
                     error.append(csvReadHelper.getMessage());
@@ -507,7 +508,7 @@ public class ImportFileBean implements Serializable {
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
 
-            try ( Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.readFileAlignment(reader)) {
                     error.append(csvReadHelper.getMessage());
@@ -554,13 +555,13 @@ public class ImportFileBean implements Serializable {
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
             // première lecrture pour charger les langues
-            try ( Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.setLangs(reader1)) {
                     error.append(csvReadHelper.getMessage());
                 }
                 //deuxième lecture pour les données
-                try ( Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
+                try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
                     // false to not read empty data
                     if (!csvReadHelper.readFile(reader2, false)) {
                         error.append(csvReadHelper.getMessage());
@@ -612,13 +613,13 @@ public class ImportFileBean implements Serializable {
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
             // première lecrture pour charger les langues
-            try ( Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
 
                 if (!csvReadHelper.setLangs(reader1)) {
                     error.append(csvReadHelper.getMessage());
                 }
                 //deuxième lecture pour les données
-                try ( Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
+                try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
                     /// option true to read empty data
                     if (!csvReadHelper.readFile(reader2, true)) {
                         error.append(csvReadHelper.getMessage());
@@ -666,16 +667,16 @@ public class ImportFileBean implements Serializable {
             }
 
             List<String[]> lines = new ArrayList<>();
-            try ( InputStreamReader isr = new InputStreamReader(event.getFile().getInputStream(), StandardCharsets.UTF_8);
-                    BufferedReader reader = new BufferedReader(isr)) {
+            try (InputStreamReader isr = new InputStreamReader(event.getFile().getInputStream(), StandardCharsets.UTF_8); BufferedReader reader = new BufferedReader(isr)) {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if(StringUtils.isNoneEmpty(line)) {
+                    if (StringUtils.isNoneEmpty(line)) {
                         lines.add(line.split(delimiterChar));
                     }
                 }
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
 
             int nbrMaxElement = lines.get(0).length;
             for (int i = 0; i < lines.size(); i++) {
@@ -684,7 +685,7 @@ public class ImportFileBean implements Serializable {
                 }
             }
 
-            String[][] matrix = new String[lines.size()+1][nbrMaxElement+1];
+            String[][] matrix = new String[lines.size() + 1][nbrMaxElement + 1];
             for (int i = 0; i < lines.size(); i++) {
                 for (int j = 0; j < nbrMaxElement; j++) {
                     if (lines.get(i).length > j) {
@@ -701,6 +702,7 @@ public class ImportFileBean implements Serializable {
             for (int i = 0; i < matrix.length; i++) {
                 if (!StringUtils.isEmpty(matrix[i][0])) {
                     racine.getChildrens().add(createTree(matrix, i, 0));
+                    //racine.getChildrens().add(createTreeMR(matrix, i, 0));
                 }
             }
 
@@ -708,8 +710,65 @@ public class ImportFileBean implements Serializable {
 
             PrimeFaces.current().executeScript("PF('waitDialog').hide()");
         }
-        
+
         PrimeFaces.current().ajax().update("containerIndex:resultImportCSVStructure");
+    }
+    private NodeTree createTree(String[][] matrix, int ligne, int colone) {
+
+        NodeTree element = new NodeTree();
+        element.setPreferredTerm(matrix[ligne][colone]);
+
+        colone++;
+        if (ligne < matrix.length && colone < matrix[ligne].length) {
+            while (matrix[ligne][colone] != null) {
+                if (matrix[ligne][colone - 1] != null && matrix[ligne][colone - 1].length() > 0 && !matrix[ligne][colone - 1].equals(element.getPreferredTerm())) {
+                    break;
+                }
+                if (matrix[ligne][colone].length() > 0) {
+                    element.getChildrens().add(createTree(matrix, ligne, colone));
+                }
+                ligne++;
+            }
+        }
+
+        return element;
+    }    
+
+    private NodeTree createTreeMR(String[][] matrix, int ligne, int colone) {
+
+        NodeTree element = new NodeTree();
+        element.setPreferredTerm(matrix[ligne][colone]);
+
+        ligne++;
+
+        if (ligne < matrix.length && colone < matrix[ligne].length) {
+            if (matrix[ligne][colone] == null) {
+                colone--;
+            } else {
+                if (matrix[ligne][colone].isEmpty()) {
+                    colone++;
+                    element.getChildrens().add(createTreeMR(matrix, ligne, colone));
+                }
+                if (!matrix[ligne][colone].isEmpty()) {
+                    element.getChildrens().add(createTreeMR(matrix, ligne, colone));
+                }
+            }
+        }
+        return element;
+        //  colone++;
+        /*      if (ligne < matrix.length && colone < matrix[ligne].length) {
+            while (matrix[ligne][colone] != null) {
+                if (matrix[ligne][colone - 1] != null && matrix[ligne][colone - 1].length() > 0 && !matrix[ligne][colone - 1].equals(element.getPreferredTerm())) {
+                    break;
+                }
+                if (matrix[ligne][colone].length() > 0) {
+                    element.getChildrens().add(createTree(matrix, ligne+1, colone));
+                }
+                ligne++;
+            }
+        }
+
+        return element;*/
     }
 
     public void addCsvStrucToDB() {
@@ -761,7 +820,7 @@ public class ImportFileBean implements Serializable {
             insertDB(nodeTree, idNewTheso, null, conceptHelper);
         }
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Le thésaurus " 
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Le thésaurus "
                 + thesaurusName + " (" + idNewTheso + ") est correctement importé !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
@@ -776,8 +835,8 @@ public class ImportFileBean implements Serializable {
         concept.setIdThesaurus(idNewTheso);
         concept.setStatus("D");
         //concept.setNotation(notation);
-    
-    /*  ToolsHelper toolsHelper = new ToolsHelper();
+
+        /*  ToolsHelper toolsHelper = new ToolsHelper();
         String id = toolsHelper.getNewId(15);
         while (conceptHelper.isIdExiste(connect.getPoolConnexion(), id)) {
             id = toolsHelper.getNewId(15);
@@ -800,26 +859,7 @@ public class ImportFileBean implements Serializable {
         }
     }
 
-    private NodeTree createTree(String[][] matrix, int ligne, int colone) {
 
-        NodeTree element = new NodeTree();
-        element.setPreferredTerm(matrix[ligne][colone]);
-
-        colone++;
-        if (ligne < matrix.length && colone < matrix[ligne].length) {
-            while (matrix[ligne][colone] != null) {
-                if (matrix[ligne][colone - 1] != null && matrix[ligne][colone - 1].length() > 0 && !matrix[ligne][colone - 1].equals(element.getPreferredTerm())) {
-                    break;
-                }
-                if (matrix[ligne][colone].length() > 0) {
-                    element.getChildrens().add(createTree(matrix, ligne, colone));
-                }
-                ligne++;
-            }
-        }
-
-        return element;
-    }
 
     /**
      * insérer un thésaurus dans la BDD (CSV)
@@ -874,13 +914,13 @@ public class ImportFileBean implements Serializable {
         } else {
             nodePreference.setPreferredName(thesaurusName);
             nodePreference.setSourceLang(selectedLang);
-            if(nodePreference.getOriginalUri() == null || nodePreference.getOriginalUri().isEmpty())
+            if (nodePreference.getOriginalUri() == null || nodePreference.getOriginalUri().isEmpty()) {
                 nodePreference.setOriginalUri("http://mondomaine.fr");
+            }
             preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }
         csvImportHelper.setNodePreference(nodePreference);
         csvImportHelper.setFormatDate(formatDate);
-        
 
         // ajout des concepts et collections
         try {
@@ -928,8 +968,8 @@ public class ImportFileBean implements Serializable {
         }
 
         conceptObjects = null;
-    //    System.gc();
-    //    System.gc();
+        //    System.gc();
+        //    System.gc();
 
         onComplete();
     }
@@ -985,7 +1025,7 @@ public class ImportFileBean implements Serializable {
             switch (conceptObject.getType().trim().toLowerCase()) {
                 case "skos:concept":
                     // ajout de concept
-                    csvImportHelper.addConceptV2(connect.getPoolConnexion(), 
+                    csvImportHelper.addConceptV2(connect.getPoolConnexion(),
                             idNewTheso, conceptObject, currentUser.getNodeUser().getIdUser());
                     break;
                 case "skos:collection":
@@ -996,15 +1036,15 @@ public class ImportFileBean implements Serializable {
                     break;
             }
         }
-        
+
         roleOnThesoBean.showListTheso();
         viewEditionBean.init();
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
                 "Le thesaurus " + idNewTheso + " est correctement ajouté !", "import réussi"));
         PrimeFaces.current().ajax().update("messageIndex");
-        
-    //    System.gc();
+
+        //    System.gc();
     }
 
     /**
@@ -1064,8 +1104,8 @@ public class ImportFileBean implements Serializable {
         }
 
         conceptObjects = null;
-    //    System.gc();
-    //    System.gc();
+        //    System.gc();
+        //    System.gc();
 
         onComplete();
     }
@@ -1194,7 +1234,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if (clearBefore) {
-                    try ( Connection conn = connect.getPoolConnexion().getConnection()) {
+                    try (Connection conn = connect.getPoolConnexion().getConnection()) {
                         conn.setAutoCommit(false);
                         if (!noteHelper.deleteNotesOfConcept(conn, idConcept, selectedTheso.getCurrentIdTheso())) {
                             conn.rollback();
@@ -1205,7 +1245,7 @@ public class ImportFileBean implements Serializable {
                         error.append("erreur de suppression: ");
                         error.append(idConcept);
                     }
-                    try ( Connection conn = connect.getPoolConnexion().getConnection()) {
+                    try (Connection conn = connect.getPoolConnexion().getConnection()) {
                         conn.setAutoCommit(false);
                         if (!noteHelper.deleteNotesOfTerm(conn, idTerm, selectedTheso.getCurrentIdTheso())) {
                             conn.rollback();
@@ -1765,7 +1805,7 @@ public class ImportFileBean implements Serializable {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
             event.queue();
         } else {
-            try ( InputStream is = event.getFile().getInputStream()) {
+            try (InputStream is = event.getFile().getInputStream()) {
                 ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, isCandidatImport, connect.getWorkLanguage());
                 warning = readRdf4j.getMessage();
                 sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
@@ -1775,7 +1815,7 @@ public class ImportFileBean implements Serializable {
                 BDDinsertEnable = true;
                 info = "File correctly loaded";
                 readRdf4j.clean();
-        //        System.gc();
+                //        System.gc();
             } catch (Exception e) {
                 error.append(System.getProperty("line.separator"));
                 error.append(e.toString());
@@ -1792,7 +1832,7 @@ public class ImportFileBean implements Serializable {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
             event.queue();
         } else {
-            try ( InputStream is = event.getFile().getInputStream()) {
+            try (InputStream is = event.getFile().getInputStream()) {
                 ReadRdf4j readRdf4j = new ReadRdf4j(is, 1, isCandidatImport, connect.getWorkLanguage());
                 warning = readRdf4j.getMessage();
                 sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
@@ -1816,7 +1856,7 @@ public class ImportFileBean implements Serializable {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
             event.queue();
         } else {
-            try ( InputStream is = event.getFile().getInputStream()) {
+            try (InputStream is = event.getFile().getInputStream()) {
                 ReadRdf4j readRdf4j = new ReadRdf4j(is, 3, isCandidatImport, connect.getWorkLanguage());
                 warning = readRdf4j.getMessage();
                 sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
@@ -1840,7 +1880,7 @@ public class ImportFileBean implements Serializable {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
             event.queue();
         } else {
-            try ( InputStream is = event.getFile().getInputStream()) {
+            try (InputStream is = event.getFile().getInputStream()) {
                 ReadRdf4j readRdf4j = new ReadRdf4j(is, 2, isCandidatImport, connect.getWorkLanguage());
                 warning = readRdf4j.getMessage();
                 sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();

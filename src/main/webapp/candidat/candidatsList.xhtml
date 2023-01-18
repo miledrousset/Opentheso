@@ -73,7 +73,7 @@
                              resizableColumns="true" scrollHeight="450" reflow="true"
                              paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
                              emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}"
-                             style="margin-bottom: -17px; margin-top: -16px;">
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                     <p:ajax event="rowSelectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="tabViewCandidat:panelCandidateList"  />
                     <p:ajax event="rowUnselectCheckbox" listener="#{candidatBean.setStateForSelectedCandidate()}" update="tabViewCandidat:panelCandidateList"  />
@@ -166,7 +166,8 @@
             <p:accordionPanel widgetVar="basic">
                 <p:tab title="#{langueBean.getMsg('candidat.language_list')}" >
                     <p:dataTable var="langue" value="#{candidatBean.languagesOfTheso}"
-                                 selection="#{candidatBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                                 selection="#{candidatBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0"
+                                 lazy="false">
                         <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
                         <p:column headerText="Code" width="60">
                             <h:outputText value="#{langue.code}" />

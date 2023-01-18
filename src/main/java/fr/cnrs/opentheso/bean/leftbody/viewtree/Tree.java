@@ -541,7 +541,7 @@ public class Tree implements Serializable {
         alignmentManualBean.reset();
         propositionBean.setIsRubriqueVisible(false);
         
-        leftBodySetting.setIndex("0");
+      //  leftBodySetting.setIndex("0");
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
 
         if (!"facet".equals(node.getType())) {
@@ -562,7 +562,7 @@ public class Tree implements Serializable {
                 alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());        
             }
             
-            rightBodySetting.setIndex("0");
+          //  rightBodySetting.setIndex("0");
         } else {
             indexSetting.setIsFacetSelected(true);
             editFacet.initEditFacet(((TreeNodeData) node.getData()).getNodeId(), idTheso, idLang);

@@ -1829,6 +1829,7 @@ public class ConceptHelper {
                 if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
                     message = arkHelper2.getMessage();
                     message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
+                    Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Ark a échoué ici : " + idConcept);
                     return false;
                 }
                 if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdArk())) {
@@ -3390,8 +3391,12 @@ public class ConceptHelper {
                     String creator = userHelper.getNameUser(ds, concept.getCreator());
                     if(contributor != null && !contributor.isEmpty())
                         concept.setContributorName(contributor);
+                    else
+                        concept.setContributorName("");
                     if(creator != null && !creator.isEmpty())
-                        concept.setCreatorName(creator);                    
+                        concept.setCreatorName(creator); 
+                    else
+                        concept.setCreatorName("");
                 }
             }
         } catch (SQLException sqle) {

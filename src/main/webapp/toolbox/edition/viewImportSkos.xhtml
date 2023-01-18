@@ -135,6 +135,7 @@
                             <p:fileUpload listener="#{importFileBean.loadFileSkos}" 
                                           label="Parcourir" style="padding-left: 10px; padding-right: 10px"
                                           mode="advanced" auto="true"
+                                          styleClass="browserbutton"
                                           allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
                                           update="viewImportSkosForm" disabled="#{importFileBean.loadDone}" />
                         </div>

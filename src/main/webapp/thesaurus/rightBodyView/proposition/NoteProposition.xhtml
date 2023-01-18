@@ -316,8 +316,8 @@
                                                 icon="fas fa-minus" />
                                 </p:menuButton> 
 
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.example')}" 
-                                              title="#{langueBean.getMsg('rightbody.concept.example')}" 
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.example_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.example_note')}" 
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
@@ -570,7 +570,7 @@
     <p:dialog id="idDeleteNoteProp" header="#{langueBean.getMsg('rightbody.concept.delete_note')}" widgetVar="deleteNoteProp" 
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >  
         <h:form id="deleteNotePropForm" >
-            <p:dataTable var="noteToDelete" value="#{noteBean.nodePropToEdit()}">
+            <p:dataTable var="noteToDelete" value="#{noteBean.nodePropToEdit()}" lazy="false">
                 <f:facet name="header">
                     <center>
                         <b>
@@ -607,7 +607,7 @@
     <p:dialog id="idEditNoteProp" header="#{langueBean.getMsg('rightbody.concept.edit_note')}" widgetVar="editNoteProp" 
               width="650" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >       
         <h:form id="editNotePropForm" >
-            <p:dataTable var="noteToEdit" value="#{noteBean.nodePropToEdit()}">
+            <p:dataTable var="noteToEdit" value="#{noteBean.nodePropToEdit()}" lazy="false">
                 <f:facet name="header">
                     <center>
                         <b>

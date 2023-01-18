@@ -16,7 +16,7 @@
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable size="small" var="facets" value="#{conceptView.nodeFacets}"
                          widgetVar="listThesoTable" styleClass="products-table"
-                         style="margin-bottom: -17px; margin-top: -16px;">
+                         style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
                     
                     <p:column headerText="#{langueBean.getMsg('leftbody.isPartOfFacets')}" style="color: black">
                         <h:outputText rendered="#{facets.value != ''}" value="#{facets.value}" title="#{facets.id}"/> 

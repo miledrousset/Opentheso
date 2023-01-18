@@ -11,12 +11,12 @@
 
                     <div class="row" style="height: 40px">
                         <div class="col-6" style="padding-left: 30px">
-                            <h:outputText value="Import en CSV" style="font-size: 17px; font-weight: bold; color: #43B572"/>
+                            <h:outputText value="#{langueBean.getMsg('csvImport.formatCsv')}" style="font-size: 17px; font-weight: bold; color: #43B572"/>
                         </div>
                         <div class="col-6" style="padding-right: 30px; text-align: right">
-                            <p:commandLink value="Exemple" update="idCsvImportHelp" oncomplete="PF('csvImportHelp').show();">
+                            <p:commandLink value="#{langueBean.getMsg('example')}" update="idCsvImportHelp" oncomplete="PF('csvImportHelp').show();">
                                 <a class="fas fa-info-circle" style="font-size: 12px; color: #C63632; " />
-                                <p:tooltip value="Exemple de format supporté" showDelay="1000" />
+                                <p:tooltip value="#{langueBean.getMsg('csvExport.supportedFormat')}" showDelay="1000" />
                             </p:commandLink>     
                         </div>            
                     </div>
@@ -24,10 +24,10 @@
                     <!-- Nom du thésaurus à créer -->
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Nom du thésaurus" />
+                            <h:outputText value="#{langueBean.getMsg('statistique.thesaurus.name')}" />
                         </div>
                         <div class="col-5">
-                            <p:inputText placeholder="Nom du thésaurus" style="width: 100%"
+                            <p:inputText placeholder="#{langueBean.getMsg('statistique.thesaurus.name')}" style="width: 100%"
                                          value="#{importFileBean.thesaurusName}" />
                         </div>
                     </div>
@@ -35,7 +35,7 @@
                     <!-- Langue par defaut -->
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Langues source" />
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" />
                         </div>
                         <div class="col-5">
                             <p:selectOneMenu value="#{importFileBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
@@ -50,7 +50,7 @@
                     <!-- délimiteur CSV -->
                     <div class="row" style="margin-top: 3px">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Délimiteur Csv" />
+                            <h:outputText value="#{langueBean.getMsg('csvExport.delimiter')}" />
                         </div>
                         <div class="col-5">
                             <p:selectOneMenu id="idDelimiter" value="#{importFileBean.choiceDelimiter}" 
@@ -67,7 +67,7 @@
                     <!-- format de date -->
                     <div class="row" style="margin-top: 3px">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Format de la date" />
+                            <h:outputText value="#{langueBean.getMsg('csvExport.dateFormat')}" />
                         </div>
                         <div class="col-5">
                             <p:inputText placeholder="yyyy-MM-dd" value="#{importFileBean.formatDate}" style="width: 100%"/>
@@ -77,7 +77,7 @@
                     <!-- dans quel projet ajouter le thesaurus -->
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Projet" />
+                            <h:outputText value="#{langueBean.getMsg('profile.project')}" />
                         </div>
                         <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}" >
                             <div class="col-5">
@@ -107,14 +107,14 @@
 
                     <!-- Choix du fichier -->  
                     <h:panelGroup id="panelFormListCsv">
-                        <div class="row" style="margin-top: 10px; margin-left: 20px; margin-right: 20px">
+                        <div class="row" style="margin-top: 10px; margin-left: 20px; margin-right: 20px; padding: 0.3rem;">
                             <div class="col-12" > 
                                 <p:fileUpload listener="#{importFileBean.loadFileCsv}" 
-                                              label="parcourir" 
+                                              label="#{langueBean.getMsg('candidat.parcourir')}" 
                                               mode="advanced" auto="true"
+                                              styleClass="browserbutton"
                                               allowTypes="/(\.|\/)(csv|txt)$/"
-                                              update="panelFormListCsv" disabled="#{importFileBean.loadDone}"
-                                              style="font-size: 12px;" />  
+                                              update="panelFormListCsv" disabled="#{importFileBean.loadDone}"/>  
                             </div>
                         </div> 
 

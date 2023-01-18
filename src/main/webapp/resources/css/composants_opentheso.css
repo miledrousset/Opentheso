@@ -26,6 +26,13 @@ body .ui-button.ui-button-text-icon-left .ui-button-text {
     padding: 0rem 0rem 0rem 0rem;
 }
 
+/* private override */
+.browserbutton .ui-button {
+    padding: 0.3rem !important; 
+}
+
+
+
 .ui-orderlist .ui-orderlist-list {
     width: 100%;
     height: 500px;

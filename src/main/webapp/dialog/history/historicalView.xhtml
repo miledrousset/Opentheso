@@ -13,7 +13,7 @@
             <div class="row">
                 <div class="col-12">
                     <p:dataTable value="#{historyBean.historyLabels}" var="label"
-                                 scrollable="true" scrollHeight="250" style="font-size: 12px;">
+                                 scrollable="true" scrollHeight="250" style="font-size: 12px;" lazy="false">
                         <f:facet name="header">
                             <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.labelHistory')}" />
                         </f:facet>
@@ -39,7 +39,7 @@
             <div class="row" style="margin-top: 10px;">
                 <div class="col-12">
                     <p:dataTable value="#{historyBean.historySynonyms}" var="synonym"
-                                 scrollable="true" scrollHeight="250" style="font-size: 12px;">
+                                 scrollable="true" scrollHeight="250" style="font-size: 12px;" lazy="false">
                         <f:facet name="header">
                             <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.synonymHistory')}" />
                         </f:facet>
@@ -65,7 +65,7 @@
             <div class="row" style="margin-top: 10px;">
                 <div class="col-12">
                     <p:dataTable value="#{historyBean.historyNotes}" var="note"
-                                 scrollable="true" scrollHeight="250" style="font-size: 12px;">
+                                 scrollable="true" scrollHeight="250" style="font-size: 12px;" lazy="false">
                         <f:facet name="header" >
                             <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.noteHistory')}" />
                         </f:facet>
@@ -91,7 +91,7 @@
             <div class="row" style="margin-top: 10px;">
                 <div class="col-12">
                     <p:dataTable value="#{historyBean.historyRelations}" var="relations"
-                                 scrollable="true" scrollHeight="250" style="font-size: 12px;">
+                                 scrollable="true" scrollHeight="250" style="font-size: 12px;" lazy="false">
                         <f:facet name="header">
                             <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.relationshipHistory')}" />
                         </f:facet>

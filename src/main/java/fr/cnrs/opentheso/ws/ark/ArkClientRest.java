@@ -516,6 +516,12 @@ public final class ArkClientRest {
             }            
             if(jsonObject.getJsonString("status").getString().equalsIgnoreCase("ERROR")) {
                 message = jsonObject.getJsonString("description").getString();
+                if(message.contains("URL already Exist")) {
+                    idArk = jsonObject.getJsonString("ark").getString();
+                    token = jsonObject.getJsonString("token").getString();
+                    return true;
+                }
+                
                 token = jsonObject.getJsonString("token").getString();
                 return false;
             }  

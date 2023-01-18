@@ -92,7 +92,7 @@
                 <div class="row" style="margin: 20px">
                     <div class="col-12">
                         <p:dataTable id="listLangThes" value="#{editThesoBean.languagesOfTheso}" var="langOfTheso" scrollable="true"
-                                     resizableColumns="true" scrollHeight="450" reflow="true">
+                                     resizableColumns="true" scrollHeight="450" reflow="true" lazy="false">
 
                             <p:column width="55" headerText="#{langueBean.getMsg('statistique.label')}">
                                 <h:outputLabel value="#{langOfTheso.labelTheso}"/>

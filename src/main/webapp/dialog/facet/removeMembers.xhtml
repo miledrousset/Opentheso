@@ -15,7 +15,7 @@
 
         <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
             <p:dataTable id="memebreToDelete" size="small" var="member" value="#{editFacet.conceptList}" styleClass="products-table"
-                         style="margin-bottom: -17px; margin-top: -16px;">
+                         style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                 <p:column width="90" headerText="Membre">
                     <h:outputText rendered="#{member.value != ''}" value="#{member.value}" title="#{member.id}" style="color: #43B572"/>                    

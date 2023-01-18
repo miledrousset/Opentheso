@@ -256,9 +256,15 @@ begin
     END IF;
     IF NOT EXISTS(SELECT *  FROM alignement_source where source='Wikidata_rest') THEN
         execute 'INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id_user, description, gps, source_filter)
-                VALUES (''Wikidata_rest'',
+                VALUES (''Ontome'',
                 ''https://www.wikidata.org/w/api.php?action=wbsearchentities&language=##lang##&search=##value##&format=json&limit=10'',
                 ''REST'', ''json'', 1, ''alignement avec le vocabulaire Wikidata REST'', false, ''Wikidata_rest'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM alignement_source where source='Ontome') THEN
+        execute 'INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id_user, description, gps, source_filter)
+                VALUES (''Ontome'',
+                ''https://ontome.net/api/classes-type-descendants/label/##value##/json'',
+                ''REST'', ''json'', 1, ''OntoME is a LARHRA application, developed and maintained by the Digital history research team'', false, ''Ontome'');';
     END IF;
 end
 $$language plpgsql;

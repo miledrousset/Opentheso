@@ -391,6 +391,14 @@ public class CandidatBean implements Serializable {
 
         setShowCandidatActivate(true);
     }
+    
+    public CandidatDto getAllInfosOfCandidate(CandidatDto candidatDto){
+        candidatDto.setLang(getIdLang());
+        candidatDto.setUserId(currentUser.getNodeUser().getIdUser());
+        candidatDto.setIdThesaurus(selectedTheso.getCurrentIdTheso());
+        candidatService.getCandidatDetails(connect, candidatDto);
+        return candidatDto;
+    }
 
     public void setIsListCandidatsActivate(boolean isListCandidatsActivate) throws IOException {
 

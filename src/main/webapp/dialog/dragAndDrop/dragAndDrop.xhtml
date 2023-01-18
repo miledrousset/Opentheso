@@ -40,7 +40,7 @@
                 </div>
                 <div class="row">
                     <div class="col-11" style="margin-left: 5px; font-size: 12px;">
-                        <p:dataTable value="#{dragAndDrop.nodeBTsToCut}" var="broader" rowStyleClass="textOpenthesoColorOrange"  >
+                        <p:dataTable value="#{dragAndDrop.nodeBTsToCut}" var="broader" rowStyleClass="textOpenthesoColorOrange"   lazy="false">
                             <p:column headerText="id" width="100">
                                 <h:outputText value="#{broader.idConcept}" />
                             </p:column>                        
@@ -66,7 +66,7 @@
             <h:panelGroup rendered="#{dragAndDrop.nodeGroupsToCut.size() > 0}">
                 <div class="row">
                     <div class="col-11" style="margin-left: 5px; font-size: 12px;">
-                        <p:dataTable value="#{dragAndDrop.nodeGroupsToCut}" var="group" rowStyleClass="from" >
+                        <p:dataTable value="#{dragAndDrop.nodeGroupsToCut}" var="group" rowStyleClass="from"  lazy="false">
                             <p:column headerText="id" width="100">
                                 <h:outputText value="#{group.conceptGroup.idgroup}" />
                             </p:column>                        
@@ -92,7 +92,7 @@
             <h:panelGroup rendered="#{dragAndDrop.nodeGroupsToAdd.size() > 0}">
                 <div class="row" rendered="#{dragAndDrop.nodeGroupsToAdd.size() > 0}">
                     <div class="col-11" style="margin-left: 5px; font-size: 12px;">
-                        <p:dataTable value="#{dragAndDrop.nodeGroupsToAdd}" var="group" rowStyleClass="to" >
+                        <p:dataTable value="#{dragAndDrop.nodeGroupsToAdd}" var="group" rowStyleClass="to"  lazy="false">
                             <p:column headerText="id" width="100">
                                 <h:outputText value="#{group.conceptGroup.idgroup}" />
                             </p:column>                        

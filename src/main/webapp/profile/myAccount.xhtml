@@ -168,7 +168,7 @@
                                                 <h:panelGroup rendered="#{!myAccountBean.nodeUser.isSuperAdmin}">
                                                     <div class="col-12">
                                                         <p:dataTable id="tabUser" value="#{myAccountBean.allMyRoleProject}" var="allRoleProject" 
-                                                                     scrollable="true" resizableColumns="true" scrollHeight="450">
+                                                                     scrollable="true" resizableColumns="true" scrollHeight="450" lazy="false">
                                                             <p:column width="30%" headerText="#{langueBean.getMsg('profile.role')}">
                                                                 <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
                                                             </p:column>

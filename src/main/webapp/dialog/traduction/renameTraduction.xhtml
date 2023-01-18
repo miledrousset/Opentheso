@@ -20,7 +20,7 @@
             
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
                 <p:dataTable var="traductionToEdit" value="#{traductionBean.nodeTermTraductionsForEdit}" size="small"
-                             style="margin-bottom: -17px; margin-top: -16px;">
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                     <p:column headerText="Label">
                         <p:inputText value="#{traductionToEdit.lexicalValue}" style="width: 100%;"/>

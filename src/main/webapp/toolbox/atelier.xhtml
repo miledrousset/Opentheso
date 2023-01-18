@@ -177,7 +177,7 @@
                                                 <h6 style="color: #43B572; font-weight: bold; margin-top: 10px">Liste des thésaurus</h6>
                                                 <h:outputText value="Veuillez selectionez un thésaurus : " />
                                                 <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" 
-                                                             selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-top: 10px">
+                                                             selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-top: 10px" lazy="false">
                                                     <p:column selectionMode="single" style="width: 35px; text-align: center" />
                                                     <p:column headerText="Id">
                                                         <h:outputText value="#{thes.id}" />
@@ -248,7 +248,7 @@
 
                                                 <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px;"
                                                                rendered="#{atelierThesBean.result.size() > 0}">
-                                                    <p:dataTable id="tbl" var="resultat" value="#{atelierThesBean.result}">
+                                                    <p:dataTable id="tbl" var="resultat" value="#{atelierThesBean.result}" lazy="false">
                                                         <p:column headerText="Id Origine" style="background-color: #ebedf0;">
                                                             <h:outputText value="#{resultat.idOrigine}" />
                                                         </p:column>

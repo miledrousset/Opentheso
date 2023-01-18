@@ -282,6 +282,7 @@ public class ExportFileBean implements Serializable {
                         .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> flux)
                         .build();
+                
             } catch (Exception ex) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return new DefaultStreamedContent();
@@ -304,7 +305,7 @@ public class ExportFileBean implements Serializable {
             }
             if (datas == null) {
                 return null;
-            }
+            } 
 
             PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
@@ -721,13 +722,13 @@ public class ExportFileBean implements Serializable {
         /// permet de filtrer par collection
         ArrayList<String> allConcepts = new ArrayList<>();
         if (!viewExportBean.isToogleFilterByGroup()) {
-            allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
-     /*       allConcepts = conceptHelper.getAllIdConceptOfThesaurusByUser(connect.getPoolConnexion(), idTheso);
+      //      allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+            allConcepts = conceptHelper.getAllIdConceptOfThesaurusByUser(connect.getPoolConnexion(), idTheso);
             ArrayList<String> allConcepts2 = conceptHelper.getAllIdConceptOfThesaurusByUser2(connect.getPoolConnexion(), idTheso);
             for (String id : allConcepts2) {
                 if(!allConcepts.contains(id))
                     allConcepts.add(id);
-            }*/
+            }
             
         } else {
             for (String idGroup : selectedGroups) {

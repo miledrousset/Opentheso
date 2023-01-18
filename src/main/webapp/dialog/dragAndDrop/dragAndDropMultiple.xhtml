@@ -19,7 +19,7 @@
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable size="small" value="#{dragAndDrop.nodesToConfirme}" var="node" styleClass="products-table"
-                             style="margin-bottom: -17px; margin-top: -16px;">
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
                     <f:facet name="header">
                         <h:outputText value="Le(s) concept(s)/branche(s) à déplacer" title="terme à couper"/>
                     </f:facet>
@@ -38,7 +38,7 @@
                 <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                     <p:dataTable size="small" value="#{dragAndDrop.groupNodeBtToCut}" var="broader"
                                  widgetVar="nodeBTsToCut" styleClass="products-table"
-                                 style="margin-bottom: -17px; margin-top: -16px;">
+                                 style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                         <f:facet name="header">
                             <h:outputText value="Poly-hiérarchie à supprimer / garder"
@@ -62,7 +62,7 @@
                 <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                     <p:dataTable size="small" value="#{dragAndDrop.groupNodeToCut}" var="group"
                                  widgetVar="nodeGroupsToCut" styleClass="products-table"
-                                 style="margin-bottom: -17px; margin-top: -16px;">
+                                 style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                         <f:facet name="header">
                             <h:outputText value="Collections à supprimer"
@@ -86,7 +86,7 @@
                 <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                     <p:dataTable size="small" value="#{dragAndDrop.groupNodeToAdd}" var="group"
                                  widgetVar="nodeGroupsToAdd" styleClass="products-table"
-                                 style="margin-bottom: -17px; margin-top: -16px;">
+                                 style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                         <f:facet name="header">
                             <h:outputText value="Collections à ajouter"

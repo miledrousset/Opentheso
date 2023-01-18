@@ -16,7 +16,7 @@
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
                 <p:dataTable var="related" value="#{conceptView.nodeConcept.nodeRT}" size="small"
-                             style="margin-bottom: -17px; margin-top: -16px;">
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                     <p:column headerText="Label">
                         <h:outputText value="#{related.title} (#{related.idConcept})" style="color: #43B572; font-size: 14px;"/>

@@ -74,10 +74,11 @@
                                             </p:commandButton>
                                         </p:toolbarGroup>
                                     </p:toolbar>
+                                    
 
                                     <p:dataTable value="#{corpusBean.nodeCorpuses}" var="corpus" scrollable="true"
                                                  resizableColumns="true" scrollHeight="450" style="margin-top: 10px"
-                                                 reflow="true">
+                                                 reflow="true" lazy="false">
 
                                         <p:column headerText="Nom">
                                             <h:outputText value="#{corpus.corpusName}" title="Obligatoire"/>
@@ -99,7 +100,7 @@
                                             <p:commandButton icon="pi pi-pencil" update=":containerIndex:manage-product-content"
                                                              oncomplete="PF('editCorpus').show()" style="margin-right: 10px"
                                                              actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this"
-                                                             styleClass="edit-button rounded-button ui-button-success">
+                                                             styleClass="rounded-button" >
                                                 <p:resetInput target=":containerIndex:manage-product-content"/>
                                             </p:commandButton>
 

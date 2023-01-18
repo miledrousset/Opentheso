@@ -149,7 +149,7 @@
                                                  style="margin-top: 10px" paginator="true" rows="10"
                                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
-                                                 rowsPerPageTemplate="5,10,{ShowAll|'Tous'}">
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'Tous'}" lazy="false">
 
                                         <p:column width="10%" headerText="#{langueBean.getMsg('statistique.id')}" sortBy="#{customer.name}" >
                                             <h:outputText value="#{stat.idConcept}"/>
@@ -230,7 +230,7 @@
                                                  style="margin-top: 10px" paginator="true" rows="10"
                                                  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                                  currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
-                                                 rowsPerPageTemplate="5,10,{ShowAll|'Tous'}">
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'Tous'}" lazy="false">
 
                                         <p:column width="30%" headerText="#{langueBean.getMsg('statistique.collection')}">
                                             <h:outputText value="#{stat.collection} (#{stat.idCollection})"/>

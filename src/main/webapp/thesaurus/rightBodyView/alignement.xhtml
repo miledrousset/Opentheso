@@ -53,11 +53,11 @@
                      scrollHeight="69%" 
                      allowUnsorting="true" 
                      sortMode="single" 
-                     style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;">
+                     style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false">
 
             <f:facet name="header">
                 <div class="products-table-header">
-                    <span style="font-weight: bold">Liste des alignements</span>
+                    <span style="font-weight: bold">#{langueBean.getMsg('rightbody.alignmentList')}</span>
                 </div>
             </f:facet>
 
@@ -110,7 +110,7 @@
 
             <f:facet name="footer">
                 <span class="p-text-bold">
-                    <h:outputText value="Nombre total des alignements disponible : " style="font-size: 14px;"/>
+                    <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
                     <h:outputText value="#{alignmentBean.allignementsList.size()}" style="font-size: 16px; color: #f47b2a"/>
                 </span>
             </f:facet>
@@ -131,12 +131,12 @@
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable size="small" var="alignmentSource" value="#{setAlignmentSourceBean.nodeSelectedAlignmentsAll}"
                              widgetVar="listSourceTable" styleClass="products-table"
-                             style="margin-bottom: -17px; margin-top: -16px;">
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                     <f:facet name="header">
                         <div class="products-table-header">
                             <span style="font-weight: bold">
-                                Liste des sources
+                                #{langueBean.getMsg('rightbody.alignmentSourceList')}
                             </span>
                         </div>
                     </f:facet>
@@ -145,7 +145,7 @@
                         <p:selectBooleanCheckbox value="#{alignmentSource.isSelected}" />          
                     </p:column>
 
-                    <p:column width="11" headerText="Nom">
+                    <p:column width="11" headerText="#{langueBean.getMsg('rightbody.conceptdialog.name')}">
                         <h:outputLabel value="#{alignmentSource.sourceLabel}" />
                     </p:column>                     
                 </p:dataTable>

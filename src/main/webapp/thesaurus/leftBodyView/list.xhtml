@@ -25,7 +25,7 @@
 
         <p:dataTable id="singleDT" var="list" value="#{listIndex.nodeIdValues}" selectionMode="single" styleClass="borderless"
                      selection="#{listIndex.selectedNode}" rowKey="#{list.id}" 
-                     style="width: auto; border: none; font-size: 12px;  min-height: 400px; max-height: 800px; overflow-y: auto;">
+                     style="width: auto; border: none; font-size: 12px;  min-height: 400px; max-height: 800px; overflow-y: auto;" lazy="false">
             <p:ajax event="rowSelect" listener="#{listIndex.onRowSelect}" update="containerIndex:formRightTab" />
             <p:column>
                 <h:outputText value="#{list.value}" title="#{list.id}" style="font-size: 12px;"/>

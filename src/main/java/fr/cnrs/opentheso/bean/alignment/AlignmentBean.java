@@ -29,6 +29,7 @@ import fr.cnrs.opentheso.core.alignment.helper.GemetHelper;
 import fr.cnrs.opentheso.core.alignment.helper.GeoNamesHelper;
 import fr.cnrs.opentheso.core.alignment.helper.GettyAATHelper;
 import fr.cnrs.opentheso.core.alignment.helper.IdRefHelper;
+import fr.cnrs.opentheso.core.alignment.helper.OntomeHelper;
 import fr.cnrs.opentheso.core.alignment.helper.OpenthesoHelper;
 import fr.cnrs.opentheso.core.alignment.helper.WikidataHelper;
 
@@ -924,6 +925,14 @@ public class AlignmentBean implements Serializable {
                         lexicalValue,
                         idLang);
             }
+            // ici pour un alignement de type Ontome
+            if (selectedAlignementSource.getSource_filter().equalsIgnoreCase("Ontome")) {
+                getAlignmentOntome(
+                        selectedAlignementSource,
+                        idTheso,
+                        idConcept,
+                        lexicalValue);
+            }            
             // System.out.println("fin");
         }
 
@@ -1313,6 +1322,39 @@ public class AlignmentBean implements Serializable {
                     geoNamesHelper.getMessages()));
         }
     }
+    
+    /**
+     * Cette fonction permet de récupérer les concepts à aligner de la source
+     * juste la liste des concepts avec une note pour distinguer les concepts/
+     *
+     * @param alignementSource
+     * @param idTheso
+     * @param idConcept
+     * @param lexicalValue
+     * @param idLang
+     */
+    private void getAlignmentOntome(
+            AlignementSource alignementSource,
+            String idTheso,
+            String idConcept,
+            String lexicalValue) {
+
+        if (alignementSource == null) {
+            listAlignValues = null;
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Source :", "Pas de source sélectionnée"));
+            return;
+        }
+        OntomeHelper ontomeHelper = new OntomeHelper();
+
+        // action JSON (HashMap (Wikidata)
+        //ici il faut appeler le filtre de Wikidata 
+        listAlignValues = ontomeHelper.queryOntomeHelper(idConcept, idTheso, lexicalValue.trim(),
+                alignementSource.getRequete(),
+                alignementSource.getSource());
+        if (listAlignValues == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", ontomeHelper.getMessages()));
+        }
+    }     
 
     /**
      * Cette fonction permet de récupérer les concepts à aligner de la source

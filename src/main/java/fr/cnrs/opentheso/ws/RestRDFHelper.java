@@ -18,6 +18,7 @@ import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
@@ -58,7 +59,14 @@ public class RestRDFHelper {
         String datasJson;
 
         JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
-
+        
+        if(!listLinkedConceptsWithOntome.isEmpty()) {
+            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+            JsonObjectBuilder jobLabel = Json.createObjectBuilder();
+            jobLabel.add("thesaurusLabel", thesaurusHelper.getTitleOfThesaurus(ds, idTheso, nodePreference.getSourceLang()));
+            jsonArrayBuilderLang.add(jobLabel.build());
+        }
+    
         for (NodeIdValue nodeIdValue : listLinkedConceptsWithOntome) {
             JsonObjectBuilder jobLang = Json.createObjectBuilder();
             jobLang.add("uri", getUri(ds, nodePreference, nodeIdValue.getId(), idTheso));
@@ -87,6 +95,12 @@ public class RestRDFHelper {
 
         JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
+        if(!listLinkedConceptsWithOntome.isEmpty()) {
+            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+            JsonObjectBuilder jobLabel = Json.createObjectBuilder();
+            jobLabel.add("thesaurusLabel", thesaurusHelper.getTitleOfThesaurus(ds, idTheso, nodePreference.getSourceLang()));
+            jsonArrayBuilderLang.add(jobLabel.build());
+        }        
         for (NodeIdValue nodeIdValue : listLinkedConceptsWithOntome) {
             JsonObjectBuilder jobLang = Json.createObjectBuilder();
             jobLang.add("uri", getUri(ds, nodePreference, nodeIdValue.getId(), idTheso));
@@ -1019,14 +1033,15 @@ public class RestRDFHelper {
      * @param groups
      * @param value
      * @param format
+     * @param match
      * @return
      */
     public String findDatasForWidget(HikariDataSource ds,
             String idTheso, String lang, String[] groups,
-            String value, String format) {
+            String value, String format, boolean match) {
 
         String datas = findDatasForWidget__(ds,
-                value, idTheso, lang, groups, format);
+                value, idTheso, lang, groups, format, match);
         if (datas == null) {
             return null;
         }
@@ -1045,7 +1060,7 @@ public class RestRDFHelper {
     private String findDatasForWidget__(
             HikariDataSource ds,
             String value, String idTheso,
-            String lang, String[] groups, String format) {
+            String lang, String[] groups, String format, boolean match) {
 
         if (value == null || idTheso == null) {
             return null;
@@ -1057,9 +1072,13 @@ public class RestRDFHelper {
 
         SearchHelper searchHelper = new SearchHelper();
 
+        ArrayList<String> nodeIds;
         // recherche de toutes les valeurs
-        ArrayList<String> nodeIds = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
-
+        if(match) {
+            nodeIds = searchHelper.searchAutoCompletionWSForWidgetMatchExact(ds, value, lang, groups, idTheso);
+        } else {
+           nodeIds = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
+        } 
         if (nodeIds == null || nodeIds.isEmpty()) {
             return null;
         }

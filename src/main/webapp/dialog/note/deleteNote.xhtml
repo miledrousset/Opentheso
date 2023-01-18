@@ -17,7 +17,7 @@
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable size="small" var="noteToDelete" value="#{noteBean.nodeToDelete()}"
                              widgetVar="listThesoTable" styleClass="products-table"
-                             style="margin-bottom: -17px; margin-top: -16px;">
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                     <p:column width="90" headerText="Valeur">
                         <h:outputText value="#{noteToDelete.lexicalvalue}" escape="false" />           

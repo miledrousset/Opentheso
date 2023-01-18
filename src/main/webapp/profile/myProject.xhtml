@@ -122,7 +122,7 @@
                                                                          paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
                                                                          emptyMessage="Aucun utilisateur disponible..."
                                                                          stripedRows="true"
-                                                                         style="margin-bottom: -17px; margin-top: -16px;">
+                                                                         style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                                                                 <p:column headerText="#{langueBean.getMsg('profile.pseudo')}">
                                                                     <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" 
@@ -181,7 +181,7 @@
                                                                          paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
                                                                          emptyMessage="#{langueBean.getMsg('toolbox.noThesaurus')}"
                                                                          stripedRows="true"
-                                                                         style="margin-bottom: -17px; margin-top: -16px;">
+                                                                         style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                                                                 <p:column width="10%" headerText="Id">
                                                                     <h:outputText value="#{listTheso.id}" />
