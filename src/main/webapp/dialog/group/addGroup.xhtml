@@ -7,12 +7,10 @@
     <p:dialog id="idAddGroup" header="#{langueBean.getMsg('leftbody.group.addGroup')}" widgetVar="addGroup" 
               modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >
         <h:form id="addGroupForm" >
-
-
-
+            <p:defaultCommand target="addGroupBtn" />
             <div class="row">
                 <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="Nom :" style="font-weight: bold;"/>
+                    <h:outputText value="#{langueBean.getMsg('statistique.label')} :" style="font-weight: bold;"/>
                     <p:commandLink style="font-size: 17px; color: #FF7979" action="#{addGroupBean.infos}" update="messageIndex">
                         <i class="pi pi-info-circle"></i>
                     </p:commandLink>
@@ -37,18 +35,19 @@
 
             <div class="row">
                 <div class="col-5">
-                    <h:outputText value="Notation :" style="font-weight: bold;"/>
+                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.notation')} :" style="font-weight: bold;"/>
                 </div>
                 <div class="col-7">
-                    <p:inputText placeholder="Notation..." value="#{addGroupBean.notation}" autocomplete="false" style="width: 100%" />
+                    <p:inputText placeholder="#{langueBean.getMsg('rightbody.concept.notation')}..." value="#{addGroupBean.notation}" autocomplete="false" style="width: 100%" />
                 </div>
             </div>
 
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" icon="fas fa-undo-alt" 
+                                 style="margin-right: 10px"
                                  actionListener="PF('addGroup').hide();" update="containerIndex:idAddGroup"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
+                <p:commandButton id="addGroupBtn" value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
                                  update="containerIndex messageIndex" oncomplete="PF('addGroup').hide();"
                                  ajax="true" process="@form"
                                  actionListener="#{addGroupBean.addGroup(selectedTheso.currentIdTheso,

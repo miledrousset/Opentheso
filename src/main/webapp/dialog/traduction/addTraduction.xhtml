@@ -43,13 +43,13 @@
             </div>        
 
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
-                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
+                                 style="margin-right: 10px"                               
                                  actionListener="PF('addTraduction').hide();" 
                                  update="containerIndex:idAddTraduction"/>
 
-                <p:commandButton id="addTraductionBtn" value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" 
-                                 ajax="true" process="@form" icon="pi pi-check" oncomplete="PF('addTraduction').show();"
+                <p:commandButton id="addTraductionBtn" value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
+                                 ajax="true" process="@form"  oncomplete="PF('addTraduction').show();"
                                  update="messageIndex containerIndex:idAddTraduction"                            
                                  actionListener="#{traductionBean.addNewTraduction(currentUser.nodeUser.idUser)}" />
             </div>

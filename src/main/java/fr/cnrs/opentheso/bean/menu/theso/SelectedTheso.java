@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
@@ -24,11 +25,9 @@ import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Arrays;
 import javax.faces.application.FacesMessage;
@@ -39,6 +38,7 @@ import org.primefaces.event.UnselectEvent;
 @Named(value = "selectedTheso")
 @SessionScoped
 public class SelectedTheso implements Serializable {
+    @Inject private LanguageBean LanguageBean;
     @Inject private Connect connect;
     @Inject private IndexSetting indexSetting;
     @Inject private TreeGroups treeGroups;
@@ -395,7 +395,10 @@ public class SelectedTheso implements Serializable {
                 return;
             }
         }
-        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), selectedIdTheso, idLang);
+        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(),
+                selectedIdTheso,
+                LanguageBean.getIdLangue());
 
         currentLang = idLang;
         selectedLang = idLang;

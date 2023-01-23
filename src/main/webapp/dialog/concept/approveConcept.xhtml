@@ -4,7 +4,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idApproveConcept" header="Approuver le concept" widgetVar="approveConcept" 
+    <p:dialog id="idApproveConcept" header="#{langueBean.getMsg('rightbody.concept.approve_concept')}" widgetVar="approveConcept" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <div class="row">
@@ -18,7 +18,7 @@
         <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() > 0}">
             <div class="row" style="margin-left: 10px; "> 
                 <div class="col-11">
-                    <h:outputText value="Ce concept est remplacé par: " style="font-size: 12px;" />
+                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.conceptReplacedBy')}: " style="font-size: 12px;" />
                 </div>
             </div>            
             <div class="row" > 
@@ -38,26 +38,29 @@
                         <div class="row" style="margin-top: 10px; "> 
                             <div class="col-12">
                                 <p:selectBooleanCheckbox value="#{editConcept.isReplacedByRTrelation}" style="color: #C63632; font-size: 12px;"
-                                                         itemLabel="Garder en relation associative (RT) ?"
-                                                         title="Ajouter une relation associative (RT) avec les concepts qui le remplace?"/>
+                                                         itemLabel="#{langueBean.getMsg('rightbody.concept.keepRelatedRelation')}"
+                                                         title="#{langueBean.getMsg('rightbody.concept.keepRelatedRelationTooltip')}"/>
                             </div>                    
                         </div>                              
                     </p:panel>
                 </div>
             </div>
         </h:panelGroup>
+        
+        <p:spacer />
+        
+        <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button"
+                             style="margin-right: 10px"
+                             icon="fas fa-undo-alt"
+                             actionListener="PF('approveConcept').hide();" update="idApproveConcept"/>
 
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('approveConcept').hide();" update="idApproveConcept"/>
-                
-                <p:commandButton class="btn btn-primary" title="Approuver" 
-                                 update="containerIndex messageIndex" 
-                                 style="color: white;" oncomplete="PF('approveConcept').hide();"
-                                 actionListener="#{editConcept.approveConcept(conceptView.nodeConcept.concept.idConcept,
-                                           selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
-            </div>
-        </f:facet>
+            <p:commandButton value="#{langueBean.getMsg('apply')}" styleClass="ui-button-success" 
+                             icon="pi pi-check"
+                             update="containerIndex messageIndex" 
+                             oncomplete="PF('approveConcept').hide();"
+                             actionListener="#{editConcept.approveConcept(conceptView.nodeConcept.concept.idConcept,
+                                       selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>
+        </div>
     </p:dialog>
 </ui:fragment>

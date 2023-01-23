@@ -12,7 +12,8 @@
             <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px; overflow-y: auto; max-height: 300px;">
                 Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
                 Si l'identifiant n'existe pas dans le thésaurus, la ligne sera rejetée.<br/>
-                Chaque concept trouvé par identifiant, il sera mise à jour avec les nouvelles valeurs du tableau.<br/>
+                Chaque concept trouvé par identifiant sera mise à jour avec les nouvelles valeurs du tableau.<br/>
+                !!!! Les concepts qui ne figurent pas dans le fichier ne sont pas modifiés !!!<br/>
                 Le format accepté est le même pour importer un thésaurus en CSV.<br/>
                 exemple :<br/>
                 Si nous avons un concept comme suit :<br/>
@@ -69,11 +70,11 @@
                 <div class="row" style="margin-left: 30px; margin-right: 30px; margin-top: 10px">
                     <div class="col-12" > 
                         <p:fileUpload listener="#{importFileBean.loadFileCsvForMerge}" 
-                                      label="parcourir" 
+                                      label="#{langueBean.getMsg('candidat.parcourir')}"  style="padding-left: 10px; padding-right: 10px; font-size: 12px;"
                                       mode="advanced" auto="true"
+                                      styleClass="browserbutton"
                                       allowTypes="/(\.|\/)(csv|txt)$/"
-                                      update="panelListForMergeCsv_result" disabled="#{importFileBean.loadDone}"
-                                      style="font-size: 12px;" />  
+                                      update="panelListForMergeCsv_result" disabled="#{importFileBean.loadDone}"/>  
                     </div>
                 </div> 
             </h:panelGroup>                

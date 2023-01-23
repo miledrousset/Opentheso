@@ -92,9 +92,10 @@
                             <p:fileUpload listener="#{importFileBean.loadFileCsv}" 
                                           label="#{langueBean.getMsg('candidat.parcourir')}" 
                                           mode="advanced" auto="true"
+                                          style="padding-left: 10px; padding-right: 10px; font-size: 12px;"
+                                          styleClass="browserbutton"
                                           allowTypes="/(\.|\/)(csv|txt)$/"
-                                          update="panelListCsv" disabled="#{importFileBean.loadDone}"
-                                          style="font-size: 12px;" />  
+                                          update="panelListCsv" disabled="#{importFileBean.loadDone}"/>  
                         </div>
                     </div> 
 
@@ -112,24 +113,22 @@
                             </div>
                         </div>
                     </h:panelGroup>
-
+                    <p:spacer height="10px;" />
                     <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                         <div class="row" style="margin-top: 5px;">
-                            <div class="col-4"> 
+                             <div class="col-11" style="text-align: right"> 
                                 <p:commandButton id="cancelCsv"
-                                                 value="#{langueBean.getMsg('btnBack')}"
-                                                 styleClass="ui-button-secondary" style="margin-right: 10px"
+                                                 value="#{langueBean.getMsg('btnBack')}" icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                                 style="margin-right: 30px"
                                                  action="#{importFileBean.init()}"
                                                  update="idListImportCsv"
                                                  oncomplete="PF('listImportCsv').hide();" />
-                            </div>
-                            <div class="col-4" > 
+
                                 <p:commandButton id="buttonImportCsv" widgetVar="buttonImportCsv"
+                                                 value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-success" icon="fa fa-download"
                                                  update="panelListCsv"
-                                                 styleClass="ui-button-primary"
                                                  actionListener="#{importFileBean.addListCsvToConcept(conceptView.nodeConcept)}"
                                                  ajax="true"
-                                                 value="#{langueBean.getMsg('candidat.import')}"
                                                  disabled="#{!importFileBean.loadDone}" />
                             </div>                             
                         </div>
@@ -157,8 +156,10 @@
                             </div>
                         </div>
                     </h:panelGroup>
+                    
                 </h:panelGroup>
             </p:panel>
         </h:panelGroup>
+        <p:spacer height="10px;" />
     </p:dialog> 
 </ui:fragment>

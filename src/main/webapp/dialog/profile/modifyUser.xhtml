@@ -4,24 +4,37 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idModifyUser" header="Modifier l'utilisateur" widgetVar="modifyUser" 
+    <p:dialog id="idModifyUser" header="#{langueBean.getMsg('profile.modify_user')}" widgetVar="modifyUser" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
+        
+        
+        
+        <p:spacer height="20px;" />
         <h:form>
             <div class="row">
                 <!-- Nom Pseudo -->
                 <div class="col-5" >
-                    <h:outputText value="Pseudo : "/>
+                    <h:outputText value="#{langueBean.getMsg('profile.pseudo')} : "/>
                 </div>
                 <div class="col-7">
-                    <h:outputText value="#{modifyUSerBean.nodeUser.name}" style="font-size: 13px; color: #f47b2a;"/>
+                    <p:inputText value="#{modifyUSerBean.nodeUser.name}" />
                 </div>
             </div>
+            
+            <div class="row" style="margin-top: 5px;">
+                <!-- Nom Pseudo -->
+                <div class="col-5" >
+                    <h:outputText value="#{langueBean.getMsg('profile.email')} : "/>
+                </div>
+                <div class="col-7">
+                    <p:inputText value="#{modifyUSerBean.nodeUser.mail}" />
+                </div>
+            </div>            
 
             <!-- Alertes -->
             <div class="row" style="margin-top: 5px;">
                 <div class="col-5">
-                    <h:outputText value="Alerte par mail : "/>
+                    <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : "/>
                 </div>
                 <div class="col-7">
                     <p:toggleSwitch value="#{modifyUSerBean.nodeUser.isAlertMail}" />
@@ -31,7 +44,7 @@
             <!-- Pour activer / désactiver le compte -->
             <div class="row" style="margin-top: 5px;">
                 <div class="col-5">
-                    <h:outputText value="Activer le compte : " />
+                    <h:outputText value="#{langueBean.getMsg('profile.activateAccount')} : " />
                 </div>
                 <div class="col-7">
                     <p:toggleSwitch value="#{modifyUSerBean.nodeUser.isActive}" />
@@ -40,16 +53,22 @@
 
             <div class="row" style="margin-top: 5px;">
                 <div class="col-12" style="text-align: right" >
-                    <p:commandButton title="Modifier utilisateur" update="containerIndex messageIndex"
-                                     class="btn btn-primary" actionListener="#{modifyUSerBean.updateUser()}"
+                    <p:commandButton value="#{langueBean.getMsg('apply')}"
+                                     update="containerIndex messageIndex"
+                                     icon="fa-regular fa-floppy-disk"
+                                     styleClass="ui-button-success"
+                                     actionListener="#{modifyUSerBean.updateUser()}"
                                      oncomplete="PF('modifyUser').hide();" />
                 </div>
             </div>
-
+            
+            <p:spacer height="20px;" />
+            <p:separator title="-" />
+            
             <!-- Initialiser le passe de l'utilisateur -->
             <div class="row" style="margin-top: 5px; margin-top: 30px">
                 <div class="col-5">
-                    <h:outputText value="Nouveau passe : " />
+                    <h:outputText value="#{langueBean.getMsg('profile.new_password')} : " />
                 </div>
                 <div class="col-7">
                     <p:password value="#{modifyUSerBean.passWord1}" style="width: 100%"/>
@@ -58,7 +77,7 @@
 
             <div class="row" style="margin-top: 5px;;">
                 <div class="col-5">
-                    <h:outputText value="Confirmation : " />
+                    <h:outputText value="#{langueBean.getMsg('profile.confirmation')} : " />
                 </div>
                 <div class="col-7">
                     <p:password value="#{modifyUSerBean.passWord2}" style="width: 100%"/>
@@ -67,10 +86,11 @@
 
             <div class="row" style="margin-top: 5px;">
                 <div class="col-12" style="text-align: right" >
-                    <p:commandButton title="Modifier mot de passe" update="containerIndex messageIndex"
-                                     class="btn btn-primary" oncomplete="PF('modifyUser').hide();"
+                    <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex messageIndex"
+                                     icon="fa-regular fa-floppy-disk"
+                                     styleClass="ui-button-success" oncomplete="PF('modifyUser').hide();"
                                      actionListener="#{modifyUSerBean.updatePassword()}">
-                        <p:tooltip value="Pour changer le mot de passe de l'utilisateur" showDelay="1000" />
+                        <p:tooltip value="#{langueBean.getMsg('profile.changeUserPassTooltip')}" showDelay="1000" />
                     </p:commandButton>
                 </div>
             </div>

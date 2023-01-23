@@ -133,7 +133,7 @@
                     <div class="row" style="margin-top: 5px">
                         <div class="col-12" > 
                             <p:fileUpload listener="#{importFileBean.loadFileSkos}" 
-                                          label="Parcourir" style="padding-left: 10px; padding-right: 10px"
+                                          label="#{langueBean.getMsg('candidat.parcourir')}" style="padding-left: 10px; padding-right: 10px"
                                           mode="advanced" auto="true"
                                           styleClass="browserbutton"
                                           allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
@@ -197,14 +197,14 @@
                                              action="#{importFileBean.init()}"
                                              update="containerIndex"/>
 
-                            <p:commandButton value="Importer" ajax="false"
+                            <p:commandButton value="#{langueBean.getMsg('candidat.import')}" ajax="false"
                                              onclick="PrimeFaces.monitorDownload(start, stop);"
                                              actionListener="#{importFileBean.addSkosThesoToBDDV2()}"
                                              styleClass="ui-button-success" icon="fa fa-download"
                                              disabled="#{!importFileBean.loadDone}"
                                              title="Import rapide" style="margin-left: 20px"/>
 
-                            <p:commandButton value="Ancienne méthode" ajax="false" update="containerIndex"
+                            <p:commandButton value="#{langueBean.getMsg('toolbox.oldMethod')}" ajax="false" update="containerIndex"
                                              onclick="PrimeFaces.monitorDownload(start, stop);"
                                              actionListener="#{importFileBean.addSkosThesoToBDD()}"
                                              styleClass="ui-button-success" icon="fa fa-download"

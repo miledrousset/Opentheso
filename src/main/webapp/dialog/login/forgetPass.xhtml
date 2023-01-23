@@ -3,25 +3,27 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-     <p:dialog id="idForgetPass" header="Passe oublié" widgetVar="forgetPass" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >        
+     <p:dialog id="idForgetPass" header="#{langueBean.getMsg('menu.forgotten_pass')}" widgetVar="forgetPass" 
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 50px" >        
 
+         <p:spacer height="40px;" />
+         
         <h:form id="forgetPassForm">
             <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="E-mail" style="font-weight: bold;"/>
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('profile.email')}"/>
                 </div>
                 <div class="col-7">
-                    <p:inputText placeholder="votre adresse mail" value="#{forgetPassBean.mail}" style="width: 100%" />
+                    <p:inputText placeholder="#{langueBean.getMsg('profile.yourEmail')}" value="#{forgetPassBean.mail}" style="width: 100%" />
                 </div>
             </div>
             <p:spacer height="20px;"/>
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" 
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
                                  style="margin-right: 10px"
                                  actionListener="PF('forgetPass').hide();" update="idForgetPass"/>
 
-                <p:commandButton styleClass="ui-button-primary" value="#{langueBean.getMsg('candidat.send')}"
+                <p:commandButton value="#{langueBean.getMsg('candidat.send')}" styleClass="ui-button-success" icon="pi pi-check"
                                  oncomplete="PF('forgetPass').hide();"
                                  update="containerIndex messageIndex"
                                  actionListener="#{forgetPassBean.sendMail()}"/>

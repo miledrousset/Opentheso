@@ -74,14 +74,14 @@
                 </div>
                 <p:inputText placeholder="username" value="#{currentUser.username}" />
                 <p:inputText type="password" placeholder="password" value="#{currentUser.password}"/>
-                <p:commandButton title="Se connecter" class="formLogin-button"
+                <p:commandButton value="#{langueBean.getMsg('menu.connect')}" styleClass="ui-button-success" icon="fa-solid fa-key"
                                  ajax="true" action="#{currentUser.login()}" 
                                  update="messageIndex containerIndex:header containerIndex:notificationProp 
                                  menuBar containerIndex:searchBar containerIndex:contentConcept">
                 </p:commandButton>
                 <p class="message">
                     <p:commandLink update="idForgetPass forgetPassForm" oncomplete="PF('forgetPass').show();"
-                                   value="#{langueBean.getMsg('menu.forgotten_pass')}" />
+                                   value="#{langueBean.getMsg('menu.forgotten_pass')}" style="font-size: 12px;"/>
                 </p>
             </h:form>
         </div>

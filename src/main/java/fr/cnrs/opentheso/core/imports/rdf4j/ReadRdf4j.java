@@ -550,7 +550,7 @@ public class ReadRdf4j {
     private boolean readImage(ReadStruct readStruct) {
         if (readStruct.property.getLocalName().equalsIgnoreCase("Image")) {
             readStruct.resource.addImageUri(readStruct.value.stringValue());
-            return false;
+            return false; 
         } else {
             return true;
         }

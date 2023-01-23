@@ -99,11 +99,12 @@
                                                 <p:toolbar>
                                                     <p:toolbarGroup align="left" />
                                                     <p:toolbarGroup align="right">
-                                                        <p:commandButton value="#{langueBean.getMsg('profile.new_user')}" icon="fas fa-user-plus"
+                                                        <p:commandButton value="#{langueBean.getMsg('profile.new_userOnProject')}" icon="fas fa-user-plus"
                                                                          actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
                                                                          style="padding-left: 35px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px;"
-                                                                         update="idNewUser" oncomplete="PF('newUser').show();"
-                                                                         styleClass="ui-button-success" />
+                                                                         update="idNewUserForProject" oncomplete="PF('newUserForProject').show();"
+                                                                         styleClass="ui-button-success" 
+                                                                         title="#{langueBean.getMsg('profile.new_userOnProject')}"/>
 
                                                         <p:commandButton value="#{langueBean.getMsg('profile.add_existing_user')}"
                                                                          actionListener="#{modifyRoleBean.setSelectedProject(myProjectBean.selectedProject)}" icon="fas fa-user"
@@ -215,7 +216,7 @@
                     <ui:include src="../commun/footer.xhtml" /> 
                 </h:form>  
 
-                <ui:include src="../dialog/profile/newUser.xhtml" />
+                <ui:include src="../dialog/profile/newUserForProject.xhtml" />
 
                 <ui:include src="../dialog/profile/newProject.xhtml" /> 
                 <ui:include src="../dialog/profile/modifyProject.xhtml" />

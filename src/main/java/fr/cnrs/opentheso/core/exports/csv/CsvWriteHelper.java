@@ -108,6 +108,17 @@ public class CsvWriteHelper {
                     header.add("skos:editorialNote@"+lang);                     
                 });
                 
+                //skos:changeNote
+                langs.forEach((lang) -> {
+                    header.add("skos:changeNote@"+lang);                     
+                });
+                
+                //skos:example
+                langs.forEach((lang) -> {
+                    header.add("skos:example@"+lang);                     
+                });                
+                
+                
                 header.add("skos:notation");
                 header.add("skos:narrower");
                 header.add("narrowerId");
@@ -223,7 +234,21 @@ public class CsvWriteHelper {
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             record.add(def);  
-        }        
+        }      
+        //skos:changeNote
+        for (String lang : langs) {
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.changeNote);
+            def = def.replaceAll("amp;", "");
+            def = def.replaceAll(";", ",");
+            record.add(def);  
+        }          
+        //skos:example
+        for (String lang : langs) {
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.example);
+            def = def.replaceAll("amp;", "");
+            def = def.replaceAll(";", ",");
+            record.add(def);  
+        }          
         
         // notation
         record.add(getNotation(skosResource.getNotationList())); 

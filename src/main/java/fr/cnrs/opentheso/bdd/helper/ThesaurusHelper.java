@@ -159,7 +159,8 @@ public class ThesaurusHelper {
                     idThesaurus = toolsHelper.getNewId(10);
                 }
             } else {
-                stmt.executeQuery("select max(id) from thesaurus");
+              //  stmt.executeQuery("select max(id) from thesaurus");
+                stmt.execute("SELECT last_value FROM thesaurus_id_seq");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     resultSet.next();
                     int idNumeriqueThesaurus = resultSet.getInt(1);

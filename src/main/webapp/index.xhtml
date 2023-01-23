@@ -75,8 +75,8 @@
 
                     <div id="boutonNotification" style="top: 103px; right: 0; position: absolute; z-index: 10" >
                         <h:panelGroup id="resultSearch" style="z-index: 10">
-                            <div style="margin-top: -5px; right: 0; margin-right: 5px; z-index: 11;">
-                                <p:commandButton  icon="pi pi-search" style="height: 30px; width: 30px; font-size: 1rem"
+                            <div style="margin-top: 5px; margin-bottom: -5px; right: 0; margin-right: 11px; z-index: 11;">
+                                <p:commandButton  icon="fa fa-list-ol" style="height: 25px;"
                                                   styleClass="ui-button-raised ui-button-success"
                                                   update="messageIndex containerIndex:notificationPanel"
                                                   actionListener="#{searchBean.afficherResultatRecherche()}" />
@@ -150,6 +150,7 @@
         </p:dialog>  
 
         <ui:include src="dialog/login/login.xhtml" />
+        <ui:include src="dialog/login/logout.xhtml" />
         <ui:include src="dialog/login/forgetPass.xhtml" />
 
         <script>

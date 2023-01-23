@@ -406,7 +406,9 @@ INSERT INTO concept_type (code, label_fr, label_en) SELECT 'concept', 'concept',
 INSERT INTO concept_type (code, label_fr, label_en) SELECT 'people', 'personne', 'people' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'people');
 INSERT INTO concept_type (code, label_fr, label_en) SELECT 'period', 'période', 'period' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'period');
 INSERT INTO concept_type (code, label_fr, label_en) SELECT 'place', 'lieu', 'place' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'place');
-
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'qualifier', 'qualificatif', 'qualifier' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'qualifier');
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'attribute', 'attribut', 'attribute' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'attribute');
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'attitude', 'attitude', 'attitude' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'attitude');
 
 -- Modification de la table Concept pour gérer le type de concept (Personne, Lieu, période ...)
 --
@@ -1655,7 +1657,7 @@ BEGIN
 		SELECT string_to_array(relations_rec.relation_value, sous_seperateur) INTO array_string;
 		
 		INSERT INTO hierarchical_relationship (id_concept1, id_thesaurus, role, id_concept2) 
-			VALUES (array_string[1], id_thesaurus, array_string[2], array_string[3]); 
+			VALUES (array_string[1], id_thesaurus, array_string[2], array_string[3]) ON CONFLICT DO NOTHING; 
 	END LOOP;
 END;
 $BODY$;

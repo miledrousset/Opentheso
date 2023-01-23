@@ -444,19 +444,19 @@ public class PropositionService implements Serializable {
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
-            
-            String commentaire = "";
-            if (StringUtils.isNotEmpty(commentaireAdmin)) {
-                commentaire = "<br/>L'adminisatrateur vous a laissé le message suivant : " + commentaireAdmin; 
-            }
+            if(commentaireAdmin == null)
+                commentaireAdmin = "";
 
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
-                    + "<p>Malheureusement, votre proposition a été refusée par un des adminisatrateurs d'Opentheso.<br/>"
-                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionSelected.getThesoName() + "(" + propositionSelected.getIdTheso() + ")" + "</b> "
-                    + "(concept : <a href=\"" + getPath() + "/?idc=" + propositionSelected.getIdConcept()
-                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>)."+commentaire+"<br/><br/> Cordialement,<br/>"
-                    + "L'équipe " + propositionSelected.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
+                    + "<p>Votre proposition d’enrichissement sur le concept " + propositionSelected.getNomConcept() + " du thésaurus " + propositionSelected.getThesoName()
+                    + " a été refusée par les adminisatrateurs.<br/>"
+                    + "Voici leur message: <br/>" 
+                    + commentaireAdmin + "<br/>"
+                    + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention. <b>" 
+                    + "<br/><br/> Cordialement,<br/>"
+                    + "L'équipe " + propositionSelected.getThesoName() 
+                    + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
         } catch (IOException ex) {
@@ -690,18 +690,19 @@ public class PropositionService implements Serializable {
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
             
-            String commentaire = "";
-            if (StringUtils.isNotEmpty(commentaireAdmin)) {
-                commentaire = "<br/>L'adminisatrateur vous a laissé le message suivant : " + commentaireAdmin; 
-            }
+            if(commentaireAdmin == null)
+                commentaireAdmin = "";
 
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
-                    + "<p>Votre proposition a été acceptée par un des adminisatrateurs d'Opentheso !!!<br/>"
-                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionSelected.getThesoName() + "(" + propositionSelected.getIdTheso() + ")" + "</b> "
-                    + "(concept : <a href=\"" + getPath() + "/?idc=" + propositionSelected.getIdConcept()
-                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>)." 
-                    + commentaire + "<br/><br/> Cordialement,<br/>"
+                    + "<p>Votre proposition d'enrichissement sur le concept " + propositionSelected.getNomConcept()
+                    + " du thésaurus " + propositionSelected.getThesoName()
+                    + " a été acceptée par les adminisatrateurs.<br/>"
+                    + " voici leur message : "
+                    + commentaireAdmin
+                    + "<br/>"
+                    + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention." 
+                    + "<br/><br/> Cordialement,<br/>"
                     + "L'équipe " + propositionSelected.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);

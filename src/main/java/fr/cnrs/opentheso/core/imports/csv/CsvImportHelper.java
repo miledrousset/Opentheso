@@ -435,23 +435,8 @@ public class CsvImportHelper {
         String idHandle = "";
         String idDoi = "";
         boolean isTopConcept = true;
-        Date created = null;
-        Date modified = null;
         
-        if (StringUtils.isEmpty(formatDate)) {
-            formatDate = "dd-mm-yyyy";
-        }
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);        
-    
-        try {
-            if(conceptObject.getCreated() != null && !conceptObject.getCreated().isEmpty())
-                created = simpleDateFormat.parse(conceptObject.getCreated());
-            if(conceptObject.getModified() != null && !conceptObject.getModified().isEmpty())
-                modified = simpleDateFormat.parse(conceptObject.getModified());            
-        } catch (ParseException ex) {
-            Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+     
 
         // IMAGES
         //-- 'url1##url2'
@@ -598,6 +583,9 @@ public class CsvImportHelper {
                 relations += SEPERATEUR + conceptObject.getIdConcept()
                         + SOUS_SEPERATEUR + "BT"
                         + SOUS_SEPERATEUR + idConcept2;
+                relations += SEPERATEUR + idConcept2
+                        + SOUS_SEPERATEUR + "NT"
+                        + SOUS_SEPERATEUR + conceptObject.getIdConcept();                
             }
         }
         if (CollectionUtils.isNotEmpty(conceptObject.getNarrowers())) {
@@ -608,6 +596,9 @@ public class CsvImportHelper {
                 relations += SEPERATEUR + conceptObject.getIdConcept()
                         + SOUS_SEPERATEUR + "NT"
                         + SOUS_SEPERATEUR + idConcept2;
+                relations += SEPERATEUR + idConcept2
+                        + SOUS_SEPERATEUR + "BT"
+                        + SOUS_SEPERATEUR + conceptObject.getIdConcept();                
             }
         }
         if (CollectionUtils.isNotEmpty(conceptObject.getRelateds())) {
@@ -618,6 +609,9 @@ public class CsvImportHelper {
                 relations += SEPERATEUR + conceptObject.getIdConcept()
                         + SOUS_SEPERATEUR + "RT"
                         + SOUS_SEPERATEUR + idConcept2;
+                relations += SEPERATEUR + idConcept2
+                        + SOUS_SEPERATEUR + "RT"
+                        + SOUS_SEPERATEUR + conceptObject.getIdConcept();                
             }
         }
         if (relations != null && relations.length() > 0) {
@@ -714,7 +708,8 @@ public class CsvImportHelper {
                     + idUser + ", "
                     + "'" + conceptStatus + "', "
                     + (conceptObject.getNotation() == null ? null : "'" + conceptObject.getNotation() + "'") + ""
-                    + ", '" + conceptObject.getArkId() + "', "
+                    + ","
+                    + (conceptObject.getArkId() == null ? "":  "'" + conceptObject.getArkId() + "'") + ", "
                     + isTopConcept + ", "
                     + "'" + idHandle + "', "
                     + "'" + idDoi + "', "

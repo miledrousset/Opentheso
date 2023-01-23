@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptArkId;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
@@ -73,6 +74,63 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
+    
+    /**
+     * Cette fonction permet de changer le type du concept
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param type
+     * @param idUser
+     * @return 
+     */
+    public boolean setConceptType(HikariDataSource ds, 
+            String idThesaurus,
+            String idConcept,
+            String type,
+            int idUser) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept set concept_type = '" + type + "'"
+                        + " WHERE id_concept ='"
+                        + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating type of concept : " + idConcept, sqle);
+        }
+        return false;
+    }    
+    
+    
+    /**
+     * Permet de retourner la liste de types de concepts
+     * date de type 2021-02-01
+     * @param ds
+     * @return 
+     */
+    public ArrayList<NodeConceptType> getAllTypesOfConcept(HikariDataSource ds) {
+        ArrayList<NodeConceptType> nodeConceptTypes = new  ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select * from concept_type");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeConceptType nodeConceptType = new NodeConceptType();
+                        nodeConceptType.setCode(resultSet.getString("code"));
+                        nodeConceptType.setLabel_fr(resultSet.getString("label_fr"));
+                        nodeConceptType.setLabel_en(resultSet.getString("label_en"));
+                        nodeConceptTypes.add(nodeConceptType);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All types of concepts " , sqle);
+        }
+        return nodeConceptTypes;
+    }            
+            
     
     /**
      * Permet de retourner la liste des concepts à partir d'une date donnée
@@ -4574,6 +4632,11 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet de rendre un Concept de type Topconcept
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
      */
     public boolean setTopConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
         try ( Connection conn = ds.getConnection()) {
