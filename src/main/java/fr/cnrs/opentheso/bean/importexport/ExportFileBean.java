@@ -618,7 +618,7 @@ public class ExportFileBean implements Serializable {
     private SKOSXmlDocument getConcepts(String idTheso) throws Exception {
 
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(),
-                viewExportBean.getNodeIdValueOfTheso().getId());
+                idTheso);
 
         if (nodePreference == null) {
             return null;
@@ -627,7 +627,7 @@ public class ExportFileBean implements Serializable {
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(),
-                viewExportBean.getNodeIdValueOfTheso().getId(), nodePreference);
+                idTheso, nodePreference);
 
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();

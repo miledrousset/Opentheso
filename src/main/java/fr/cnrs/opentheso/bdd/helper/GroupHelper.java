@@ -2963,7 +2963,7 @@ public class GroupHelper {
      * @param idArk
      * @return Objet class Concept
      */
-    public String getIdGroupFromArkId(HikariDataSource ds, String idArk) {
+    public String getIdGroupFromArkId(HikariDataSource ds, String idArk, String idTheso) {
 
         Connection conn;
         Statement stmt;
@@ -2975,7 +2975,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select idgroup from concept_group where"
-                            + " id_ark = '" + idArk + "'";
+                            + " id_ark = '" + idArk + "' and idthesaurus = '" + idTheso + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
@@ -2998,6 +2998,49 @@ public class GroupHelper {
         }
         return idGroup;
     }
+    /**
+     * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une
+     * chaine vide
+     *
+     * @param ds
+     * @param idHandle
+     * @return Objet class Concept
+     */
+    public String getIdGroupFromHandleId(HikariDataSource ds, String idHandle) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet = null;
+        String idGroup = "";
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select idgroup from concept_group where"
+                            + " id_handle = '" + idHandle + "'";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+
+                    if (resultSet.next()) {
+                        idGroup = resultSet.getString("idgroup");
+                    }
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting idGroup from idArk of Group : " + idHandle, sqle);
+        }
+        return idGroup;
+    }    
 
     /**
      * Cette fonction permet de récupérer l'identifiant du Concept d'après

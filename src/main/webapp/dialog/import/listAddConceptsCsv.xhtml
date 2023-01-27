@@ -1,0 +1,140 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idListAddConceptsCsv" header="#{langueBean.getMsg('rightbody.concept.import_tabulated_list')}" widgetVar="listAddConceptsCsv" 
+              width="850" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 50px" >
+
+        <h:form id="listAddConceptsCsvForm">              
+
+            <p:outputPanel deferred="true"  style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px; overflow-y: auto; max-height: 400px;">
+
+
+                <fieldset>
+                    <p:scrollPanel mode="native" >
+                        <p:panelGrid style="font-size: 12px;" >
+                            <f:facet name="header">
+                                <p:row style="font-size: 12px;">
+                                    <p:column>URI</p:column>
+                                    <p:column >skos:prefLabel@fr</p:column>
+                                    <p:column >skos:prefLabel@en</p:column>
+                                    <p:column >skos:definition@fr</p:column>
+                                    <p:column >skos:broader</p:column>
+                                </p:row>
+                            </f:facet>
+                            <p:row style="font-size: 12px;">
+                                <p:column ></p:column>
+                                <p:column >France</p:column>
+                                <p:column >France_en</p:column>
+                                <p:column >Pays de la liberté##fait partie de l'Europe</p:column>
+                                <p:column >26678/pcrtGQwa5EVqVh</p:column>
+                            </p:row>
+                            <p:row style="font-size: 12px;">
+                                <p:column ></p:column>
+                                <p:column >Lyon</p:column>
+                                <p:column >Lyon_en</p:column>
+                                <p:column >Ville de la gastronomie</p:column>
+                                <p:column >26678/pcrtGQwa5EVqdsqd</p:column>
+                            </p:row>                          
+                        </p:panelGrid>    
+                        <p:spacer/>
+                    </p:scrollPanel>    
+
+                    <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px;">
+                        <p >
+                            #{langueBean.getMsg('import.listCsv.help')} <br/>
+                            pour détecter les identifiants ARK, il faut une URI de ce type : (ark:/77777/PCRqdc8ms9kjk3xz5mptyj1)
+                        </p>
+                    </p:panel>                
+                </fieldset>
+
+            </p:outputPanel>
+
+            <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
+
+
+                <!-- choix du l'identifiant Ark ou Id ou Handle -->
+                <div class="row" style="margin-top: 10px; font-size: 14px; color: #000" >
+                    <div class="col-5">
+                        <h:outputText value="L'identifiant est de type:" />
+                    </div>
+                    <div class="col-7">
+                        <p:selectOneMenu value="#{importFileBean.selectedIdentifierImportAlign}" 
+                                         styleClass="selectOneMenu_custom" 
+                                         panelStyleClass="selectOneMenu_panelStyle_custom" style="width: 100%;"
+                                         title="Choix de l'identifiant pour détecter le concept">
+                            <f:selectItem itemLabel="identifier" itemValue="identifier" itemDescription="L'identifiant interne du concept"/>
+                            <f:selectItem itemLabel="ark" itemValue="ark" itemDescription="L'identifiant ark du concept"/>
+                            <f:selectItem itemLabel="handle" itemValue="handle" itemDescription="L'identifiant handle du concept"/>
+                            <p:ajax event="change" listener="#{importFileBean.actionChoiceIdentifier()}"  />
+                        </p:selectOneMenu>
+                    </div>
+                </div>                   
+
+                <!-- délimiteur CSV -->
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5" offset="5">
+                        <h:outputText value="Délimiteur Csv :" style="color: #000; font-size: 12px"  />
+                    </div>
+                    <div class="col-7">
+                        <p:selectOneMenu value="#{importFileBean.choiceDelimiter}" 
+                                         styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                         style="width: 100%; background: none;  box-shadow: none;">
+                            <f:selectItem itemLabel="," itemValue="0" />
+                            <f:selectItem itemLabel=";" itemValue="1" />
+                            <f:selectItem itemLabel="\t" itemValue="2" />
+                            <p:ajax event="change" listener="#{importFileBean.actionChoice()}"  />
+                        </p:selectOneMenu>
+                    </div>
+                </div>             
+
+            </p:panel>
+
+            <h:panelGroup id="panellistAddConceptsCsv">
+                <!-- Choix du fichier -->   
+                <div class="row" style="margin-left: 30px; margin-right: 30px; margin-top: 10px">
+                    <div class="col-12" > 
+                        <p:fileUpload listener="#{importFileBean.loadFileCsv}" 
+                                      label="#{langueBean.getMsg('candidat.parcourir')}"  style="padding-left: 10px; padding-right: 10px; font-size: 12px;"
+                                      mode="advanced" auto="true"
+                                      styleClass="browserbutton"
+                                      allowTypes="/(\.|\/)(csv|txt)$/"
+                                      update="panelListAddConceptsCsv_result" disabled="#{importFileBean.loadDone}"/>  
+                    </div>
+                </div> 
+            </h:panelGroup>                
+            <h:panelGroup id="panelListAddConceptsCsv_result">
+                <h:panelGroup rendered="#{importFileBean.loadDone}" style="margin-top: 10px" >
+                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                        <div class="col-5">
+                            <h:outputText value="URI: " />
+                            <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                        <div class="col-5">
+                            <h:outputText value="Total des actions " />
+                            <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                        </div>
+                    </div> 
+                </h:panelGroup>
+
+                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                     style="margin-right: 10px"
+                                     actionListener="#{importFileBean.init()}"
+                                     oncomplete="PF('listAddConceptsCsv').hide();"
+                                     update="listAddConceptsCsvForm"/>
+
+                    <p:commandButton value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-success" icon="pi pi-check"
+                                     process="@this"
+                                     update="messageIndex listAddConceptsCsvForm"
+                                     disabled="#{!importFileBean.loadDone}"
+                                     actionListener="#{importFileBean.addListConceptsToTheso(selectedTheso.selectedIdTheso, currentUser.nodeUser.idUser)}" />
+                </div> 
+            </h:panelGroup>
+        </h:form>
+    </p:dialog> 
+</ui:fragment>

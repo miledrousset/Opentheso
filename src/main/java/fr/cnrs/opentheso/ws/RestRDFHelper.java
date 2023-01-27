@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.json.JsonArray;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.ExportHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
@@ -34,6 +35,10 @@ import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 //import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelper;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
+import fr.cnrs.opentheso.skosapi.SKOSResource;
+import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -394,7 +399,7 @@ public class RestRDFHelper {
         }
         ConceptHelper conceptHelper = new ConceptHelper();
         String idTheso = conceptHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);
-        String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk);
+        String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk, idTheso);
 
         if (idTheso == null || idConcept == null) {
             return null;
@@ -529,8 +534,9 @@ public class RestRDFHelper {
             String idArk) {
 
         ConceptHelper conceptHelper = new ConceptHelper();
-        String idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk);
-        String idTheso = conceptHelper.getIdThesaurusFromArkId(ds, idArk);
+        String idTheso = conceptHelper.getIdThesaurusFromArkId(ds, idArk);        
+        String idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk, idTheso);
+
 
         if (idConcept == null || idTheso == null) {
             return null;
@@ -584,7 +590,7 @@ public class RestRDFHelper {
             String idArk, String idTheso, String idLang, boolean showLabels) {
 
         ConceptHelper conceptHelper = new ConceptHelper();
-        String idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk);
+        String idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk, idTheso);
         if (idTheso == null || idTheso.isEmpty()) {
             idTheso = conceptHelper.getIdThesaurusFromArkId(ds, idArk);
         }
@@ -995,7 +1001,7 @@ public class RestRDFHelper {
             idTheso = conceptHelper.getIdThesaurusFromArkId(ds, idArk);
             if(idTheso == null) continue;
             
-            idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk);
+            idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk, idTheso);
             if(idConcept == null) continue;
             
             nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
@@ -1373,7 +1379,12 @@ public class RestRDFHelper {
             String idTheso, String format) {
 
         RDFFormat rDFFormat = getRDFFormat(format);
-        WriteRdf4j writeRdf4j = getTheso__(ds, idTheso);
+        WriteRdf4j writeRdf4j = null;
+        try {
+            writeRdf4j = getTheso2__(ds, idTheso);
+        } catch (Exception ex) {
+            Logger.getLogger(RestRDFHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (writeRdf4j == null) {
             return null;
         }
@@ -1415,6 +1426,47 @@ public class RestRDFHelper {
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
         return writeRdf4j;
     }
+    
+    /**
+     * Fonction qui permet de récupérer une branche complète en partant d'un
+     * concept et en allant jusqu'à la racine (vers le haut)
+     *
+     * @param ds
+     * @param idTheso
+     * @return skos
+     */
+    private WriteRdf4j getTheso2__ (
+            HikariDataSource ds, String idTheso) throws Exception{
+        if (idTheso == null) return null;
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if (nodePreference == null) return null;
+
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.exportTheso(ds, idTheso, nodePreference);
+
+        String baseUrl = "https" + "://" + nodePreference.getCheminSite();
+
+        ExportHelper exportHelper = new ExportHelper();
+        
+        exportRdf4jHelperNew.exportCollections(ds, idTheso);
+        List<SKOSResource> concepts = exportHelper.getAllConcepts(ds, idTheso,
+                    baseUrl, null, nodePreference.getOriginalUri());
+            
+        List<SKOSResource> facettes = exportHelper.getAllFacettes(ds, idTheso, baseUrl,
+                nodePreference.getOriginalUri(), nodePreference);
+        for (SKOSResource facette : facettes) {
+            exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+        }
+
+        for (SKOSResource concept : concepts) {
+            exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
+        }
+        exportRdf4jHelperNew.exportFacettes(ds, idTheso);
+        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return writeRdf4j;        
+    }    
+  
 
     /**
      * Permet de retourner un group au format défini en passant par un
@@ -1469,8 +1521,9 @@ public class RestRDFHelper {
             String idArk) {
 
         GroupHelper groupHelper = new GroupHelper();
-        String idGroup = groupHelper.getIdGroupFromArkId(ds, idArk);
-        String idTheso = groupHelper.getIdThesaurusFromArkId(ds, idArk);
+        String idTheso = groupHelper.getIdThesaurusFromArkId(ds, idArk);        
+        String idGroup = groupHelper.getIdGroupFromArkId(ds, idArk, idTheso);
+
 
         if (idGroup == null || idTheso == null) {
             return null;

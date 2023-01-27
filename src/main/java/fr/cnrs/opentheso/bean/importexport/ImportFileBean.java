@@ -10,12 +10,13 @@ import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
@@ -46,6 +48,7 @@ import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.io.BufferedReader;
@@ -64,7 +67,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.locationtech.jts.util.Debug;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
@@ -75,7 +79,7 @@ import org.primefaces.event.FileUploadEvent;
 @Named(value = "importFileBean")
 @SessionScoped
 public class ImportFileBean implements Serializable {
-
+    private final Log log = LogFactory.getLog(ImportFileBean.class);
     @Inject
     private Connect connect;
     @Inject
@@ -109,6 +113,8 @@ public class ImportFileBean implements Serializable {
     private ArrayList<CsvReadHelper.ConceptObject> conceptObjects;
     private ArrayList<String> langs;
     private ArrayList<NodeAlignmentImport> nodeAlignmentImports;
+    
+    private ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues;
 
     //CSV Structuré
     private NodeTree racine;
@@ -648,6 +654,49 @@ public class ImportFileBean implements Serializable {
         }
     }
 
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
+    public void loadFileCsvForReplaceValueByNewValue(FileUploadEvent event) {
+        initError();
+        
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            // première lecrture pour charger les langues
+            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+            ArrayList<String> usedLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+                /// option true to read empty data
+                if (!csvReadHelper.readFileReplaceValueByNewValue(reader, usedLangs)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+
+                warning = csvReadHelper.getMessage();
+                nodeReplaceValueByValues = csvReadHelper.getNodeReplaceValueByValues();
+                if (nodeReplaceValueByValues != null) {
+                    total = nodeReplaceValueByValues.size();
+                    uri = "";//csvReadHelper.getUri();
+                    loadDone = true;
+                    BDDinsertEnable = true;
+                    info = "File correctly loaded";
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+        }
+    }
+
     public void loadFileCsvStructured(FileUploadEvent event) throws IOException {
         total = 0;
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
@@ -713,6 +762,7 @@ public class ImportFileBean implements Serializable {
 
         PrimeFaces.current().ajax().update("containerIndex:resultImportCSVStructure");
     }
+
     private NodeTree createTree(String[][] matrix, int ligne, int colone) {
 
         NodeTree element = new NodeTree();
@@ -732,7 +782,7 @@ public class ImportFileBean implements Serializable {
         }
 
         return element;
-    }    
+    }
 
     private NodeTree createTreeMR(String[][] matrix, int ligne, int colone) {
 
@@ -858,8 +908,6 @@ public class ImportFileBean implements Serializable {
             insertDB(node, idNewTheso, idConcept, conceptHelper);
         }
     }
-
-
 
     /**
      * insérer un thésaurus dans la BDD (CSV)
@@ -1110,6 +1158,128 @@ public class ImportFileBean implements Serializable {
         onComplete();
     }
 
+    /**
+     * insérer un thésaurus dans la BDD (CSV)
+     *
+     * @param idTheso
+     * @param idUser1
+     */
+    public void replaceValueByNewValue(String idTheso, int idUser1) {
+
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+
+        if (nodeReplaceValueByValues == null || nodeReplaceValueByValues.isEmpty()) {
+            return;
+        }
+        if (idTheso == null || idTheso.isEmpty()) {
+            return;
+        }        
+
+        if (importInProgress) {
+            return;
+        }
+
+        initError();
+
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+        String idConcept;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        // mise à jouor des concepts
+        try {
+            for (NodeReplaceValueByValue nodeReplaceValueByValue : nodeReplaceValueByValues) {
+                if (nodeReplaceValueByValue == null) {
+                    continue;
+                }
+                if (nodeReplaceValueByValue.getIdConcept()== null || nodeReplaceValueByValue.getIdConcept().isEmpty()) {
+                    continue;
+                }
+                idConcept=  getIdConcept(nodeReplaceValueByValue.getIdConcept(), idTheso);
+                if (idConcept == null || idConcept.isEmpty()) {
+                    continue;
+                }
+                nodeReplaceValueByValue.setIdConcept(idConcept);
+                // controle pour vérifier l'existance de l'Id
+                if (!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso())) {
+                    continue;
+                }
+
+                if(nodeReplaceValueByValue.getSKOSProperty() == SKOSProperty.broader) {
+                    String oldBt = getIdConcept(nodeReplaceValueByValue.getOldValue(), idTheso);
+                    String newBt = getIdConcept(nodeReplaceValueByValue.getNewValue(), idTheso);
+                    if(oldBt == null || newBt == null) {
+                        continue;
+                    }
+                    nodeReplaceValueByValue.setOldValue(oldBt);
+                    nodeReplaceValueByValue.setNewValue(newBt);
+                }
+                if (csvImportHelper.updateConceptValueByNewValue(connect.getPoolConnexion(), idTheso, nodeReplaceValueByValue, idUser1)) {
+                    total++;
+                }
+            }
+            log.error(csvImportHelper.getMessage());
+
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            //total = 0;
+            info = info + "\n" + "total = " + total ;
+            error.append(csvImportHelper.getMessage());
+            roleOnThesoBean.showListTheso();
+            viewEditionBean.init();
+
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("toolBoxForm");
+                pf.ajax().update("toolBoxForm:listThesoForm");
+            }
+
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+
+        conceptObjects = null;
+        //    System.gc();
+        //    System.gc();
+
+        onComplete();
+    }
+    private String getIdConcept(String idToFind, String idTheso) {
+        String idConcept = null;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+            idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), idToFind, idTheso);
+        }
+        if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+            idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), idToFind);
+        }
+        if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+            idConcept = idToFind;
+        }        
+        return idConcept;
+    }
+    private String getIdGroup(String idToFind, String idTheso) {
+        String idGroup = null;
+        GroupHelper groupHelper = new GroupHelper();
+        if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+            idGroup = groupHelper.getIdGroupFromArkId(connect.getPoolConnexion(), idToFind, idTheso);
+        }
+        if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+            idGroup = groupHelper.getIdGroupFromHandleId(connect.getPoolConnexion(), idToFind);
+        }
+        if ("identifier".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+            idGroup = idToFind;
+        }        
+        return idGroup;
+    }    
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////// Fonctions pour importer des données en CSV //////////////////
 ///////////////// L'ajout des données se fait en fusion  //////////////////////
@@ -1211,7 +1381,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getIdConcept());
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getIdConcept(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getIdConcept());
@@ -1392,7 +1562,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId());
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getLocalId());
@@ -1475,7 +1645,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeIdValue.getId());
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeIdValue.getId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), nodeIdValue.getId());
@@ -1558,7 +1728,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), nodeAlignmentImport.getLocalId());
@@ -1642,7 +1812,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
                 if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
-                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId());
+                    idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), conceptObject.getLocalId(), selectedTheso.getCurrentIdTheso());
                 }
                 if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
                     idConcept = conceptHelper.getIdConceptFromHandleId(connect.getPoolConnexion(), conceptObject.getLocalId());
@@ -1685,6 +1855,105 @@ public class ImportFileBean implements Serializable {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////   
 
+    
+    /**
+     * permet d'ajouter une liste de concepts en CSV au thésaurus
+     * les concepts seront placés au bon endroit suivant l'information du BT
+     *
+     * @param idTheso
+     * @param idUser
+     */
+    public void addListConceptsToTheso(String idTheso, int idUser) {
+        if (conceptObjects == null || conceptObjects.isEmpty()) {
+            warning = "pas de valeurs";
+            return;
+        }
+        if (importInProgress) {
+            return;
+        }
+        initError();
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+
+        // préparer les préférences du thésaurus, on récupérer les préférences du thésaurus en cours
+        NodePreference nodePreference = roleOnThesoBean.getNodePreference();
+        if (nodePreference == null) {
+            warning = "pas de préférences";
+            return;
+        }
+        CsvImportHelper csvImportHelper = new CsvImportHelper(nodePreference);
+        GroupHelper groupHelper = new GroupHelper();
+        ConceptHelper conceptHelper = new ConceptHelper();
+        String idConcept;
+        String BT_temp;
+        try {
+            for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
+                if (conceptObject == null) {
+                    continue;
+                }
+                if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
+                    conceptObject.setIdConcept(null);
+                } else {
+                    idConcept=  getIdConcept(conceptObject.getIdConcept(), idTheso);
+                    if (idConcept == null || idConcept.isEmpty()) {
+                        continue;
+                    }
+                    conceptObject.setIdConcept(idConcept);
+                    // controle pour vérifier l'existance de l'Id
+                    if (conceptHelper.isIdExiste(connect.getPoolConnexion(), conceptObject.getIdConcept(), idTheso)) {
+                        continue;
+                    }                      
+                }
+                
+                // gestion de l'hiérarchie pour les listes NT,
+                // si le BT est renseigné, alors on intègre le concept sous ce BT,
+                // sinon, c'est le père du dossier en cours qui est pris en compte
+                if (conceptObject.getBroaders().isEmpty()) {
+                    csvImportHelper.addSingleConcept(connect.getPoolConnexion(), idTheso,
+                            null, null, idUser, conceptObject);
+                } else {
+                    for (int i = 0; i < conceptObject.getBroaders().size(); i++) {
+                        BT_temp = conceptObject.getBroaders().get(i);
+                        BT_temp = getIdConcept(BT_temp, idTheso);
+                        if(BT_temp == null) {
+                            error.append("BT n'existe pas : ");
+                            error.append(conceptObject.getBroaders().get(i));
+                            continue; // erreur d'identifiant
+                        }
+                        conceptObject.getBroaders().set(i, BT_temp);
+                    }
+                        
+                    csvImportHelper.addSingleConcept(connect.getPoolConnexion(), idTheso,
+                            null, null, idUser, conceptObject);
+                    
+                }
+                String idGroup;
+                for (String member : conceptObject.getMembers()) {
+                    idGroup = getIdGroup(member, idTheso);
+                    if(idGroup == null) continue;
+                    groupHelper.addConceptGroupConcept(connect.getPoolConnexion(), idGroup, conceptObject.getIdConcept(), idTheso);
+                }
+            }
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            info = "import réussi";
+
+            info = info + "\n" + "total = " + total ;
+            error.append(csvImportHelper.getMessage());
+            viewEditionBean.init();            
+            
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+    }    
+    
     /**
      * permet d'ajouter une liste de concepts en CSV sous le concept sélectionné
      * la liste peut être hiérarchisée si la relation BT est renseignée

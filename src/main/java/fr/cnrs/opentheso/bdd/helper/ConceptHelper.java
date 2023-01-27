@@ -1362,7 +1362,7 @@ public class ConceptHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select modified from concept where id_thesaurus = '"
-                        + idTheso + "' and status != 'CA' order by modified DESC limit 1 ");
+                        + idTheso + "' and status != 'CA' and modified IS NOT NULL order by modified DESC limit 1 ");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         date = resultSet.getDate("modified");
@@ -4181,13 +4181,14 @@ public class ConceptHelper {
      * l'idArk
      * @param ds
      * @param arkId
+     * @param idTheso
      * @return 
      */
-    public String getIdConceptFromArkId(HikariDataSource ds, String arkId) {
+    public String getIdConceptFromArkId(HikariDataSource ds, String arkId, String idTheso) {
         String idConcept = null;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where id_ark = '" + arkId + "'");
+                stmt.executeQuery("select id_concept from concept where id_ark ilike '" + arkId + "' and id_thesaurus = '" + idTheso + "'" );
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idConcept = resultSet.getString("id_concept").trim();
@@ -4208,7 +4209,7 @@ public class ConceptHelper {
         String idConcept = null;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where id_handle = '" + handleId + "'");
+                stmt.executeQuery("select id_concept from concept where id_handle ilike '" + handleId + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idConcept = resultSet.getString("id_concept");

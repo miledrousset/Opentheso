@@ -1549,7 +1549,7 @@ public class Rest_new {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
         if(arkGroups != null && arkGroups.length != 0){
-            groups = getIdGroupFromArk(arkGroups);
+            groups = getIdGroupFromArk(arkGroups, idTheso);
         }
 
         datas = getDatasForWidget(idTheso, idLang, groups, value, format, match);
@@ -1567,7 +1567,7 @@ public class Rest_new {
         //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }    
     
-    private String[] getIdGroupFromArk(String[] arkGroups) {
+    private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {
         String[] groups = new String[arkGroups.length];
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
@@ -1577,7 +1577,7 @@ public class Rest_new {
             GroupHelper groupHelper = new GroupHelper();
             int i=0;
             for (String arkGroup : arkGroups) {
-                groups[i] = groupHelper.getIdGroupFromArkId(ds, arkGroup);
+                groups[i] = groupHelper.getIdGroupFromArkId(ds, arkGroup, idTheso);
                 i++;
             }
             ds.close();
@@ -1910,7 +1910,7 @@ public class Rest_new {
             if(idArk == null || idArk.isEmpty()) {
                 return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
             } else {
-                idConcept = getIdConceptFromArk(idArk);
+                idConcept = getIdConceptFromArk(idArk, idTheso);
                 if(idConcept == null)
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();                
             }
@@ -1955,14 +1955,14 @@ public class Rest_new {
         return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
     }
     
-    private String getIdConceptFromArk(String idArk){
+    private String getIdConceptFromArk(String idArk, String idtheso){
         String idConcept;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
                 return null;
             }
             ConceptHelper conceptHelper = new ConceptHelper();
-            idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk);
+            idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk, idtheso);
 
         }
         return idConcept;
@@ -2165,15 +2165,14 @@ public class Rest_new {
     }
 
     private String getAllTheso__(String idtheso, String format) {
-        HikariDataSource ds = connect();
         String datas;
-        if (ds == null) {
-            return null;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
+            }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.getTheso(ds, idtheso, format);
         }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        datas = restRDFHelper.getTheso(ds, idtheso, format);
-
-        ds.close();
         if (datas == null) {
             return null;
         }

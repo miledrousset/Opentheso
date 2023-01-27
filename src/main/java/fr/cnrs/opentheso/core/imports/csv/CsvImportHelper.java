@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bean.importexport.ImportFileBean;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.ConceptGroupLabel;
+import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
@@ -24,7 +25,9 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -192,7 +195,8 @@ public class CsvImportHelper {
 
         // On vérifie si le conceptPere est un Groupe, alors il faut ajouter un TopTerm, sinon, c'est un concept avec des relations
         if (idConceptPere == null) {
-            concept.setTopConcept(true);
+            if(conceptObject.getBroaders() == null || conceptObject.getBroaders().isEmpty())
+                concept.setTopConcept(true);
         } else {
             concept.setTopConcept(false);
         }
@@ -923,6 +927,7 @@ public class CsvImportHelper {
             if (!relationsHelper.insertHierarchicalRelation(ds, idConcept2, idTheso, "NT", conceptObject.getIdConcept())) {
                 message = message + "\n" + "erreur dans de la relation BT: " + conceptObject.getIdConcept();
             }
+            new ConceptHelper().setNotTopConcept(ds, conceptObject.getIdConcept(), idTheso);
         }
 
         for (String idConcept2 : conceptObject.getNarrowers()) {
@@ -1013,8 +1018,8 @@ public class CsvImportHelper {
             return true;
         }
         try {
-            latitude = Double.parseDouble(conceptObject.getLatitude());
-            longitude = Double.parseDouble(conceptObject.getLongitude());
+            latitude = Double.valueOf(conceptObject.getLatitude());
+            longitude = Double.valueOf(conceptObject.getLongitude());
         } catch (Exception e) {
             return true;
         }
@@ -1037,6 +1042,98 @@ public class CsvImportHelper {
 ////////////////////////////// mise à jour des concepts /////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////    
+    
+    
+    
+    
+    
+    //////////////////////////////////////////////////////////////////////////////////////    
+    //////// Méthodes pour le remplacement des valeurs suivant le type de données ////////    
+    //////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * permet de remplacer un lot de concepts, l'ancienne valeure par la nouvelle
+     * @param ds
+     * @param idTheso
+     * @param nodeReplaceValueByValue
+     * @param idUser1
+     * @return 
+     */
+    public boolean updateConceptValueByNewValue(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
+        message = "";
+        switch (nodeReplaceValueByValue.getSKOSProperty()) {
+            case SKOSProperty.prefLabel:
+                if (!updatePrefLabel(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
+                    addMessage("Erreur : ", nodeReplaceValueByValue);
+                }
+                break;
+            case SKOSProperty.broader:
+                if (!updateBroader(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
+                    addMessage("Erreur : ", nodeReplaceValueByValue);
+                }
+                break;                
+            default:
+                throw new AssertionError();
+        }
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(ds, idTheso, nodeReplaceValueByValue.getIdConcept(), idUser1);
+        return true;
+    }    
+    private boolean updatePrefLabel(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
+        if (nodeReplaceValueByValue.getIdConcept() == null || nodeReplaceValueByValue.getIdConcept().isEmpty()) {
+            addMessage("concept sans identifiant :", nodeReplaceValueByValue);
+            return false;
+        }
+        TermHelper termHelper = new TermHelper();
+        String idTerm = termHelper.getIdTermOfConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
+        if (idTerm == null || idTerm.isEmpty()) {
+            return false;
+        }
+
+        if(!termHelper.updateTraduction(ds, nodeReplaceValueByValue.getNewValue(), idTerm, nodeReplaceValueByValue.getIdLang(), idTheso, idUser1)) {
+            addMessage("Rename error :", nodeReplaceValueByValue);
+        }
+        return true;
+    }
+    private boolean updateBroader(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
+        if (nodeReplaceValueByValue.getIdConcept() == null || nodeReplaceValueByValue.getIdConcept().isEmpty()) {
+            addMessage("concept sans identifiant :", nodeReplaceValueByValue);
+            return false;
+        }
+        
+        RelationsHelper relationsHelper = new RelationsHelper();
+        if(!relationsHelper.deleteRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getOldValue(), idUser1)) {
+            addMessage("Rename error :", nodeReplaceValueByValue);
+        }        
+        if(!relationsHelper.addRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1)) {
+            addMessage("Rename error :", nodeReplaceValueByValue);
+        }
+        /*
+        if(!relationsHelper.deleteRelationNT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1)) {
+            addMessage("Rename error :", nodeReplaceValueByValue);
+        } */       
+        return true;
+    }      
+    private void addMessage(String error, NodeReplaceValueByValue nodeReplaceValueByValue) {
+        message = message + error + nodeReplaceValueByValue.getIdConcept() + "##" + nodeReplaceValueByValue.getOldValue() + "##" + nodeReplaceValueByValue.getNewValue() + "##" + nodeReplaceValueByValue.getIdLang() + "\n";
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public boolean updateConcept(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
 
         conceptObject.setIdTerm(new TermHelper().getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso));
@@ -1372,8 +1469,8 @@ public class CsvImportHelper {
             return true;
         }
         try {
-            latitude = Double.parseDouble(conceptObject.getLatitude());
-            longitude = Double.parseDouble(conceptObject.getLongitude());
+            latitude = Double.valueOf(conceptObject.getLatitude());
+            longitude = Double.valueOf(conceptObject.getLongitude());
         } catch (Exception e) {
             return true;
         }

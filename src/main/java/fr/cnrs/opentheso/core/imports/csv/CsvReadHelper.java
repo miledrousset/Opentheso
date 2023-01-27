@@ -5,10 +5,12 @@
  */
 package fr.cnrs.opentheso.core.imports.csv;
 
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import java.io.IOException;
 import java.io.Reader;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -44,6 +47,8 @@ public class CsvReadHelper {
     private ArrayList<NodeNote> nodeNotes;
     private ArrayList<NodeIdValue> nodeIdValues;
 
+    private ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues;    
+    
     public CsvReadHelper(char delimiter) {
         this.delimiter = delimiter;
         conceptObjects = new ArrayList<>();
@@ -393,6 +398,105 @@ public class CsvReadHelper {
         }
         return false;
     }
+    
+    /**
+     * permet de lire un fichier CSV complet pour récupérer données
+     * pour la valeur à remplacer par la nouvelle valeur 
+     *
+     * @param in
+     * @param usedLangs
+     * @return
+     */
+    public boolean readFileReplaceValueByNewValue(Reader in, ArrayList<String> usedLangs) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+
+            String idConcept;
+            nodeReplaceValueByValues = new ArrayList<>();
+            for (CSVRecord record : cSVParser) {
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    idConcept = record.get("localId");
+                    if (idConcept == null || idConcept.isEmpty()) {
+                        continue;
+                    }
+                } catch (Exception e) {
+                    continue;
+                }                
+                for (String idLang : usedLangs) {
+                    NodeReplaceValueByValue nodeReplaceValueByValue = new NodeReplaceValueByValue();
+                    // on récupère les prefLabels 
+                    nodeReplaceValueByValue = getValueAndPropertyPrefLabel(nodeReplaceValueByValue, record, idLang);     
+                    if (nodeReplaceValueByValue != null) {
+                        nodeReplaceValueByValue.setIdConcept(idConcept);
+                        nodeReplaceValueByValues.add(nodeReplaceValueByValue);
+                    }                  
+                }
+                 // on récupère les BTs 
+                NodeReplaceValueByValue nodeReplaceValueByValue = new NodeReplaceValueByValue();
+                nodeReplaceValueByValue = getValueAndPropertyBT(nodeReplaceValueByValue, record);     
+                if (nodeReplaceValueByValue != null) {
+                    nodeReplaceValueByValue.setIdConcept(idConcept);
+                    nodeReplaceValueByValues.add(nodeReplaceValueByValue);
+                }                  
+                 
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }    
+    
+    private NodeReplaceValueByValue getValueAndPropertyPrefLabel(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record,
+            String idLang) {
+        String value;
+        try {
+            value = record.get("new_skos:preflabel@"+ idLang);
+            if(value != null && !value.isEmpty()) {
+                nodeReplaceValueByValue.setIdLang(idLang);
+                nodeReplaceValueByValue.setNewValue(value);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.prefLabel);
+            } else {
+                return null;
+            }
+            value = record.get("skos:preflabel@"+ idLang);
+            if(value != null && !value.isEmpty()) {
+                nodeReplaceValueByValue.setOldValue(value);
+                return nodeReplaceValueByValue;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }      
+        return null;
+    }
+    private NodeReplaceValueByValue getValueAndPropertyBT(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record) {
+        String value;
+        try {
+            value = record.get("new_skos:broader");
+            if(value != null && !value.isEmpty()) {
+                nodeReplaceValueByValue.setNewValue(value);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.broader);
+            } else {
+                return null;
+            }
+            value = record.get("skos:broader");
+            if(value != null && !value.isEmpty()) {
+                nodeReplaceValueByValue.setOldValue(value);
+                return nodeReplaceValueByValue;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }      
+        return null;
+    }    
+    
 
 ////////////////////////////////////////////////////////////////////////////////    
 ////////////////////////////////////////////////////////////////////////////////
@@ -607,6 +711,7 @@ public class CsvReadHelper {
     private String getId(String uri) {
         String id;
 
+        uri = uri.toLowerCase();
         if (uri == null || uri.isEmpty()) {
             return null;
         }
@@ -628,7 +733,10 @@ public class CsvReadHelper {
                 if (uri.contains("#")) {
                     id = uri.substring(uri.indexOf("#") + 1, uri.length());
                 } else {
-                    id = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
+                    if(uri.contains("ark:/")){
+                        id = uri.substring(uri.indexOf("ark:/")+5 , uri.length());
+                    } else 
+                        id = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
                 }
             }
         }
@@ -1383,6 +1491,14 @@ public class CsvReadHelper {
 
     public void setNodeIdValues(ArrayList<NodeIdValue> nodeIdValues) {
         this.nodeIdValues = nodeIdValues;
+    }
+
+    public ArrayList<NodeReplaceValueByValue> getNodeReplaceValueByValues() {
+        return nodeReplaceValueByValues;
+    }
+
+    public void setNodeReplaceValueByValues(ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues) {
+        this.nodeReplaceValueByValues = nodeReplaceValueByValues;
     }
 
     public class ConceptObject {
