@@ -1323,15 +1323,15 @@ public class SearchHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select lexical_value from term "
+                stmt.executeQuery("select lower(lexical_value) from term "
                         + " where"
                         + " id_thesaurus = '" + idTheso + "'"
                         + " and"
                         + " lang = '" + idLang + "'"
-                        + " group by lexical_value having count(*) > 1 limit 100");
+                        + " group by lower(lexical_value) having count(*) > 1 limit 100");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
-                        conceptLabels.add(resultSet.getString("lexical_value"));
+                        conceptLabels.add(resultSet.getString("lower"));
                     }
                 }
             }

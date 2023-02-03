@@ -19,7 +19,7 @@
         }
     </style>
 
-    <p:panel rendered="#{candidatBean.isListCandidatsActivate()}" style="padding: 20px">
+    <p:panel rendered="#{candidatBean.isListCandidatsActivate()}" >
         <h:form id="panelCandidateList">
             <p:toolbar>
                 <p:toolbarGroup align="left">
@@ -44,13 +44,13 @@
             </p:toolbar>
 
             <div class="row" style="margin-top: 10px; font-size: 13px;">
-                <div class="col-2">
+                <div class="col-4">
                     <p:selectBooleanCheckbox value="#{candidatBean.myCandidatsSelected1}">
                         <p:ajax update="tabViewCandidat" listener="#{candidatBean.selectMyCandidats()}" />
                     </p:selectBooleanCheckbox>
                     <h:outputLabel value="#{langueBean.getMsg('candidat.my_candidats')}" style="color: #000; margin-left: 10px; margin-top: 5px" />
                 </div>
-                <div class="col-4">
+                <div class="col-2">
                     <h:outputText value="#{candidatBean.getOuntOfCandidats()} #{langueBean.getMsg('candidat.titre')}(s)" style="color: #601e18; font-size: 14px; " />                    
                 </div>
                 <div class="col-6" style="text-align: right">
@@ -64,7 +64,7 @@
             </div>
 
             <!-- tableau des candidats -->
-            <div class="card mb-4 py-3 border-left-success" style="margin-top: 30px; border-color: #43B572">
+            <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; border-color: #43B572">
 
                 <p:dataTable id="listCandidats" value="#{candidatBean.candidatList}" 
                              var="listCandidats" size="small" stripedRows="true"
@@ -136,17 +136,18 @@
 
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) 
                                       and (candidatBean.isListSelected())}">
-                <div class="row" >
-                    <div class="col-2 offset-1" style="text-align: right; margin-top: 20px;">
-                        <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" ajax="true" process="@this"
-                                         style="width: 100%; background-color: red !important; border-color: red !important"
-                                         update="idDeleteCandidate" styleClass="ui-button-success"
+                <div class="row" style="margin-top: 10px; margin-bottom: 30px">
+                    <div class="col-2 offset-1" style="text-align: right;">
+                        <p:commandButton ajax="true" process="@this"
+                                         value="#{langueBean.getMsg('candidat.remove')}" styleClass="ui-button-danger button" icon="fas fa-trash" 
+                                         update="idDeleteCandidate"
                                          oncomplete="PF('deleteCandidate').show();" /> 
                     </div>
 
-                    <div class="col-2 offset-6" style="text-align: right; margin-top: 20px;">
-                        <p:commandButton value="#{langueBean.getMsg('candidat.submitList')}" ajax="true" process="@this"
-                                         update="idProcessCandidateList processCandidateListForm" styleClass="ui-button-success"
+                    <div class="col-4 offset-4" style="text-align: right;">
+                        <p:commandButton ajax="true" process="@this"
+                                         value="#{langueBean.getMsg('candidat.submitList')}" styleClass="ui-button-success" icon="pi pi-check"
+                                         update="idProcessCandidateList processCandidateListForm"
                                          oncomplete="PF('processCandidateList').show();" style="width: 100%"/> 
                     </div>
                 </div>
@@ -154,10 +155,10 @@
         </h:form>        
     </p:panel>
 
-    <p:panel visible="#{candidatBean.isExportViewActivate()}" style="padding-left: 20px; padding-right: 20px;">
+    <p:panel visible="#{candidatBean.isExportViewActivate()}" style="padding-left: 20px; padding-right: 20px; margin-bottom: 30px">
         <h:form>
             <div class="row" >
-                <div class="col-12" style="margin-bottom: 15px">
+                <div class="col-12" >
                     <h:outputText value="#{langueBean.getMsg('candidat.exporting_candidates')}" 
                                   class="h5 mb-0 text-gray-800"/>
                 </div>
@@ -179,30 +180,27 @@
                 </p:tab>
             </p:accordionPanel>
 
-            <div class="row" style="margin-top: 20px">
-                <div class="col-1">
+            <div class="row" style="margin-top:  5px" >
+                <div class="col-3">
                     <h:outputText value="#{langueBean.getMsg('candidat.output_format')}" style="color: #000"/>
                 </div>
-                <div class="col-11" >
+                <div class="col-1" >
                     <p:selectOneMenu value="#{candidatBean.selectedExportFormat}" style="background: none; 
                                      box-shadow: none;" panelStyle="border: none; box-shadow: none;">
                         <f:selectItems  value="#{candidatBean.exportFormat}" var="format" itemLabel="#{format}" itemValue="#{format}"/>
 
                     </p:selectOneMenu>
                 </div>
-            </div>
-
-            <div class="row" style="margin: 20px">
-                <div class="col-12" style="text-align: center">
-
+                <div class="col-2 offset-2" >
                     <p:commandButton value="#{langueBean.getMsg('btnBack')}"
                                      icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                      actionListener="#{candidatBean.setListCandidatsActivate(true)}"
                                      update="tabViewCandidat" />
-
+                </div>
+                <div class="col-2" >
                     <p:commandButton value="#{langueBean.getMsg('candidat.export')}"
-                                     styleClass="ui-button-success" icon="fa fa-download"
-                                     title="Import rapide" style="margin-left: 20px"
+                                     styleClass="ui-button-success" icon="fa fa-upload"
+                                     style="margin-left: 20px"
                                      update="tabViewCandidat messageIndex">
                         <p:fileDownload value="#{exportFileBean.exportCandidatsEnSkos()}" />
                     </p:commandButton>
@@ -265,12 +263,14 @@
 
             <div class="row" style="margin: 20px">
                 <div class="col-6" style="text-align: right">
-                    <p:commandButton title="#{langueBean.getMsg('btnBack')}" class="btn btn-secondary"
+                    <p:commandButton 
+                                     value="#{langueBean.getMsg('btnBack')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
                                      actionListener="#{candidatBean.setListCandidatsActivate(true)}"
                                      update="tabViewCandidat" process="@this"/>
                 </div>
                 <div class="col-6" >
-                    <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('candidat.import')}" ajax="true"
+                    <p:commandButton ajax="true"
+                                     value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-success" icon="pi pi-download"
                                      update="tabViewCandidat messageIndex" process="@this"
                                      actionListener="#{importFileBean.addSkosCandidatToBDD()}"/>
                 </div> 

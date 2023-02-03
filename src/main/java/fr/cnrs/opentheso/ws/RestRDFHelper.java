@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.json.JsonArray;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.ExportHelper;
@@ -36,7 +35,6 @@ import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
-import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
@@ -52,6 +50,33 @@ import org.eclipse.rdf4j.rio.Rio;
  */
 public class RestRDFHelper {
 
+    /**
+     * permet de retourner l'URL Opentheso depui un Identifiant ARK
+     * ceci pour remplacer la redirection faite par le serveur ARK
+     * @param ds
+     * @param naan
+     * @param idArk
+     * @return 
+     */
+    public String getUrlFromIdArk(HikariDataSource ds, String naan, String idArk) {
+        if (idArk == null || idArk.isEmpty()) {
+            return null;
+        }
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        String idTheso = conceptHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);
+        String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk, idTheso);
+
+        if (idTheso == null || idConcept == null) {
+            return null;
+        }
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if (nodePreference == null) {
+            return null;
+        }
+        return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;
+    }
+    
     public String getAllLinkedConceptsWithOntome__(HikariDataSource ds, String idTheso) {
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         if (nodePreference == null) {

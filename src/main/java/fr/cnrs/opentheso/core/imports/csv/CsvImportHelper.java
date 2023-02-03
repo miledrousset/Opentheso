@@ -886,31 +886,31 @@ public class CsvImportHelper {
         NoteHelper noteHelper = new NoteHelper();
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
             noteHelper.addConceptNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                    "note", idUser);
+                    "note","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
             noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                    "definition", idUser);
+                    "definition","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
             noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                    "changeNote", idUser);
+                    "changeNote","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
             noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                    "editorialNote", idUser);
+                    "editorialNote","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
             noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                    "historyNote", idUser);
+                    "historyNote", "",idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
             noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                    "scopeNote", idUser);
+                    "scopeNote", "",idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getExamples()) {
             noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                    "example", idUser);
+                    "example", "",idUser);
         }
         return true;
     }
@@ -1282,7 +1282,7 @@ public class CsvImportHelper {
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
             if (!note.getLabel().isEmpty()) {
                 noteHelper.addConceptNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                        "note", idUser1);
+                        "note","", idUser1);
             }
         }
         langs = getLangs(conceptObject.getScopeNotes());
@@ -1294,7 +1294,7 @@ public class CsvImportHelper {
         for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
             if (!note.getLabel().isEmpty()) {
                 noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
-                        "scopeNote", idUser1);
+                        "scopeNote","", idUser1);
             }
         }
 
@@ -1307,7 +1307,7 @@ public class CsvImportHelper {
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
             if (!note.getLabel().isEmpty()) {
                 noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                        "definition", idUser1);
+                        "definition", "",idUser1);
             }
         }
 
@@ -1320,7 +1320,7 @@ public class CsvImportHelper {
         for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
             if (!note.getLabel().isEmpty()) {
                 noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                        "changeNote", idUser1);
+                        "changeNote", "",idUser1);
             }
         }
 
@@ -1333,7 +1333,7 @@ public class CsvImportHelper {
         for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
             if (!note.getLabel().isEmpty()) {
                 noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                        "editorialNote", idUser1);
+                        "editorialNote", "",idUser1);
             }
         }
 
@@ -1346,7 +1346,7 @@ public class CsvImportHelper {
         for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
             if (!note.getLabel().isEmpty()) {
                 noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                        "historyNote", idUser1);
+                        "historyNote", "",idUser1);
             }
         }
 
@@ -1359,7 +1359,7 @@ public class CsvImportHelper {
         for (CsvReadHelper.Label note : conceptObject.getExamples()) {
             if (!note.getLabel().isEmpty()) {
                 noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
-                        "example", idUser1);
+                        "example", "",idUser1);
             }
         }
         return true;

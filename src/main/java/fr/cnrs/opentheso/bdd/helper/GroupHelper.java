@@ -636,13 +636,13 @@ public class GroupHelper {
         try {
             stmt = conn.createStatement();
             try {
-                String query = "select nextval('concept_group__id_seq') from concept_group__id_seq";
+                String query = "select last_value from concept_group__id_seq";
                 //       + "select max(id) from concept_group";
                 stmt.executeQuery(query);
                 resultSet = stmt.getResultSet();
                 if (resultSet.next()) {
                     int idNumeriqueGroup = resultSet.getInt(1);
-                    idgroup = "G" + idNumeriqueGroup;
+                    idgroup = "G" + ++idNumeriqueGroup;
                     // si le nouveau Id existe, on l'incrémente
                     while (isIdGroupExiste(conn, idgroup)) {
                         idgroup = "G" + (++idNumeriqueGroup);
@@ -714,6 +714,7 @@ public class GroupHelper {
         ResultSet resultSet = null;
         Connection conn;
         boolean existe = false;
+        if(notation == null || notation.isEmpty()) return false;
 
         try {
             conn = ds.getConnection();

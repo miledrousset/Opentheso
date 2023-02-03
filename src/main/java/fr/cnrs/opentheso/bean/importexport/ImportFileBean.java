@@ -44,6 +44,7 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
+import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
@@ -52,6 +53,7 @@ import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -71,6 +73,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -112,7 +116,9 @@ public class ImportFileBean implements Serializable {
     private String thesaurusName;
     private ArrayList<CsvReadHelper.ConceptObject> conceptObjects;
     private ArrayList<String> langs;
+    private String idLang;
     private ArrayList<NodeAlignmentImport> nodeAlignmentImports;
+
     
     private ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues;
 
@@ -192,6 +198,7 @@ public class ImportFileBean implements Serializable {
     }
 
     public void init() {
+        selectedIdentifierImportAlign="identifier";
         choiceDelimiter = 0;
         delimiterCsv = ',';
         haveError = false;
@@ -225,6 +232,7 @@ public class ImportFileBean implements Serializable {
         if (nodeNotes != null) {
             nodeNotes.clear();
         }
+        idLang = null;
 
         // récupération des toutes les langues pour le choix de le langue source
         LanguageHelper languageHelper = new LanguageHelper();
@@ -512,11 +520,25 @@ public class ImportFileBean implements Serializable {
             event.setPhaseId(PhaseId.INVOKE_APPLICATION);
             event.queue();
         } else {
+            ArrayList<String> headerSourceAlignList;
+            
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
-
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+                headerSourceAlignList =csvReadHelper.readHeadersFileAlignment(reader1);
+                if(headerSourceAlignList == null || headerSourceAlignList.isEmpty()){
+                    error.append(csvReadHelper.getMessage());
+                    return;
+                }
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+                return;
+            }             
+            
             try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
 
-                if (!csvReadHelper.readFileAlignment(reader)) {
+                if (!csvReadHelper.readFileAlignment(reader, headerSourceAlignList)) {
                     error.append(csvReadHelper.getMessage());
                 }
 
@@ -654,6 +676,66 @@ public class ImportFileBean implements Serializable {
         }
     }
 
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
+    public void loadFileCsvForGetIdFromPrefLabel(FileUploadEvent event) {
+        initError();
+        
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            
+            // première lecrture pour charger les langues
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+                /// option true to read empty data
+                if (!csvReadHelper.readFileCsvForGetIdFromPrefLabelSetLang(reader1)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            }
+            if(csvReadHelper.getIdLang() == null) {
+                error.append("La langue n'a pas été déctectée");
+                return;
+            }            
+            
+            
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+                /// option true to read empty data
+                if (!csvReadHelper.readFileCsvForGetIdFromPrefLabel(reader)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+
+                warning = csvReadHelper.getMessage();
+                nodeIdValues = csvReadHelper.getNodeIdValues();
+                idLang = csvReadHelper.getIdLang();
+                if (nodeIdValues != null) {
+                    total = nodeIdValues.size();
+                    uri = "";//csvReadHelper.getUri();
+                    loadDone = true;
+                    BDDinsertEnable = true;
+                    info = "File correctly loaded";
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+        }
+    }    
+            
+            
     /**
      * permet de charger un fichier en Csv
      *
@@ -1159,6 +1241,87 @@ public class ImportFileBean implements Serializable {
     }
 
     /**
+     * permet de récupérer les identifiants depuis le prefLabel
+     *
+     * @param idTheso
+     * @param idUser
+     * @return 
+     */
+    public StreamedContent getIdFromPrefLabel(String idTheso, int idUser) {
+
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+
+        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+            return null;
+        }
+        if (idTheso == null || idTheso.isEmpty()) {
+            return null;
+        }     
+        if (idLang == null || idLang.isEmpty()) {
+            return null;
+        }
+        initError();
+
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+        ArrayList<String> idConcepts;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        // mise à jouor des concepts
+        try {
+            for (NodeIdValue nodeIdValue : nodeIdValues) {
+                if (nodeIdValue == null) {
+                    continue;
+                }
+                if (nodeIdValue.getValue()== null || nodeIdValue.getValue().isEmpty()) {
+                    continue;
+                }
+                idConcepts =  conceptHelper.getIdConceptsFromLabel(connect.getPoolConnexion(),
+                        idTheso, nodeIdValue.getValue(), idLang );
+                if (idConcepts == null || idConcepts.isEmpty() || idConcepts.size() > 1) {
+                    continue;
+                }
+                for (String idConcept : idConcepts) {
+                    nodeIdValue.setId(idConcept);
+                    total++;                                    
+                }
+            }
+            log.error(csvImportHelper.getMessage());
+
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            //total = 0;
+            info = info + "\n" + "total = " + total ;
+            error.append(csvImportHelper.getMessage());
+            
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas = csvWriteHelper.writeCsvIdValue(nodeIdValues, idLang);
+
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name("resultat.csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();            
+            
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+        return null;
+    }    
+    
+    /**
      * insérer un thésaurus dans la BDD (CSV)
      *
      * @param idTheso
@@ -1434,7 +1597,7 @@ public class ImportFileBean implements Serializable {
                             selectedTheso.getCurrentIdTheso(), definition.getLang(),
                             definition.getLabel(), "definition")) {
                         noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, definition.getLang(),
-                                selectedTheso.getCurrentIdTheso(), definition.getLabel(), "definition", -1);
+                                selectedTheso.getCurrentIdTheso(), definition.getLabel(), "definition", "", -1);
                         total++;
                     }
                 }
@@ -1444,7 +1607,7 @@ public class ImportFileBean implements Serializable {
                             selectedTheso.getCurrentIdTheso(), historyNote.getLang(),
                             historyNote.getLabel(), "historyNote")) {
                         noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, historyNote.getLang(),
-                                selectedTheso.getCurrentIdTheso(), historyNote.getLabel(), "historyNote", -1);
+                                selectedTheso.getCurrentIdTheso(), historyNote.getLabel(), "historyNote","", -1);
                         total++;
                     }
                 }
@@ -1454,7 +1617,7 @@ public class ImportFileBean implements Serializable {
                             selectedTheso.getCurrentIdTheso(), changeNote.getLang(),
                             changeNote.getLabel(), "changeNote")) {
                         noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, changeNote.getLang(),
-                                selectedTheso.getCurrentIdTheso(), changeNote.getLabel(), "changeNote", -1);
+                                selectedTheso.getCurrentIdTheso(), changeNote.getLabel(), "changeNote","", -1);
                         total++;
                     }
                 }
@@ -1464,7 +1627,7 @@ public class ImportFileBean implements Serializable {
                             selectedTheso.getCurrentIdTheso(), editorialNote.getLang(),
                             editorialNote.getLabel(), "editorialNote")) {
                         noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, editorialNote.getLang(),
-                                selectedTheso.getCurrentIdTheso(), editorialNote.getLabel(), "editorialNote", -1);
+                                selectedTheso.getCurrentIdTheso(), editorialNote.getLabel(), "editorialNote","", -1);
                         total++;
                     }
                 }
@@ -1474,7 +1637,7 @@ public class ImportFileBean implements Serializable {
                             selectedTheso.getCurrentIdTheso(), example.getLang(),
                             example.getLabel(), "example")) {
                         noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, example.getLang(),
-                                selectedTheso.getCurrentIdTheso(), example.getLabel(), "example", -1);
+                                selectedTheso.getCurrentIdTheso(), example.getLabel(), "example","", -1);
                         total++;
                     }
                 }
@@ -1488,7 +1651,7 @@ public class ImportFileBean implements Serializable {
                             note.getLabel(), "note")) {
                         noteHelper.addConceptNote(connect.getPoolConnexion(),
                                 idConcept, note.getLang(),
-                                selectedTheso.getCurrentIdTheso(), note.getLabel(), "note", -1);
+                                selectedTheso.getCurrentIdTheso(), note.getLabel(), "note","", -1);
                         total++;
                     }
                 }
@@ -1500,7 +1663,7 @@ public class ImportFileBean implements Serializable {
                             scopeNote.getLabel(), "scopeNote")) {
                         noteHelper.addConceptNote(connect.getPoolConnexion(),
                                 idConcept, scopeNote.getLang(),
-                                selectedTheso.getCurrentIdTheso(), scopeNote.getLabel(), "scopeNote", -1);
+                                selectedTheso.getCurrentIdTheso(), scopeNote.getLabel(), "scopeNote","", -1);
                         total++;
                     }
                 }

@@ -106,14 +106,17 @@ public class AddGroupBean implements Serializable {
         GroupHelper groupHelper = new GroupHelper();
         groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-        if (groupHelper.isNotationExist(
-                connect.getPoolConnexion(),
-                notation,
-                idTheso)) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }        
+        if(notation == null || notation.isEmpty()){
+        } else {
+            if (groupHelper.isNotationExist(
+                    connect.getPoolConnexion(),
+                    notation,
+                    idTheso)) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }
         
         String idGroup = groupHelper.addGroup(connect.getPoolConnexion(),
                 nodeGroup,

@@ -93,7 +93,7 @@ public class PropositionService implements Serializable {
         propositionDao.setThesoName(new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
 
         try {
-            String subject = "[Opentheso] Confirmation de l'envoie de votre proposition";
+            String subject = "[Opentheso] Confirmation de l'envoi de votre proposition";
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionDao.getNom() + ", <br/> "
                     + "<p> Votre proposition a bien été reçue par nos administrateurs, elle sera étudiée dans les plus brefs délais.<br/>"
@@ -781,7 +781,7 @@ public class PropositionService implements Serializable {
                     notePropBean.getLang(),
                     selectedTheso.getCurrentIdTheso(),
                     notePropBean.getLexicalvalue(),
-                    typeNote,
+                    typeNote, "",
                     currentUser.getNodeUser().getIdUser())) {
 
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
@@ -794,7 +794,7 @@ public class PropositionService implements Serializable {
                     notePropBean.getLang(),
                     selectedTheso.getCurrentIdTheso(),
                     notePropBean.getLexicalvalue(),
-                    typeNote,
+                    typeNote,"",
                     currentUser.getNodeUser().getIdUser())) {
 
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");

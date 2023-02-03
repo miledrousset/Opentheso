@@ -17,6 +17,7 @@
         <div class="col-12">
             <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
                 <!--Pour importer des alignements -->
+                
                 <p:menuButton value="#{langueBean.getMsg('actions')}"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;
                               color: transparent;  font-size: 12px" >
                     <p:menuitem value="#{langueBean.getMsg('actions.importAlignments')}" 
@@ -64,7 +65,7 @@
                                 title="#{langueBean.getMsg('actions.importListForMergingTooltip')}"
                                 oncomplete="PF('listForMergeCsv').show();"
                                 update="idListForMergeCsv listForMergeCsvForm"
-                                action="#{importFileBean.init()}" icon="fa fa-code-merge" style="font-size: 12px;"/>
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
                     
                     
                     <p:divider style="margin-bottom: 10px; margin-bottom: 20px;" />                    
@@ -73,14 +74,23 @@
                                 title="#{langueBean.getMsg('actions.importListForReplaceByTooltip')}"
                                 oncomplete="PF('listReplaceValueByNewValueCsv').show();"
                                 update="idListReplaceValueByNewValueCsv listReplaceValueByNewValueCsvForm"
-                                action="#{importFileBean.init()}" icon="fa fa-code-merge" style="font-size: 12px;"/>                    
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                    
 
                     <!-- Import d'une liste tabulée pour ajouter des concepts au thésaurus, si l'ID est vide, un identifiant sera généré automatiquement -->                    
                     <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.importListConceptToAdd')}" 
                                 title="#{langueBean.getMsg('actions.importListConceptToAddTooltip')}"
                                 oncomplete="PF('listAddConceptsCsv').show();"
                                 update="idListAddConceptsCsv listAddConceptsCsvForm"
-                                action="#{importFileBean.init()}" icon="fa fa-code-merge" style="font-size: 12px;"/>                       
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                   
+                    <p:divider style="margin-bottom: 10px; margin-bottom: 20px;" />  
+                    
+                    <!-- Récupère les Identifiant d'après un prefLabel -->
+                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.getIdFromPrefLabel')}" 
+                                title="#{langueBean.getMsg('actions.getIdFromPrefLabelTooltip')}"
+                                oncomplete="PF('getIdFromPrefLabel').show();"
+                                update="idGetIdFromPrefLabel getIdFromPrefLabelForm"
+                                action="#{importFileBean.init()}" icon="pi pi-upload" style="font-size: 12px;"/>                          
+                    
                     
                 </p:menuButton>
             </p:panel>           
@@ -95,6 +105,8 @@
     <ui:include src="../dialog/import/listNotationCsv.xhtml" />     
     <ui:include src="../dialog/import/listForMergeCsv.xhtml" />    
     <ui:include src="../dialog/import/listReplaceValueByNewValueCsv.xhtml" />  
-    <ui:include src="../dialog/import/listAddConceptsCsv.xhtml" />     
+    <ui:include src="../dialog/import/listAddConceptsCsv.xhtml" />   
+    <ui:include src="../dialog/actions/getIdFromPrefLabel.xhtml" />     
+    
     
 </ui:fragment>

@@ -54,7 +54,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -66,7 +65,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
@@ -772,6 +770,13 @@ public class ConceptView implements Serializable {
         }
         UserHelper userHelper = new UserHelper();;
         return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getConcept().getContributor());
+    }
+    
+    public String getNoteSource(String noteSource){
+        if(StringUtils.isEmpty(noteSource))
+            return "";
+        else
+            return " (" + noteSource + ")";
     }
 
 /////////////////////////////////

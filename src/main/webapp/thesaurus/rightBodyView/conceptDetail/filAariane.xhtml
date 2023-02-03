@@ -150,7 +150,7 @@
         <h:form rendered="#{roleOnTheso.nodePreference.breadcrumb}" style="padding-left: 5px;">
             <ui:repeat var="path" value="#{conceptView.pathLabel}" >
                 <h:panelGroup rendered="#{path.isStartOfPath}">
-                    <i class="fas fa-home" size="xs" style="color: #f47b2a;"/>
+                    <i class="fas fa-home" size="xs" style="color: #f47b2a; font-size: 15px;"/>
                 </h:panelGroup>
 
                 <p:commandLink rendered="#{path.isIsStartOfPath()}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
@@ -165,7 +165,7 @@
             </ui:repeat>
 
             <h:panelGroup rendered="#{conceptView.nodeConcept.concept.topConcept}">
-                <i  class="fas fa-home" size="xs" style="color: #f47b2a;"/>
+                <i  class="fas fa-home" size="xs" style="color: #f47b2a; font-size: 15px;"/>
             </h:panelGroup>
 
             <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value != ''}" 

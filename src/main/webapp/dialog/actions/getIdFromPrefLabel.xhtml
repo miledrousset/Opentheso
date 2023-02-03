@@ -1,0 +1,99 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idGetIdFromPrefLabel" header="#{langueBean.getMsg('actions.getIdFromPrefLabel')}" widgetVar="getIdFromPrefLabel"  
+              width="850" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <h:panelGroup id="getIdFromPrefLabelForm">              
+
+            <p:outputPanel deferred="true"  style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px; overflow-y: auto; max-height: 300px;">
+                
+                
+                <fieldset>
+                <p:scrollPanel mode="native" >
+                    <p:panelGrid style="font-size: 12px;">
+                        <f:facet name="header">
+                            <p:row style="font-size: 12px;">
+                                <p:column colspan="1">skos:prefLabel@fr</p:column>
+                                <p:column colspan="1"><h:outputText value="URI (cette colonne sera ajoutée)" style="color: red"/></p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row style="font-size: 12px;">
+                            <p:column colspan="1">Espagne</p:column>
+                        </p:row>
+                    </p:panelGrid>    
+                    <p:spacer/>
+                </p:scrollPanel>    
+                
+                <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px;">
+                    <p style="color: #000;">
+                        Permet de récupérer les Id d'après le prefLabel, une colonne URI sera ajoutée au tableau pour les identifiants trouvés<br/>
+                        L'Id est vide si : pas d'identifiant, et si le label est en double 
+                    </p>
+                </p:panel>                
+                </fieldset>
+               
+            </p:outputPanel>
+
+            <h:panelGroup id="panelGetIdFromPrefLabel">
+                <!-- Choix du fichier -->   
+                <div class="row" style="margin-left: 30px; margin-right: 30px; margin-top: 10px">
+                    <div class="col-12" > 
+                        <p:fileUpload listener="#{importFileBean.loadFileCsvForGetIdFromPrefLabel}" 
+                                      label="#{langueBean.getMsg('candidat.parcourir')}"  style="padding-left: 10px; padding-right: 10px; font-size: 12px;"
+                                      mode="advanced" auto="true"
+                                      styleClass="browserbutton"
+                                      allowTypes="/(\.|\/)(csv|txt)$/"
+                                      update="panelGetIdFromPrefLabel_result" disabled="#{importFileBean.loadDone}"/>  
+                    </div>
+                </div> 
+            </h:panelGroup>                
+            <h:panelGroup id="panelGetIdFromPrefLabel_result">
+                <h:panelGroup rendered="#{importFileBean.loadDone}" style="margin-top: 10px" >
+                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                        <div class="col-5">
+                            <h:outputText value="URI: " />
+                            <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                        <div class="col-5">
+                            <h:outputText value="Total des actions " />
+                            <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                        </div>
+                    </div> 
+                </h:panelGroup>
+
+                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                     style="margin-right: 10px"
+                                     actionListener="#{importFileBean.init()}"
+                                     oncomplete="PF('getIdFromPrefLabel').hide();"
+                                     update="getIdFromPrefLabelForm"/>
+
+                    <p:commandButton value="#{langueBean.getMsg('candidat.export')}" ajax="true"
+                                     onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     disabled="#{!importFileBean.loadDone}"
+                                     styleClass="ui-button-success" icon="fa fa-upload" 
+                                     title="#{langueBean.getMsg('actions.getIdFromPrefLabel')}" style="margin-left: 20px">
+                        <p:fileDownload value="#{importFileBean.getIdFromPrefLabel(selectedTheso.selectedIdTheso, currentUser.nodeUser.idUser)}" />
+                    </p:commandButton>                     
+                    
+                </div> 
+                <script type="text/javascript">
+                    function start() {
+                        PF('statusDialog').show();
+                    }
+
+                    function stop() {
+                        PF('statusDialog').hide();
+                    }
+                </script>                
+            </h:panelGroup>
+        </h:panelGroup>
+ 
+    </p:dialog> 
+</ui:fragment>

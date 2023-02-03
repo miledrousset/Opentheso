@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -55,20 +56,12 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AlignmentBean implements Serializable {
 
-    @Inject
-    private Connect connect;
-    
-    @Inject
-    private ConceptView conceptView;
-    
-    @Inject
-    private SelectedTheso selectedTheso;
-
-    @Inject
-    private ConceptView conceptBean;
-    
-    @Inject
-    private AlignmentManualBean alignmentManualBean;
+    @Inject private Connect connect;
+    @Inject private ConceptView conceptView;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private ConceptView conceptBean;
+    @Inject private AlignmentManualBean alignmentManualBean;
+    @Inject private LanguageBean languageBean;
 
     private boolean withLang;
     private boolean withNote;
@@ -932,7 +925,7 @@ public class AlignmentBean implements Serializable {
                         idTheso,
                         idConcept,
                         lexicalValue);
-            }            
+            }
             // System.out.println("fin");
         }
 
@@ -974,7 +967,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", wikidataHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), wikidataHelper.getMessages()));               
         }
     }
 
@@ -1008,7 +1002,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", wikidataHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), wikidataHelper.getMessages()));            
         }
     }
 
@@ -1043,7 +1038,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", idRefHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), idRefHelper.getMessages()));                  
         }
     }
 
@@ -1078,7 +1074,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", idRefHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), idRefHelper.getMessages()));              
         }
     }
 
@@ -1112,7 +1109,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", idRefHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), idRefHelper.getMessages()));              
         }
     }
 
@@ -1144,7 +1142,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", idRefHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), idRefHelper.getMessages()));  
         }
     }
 
@@ -1176,7 +1175,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", idRefHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), idRefHelper.getMessages()));  
         }
     }
 
@@ -1211,8 +1211,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected",
-                    gettyAATHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), gettyAATHelper.getMessages()));              
         }
     }
 
@@ -1247,8 +1247,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Pas de résultat",
-                    gemetHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), gemetHelper.getMessages()));   
         }
     }
 
@@ -1283,8 +1283,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Pas de résultat",
-                    agrovocHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), agrovocHelper.getMessages()));  
         }
     }
 
@@ -1318,11 +1318,11 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected",
-                    geoNamesHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), geoNamesHelper.getMessages()));
         }
     }
-    
+
     /**
      * Cette fonction permet de récupérer les concepts à aligner de la source
      * juste la liste des concepts avec une note pour distinguer les concepts/
@@ -1352,7 +1352,8 @@ public class AlignmentBean implements Serializable {
                 alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected", ontomeHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), ontomeHelper.getMessages()));
         }
     }     
 
@@ -1387,8 +1388,8 @@ public class AlignmentBean implements Serializable {
                 idLang, alignementSource.getRequete(),
                 alignementSource.getSource());
         if (listAlignValues == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Item Unselected",
-                    openthesoHelper.getMessages()));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    languageBean.getMsg("search.noResult"), openthesoHelper.getMessages()));            
         }
     }
 
@@ -1683,7 +1684,7 @@ public class AlignmentBean implements Serializable {
         selectedNodeAlignment = null;
         alignmentInProgress = false;
         //conceptView.getConcept(idTheso, idConcept, conceptView.getSelectedLang());
-        
+
         updateDateOfConcept(idTheso, idConcept, idUser);
 
         PrimeFaces pf = PrimeFaces.current();
@@ -1701,19 +1702,19 @@ public class AlignmentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param idTheso
      * @param idConcept
-     * @param idUser 
+     * @param idUser
      */
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
         ConceptHelper conceptHelper = new ConceptHelper();
 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 idTheso,
-                idConcept, idUser);    
+                idConcept, idUser);
     }
-    
+
     /**
      * Permet d'ajouter les coordonnées GPS pour les lieux
      *
@@ -1827,14 +1828,21 @@ public class AlignmentBean implements Serializable {
             return false;
         }
 
+
         // ajout de la note avec prefix de la source (wikidata)
         for (SelectedResource selectedResource : descriptionsOfAlignment) {
             if (selectedResource.isSelected()) {
+                if(noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(),
+                        idTerm, idTheso, 
+                        selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
+                    continue;
+                }                
+                
                 if (!noteHelper.addTermNote(connect.getPoolConnexion(),
                         idTerm, selectedResource.getIdLang(),
                         idTheso,
-                        selectedResource.getGettedValue() + " (" + selectedAlignement + ")",
-                        "definition",
+                        selectedResource.getGettedValue(),
+                        "definition", selectedAlignement,
                         idUser)) {
                     error = true;
                     alignementResult = alignementResult + ": Erreur dans l'ajout des définitions";

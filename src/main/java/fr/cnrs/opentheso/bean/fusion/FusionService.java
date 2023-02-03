@@ -193,6 +193,7 @@ public class FusionService implements Serializable {
                                             conceptFound.getConcept().getIdThesaurus(),
                                             nodeNote.getLexicalvalue(),
                                             nodeNote.getNotetypecode(),
+                                            "",
                                             nodeNote.getIdUser());
                                     isUpdated = true;
                                 }

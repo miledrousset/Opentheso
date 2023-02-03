@@ -1077,7 +1077,7 @@ public class ImportRdf4jHelper {
 
             if (nodeNoteList1.getNotetypecode().equals("customnote") || nodeNoteList1.getNotetypecode().equals("scopeNote") || nodeNoteList1.getNotetypecode().equals("note")) {
                 acs.noteHelper.addConceptNote(ds, acs.concept.getIdConcept(), nodeNoteList1.getLang(),
-                        idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(), idUser);
+                        idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(),"", idUser);
             }
 
             if (nodeNoteList1.getNotetypecode().equals("definition")
@@ -1086,7 +1086,7 @@ public class ImportRdf4jHelper {
                     || nodeNoteList1.getNotetypecode().equals("changeNote")
                     || nodeNoteList1.getNotetypecode().equals("example")) {
                 acs.noteHelper.addTermNote(ds, acs.nodeTerm.getIdTerm(), nodeNoteList1.getLang(),
-                        idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(), idUser);
+                        idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(),"", idUser);
             }
 
         }

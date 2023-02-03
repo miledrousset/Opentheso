@@ -38,6 +38,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
 import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
@@ -942,13 +943,15 @@ public class ConceptHelper {
      * permet de trouver les idConcepts en partant d'un label
      * @param ds
      * @param idTheso
+     * @param label
      * @param idLang
      * @return 
      */
-    private ArrayList<String> getIdConceptsFromLabel(HikariDataSource ds,
+    public ArrayList<String> getIdConceptsFromLabel(HikariDataSource ds,
             String idTheso, String label, String idLang) {
         ArrayList<String> conceptLabels = new ArrayList<>();
-        
+        StringPlus stringPlus = new StringPlus();
+        label = stringPlus.convertString(label);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select concept.id_concept from concept, preferred_term, term " +
@@ -965,7 +968,7 @@ public class ConceptHelper {
                         " and " +
                         " term.lang = '" +idLang + "'" +
                         " and" +
-                        " term.lexical_value = '" + label + "'");
+                        " lower(term.lexical_value) = lower('" + label + "')");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         conceptLabels.add(resultSet.getString("id_concept"));
@@ -1399,7 +1402,7 @@ public class ConceptHelper {
                             " concept.id_thesaurus = '" + idTheso + "'" +
                             " and" +
                             " term.lang = '" + idLang + "'" +
-                            " and concept.status != 'CA' order by concept.modified DESC limit 10");
+                            " and concept.status != 'CA' and concept.modified IS not null  order by concept.modified DESC limit 10");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();

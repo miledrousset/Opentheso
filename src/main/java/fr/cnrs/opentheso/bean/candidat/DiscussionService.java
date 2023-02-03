@@ -1,23 +1,20 @@
 package fr.cnrs.opentheso.bean.candidat;
 
-import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bean.concept.SynonymBean;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.utils.EmailUtils;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -43,9 +40,11 @@ public class DiscussionService implements Serializable {
     private Connect connect;
     @Inject
     private LanguageBean languageBean;
-
+    @Inject private MailBean mailBean;
+    
+    
     private String email;
-    private List<String> participants;
+    private List<NodeUser> nodeUsers;
 
     @PreDestroy
     public void destroy() {
@@ -53,33 +52,27 @@ public class DiscussionService implements Serializable {
     }
 
     public void clear() {
-        if (participants != null) {
-            participants.clear();
-            participants = null;
+        if (nodeUsers != null) {
+            nodeUsers.clear();
+            nodeUsers = null;
         }
         email = null;
     }
 
-    public List<String> getParticipantsInConversation() {
-
-        participants = new MessageDao().getParticipantsByCandidat(
+    public void getParticipantsInConversation() {
+        nodeUsers = new MessageDao().getParticipantsByCandidat(
                 connect.getPoolConnexion(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());
 
-        if (CollectionUtils.isEmpty(participants)) {
+        if (CollectionUtils.isEmpty(nodeUsers)) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg8"));
-            return new ArrayList<>();
         }
-
-        PrimeFaces.current().ajax().update("candidatForm");
-        PrimeFaces.current().executeScript("PF('participantsList').show();");
-
-        return participants;
+//        PrimeFaces.current().ajax().update("candidatForm");
+//        PrimeFaces.current().executeScript("PF('participantsList').show();");
     }
 
     public void sendMessage() {
-
         if (candidatBean.getInitialCandidat() == null) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg7"));
             return;
@@ -101,6 +94,24 @@ public class DiscussionService implements Serializable {
                 candidatBean.getCurrentUser().getNodeUser().getIdUser(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());
+
+        
+        //// envoie de mail aux participants à la discussion
+        
+        String subject = "Nouveau message module candidat";
+        String message = "Vous avez participez à la discussion pour ce candidat " + candidatBean.getCandidatSelected().getIdConcepte() +
+                " un nouveau message a été posté";
+
+        getParticipantsInConversation();
+        if(nodeUsers != null) {
+            for (NodeUser nodeUser : nodeUsers) {
+                if(nodeUser.isIsAlertMail()) {
+                    if (!mailBean.sendMail(nodeUser.getMail(), subject,  message)) {
+                  //     candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("Erreur d'envoie de mail pour " + nodeUser.getName() + ", veuillez contacter l'administrateur"));
+                    }
+                }
+            }
+        }
 
         reloadMessage();
 
@@ -178,12 +189,14 @@ public class DiscussionService implements Serializable {
         this.email = email;
     }
 
-    public List<String> getParticipants() {
-        return participants;
+    public List<NodeUser> getNodeUsers() {
+        return nodeUsers;
     }
 
-    public void setParticipants(List<String> participants) {
-        this.participants = participants;
+    public void setNodeUsers(List<NodeUser> nodeUsers) {
+        this.nodeUsers = nodeUsers;
     }
+
+
 
 }

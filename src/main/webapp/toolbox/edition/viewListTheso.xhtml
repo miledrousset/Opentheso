@@ -104,7 +104,7 @@
 
                     <p:column width="10" headerText="#{langueBean.getMsg('candidat.remove')}" style="margin-top: 5px">
                         <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined" 
-                                         update="idConfirmDelete" process="@this" ajax="true"
+                                         update="idConfirmDelete" process="@this" ajax="true" 
                                          actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"
                                          oncomplete="PF('confirmDelete').show();" />
                     </p:column>

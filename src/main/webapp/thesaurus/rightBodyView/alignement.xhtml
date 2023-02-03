@@ -92,20 +92,28 @@
             </p:column>
 
             <p:column headerText="Actions" style="text-align: center">
-                <p:commandButton process="@this" rendered="#{alignement.targetUri != null}" 
+                <div class="row">
+                    <div class="col-5 offset-1">
+                                        <p:commandButton process="@this" rendered="#{alignement.targetUri != null}" 
                                  action="#{alignmentManualBean.reset()}"
                                  actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
                                  update=":containerIndex:idUpdateSingleAlignment"
                                  oncomplete="PF('updateSingleAlignment').show();"
                                  icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
                                  style="height: 30px; width: 30px; color: #43B572" />
-
-                <p:commandButton process="@this" ajax="true"
+                    </div>
+                    <div class="col-5">
+                                        <p:commandButton process="@this" ajax="true"
                                  icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined" 
                                  oncomplete="PF('confirmDeleteAlignement').show()"
                                  actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
                                  rendered="#{alignement.targetUri != null}" 
-                                 style="height: 30px; width: 30px; margin-left: 5px" />
+                                 style="height: 30px; width: 30px;" />
+                    </div>                    
+                </div>
+
+
+
             </p:column>
 
             <f:facet name="footer">
@@ -131,7 +139,7 @@
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable size="small" var="alignmentSource" value="#{setAlignmentSourceBean.nodeSelectedAlignmentsAll}"
                              widgetVar="listSourceTable" styleClass="products-table"
-                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
+                             style="margin-bottom: -17px; margin-top: -16px; overflow: auto; max-height: 400px" lazy="false" >
 
                     <f:facet name="header">
                         <div class="products-table-header">

@@ -5,7 +5,6 @@
  */
 package fr.cnrs.opentheso.core.imports.csv;
 
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -40,6 +39,7 @@ public class CsvReadHelper {
     private String uri;
 
     private ArrayList<String> langs;
+    private String idLang;
 
     private ArrayList<ConceptObject> conceptObjects;
 
@@ -53,7 +53,81 @@ public class CsvReadHelper {
         this.delimiter = delimiter;
         conceptObjects = new ArrayList<>();
     }
+        
+    public boolean readFileCsvForGetIdFromPrefLabelSetLang(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader()
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
 
+            CSVParser cSVParser = cSVFormat.parse(in);
+           
+            Map<String, Integer> headers = cSVParser.getHeaderMap();
+
+            if(headers.keySet().size()>1) {
+                message = "Erreur, Une seule colonne est autorisée";
+                return false;
+            }
+            String values[];
+            idLang = null;
+            for (String columnName : headers.keySet()) {
+                if (columnName.contains("@")) {
+                    values = columnName.split("@");
+                    if (values[1] != null) {
+                        idLang = values[1];
+                    }
+                } else {
+                    message = "Erreur, La langue doit être précisée exemple : skos:prefLabel@fr";
+                    return false;                    
+                }
+            }
+            if(idLang == null){
+                message = "Erreur, La langue n'a pas été trouvée";
+                return false;                  
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }              
+            
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileCsvForGetIdFromPrefLabel(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader()
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+
+            CSVParser cSVParser = cSVFormat.parse(in);
+            String value;
+            nodeIdValues = new ArrayList<>();
+            for (CSVRecord record : cSVParser) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("skos:prefLabel@" + idLang);
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setValue(value);
+                } catch (Exception e) {
+                    continue;
+                }
+                nodeIdValues.add(nodeIdValue);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }    
+    
+    
+    
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
      *
@@ -231,13 +305,34 @@ public class CsvReadHelper {
         return false;
     }    
 
+    public ArrayList<String > readHeadersFileAlignment (Reader in){
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+            Map<String, Integer> headers = cSVParser.getHeaderMap();
+
+            ArrayList<String> headerSourceAlign = new ArrayList<>();
+            for (String columnName : headers.keySet()) {
+                if (columnName.equalsIgnoreCase("localId")) {
+                    continue;
+                }
+                headerSourceAlign.add(columnName);
+            }
+            return headerSourceAlign;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;        
+    }
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
      *
      * @param in
+     * @param headerSourceAlign
      * @return
      */
-    public boolean readFileAlignment(Reader in) {
+    public boolean readFileAlignment(Reader in, ArrayList<String> headerSourceAlign) {
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
@@ -262,7 +357,7 @@ public class CsvReadHelper {
                 }
 
                 // on récupère les alignements 
-                nodeAlignmentImport = getNewAlignment(nodeAlignmentImport, record);
+                nodeAlignmentImport = getNewAlignment(nodeAlignmentImport, record, headerSourceAlign);
                 if (nodeAlignmentImport != null) {
                     nodeAlignmentImports.add(nodeAlignmentImport);
                 }
@@ -276,51 +371,17 @@ public class CsvReadHelper {
 
     private NodeAlignmentImport getNewAlignment(
             NodeAlignmentImport nodeAlignmentImport,
-            CSVRecord record) {
+            CSVRecord record, ArrayList<String> headerSourceAlign) {
         String uri1;
 
         /// types alignements 1=exactMatch ; 2=closeMatch ; 3=broadMatch ; 4=relatedMatch ; 5=narrowMatch
-        try {
-            uri1 = record.get("Wikidata");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Wikidata", uri1);
-        } catch (Exception e) {
+        for (String alignSource : headerSourceAlign) {
+            try {
+                uri1 = record.get(alignSource);
+                nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, alignSource, uri1);
+            } catch (Exception e) {
+            }            
         }
-
-        try {
-            uri1 = record.get("AAT");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "AAT", uri1);
-        } catch (Exception e) {
-        }
-
-        try {
-            uri1 = record.get("BNF");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "BNF", uri1);
-        } catch (Exception e) {
-        }
-
-        try {
-            uri1 = record.get("IdRef");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "IdRef", uri1);
-        } catch (Exception e) {
-        }
-
-        try {
-            uri1 = record.get("Pleiades");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Pleiades", uri1);
-        } catch (Exception e) {
-        }
-
-        try {
-            uri1 = record.get("PeriodO");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "PeriodO", uri1);
-        } catch (Exception e) {
-        }
-        try {
-            uri1 = record.get("Geonames");
-            nodeAlignmentImport = getAlignmentSource(nodeAlignmentImport, "Geonames", uri1);
-        } catch (Exception e) {
-        }
-
         return nodeAlignmentImport;
     }
 
@@ -425,10 +486,10 @@ public class CsvReadHelper {
                 } catch (Exception e) {
                     continue;
                 }                
-                for (String idLang : usedLangs) {
+                for (String idLang1 : usedLangs) {
                     NodeReplaceValueByValue nodeReplaceValueByValue = new NodeReplaceValueByValue();
                     // on récupère les prefLabels 
-                    nodeReplaceValueByValue = getValueAndPropertyPrefLabel(nodeReplaceValueByValue, record, idLang);     
+                    nodeReplaceValueByValue = getValueAndPropertyPrefLabel(nodeReplaceValueByValue, record, idLang1);     
                     if (nodeReplaceValueByValue != null) {
                         nodeReplaceValueByValue.setIdConcept(idConcept);
                         nodeReplaceValueByValues.add(nodeReplaceValueByValue);
@@ -1499,6 +1560,14 @@ public class CsvReadHelper {
 
     public void setNodeReplaceValueByValues(ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues) {
         this.nodeReplaceValueByValues = nodeReplaceValueByValues;
+    }
+
+    public String getIdLang() {
+        return idLang;
+    }
+
+    public void setIdLang(String idLang) {
+        this.idLang = idLang;
     }
 
     public class ConceptObject {

@@ -6,7 +6,6 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdConceptIdTerm;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -757,7 +756,7 @@ public class NoteHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang"
+                stmt.executeQuery("SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang, note.notesource"
                         + " FROM note, note_type"
                         + " WHERE note.notetypecode = note_type.code"
                         + " AND note_type.isterm = true"
@@ -776,6 +775,7 @@ public class NoteHelper {
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
+                        nodeNote.setNoteSource(resultSet.getString("notesource"));
                         nodeNotes.add(nodeNote);
                     }
                 }
@@ -902,19 +902,22 @@ public class NoteHelper {
      * @param idThesaurus
      * @param note
      * @param noteTypeCode
+     * @param noteSource
      * @param idUser
      * @return
      */
     public boolean addConceptNote(HikariDataSource ds, String idConcept, String idLang, String idThesaurus,
-            String note, String noteTypeCode, int idUser) {
+            String note, String noteTypeCode, String noteSource, int idUser) {
 
         boolean status = false;
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("Insert into note (notetypecode, id_thesaurus, id_concept, lang, lexicalvalue, id_user)"
+                stmt.executeUpdate("Insert into note (notetypecode, id_thesaurus, id_concept, lang, lexicalvalue, id_user, notesource)"
                         + " values ('" + noteTypeCode + "','" + idThesaurus + "','" + idConcept + "','" + idLang + "','"
-                        + new StringPlus().convertString(note) + "'," + idUser + ")");
+                        + new StringPlus().convertString(note) + "'," + idUser 
+                        + ",'" + noteSource + "'"
+                        + ")");
                 status = true;
             }
         } catch (SQLException sqle) {
@@ -958,7 +961,7 @@ public class NoteHelper {
      * @param idUser
      * @return
      */
-    private boolean addConceptNoteRollback(HikariDataSource ds,
+/*    private boolean addConceptNoteRollback(HikariDataSource ds,
             String idConcept, String idLang, String idThesausus,
             String note, String noteTypeCode, int idUser) {
 
@@ -995,7 +998,7 @@ public class NoteHelper {
             log.error("Error while adding Note of Concept : " + idConcept, sqle);
         }
         return status;
-    }
+    }*/
 
     /**
      * Cette focntion permet de retourner la liste de l'historique des notes
@@ -1151,21 +1154,24 @@ public class NoteHelper {
      * @param idThesaurus
      * @param note
      * @param noteTypeCode
+     * @param noteSource
      * @param idUser
      * @return
      */
     public boolean addTermNote(HikariDataSource ds, String idTerm, String idLang, String idThesaurus,
-            String note, String noteTypeCode, int idUser) {
+            String note, String noteTypeCode, String noteSource, int idUser) {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 String query = "Insert into note "
-                        + "(notetypecode, id_thesaurus, id_term, lang, lexicalvalue, id_user)"
+                        + "(notetypecode, id_thesaurus, id_term, lang, lexicalvalue, id_user, notesource)"
                         + " values ("
                         + "'" + noteTypeCode + "'"
                         + ",'" + idThesaurus + "'"
                         + ",'" + idTerm + "'"
                         + ",'" + idLang + "'"
-                        + ",'" + new StringPlus().convertString(note) + "'," + idUser + ")";
+                        + ",'" + new StringPlus().convertString(note) + "'," + idUser
+                        + ", '" + noteSource + "'"
+                        + ")";
 
                 stmt.executeUpdate(query);
             }

@@ -151,7 +151,7 @@ public class ModifyRoleBean implements Serializable {
     }    
     
     /**
-     * permet de'ajouter un utilisateur existant au projet
+     * permet d'ajouter un utilisateur existant au projet
      */
     public void addUserToProject () {
         FacesMessage msg;

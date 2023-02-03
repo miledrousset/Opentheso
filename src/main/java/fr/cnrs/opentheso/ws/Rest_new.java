@@ -28,7 +28,11 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
@@ -1543,10 +1547,14 @@ public class Rest_new {
         }
 
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Response.Status.OK).entity(getJsonMessage("l'Id du Thesaurus est obligatoire")).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();            
         }
         if (value == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Response.Status.OK).entity(getJsonMessage("La question est vide")).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();  
         }
         if(arkGroups != null && arkGroups.length != 0){
             groups = getIdGroupFromArk(arkGroups, idTheso);
@@ -1555,16 +1563,14 @@ public class Rest_new {
         datas = getDatasForWidget(idTheso, idLang, groups, value, format, match);
         
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Response.Status.OK).entity(getJsonMessage("Pas de résultat")).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();  
         }
-        
-        
-        
         return Response
                 .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }    
     
     private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {
@@ -1622,17 +1628,20 @@ public class Rest_new {
         }
         
         if(idArks == null || idArks.length == 0)
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Response.Status.OK).entity(getJsonMessage("l'Id Ark est obligatoire")).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build(); 
         
         datas = getDatasForWidgetByArk(idLang, idArks, format);
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response.status(Response.Status.OK).entity(getJsonMessage("Pas de résultat")).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build(); 
         }
         return Response
                 .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
-        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
     }      
     
     private String getDatasForWidgetByArk(String idLang, String[] idArks, String format) {
@@ -2912,7 +2921,56 @@ public class Rest_new {
 
 
 
+    
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+////////////////Permet de traduire les URI ARK par Opentheso////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+    
+    
+    /**
+     * pour faire la redirection entre un IdArk et l'URL Opentheso
+     *
+     * @param naan
+     * @param arkId
+     * @return #MR
+     */
+    @Path("ark:/{naan}/{idArk}")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response getUriFromArk(@PathParam("naan") String naan,
+                                     @PathParam("idArk") String arkId) {
+        if (naan == null || naan.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("NAAN not specified")).type(MediaType.APPLICATION_JSON).build();
+        }
 
+        if (arkId == null || arkId.isEmpty()) {
+            return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("Ark not specified")).type(MediaType.APPLICATION_JSON).build();
+        }
+        String webUrl;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("No connection")).type(MediaType.APPLICATION_JSON).build();
+            }
+
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            webUrl = restRDFHelper.getUrlFromIdArk(ds, naan, arkId);
+            if(webUrl == null) {
+                return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("Ark ID does not exist")).type(MediaType.APPLICATION_JSON).build();
+            }
+            URI uri = new URI(webUrl);
+            return Response.temporaryRedirect(uri).build();
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Rest_new.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("Internal error")).type(MediaType.APPLICATION_JSON).build();
+    }    
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+////////////////FIN traduire les URI ARK par Opentheso//////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -2934,6 +2992,12 @@ public class Rest_new {
                 + "}";
 
         return message;
+    }
+    
+    private String getJsonMessage(String message){
+        JsonObjectBuilder job = Json.createObjectBuilder();
+        job.add("message", message);
+        return job.build().toString();
     }
 
     private String messageEmptyTurtle() {

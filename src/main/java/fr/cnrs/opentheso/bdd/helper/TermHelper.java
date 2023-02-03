@@ -468,7 +468,7 @@ public class TermHelper {
                             + " AND id_term = '" + idTerm + "'"
                             + " AND id_thesaurus = '" + idTheso + "'";
 
-                    System.out.println("UPDATE : " + query);
+                 //   System.out.println("UPDATE : " + query);
 
                     stmt.executeUpdate(query);
                     if (addNewTermHistorique(conn, idTerm, label, idLang, idTheso, "", "Rename", idUser)) {

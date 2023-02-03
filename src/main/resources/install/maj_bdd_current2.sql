@@ -475,6 +475,17 @@ CREATE TABLE IF NOT EXISTS proposition_modification_detail
 );
 -- Fin Module proposition --
 
+
+-- Modification de la table note pour ajouter la source de la note
+--
+create or replace function update_table_note_source() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='note' AND column_name='notesource') THEN
+        execute 'ALTER TABLE note ADD COLUMN notesource character varying COLLATE pg_catalog."default";';
+    END IF;
+end
+$$language plpgsql;
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -501,6 +512,8 @@ SELECT update_table_concept_type();
 SELECT update_table_preferences_useConceptTree();
 SELECT update_table_preferences_displayUserName();
 SELECT update_table_preferences_suggestion();
+SELECT update_table_note_source();
+
 
 
 
@@ -530,6 +543,7 @@ SELECT delete_fonction('update_table_concept_type','');
 SELECT delete_fonction('update_table_preferences_useConceptTree', '');
 SELECT delete_fonction('update_table_preferences_displayUserName', '');
 SELECT delete_fonction('update_table_preferences_suggestion', '');
+SELECT delete_fonction('update_table_note_source', '');
 
 
 

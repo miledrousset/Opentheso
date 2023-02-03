@@ -39,12 +39,11 @@
                             <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 13px; color: #601e18; font-weight: bold;"/>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-10" style="margin-top: 3px">
-                            <h:outputText value="Lien permanent vers ce thésaurus: " style="font-size: 13px; color: #858796"/>
+                            <h:outputText value="#{langueBean.getMsg('home.permalink')}: " style="font-size: 13px; color: #858796"/>
                             <p:link href="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
-                                    value="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
+                                    value="#{request.serverName}#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
                                     target="_blank" style="font-size: 13px; color: #F47B2A;" >
                                 <i class="pi pi-link" style="color: #43B572;" />
                             </p:link>   

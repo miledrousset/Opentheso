@@ -21,6 +21,8 @@ public class NodeNote implements Serializable {
     // For Term : definition; editorialNote; historyNote, changeNote, example; 
     private String notetypecode;
     
+    private String noteSource;
+    
     private String id_term;
     private String id_concept;
     private String lang;
@@ -121,4 +123,13 @@ public class NodeNote implements Serializable {
     public void setVoted(boolean voted) {
         this.voted = voted;
     }
+
+    public String getNoteSource() {
+        return noteSource;
+    }
+
+    public void setNoteSource(String noteSource) {
+        this.noteSource = noteSource;
+    }
+    
 }

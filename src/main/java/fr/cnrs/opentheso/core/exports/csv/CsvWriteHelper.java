@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
@@ -485,6 +486,42 @@ public class CsvWriteHelper {
             return null;
         }
     }
+    
+    /**
+     * Export des données Id valeur en CSV
+     * @param nodeIdValues
+     * @param idLang
+     * @return 
+     */
+    public byte[] writeCsvIdValue(ArrayList<NodeIdValue> nodeIdValues, String idLang){
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+                    CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().build())) {
+
+                /// écriture des headers
+                ArrayList<String> header = new ArrayList<>();
+                header.add("conceptId");
+                header.add("skos:prefLabel@"+idLang);
+                csvFilePrinter.printRecord(header);
+                ArrayList<Object> record = new ArrayList<>();
+                for (NodeIdValue nodeIdValue : nodeIdValues) {
+                    try {
+                        record.add(nodeIdValue.getId());
+                        record.add(nodeIdValue.getValue());
+                        csvFilePrinter.printRecord(record);
+                        record.clear();
+                    } catch (IOException e){
+                        System.err.println(e.toString());
+                    }
+                }
+            }
+            return os.toByteArray();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+            return null;
+        }
+    }    
     
     /**
      * permet d'écrire un tableau CSV comme un graphe

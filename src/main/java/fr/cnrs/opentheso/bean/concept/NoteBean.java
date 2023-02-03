@@ -804,7 +804,9 @@ public class NoteBean implements Serializable {
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,
-                selectedTypeNote, idUser);
+                selectedTypeNote,
+                "",
+                idUser);
     }
 
     private boolean addtermNote(int idUser) {
@@ -828,7 +830,9 @@ public class NoteBean implements Serializable {
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,
-                selectedTypeNote, idUser);
+                selectedTypeNote,
+                "",
+                idUser);
     }
 
     private void printErreur() {

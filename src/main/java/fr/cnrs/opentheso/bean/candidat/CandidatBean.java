@@ -514,7 +514,7 @@ public class CandidatBean implements Serializable {
             if(candidatSelected.getIdTerm() != null) {
                 noteHelper.addTermNote(connect.getPoolConnexion(), candidatSelected.getIdTerm(),
                         selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
-                        definition, "definition", currentUser.getNodeUser().getIdUser());
+                        definition, "definition", "", currentUser.getNodeUser().getIdUser());
             }
            
             
