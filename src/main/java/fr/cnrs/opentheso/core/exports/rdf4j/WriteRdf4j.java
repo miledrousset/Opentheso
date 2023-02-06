@@ -56,7 +56,7 @@ public class WriteRdf4j {
         model = null;
         vf = null;
         builder = null;
-        System.gc();
+    //    System.gc();
     }
 
     private void loadModel() {
@@ -100,10 +100,7 @@ public class WriteRdf4j {
 
             writeStatus(concept);
             writeReplaces(concept);
-         //   i++;
-        //    System.out.println("compteur = " + i + "  concept = " + concept.getIdentifier() );
         }
-//System.out.println("compteur = " + i );        
     }
 
     private void writeImageUri(SKOSResource resource) {

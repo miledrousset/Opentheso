@@ -256,9 +256,15 @@ begin
     END IF;
     IF NOT EXISTS(SELECT *  FROM alignement_source where source='Wikidata_rest') THEN
         execute 'INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id_user, description, gps, source_filter)
-                VALUES (''Wikidata_rest'',
+                VALUES (''Ontome'',
                 ''https://www.wikidata.org/w/api.php?action=wbsearchentities&language=##lang##&search=##value##&format=json&limit=10'',
                 ''REST'', ''json'', 1, ''alignement avec le vocabulaire Wikidata REST'', false, ''Wikidata_rest'');';
+    END IF;
+    IF NOT EXISTS(SELECT *  FROM alignement_source where source='Ontome') THEN
+        execute 'INSERT INTO public.alignement_source (source, requete, type_rqt, alignement_format, id_user, description, gps, source_filter)
+                VALUES (''Ontome'',
+                ''https://ontome.net/api/classes-type-descendants/label/##value##/json'',
+                ''REST'', ''json'', 1, ''OntoME is a LARHRA application, developed and maintained by the Digital history research team'', false, ''Ontome'');';
     END IF;
 end
 $$language plpgsql;
@@ -297,25 +303,12 @@ ALTER TABLE languages_iso639 ALTER COLUMN iso639_1 Type character varying;
 ALTER TABLE concept_group_label ALTER COLUMN lang Type character varying;
 ALTER TABLE preferences ALTER COLUMN generate_handle SET DEFAULT false;
 
+-- enlever la contrainte des dates not null
+ALTER TABLE concept ALTER COLUMN created DROP DEFAULT;
+ALTER TABLE concept ALTER COLUMN modified DROP DEFAULT;
+ALTER TABLE concept ALTER COLUMN created drop not null;
+ALTER TABLE concept ALTER COLUMN modified drop not null;
 
--- Modification de la table des langues iso630, ajout des nouvelles langues
---
-create or replace function update_table_languages() returns void as $$
-begin
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Hans') THEN
-        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Hans'', ''zh-Hans'', ''chinese (simplified)'', ''chinois (simplifié)'');';
-    END IF;
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Hant') THEN
-        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Hant'', ''zh-Hant'', ''chinese (traditional)'', ''chinois (traditionnel)'');';
-    END IF;
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'zh-Latn-pinyin') THEN
-        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''zh-Latn-pinyin'', ''zh-Latn-pinyin'', ''chinese (pinyin)'', ''chinois (pinyin)'');';
-    END IF;
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1 = 'bo-x-ewts') THEN
-        execute 'INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name) VALUES (''bo-x-ewts'', ''bo-x-ewts'', ''tibetan (ewts)'', ''tibétain (ewts)'');';
-    END IF;
-end
-$$language plpgsql;
 
 
 -- mise à jour des types de notes --
@@ -413,7 +406,9 @@ INSERT INTO concept_type (code, label_fr, label_en) SELECT 'concept', 'concept',
 INSERT INTO concept_type (code, label_fr, label_en) SELECT 'people', 'personne', 'people' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'people');
 INSERT INTO concept_type (code, label_fr, label_en) SELECT 'period', 'période', 'period' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'period');
 INSERT INTO concept_type (code, label_fr, label_en) SELECT 'place', 'lieu', 'place' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'place');
-
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'qualifier', 'qualificatif', 'qualifier' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'qualifier');
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'attribute', 'attribut', 'attribute' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'attribute');
+INSERT INTO concept_type (code, label_fr, label_en) SELECT 'attitude', 'attitude', 'attitude' WHERE NOT EXISTS (SELECT code FROM concept_type WHERE code = 'attitude');
 
 -- Modification de la table Concept pour gérer le type de concept (Personne, Lieu, période ...)
 --
@@ -480,6 +475,17 @@ CREATE TABLE IF NOT EXISTS proposition_modification_detail
 );
 -- Fin Module proposition --
 
+
+-- Modification de la table note pour ajouter la source de la note
+--
+create or replace function update_table_note_source() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='note' AND column_name='notesource') THEN
+        execute 'ALTER TABLE note ADD COLUMN notesource character varying COLLATE pg_catalog."default";';
+    END IF;
+end
+$$language plpgsql;
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -506,6 +512,8 @@ SELECT update_table_concept_type();
 SELECT update_table_preferences_useConceptTree();
 SELECT update_table_preferences_displayUserName();
 SELECT update_table_preferences_suggestion();
+SELECT update_table_note_source();
+
 
 
 
@@ -535,6 +543,7 @@ SELECT delete_fonction('update_table_concept_type','');
 SELECT delete_fonction('update_table_preferences_useConceptTree', '');
 SELECT delete_fonction('update_table_preferences_displayUserName', '');
 SELECT delete_fonction('update_table_preferences_suggestion', '');
+SELECT delete_fonction('update_table_note_source', '');
 
 
 
@@ -765,16 +774,1149 @@ INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_na
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('lt', 'lit', 'Lithuanian', 'lituanien', 96, 'lt');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('lb', 'ltz', 'Luxembourgish; Letzeburgesch', 'luxembourgeois', 97, 'lu');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('bo', 'tib (B)
-bod (T)', 'Tibetan', 'tibétain', 161, 'cn');
+bod (T)', 'Tibetan', 'tibétain', 161, 'tibet');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('za', 'zha', 'Zhuang; Chuang', 'zhuang; chuang', 181, 'cn');
-INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('bo-x-ewts', 'bo-x-ewts', 'tibetan (ewts)', 'tibétain (ewts)', 194, 'np');
+INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('bo-x-ewts', 'bo-x-ewts', 'tibetan (ewts)', 'tibétain (ewts)', 194, 'tibet');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('cu', 'chu', 'Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic', 'vieux slave; vieux bulgare', 183, 'bg');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('st', 'sot', 'Sotho, Southern', 'sotho du Sud', 146, 'za');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('ia', 'ina', 'Interlingua (International Auxiliary Language Association)', 'interlingua', 184, NULL);
-
+INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('metadata', 'Metadata', 'métadonnées', 'Metadata', 2000, NULL);
 
 ALTER TABLE ONLY public.languages_iso639
     ADD CONSTRAINT languages_iso639_iso639_1_key UNIQUE (iso639_1);
 
 ALTER TABLE ONLY public.languages_iso639
     ADD CONSTRAINT languages_iso639_pkey PRIMARY KEY (id);
+
+
+
+
+-- FUNCTION: public.opentheso_get_alter_term(character varying, character varying, boolean)
+
+-- DROP FUNCTION public.opentheso_get_alter_term(character varying, character varying, boolean);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_alter_term(
+	id_theso character varying,
+	id_con character varying,
+	ishiden boolean)
+    RETURNS TABLE(alter_term_lexical_value character varying, alter_term_source character varying, alter_term_status character varying, alter_term_lang character varying)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT non_preferred_term.lexical_value, non_preferred_term.source, non_preferred_term.status, non_preferred_term.lang
+		FROM non_preferred_term, preferred_term
+		WHERE preferred_term.id_term = non_preferred_term.id_term
+		AND preferred_term.id_thesaurus = non_preferred_term.id_thesaurus
+		AND preferred_term.id_concept = id_con
+		AND non_preferred_term.id_thesaurus = id_theso
+		AND non_preferred_term.hiden = isHiden;
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_gps(character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_gps(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_gps(
+	id_thesorus character varying,
+	id_con character varying)
+    RETURNS TABLE(gps_latitude double precision, gps_longitude double precision)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT latitude, longitude
+		FROM gps
+		WHERE id_theso = id_thesorus
+		AND id_concept = id_con;
+
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_groups(character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_groups(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_groups(
+	id_theso character varying,
+	id_con character varying)
+    RETURNS TABLE(group_id text, group_id_ark text, group_id_handle character varying, group_id_doi character varying)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT concept_group.idgroup, concept_group.id_ark, concept_group.id_handle, concept_group.id_doi
+		FROM concept_group_concept, concept_group
+		WHERE concept_group.idgroup = concept_group_concept.idgroup
+		AND concept_group.idthesaurus = concept_group_concept.idthesaurus
+		AND concept_group_concept.idthesaurus = id_theso
+		AND concept_group_concept.idconcept = id_con;
+
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_images(character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_images(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_images(
+	id_theso character varying,
+	id_con character varying)
+    RETURNS TABLE(name character varying, copyright character varying, url character varying)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT image_name, image_copyright, external_uri
+		FROM external_images
+		WHERE id_thesaurus = id_theso
+		AND id_concept = id_con;
+
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_note_concept(character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_note_concept(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_note_concept(
+	id_theso character varying,
+	id_con character varying)
+    RETURNS TABLE(note_id integer, note_notetypecode text, note_lexicalvalue character varying, note_created timestamp without time zone, note_modified timestamp without time zone, note_lang character varying)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang
+		FROM note, note_type
+		WHERE note.notetypecode = note_type.code
+		AND note_type.isconcept = true
+		AND note.id_thesaurus = id_theso
+		AND note.id_concept = id_con;
+
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_note_term(character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_note_term(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_note_term(
+	id_theso character varying,
+	id_con character varying)
+    RETURNS TABLE(note_id integer, note_notetypecode text, note_lexicalvalue character varying, note_created timestamp without time zone, note_modified timestamp without time zone, note_lang character varying)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang
+		FROM note
+		WHERE id_thesaurus = id_theso
+		AND note.id_term IN (SELECT id_term
+							 FROM preferred_term
+							 WHERE id_thesaurus = id_theso
+							 AND id_concept = id_con);
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_relations(character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_relations(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_relations(
+	id_theso character varying,
+	id_con character varying)
+    RETURNS TABLE(relationship_id_concept character varying, relationship_role character varying, relationship_id_ark character varying, relationship_id_handle character varying, relationship_id_doi character varying)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+                select id_concept2, role, id_ark, id_handle, id_doi
+                from hierarchical_relationship, concept
+                where  hierarchical_relationship.id_concept2 = concept.id_concept
+                and hierarchical_relationship.id_thesaurus = concept.id_thesaurus
+                and hierarchical_relationship.id_thesaurus = id_theso
+                and hierarchical_relationship.id_concept1 = id_con
+                and concept.status != 'CA';
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_traductions(character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_traductions(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_traductions(
+	id_theso character varying,
+	id_con character varying)
+    RETURNS TABLE(term_id character varying, term_lexical_value character varying, term_lang character varying)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT term.id_term, term.lexical_value, term.lang
+		FROM term, preferred_term
+		WHERE term.id_term = preferred_term.id_term
+		AND term.id_thesaurus = preferred_term.id_thesaurus
+		AND term.id_thesaurus = id_theso
+		AND preferred_term.id_concept = id_con
+		ORDER BY term.lexical_value;
+
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_uri(boolean, character varying, character varying, boolean, character varying, boolean, character varying, character varying, character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_uri(boolean, character varying, character varying, boolean, character varying, boolean, character varying, character varying, character varying, character varying);
+CREATE OR REPLACE FUNCTION public.opentheso_get_uri(
+	original_uri_is_ark boolean,
+	id_ark character varying,
+	original_uri character varying,
+	original_uri_is_handle boolean,
+	id_handle character varying,
+	original_uri_is_doi boolean,
+	id_doi character varying,
+	id_concept character varying,
+	id_theso character varying,
+	path character varying)
+    RETURNS character varying
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+BEGIN
+	IF (original_uri_is_ark = true AND id_ark IS NOT NULL AND id_ark != '') THEN
+		return original_uri || '/' || id_ark;
+	ELSIF (original_uri_is_ark = true AND (id_ark IS NULL or id_ark = '')) THEN
+		return path || '/?idc=' || id_concept || '&idt=' || id_theso;	
+	ELSIF (original_uri_is_handle = true AND id_handle IS NOT NULL AND id_handle != '') THEN
+		return 'https://hdl.handle.net/' || id_handle;
+	ELSIF (original_uri_is_doi = true AND id_doi IS NOT NULL AND id_doi != '') THEN
+		return 'https://doi.org/' || id_doi;
+	ELSIF (original_uri IS NOT NULL AND original_uri != '') THEN
+		return original_uri || '/?idc=' || id_concept || '&idt=' || id_theso;
+	ELSE
+		return path || '/?idc=' || id_concept || '&idt=' || id_theso;
+	end if;
+end;
+$BODY$;
+
+
+-- FUNCTION: public.opentheso_get_alignements(character varying, character varying)
+
+-- DROP FUNCTION public.opentheso_get_alignements(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_alignements(
+	id_theso character varying,
+	id_con character varying)
+    RETURNS TABLE(alig_uri_target character varying, alig_id_type integer)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT uri_target, alignement_id_type
+		FROM alignement
+		where internal_id_concept = id_con
+		and internal_id_thesaurus = id_theso;
+end;
+$BODY$;
+
+
+CREATE OR REPLACE FUNCTION opentheso_get_facettes (id_theso VARCHAR, path VARCHAR)
+	RETURNS SETOF RECORD
+	LANGUAGE plpgsql
+AS $$
+DECLARE
+	rec record;
+	facet_rec record;
+	theso_rec record;
+	concept_rec record;
+
+	uri_membre VARCHAR;
+	id_ark VARCHAR;
+	id_handle VARCHAR;
+	uri_value VARCHAR;
+BEGIN
+
+	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
+
+	FOR facet_rec IN SELECT node_label.*, thesaurus_array.id_concept_parent
+			   	 FROM node_label, thesaurus_array
+			   	 WHERE node_label.id_thesaurus = thesaurus_array.id_thesaurus
+			   	 AND node_label.id_facet = thesaurus_array.id_facet
+			   	 AND node_label.id_thesaurus = id_theso
+    LOOP
+
+		SELECT * INTO concept_rec FROM concept WHERE id_thesaurus = id_theso AND id_concept = facet_rec.id_concept_parent;
+
+		uri_value = opentheso_get_uri(theso_rec.original_uri_is_ark, concept_rec.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
+					 concept_rec.id_handle, theso_rec.original_uri_is_doi, concept_rec.id_doi, facet_rec.id_concept_parent, id_theso, path);
+
+		SELECT facet_rec.id_facet, facet_rec.lexical_value, facet_rec.created, facet_rec.modified, facet_rec.lang,
+				facet_rec.id_concept_parent, uri_value INTO rec;
+
+  		RETURN NEXT rec;
+    END LOOP;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION opentheso_get_concepts_by_group (id_theso VARCHAR, path VARCHAR, id_group VARCHAR)
+	RETURNS SETOF RECORD
+	LANGUAGE plpgsql
+AS $$
+DECLARE
+
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+
+	rec record;
+	con record;
+	theso_rec record;
+	traduction_rec record;
+	altLab_rec record;
+	altLab_hiden_rec record;
+	geo_rec record;
+	group_rec record;
+	note_concept_rec record;
+	note_term_rec record;
+	relation_rec record;
+	alignement_rec record;
+	img_rec record;
+	vote_record record;
+	message_record record;
+	cadidat_record record;
+	replace_rec record;
+	replacedBy_rec record;
+	facet_rec record;
+
+	tmp text;
+	uri text;
+	local_URI text;
+	prefLab VARCHAR;
+	altLab VARCHAR;
+	altLab_hiden VARCHAR;
+	membre text;
+	definition text;
+	secopeNote text;
+	note text;
+	historyNote text;
+	example text;
+	changeNote text;
+	editorialNote text;
+	narrower text;
+	broader text;
+	related text;
+	exactMatch text;
+	closeMatch text;
+	broadMatch text;
+	relatedMatch text;
+	narrowMatch text;
+	img text;
+	creator text;
+	contributor text;
+	replacedBy text;
+	replaces text;
+	facets text;
+BEGIN
+
+	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
+
+
+	FOR con IN SELECT concept.* FROM concept, concept_group_concept WHERE concept.id_concept = concept_group_concept.idconcept
+								AND concept.id_thesaurus = concept_group_concept.idthesaurus AND concept.id_thesaurus = id_theso
+								AND concept_group_concept.idgroup = id_group AND concept.status != 'CA'
+    LOOP
+		-- URI
+		uri = opentheso_get_uri(theso_rec.original_uri_is_ark, con.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
+					 con.id_handle, theso_rec.original_uri_is_doi, con.id_doi, con.id_concept, id_theso, path);
+
+		-- LocalUri
+		local_URI = path || '/?idc=' || con.id_concept || '&idt=' || id_theso;
+		prefLab = '';
+
+		-- PrefLab
+		FOR traduction_rec IN SELECT * FROM opentheso_get_traductions(id_theso, con.id_concept)
+		LOOP
+			prefLab = prefLab || traduction_rec.term_lexical_value || sous_seperateur || traduction_rec.term_lang || seperateur;
+		END LOOP;
+
+		-- altLab
+		altLab = '';
+		FOR altLab_rec IN SELECT * FROM opentheso_get_alter_term(id_theso, con.id_concept, false)
+		LOOP
+			altLab = altLab || altLab_rec.alter_term_lexical_value || sous_seperateur || altLab_rec.alter_term_lang || seperateur;
+		END LOOP;
+
+		-- altLab hiden
+		altLab_hiden = '';
+		FOR altLab_hiden_rec IN SELECT * FROM opentheso_get_alter_term(id_theso, con.id_concept, true)
+		LOOP
+			altLab_hiden = altLab_hiden || altLab_hiden_rec.alter_term_lexical_value || sous_seperateur || altLab_hiden_rec.alter_term_lang || seperateur;
+		END LOOP;
+
+		-- Notes
+		note = '';
+		example = '';
+		changeNote = '';
+		secopeNote = '';
+		definition = '';
+		historyNote = '';
+		editorialNote = '';
+		FOR note_concept_rec IN SELECT * FROM opentheso_get_note_concept(id_theso, con.id_concept)
+		LOOP
+			IF (note_concept_rec.note_notetypecode = 'note') THEN
+				note = note || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'scopeNote') THEN
+				secopeNote = secopeNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'historyNote') THEN
+				historyNote = historyNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'definition') THEN
+				definition = definition || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'example') THEN
+				example = example || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'changeNote') THEN
+				changeNote = changeNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'editorialNote') THEN
+				editorialNote = editorialNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			END IF;
+		END LOOP;
+
+		FOR note_term_rec IN SELECT * FROM opentheso_get_note_term(id_theso, con.id_concept)
+		LOOP
+			IF (note_term_rec.note_notetypecode = 'note') THEN
+				note = note || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'scopeNote') THEN
+				secopeNote = secopeNote || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'historyNote') THEN
+				historyNote = historyNote || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'definition') THEN
+				definition = definition || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'example') THEN
+				example = example || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'changeNote') THEN
+				changeNote = changeNote || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'editorialNote') THEN
+				editorialNote = editorialNote || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			END IF;
+		END LOOP;
+
+		-- Narrower
+		narrower = '';
+		broader = '';
+		related = '';
+		FOR relation_rec IN SELECT * FROM opentheso_get_relations(id_theso, con.id_concept)
+		LOOP
+			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
+					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, id_theso, path)
+					|| '@' || relation_rec.relationship_role || '@' || relation_rec.relationship_id_concept || '@' ;
+
+			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI'
+					OR relation_rec.relationship_role = 'NTG') THEN
+				narrower = narrower || tmp || seperateur;
+			ELSIF (relation_rec.relationship_role = 'BT' OR relation_rec.relationship_role = 'BTP' OR relation_rec.relationship_role = 'BTI'
+					OR relation_rec.relationship_role = 'BTG') THEN
+				broader = broader || tmp || seperateur;
+			ELSIF (relation_rec.relationship_role = 'RT' OR relation_rec.relationship_role = 'RHP' OR relation_rec.relationship_role = 'RPO') THEN
+				related = related || tmp || seperateur;
+			END IF;
+		END LOOP;
+
+		-- Alignement
+		exactMatch = '';
+		closeMatch = '';
+		broadMatch = '';
+		relatedMatch = '';
+		narrowMatch = '';
+		FOR alignement_rec IN SELECT * FROM opentheso_get_alignements(id_theso, con.id_concept)
+		LOOP
+			if (alignement_rec.alig_id_type = 1) THEN
+				exactMatch = exactMatch || alignement_rec.alig_uri_target || seperateur;
+			ELSEIF (alignement_rec.alig_id_type = 2) THEN
+				closeMatch = closeMatch || alignement_rec.alig_uri_target || seperateur;
+			ELSEIF (alignement_rec.alig_id_type = 3) THEN
+				broadMatch = broadMatch || alignement_rec.alig_uri_target || seperateur;
+			ELSEIF (alignement_rec.alig_id_type = 4) THEN
+				relatedMatch = relatedMatch || alignement_rec.alig_uri_target || seperateur;
+			ELSEIF (alignement_rec.alig_id_type = 5) THEN
+				narrowMatch = narrowMatch || alignement_rec.alig_uri_target || seperateur;
+			END IF;
+		END LOOP;
+
+		-- geo:alt && geo:long
+		SELECT * INTO geo_rec FROM opentheso_get_gps(id_theso, con.id_concept);
+
+		-- membre
+		membre = '';
+		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
+		LOOP
+			IF (theso_rec.original_uri_is_ark = true AND group_rec.group_id_ark IS NOT NULL  AND group_rec.group_id_ark != '') THEN
+				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
+			ELSIF (theso_rec.original_uri_is_ark = true AND (group_rec.group_id_ark IS NULL OR group_rec.group_id_ark = '')) THEN
+				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+			ELSIF (group_rec.group_id_handle IS NOT NULL) THEN
+				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
+			ELSIF (theso_rec.original_uri IS NOT NULL) THEN
+				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+			ELSE
+				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+			END IF;
+		END LOOP;
+
+		-- Images
+		img = '';
+		FOR img_rec IN SELECT * FROM opentheso_get_images(id_theso, con.id_concept)
+		LOOP
+			img = img || img_rec.url || seperateur;
+		END LOOP;
+
+		SELECT username INTO creator FROM users WHERE id_user = con.creator;
+		SELECT username INTO contributor FROM users WHERE id_user = con.contributor;
+
+		replaces = '';
+		FOR replace_rec IN SELECT id_concept1, id_ark, id_handle, id_doi
+				FROM concept_replacedby, concept
+				WHERE concept.id_concept = concept_replacedby.id_concept1
+				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
+				AND concept_replacedby.id_concept1 = con.id_concept
+				AND concept_replacedby.id_thesaurus = id_theso
+		LOOP
+			replaces = replaces || opentheso_get_uri(theso_rec.original_uri_is_ark, replace_rec.id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, replace_rec.id_handle, theso_rec.original_uri_is_doi,
+					replace_rec.id_doi, replace_rec.id_concept1, id_theso, path) || seperateur;
+		END LOOP;
+
+		replacedBy = '';
+		FOR replacedBy_rec IN SELECT id_concept2, id_ark, id_handle, id_doi
+				FROM concept_replacedby, concept
+				WHERE concept.id_concept = concept_replacedby.id_concept2
+				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
+				AND concept_replacedby.id_concept2 = con.id_concept
+				AND concept_replacedby.id_thesaurus = id_theso
+		LOOP
+			replacedBy = replacedBy || opentheso_get_uri(theso_rec.original_uri_is_ark, replacedBy_rec.id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, replacedBy_rec.id_handle, theso_rec.original_uri_is_doi,
+					replacedBy_rec.id_doi, replacedBy_rec.id_concept2, id_theso, path) || seperateur;
+		END LOOP;
+
+		facets = '';
+		FOR facet_rec IN SELECT thesaurus_array.id_facet
+						 FROM thesaurus_array
+						 WHERE thesaurus_array.id_thesaurus = id_theso
+						 AND thesaurus_array.id_concept_parent = con.id_concept
+		LOOP
+			facets = facets || facet_rec.id_facet || seperateur;
+		END LOOP;
+
+		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
+				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
+				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified, img,
+				creator, contributor, replaces, replacedBy, facets INTO rec;
+
+  		RETURN NEXT rec;
+    END LOOP;
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION opentheso_get_concepts (id_theso VARCHAR, path VARCHAR)
+	RETURNS SETOF RECORD
+	LANGUAGE plpgsql
+AS $$
+DECLARE
+
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+
+	rec record;
+	con record;
+	theso_rec record;
+	traduction_rec record;
+	altLab_rec record;
+	altLab_hiden_rec record;
+	geo_rec record;
+	group_rec record;
+	note_concept_rec record;
+	note_term_rec record;
+	relation_rec record;
+	alignement_rec record;
+	img_rec record;
+	vote_record record;
+	message_record record;
+	cadidat_record record;
+	replace_rec record;
+	replacedBy_rec record;
+	facet_rec record;
+
+	tmp text;
+	uri text;
+	local_URI text;
+	prefLab VARCHAR;
+	altLab VARCHAR;
+	altLab_hiden VARCHAR;
+	membre text;
+	definition text;
+	secopeNote text;
+	note text;
+	historyNote text;
+	example text;
+	changeNote text;
+	editorialNote text;
+	narrower text;
+	broader text;
+	related text;
+	exactMatch text;
+	closeMatch text;
+	broadMatch text;
+	relatedMatch text;
+	narrowMatch text;
+	img text;
+	creator text;
+	contributor text;
+	replaces text;
+	replacedBy text;
+	facets text;
+BEGIN
+
+	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
+
+
+	FOR con IN SELECT * FROM concept WHERE id_thesaurus = id_theso AND status != 'CA'
+    LOOP
+		-- URI
+		uri = opentheso_get_uri(theso_rec.original_uri_is_ark, con.id_ark, theso_rec.original_uri, theso_rec.original_uri_is_handle,
+					 con.id_handle, theso_rec.original_uri_is_doi, con.id_doi, con.id_concept, id_theso, path);
+
+		-- LocalUri
+		local_URI = path || '/?idc=' || con.id_concept || '&idt=' || id_theso;
+		prefLab = '';
+
+		-- PrefLab
+		FOR traduction_rec IN SELECT * FROM opentheso_get_traductions(id_theso, con.id_concept)
+		LOOP
+			prefLab = prefLab || traduction_rec.term_lexical_value || sous_seperateur || traduction_rec.term_lang || seperateur;
+		END LOOP;
+
+		-- altLab
+		altLab = '';
+		FOR altLab_rec IN SELECT * FROM opentheso_get_alter_term(id_theso, con.id_concept, false)
+		LOOP
+			altLab = altLab || altLab_rec.alter_term_lexical_value || sous_seperateur || altLab_rec.alter_term_lang || seperateur;
+		END LOOP;
+
+		-- altLab hiden
+		altLab_hiden = '';
+		FOR altLab_hiden_rec IN SELECT * FROM opentheso_get_alter_term(id_theso, con.id_concept, true)
+		LOOP
+			altLab_hiden = altLab_hiden || altLab_hiden_rec.alter_term_lexical_value || sous_seperateur || altLab_hiden_rec.alter_term_lang || seperateur;
+		END LOOP;
+
+		-- Notes
+		note = '';
+		example = '';
+		changeNote = '';
+		secopeNote = '';
+		definition = '';
+		historyNote = '';
+		editorialNote = '';
+		FOR note_concept_rec IN SELECT * FROM opentheso_get_note_concept(id_theso, con.id_concept)
+		LOOP
+			IF (note_concept_rec.note_notetypecode = 'note') THEN
+				note = note || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'scopeNote') THEN
+				secopeNote = secopeNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'historyNote') THEN
+				historyNote = historyNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'definition') THEN
+				definition = definition || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'example') THEN
+				example = example || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'changeNote') THEN
+				changeNote = changeNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			ELSIF (note_concept_rec.note_notetypecode = 'editorialNote') THEN
+				editorialNote = editorialNote || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+			END IF;
+		END LOOP;
+
+		FOR note_term_rec IN SELECT * FROM opentheso_get_note_term(id_theso, con.id_concept)
+		LOOP
+			IF (note_term_rec.note_notetypecode = 'note') THEN
+				note = note || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'scopeNote') THEN
+				secopeNote = secopeNote || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'historyNote') THEN
+				historyNote = historyNote || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'definition') THEN
+				definition = definition || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'example') THEN
+				example = example || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'changeNote') THEN
+				changeNote = changeNote || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			ELSIF (note_term_rec.note_notetypecode = 'editorialNote') THEN
+				editorialNote = editorialNote || note_term_rec.note_lexicalvalue || sous_seperateur || note_term_rec.note_lang || seperateur;
+			END IF;
+		END LOOP;
+
+		-- Narrower
+		narrower = '';
+		broader = '';
+		related = '';
+		FOR relation_rec IN SELECT * FROM opentheso_get_relations(id_theso, con.id_concept)
+		LOOP
+			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
+					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, id_theso, path)
+					|| '@' || relation_rec.relationship_role || '@' || relation_rec.relationship_id_concept || '@' ;
+
+			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI'
+					OR relation_rec.relationship_role = 'NTG') THEN
+				narrower = narrower || tmp || seperateur;
+			ELSIF (relation_rec.relationship_role = 'BT' OR relation_rec.relationship_role = 'BTP' OR relation_rec.relationship_role = 'BTI'
+					OR relation_rec.relationship_role = 'BTG') THEN
+				broader = broader || tmp || seperateur;
+			ELSIF (relation_rec.relationship_role = 'RT' OR relation_rec.relationship_role = 'RHP' OR relation_rec.relationship_role = 'RPO') THEN
+				related = related || tmp || seperateur;
+			END IF;
+		END LOOP;
+
+		-- Alignement
+		exactMatch = '';
+		closeMatch = '';
+		broadMatch = '';
+		relatedMatch = '';
+		narrowMatch = '';
+		FOR alignement_rec IN SELECT * FROM opentheso_get_alignements(id_theso, con.id_concept)
+		LOOP
+			if (alignement_rec.alig_id_type = 1) THEN
+				exactMatch = exactMatch || alignement_rec.alig_uri_target || seperateur;
+			ELSEIF (alignement_rec.alig_id_type = 2) THEN
+				closeMatch = closeMatch || alignement_rec.alig_uri_target || seperateur;
+			ELSEIF (alignement_rec.alig_id_type = 3) THEN
+				broadMatch = broadMatch || alignement_rec.alig_uri_target || seperateur;
+			ELSEIF (alignement_rec.alig_id_type = 4) THEN
+				relatedMatch = relatedMatch || alignement_rec.alig_uri_target || seperateur;
+			ELSEIF (alignement_rec.alig_id_type = 5) THEN
+				narrowMatch = narrowMatch || alignement_rec.alig_uri_target || seperateur;
+			END IF;
+		END LOOP;
+
+		-- geo:alt && geo:long
+		SELECT * INTO geo_rec FROM opentheso_get_gps(id_theso, con.id_concept);
+
+		-- membre
+		membre = '';
+		FOR group_rec IN SELECT * FROM opentheso_get_groups(id_theso, con.id_concept)
+		LOOP
+			IF (theso_rec.original_uri_is_ark = true AND group_rec.group_id_ark IS NOT NULL  AND group_rec.group_id_ark != '') THEN
+				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
+			ELSIF (theso_rec.original_uri_is_ark = true AND (group_rec.group_id_ark IS NULL OR group_rec.group_id_ark = '')) THEN
+				membre = membre || path || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
+			ELSIF (group_rec.group_id_handle IS NOT NULL AND group_rec.group_id_handle != '') THEN
+				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
+			ELSIF (theso_rec.original_uri IS NOT NULL AND theso_rec.original_uri != '') THEN
+				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
+			ELSE
+				membre = membre || path || '/?idc=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
+			END IF;
+		END LOOP;
+
+		-- Images
+		img = '';
+		FOR img_rec IN SELECT * FROM opentheso_get_images(id_theso, con.id_concept)
+		LOOP
+			img = img || img_rec.url || seperateur;
+		END LOOP;
+
+		SELECT username INTO creator FROM users WHERE id_user = con.creator;
+		SELECT username INTO contributor FROM users WHERE id_user = con.contributor;
+
+		replaces = '';
+		FOR replace_rec IN SELECT id_concept1, id_ark, id_handle, id_doi
+				FROM concept_replacedby, concept
+				WHERE concept.id_concept = concept_replacedby.id_concept1
+				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
+				AND concept_replacedby.id_concept2 = con.id_concept
+				AND concept_replacedby.id_thesaurus = id_theso
+		LOOP
+			replaces = replaces || opentheso_get_uri(theso_rec.original_uri_is_ark, replace_rec.id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, replace_rec.id_handle, theso_rec.original_uri_is_doi,
+					replace_rec.id_doi, replace_rec.id_concept1, id_theso, path) || seperateur;
+		END LOOP;
+
+		replacedBy = '';
+		FOR replacedBy_rec IN SELECT id_concept2, id_ark, id_handle, id_doi
+				FROM concept_replacedby, concept
+				WHERE concept.id_concept = concept_replacedby.id_concept2
+				AND concept.id_thesaurus = concept_replacedby.id_thesaurus
+				AND concept_replacedby.id_concept1 = con.id_concept
+				AND concept_replacedby.id_thesaurus = id_theso
+		LOOP
+			replacedBy = replacedBy || opentheso_get_uri(theso_rec.original_uri_is_ark, replacedBy_rec.id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, replacedBy_rec.id_handle, theso_rec.original_uri_is_doi,
+					replacedBy_rec.id_doi, replacedBy_rec.id_concept2, id_theso, path) || seperateur;
+		END LOOP;
+
+		facets = '';
+		FOR facet_rec IN SELECT thesaurus_array.id_facet
+						 FROM thesaurus_array
+						 WHERE thesaurus_array.id_thesaurus = id_theso
+						 AND thesaurus_array.id_concept_parent = con.id_concept
+		LOOP
+			facets = facets || facet_rec.id_facet || seperateur;
+		END LOOP;
+
+		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
+				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
+				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified,
+				img, creator, contributor, replaces, replacedBy, facets INTO rec;
+
+  		RETURN NEXT rec;
+    END LOOP;
+END;
+$$;
+
+-- Procédures
+
+CREATE OR REPLACE procedure opentheso_add_terms(
+	id_term character varying,
+	id_thesaurus character varying,
+	id_concept character varying,
+	id_user int,
+	terms text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+	term_rec record;
+	array_string   text[];
+BEGIN
+	--label.getLabel() + SOUS_SEPERATEUR + label.getLanguage()
+	FOR term_rec IN SELECT unnest(string_to_array(terms, seperateur)) AS term_value
+    LOOP
+		SELECT string_to_array(term_rec.term_value, sous_seperateur) INTO array_string;
+            
+      	Insert into term (id_term, lexical_value, lang, id_thesaurus, created, modified, source, status, contributor) 
+			values (id_term, array_string[1], array_string[2], id_thesaurus, CURRENT_DATE, CURRENT_DATE, '', '', id_user);
+	END LOOP;
+	
+	-- Insert link term
+	Insert into preferred_term (id_concept, id_term, id_thesaurus) values (id_concept, id_term, id_thesaurus);
+END;
+$BODY$;
+
+
+
+
+
+CREATE OR REPLACE procedure opentheso_add_hierarchical_relations(
+	id_thesaurus character varying,
+	relations text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+	
+	relations_rec record;
+	array_string   text[];
+BEGIN
+
+	FOR relations_rec IN SELECT unnest(string_to_array(relations, seperateur)) AS relation_value
+    LOOP
+		SELECT string_to_array(relations_rec.relation_value, sous_seperateur) INTO array_string;
+		
+		INSERT INTO hierarchical_relationship (id_concept1, id_thesaurus, role, id_concept2) 
+			VALUES (array_string[1], id_thesaurus, array_string[2], array_string[3]) ON CONFLICT DO NOTHING; 
+	END LOOP;
+END;
+$BODY$;
+
+
+
+
+CREATE OR REPLACE procedure opentheso_add_notes(
+	id_concept character varying,
+	id_thesaurus character varying,
+	id_user int,
+	notes text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+	
+	notes_rec record;
+	array_string   text[];
+BEGIN
+
+	FOR notes_rec IN SELECT unnest(string_to_array(notes, seperateur)) AS note_value
+    LOOP
+		SELECT string_to_array(notes_rec.note_value, sous_seperateur) INTO array_string;
+		
+		if (array_string[2] = 'customnote' OR array_string[2] = 'scopeNote' OR array_string[2] = 'note')  THEN
+			insert into note (notetypecode, id_thesaurus, id_concept, lang, lexicalvalue, id_user) 
+				values (array_string[2], id_thesaurus, id_concept, array_string[3], array_string[1], id_user);
+		END IF;
+		
+		if (array_string[2] = 'definition' OR array_string[2] = 'historyNote' OR array_string[2] = 'editorialNote'
+		   		OR array_string[2] = 'changeNote' OR array_string[2] = 'example')  THEN
+			Insert into note (notetypecode, id_thesaurus, id_term, lang, lexicalvalue, id_user) 
+				values (array_string[2], id_thesaurus, array_string[4], array_string[3], array_string[1], id_user);
+		END IF;	
+		
+		if (id_user != '-1') THEN
+			Insert into note_historique (notetypecode, id_thesaurus, id_concept, lang, lexicalvalue, action_performed, id_user)
+				values (array_string[2], id_thesaurus, id_concept, array_string[3], array_string[1], 'add', id_user);
+		END IF;
+	END LOOP;
+END;
+$BODY$;
+
+
+
+CREATE OR REPLACE procedure opentheso_add_non_preferred_term(id_thesaurus character varying,
+			id_user int, 
+			non_pref_terms text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+	
+	non_pref_rec record;
+	array_string   text[];
+BEGIN
+
+	FOR non_pref_rec IN SELECT unnest(string_to_array(non_pref_terms, seperateur)) AS non_pref_value
+    LOOP
+		SELECT string_to_array(non_pref_rec.non_pref_value, sous_seperateur) INTO array_string;
+		-- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
+		Insert into non_preferred_term (id_term, lexical_value, lang, id_thesaurus, source, status, hiden)
+			values (array_string[1], array_string[2], array_string[3], array_string[4], array_string[5], array_string[6], CAST(array_string[7] AS BOOLEAN));
+			
+		Insert into non_preferred_term_historique (id_term, lexical_value, lang, id_thesaurus, source, status, id_user, action)
+			values (array_string[1], array_string[2], array_string[3], id_thesaurus, array_string[4], array_string[5], id_user, 'ADD');	
+	END LOOP;
+END;
+$BODY$;
+
+
+
+CREATE OR REPLACE procedure opentheso_add_external_images(
+	id_thesaurus character varying,
+	id_concept character varying,
+	id_user int,
+	images text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+    seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+    images_rec record;
+BEGIN
+
+    FOR images_rec IN SELECT unnest(string_to_array(images, seperateur)) AS image_value
+    LOOP
+		Insert into external_images (id_concept, id_thesaurus, id_user, image_name, external_uri, image_copyright) 
+            values (id_concept, id_thesaurus, id_user, '', images_rec.image_value, '');	
+    END LOOP;
+END;
+$BODY$;
+
+
+
+
+CREATE OR REPLACE procedure opentheso_add_alignements(alignements text) 
+LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+	
+	alignements_rec record;
+	array_string   text[];
+BEGIN
+
+	FOR alignements_rec IN SELECT unnest(string_to_array(alignements, seperateur)) AS alignement_value
+    LOOP
+		SELECT string_to_array(alignements_rec.alignement_value, sous_seperateur) INTO array_string;
+		
+		Insert into alignement (author, concept_target, thesaurus_target, uri_target, alignement_id_type, internal_id_thesaurus, internal_id_concept) 
+			values (CAST(array_string[1] AS int), array_string[2], array_string[3], array_string[4], CAST(array_string[5] AS int), array_string[6], array_string[7]);
+	END LOOP;
+END;
+$BODY$;
+
+
+
+CREATE OR REPLACE procedure opentheso_add_new_concept(
+	id_thesaurus character varying,
+	id_con character varying,
+	id_user int,
+	conceptStatus character varying,
+	notationConcept character varying,
+	id_ark character varying, 
+	isTopConcept Boolean, 
+	id_handle character varying,
+	id_doi character varying,
+	prefterms text,
+	relation_hiarchique text,
+	notes text,
+	non_pref_terms text,
+	alignements text,
+	images text,
+	idsConceptsReplaceBy text,
+	isGpsPresent Boolean,
+	altitude double precision,
+	longitude double precision,
+        created Date,
+        modified Date)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+    id_new_concet character varying;
+    idConceptReplaceBy character varying;
+    seperateur constant varchar := '##';
+    concept_Rep_rec record; 
+    replaces_rec record;
+BEGIN
+
+	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
+		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
+		
+	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
+		
+	IF (id_new_concet IS NOT NULL) THEN
+		
+		IF (prefterms IS NOT NULL AND prefterms != 'null') THEN
+			-- 'lexical_value@lang@source@status@createed@modified'
+			CALL opentheso_add_terms(id_new_concet, id_thesaurus, id_new_concet, id_user, prefterms);
+		END IF;
+
+		IF (relation_hiarchique IS NOT NULL AND relation_hiarchique != 'null') THEN
+			-- 'id_concept1@role@id_concept2'
+			CALL opentheso_add_hierarchical_relations(id_thesaurus, relation_hiarchique);
+		END IF;
+		
+		IF (notes IS NOT NULL AND notes != 'null') THEN
+			-- 'value@typeCode@lang@id_term'
+			CALL opentheso_add_notes(id_new_concet, id_thesaurus, id_user, notes);
+		END IF;
+		
+		IF (non_pref_terms IS NOT NULL AND non_pref_terms != 'null') THEN
+			-- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
+			CALL opentheso_add_non_preferred_term(id_thesaurus, id_user, non_pref_terms);
+		END IF;
+		
+		IF (images IS NOT NULL AND images != 'null') THEN
+			-- 'url1##url2'
+			CALL opentheso_add_external_images(id_thesaurus, id_new_concet, id_user, images);
+		END IF;
+		
+		IF (alignements IS NOT NULL AND alignements != 'null') THEN
+			-- 'author@concept_target@thesaurus_target@uri_target@alignement_id_type@internal_id_thesaurus@internal_id_concept'
+			CALL opentheso_add_alignements(alignements);
+		END IF;
+		
+		IF (idsConceptsReplaceBy IS NOT NULL AND idsConceptsReplaceBy != 'null') THEN
+        	FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
+            LOOP
+				Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user)
+							values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
+            END LOOP;
+		END IF;
+		
+       	IF (altitude > 0 AND longitude > 0) THEN
+			insert into gps values(id_new_concet, id_thesaurus, altitude, longitude);
+        END IF;		
+	END IF;
+END;
+$BODY$;
+
+
+
+
+CREATE OR REPLACE procedure opentheso_add_facet(
+	id_facet character varying,
+	id_thesaurus character varying,
+	id_conceotParent character varying,
+	labels text,
+	membres text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@';
+	
+	label_rec record;
+	membres_rec record;
+	array_string   text[];
+	isFirst boolean;
+BEGIN
+	isFirst = false;
+	FOR label_rec IN SELECT unnest(string_to_array(labels, seperateur)) AS label_value
+    LOOP
+		SELECT string_to_array(label_rec.label_value, sous_seperateur) INTO array_string;
+		
+		if (isFirst = false) then
+			isFirst = true;
+			INSERT INTO node_label(id_facet, id_thesaurus, lexical_value, created, modified, lang) 
+				VALUES (id_facet, id_thesaurus, array_string[1], CURRENT_DATE, CURRENT_DATE, array_string[2]);
+							
+			INSERT INTO thesaurus_array(id_thesaurus, id_concept_parent, id_facet) VALUES (id_thesaurus, id_conceotParent, id_facet);
+		ELSE
+			Insert into node_label (id_facet, id_thesaurus, lexical_value, lang) values (id_facet, id_thesaurus, array_string[1], array_string[2]);	
+		END IF;
+	END LOOP;
+	
+	FOR membres_rec IN SELECT unnest(string_to_array(membres, seperateur)) AS membre_value
+    LOOP		
+		INSERT INTO concept_facet(id_facet, id_thesaurus, id_concept) VALUES (id_facet, id_thesaurus, membres_rec.membre_value);
+	END LOOP;
+END;
+$BODY$;;

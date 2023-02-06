@@ -22,7 +22,7 @@
 
     <p:dataTable var="candidat" value="#{candidatBean.acceptedCadidat}" paginator="true" rows="15"
                  selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
-                 style="margin-top: 20px" emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}">
+                 style="margin-top: 20px" emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}" lazy="false">
 
         <p:column width="5%" headerText="ID">
             <h:outputText value="#{candidat.idConcepte}" />

@@ -6,19 +6,22 @@
 
 package fr.cnrs.opentheso.bdd.helper.nodes.notes;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 /**
  *
  * @author miled.rousset
  */
-public class NodeNote {
+public class NodeNote implements Serializable {
     
     private int id_note;
     
     // For Concept : note, scopeNote
     // For Term : definition; editorialNote; historyNote, changeNote, example; 
     private String notetypecode;
+    
+    private String noteSource;
     
     private String id_term;
     private String id_concept;
@@ -120,4 +123,13 @@ public class NodeNote {
     public void setVoted(boolean voted) {
         this.voted = voted;
     }
+
+    public String getNoteSource() {
+        return noteSource;
+    }
+
+    public void setNoteSource(String noteSource) {
+        this.noteSource = noteSource;
+    }
+    
 }

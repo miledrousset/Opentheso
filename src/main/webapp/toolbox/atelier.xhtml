@@ -47,7 +47,7 @@
 
                     <div class="container-fluid">
 
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800" style="font-size: 1.5rem;">#{langueBean.getMsg('menu.toolbox')} / <span style="color: #f47b2a;font-size: 1.5rem;">#{langueBean.getMsg('menu.thesaurusWorkshop')}</span></h1>
                         </div>
 
@@ -60,9 +60,9 @@
                                     </div>
                                 </h:panelGroup>
 
-                                <div class="card mb-4 py-3 border-left-success" style="padding-left: 10px; padding-right: 10px">
-                                    <h:outputText value="D'autres actions structurées avec choix d'un thésaurus en particulier"  /> <br/>
-                                    <p:wizard id="wizAtelier" widgetVar="wiz" nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}" >
+                                <div hidden="true" class="card mb-4 py-3 border-left-success" style="padding-left: 10px; padding-right: 10px">
+                                    <h:outputText rendered="e" value="D'autres actions structurées avec choix d'un thésaurus en particulier"  /> <br/>
+                                    <p:wizard rendered="e" id="wizAtelier" widgetVar="wiz" nextLabel="Suivant" backLabel="Précédent" flowListener="#{atelierThesBean.onFlowProcess}" >
                                         <p:tab id="actions" title="Choix de l'action" titleStyleClass="tabCostum">
 
                                             <p:panel styleClass="redColoredPanel" style="padding: 10px">
@@ -177,7 +177,7 @@
                                                 <h6 style="color: #43B572; font-weight: bold; margin-top: 10px">Liste des thésaurus</h6>
                                                 <h:outputText value="Veuillez selectionez un thésaurus : " />
                                                 <p:dataTable var="thes" value="#{atelierThesBean.nodeListTheso}" 
-                                                             selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-top: 10px">
+                                                             selection="#{atelierThesBean.thesoSelected}" rowKey="#{thes.id}" style="margin-top: 10px" lazy="false">
                                                     <p:column selectionMode="single" style="width: 35px; text-align: center" />
                                                     <p:column headerText="Id">
                                                         <h:outputText value="#{thes.id}" />
@@ -248,7 +248,7 @@
 
                                                 <p:scrollPanel mode="native" style="margin-top: 10px; width: 100%; max-height: 450px;"
                                                                rendered="#{atelierThesBean.result.size() > 0}">
-                                                    <p:dataTable id="tbl" var="resultat" value="#{atelierThesBean.result}">
+                                                    <p:dataTable id="tbl" var="resultat" value="#{atelierThesBean.result}" lazy="false">
                                                         <p:column headerText="Id Origine" style="background-color: #ebedf0;">
                                                             <h:outputText value="#{resultat.idOrigine}" />
                                                         </p:column>
@@ -291,7 +291,7 @@
 
                                     <div class="row">
                                         <div class="col-12" style="text-align: center" >
-                                            <p:commandButton id="cancelBtn" icon="fa fa-undo" class="btn btn-success" 
+                                            <p:commandButton rendered="e" id="cancelBtn" icon="fa fa-undo" class="btn btn-success" 
                                                              style="width: 70px; color: white; background: #FFC107; border: #FFC107; margin-top: 10px"
                                                              actionListener="#{atelierThesBean.init()}" process="@this"
                                                              onclick="PF('wiz').loadStep(PF('wiz').cfg.steps[0], false);" update="containerIndex:wizAtelier"/>

@@ -6,59 +6,53 @@
 
     <p:dialog id="idRenameTraduction" header="#{langueBean.getMsg('rightbody.conceptdialog.modify_translation')}" widgetVar="renameTraduction" 
               width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        
         <h:form id="renameTraductionForm" >
+            
             <p:defaultCommand target="validateRenameTraduction" /> 
+            
             <div class="row">
-                <div class="col-4 offset-1" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} :" class="dialog-titre" /> 
-                </div>
-                <div class="col-6">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" class="dialog-titre"/> 
-                </div>
-                <div class="col-1">
-                    <p:commandLink action="#{noteBean.infos}" update="messageIndex" style="font-size: 17px; color: #FF7979; text-align: right">
-                        <i class="pi pi-exclamation-circle" />
-                    </p:commandLink>
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : "  /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/> 
                 </div>
             </div>
-            <p:spacer/>
             
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
+                <p:dataTable var="traductionToEdit" value="#{traductionBean.nodeTermTraductionsForEdit}" size="small"
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
-            
-            <ui:repeat var="traductionToEdit" value="#{traductionBean.nodeTermTraductionsForEdit}" >
-                <div class="row" style="margin-top: 5px">
-                    <div class="col-8 offset-1" style="background: #FAFAFA">
-                        <p:inputText value="#{traductionToEdit.lexicalValue}" style="font-size: 12px; width: 100%; color: #000"/>                    
-                    </div>          
-                    <h:outputText value="#{traductionToEdit.lang}" style="color: #43B572; font-size: 14px;"/>                
-                    <div class="col-1" style="background: #FAFAFA">
+                    <p:column headerText="Label">
+                        <p:inputText value="#{traductionToEdit.lexicalValue}" style="width: 100%;"/>
+                    </p:column>
+                    
+                    <p:column headerText="Lang">
+                        <h:outputText value="#{traductionToEdit.lang}" style="color: #43B572; font-size: 14px;"/>
+                    </p:column>
+
+                    <p:column width="80" headerText="Supprimer">
                         <p:commandLink style="color: #F7A269; "
                                        ajax="true" process="@form"
-                                       action="#{traductionBean.updateTraduction(traductionToEdit, currentUser.nodeUser.idUser)}">
+                                       update="messageIndex containerIndex:idDeleteTraduction containerIndex:formRightTab"
+                                       actionListener="#{traductionBean.updateTraduction(traductionToEdit, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-check-circle" />
                         </p:commandLink>
-                    </div>
-                </div>
-            </ui:repeat>
-            <div class="row">
-                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                    <p:messages id="RenameTradMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
-                        <p:autoUpdate/>
-                    </p:messages>
-                </div>
-            </div>   
-            <p:spacer height="10px;"/>
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('renameTraduction').hide();" update="containerIndex:idRenameTraduction"/>
+                    </p:column>                    
+                </p:dataTable>
+            </div>
+            
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 style="margin-right: 10px" update="containerIndex:idRenameTraduction"
+                                 actionListener="PF('renameTraduction').hide();"/>
 
                 <p:commandButton id="validateRenameTraduction"
-                                value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}"
-                                 ajax="true" process="@form"
-                                 styleClass="ui-button-primary" 
+                                 value="#{langueBean.getMsg('rightbody.conceptdialog.modify_all')}"
+                                 icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  oncomplete="PF('renameTraduction').show();"
-                                 actionListener="#{traductionBean.updateAllTraduction(currentUser.nodeUser.idUser)}" style="color: white;"/>
+                                 update="messageIndex containerIndex:idDeleteTraduction containerIndex:formRightTab"
+                                 actionListener="#{traductionBean.updateAllTraduction(currentUser.nodeUser.idUser)}" />
             </div>
         </h:form>
     </p:dialog>

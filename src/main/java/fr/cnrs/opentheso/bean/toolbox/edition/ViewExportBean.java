@@ -119,13 +119,14 @@ public class ViewExportBean implements Serializable {
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+
 
         String idLang = selectedTheso.getCurrentLang();
         if (idLang == null || idLang.isEmpty()) {
             idLang = connect.getWorkLanguage();
         }
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);        
 
         types = Arrays.asList("Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);
@@ -325,6 +326,16 @@ public class ViewExportBean implements Serializable {
     public void setCsvDelimiter(String csvDelimiter) {
         this.csvDelimiter = csvDelimiter;
     }
+    
+    public char getCsvDelimiterChar() {
+        if (csvDelimiter.equalsIgnoreCase(";")) {
+            return ';';
+        } 
+        if (csvDelimiter.equalsIgnoreCase("\\t")) {
+            return '\t';
+        }
+        return ',';
+    }  
 
     public boolean isIsAllGroupsSelected() {
         return isAllGroupsSelected;

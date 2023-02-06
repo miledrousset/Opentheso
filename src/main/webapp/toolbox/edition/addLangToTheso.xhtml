@@ -47,14 +47,15 @@
                 </div>
             </div> 
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
                                  actionListener="PF('addLangToTheso').hide();" update="idAddLangToTheso"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('addLangToTheso').hide();"
-                                 actionListener="#{editThesoBean.addNewLang()}"
+                <p:commandButton value="#{langueBean.getMsg('btnAdd')}" update="containerIndex messageIndex"
+                                 styleClass="ui-button-success"  oncomplete="PF('addLangToTheso').hide();"
+                                 actionListener="#{editThesoBean.addNewLang()}" icon="pi pi-check" 
                                  action="#{roleOnTheso.showListTheso()}" />
             </div>
         </h:form>

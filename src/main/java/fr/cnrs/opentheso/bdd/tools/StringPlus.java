@@ -74,6 +74,8 @@ public StringPlus() {
         s = s.replaceAll("\\'", "''");
         // Handle backslashes (You like the Java style...)
         s = s.replaceAll("\\\\", "\\\\\\\\");
+        
+    //    s = s.replaceAll("\"", "\\\"");
         return s.trim();
     }
 

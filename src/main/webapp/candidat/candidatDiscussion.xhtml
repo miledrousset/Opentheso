@@ -9,8 +9,8 @@
         </div>
         <div class="col-6" style="text-align: right;">
             <p:commandButton actionListener="#{discussionService.reloadMessage()}"
-                             icon="fas fa-sync" styleClass="rounded-button ui-button-secondary"
-                             style="background-color: #F47B2A; border-color: #F47B2A"
+                             icon="fas fa-sync" styleClass="rounded-button ui-button-outlined"
+                             style="color: #F47B2A"
                              update="tabViewCandidat messageIndex" />       
         </div>        
     </div>
@@ -62,16 +62,18 @@
         </div>
     </div>
 
-    <div class="row" style="margin-top: 10px; margin-left: 10px; margin-right: 10px ">
+    <div class="row" style="margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 30px ">
         <div class="col-6">
-            <p:commandButton title="#{langueBean.getMsg('candidat.show_participants')}" 
-                             class="btn btn-primary" update="idParticipantsList" oncomplete="PF('participantsList').show();"
+            <p:commandButton 
+                             value="#{langueBean.getMsg('candidat.show_participants')}" styleClass="ui-button-success" icon="fa-solid fa-user"
+                             update="idParticipantsList" oncomplete="PF('participantsList').show();"
                              actionListener="#{discussionService.getParticipantsInConversation()}" />
         </div>
         <div class="col-6" style="text-align: right">
-            <p:commandButton disabled="true" title="#{langueBean.getMsg('candidat.send_invitation')}"
+            <p:commandButton disabled="true" 
+                             value="#{langueBean.getMsg('candidat.send_invitation')}" styleClass="ui-button-success" icon="fa-solid fa-paper-plane"
                              update="idSendChatInvitation" ajax="true"
-                             class="btn btn-primary" oncomplete="PF('sendChatInvitation').show();" />
+                             oncomplete="PF('sendChatInvitation').show();" />
         </div>
     </div>
 </ui:fragment>

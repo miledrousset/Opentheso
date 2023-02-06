@@ -6,6 +6,7 @@
 package fr.cnrs.opentheso.bean.alignment;
 
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentType;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
@@ -88,7 +89,7 @@ public class AlignmentManualBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
         }
-
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
         conceptView.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
@@ -125,7 +126,7 @@ public class AlignmentManualBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
         }
-
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
         conceptView.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
@@ -163,13 +164,14 @@ public class AlignmentManualBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
         }
-
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
+        
         conceptView.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "alignement modifié avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         PrimeFaces pf = PrimeFaces.current();
@@ -215,7 +217,8 @@ public class AlignmentManualBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
         }
-
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), idConcept, currentUser.getNodeUser().getIdUser());
+        
         conceptView.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
@@ -233,6 +236,18 @@ public class AlignmentManualBean implements Serializable {
         }
     }    
     
+    /**
+     * 
+     * @param idTheso
+     * @param idConcept
+     * @param idUser 
+     */
+    private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                idTheso,
+                idConcept, idUser);        
+    }
     
 
     public ArrayList<NodeAlignmentType> getNodeAlignmentTypes() {

@@ -8,7 +8,6 @@ package fr.cnrs.opentheso.bean.group;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -29,20 +29,26 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 
 /**
- *
  * @author miledrousset
  */
 @Named(value = "removeConceptAndChildFromGroupBean")
-@javax.enterprise.context.SessionScoped
-
+@SessionScoped
 public class RemoveConceptAndChildFromGroupBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private ConceptView conceptView;
-    @Inject private TreeGroups treeGroups;
-    @Inject private GroupView groupView;    
+    @Inject 
+    private Connect connect;
+    
+    @Inject 
+    private SelectedTheso selectedTheso;
+    
+    @Inject 
+    private ConceptView conceptView;
+    
+    @Inject 
+    private TreeGroups treeGroups;
+    
+    @Inject 
+    private GroupView groupView;    
 
     private ArrayList <NodeGroup> nodeGroups;
 
@@ -55,9 +61,6 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
             nodeGroups.clear();
             nodeGroups = null;
         }    
-    }
-    
-    public RemoveConceptAndChildFromGroupBean() {
     }
 
     public void init() {
@@ -110,7 +113,6 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
     
     public void deleteGroup(String idGroup, int idUser){
         FacesMessage msg;
-//        PrimeFaces pf = PrimeFaces.current();
         try {
             GroupHelper groupHelper = new GroupHelper();
             
@@ -121,9 +123,6 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
                 conn.close();
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de la collection !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-//                if (pf.isAjaxRequest()) {
-//                    pf.ajax().update("messageIndex");          
-//                }
                 return;
             }
             conn.commit();
@@ -152,7 +151,6 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         groupView.init();
      
     }
-    
 
     public ArrayList<NodeGroup> getNodeGroups() {
         return nodeGroups;
@@ -161,7 +159,4 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
     public void setNodeGroups(ArrayList<NodeGroup> nodeGroups) {
         this.nodeGroups = nodeGroups;
     }
-
-
-   
 }

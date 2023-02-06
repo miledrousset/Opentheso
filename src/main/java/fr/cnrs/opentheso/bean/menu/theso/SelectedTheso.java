@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
@@ -24,11 +25,9 @@ import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Arrays;
 import javax.faces.application.FacesMessage;
@@ -39,6 +38,7 @@ import org.primefaces.event.UnselectEvent;
 @Named(value = "selectedTheso")
 @SessionScoped
 public class SelectedTheso implements Serializable {
+    @Inject private LanguageBean LanguageBean;
     @Inject private Connect connect;
     @Inject private IndexSetting indexSetting;
     @Inject private TreeGroups treeGroups;
@@ -99,8 +99,8 @@ public class SelectedTheso implements Serializable {
         idThesoFromUri = null;      
         thesoName = null;   
         localUri = null;
-        System.gc();
-        System.runFinalization();        
+    //    System.gc();
+    //    System.runFinalization();        
     }      
     
     @PostConstruct
@@ -110,16 +110,20 @@ public class SelectedTheso implements Serializable {
             return;
         }
         
-        isNetworkAvailable = hostAvailabilityCheck();
-        
-        ///////
+        isNetworkAvailable = true;  
+//#MR désactivé temporairement pour tester pourquoi le serveur ne répond pas rapidement au démarrage // hostAvailabilityCheck();
+
+
+
+
+        ///////#MR désactivé, ce n'est plus utile
         ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+/*        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         HttpServletRequest req = (HttpServletRequest) externalContext.getRequest();
         if(!req.getSession().isNew()){
             System.gc();
-            System.runFinalization();
-        }        
+      //      System.runFinalization();
+        }     */   
         ///////
         ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire        
         
@@ -177,7 +181,6 @@ public class SelectedTheso implements Serializable {
      * l'application
      * @throws java.io.IOException
      */
-//    public void setSelectedTheso() throws IOException {
     public void setSelectedTheso() throws IOException {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
@@ -194,9 +197,7 @@ public class SelectedTheso implements Serializable {
                 PrimeFaces.current().executeScript("disparaitre();");
             }
             
-            //if (!"index".equals(menuBean.getActivePageName())) {
-                menuBean.redirectToThesaurus();
-            //}
+            menuBean.redirectToThesaurus();
             return;
         }
 
@@ -209,6 +210,7 @@ public class SelectedTheso implements Serializable {
             listIndex.reset();
             conceptBean.init();
             init();
+            
             indexSetting.setIsSelectedTheso(false); 
             
             roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());
@@ -222,21 +224,7 @@ public class SelectedTheso implements Serializable {
                 PrimeFaces.current().executeScript("disparaitre();");
             }
             
-            //if (!"index".equals(menuBean.getActivePageName())) {
-                menuBean.redirectToThesaurus();
-            //}
-        /*
-            PrimeFaces pf = PrimeFaces.current();
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:contentConcept");
-                pf.ajax().update("containerIndex:thesoSelect");
-                pf.ajax().update("containerIndex:sideBarSearch");
-                pf.ajax().update("containerIndex:searchBar");
-                pf.ajax().update("containerIndex:header");
-                pf.ajax().update("containerIndex:notificationPanel");
-                pf.ajax().update("containerIndex:contentConcept");
-            }
-            */
+            menuBean.redirectToThesaurus();
             return;
         }
 
@@ -252,9 +240,7 @@ public class SelectedTheso implements Serializable {
                 PrimeFaces.current().executeScript("disparaitre();");
             }
             
-            //if (!"index".equals(menuBean.getActivePageName())) {
-                menuBean.redirectToThesaurus();
-            //}
+            menuBean.redirectToThesaurus();
             return;
         }
 
@@ -278,18 +264,8 @@ public class SelectedTheso implements Serializable {
             searchBean.setBarVisisble(false);
             PrimeFaces.current().executeScript("disparaitre();");
         }
+        
         menuBean.redirectToThesaurus();
-        /*
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:contentConcept");
-            pf.ajax().update("containerIndex:thesoSelect");
-            pf.ajax().update("containerIndex:sideBarSearch");
-            pf.ajax().update("containerIndex:searchBar");
-            pf.ajax().update("containerIndex:header");
-            pf.ajax().update("containerIndex:notificationPanel");
-            pf.ajax().update("containerIndex:contentConcept");
-        }*/
     }
     
     
@@ -413,14 +389,17 @@ public class SelectedTheso implements Serializable {
         // setting des préférences du thésaurus sélectionné
         roleOnThesoBean.initNodePref();
         roleOnThesoBean.showListTheso();
-        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), selectedIdTheso);
-
         if (idLang == null) {
             idLang = getIdLang();
             if (idLang == null || idLang.isEmpty()) {
                 return;
             }
         }
+        nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(),
+                selectedIdTheso,
+                LanguageBean.getIdLangue());
+
         currentLang = idLang;
         selectedLang = idLang;
         setThesoName();

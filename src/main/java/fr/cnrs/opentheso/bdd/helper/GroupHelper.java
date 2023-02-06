@@ -114,50 +114,22 @@ public class GroupHelper {
             String idGroup,
             String idTheso,
             int idUser) {
-
-        Connection conn = null;
-        Statement stmt;
         boolean status = false;
         label = new StringPlus().convertString(label);
 
-        try {
-            conn = ds.getConnection();
-            conn.setAutoCommit(false);
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "UPDATE concept_group_label "
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept_group_label "
                             + "set lexicalvalue='" + label + "',"
                             + " modified = current_date"
                             + " WHERE lang ='" + idLang + "'"
                             + " AND idthesaurus='" + idTheso + "'"
-                            + " AND idgroup ='" + idGroup + "'";
-
-                    stmt.executeUpdate(query);
-                    if (!addGroupTraductionHistoriqueRollBack(conn, idGroup, idTheso, idLang, label, idUser)) {
-                        conn.rollback();
-                        conn.close();
-                    }
-                    conn.commit();
-                    conn.close();
-                    status = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+                            + " AND idgroup ='" + idGroup + "'");
+                status = true;
+                addGroupTraductionHistoriqueRollBack(conn, idGroup, idTheso, idLang, label, idUser);
             }
         } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while updating group : " + idGroup, sqle);
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, sqle);
         }
         return status;
     }
@@ -459,6 +431,42 @@ public class GroupHelper {
     }
 
     /**
+     * Cette fonction permet d'ajouter un libellé pour un group (MT, domaine
+     * etc..)
+     *
+     * @param ds
+     * @param idGroup
+     * @param idLang
+     * @param value
+     * @param idTheso
+     * @return
+     */
+    public boolean addGroupTraduction(HikariDataSource ds,
+            String idGroup, String idTheso,
+            String idLang, String value) {
+        boolean status = false;
+        value = new StringPlus().convertString(value);
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("Insert into concept_group_label "
+                        + "(lexicalvalue, created, modified,lang, idthesaurus, idgroup)"
+                        + "values ("
+                        + "'" + value + "'"
+                        + ",current_date"
+                        + ",current_date"
+                        + ",'" + idLang + "'"
+                        + ",'" + idTheso + "'"
+                        + ",'" + idGroup + "'" + ")");
+                status = true;                
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while adding traduction of Group : " + idGroup, sqle);
+        }
+        return status;
+    }    
+    
+    /**
      * Cette fonction permet d'ajouter une ligne historisque du chagement dans
      * les traductions du groupe
      *
@@ -628,13 +636,13 @@ public class GroupHelper {
         try {
             stmt = conn.createStatement();
             try {
-                String query = "select nextval('concept_group__id_seq') from concept_group__id_seq";
+                String query = "select last_value from concept_group__id_seq";
                 //       + "select max(id) from concept_group";
                 stmt.executeQuery(query);
                 resultSet = stmt.getResultSet();
                 if (resultSet.next()) {
                     int idNumeriqueGroup = resultSet.getInt(1);
-                    idgroup = "G" + idNumeriqueGroup;
+                    idgroup = "G" + ++idNumeriqueGroup;
                     // si le nouveau Id existe, on l'incrémente
                     while (isIdGroupExiste(conn, idgroup)) {
                         idgroup = "G" + (++idNumeriqueGroup);
@@ -706,6 +714,7 @@ public class GroupHelper {
         ResultSet resultSet = null;
         Connection conn;
         boolean existe = false;
+        if(notation == null || notation.isEmpty()) return false;
 
         try {
             conn = ds.getConnection();
@@ -2955,7 +2964,7 @@ public class GroupHelper {
      * @param idArk
      * @return Objet class Concept
      */
-    public String getIdGroupFromArkId(HikariDataSource ds, String idArk) {
+    public String getIdGroupFromArkId(HikariDataSource ds, String idArk, String idTheso) {
 
         Connection conn;
         Statement stmt;
@@ -2967,7 +2976,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select idgroup from concept_group where"
-                            + " id_ark = '" + idArk + "'";
+                            + " id_ark = '" + idArk + "' and idthesaurus = '" + idTheso + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
@@ -2990,6 +2999,49 @@ public class GroupHelper {
         }
         return idGroup;
     }
+    /**
+     * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une
+     * chaine vide
+     *
+     * @param ds
+     * @param idHandle
+     * @return Objet class Concept
+     */
+    public String getIdGroupFromHandleId(HikariDataSource ds, String idHandle) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet = null;
+        String idGroup = "";
+        try {
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "select idgroup from concept_group where"
+                            + " id_handle = '" + idHandle + "'";
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+
+                    if (resultSet.next()) {
+                        idGroup = resultSet.getString("idgroup");
+                    }
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting idGroup from idArk of Group : " + idHandle, sqle);
+        }
+        return idGroup;
+    }    
 
     /**
      * Cette fonction permet de récupérer l'identifiant du Concept d'après

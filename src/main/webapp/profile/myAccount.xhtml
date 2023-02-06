@@ -40,14 +40,13 @@
             <div id="content-wrapper" style="min-height:100%; position:relative;">
 
                 <h:form id="containerIndex">
-                    
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
 
                     <div class="container-fluid" style="padding-bottom: 70px">
 
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.my_account')}</span></h1>
                         </div>
 
@@ -69,10 +68,10 @@
                                                                  style="width: 100%; height: 100%" />
                                                 </div>
 
-                                                <div class="col-1" style="vertical-align: central; margin-top: 3px">
-                                                    <p:commandLink action="#{myAccountBean.updatePseudo()}" update="containerIndex">
-                                                        <i class="pi pi-check-circle" style="color: #F7A269;" />
-                                                    </p:commandLink> 
+                                                <div class="col-1" style="vertical-align: central; margin-top: 3px; font-size: 12px">
+                                                    <p:commandButton action="#{myAccountBean.updatePseudo()}" update="containerIndex"
+                                                        icon="pi pi-check" styleClass="rounded-button">
+                                                    </p:commandButton>
                                                 </div>
                                             </div>
                                         </div>                                     
@@ -106,9 +105,9 @@
                                                 </div>
 
                                                 <div class="col-1" style="vertical-align: central; margin-top: 3px">
-                                                    <p:commandLink action="#{myAccountBean.updatePassword()}" update="containerIndex">
-                                                        <i class="pi pi-check-circle" style="color: #F7A269;" />
-                                                    </p:commandLink> 
+                                                    <p:commandButton action="#{myAccountBean.updatePassword()}" update="containerIndex"
+                                                        icon="pi pi-check" styleClass="rounded-button">
+                                                    </p:commandButton> 
                                                 </div>
                                             </div>
                                         </div>
@@ -129,9 +128,9 @@
                                                 </div>
 
                                                 <div class="col-1" style="vertical-align: central; margin-top: 3px">
-                                                    <p:commandLink action="#{myAccountBean.updateEmail()}" update="containerIndex">
-                                                        <i class="pi pi-check-circle" style="color: #F7A269;" />
-                                                    </p:commandLink> 
+                                                    <p:commandButton action="#{myAccountBean.updateEmail()}" update="containerIndex"
+                                                        icon="pi pi-check" styleClass="rounded-button">
+                                                    </p:commandButton> 
                                                 </div>
                                             </div>
                                         </div>
@@ -147,9 +146,9 @@
                                                 </div>
 
                                                 <div class="col-1" style="vertical-align: central; margin-top: 3px">
-                                                    <p:commandLink action="#{myAccountBean.updateAlertEmail()}" update="containerIndex">
-                                                        <i class="pi pi-check-circle" style="color: #F7A269;" />
-                                                    </p:commandLink> 
+                                                    <p:commandButton action="#{myAccountBean.updateAlertEmail()}" update="containerIndex"
+                                                        icon="pi pi-check" styleClass="rounded-button">
+                                                    </p:commandButton> 
                                                 </div>
                                             </div>
                                         </div>
@@ -169,7 +168,7 @@
                                                 <h:panelGroup rendered="#{!myAccountBean.nodeUser.isSuperAdmin}">
                                                     <div class="col-12">
                                                         <p:dataTable id="tabUser" value="#{myAccountBean.allMyRoleProject}" var="allRoleProject" 
-                                                                     scrollable="true" resizableColumns="true" scrollHeight="450">
+                                                                     scrollable="true" resizableColumns="true" scrollHeight="450" lazy="false">
                                                             <p:column width="30%" headerText="#{langueBean.getMsg('profile.role')}">
                                                                 <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
                                                             </p:column>

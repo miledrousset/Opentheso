@@ -55,7 +55,9 @@ public class AlignmentHelper {
                         " where" +
                         " internal_id_thesaurus = '" + idTheso + "'" +
                         " and " +
-                        " uri_target ilike '%ontome.net/class/" + cidocClass + "'" +
+                        " uri_target ilike '%ontome.net/ontology/" + cidocClass + "'" +
+                        " or uri_target ilike '%ontome.net/ontology/c" + cidocClass + "'" + 
+                        " or uri_target ilike '%ontome.net/class/" + cidocClass + "'" +
                         " and" +
                         " alignement_id_type = 1");
 
@@ -96,7 +98,8 @@ public class AlignmentHelper {
                         " where" +
                         " internal_id_thesaurus = '" + idTheso + "'" +
                         " and " +
-                        " uri_target ilike '%ontome.net/class%'" +
+                        " uri_target ilike '%ontome.net/ontology%'" +
+                        " or uri_target ilike '%ontome.net/class%'" +
                         " and" +
                         " alignement_id_type = 1");
 

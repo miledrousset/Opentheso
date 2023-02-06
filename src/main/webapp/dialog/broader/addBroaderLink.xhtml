@@ -4,55 +4,55 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog id="idAddBroaderLink" header="#{langueBean.getMsg('rightbody.conceptdialog.add_generic_relationship')}" widgetVar="addBroaderLink" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >  
-
-        <div class="row">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
+    <p:dialog id="idAddBroaderLink" header="#{langueBean.getMsg('rightbody.conceptdialog.add_generic_relationship')}" 
+              widgetVar="addBroaderLink" width="450" showEffect="fade" modal="true" resizable="false" 
+              position="top" style="margin-top: 30px" >  
+        <h:form>
+            
+            <p:defaultCommand target="addBroaderLinkBtn" />
+            
+            <div class="row">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/> 
+                </div>
             </div>
-            <div class="col-7">
-                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                              style="margin-left: 10px; color: black; margin-left: 5px"/> 
+
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.broader')} : " /> 
+                </div>
+                <div class="col-7">
+                    <p:autoComplete id="autoBroaderLink" value="#{broaderBean.searchSelected}"
+                                    var="values" style="width: 100%"
+                                    forceSelection="true"
+                                    completeMethod="#{broaderBean.getAutoComplet}"                                  
+                                    minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
+                                    scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 34px;box-shadow: none;">
+                        <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
+                            <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
+                                          style="font-style: italic;" />
+                            <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
+                        </p:column>
+
+                        <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
+                            <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
+                        </p:column>
+                    </p:autoComplete>  
+                </div>
             </div>
-        </div>
 
-        <div class="row" style="margin-top: 5px">
-            <div class="col-5" style="margin-top: 3px">
-                <h:outputText value="#{langueBean.getMsg('rightbody.concept.broader')} : " class="dialog-titre" /> 
-            </div>
-            <div class="col-7">
-                <p:autoComplete id="autoBroaderLink" value="#{broaderBean.searchSelected}"
-                                var="values" style="width: 100%"
-                                forceSelection="true"
-                                completeMethod="#{broaderBean.getAutoComplet}"                                  
-                                minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
-                                scrollHeight="600" inputStyle="font-size: 12px; width: 100%; height: 34px;box-shadow: none;border-color: #43B572; color: #000">
-                    <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
-                        <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
-                                      style="font-style: italic;" />
-                        <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
-                    </p:column>
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px" 
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 actionListener="PF('addBroaderLink').hide();" update="containerIndex:idAddBroaderLink"/>
 
-                    <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
-                        <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
-                    </p:column>
-
-                </p:autoComplete>  
-            </div>
-        </div>
-        
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary"
-                                 style="margin-right: 10px"
-                                 actionListener="PF('addBroaderLink').hide();" update="idAddBroaderLink"/>
-
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
-                                 styleClass="ui-button-primary" oncomplete="PF('addBroaderLink').hide();"
+                <p:commandButton id="addBroaderLinkBtn" value="#{langueBean.getMsg('btnValidate')}" 
+                                 update="containerIndex messageIndex"
+                                 icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
+                                 oncomplete="PF('addBroaderLink').hide();"
                                  actionListener="#{broaderBean.addNewBroaderLink(currentUser.nodeUser.idUser)}"/>
             </div>
-        </f:facet>
+        </h:form>
     </p:dialog>   
 </ui:fragment>

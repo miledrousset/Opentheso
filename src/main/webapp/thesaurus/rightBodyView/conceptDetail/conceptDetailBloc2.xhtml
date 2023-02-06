@@ -4,14 +4,12 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
-
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
-        <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
-
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
             <!-- ligne BT -->            
-            <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+            <div class="list-group-item list-group-item-action">
                 <div class="row" style="margin-left: 0px;">
-                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.broader')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.broader')}"
                                       style="font-size: 14px; font-weight: bold;color: #8f8f8f; margin-right: 7px"/>
@@ -26,15 +24,16 @@
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_generic_relation')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_add_generic_relation')}"
-                                        actionListener="#{broaderBean.reset()}" update="idAddBroaderLink" icon="fas fa-plus"
+                                        actionListener="#{broaderBean.reset()}" update="containerIndex:idAddBroaderLink" icon="fas fa-plus"
                                         oncomplete="PF('addBroaderLink').show();"/>
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_generic_relation')}" 
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_delete_generic_relation')}"
-                                        actionListener="#{broaderBean.reset()}" update="idDeleteBroaderLink" 
+                                        actionListener="#{broaderBean.reset()}" update="containerIndex:idDeleteBroaderLink" 
                                         oncomplete="PF('deleteBroaderLink').show();" icon="fas fa-minus"
                                         disabled="#{conceptView.nodeConcept.nodeBT.size() == 0}"/>
                         </p:menuButton>
+                        
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeBT.size() == 0}">   
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                            style="font-size: 14px; color: grey; font-style: italic " /> 
@@ -44,9 +43,9 @@
                             <ui:repeat  var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
                                 <p:tooltip style="font-size: 12px;" position="bottom"/>
                                 <p:commandLink id="toolTipBT1" rendered="#{value.title != ''}" value="#{value.title}"
-
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex">
+                                                         value.idConcept, conceptView.selectedLang)}" 
+                                               update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex">
 
                                 </p:commandLink>    
 
@@ -81,18 +80,18 @@
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_narrower_relation')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_add_narrower_relation')}"
-                                        actionListener="#{narrowerBean.reset()}" update="idAddNarrowerLink"
+                                        actionListener="#{narrowerBean.reset()}" update="containerIndex:idAddNarrowerLink"
                                         oncomplete="PF('addNarrowerLink').show();" icon="fas fa-plus" />
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.changing_relationships')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_changing_relationships')}"
                                         actionListener="#{narrowerBean.initForChangeRelations()}" icon="fas fa-edit"
-                                        update="idChangeRelation" oncomplete="PF('changeRelation').show();"
+                                        update="containerIndex:idChangeRelation" oncomplete="PF('changeRelation').show();"
                                         disabled="#{conceptView.nodeConcept.nodeNT.size() == 0}"/>  
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_narrower_relation')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_delete_narrower_relation')}"
-                                        actionListener="#{narrowerBean.reset()}" update="idDeleteNarrowerLink" 
+                                        actionListener="#{narrowerBean.reset()}" update="containerIndex:idDeleteNarrowerLink" 
                                         oncomplete="PF('deleteNarrowerLink').show();" icon="fas fa-minus"
                                         disabled="#{conceptView.nodeConcept.nodeNT.size() == 0}"/>
                         </p:menuButton>
@@ -162,6 +161,7 @@
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_add_related_relation')}"
                                         actionListener="#{relatedBean.reset()}" oncomplete="PF('addRelatedLink').show();"
                                         update="containerIndex:idAddRelatedLink" icon="fas fa-plus" />
+                            
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_related_relation')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_delete_related_relation')}"
                                         oncomplete="PF('deleteRelatedLink').show();" update="containerIndex:idDeleteRelatedLink"
@@ -192,14 +192,13 @@
     </div>
 
     <!-- ligne Traductions -->  
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central;">
-        <div class="list-group" style="margin-top: -5px; margin-bottom: -5px">
-            <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+            <div class="list-group-item list-group-item-action">
                 <div class="row" style="margin-left: 0px;">
                     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 7px"/>
-
 
                     </div>
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: end"> 
@@ -233,15 +232,17 @@
                                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
                                     <p:spacer width="3" rendered="#{status2.first}" />
-                                    <p:spacer width="40" rendered="#{!status2.first}" />
+                                    <p:spacer width="41" rendered="#{!status2.first}" />
                                 </h:panelGroup>
                                 
-                                <img src="#{conceptView.getDrapeauImg(trad.codePays)}" width="20" height="15" style="margin-right: 7px"/>
+                                <img src="#{conceptView.getDrapeauImgLocal(trad.codePays)}" width="20" height="15" style="margin-right: 7px"/>
 
 
                                 <p:commandLink value="#{trad.lexicalValue} " title="#{conceptView.nodeConcept.concept.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
-                                               update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:sideBarSearch containerIndex:searchBar indexTitle"/>
+                                               update="containerIndex:contentConcept containerIndex:thesoSelect 
+                                               containerIndex:sideBarSearch 
+                                               containerIndex:searchBar indexTitle"/>
                                 <h:outputText value=" (#{trad.lang})" style="font-size: 14px; font-weight: 300; margin-left: 5px; "/>
                                 <br/>                                
                             </ui:repeat>
@@ -251,17 +252,4 @@
             </div>
         </div>
     </div>
-
-    <ui:include src="../../../dialog/broader/addBroaderLink.xhtml" />
-    <ui:include src="../../../dialog/broader/deleteBroaderLink.xhtml" />
-
-    <ui:include src="../../../dialog/narrower/addNarrowerLink.xhtml" />
-    <ui:include src="../../../dialog/narrower/deleteNarrowerLink.xhtml" />
-    <ui:include src="../../../dialog/narrower/changeRelation.xhtml" />
-
-
-
-
-
-
 </ui:fragment>

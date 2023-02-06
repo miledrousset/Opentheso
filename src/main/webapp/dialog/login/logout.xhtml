@@ -7,20 +7,25 @@
     <p:dialog id="idLogout" header="#{langueBean.getMsg('menu.logout')}" widgetVar="logout" 
               showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 50px; font-size: 12px;" >
 
+        <p:spacer height="20px" />
+        <h:form class="login-form">
             <div class="row">
                 <div class="col-12">
                     <h:outputText value="#{langueBean.getMsg('menu.validateLogout')}" />  
                 </div>
             </div>
+            <div style="width: 100%; text-align: right; margin-top: 20px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                                 process="@this" ajax="true" 
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 style="margin-right: 10px" update="idLogout containerIndex"/>
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 update="containerIndex:idLogout"/>
-
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary"
-                                 process="@this"
-                                 ajax="true" actionListener="#{currentUser.disconnect(true)}" update="containerIndex:idLogout"/>
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" 
+                                 styleClass="ui-button-success" 
+                                 process="@this" icon="pi pi-check"
+                                 update="idLogout containerIndex"
+                                 ajax="true" actionListener="#{currentUser.disconnect(true)}"/>
             </div>
-
+        </h:form>
     </p:dialog>   
 </ui:fragment>

@@ -93,7 +93,7 @@ public class CurrentUser implements Serializable {
     }
 
     public void disconnect(boolean redirectionEnable) throws IOException {
-
+        if(nodeUser == null) return;
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 

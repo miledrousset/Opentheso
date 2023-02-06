@@ -161,22 +161,22 @@ function closeMenu() {
 
         var candidatButton1 = document.getElementById("candidatButton1");
         if (candidatButton1 !== null) {
-            candidatButton1.style.display = "none"
+            candidatButton1.style.display = "none";
         }
 
         var profileButton1 = document.getElementById("profileButton1");
         if (profileButton1 !== null) {
-            profileButton1.style.display = "none"
+            profileButton1.style.display = "none";
         }
 
         var toolboxButton1 = document.getElementById("toolboxButton1");
         if (toolboxButton1 !== null) {
-            toolboxButton1.style.display = "none"
+            toolboxButton1.style.display = "none";
         }
 
         var settingButton1 = document.getElementById("settingButton1");
         if (settingButton1 !== null) {
-            settingButton1.style.display = "none"
+            settingButton1.style.display = "none";
         }
     }
     ;
@@ -187,29 +187,21 @@ function initMenu() {
 
     var candidatButton1 = document.getElementById("candidatButton1");
     if (candidatButton1 !== null) {
-        candidatButton1.style.display = "none"
+        candidatButton1.style.display = "none";
     }
 
     var profileButton1 = document.getElementById("profileButton1");
     if (profileButton1 !== null) {
-        profileButton1.style.display = "none"
+        profileButton1.style.display = "none";
     }
 
     var toolboxButton1 = document.getElementById("toolboxButton1");
     if (toolboxButton1 !== null) {
-        toolboxButton1.style.display = "none"
+        toolboxButton1.style.display = "none";
     }
 
     var settingButton1 = document.getElementById("settingButton1");
     if (settingButton1 !== null) {
-        settingButton1.style.display = "none"
+        settingButton1.style.display = "none";
     }
-}
-
-function scrollToPageTop() {
-    var $anchor = $(this);
-    $('html, body').stop().animate({
-        scrollTop: ($($anchor.attr('href')).offset().top)
-    }, 1000, 'easeInOutExpo');
-    e.preventDefault();
 }

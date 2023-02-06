@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
@@ -13,15 +8,16 @@ import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
@@ -39,23 +35,36 @@ import org.primefaces.model.TreeNode;
  */
 @Named(value = "dragAndDrop")
 @SessionScoped
-//@ViewScoped
 public class DragAndDrop implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;
-    @Inject private Tree tree;
+
+    @Inject
+    private Connect connect;
+
+    @Inject
+    private ConceptView conceptBean;
+
+    @Inject
+    private SelectedTheso selectedTheso;
+
+    @Inject
+    private CurrentUser currentUser;
+
+    @Inject
+    private Tree tree;
 
     private boolean isCopyOn;
     private boolean isValidPaste;
     private NodeConcept nodeConceptDrag;
     private ArrayList<NodeBT> nodeBTsToCut;
-    
+
     private ArrayList<NodeGroup> nodeGroupsToCut;
-    private ArrayList<NodeGroup> nodeGroupsToAdd;    
-    
+    private ArrayList<NodeGroup> nodeGroupsToAdd;
+
+    private List<TreeNode> nodesToConfirme;
+    private List<GroupNode> groupNodeToAdd;
+    private List<GroupNode> groupNodeToCut;
+    private List<BTNode> groupNodeBtToCut;
+
     private NodeConcept nodeConceptDrop;
 
     private boolean isdragAndDrop;
@@ -131,17 +140,19 @@ public class DragAndDrop implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    public void initInfo() {
-
+    private void showMessage(FacesMessage.Severity severity, String message) {
+        FacesMessage msg = new FacesMessage(severity, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
     }
-
 
     public void setBTsToCut() {
         if (nodeConceptDrag == null) {
             return;
         }
-        if(nodeBTsToCut == null)
+        if (nodeBTsToCut == null) {
             nodeBTsToCut = new ArrayList<>();
+        }
         for (NodeBT nodeBT : nodeConceptDrag.getNodeBT()) {
             NodeBT nodeBT1 = new NodeBT();
             nodeBT1.setIdConcept(nodeBT.getIdConcept());
@@ -149,8 +160,22 @@ public class DragAndDrop implements Serializable {
             nodeBT1.setIsSelected(true);
             nodeBTsToCut.add(nodeBT1);
         }
-    } 
-    
+    }
+
+    public List<NodeBT> setBTsToCut(NodeConcept concept) {
+
+        List<NodeBT> Bts = new ArrayList<>();
+
+        for (NodeBT nodeBT : concept.getNodeBT()) {
+            NodeBT nodeBT1 = new NodeBT();
+            nodeBT1.setIdConcept(nodeBT.getIdConcept());
+            nodeBT1.setTitle(nodeBT.getTitle());
+            nodeBT1.setIsSelected(true);
+            Bts.add(nodeBT1);
+        }
+        return Bts;
+    }
+
     public void setGroupsToCut() {
         if (nodeConceptDrag == null) {
             return;
@@ -175,8 +200,35 @@ public class DragAndDrop implements Serializable {
                 nodeGroupsToAdd.add(nodeGroup1);
             }
         }
-    }     
-    
+    }
+
+    public List<NodeGroup> setGroupsToCut(NodeConcept concept) {
+
+        List<NodeGroup> groupsToCut = new ArrayList<>();
+
+        for (NodeGroup nodeGroup : concept.getNodeConceptGroup()) {
+            NodeGroup nodeGroup1 = new NodeGroup();
+            nodeGroup1.getConceptGroup().setIdgroup(nodeGroup.getConceptGroup().getIdgroup());
+            nodeGroup1.setLexicalValue(nodeGroup.getLexicalValue());
+            nodeGroup1.setIsSelected(true);
+            groupsToCut.add(nodeGroup1);
+        }
+
+        return groupsToCut;
+    }
+
+    public List<NodeGroup> setGroupsToAdd(NodeConcept concept) {
+
+        List<NodeGroup> groupsToAdd = new ArrayList<>();
+        for (NodeGroup nodeGroup : concept.getNodeConceptGroup()) {
+            NodeGroup nodeGroup1 = new NodeGroup();
+            nodeGroup1.getConceptGroup().setIdgroup(nodeGroup.getConceptGroup().getIdgroup());
+            nodeGroup1.setLexicalValue(nodeGroup.getLexicalValue());
+            nodeGroup1.setIsSelected(true);
+            groupsToAdd.add(nodeGroup1);
+        }
+        return groupsToAdd;
+    }    
     
     /**
      * permet de préparer le concept ou la branche pour le déplacement vers un autre endroit #MR
@@ -416,12 +468,7 @@ public class DragAndDrop implements Serializable {
             return;
         }
         isValidPaste = true;
-    }    
-/*        public void onDragDrop(TreeDragDropEvent event) {
-            //reset();
-            dragNode = (TreeNode) event.getDragNode();
-            dropNode = (TreeNode) event.getDropNode();
-        }*/
+    }
     
     /**
      * Fonction pour récupérer l'évènement drag drop de l'arbre
@@ -466,7 +513,6 @@ public class DragAndDrop implements Serializable {
                     termeParentAssocie.getId(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang());
-
             conceptParentTerme = concepParent.getTerm().getLexical_value();
             */
             PrimeFaces pf = PrimeFaces.current();
@@ -614,6 +660,172 @@ public class DragAndDrop implements Serializable {
         }
     }
     
+    public void onDragDropMultiple(TreeDragDropEvent event) {
+        reset();
+        dragNode = (TreeNode) event.getDragNode();
+        dropNode = (TreeNode) event.getDropNode();
+        
+
+        nodesToConfirme = new ArrayList<>();
+
+        List<TreeNode> nodes = tree.getClickselectedNodes();
+        groupNodeToAdd = new ArrayList<>();
+        groupNodeToCut = new ArrayList<>();
+        groupNodeBtToCut = new ArrayList<>();
+
+        for (TreeNode node : tree.getClickselectedNodes()) {
+            // à corriger pour traiter le déplacement des facettes par Drag and Drop
+            if ("facet".equalsIgnoreCase(node.getType())) {
+                if ("facet".equalsIgnoreCase(dropNode.getType())) {
+                    showMessage(FacesMessage.SEVERITY_ERROR, "Déplacement non permis !");
+                    isValidPaste = false;
+                    return;
+                }
+                new FacetHelper().updateFacetParent(connect.getPoolConnexion(),
+                        ((TreeNodeData) dropNode.getData()).getNodeId(),
+                        ((TreeNodeData) node.getData()).getNodeId(),
+                        selectedTheso.getCurrentIdTheso());
+
+                tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+                tree.expandTreeToPath2(((TreeNodeData) dropNode.getParent().getData()).getNodeId(),
+                        selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang(),
+                        ((TreeNodeData) node.getData()).getNodeId());
+
+                PrimeFaces.current().ajax().update("formRightTab:facetView");
+                PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
+                showMessage(FacesMessage.SEVERITY_WARN, "Facette déplacée avec succès !!!");
+                return;
+            }
+
+            ConceptHelper conceptHelper = new ConceptHelper();
+            nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
+                    ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(), -1, -1);
+
+            isdragAndDrop = true;
+            nodesToConfirme.add(node);
+
+            /// préparer le noeud à couper
+            setBTsToCut();
+            //setBTsToCut();       
+            List<NodeBT> nodeBTs = setBTsToCut(nodeConceptDrag);
+            for (NodeBT nodeBT : nodeBTs) {
+                groupNodeBtToCut.add(new BTNode(node, nodeBT));
+            }
+
+            if (dropNode.getParent() == null) {
+                // déplacement à la racine
+                isDropToRoot = true;
+            } else {
+                nodeConceptDrop = conceptHelper.getConcept(connect.getPoolConnexion(),
+                        ((TreeNodeData) dropNode.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
+                        selectedTheso.getCurrentLang(), -1, -1);
+                /// Vérifier si le dépalcement est valide (controle des relations interdites)
+                ValidateActionHelper validateActionHelper = new ValidateActionHelper();
+                if (nodeConceptDrop != null) {
+                    if (!validateActionHelper.isMoveConceptToConceptValid(
+                            connect.getPoolConnexion(),
+                            selectedTheso.getCurrentIdTheso(),
+                            nodeConceptDrag.getConcept().getIdConcept(),
+                            nodeConceptDrop.getConcept().getIdConcept())) {
+                        
+                        showMessage(FacesMessage.SEVERITY_ERROR, "Relation non permise : "
+                                + validateActionHelper.getMessage());
+                        isValidPaste = false;
+                        reloadTree();
+                        return;
+                    }
+                }
+            }
+
+            // préparer les collections à couper  
+            setGroupsToCut();
+            //setGroupsToCut();
+            List<NodeGroup> groupsToCut = setGroupsToCut(nodeConceptDrag);
+            for (NodeGroup nodeGroup : groupsToCut) {
+                groupNodeToCut.add(new GroupNode(node, nodeGroup));
+            }
+            List<NodeGroup> groupsToAdd = setGroupsToAdd(nodeConceptDrag);
+            for (NodeGroup nodeGroup : groupsToAdd) {
+                groupNodeToAdd.add(new GroupNode(node, nodeGroup));
+            }
+
+            FacetHelper facetHelper = new FacetHelper();
+            // cas de déplacement vers une facette 
+            if (((TreeNodeData) dropNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
+                // cas d'une branche, pas permis
+                if (!nodeConceptDrag.getNodeNT().isEmpty()) {
+
+                    showMessage(FacesMessage.SEVERITY_WARN, "Action non permise !!!");
+                    rollBackAfterErrorOrCancelDragDrop();
+                    return;
+                }
+                String idFacet = ((TreeNodeData) dropNode.getData()).getNodeId();
+
+                if (idFacet == null) {
+
+                    showMessage(FacesMessage.SEVERITY_WARN, "Action non permise !!!");
+                    rollBackAfterErrorOrCancelDragDrop();
+                    return;
+                }
+
+                if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+                        idFacet,
+                        selectedTheso.getCurrentIdTheso(),
+                        ((TreeNodeData) node.getData()).getNodeId())) {
+
+                    showMessage(FacesMessage.SEVERITY_WARN, "Erreur dans le déplacement !!!");
+                    rollBackAfterErrorOrCancelDragDrop();
+                    return;
+                }
+
+                showMessage(FacesMessage.SEVERITY_INFO, "Concept ajouté à la facette");
+            } else {
+                // on vérifie si le noeud à déplacer est un membre d'une facette, alors on supprime cette appartenance
+                if (((TreeNodeData) node.getData()).getNodeType().equalsIgnoreCase("facetmember")) {
+                    try {
+                        String idFacetParent = ((TreeNodeData) node.getData()).getIdFacetParent();
+                        if (!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                                idFacetParent, ((TreeNodeData) node.getData()).getNodeId(),
+                                selectedTheso.getCurrentIdTheso())) {
+
+                            showMessage(FacesMessage.SEVERITY_WARN, "Action non permise !!!");
+                            rollBackAfterErrorOrCancelDragDrop();
+                            return;
+                        }
+                    } catch (Exception e) {
+                        showMessage(FacesMessage.SEVERITY_WARN, "Action non permise !!!");
+                        rollBackAfterErrorOrCancelDragDrop();
+                        return;
+                    }
+
+                }
+
+                // cas de changement de groupe, on propose de garder / supprimer / ajouter le groupe
+                if (isDroppedToAnotherGroup()) {
+                    // si oui, on affiche une boite de dialogue pour choisir les branches à couper
+                    ///choix de l'option pour deplacer la collection ou non 
+                    isGroupToCut = true;
+                    nodesToConfirme.add(node);
+                    PrimeFaces.current().ajax().update("containerIndex:formLeftTab:idDragAndDropMultiple");
+                    PrimeFaces.current().executeScript("PF('dragAndDropMultiple').show();");
+                    continue;
+                }
+
+                // on controle s'il y a plusieurs branches, 
+                if (nodeConceptDrag.getNodeBT().size() < 2) {
+                    // sinon, on applique le changement direct 
+                    drop();
+                } else {
+                    nodesToConfirme.add(node);
+                    // si oui, on affiche une boite de dialogue pour choisir les branches à couper
+                    PrimeFaces.current().ajax().update("idDragAndDropMultiple");
+                    PrimeFaces.current().executeScript("PF('dragAndDropMultiple').show();");
+                }
+            }
+        }
+    }
+    
     /**
      * permet de déposer la branche copiée précédement par Drag and Drop
      *
@@ -676,7 +888,56 @@ public class DragAndDrop implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);        
         PrimeFaces.current().executeScript("PF('dragAndDrop').hide();");
         reset();
-    }    
+    } 
+
+    public void dropMultiple() {
+
+        for (TreeNode node : nodesToConfirme) {
+
+            nodeConceptDrag = nodeConceptDrop = new ConceptHelper().getConcept(connect.getPoolConnexion(),
+                    ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(), -1, -1);
+
+            if (nodeConceptDrop == null) {
+                continue;
+            }
+
+            if (dropNode.getParent() == null) {
+                // cas de déplacement d'un concept à la racine   
+                if (!moveFromConceptToRootMultiple()) {
+                    return;
+                }
+            } else {
+                /// Vérifier si le dépalcement est valide (controle des relations interdites)
+                // cas de déplacement d'un concept à concept        
+                if ((!nodeConceptDrag.getConcept().isTopConcept())) {
+                    if (!moveFromConceptToConcept()) {
+                        continue;
+                    }
+                }
+
+                // cas de déplacement de la racine à un concept
+                if ((nodeConceptDrag.getConcept().isTopConcept())) {
+                    if (!moveFromRootToConcept()) {
+                        continue;
+                    }
+                }
+            }
+
+            addAndCutGroupMultiple();
+
+            if (dropNode.getParent() == null) {
+                showMessage(FacesMessage.SEVERITY_INFO, nodeConceptDrag.getTerm().getLexical_value() + " -> Root");
+            } else {
+                showMessage(FacesMessage.SEVERITY_INFO, nodeConceptDrag.getTerm().getLexical_value()
+                        + " -> " + nodeConceptDrop.getTerm().getLexical_value());
+            }
+        }
+
+        reloadConcept();
+        reloadTree();
+        PrimeFaces.current().executeScript("PF('dragAndDrop').hide();");
+    }
     
     private boolean isDroppedToAnotherGroup(){
         if(nodeConceptDrag == null || nodeConceptDrop == null) return false;
@@ -760,6 +1021,37 @@ public class DragAndDrop implements Serializable {
         return true;
     }
     
+    
+    private boolean moveFromConceptToConceptMultiple(){
+        // cas de déplacement d'un concept à concept
+        ArrayList<String> oldBtToDelete = new ArrayList<>();
+        ConceptHelper conceptHelper = new ConceptHelper();
+        for (BTNode nodeBT : groupNodeBtToCut) {
+            if (((TreeNodeData) nodeBT.getNode().getData()).getNodeId()
+                    .equals(nodeConceptDrag.getConcept().getIdConcept()) 
+                    && nodeBT.nodeBT.isIsSelected()) {
+                // on prépare les BT sélectionné pour la suppression
+                oldBtToDelete.add(nodeBT.nodeBT.getIdConcept());
+            }
+        }
+        if (oldBtToDelete.isEmpty()) {
+            showMessage(FacesMessage.SEVERITY_WARN, nodeConceptDrag.getTerm().getLexical_value() 
+                    + " - Aucun parent n'est sélectionné pour déplacement");
+            return false;
+        }
+        if (!conceptHelper.moveBranchFromConceptToConcept(connect.getPoolConnexion(),
+                nodeConceptDrag.getConcept().getIdConcept(),
+                oldBtToDelete,
+                nodeConceptDrop.getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                currentUser.getNodeUser().getIdUser())) {
+
+            showMessage(FacesMessage.SEVERITY_ERROR, nodeConceptDrag.getTerm().getLexical_value() 
+                    + " - Erreur pendant la suppression des branches !!");
+        }
+        return true;
+    }
+    
     private boolean moveFromRootToConcept() {
         FacesMessage msg;
         ConceptHelper conceptHelper = new ConceptHelper();        
@@ -771,6 +1063,43 @@ public class DragAndDrop implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
+        }
+        return true;
+    }
+    
+    private boolean moveFromConceptToRootMultiple(){
+        FacesMessage msg;
+        ConceptHelper conceptHelper = new ConceptHelper();         
+        ArrayList<String> oldBtToDelete = new ArrayList<>();
+        
+        for (BTNode nodeBT : groupNodeBtToCut) {
+            if (((TreeNodeData) nodeBT.getNode().getData()).getNodeId()
+                    .equals(nodeConceptDrag.getConcept().getIdConcept())) {
+                oldBtToDelete.add(nodeConceptDrag.getConcept().getIdConcept());
+            }
+        }
+        // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
+        if (oldBtToDelete.isEmpty()) {
+            if (!conceptHelper.setTopConcept(connect.getPoolConnexion(),
+                    nodeConceptDrag.getConcept().getIdConcept(),
+                    selectedTheso.getCurrentIdTheso())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return false;
+            }
+            return true;
+        } 
+        
+        for (String oldIdBT : oldBtToDelete) {
+            if (!conceptHelper.moveBranchFromConceptToRoot(connect.getPoolConnexion(),
+                    nodeConceptDrag.getConcept().getIdConcept(),
+                    oldIdBT,
+                    selectedTheso.getCurrentIdTheso(),
+                    currentUser.getNodeUser().getIdUser())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return false;
+            }
         }
         return true;
     }
@@ -848,6 +1177,67 @@ public class DragAndDrop implements Serializable {
         pf.executeScript("srollToSelected();");
     }
     
+    private void addAndCutGroupMultiple() {
+        GroupHelper groupHelper = new GroupHelper();
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> allId = conceptHelper.getIdsOfBranch(
+                    connect.getPoolConnexion(),
+                    nodeConceptDrop.getConcept().getIdConcept(),
+                    selectedTheso.getCurrentIdTheso());
+        if( (allId == null) || (allId.isEmpty())) return;         
+        
+        for (GroupNode nodeGroup : groupNodeToCut) {
+            if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId()
+                    .equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && nodeGroup.getNodeGroup().isIsSelected()) {
+                for (String idConcept : allId) {
+                    groupHelper.deleteRelationConceptGroupConcept(
+                        connect.getPoolConnexion(),
+                        nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                        idConcept,
+                        selectedTheso.getCurrentIdTheso(),
+                        currentUser.getNodeUser().getIdUser());      
+                }
+            }
+            if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId()
+                    .equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && !nodeGroup.getNodeGroup().isIsSelected()) {
+                for (String idConcept : allId) {
+                    groupHelper.addConceptGroupConcept(
+                        connect.getPoolConnexion(),
+                        nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                        idConcept,
+                        selectedTheso.getCurrentIdTheso());      
+                }
+            }            
+        }
+        for (GroupNode nodeGroup : groupNodeToAdd) {
+            if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId()
+                    .equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && !nodeGroup.getNodeGroup().isIsSelected()) {
+                for (String idConcept : allId) {
+                    groupHelper.deleteRelationConceptGroupConcept(
+                        connect.getPoolConnexion(),
+                        nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                        idConcept,
+                        selectedTheso.getCurrentIdTheso(),
+                        currentUser.getNodeUser().getIdUser());      
+                }
+            }
+            if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId()
+                    .equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && nodeGroup.getNodeGroup().isIsSelected()) {
+                for (String idConcept : allId) {
+                    groupHelper.addConceptGroupConcept(
+                        connect.getPoolConnexion(),
+                        nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                        idConcept,
+                        selectedTheso.getCurrentIdTheso());      
+                }
+            }            
+        }
+    }
+    
     private void addAndCutGroup() {
         GroupHelper groupHelper = new GroupHelper();
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -898,9 +1288,7 @@ public class DragAndDrop implements Serializable {
                         selectedTheso.getCurrentIdTheso());      
                 }
             }            
-        }        
-        
-        
+        }
     }
   
     public void rollBackAfterErrorOrCancelDragDrop() {
@@ -1017,5 +1405,90 @@ public class DragAndDrop implements Serializable {
     public void setDropNode(TreeNode dropNode) {
         this.dropNode = dropNode;
     }
+    
+    public List<TreeNode> getNodesToConfirme() {
+        return nodesToConfirme;
+    }
 
+    public void setNodesToConfirme(List<TreeNode> nodesToConfirme) {
+        this.nodesToConfirme = nodesToConfirme;
+    }
+    
+    public List<GroupNode> getGroupNodeToAdd() {
+        return groupNodeToAdd;
+    }
+
+    public void setGroupNodeToAdd(List<GroupNode> groupNodeToAdd) {
+        this.groupNodeToAdd = groupNodeToAdd;
+    }
+
+    public List<GroupNode> getGroupNodeToCut() {
+        return groupNodeToCut;
+    }
+
+    public void setGroupNodeToCut(List<GroupNode> groupNodeToCut) {
+        this.groupNodeToCut = groupNodeToCut;
+    }
+
+    public List<BTNode> getGroupNodeBtToCut() {
+        return groupNodeBtToCut;
+    }
+
+    public void setGroupNodeBtToCut(List<BTNode> groupNodeBtToCut) {
+        this.groupNodeBtToCut = groupNodeBtToCut;
+    }
+
+    public class GroupNode {
+
+        private TreeNode node;
+        private NodeGroup nodeGroup;
+
+        public GroupNode(TreeNode node, NodeGroup nodeGroup) {
+            this.node = node;
+            this.nodeGroup = nodeGroup;
+        }
+
+        public TreeNode getNode() {
+            return node;
+        }
+
+        public void setNode(TreeNode node) {
+            this.node = node;
+        }
+
+        public NodeGroup getNodeGroup() {
+            return nodeGroup;
+        }
+
+        public void setNodeGroup(NodeGroup nodeGroup) {
+            this.nodeGroup = nodeGroup;
+        }
+    }
+
+    public class BTNode {
+
+        private TreeNode node;
+        private NodeBT nodeBT;
+
+        public BTNode(TreeNode node, NodeBT nodeBT) {
+            this.node = node;
+            this.nodeBT = nodeBT;
+        }
+
+        public TreeNode getNode() {
+            return node;
+        }
+
+        public void setNode(TreeNode node) {
+            this.node = node;
+        }
+
+        public NodeBT getNodeBT() {
+            return nodeBT;
+        }
+
+        public void setNodeBT(NodeBT nodeBT) {
+            this.nodeBT = nodeBT;
+        }
+    }
 }

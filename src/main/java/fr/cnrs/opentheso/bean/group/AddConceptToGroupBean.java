@@ -81,25 +81,24 @@ public class AddConceptToGroupBean implements Serializable {
         // terme.getIdC() est le terme séléctionné dans l'arbre
         // terme.getIdTheso() est l'id du thésaurus
         FacesMessage msg;
-        if (selectedNodeAutoCompletionGroup == null || selectedNodeAutoCompletionGroup.getIdGroup().equals("")) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "pas de sélection !!");
+        if (selectedNodeAutoCompletionGroup == null || selectedNodeAutoCompletionGroup.getIdGroup() == null 
+                || selectedNodeAutoCompletionGroup.getIdGroup().equals("")) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Aucune sélection !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
         // addConceptToGroup
-        GroupHelper groupHelper = new GroupHelper();
-        if (!groupHelper.addConceptGroupConcept(connect.getPoolConnexion(),
+        if (!new GroupHelper().addConceptGroupConcept(connect.getPoolConnexion(),
                 selectedNodeAutoCompletionGroup.getIdGroup(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
-        //    FacesContext.getCurrentInstance().addMessage("formRightTab:viewTabConcept:addConceptToGroupForm:addConceptToCollection", msg);
             FacesContext.getCurrentInstance().addMessage(null, msg);            
             return;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        
+        new ConceptHelper().updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 

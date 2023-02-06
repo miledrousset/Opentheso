@@ -46,7 +46,7 @@
                     </h:panelGroup>
 
                     <div class="container-fluid">
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.setting')} / <span style="color: #f47b2a">#{langueBean.getMsg('menu.preference')}</span></h1>
                         </div>
 
@@ -59,34 +59,32 @@
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Url du site local" style="font-size: 14px; font-weight: bold;"
-                                                                  title="L'URL local du serveur qui héberge Opentheso, permet le rebond entre les concepts dans la même instance (exp: https://monsite.fr/opentheso/)"/>
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.localUrl')}" style="font-size: 14px; font-weight: bold;"
+                                                                  title="#{langueBean.getMsg('preferences.localUrlTooltip')} (exp: https://monsite.fr/opentheso/)"/>
                                                 </div>
                                                 <div class="col-6">
                                                     <p:inputText id="inputTextCheminSite" value="#{preferenceBean.nodePreference.cheminSite}" style="width: 100%;"/>
                                                 </div>
                                             </div>
                                         </div>
-                                        <p:tooltip for="inputTextCheminSite" value="L'URL local du serveur qui héberge Opentheso, permet le rebond entre les concepts dans la même instance (exp: https://monsite.fr/opentheso/)" 
+                                        <p:tooltip for="inputTextCheminSite" value="#{langueBean.getMsg('preferences.serverAdress')} (exp: https://monsite.fr/opentheso/)" 
                                                    position="top" showDelay="500"/>
 
                                         <!-- Uri d'export -->
                                         <div class="list-group-item list-group-item-action" style="margin-top: 20px; margin-bottom: 20px; background-color: #ecf8f1">
                                             <div class="row" >
                                                 <div class="col-3"  style="text-align: right;  ">
-                                                    <h:outputText value="Uri d'export "
-                                                                  title="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!"
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.exportUri')} "
+                                                                  title="#{langueBean.getMsg('preferences.exportUriInfo')}"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                     <p:commandButton id="infoUri" type="button" icon="fas fa-info-circle"  styleClass="rounded-button ui-button-flat"/>
                                                     
-                                                    <p:tooltip for="infoUri" value="Pour construire l'URI du concept d'origine, choisir la bonne combinaison !!
-                                                               C'est ce choix qui va servir à construire l'URI du concept à l'export. 
-                                                               Exemple: pour Ark, choisir: https://ark.mondomaine.fr/ark:  pour Uri classique, choisir: https://mondomaine.fr/opentheso2"
+                                                    <p:tooltip for="infoUri" value="#{langueBean.getMsg('preferences.uriInfo')} https://ark.mondomaine.fr/ark:  #{langueBean.getMsg('preferences.uriInfo2')} https://mondomaine.fr/opentheso2"
                                                                showDelay="1000" style="max-width: 300px;"/>
                                                 </div>
                                                 <div class="col-6">
                                                     <p:selectOneRadio id="customRadioUri" value="#{preferenceBean.uriType}"  >
-                                                        <f:selectItem itemLabel="Uri classique" itemValue="uri" />
+                                                        <f:selectItem itemLabel="#{langueBean.getMsg('preferences.uri')}" itemValue="uri" />
                                                         <f:selectItem itemLabel="Ark" itemValue="ark" />
                                                         <f:selectItem itemLabel="Handle" itemValue="handle" />
                                                         <!-- <f:selectItem itemLabel="Doi" itemValue="doi" itemDisabled="true"/> -->   
@@ -101,7 +99,7 @@
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Langue par defaut" style="font-size: 14px; font-weight: bold;"/>
+                                                    <h:outputText value="#{langueBean.getMsg('toolbox.defaultLanguage')}" style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
                                                 <div class="col-6">
                                                     <p:selectOneMenu id="langOfTheso" value="#{preferenceBean.nodePreference.sourceLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
@@ -117,14 +115,14 @@
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Type d'identifiant" style="font-size: 14px; font-weight: bold;"/>
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.identifierType')}" style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
                                                 <div class="col-6">
                                                     <p:selectOneMenu value="#{preferenceBean.nodePreference.identifierType}" 
                                                                      styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                                                      style="width: 100%; background: none;  box-shadow: none; ">
-                                                        <f:selectItem itemLabel="Alphanumérique" itemValue="1" />
-                                                        <f:selectItem itemLabel="Numérique" itemValue="2" />                        
+                                                        <f:selectItem itemLabel="#{langueBean.getMsg('preferences.alphanumeric')}" itemValue="1" />
+                                                        <f:selectItem itemLabel="#{langueBean.getMsg('preferences.numeric')}" itemValue="2" />                        
                                                     </p:selectOneMenu>
                                                 </div>
                                             </div>
@@ -134,14 +132,14 @@
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
                                                 <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Nom pérenne du thésaurus" style="font-size: 14px; font-weight: bold;"/>
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.persistentNameTheso')}" style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
                                                 <div class="col-6">
                                                     <p:inputText value="#{preferenceBean.nodePreference.preferredName}" style="width: 100%;"/>
                                                 </div>
                                                 <div class="col-3" style="text-align: left; margin-top: 6px;">
                                                      <a class="fas fa-link" style="font-size: 12px; color: #43B572;" />
-                                                    <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="Testez le lien" style="font-size: 12px; margin-left: 5px; color: #601e18"/>
+                                                     <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="#{langueBean.getMsg('preferences.testLink')}" style="font-size: 12px; margin-left: 5px; color: #601e18"/>
                                                 </div>                                                
                                             </div>
 
@@ -150,10 +148,10 @@
                                         <!-- Activer/ désactiver le déployement auto de l'arbre  -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Activer le déploiement auto de l'arbre" style="font-size: 14px; font-weight: bold;"/>
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.activateAutoTreeDeployment')}" style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.auto_expand_tree}" style="font-size: 12px;" /> 
                                                 </div>
                                             </div>
@@ -162,12 +160,12 @@
                                         <!-- Activer/ désactiver le cache de l'arbre  -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Activer le cache de l'arbre" 
-                                                                  title="Quand c'est activé, si on raffraichi la page, l'arbre se déplie même quand les dossiers sont fermés" 
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.activateTreeCache')}" 
+                                                                  title="#{langueBean.getMsg('preferences.activateTreeCacheTooltip')}" 
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.tree_cache}" style="font-size: 12px;"  /> 
                                                 </div>
                                             </div>
@@ -176,11 +174,11 @@
                                         <!-- Activer/ désactiver le tri par notation par défaut -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Activer le tri par notation par defaut"
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.activateNotationSort')}"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.sort_by_notation}" style="font-size: 12px;"  />
                                                 </div>
                                             </div>
@@ -189,11 +187,11 @@
                                         <!-- Activer/ désactiver le tri par notation par défaut -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Activer le webservices"
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.activateWebservices')}"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.webservices}" style="font-size: 12px;" />
                                                 </div>
                                             </div>
@@ -202,11 +200,11 @@
                                         <!-- Activer/ désactiver le fil d'ariane Breadcrumb -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Activer le fil d'ariane"
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.activateBreadCrumb')}"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.breadcrumb}" style="font-size: 12px;" />
                                                 </div>
                                             </div>
@@ -214,11 +212,11 @@
                                         <!-- Activer/ désactiver l'arbre de Collections-concept -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Activer l'arbre de collections/concepts"
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.activateTreeCollection')}"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.useConceptTree}" style="font-size: 12px;" />
                                                 </div>
                                             </div>
@@ -227,11 +225,11 @@
                                         <!-- Activer/ désactiver l'affichage des noms des personnes qui ont créé ou modifié les concepts en pulic -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Activer l'affichage du nom des personnes qui ont modifié les concepts"
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.nameOfContributor')}"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.displayUserName}" style="font-size: 12px;" />
                                                 </div>
                                             </div>
@@ -240,24 +238,23 @@
                                         <!-- Activer/ désactiver les suggestions / propositions de modification d'un concept -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
-                                                <div class="col-3" style="text-align: right; margin-top: 6px">
-                                                    <h:outputText value="Activer les propostions de modifications pour les concepts"
+                                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                    <h:outputText value="#{langueBean.getMsg('preferences.propositions')}"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
                                                     <p:toggleSwitch value="#{preferenceBean.nodePreference.suggestion}" style="font-size: 12px;" />
                                                 </div>
                                             </div>
                                         </div>                                            
-
-                                        <div class="row" style="padding-top: 5px;">
-                                            <div class="col-3" />
-                                            <div class="col-6" style="text-align: right;">
-                                                <p:commandButton title="Enregistrer" class="btn btn-primary"
+                                        <p:spacer height="20px;" />
+                                        <div class="row" style="padding-top: 5px; ">
+                                            <div class="col-12" style="text-align: center;width: 100%">
+                                                <p:commandButton value="#{langueBean.getMsg('candidat.save')}" styleClass="ui-button-success"
                                                                  actionListener="#{preferenceBean.savePreference()}"
                                                                  oncomplete="PF('waitDialog').hide();"
-                                                                 update="containerIndex messageIndex">
-                                                    <p:tooltip value="Enregistrer les modifications" showDelay="1000" />
+                                                                 update="containerIndex messageIndex"
+                                                                 icon="fas fa-save">
                                                 </p:commandButton>
                                             </div>
                                         </div>

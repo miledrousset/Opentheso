@@ -242,7 +242,7 @@ public class EditFacet implements Serializable {
         traductionValue = "";
     }
 
-    private void initDataAfterAction() {
+    public void initDataAfterAction() {
         initEditFacet(facetSelected.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -318,8 +318,15 @@ public class EditFacet implements Serializable {
             tree.getDataService().addNodeWithChild("concept", data, tree.getSelectedNode());
         } else {
             tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+        }        
+        /*
+        if(conceptHelper.haveChildren(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(), conceptSelected.getId())) {
+            tree.getDataService().addNodeWithChild("concept", data, tree.getClickselectedNodes().get(0));
+        } else {
+            tree.getDataService().addNodeWithoutChild("file", data, tree.getClickselectedNodes().get(0));
         }
-
+*/
         initDataAfterAction();
 
         tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
@@ -340,22 +347,23 @@ public class EditFacet implements Serializable {
      * permet d'ajouter un concept à la facette en passant par l'autocomplétion
      */
     public void addConceptToFacet() {
-        FacetHelper facetHelper = new FacetHelper();
-        FacesMessage msg;
 
-        if(facetSelectedAutocomplete == null || facetSelectedAutocomplete.getId() == null || facetSelectedAutocomplete.getId().isEmpty()){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " pas de facette sélectionnée !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(facetSelectedAutocomplete == null || facetSelectedAutocomplete.getId() == null 
+                || facetSelectedAutocomplete.getId().isEmpty()){
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucune facette sélectionnée !");
             return;
         }
 
-        if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
-                facetSelectedAutocomplete.getId(), selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " L'ajout a échoué !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(!new FacetHelper().addConceptToFacet(connect.getPoolConnexion(),
+                facetSelectedAutocomplete.getId(), selectedTheso.getCurrentIdTheso(), 
+                conceptBean.getNodeConcept().getConcept().getIdConcept())){
+            
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'ajout de la facette a échoué !");
             return;
         }
-        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(), conceptBean.getSelectedLang());
+        
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept()
+                .getConcept().getIdConcept(), conceptBean.getSelectedLang());
         showMessage(FacesMessage.SEVERITY_INFO, "Concept ajouté à la facette avec succès !");
     }
 
@@ -485,12 +493,13 @@ public class EditFacet implements Serializable {
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 newFacetName, selectedTheso.getCurrentLang(),
                 null);
+        
         if(idFacet == null) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la création de la Facette !");
             return;
         }
-        showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec succès !");
-
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec sucée !");
+        
         tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");
 
         PrimeFaces pf = PrimeFaces.current();
@@ -527,8 +536,8 @@ public class EditFacet implements Serializable {
         }
 
         showMessage(FacesMessage.SEVERITY_INFO, "Facette modifiée avec sucée !");
-
         ((TreeNodeData) tree.getSelectedNode().getData()).setName(newFacetName);
+        //((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(newFacetName);
 
         facetSelected = facetHelper.getThisFacet(connect.getPoolConnexion(),
                 facetSelected.getIdFacet(),

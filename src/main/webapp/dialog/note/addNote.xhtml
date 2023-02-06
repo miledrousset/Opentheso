@@ -7,30 +7,30 @@
     <p:dialog id="idAddNote" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNote" 
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="addNoteForm" >
-            <p:defaultCommand  target="nothing" />
+        <h:form id="addNoteForm" >  
+            
+            <p:defaultCommand target="addNoteBtn" />
+            
             <div class="row">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " class="dialog-titre" /> 
-                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" update="messageIndex">
+                <div class="col-12" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/>
+                    
+                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" 
+                                   update="messageIndex" ajax="true" process="@form">
                         <i class="pi pi-exclamation-circle" />
                     </p:commandLink>
-                </div>
-                <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}"
-                                  style="margin-left: 10px; color: black; margin-left: 5px" /> 
                 </div>
             </div>
 
             <!-- type note -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-5">
-                    <h:outputText value="Type : " class="dialog-titre" /> 
+                    <h:outputText value="Type : " /> 
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" value="#{noteBean.selectedTypeNote}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
-
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" style="width: 100%;"
+                                     value="#{noteBean.selectedTypeNote}">
                         <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
                                        itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
                     </p:selectOneMenu>  
@@ -40,45 +40,35 @@
             <!-- Langue de la note -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " class="dialog-titre" /> 
+                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " /> 
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{noteBean.selectedLang}" 
-                                     style="width: 100%; font-size: 12px; background: white; border-color: #43B572; color: #000">
-                        <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" 
+                                     value="#{noteBean.selectedLang}" style="width: 100%;">
+                        <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" 
+                                        itemValue="#{lang.code}" />
                     </p:selectOneMenu>    
                 </div>
             </div>
 
             <div class="row" style="margin-top: 10px">
                 <div class="col-12">
-                    <p:textEditor id="textEditor" widgetVar="NoteEditor2" value="#{noteBean.noteValue}" allowLinks="true" 
-                                  secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
-                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
-                    </p:textEditor>    
+                    <p:textEditor widgetVar="NoteEditor2" value="#{noteBean.noteValue}" allowLinks="true" secure="false" height="200"
+                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />   
                 </div>
             </div>            
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
 
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                  actionListener="PF('addNote').hide();" update="containerIndex:idAddNote"/>
 
-                <p:commandButton id="commandAddNote" value="#{langueBean.getMsg('btnValidate')}" update="messageIndex"
-                                 ajax="true" process="@form"
-                                 styleClass="ui-button-primary" oncomplete="PF('addNote').show();"
+                <p:commandButton id="addNoteBtn" value="#{langueBean.getMsg('btnValidate')}" icon="pi pi-check" 
+                                 update="containerIndex:formRightTab messageIndex" styleClass="ui-button-success" 
+                                 ajax="true" process="@form"                              
                                  actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
-                <p:commandLink id="nothing"  />
-            </div>
-
-            <div class="row">
-                <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
-                    <p:messages id="addnoteMessages" showDetail="true" closable="true" showIcon="false" style="font-size: 12px;">
-                        <p:autoUpdate/>
-                    </p:messages>
-                </div>
-            </div>        
-
+            </div> 
         </h:form>
     </p:dialog>   
 </ui:fragment>

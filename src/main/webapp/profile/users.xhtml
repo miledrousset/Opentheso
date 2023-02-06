@@ -40,55 +40,183 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex" style="min-height:100%; position:relative;">
-                    
+
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
 
                     <div class="container-fluid" style="padding-bottom: 70px">
-
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_users')}</span></h1>
                         </div>
 
-                        <div class="col-12" style="height: 100%">
+                        <div class="card shadow mb-4" style="height: 100%;"> 
+                            <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
 
-                            <!-- Compte d'utilisateur -->
-                            <div class="card shadow mb-4" style="height: 100%;"> 
-                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px">
-                                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
-                                        <div class="col-12">
-                                            <!-- Vue liste de tous les utilisateurs -->
-                                            <p:dataTable scrollable="true" style="width: 100%" value="#{superAdminBean.nodeUserGroupUsers}" 
-                                                         var="listUserRole" resizableColumns="true" scrollHeight="600" >
-                                                <p:column width="50px" headerText="Id">
-                                                    <h:outputText  value="#{listUserRole.idUser}" />
-                                                </p:column>
-                                                <p:column headerText="#{langueBean.getMsg('profile.pseudo')}" sortBy="#{listUserRole.userName}">
-                                                    <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" value="#{listUserRole.userName}" />
-                                                </p:column>
+                                <div class="row" style="margin-top: -15px; margin-bottom: 5px;">
+                                    <div class="col-1 offset-11">
+                                        <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin}" 
+                                                         action="#{newUSerBean.initForSuperAdmin()}"
+                                                         oncomplete="PF('addNewUser').show();" 
+                                                         ajax="true" 
+                                                         icon="fa fa-user-plus" update="idAddNewUser" 
+                                                         styleClass="rounded-button"
+                                                         title="#{langueBean.getMsg('profile.new_user')}"
+                                                         disabled="true">
+                                        </p:commandButton>
+                                    </div>                          
+                                </div>                                
 
-                                                <p:column headerText="#{langueBean.getMsg('profile.role')}" sortBy="#{listUserRole.roleName}">
-                                                    <h:outputText value="#{listUserRole.roleName}"/>
-                                                </p:column>
+                                <p:dataTable rendered="#{superAdminBean.allProjects != null}"
+                                             value="#{superAdminBean.nodeUserGroupUsers}" var="listUserRole" size="small"
+                                             widgetVar="listProject" styleClass="products-table"
+                                             resizableColumns="true" scrollHeight="450" reflow="true"
+                                             paginator="true" rows="20" rowSelectMode="add" paginatorPosition="bottom"
+                                             emptyMessage="Aucun projet disponible..."
+                                             stripedRows="true"
+                                             style="margin-bottom: -17px; " lazy="false">
 
-                                                <p:column headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listUserRole.groupName}">
-                                                    <h:outputText value="#{listUserRole.groupName}"/>
-                                                </p:column>
-
-                                                <f:facet name="footer">
-                                                    <span class="p-text-bold">Nombre total des utilisateurs :  #{superAdminBean.nodeUserGroupUsers.size()}</span>
-                                                </f:facet>
-                                            </p:dataTable>                                        
+                                    <f:facet name="header">
+                                        <div class="products-table-header">
+                                            <span style="font-weight: bold">#{langueBean.getMsg('profile.list_of_all_users')}</span>
                                         </div>
-                                    </div>
-                                </div>
+                                    </f:facet>
+
+                                    <p:column width="50px" headerText="Id">
+                                        <h:outputText  value="#{listUserRole.idUser}" />
+                                    </p:column>
+                                    <p:column headerText="#{langueBean.getMsg('profile.pseudo')}" sortBy="#{listUserRole.userName}">
+                                        <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" value="#{listUserRole.userName}" />
+                                    </p:column>
+
+                                    <p:column headerText="#{langueBean.getMsg('profile.role')}" sortBy="#{listUserRole.roleName}">
+                                        <h:outputText value="#{listUserRole.roleName}"/>
+                                    </p:column>
+
+                                    <p:column headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listUserRole.groupName}">
+                                        <h:outputText value="#{listUserRole.groupName}"/>
+                                    </p:column>
+
+                                    <f:facet name="footer">
+                                        <span class="p-text-bold">
+                                            <h:outputText value="#{langueBean.getMsg('profile.totalOfUsers')} : " style="font-size: 14px;"/>
+                                            <h:outputText value="#{superAdminBean.nodeUserGroupUsers.size()}" style="font-size: 16px; color: #f47b2a"/>
+                                        </span>
+                                    </f:facet>
+
+                                </p:dataTable>
                             </div>
                         </div>
                     </div>
+
                     <ui:include src="../commun/footer.xhtml" />
                 </h:form>
             </div>
         </h:panelGroup>
+
+        <p:dialog id="idAddNewUser" header="#{langueBean.getMsg('profile.new_user')}" widgetVar="addNewUser" 
+                  width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+            <h:form>
+
+                <p:defaultCommand target="addUserBtn" />
+
+                <div class="row"> 
+                    <!-- Nom Pseudo -->
+                    <div class="col-5" >
+                        <h:outputText value="#{langueBean.getMsg('profile.pseudo')} : " title="#{langueBean.getMsg('profile.tootltip_user')}"/>  
+                    </div>
+
+                    <div class="col-7">
+                        <p:inputText value="#{newUSerBean.nodeUser.name}" style="width: 100%" />
+                    </div>                    
+                </div>
+
+                <!-- Email -->
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5">
+                        <h:outputText value="#{langueBean.getMsg('profile.email')} : "/>
+                    </div>
+                    <div class="col-7">
+                        <p:inputText value="#{newUSerBean.nodeUser.mail}" style="width: 100%">
+                            <f:validator validatorId="custom.emailValidator" />
+                        </p:inputText>
+                    </div>   
+                </div>
+
+                <!-- passe de l'utilisateur -->
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5">
+                        <h:outputText value="#{langueBean.getMsg('menu.password')} : " />
+                    </div>
+                    <div class="col-7">
+                        <p:password value="#{newUSerBean.passWord1}" style="width: 100%"/>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5">
+                        <h:outputText value="#{langueBean.getMsg('profile.confirmation')} #{langueBean.getMsg('menu.password')} : " />
+                    </div>
+                    <div class="col-7">
+                        <p:password value="#{newUSerBean.passWord2}" style="width: 100%" />
+                    </div>
+                </div>            
+
+                <!-- Pour activer / désactiver le compte -->
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5">
+                        <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : " title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
+                    </div>
+                    <div class="col-7">
+                        <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.isAlertMail}" /> 
+                    </div>
+                    <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="isAlertMail" />
+                </div>
+
+                
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5">
+                        <h:outputText value="#{langueBean.getMsg('profile.role')} : " /> 
+                    </div>
+                    <div class="col-7">                       
+                        <p:selectOneMenu value="#{newUSerBean.selectedProject}"
+                                         styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                         style="width: 100%; background: none;  box-shadow: none; "
+                                         panelStyle="border: none; box-shadow: none; max-width: 300px">
+                            <f:selectItems value="#{newUSerBean.nodeAllRoles}" var="allRole" itemLabel="#{allRole.roleName}" itemValue="#{allRole.idRole}"/>
+                        </p:selectOneMenu>
+                    </div> 
+                </div>                
+                
+                <div class="row" style="margin-top: 5px;">
+                    <div class="col-5">
+                        <h:outputText value="#{langueBean.getMsg('profile.project')} : "  style="font-size: 12px;"/>
+                    </div>
+                    <div class="col-7">
+                        <p:selectOneMenu value="#{newUSerBean.selectedProject}"
+                                         styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                         style="width: 100%; background: none;  box-shadow: none; "
+                                         panelStyle="border: none; box-shadow: none; max-width: 300px">
+                            <f:selectItem itemLabel="..." itemValue=""/>
+                            <f:selectItems value="#{newUSerBean.nodeAllProjects}" var="allProject" itemLabel="#{allProject.groupName}" itemValue="#{allProject.idGroup}"/>
+                        </p:selectOneMenu>
+                    </div>
+                </div> 
+
+                <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                     icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                     ajax="true" actionListener="PF('addNewUser').hide();" update="idAddNewUser" />
+
+                    <p:commandButton id="addUserBtn" value="#{langueBean.getMsg('btnValidate')}"
+                                     icon="pi pi-check" oncomplete="PF('addNewUser').hide();"
+                                     styleClass="ui-button-success"
+                                     ajax="true" process="@this"
+                                     update="messageIndex containerIndex" 
+                                     actionListener="#{newUSerBean.addNewUserBySuperAdmin()}" />
+                </div>
+            </h:form>
+        </p:dialog>          
     </h:body>
 </html>

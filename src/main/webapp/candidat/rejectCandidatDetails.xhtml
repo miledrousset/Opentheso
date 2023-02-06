@@ -28,6 +28,8 @@
                         <div class="col-12">
                             <h:outputText value="#{langueBean.getMsg('candidat.title')} : " style="font-weight: bold;"/>
                             <h:outputText value="#{candidatBean.candidatSelected.nomPref}" style="font-size: 15px; font-weight: bold; color: #f47b2a" />
+                            <h:outputText value=" (#{candidatBean.candidatSelected.idConcepte})" style="font-size: 15px;" />
+                            
                         </div>
                     </div>
 
@@ -103,9 +105,17 @@
                     </h:panelGroup>
                 </div>
             </div>
+            
+            <!-- pour réactiver le candidat -->
+            <div class="row" style="margin-top: 20px; text-align: right">
+                <div class="col-12">
+                    <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                        value="réactiver le candidat" action="#{candidatBean.reactivateRejectedCandidat()}" update="messageIndex tabViewCandidat"/>
+                </div>            
+            </div>            
         </div>
 
-        <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
+        <h:panelGroup >
             <div class="col-6">
                 <div class="card mb-4 py-3 border-left-success">
                     <div class="list-group" style="padding-left: 10px; margin-right: 10px">
@@ -146,5 +156,7 @@
                 </div>
             </div>
         </h:panelGroup>
+
+
     </div>
 </ui:fragment>

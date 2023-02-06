@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.bean.candidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 
@@ -84,24 +86,30 @@ public class MessageDao {
         return messages;
     }
 
-    public List<String> getParticipantsByCandidat(HikariDataSource hikariDataSource, String candidatId, String thesaurusId) {
-        List<String> participants = new ArrayList<>();
+    public List<NodeUser> getParticipantsByCandidat(HikariDataSource hikariDataSource, String candidatId, String thesaurusId) {
+        List<Integer> participants = new ArrayList<>();
         try (Connection connection = hikariDataSource.getConnection()){
             try (Statement stmt = connection.createStatement()) {
-            stmt.executeQuery(new StringBuffer("SELECT DISTINCT users.username FROM candidat_messages msg, users users ")
+            stmt.executeQuery(new StringBuffer("SELECT DISTINCT users.id_user FROM candidat_messages msg, users users ")
                     .append("WHERE msg.id_user = users.id_user AND msg.id_concept = '")
                     .append(candidatId).append("' AND msg.id_thesaurus = '")
                     .append(thesaurusId).append("'").toString());
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
-                        participants.add(resultSet.getString("username"));
+                        participants.add(resultSet.getInt("id_user"));
                     }
                 }
             }
         } catch (SQLException e) {
-            return participants;
+            return null;
         }
-        return participants;
+        UserHelper userHelper = new UserHelper();
+        List<NodeUser> nodeUsers = new ArrayList<>();
+        for (int idUser : participants) {
+            NodeUser nodeUser = userHelper.getUser(hikariDataSource, idUser);
+            nodeUsers.add(nodeUser);
+        }
+        return nodeUsers;
     }
     
 }

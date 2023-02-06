@@ -4,12 +4,15 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
-
     <!-- Infos -->
-    <div class="col-12 md:col-4" style="margin-top: -10px;">
-        <p:staticMessage severity="warn" summary="Info" detail=" !! Le concept ne sera pas réellement modifié tant qu'un admin ne l'aura pas validé !!" style="width: 100%; font-size: 14px;"/>
-    </div>    
-    
+    <div class="row">
+        <div class="col-11 md:col-4" style="margin-top: -10px;">
+            <p:staticMessage severity="warn" summary="Info" 
+                             detail="#{langueBean.getMsg('rightbody.proposal.info1')}" 
+                             style="width: 100%;"/>
+        </div> 
+    </div>   
+
     <h:panelGroup id="propositionView" styleClass="textOpentheso" style="margin: 0px">
 
         <ui:include src="TermProposition.xhtml" />
@@ -18,30 +21,9 @@
 
         <ui:include src="NoteProposition.xhtml" />
 
-        <p:dialog id="confirmDialogId" header="#{langueBean.getMsg('profile.confirmation')}" widgetVar="confirmDialog" 
-                  width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
-            <div class="row">
-                <div class="col-12">
-                    <h:outputText value="#{propositionBean.message}" />  
-                </div>
-            </div>
-
-            <f:facet name="footer">
-                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                     update="confirmDialogId" actionListener="PF('confirmDialog').hide();" />
-
-                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-primary" ajax="true"
-                                     process="@this" update="containerIndex:contentConcept containerIndex:notificationPanel messageIndex"
-                                     actionListener="#{propositionBean.executionAction()}"/>
-                </div>
-            </f:facet>
-        </p:dialog>
-
         <h:panelGroup rendered="#{(!currentUser.nodeUser.isSuperAdmin and !roleOnTheso.isAdminOnThisTheso)}">
-            <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
-                <div class="list-group">
+            <div class="card mb-4 py-3 border-left-success" style="margin: 10px;">
+                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
                         <div class="col-3">
                             <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.name')} * : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
@@ -78,31 +60,35 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <!-- Infos -->
-                <div class="col-8">
-                    <p:staticMessage severity="warn" summary="Info" detail=" !! Vous serez averti par mail quand votre propostion sera traitée !!" style="width: 100%; font-size: 14px;"/>
-                </div>                 
-                
-                
-                <div class="col-4" style="text-align: right;">
-                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary" 
-                                     style="margin-right: 10px" ajax="true" process="@this"
-                                     update="containerIndex:rightTab" actionListener="#{propositionBean.preparerConfirmationDialog('annulerProposition')}" />
+                <div class="col-11">
+                    <p:staticMessage severity="warn" summary="Info" 
+                                     detail="#{langueBean.getMsg('rightbody.proposal.info2')}" 
+                                     style="width: 100%; font-size: 14px;"/>
+                </div> 
+            </div>
+            <p:spacer height="10px;" />
+            <div class="row">
+                <div class="col-12" style="text-align: right; margin-left: -10px;">
+                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
+                                     actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept" 
+                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
+                                     icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                     ajax="true" process="@this"/>
 
-
-                    <p:commandButton icon="pi pi-send" value="#{langueBean.getMsg('rightbody.sendProposal')}"
-                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}" 
-                                     update="containerIndex messageIndex"/>
+                    <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="confirmDialogId"
+                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}"
+                                     ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" />
                 </div>
             </div>
+
         </h:panelGroup>
 
         <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}">
-            <div class="card mb-4 py-3 border-left-success" style="padding-top: -3px; padding-bottom: -3px;">
-                <div class="list-group">
-                    <div class="row" style=" margin-left: 15px; margin-right: 15px">
+            <div class="card mb-4 py-3 border-left-success" style="margin: 10px;">
+                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+                    <div class="row" style="margin-left: 15px; margin-right: 15px">
                         <div class="col-3">
                             <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.name')} : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
@@ -153,30 +139,56 @@
                     </h:panelGroup>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row" style="margin-top: 15px; margin-left: 10px; margin-right: 10px">
                 <div class="col-3">
                     <p:commandButton value="#{langueBean.getMsg('btnCancel')}" rendered="#{propositionBean.showButtonDecision()}"
                                      actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept" 
                                      style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
-                                     icon="pi pi-chevron-left" />
+                                     icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                     ajax="true" process="@this"/>
                 </div>
                 <div class="col-9" style="text-align: right;">
                     <p:commandButton value="#{langueBean.getMsg('candidat.remove')}"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}"
-                                     ajax="true" process="@this" icon="fa fa-regular fa-trash" update="messageIndex" 
-                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f" />
-                    
+                                     ajax="true" process="@this" icon="fa fa-regular fa-trash" update="messageIndex confirmDialogId" 
+                                     style="margin-right: 10px;" styleClass="ui-button-secondary button" />
+
                     <p:commandButton value="#{langueBean.getMsg('proposition.refuser')}" rendered="#{propositionBean.showButtonDecision()}"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('refuserProposition')}" ajax="true" process="@this"
-                                     update="messageIndex" style="margin-right: 10px; background-color: red"
-                                     styleClass="p-mr-2" icon="pi pi-times-circle" />
+                                     update="messageIndex confirmDialogId" style="margin-right: 10px; background-color: red; border-color: red"
+                                     styleClass="ui-button-secondary button" icon="pi pi-times-circle" />
 
-                    <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="messageIndex"
+                    <p:commandButton value="#{langueBean.getMsg('proposition.approuver')}" update="messageIndex confirmDialogId"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('approuverProposition')}"
                                      style="background-color: #43B572; border-color: #43B572;" ajax="true" process="@this"
-                                     styleClass="p-mr-2" icon="pi pi-check-circle" rendered="#{propositionBean.showButtonDecision()}" />
+                                     styleClass="ui-button-success" icon="pi pi-check-circle" 
+                                     rendered="#{propositionBean.showButtonDecision()}" />
                 </div>
             </div>
         </h:panelGroup>
     </h:panelGroup>
+
+    <p:dialog id="confirmDialogId" header="#{langueBean.getMsg('profile.confirmation')}" 
+              widgetVar="confirmDialog" width="450" showEffect="fade" modal="true" 
+              resizable="false" position="top" style="margin-top: 30px" >
+
+        <div class="row">
+            <div class="col-12">
+                <h:outputText value="#{propositionBean.message}" />  
+            </div>
+        </div>
+
+        <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
+            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" icon="fas fa-undo-alt"
+                             styleClass="ui-button-secondary button" style="margin-right: 10px"
+                             update="confirmDialogId" actionListener="PF('confirmDialog').hide();"
+                             ajax="true" process="@this"/>
+
+            <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success"
+                             icon="pi pi-check"
+                             update="containerIndex:contentConcept containerIndex:notificationPanel messageIndex"
+                             actionListener="#{propositionBean.executionAction()}"/>
+        </div>
+    </p:dialog>
 </ui:fragment>

@@ -37,13 +37,16 @@
 
                     <div style="width: 100%; display: flex;">
                         <div style="width: 50%;" />
-                        <div style="width: 50%; text-align: right;">
-                            <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary"
-                                             update="containerIndex"
+                        <div style="width: 50%; text-align: right; margin-top: 20px">
+                            <p:commandButton value="#{langueBean.getMsg('btnCancel')}" 
+                                             styleClass="ui-button-secondary button"
+                                             update="containerIndex" icon="fas fa-undo-alt"
                                              style="font-size: 14px; margin-right: 20px" actionListener="#{viewEditorHomeBean.reset()}"/>
 
-                            <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex" styleClass="ui-button-primary"
-                                             style="font-size: 14px;" actionListener="#{viewEditorHomeBean.updateGoogleAnalytics()}" />
+                            <p:commandButton value="#{langueBean.getMsg('btnValidate')}" 
+                                             icon="pi pi-check"
+                                             update="containerIndex" styleClass="ui-button-success"
+                                             actionListener="#{viewEditorHomeBean.updateGoogleAnalytics()}" />
                         </div>
                     </div>
 
@@ -55,15 +58,13 @@
                     <div style="width: 100%; display: flex; margin-bottom: 10px">
                         <div style="width: 50%;">
                             <p:commandButton value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
-                                             update="containerIndex" styleClass="ui-button-primary"
-                                             action="#{viewEditorHomeBean.setViewPlainTextTo(false)}"
-                                             style="font-size: 12px;"/>
+                                             update="containerIndex" styleClass="ui-button-success"
+                                             action="#{viewEditorHomeBean.setViewPlainTextTo(false)}"/>
                         </div>
                         <div style="width: 50%; text-align: right;">
                             <p:commandButton value="#{langueBean.getMsg('thesohome.rawHTMLView')}" 
-                                             styleClass="ui-button-primary" update="containerIndex"
-                                             action="#{viewEditorHomeBean.setViewPlainTextTo(true)}"
-                                             style="font-size: 12px;"/>
+                                             styleClass="ui-button-success" update="containerIndex"
+                                             action="#{viewEditorHomeBean.setViewPlainTextTo(true)}"/>
                         </div>
                     </div>
 
@@ -76,14 +77,17 @@
                         <p:inputTextarea value="#{viewEditorHomeBean.text}" style="width: 100%; min-height: 600px;"/>
                     </h:panelGroup>
 
-                    <div class="row" >
+                    <div class="row" style="margin-top: 15px">
                         <div class="col-4 offset-8" style="text-align: right">
-                            <p:commandButton value="#{langueBean.getMsg('btnCancel')}" styleClass="ui-button-secondary"
-                                             update="containerIndex" style="font-size: 14px; margin-right: 20px;" 
-                                             actionListener="#{viewEditorHomeBean.reset()}"/>                                         
+                            <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
+                                             styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
+                                             update="containerIndex" style="font-size: 14px; margin-right: 20px;"
+                                             actionListener="#{viewEditorHomeBean.reset()}"/>
+                            
                             <p:commandButton value="#{langueBean.getMsg('btnValidate')}"
-                                             update="containerIndex" styleClass="ui-button-primary"
-                                             style="font-size: 14px; margin-right: 10px;" actionListener="#{viewEditorHomeBean.updateHomePage()}" />                                        
+                                             update="containerIndex" styleClass="ui-button-success" icon="pi pi-check"
+                                             style="font-size: 14px; margin-right: 10px;" 
+                                             actionListener="#{viewEditorHomeBean.updateHomePage()}" />                                        
                         </div>
                     </div>
                 </h:panelGroup>

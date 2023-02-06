@@ -8,7 +8,7 @@
         <div style="width: 75%; text-align: right;">
             <p:commandLink action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar containerIndex:formLeftTab:tabTree:treeGroups" 
                            ajax="true" process="@form"
-                           title="Recharger l'arbre">
+                           title="#{langueBean.getMsg('tree.relaod')}">
                 <i class="fas fa-refresh" style=" color: #F47B2A; margin-right: 20px; font-size: 14px; " />
             </p:commandLink>            
 
@@ -42,7 +42,7 @@
             widgetVar="groupWidget">
 
         <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
-        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" />
+        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formLeftTab:tabTree:menuCollection"/>
 
         <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 13px; color: blue"/>

@@ -193,6 +193,7 @@ public class FusionService implements Serializable {
                                             conceptFound.getConcept().getIdThesaurus(),
                                             nodeNote.getLexicalvalue(),
                                             nodeNote.getNotetypecode(),
+                                            "",
                                             nodeNote.getIdUser());
                                     isUpdated = true;
                                 }
@@ -341,7 +342,7 @@ public class FusionService implements Serializable {
             uri = sourceSkos.getTitle();
             loadDone = true;
             readRdf4j.clean();
-            System.gc();
+        //    System.gc();
         } catch (Exception e) {
 
         }

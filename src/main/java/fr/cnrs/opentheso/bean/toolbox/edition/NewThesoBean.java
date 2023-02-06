@@ -28,6 +28,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -109,10 +110,10 @@ public class NewThesoBean implements Serializable {
         }
         int idProject = -1;
         try {
-            if (selectedProject != null) {
+            if (!StringUtils.isEmpty(selectedProject)) {
                 idProject = Integer.parseInt(selectedProject);
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
         }
         Connection conn;
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
@@ -170,6 +171,7 @@ public class NewThesoBean implements Serializable {
                     selectedLang);
         } else {
             nodePreference.setPreferredName(title);
+            nodePreference.setSourceLang(selectedLang);
             preferencesHelper.addPreference(//updateAllPreferenceUser(
                     connect.getPoolConnexion(),
                     nodePreference, idNewTheso);

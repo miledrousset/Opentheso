@@ -230,7 +230,7 @@ public class ArkHelper2 {
         String jsonDatas = nodeJson2.getJsonString();
         if(jsonDatas == null) return false;        
         
-        if(!arkClientRest.updateArk(nodeJson2.getJsonString())) {
+        if(!arkClientRest.updateArk(jsonDatas)) {
             message = message + arkClientRest.getMessage();
             return false;
         }
@@ -275,7 +275,6 @@ public class ArkHelper2 {
         
         if(!arkClientRest.updateUriArk(nodeJson2.getJsonString())) {
             message = message + arkClientRest.getMessage();
-            System.out.println(message);
             return false;
         }
         return true;

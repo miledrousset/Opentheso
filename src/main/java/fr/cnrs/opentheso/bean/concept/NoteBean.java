@@ -66,13 +66,18 @@ public class NoteBean implements Serializable {
         noteValue = null;
         selectedNodeNote = null;
     }
-
+    
     public void reset() {
         noteTypes = new NoteHelper().getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
         selectedTypeNote = null;
+    }
+    
+    public void initNoteProp(String noteType) {
+        reset();
+        setSelectedTypeNote(noteType);
     }
 
     public void infos() {
@@ -293,6 +298,17 @@ public class NoteBean implements Serializable {
     public void updateNote(NodeNote nodeNote, int idUser) {
         NoteHelper noteHelper = new NoteHelper();
         FacesMessage msg;
+        
+        if(nodeNote.getLexicalvalue().isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne peut pas être vide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            conceptBean.getConcept(
+                    selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getSelectedLang());            
+            return;            
+        }
         if (selectedTypeNote.equalsIgnoreCase("note") || selectedTypeNote.equalsIgnoreCase("scopeNote") || selectedTypeNote.equalsIgnoreCase("historyNote")) {
             if (!noteHelper.updateConceptNote(connect.getPoolConnexion(),
                     nodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
@@ -330,7 +346,7 @@ public class NoteBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note modifiée avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
@@ -788,7 +804,9 @@ public class NoteBean implements Serializable {
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,
-                selectedTypeNote, idUser);
+                selectedTypeNote,
+                "",
+                idUser);
     }
 
     private boolean addtermNote(int idUser) {
@@ -812,7 +830,9 @@ public class NoteBean implements Serializable {
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,
-                selectedTypeNote, idUser);
+                selectedTypeNote,
+                "",
+                idUser);
     }
 
     private void printErreur() {

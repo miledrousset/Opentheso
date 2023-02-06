@@ -92,9 +92,8 @@ public class PropositionService implements Serializable {
         propositionDao.setStatus(PropositionStatusEnum.ENVOYER.name());
         propositionDao.setThesoName(new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
 
-
         try {
-            String subject = "[Opentheso] Confirmation de l'envoie de votre proposition";
+            String subject = "[Opentheso] Confirmation de l'envoi de votre proposition";
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionDao.getNom() + ", <br/> "
                     + "<p> Votre proposition a bien été reçue par nos administrateurs, elle sera étudiée dans les plus brefs délais.<br/>"
@@ -105,11 +104,11 @@ public class PropositionService implements Serializable {
                     + "L'équipe " + propositionDao.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
 
             if(!sendEmail(propositionDao.getEmail(), subject, contentFile)) {
-                showMessage(FacesMessage.SEVERITY_ERROR, "!! votre propostion n'a pas été pas envoyée !!");
+                showMessage(FacesMessage.SEVERITY_ERROR, "!! votre propostion n'a pas été envoyée !!");
                 return false;
             }
         } catch (IOException ex) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion n'a pas été pas envoyée !");
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion n'a pas été envoyée !");
             return false;
         }
 
@@ -392,9 +391,17 @@ public class PropositionService implements Serializable {
     }
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
-
         return mailBean.sendMail(emailDestination, subject,  contentFile);
-            //showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail!");
+  
+
+
+
+
+
+
+
+
+        //showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail!");
         
         /// désactivé par #MR Miled pour utiliser la méthode officielle d'envoie de Mail
         /*
@@ -437,19 +444,19 @@ public class PropositionService implements Serializable {
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
-            
-            String commentaire = "";
-            if (StringUtils.isNotEmpty(commentaireAdmin)) {
-                commentaire = "<br/>L'adminisatrateur vous a laissé le message suivant : " + commentaireAdmin; 
-            }
+            if(commentaireAdmin == null)
+                commentaireAdmin = "";
 
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
-                    + "<p>Malheureusement, votre proposition a été refusée par un des adminisatrateurs d'Opentheso.<br/>"
-                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionSelected.getThesoName() + "(" + propositionSelected.getIdTheso() + ")" + "</b> "
-                    + "(concept : <a href=\"" + getPath() + "/?idc=" + propositionSelected.getIdConcept()
-                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>)."+commentaire+"<br/><br/> Cordialement,<br/>"
-                    + "L'équipe " + propositionSelected.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
+                    + "<p>Votre proposition d’enrichissement sur le concept " + propositionSelected.getNomConcept() + " du thésaurus " + propositionSelected.getThesoName()
+                    + " a été refusée par les adminisatrateurs.<br/>"
+                    + "Voici leur message: <br/>" 
+                    + commentaireAdmin + "<br/>"
+                    + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention. <b>" 
+                    + "<br/><br/> Cordialement,<br/>"
+                    + "L'équipe " + propositionSelected.getThesoName() 
+                    + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
         } catch (IOException ex) {
@@ -683,18 +690,19 @@ public class PropositionService implements Serializable {
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
             
-            String commentaire = "";
-            if (StringUtils.isNotEmpty(commentaireAdmin)) {
-                commentaire = "<br/>L'adminisatrateur vous a laissé le message suivant : " + commentaireAdmin; 
-            }
+            if(commentaireAdmin == null)
+                commentaireAdmin = "";
 
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
-                    + "<p>Votre proposition a été acceptée par un des adminisatrateurs d'Opentheso !!!<br/>"
-                    + "Nous vous remercions de votre contribution à l'enrichissement du thésaurus <b>" + propositionSelected.getThesoName() + "(" + propositionSelected.getIdTheso() + ")" + "</b> "
-                    + "(concept : <a href=\"" + getPath() + "/?idc=" + propositionSelected.getIdConcept()
-                    + "&idt=" + propositionSelected.getIdTheso() + "\">" + propositionSelected.getNomConcept() + "</a>)." 
-                    + commentaire + "<br/><br/> Cordialement,<br/>"
+                    + "<p>Votre proposition d'enrichissement sur le concept " + propositionSelected.getNomConcept()
+                    + " du thésaurus " + propositionSelected.getThesoName()
+                    + " a été acceptée par les adminisatrateurs.<br/>"
+                    + " voici leur message : "
+                    + commentaireAdmin
+                    + "<br/>"
+                    + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention." 
+                    + "<br/><br/> Cordialement,<br/>"
                     + "L'équipe " + propositionSelected.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
 
             sendEmail(propositionSelected.getEmail(), subject, contentFile);
@@ -773,7 +781,7 @@ public class PropositionService implements Serializable {
                     notePropBean.getLang(),
                     selectedTheso.getCurrentIdTheso(),
                     notePropBean.getLexicalvalue(),
-                    typeNote,
+                    typeNote, "",
                     currentUser.getNodeUser().getIdUser())) {
 
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
@@ -786,7 +794,7 @@ public class PropositionService implements Serializable {
                     notePropBean.getLang(),
                     selectedTheso.getCurrentIdTheso(),
                     notePropBean.getLexicalvalue(),
-                    typeNote,
+                    typeNote,"",
                     currentUser.getNodeUser().getIdUser())) {
 
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");

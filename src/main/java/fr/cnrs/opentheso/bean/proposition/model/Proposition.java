@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Proposition implements Serializable {
 
     private String conceptID;
@@ -16,17 +17,11 @@ public class Proposition implements Serializable {
     private String nomConceptProp;
     private Term nomConcept;
 
-    private List<SynonymPropBean> synonymsProp = new ArrayList<>();
+    private List<SynonymPropBean> synonymsProp;
+    private List<TraductionPropBean> traductionsProp;
 
-    private List<TraductionPropBean> traductionsProp = new ArrayList<>();
-
-    private List<NotePropBean> notes = new ArrayList<>();
-    private List<NotePropBean> scopeNotes = new ArrayList<>();
-    private List<NotePropBean> historyNotes = new ArrayList<>();
-    private List<NotePropBean> examples = new ArrayList<>();
-    private List<NotePropBean> editorialNotes = new ArrayList<>();
-    private List<NotePropBean> definitions = new ArrayList<>();
-    private List<NotePropBean> changeNotes = new ArrayList<>();
+    private List<NotePropBean> notes, scopeNotes, historyNotes, examples,
+            editorialNotes, definitions, changeNotes;
 
     
     public Proposition() {
@@ -144,5 +139,4 @@ public class Proposition implements Serializable {
     public void setNotes(List<NotePropBean> notes) {
         this.notes = notes;
     }
-
 }

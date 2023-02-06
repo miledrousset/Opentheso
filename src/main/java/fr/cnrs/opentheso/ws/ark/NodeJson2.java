@@ -4,6 +4,11 @@ import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Qualifier;
 import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.tools.FileUtilities;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 public final class NodeJson2 {
 
@@ -27,21 +32,21 @@ public final class NodeJson2 {
      * @return 
      */
     public String getJsonString() {
-        String arkString = "{"
-                + "\"token\":\""+ token + "\","
-                + "\"ark\":\""+ ark + "\","
-                + "\"naan\":\"" + naan + "\","
-                + "\"type\":\""+  type + "\","                
-                + "\"urlTarget\":\""+ urlTarget + "\","
-                + "\"title\":\" "+ title + "\","
-                + "\"creator\":\"" + creator + "\","
-                + "\"useHandle\":" + useHandle + ","                
-                + "\"modificationDate\":\""+ new FileUtilities().getDate() + "\","
-                + "\"dcElements\":" + getStringFromDcElements() + ","
-                + "\"qualifiers\":" + getStringFromQualifiers()                
-                + "}";
+        JsonObjectBuilder job = Json.createObjectBuilder();
+        job.add("token", token);
+        job.add("ark", ark);
+        job.add("naan", naan);
+        job.add("type", type);
+        job.add("urlTarget", urlTarget);
+        job.add("title", title);
+        job.add("creator", creator);
+        job.add("useHandle", useHandle);
+        job.add("modificationDate", new FileUtilities().getDate());
+        
+        job.add("dcElements", getStringFromDcElements());        
+        job.add("qualifiers", getStringFromQualifiers()); 
 
-        return arkString;
+        return job.build().toString();
     }
     
     /**
@@ -59,41 +64,33 @@ public final class NodeJson2 {
         return arkString;
     }    
     
-    private String getStringFromDcElements(){
-        if(dcElements == null) return "[]";
-        String dcElementString = "[";
-        boolean first = true;
-        for (DcElement dcElement : dcElements) {
-            if(!first) {
-                dcElementString += ",";
-            }             
-            dcElementString += "{";
-            dcElementString += "\"name\":\""+ dcElement.getName() + "\",";
-            dcElementString += "\"value\":\""+ dcElement.getValue()+ "\","; 
-            dcElementString += "\"language\":\""+ dcElement.getLanguage()+ "\"";  
-            dcElementString += "}";
-            first = false;  
+    private JsonArray getStringFromDcElements(){
+       JsonArrayBuilder jsonArrayBuilderDC = Json.createArrayBuilder();
+        if(dcElements == null) {
+            return jsonArrayBuilderDC.build();
         }
-        dcElementString += "]";
-        return dcElementString;
+        for (DcElement dcElement : dcElements) {
+            JsonObjectBuilder jobLine = Json.createObjectBuilder();
+            jobLine.add("name", dcElement.getName());
+            jobLine.add("value", dcElement.getValue());
+            jobLine.add("language", dcElement.getLanguage());
+            jsonArrayBuilderDC.add(jobLine.build());
+        }
+        return jsonArrayBuilderDC.build();
     }
     
-    private String getStringFromQualifiers(){
-        if(qualifiers == null) return "[]";
-        String qualifierString = "[";
-        boolean first = true;
-        for (Qualifier qualifier : qualifiers) {
-            if(!first) {
-                qualifierString += ",";
-            }             
-            qualifierString += "{";
-            qualifierString += "\"qualifier\":\""+ qualifier.getQualifier() + "\",";
-            qualifierString += "\"url_target\":\""+ qualifier.getUrlTarget() + "\""; 
-            qualifierString += "}";
-            first = false;  
+    private JsonArray getStringFromQualifiers(){
+       JsonArrayBuilder jsonArrayBuilderQual = Json.createArrayBuilder();
+        if(qualifiers == null) {
+            return jsonArrayBuilderQual.build();
         }
-        qualifierString += "]";
-        return qualifierString;
+        for (Qualifier qualifier : qualifiers) {
+            JsonObjectBuilder jobLine = Json.createObjectBuilder();
+            jobLine.add("qualifier", qualifier.getQualifier());
+            jobLine.add("url_target", qualifier.getUrlTarget());
+            jsonArrayBuilderQual.add(jobLine.build());
+        }
+        return jsonArrayBuilderQual.build();        
     }    
     
     public String getToken() {

@@ -57,7 +57,7 @@
                 <p:panel visible="false" header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
                          closeSpeed="500" style="margin-bottom:20px" collapsed="true">
                     <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}"
-                                 selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0">
+                                 selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0" lazy="false">
                         <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllLangsSelect}" process="@this" partialSubmit="true" />
                         <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
                         <p:column headerText="Code" width="60">
@@ -72,7 +72,7 @@
                 <p:panel visible="false" header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500"
                          closeSpeed="500" style="margin-bottom:20px" collapsed="true">
                     <p:dataTable id="listGroupe" var="groupOfTheso" value="#{viewExportBean.groupList}" style=";margin-bottom:0"
-                                 selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}">
+                                 selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}" lazy="false">
                         <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllGroupsSelect}" process="@this" partialSubmit="true" />
 
                         <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
@@ -94,7 +94,7 @@
                          closeSpeed="500" style="margin-bottom:20px;" collapsed="false">
                     <h:outputLabel style="color: #000;" value="Types :"/>
                     <p:dataTable id="listType" var="type" value="#{viewExportBean.types}"
-                                 selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0">
+                                 selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0" lazy="false">
                         <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
                         <p:column headerText="Code">
                             <h:outputText value="#{type}" />
@@ -283,7 +283,7 @@
                         <div class="col-5">
                             <p:selectOneMenu value="#{viewExportBean.selectedIdLangTheso}"
                                              styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
-                                             style="width: 100%; background: none;  box-shadow: none; ">
+                                             style="width: 100%; background: none; box-shadow: none; ">
                                 <f:selectItems value="#{viewExportBean.languagesOfTheso}" var="lang"
                                                itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
                             </p:selectOneMenu>
@@ -377,38 +377,34 @@
                 </p:panel>
 
                 <div class="row" style="margin: 20px">
-                    <div class="col-6">
-                        <p:commandButton value="#{viewExportBean.getExportButtonLabel()}" ajax="false"
+                    <div class="col-12" style="text-align: center">
+                        <p:commandButton value="#{langueBean.getMsg('btnBack')}"
+                                         icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                         actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
+                                         update="containerIndex"/>
+                        
+                        <p:commandButton value="#{langueBean.getMsg('candidat.export')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
-                                         icon="fa fa-upload" class="btn btn-success"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
-                                         title="Export rapide"
-                                         style="float: right; color: white; background: #43B572; border: #43B572;">
+                                         styleClass="ui-button-success" icon="fa fa-upload" 
+                                         title="#{langueBean.getMsg('toolbox.newExportMethod')}" style="margin-left: 20px">
                             <p:fileDownload value="#{exportFileBean.exportNewGen()}" />
                         </p:commandButton>
                         
-                        <p:commandButton value="Ancienne méthode" ajax="false"
+                        <p:commandButton value="#{langueBean.getMsg('toolbox.oldMethod')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
-                                         icon="fa fa-upload" class="btn btn-warning"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
-                                         title="Export classique plus long"
-                                         style="margin-right: 20px;  float: right; color: #ca2819; background-color: #FAEDE5">
+                                         styleClass="ui-button-success" icon="fa fa-upload" 
+                                         title="#{langueBean.getMsg('toolbox.oldMethodTooltip')}" style="margin-left: 20px">
                             <p:fileDownload value="#{exportFileBean.exportThesorus()}" />
                         </p:commandButton>      
                         
                         <p:commandButton value="Exporter vers Vertuoso" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
-                                         icon="fa fa-upload" class="btn btn-success"
+                                         icon="fa fa-upload" styleClass="ui-button-success"
+                                         style="margin-left: 20px"
                                          update="messageIndex" actionListener="#{exportFileBean.exportToVertuoso()}"
-                                         rendered="#{viewEditionBean.isViewImportVirtuoso()}"
-                                         style="float: right; color: white; background: #43B572; border: #43B572;" />
-                    </div>
-
-                    <div class="col-6">
-                        <p:commandButton icon="fa fa-undo" value="#{langueBean.getMsg('btnBack')}" class="btn btn-success"
-                                         style="color: white; background: #FFC107; border: #FFC107;"
-                                         actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
-                                         update="containerIndex"/>
+                                         rendered="#{viewEditionBean.isViewImportVirtuoso()}" />
                     </div>
                 </div>
             </div>

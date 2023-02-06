@@ -7,7 +7,10 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
+import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
+import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import javax.annotation.PreDestroy;
@@ -28,7 +31,9 @@ public class NotationBean implements Serializable {
     @Inject private Connect connect;
     @Inject private LanguageBean languageBean;
     @Inject private ConceptView conceptBean;
-
+    @Inject private Tree tree;
+    @Inject private SelectedTheso selectedTheso;
+    
     private String notation;
 
     @PreDestroy
@@ -96,6 +101,22 @@ public class NotationBean implements Serializable {
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "La notation a bien été modifiée");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+        
+        // mettre à jour le label dans l'arbre
+        if(selectedTheso.isSortByNotation()) {
+            if (tree.getSelectedNode() != null) {
+                // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+                if (!((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(
+                        conceptBean.getNodeConcept().getConcept().getIdConcept())) {
+                    tree.expandTreeToPath(conceptBean.getNodeConcept().getConcept().getIdConcept(), idTheso, conceptBean.getSelectedLang());
+                }
+                ((TreeNodeData) tree.getSelectedNode().getData()).setNotation(notation);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("containerIndex:formLeftTab:tabTree:tree");
+                }
+            }  
+        }        
+        
         
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");

@@ -78,7 +78,7 @@ public class ViewEditionBean implements Serializable {
 
     public String getNewAlternateColor() {
         if (alternateColor.equalsIgnoreCase("#FFFFFF")) {
-            alternateColor = "#C8EAD6";
+            alternateColor = "#deeae3";
         } else {
             alternateColor = "#FFFFFF";
         }
@@ -87,10 +87,10 @@ public class ViewEditionBean implements Serializable {
 
     public String getAlternateColor(int position) {
         if (position == 0) {
-            alternateColor = "#C8EAD6";
+            alternateColor = "#deeae3";
         } else {
             if (alternateColor.equalsIgnoreCase("#FAFAFA")) {
-                alternateColor = "#C8EAD6";
+                alternateColor = "#deeae3";
             } else {
                 alternateColor = "#FAFAFA";
             }

@@ -6,7 +6,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idCsvImportHelp"  header="#{langueBean.getMsg('edit.importcsv')}" widgetVar="csvImportHelp" modal="true" resizable="false"
-              position="top" width="600" style="margin-top: 150px">
+              position="top" width="700" style="margin-top: 150px">
 
         <fieldset>
             <p:panelGrid>
@@ -39,23 +39,22 @@
 
             <p:outputPanel deferred="true">
                 <p>
-                    Les termes doivent avoir un séparateur (virgules, point-virgule, tabulé) dans le fichier à uploader.<br/>
-                    Pour les champs qui autorisent les valeurs multiples, il faut les séparer par (##) ex : (deux##2).
+                    #{langueBean.getMsg('import.listCsv.help')}
                 </p>
             </p:outputPanel>
 
             <br/>
 
             <div class="row">
-                <div class="col-6">
-                    <p:commandButton value="Exemple avec collections" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
-                                     icon="fas fa-download" style="background: #42a068; font-size: 12px; " >
+                <div class="col-5 offset-1">
+                    <p:commandButton value="#{langueBean.getMsg('csvExportHelp.exportWithColl')}" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     icon="fas fa-download" styleClass="ui-button-success" >
                         <p:fileDownload value="#{helpfileDownload.downloadCSVSample()}" />
                     </p:commandButton>                          
                 </div>
-                <div class="col-6">
-                    <p:commandButton value="Exemple sans collections" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
-                                     icon="fas fa-download" style="background: #42a068; font-size: 12px; " >
+                <div class="col-5 offset-1" >
+                    <p:commandButton value="#{langueBean.getMsg('csvExportHelp.exportWithoutColl')}" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     icon="fas fa-download" styleClass="ui-button-success" >
                         <p:fileDownload value="#{helpfileDownload.downloadCSVSampleWithoutCollections()}" />
                     </p:commandButton> 
                 </div>                    

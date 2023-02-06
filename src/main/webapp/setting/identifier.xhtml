@@ -47,7 +47,7 @@
 
                     <div class="container-fluid" style="padding-bottom: 70px">
 
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.setting')} / <span style="color: #f47b2a">#{langueBean.getMsg('menu.identifier')}</span></h1>
                         </div>
 
@@ -143,7 +143,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <!-- pass Ark -->
                                             <div class="list-group-item list-group-item-action">
                                                 <div class="row" style="padding: 3px;">
@@ -151,7 +150,7 @@
                                                         <h:outputText value="Passe Ark" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:password value="#{preferenceBean.nodePreference.passArk}" style="width: 100%;"/>
+                                                        <p:password value="#{preferenceBean.nodePreference.passArk}" style="width: 100%;" toggleMask="false" redisplay="true"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -251,7 +250,7 @@
                                                         <h:outputText value="Passe Handle" style="font-weight: bold;" />
                                                     </div>
                                                     <div class="col-8">
-                                                        <p:password value="#{preferenceBean.nodePreference.passHandle}" style="width: 100%;"/>
+                                                        <p:password value="#{preferenceBean.nodePreference.passHandle}" style="width: 100%;" toggleMask="false" redisplay="true"/>
                                                     </div>
                                                 </div>
                                             </div>

@@ -104,7 +104,6 @@ public class WriteAltLabel  {
             }
             passed = false;
         }
-  //      System.out.println(stringBuilder.toString());
     }
 
     public StringBuilder getAllAltLabels() {

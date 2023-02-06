@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptArkId;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
@@ -37,6 +38,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
 import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
@@ -73,6 +75,63 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
+    
+    /**
+     * Cette fonction permet de changer le type du concept
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param type
+     * @param idUser
+     * @return 
+     */
+    public boolean setConceptType(HikariDataSource ds, 
+            String idThesaurus,
+            String idConcept,
+            String type,
+            int idUser) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept set concept_type = '" + type + "'"
+                        + " WHERE id_concept ='"
+                        + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating type of concept : " + idConcept, sqle);
+        }
+        return false;
+    }    
+    
+    
+    /**
+     * Permet de retourner la liste de types de concepts
+     * date de type 2021-02-01
+     * @param ds
+     * @return 
+     */
+    public ArrayList<NodeConceptType> getAllTypesOfConcept(HikariDataSource ds) {
+        ArrayList<NodeConceptType> nodeConceptTypes = new  ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select * from concept_type");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeConceptType nodeConceptType = new NodeConceptType();
+                        nodeConceptType.setCode(resultSet.getString("code"));
+                        nodeConceptType.setLabel_fr(resultSet.getString("label_fr"));
+                        nodeConceptType.setLabel_en(resultSet.getString("label_en"));
+                        nodeConceptTypes.add(nodeConceptType);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All types of concepts " , sqle);
+        }
+        return nodeConceptTypes;
+    }            
+            
     
     /**
      * Permet de retourner la liste des concepts à partir d'une date donnée
@@ -884,13 +943,15 @@ public class ConceptHelper {
      * permet de trouver les idConcepts en partant d'un label
      * @param ds
      * @param idTheso
+     * @param label
      * @param idLang
      * @return 
      */
-    private ArrayList<String> getIdConceptsFromLabel(HikariDataSource ds,
+    public ArrayList<String> getIdConceptsFromLabel(HikariDataSource ds,
             String idTheso, String label, String idLang) {
         ArrayList<String> conceptLabels = new ArrayList<>();
-        
+        StringPlus stringPlus = new StringPlus();
+        label = stringPlus.convertString(label);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select concept.id_concept from concept, preferred_term, term " +
@@ -907,7 +968,7 @@ public class ConceptHelper {
                         " and " +
                         " term.lang = '" +idLang + "'" +
                         " and" +
-                        " term.lexical_value = '" + label + "'");
+                        " lower(term.lexical_value) = lower('" + label + "')");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         conceptLabels.add(resultSet.getString("id_concept"));
@@ -1304,7 +1365,7 @@ public class ConceptHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select modified from concept where id_thesaurus = '"
-                        + idTheso + "' and status != 'CA' order by modified DESC limit 1 ");
+                        + idTheso + "' and status != 'CA' and modified IS NOT NULL order by modified DESC limit 1 ");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         date = resultSet.getDate("modified");
@@ -1341,7 +1402,7 @@ public class ConceptHelper {
                             " concept.id_thesaurus = '" + idTheso + "'" +
                             " and" +
                             " term.lang = '" + idLang + "'" +
-                            " and concept.status != 'CA' order by concept.modified DESC limit 10");
+                            " and concept.status != 'CA' and concept.modified IS not null  order by concept.modified DESC limit 10");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();
@@ -1561,7 +1622,6 @@ public class ConceptHelper {
         lisIds = getIdsOfBranch__(hd, idConceptDeTete, idTheso, lisIds);
         return lisIds;
     }
-
     private ArrayList<String> getIdsOfBranch__(HikariDataSource hd, String idConceptDeTete,
             String idTheso, ArrayList<String> lisIds) {
 
@@ -1572,7 +1632,35 @@ public class ConceptHelper {
             getIdsOfBranch__(hd, listIdsOfConceptChildren1, idTheso, lisIds);
         }
         return lisIds;
-    }
+    }    
+
+    /**
+     * Cette fonction permet de retrouver tous tes identifiants d'une branche en
+     * partant du concept en paramètre avec limit pour le nombre de résultat
+     * @param hd
+     * @param idConceptDeTete
+     * @param idTheso
+     * @param limit
+     * @return 
+     */
+    public ArrayList<String> getIdsOfBranchLimited(HikariDataSource hd, String idConceptDeTete, String idTheso, int limit) {
+        ArrayList<String> lisIds = new ArrayList<>();
+        lisIds = getIdsOfBranchLimited__(hd, idConceptDeTete, idTheso, lisIds, limit);
+        return lisIds;
+    }    
+    private ArrayList<String> getIdsOfBranchLimited__(HikariDataSource hd, String idConceptDeTete,
+            String idTheso, ArrayList<String> lisIds, int limit) {
+
+        if(lisIds.size() > limit) return lisIds;
+        lisIds.add(idConceptDeTete);
+
+        ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(hd, idConceptDeTete, idTheso);
+        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
+            getIdsOfBranchLimited__(hd, listIdsOfConceptChildren1, idTheso, lisIds, limit);
+        }
+        return lisIds;
+    }    
+
 
     /**
      * permet de modifier l'identifiant du concept en numérique, la fonction
@@ -1752,9 +1840,10 @@ public class ConceptHelper {
      * @param ds
      * @param idTheso
      * @param idConcepts
+     * @param idLang
      * @return 
      */
-    public boolean generateArkId(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts) {
+    public boolean generateArkId(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts, String idLang) {
 
         ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
         if (!arkHelper2.login()) {
@@ -1776,8 +1865,7 @@ public class ConceptHelper {
         for (String idConcept : idConcepts) {
 
             //    System.out.println("génération ARK pour le concept : " + idConcept);
-            nodeMetaData = getNodeMetaData(ds, idConcept,
-                    nodePreference.getSourceLang(), idTheso);
+            nodeMetaData = initNodeMetaData();
             if (nodeMetaData == null) {
                 return false;
             }
@@ -1785,7 +1873,10 @@ public class ConceptHelper {
             if (concept == null) {
                 return false;
             }
-
+            nodeMetaData.setTitle(getLexicalValueOfConcept(ds, idConcept, idTheso,idLang));
+            nodeMetaData.setSource(nodePreference.getPreferredName());
+            nodeMetaData.setCreator(concept.getCreatorName());
+            
             privateUri = "?idc=" + idConcept + "&idt=" + idTheso;
 
             /// test de tous les cas de figure pour la création d'un idArk
@@ -1799,6 +1890,7 @@ public class ConceptHelper {
                 if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
                     message = arkHelper2.getMessage();
                     message = arkHelper2.getMessage() + "  idConcept = " + idConcept;
+                    Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Ark a échoué ici : " + idConcept);
                     return false;
                 }
                 if (!updateArkIdOfConcept(ds, idConcept, idTheso, arkHelper2.getIdArk())) {
@@ -1998,16 +2090,15 @@ public class ConceptHelper {
     /**
      * Pour préparer les données pour la création d'un idArk
      */
-    private NodeMetaData getNodeMetaData(HikariDataSource ds,
-            String idConcept, String idLang, String idTheso) {
-        NodeConcept nodeConcept;
+    private NodeMetaData initNodeMetaData() {
+/*        NodeConcept nodeConcept;
         nodeConcept = getConcept(ds, idConcept, idTheso, idLang, 21, 0);
         if (nodeConcept == null) {
             return null;
-        }
+        }*/
         NodeMetaData nodeMetaData = new NodeMetaData();
-        nodeMetaData.setCreator(nodeConcept.getTerm().getSource());
-        nodeMetaData.setTitle(nodeConcept.getTerm().getLexical_value());
+   //     nodeMetaData.setCreator(nodeConcept.getTerm().getSource());
+   //     nodeMetaData.setTitle(nodeConcept.getTerm().getLexical_value());
         nodeMetaData.setDcElementsList(new ArrayList<>());
         return nodeMetaData;
     }
@@ -2159,7 +2250,14 @@ public class ConceptHelper {
      * Cette fonction permet d'ajouter un Concept complet à la base avec le
      * libellé et les relations Si l'opération échoue, elle envoi un NULL et ne
      * modifie pas la base de données
-     */
+    * @param ds
+    * @param idParent
+    * @param relationType
+    * @param concept
+    * @param term
+    * @param idUser
+    * @return 
+    */
     public String addConcept(HikariDataSource ds, String idParent, String relationType,
             Concept concept, Term term, int idUser) {
 
@@ -2255,7 +2353,7 @@ public class ConceptHelper {
                 // alors c'est le moment de récupérer le code ARK
                 if (nodePreference.isUseArk()) {
                     idConcepts.add(idConcept);
-                    if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts)) {
+                    if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts, term.getLang())) {
                         //    conn.rollback();
                         //    conn.close();
                         message = message + "La création Ark a échoué";
@@ -2364,7 +2462,7 @@ public class ConceptHelper {
                 // alors c'est le moment de récupérer le code ARK
                 if (nodePreference.isUseArk()) {
                     idConcepts.add(idConcept);
-                    if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts)) {
+                    if (!generateArkId(ds, concept.getIdThesaurus(), idConcepts, term.getLang())) {
                         //    conn.rollback();
                         //    conn.close();
                         message = message + "La création Ark a échouée";
@@ -2793,22 +2891,24 @@ public class ConceptHelper {
             }
             if(idConcept == null) return null;
             if(idSequenceConcept == -1) {
-                stmt.executeUpdate("Insert into concept (id_concept, id_thesaurus, id_ark, status, notation, top_concept, creator)"
+                stmt.executeUpdate("Insert into concept (id_concept, id_thesaurus, id_ark, created ,status, notation, top_concept, creator)"
                         + " values ("
                         + "'" + idConcept + "'"
                         + ",'" + concept.getIdThesaurus() + "'"
                         + ",'" + idArk + "'"
+                        + ", current_date"
                         + ",'" + concept.getStatus() + "'"
                         + ",'" + concept.getNotation() + "'"
                         + "," + concept.isTopConcept() 
                         + "," + idUser + ")");                
             } else {
-                stmt.executeUpdate("Insert into concept (id, id_concept, id_thesaurus, id_ark, status, notation, top_concept, creator)"
+                stmt.executeUpdate("Insert into concept (id, id_concept, id_thesaurus, id_ark, created, status, notation, top_concept, creator)"
                         + " values (" 
                         + idSequenceConcept
                         + ",'" + idConcept + "'"
                         + ",'" + concept.getIdThesaurus() + "'"
                         + ",'" + idArk + "'"
+                        + ", current_date"
                         + ",'" + concept.getStatus() + "'"
                         + ",'" + concept.getNotation() + "'"
                         + "," + concept.isTopConcept() 
@@ -3200,15 +3300,25 @@ public class ConceptHelper {
     /**
      * Cette fonction permet d'insérrer un Concept dans la table Concept avec un
      * idConcept existant (Import) avec Rollback
-     */
+    * 
+    * @param ds
+    * @param concept
+    * @param idUser
+    * @return 
+    */
     public boolean insertConceptInTable(HikariDataSource ds, Concept concept, int idUser) {
 
+        String created;
+        String modified;
         if (concept.getCreated() == null) {
-            concept.setCreated(new java.util.Date());
+            created = null;
+        } else {
+            created = "'" + concept.getCreated() + "'";
         }
         if (concept.getModified() == null) {
-            //concept.setModified(new java.util.Date());
-            concept.setModified(concept.getCreated());
+            modified = null;
+        } else {
+            modified = "'" + concept.getModified() + "'";
         }
         if (concept.getStatus() == null) {
             concept.setStatus("D");
@@ -3235,8 +3345,8 @@ public class ConceptHelper {
                         + "'" + concept.getIdConcept() + "'"
                         + ",'" + concept.getIdThesaurus() + "'"
                         + ",'" + concept.getIdArk() + "'"
-                        + ",'" + concept.getCreated() + "'"
-                        + ",'" + concept.getModified() + "'"
+                        + "," + created
+                        + "," + modified
                         + ",'" + concept.getStatus() + "'"
                         + ",'" + concept.getNotation() + "'"
                         + "," + concept.isTopConcept()
@@ -3342,8 +3452,12 @@ public class ConceptHelper {
                     String creator = userHelper.getNameUser(ds, concept.getCreator());
                     if(contributor != null && !contributor.isEmpty())
                         concept.setContributorName(contributor);
+                    else
+                        concept.setContributorName("");
                     if(creator != null && !creator.isEmpty())
-                        concept.setCreatorName(creator);                    
+                        concept.setCreatorName(creator); 
+                    else
+                        concept.setCreatorName("");
                 }
             }
         } catch (SQLException sqle) {
@@ -3397,6 +3511,64 @@ public class ConceptHelper {
         }
         return tabIdConcept;
     }
+    
+    /**
+     * Temporaire à supprimer par la suite ou à faire évoluer pour un export par utilisateur
+     */
+    public ArrayList<String> getAllIdConceptOfThesaurusByUser(HikariDataSource ds, String idThesaurus) {
+
+        ArrayList<String> tabIdConcept = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select DISTINCT id_concept from concept\n" +
+                                "where \n" +
+                                "concept.id_thesaurus = 'th17'\n" +
+                                "and\n" +
+                                "concept.status != 'CA'\n" +
+                                "and \n" +
+                                "( \n" +
+                                "	(concept.creator in (78,83)) \n" +
+                                "	or   \n" +
+                                "	(concept.contributor in (78,83))\n" +
+                                ")");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        tabIdConcept.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus : " + idThesaurus, sqle);
+        }
+        return tabIdConcept;
+    }    
+    /**
+     * Temporaire à supprimer par la suite ou à faire évoluer pour un export par utilisateur
+     */
+    public ArrayList<String> getAllIdConceptOfThesaurusByUser2(HikariDataSource ds, String idThesaurus) {
+
+        ArrayList<String> tabIdConcept = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select DISTINCT internal_id_concept from alignement\n" +
+                        "where \n" +
+                        "internal_id_thesaurus = 'th17'\n" +
+                        "and \n" +
+                        "alignement.author in (78,83)");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        tabIdConcept.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All IdConcept of Thesaurus : " + idThesaurus, sqle);
+        }
+        return tabIdConcept;
+    }    
+    
 
     /**
      * Cette fonction permet de récupérer la liste des Id concept d'un thésaurus
@@ -3896,7 +4068,11 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie une
      * chaine vide
-     */
+    * @param ds
+    * @param idConcept
+    * @param idThesaurus
+    * @return 
+    */
     public String getIdArkOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
         String ark = "";
@@ -3934,7 +4110,8 @@ public class ConceptHelper {
                         + "' and id_concept = '" + idConcept + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
-                        notation = resultSet.getString("notation").trim();
+                        notation = resultSet.getString("notation") == null ? "" : resultSet.getString("notation").trim();
+                        //notation = resultSet.getString("notation").trim();
                     }
                 }
             }
@@ -3947,7 +4124,11 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer les identifiants d'un concept idArk,
      * idHandle, idConcept sous forme de nodeUri
-     */
+    * @param ds
+    * @param idConcept
+    * @param idThesaurus
+    * @return 
+    */
     public NodeUri getNodeUriOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
         NodeUri nodeUri = new NodeUri();
@@ -3973,7 +4154,11 @@ public class ConceptHelper {
     /**
      * Cette fonction permet de récupérer l'identifiant Handle sinon renvoie une
      * chaine vide
-     */
+    * @param ds
+    * @param idConcept
+    * @param idThesaurus
+    * @return 
+    */
     public String getIdHandleOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
         String handle = "";
@@ -3999,13 +4184,14 @@ public class ConceptHelper {
      * l'idArk
      * @param ds
      * @param arkId
+     * @param idTheso
      * @return 
      */
-    public String getIdConceptFromArkId(HikariDataSource ds, String arkId) {
+    public String getIdConceptFromArkId(HikariDataSource ds, String arkId, String idTheso) {
         String idConcept = null;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where id_ark = '" + arkId + "'");
+                stmt.executeQuery("select id_concept from concept where id_ark ilike '" + arkId + "' and id_thesaurus = '" + idTheso + "'" );
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idConcept = resultSet.getString("id_concept").trim();
@@ -4026,7 +4212,7 @@ public class ConceptHelper {
         String idConcept = null;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where id_handle = '" + handleId + "'");
+                stmt.executeQuery("select id_concept from concept where id_handle ilike '" + handleId + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idConcept = resultSet.getString("id_concept");
@@ -4450,6 +4636,11 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet de rendre un Concept de type Topconcept
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
      */
     public boolean setTopConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
         try ( Connection conn = ds.getConnection()) {
@@ -4638,6 +4829,47 @@ public class ConceptHelper {
         }
         return listIdsOfConcept;
     }
+    
+    /**
+     * Cette fonction permet de récupérer les IdArk des concepts suivant l'idArk du
+     * Concept-Père et le thésaurus
+     * @param ds
+     * @param idArk
+     * @return 
+     */
+    public ArrayList<String> getListChildrenOfConceptByArk(HikariDataSource ds, String idArk) {
+        ArrayList<String> listIdsArks = new ArrayList<>();
+        
+        String idTheso = getIdThesaurusFromArkId(ds, idArk);
+        String idConcept = getIdConceptFromArkId(ds, idArk, idTheso);
+       
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select concept.id_ark  from hierarchical_relationship, concept" +
+                        " where" +
+                        " concept.id_concept = hierarchical_relationship.id_concept2" +
+                        " and" +
+                        " concept.id_thesaurus = hierarchical_relationship.id_thesaurus" +
+                        " and" +
+                        " hierarchical_relationship.id_thesaurus = '" + idTheso + "'" +
+                        " and" +
+                        " hierarchical_relationship.id_concept1 = '" + idConcept + "'" +
+                        " and" +
+                        " hierarchical_relationship.role LIKE 'NT%'" +
+                        " and" +
+                        " concept.status != 'CA'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        listIdsArks.add(resultSet.getString("id_ark"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting List of Id of Concept : " + idConcept, sqle);
+        }
+        return listIdsArks;
+    }    
+    
 
     private ArrayList<NodeHieraRelation> getRelations(ArrayList<NodeHieraRelation> nodeHieraRelations,
             ArrayList<String> relations) {

@@ -183,7 +183,9 @@ public class ImportTabuleIntoBDD {
                     note.getLang(),
                     idThesaurus,
                     note.getNote(),
-                    "note", idUser);
+                    "note",
+                    "",
+                    idUser);
         }        
         for (Note note : tabulateDocument.getDefinition()) {
             noteHelper.addTermNote(ds,
@@ -191,7 +193,9 @@ public class ImportTabuleIntoBDD {
                     note.getLang(),
                     idThesaurus,
                     note.getNote(),
-                    "definition", idUser);
+                    "definition",
+                    "",
+                    idUser);
         }
         for (Note note : tabulateDocument.getScopeNote()) {
             noteHelper.addConceptNote(ds,
@@ -199,7 +203,9 @@ public class ImportTabuleIntoBDD {
                     note.getLang(),
                     idThesaurus,
                     note.getNote(),
-                    "scopeNote", idUser);
+                    "scopeNote",
+                    "",
+                    idUser);
         }
         for (Note note : tabulateDocument.getHistoryNote()) {
             noteHelper.addTermNote(ds,
@@ -207,7 +213,9 @@ public class ImportTabuleIntoBDD {
                     note.getLang(),
                     idThesaurus,
                     note.getNote(),
-                    "historyNote", idUser);
+                    "historyNote",
+                    "",
+                    idUser);
         }        
         for (Note note : tabulateDocument.getEditorialNote()) {
             noteHelper.addTermNote(ds,
@@ -215,7 +223,9 @@ public class ImportTabuleIntoBDD {
                     note.getLang(),
                     idThesaurus,
                     note.getNote(),
-                    "editorialNote", idUser);
+                    "editorialNote",
+                    "",
+                    idUser);
         }         
         
         //Enregistrer les relations

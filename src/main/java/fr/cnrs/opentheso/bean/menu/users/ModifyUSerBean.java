@@ -75,6 +75,8 @@ public class ModifyUSerBean implements Serializable {
         if(!userHelper.updateUser(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
+                nodeUser.getName(),
+                nodeUser.getMail(),
                 nodeUser.isIsActive(),
                 nodeUser.isIsAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement !!!");

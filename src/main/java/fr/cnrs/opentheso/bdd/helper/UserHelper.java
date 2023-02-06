@@ -34,6 +34,46 @@ public class UserHelper {
     ////////////////// Nouvelles fontions #MR//////////////////////////////
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////    
+
+
+
+
+
+    /**
+     * cette fonction permet de retourner tous les roles
+     *
+     *
+     * @param ds
+     * @return
+     */
+    public ArrayList<NodeUserRoleGroup> getAllRole(
+            HikariDataSource ds) {
+        ArrayList <NodeUserRoleGroup> nodeUserRoleGroups = new ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT "
+                            + "  roles.id, "
+                            + "  roles.name "
+                            + " FROM "
+                            + "  public.roles ");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while(resultSet.next()) {
+                        NodeUserRoleGroup nodeUserRoleGroup = new NodeUserRoleGroup();
+                        nodeUserRoleGroup.setIdRole(resultSet.getInt("id"));
+                        nodeUserRoleGroup.setRoleName(resultSet.getString("name"));
+                        nodeUserRoleGroups.add(nodeUserRoleGroup);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeUserRoleGroups;
+    }
+
+
+
+
     /**
      * permet de rechercher un utilisateur avec son nom
      *
@@ -1011,12 +1051,16 @@ public class UserHelper {
      *
      * @param ds
      * @param idUser
+     * @param name
+     * @param email
      * @param isIsActive
      * @param isIsAlertMail
      * @return
      */
     public boolean updateUser(HikariDataSource ds,
             int idUser,
+            String name,
+            String email,
             boolean isIsActive,
             boolean isIsAlertMail) {
         boolean status = false;
@@ -1024,6 +1068,8 @@ public class UserHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE users set alertmail = " + isIsAlertMail
+                            + ", username = '" + name + "'"
+                            + ", mail = '" + email + "'"
                             + ", active = " + isIsActive
                             + " WHERE id_user = " + idUser);                
                     status = true;

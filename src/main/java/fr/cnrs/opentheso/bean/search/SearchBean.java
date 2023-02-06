@@ -246,10 +246,8 @@ public class SearchBean implements Serializable {
         }
         isSelectedItem = true;
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     /**
@@ -296,7 +294,7 @@ public class SearchBean implements Serializable {
         }
 
         if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
-            Collections.sort(nodeConceptSearchs);
+        //    Collections.sort(nodeConceptSearchs);
             if (nodeConceptSearchs.size() == 1) {
                 conceptBean.getConcept(nodeConceptSearchs.get(0).getIdTheso(), nodeConceptSearchs.get(0).getIdConcept(),nodeConceptSearchs.get(0).getCurrentLang());                
                 isSelectedItem = true;
@@ -358,6 +356,8 @@ public class SearchBean implements Serializable {
         List<NodeConceptSearch> concepts = new ArrayList<>();
         String thesaurusLabel = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), idTheso, idLang);
         NodeConceptSearch nodeConceptSearch;
+        if(searchValue == null)
+            searchValue = "";
 
         if (withId) {
             nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(), searchValue, idTheso);
@@ -398,7 +398,7 @@ public class SearchBean implements Serializable {
             }
         }
 
-        if (indexMatch) {
+        if (indexMatch || searchValue.isEmpty()) {
             ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchStartWith(connect.getPoolConnexion(),
                     searchValue,
                     idLang,
@@ -434,7 +434,7 @@ public class SearchBean implements Serializable {
                 concepts.add(nodeConceptSearch);
             }
         }
-        Collections.sort(concepts);
+    //    Collections.sort(concepts);
         return concepts;
     }
 
@@ -828,7 +828,11 @@ public class SearchBean implements Serializable {
 
         conceptBean.getConcept(idTheso, idConcept, idLang);
         rightBodySetting.setIndex("0");
-
+        
+        PrimeFaces.current().ajax().update("containerIndex:contentConcept");
+        PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
+    //    PrimeFaces.current().ajax().update("containerIndex:sideBarSearch");
+    //    PrimeFaces.current().ajax().update("containerIndex:searchBar");
     }
 
     public NodeSearchMini getSearchSelected() {

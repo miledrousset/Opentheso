@@ -1,0 +1,103 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="idNewUserForProject" header="#{langueBean.getMsg('profile.new_userOnProject')}" widgetVar="newUserForProject" 
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <h:form>
+
+            <p:defaultCommand target="addUserBtn" />
+
+            <div class="row"> 
+                <!-- Nom Pseudo -->
+                <div class="col-5" >
+                    <h:outputText value="#{langueBean.getMsg('profile.pseudo')} : " title="#{langueBean.getMsg('profile.tootltip_user')}"/>  
+                </div>
+
+                <div class="col-7">
+                    <p:inputText value="#{newUSerBean.nodeUser.name}" style="width: 100%" />
+                </div>                    
+            </div>
+
+            <!-- Email -->
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('profile.email')} : "/>
+                </div>
+                <div class="col-7">
+                    <p:inputText value="#{newUSerBean.nodeUser.mail}" style="width: 100%">
+                        <f:validator validatorId="custom.emailValidator" />
+                    </p:inputText>
+                </div>   
+            </div>
+
+            <!-- passe de l'utilisateur -->
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('menu.password')} : " />
+                </div>
+                <div class="col-7">
+                    <p:password value="#{newUSerBean.passWord1}" style="width: 100%"/>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('profile.confirmation')} #{langueBean.getMsg('menu.password')} : " />
+                </div>
+                <div class="col-7">
+                    <p:password value="#{newUSerBean.passWord2}" style="width: 100%" />
+                </div>
+            </div>            
+
+            <!-- Pour activer / désactiver le compte -->
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : " title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
+                </div>
+                <div class="col-7">
+                    <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.isAlertMail}" /> 
+                </div>
+                <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="isAlertMail" />
+            </div>
+
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('profile.currentProject')} : "  style="font-size: 12px;"/>
+                </div>
+                <div class="col-7">
+                    <h:outputText value="#{myProjectBean.selectedProjectName}"  />
+                </div>
+            </div> 
+
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('profile.role')} : " /> 
+                </div>
+                <div class="col-7">                       
+                    <p:selectOneMenu value="#{newUSerBean.selectedRole}"
+                                     styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                     style="width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="border: none; box-shadow: none; max-width: 300px">
+                        <f:selectItems value="#{myProjectBean.myAuthorizedRoles}" var="myRoles" itemLabel="#{myRoles.value}" itemValue="#{myRoles.id}"/>
+                    </p:selectOneMenu>
+                </div> 
+            </div>
+
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 ajax="true" actionListener="PF('newUserForProject').hide();" update="idNewUserForProject" />
+
+                <p:commandButton id="addUserBtn" value="#{langueBean.getMsg('btnValidate')}"
+                                 icon="pi pi-check" oncomplete="PF('newUserForProject').hide();"
+                                 styleClass="ui-button-success"
+                                 update="messageIndex containerIndex" 
+                                 actionListener="#{newUSerBean.addUser()}" />
+            </div>
+        </h:form>
+    </p:dialog>   
+</ui:fragment>

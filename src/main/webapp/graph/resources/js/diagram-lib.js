@@ -10,19 +10,20 @@ function chercher() {
 
 function dataLoading(option) {
     document.getElementById("url").value = option.url;
+ //   window.alert(option.url);    
     $(document).ready(function () {
         seatchDatas(option.url);
     });
 }
 
 function seatchDatas(url) {
-
     $.ajax({
         url: url,
         type: 'GET',
         dataType: 'html',
         statusCode: {
-            202: function(responseObject, textStatus, jqXHR) {
+            200: function(responseObject, textStatus, jqXHR) {
+              //  window.alert('test '); 
                 try {
                     arrayOfObjects = JSON.parse(responseObject);
 

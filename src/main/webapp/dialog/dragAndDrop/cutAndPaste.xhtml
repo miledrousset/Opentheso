@@ -10,7 +10,7 @@
 
             <div class="row">
                 <div class="col-12" style="margin-left: 5px;font-size: 12px;">
-                    <p:dataTable value="#{cutAndPaste.cuttedConcept}" var="cuttedConcept">
+                    <p:dataTable value="#{cutAndPaste.cuttedConcept}" var="cuttedConcept" lazy="false">
                         <p:column headerText="ID">
                             <h:outputLabel value="#{cuttedConcept.concept.idConcept}"/>
                         </p:column>
@@ -26,7 +26,7 @@
 
             <div class="row" rendered="#{cutAndPaste.nodeBTsToCut.size() > 1}">
                 <div class="col-12" style="margin-left: 5px; font-size: 12px;">
-                    <p:dataTable value="#{cutAndPaste.nodeBTsToCut}" var="broader" >
+                    <p:dataTable value="#{cutAndPaste.nodeBTsToCut}" var="broader"  lazy="false">
                         <p:column headerText="ID">
                             <h:outputLabel value="#{broader.idConcept}"/>
                         </p:column>

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -722,18 +723,11 @@ public class ExportRdf4jHelperNew {
     //////////////////////////////////////////////////////////////////////////// 
     public String getUriFromId(String id) {
         
-        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty()) {
+        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty() 
+            && !"null".equals(nodePreference.getOriginalUri())) {
             return nodePreference.getOriginalUri() + "/" + id;
-        } else {
-            String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
-            String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
-            String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();        
-            String baseUrl = protocole + "://" + serverAdress + contextPath;
-            
-            System.out.println(">>> Version 1 : " + baseUrl + "/" + id);
-            System.out.println(">>> Version 2 : " + getPath() + "/" + id);
-            
-            return getPath() + "/" + id;
+        } else {            
+            return getPath() + "/?idt=" + id;
         }
     }
 
@@ -747,11 +741,9 @@ public class ExportRdf4jHelperNew {
     private String getUri(NodeConceptExport nodeConceptExport) {
         String uri = "";
         if (nodeConceptExport == null) {
-            //      System.out.println("nodeConcept = Null");
             return uri;
         }
         if (nodeConceptExport.getConcept() == null) {
-            //    System.out.println("nodeConcept.getConcept = Null");
             return uri;
         }
 
@@ -808,11 +800,9 @@ public class ExportRdf4jHelperNew {
         String uri = "";
         if(getPath() == null) return uri;        
         if (nodeConceptExport == null) {
-            //      System.out.println("nodeConcept = Null");
             return uri;
         }
         if (nodeConceptExport.getConcept() == null) {
-            //    System.out.println("nodeConcept.getConcept = Null");
             return uri;
         }
         uri = getPath()+ "/?idc=" + nodeConceptExport.getConcept().getIdConcept().trim()
@@ -828,11 +818,9 @@ public class ExportRdf4jHelperNew {
     public String getUriFromGroup(NodeGroupLabel nodeGroupLabel) {
         String uri = "";
         if (nodeGroupLabel == null) {
-            //      System.out.println("nodeConcept = Null");
             return uri;
         }
         if (nodeGroupLabel.getIdGroup() == null) {
-            //    System.out.println("nodeConcept.getConcept = Null");
             return uri;
         }
 
@@ -894,7 +882,6 @@ public class ExportRdf4jHelperNew {
     private String getUriGroupFromNodeUri(NodeUri nodeUri, String idTheso) {
         String uri = "";
         if (nodeUri == null) {
-            //      System.out.println("nodeConcept = Null");
             return uri;
         }
 
@@ -946,7 +933,6 @@ public class ExportRdf4jHelperNew {
     private String getUriFromNodeUri(NodeUri nodeUri, String idTheso) {
         String uri = "";
         if (nodeUri == null) {
-            //      System.out.println("nodeConcept = Null");
             return uri;
         }
 
@@ -1004,7 +990,6 @@ public class ExportRdf4jHelperNew {
     private String getUriForFacette(String idFacet, String idTheso){
         String uri = "";
         if (idFacet == null) {
-            //      System.out.println("nodeConcept = Null");
             return uri;
         }
         uri = getPath()+ "/?idf=" + idFacet + "&idt=" +idTheso;

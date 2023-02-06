@@ -55,7 +55,12 @@ public class StatistiqueBean implements Serializable {
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<DomaineDto> groupList;
 
-    private List<String> colors = new ArrayList<>(List.of("rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"));
+    private List<String> colors = new ArrayList<>(List.of("rgb(255, 99, 132)","rgb(54, 162, 235)",
+            "rgb(75, 192, 192)","rgb(158, 14, 64)",
+            "rgb(136, 66, 29)", "rgb(240, 195, 0)", "rgb(63, 34, 4)", "rgb(29, 96, 198)",
+            "rgb(121, 248, 248)", "rgb(0, 204, 203)", "rgb(23, 101, 125)", "rgb(102, 0, 255)",
+            "rgb(0, 255, 0)", "rgb(135, 233, 144)", "rgb(9, 106, 9)", "rgb(112, 141, 35)",
+            "rgb(255, 205, 86)"));
 
     @PreDestroy
     public void destroy(){
@@ -156,7 +161,7 @@ public class StatistiqueBean implements Serializable {
     
     private void initChamps() {
         languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso());
+                connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
 
         groupList = new GroupHelper().getAllGroupsByThesaurusAndLang(connect, selectedTheso.getSelectedIdTheso(),
                 languageBean.getIdLangue());

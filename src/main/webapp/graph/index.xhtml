@@ -67,14 +67,14 @@
                 var idConcept = document.getElementById("formId:id_concept").value;
                 var language = document.getElementById("formId:langue").value;
                 var baseUrl = document.getElementById("formId:base_url").value;
-
-
+                
+            //    window.alert(baseUrl + 'api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language);
+                
                 dataLoading({
                     url: baseUrl + 'api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language
                 });
             </script>
             <script type="text/javascript" src="resources/js/diagram-params.js"></script>
         </div>
-        
     </h:body>
 </html>

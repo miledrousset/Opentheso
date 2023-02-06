@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTypeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -26,6 +27,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.collections.CollectionUtils;
 
 import org.primefaces.PrimeFaces;
 
@@ -44,6 +46,8 @@ public class AddConcept implements Serializable {
     private SelectedTheso selectedTheso;
     @Inject
     private Tree tree;
+    @Inject
+    private EditFacet editFacet;
 
     private String prefLabel;
     private String notation;
@@ -134,6 +138,11 @@ public class AddConcept implements Serializable {
             
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
+    }
+    
+    public void addMembre(String idConceptParent, String idLang, String status, String idTheso, int idUser) {
+        addNewConcept(idConceptParent, idLang, status, idTheso, idUser);
+        editFacet.initEditFacet(editFacet.getFacetSelected().getIdFacet(), idTheso, idLang);
     }
 
     public void resetForFacet(NodeFacet nodeFacet) {
@@ -237,6 +246,8 @@ public class AddConcept implements Serializable {
                     false, true, false, "term");
             data.setIdFacetParent(idFacet);
             tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
+            
+           // tree.getDataService().addNodeWithoutChild("file", data, tree.getClickselectedNodes().get(0));
 
             tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
             tree.expandTreeToPath2(idBTfacet,
@@ -247,6 +258,7 @@ public class AddConcept implements Serializable {
             PrimeFaces pf = PrimeFaces.current();
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
+                pf.ajax().update("containerIndex");
             }
             FacesMessage msg2 = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concept ajouté avec succès !");
             FacesContext.getCurrentInstance().addMessage(null, msg2);
@@ -269,19 +281,35 @@ public class AddConcept implements Serializable {
                 tree.getSelectedNode().setType("concept");
             }
             if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
-                tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
+                tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang, notation);
                 if (pf.isAjaxRequest()) {
                     pf.executeScript("srollToSelected()");
                 }
                 tree.getSelectedNode().setExpanded(true);
             }
-        }
+        }        
+/*        if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
+            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
+            if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
+                tree.expandTreeToPath(idConceptParent, idTheso, idLang);
+            }
+
+            // cas où l'arbre est déjà déplié ou c'est un concept sans fils
+            /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
+            // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
+            if (tree.getClickselectedNodes().get(0).getChildCount() == 0) {
+                tree.getClickselectedNodes().get(0).setType("concept");
+            }
+            if (tree.getClickselectedNodes().get(0).isExpanded() || tree.getClickselectedNodes().get(0).getChildCount() == 0) {
+                tree.addNewChild(tree.getClickselectedNodes().get(0), idNewConcept, idTheso, idLang);
+                if (pf.isAjaxRequest()) {
+                    pf.executeScript("srollToSelected()");
+                }
+                tree.getClickselectedNodes().get(0).setExpanded(true);
+            }
+        }*/
         conceptBean.getConcept(idTheso, idConceptParent, idLang);
         isCreated = true;
-
-   /*     if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formRightTab");
-        }*/
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -314,8 +342,8 @@ public class AddConcept implements Serializable {
                 idGroup = nodeGroup.getConceptGroup().getIdgroup();
             }
         }
-        RelationsHelper relationsHelper = new RelationsHelper();
-        typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
+        
+        typesRelationsNT = new RelationsHelper().getTypesRelationsNT(connect.getPoolConnexion());
         nodeGroups = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }

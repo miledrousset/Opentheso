@@ -47,7 +47,8 @@
 
                     <div class="container-fluid">
 
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4" 
+                             style=" margin-top: 20px; margin-bottom: 15px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.toolbox')} / <span style="color: #f47b2a">#{langueBean.getMsg('menu.edition')}</span></h1>
                         </div>
 
@@ -72,7 +73,7 @@
                         </p:panel>  
 
                         <p:panel rendered="#{viewEditionBean.isViewImportCSVStructure}">
-                            <ui:include src="edition/viewImportCsvStrecture.xhtml" />
+                            <ui:include src="edition/viewImportCsvStructured.xhtml" />
                         </p:panel>  
 
                         <p:panel rendered="#{viewEditionBean.isExportView()}">

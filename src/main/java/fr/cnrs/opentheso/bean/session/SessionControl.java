@@ -72,9 +72,9 @@ public class SessionControl implements Serializable {
 
         //externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI()); 
 
-        System.gc();
-        System.gc();
-        System.runFinalization ();
+    //    System.gc();
+//        System.gc();
+  //      System.runFinalization ();
         
         menuBean.redirectToThesaurus();
     }

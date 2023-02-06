@@ -4,15 +4,22 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idConfirmRemoveUserFromProject" header="Enlever l'utilisateur du projet" widgetVar="confirmRemoveUserFromProject" 
+    <p:dialog id="idConfirmRemoveUserFromProject" header="#{langueBean.getMsg('profile.removeUserFromProject')}" widgetVar="confirmRemoveUserFromProject" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form>
             <div class="row">
                 <div class="col-12" >
-                    <h:outputText value="Voulez-vous enlever l'utilisateur du projet : " style="font-size: 13px; color: black;"/>                    
+                    <h:outputText value="#{langueBean.getMsg('profile.removeUserFromProjectConfirm')} : " style="font-size: 13px; color: black;"/>                    
                 </div>
             </div>
+            
+            <div class="row" style="margin-top: 5px">
+                <div class="col-12" >
+                    <h:outputText value="#{modifyRoleBean.nodeUser.name} (#{modifyRoleBean.nodeUser.idUser})"
+                                  style="font-size: 13px; color: #C63632;"/>
+                </div>            
+            </div>            
 
             <div class="row" style="margin-top: 5px">
                 <div class="col-12" >
@@ -21,14 +28,16 @@
                 </div>            
             </div>
 
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 actionListener="PF('confirmRemoveUserFromProject').hide();" 
+                                 update="idConfirmRemoveUserFromProject"/>
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('confirmRemoveUserFromProject').hide();" update="idConfirmRemoveUserFromProject"/>
-
-                <p:commandButton title="Supprimer" update="containerIndex messageIndex" 
-                                 style="background-color: #C63632; border-color: #C63632"
-                                 class="btn btn-primary" oncomplete="PF('confirmRemoveUserFromProject').hide();"
+                <p:commandButton value="#{langueBean.getMsg('profile.remove')}" styleClass="ui-button-success" 
+                                 ajax="true" process="@this" icon="pi pi-check" 
+                                 update="messageIndex containerIndex"                            
+                                 oncomplete="PF('confirmRemoveUserFromProject').hide();"
                                  actionListener="#{modifyRoleBean.removeUserFromProject()}" />
             </div>
         </h:form>

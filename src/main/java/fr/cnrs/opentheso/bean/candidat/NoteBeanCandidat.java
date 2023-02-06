@@ -299,7 +299,9 @@ public class NoteBeanCandidat implements Serializable {
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,
-                selectedTypeNote, idUser);
+                selectedTypeNote,
+                "",
+                idUser);
     }
 
     private boolean addtermNote(int idUser) {
@@ -310,7 +312,9 @@ public class NoteBeanCandidat implements Serializable {
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,
-                selectedTypeNote, idUser);
+                selectedTypeNote,
+                "",
+                idUser);
     }
 
     private void printErreur() {

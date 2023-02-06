@@ -14,7 +14,7 @@
                     <h:outputText value="#{groupView.nodeGroup.lexicalValue} (#{groupView.nodeGroup.conceptGroup.idgroup})" style="font-weight: bold;" />
                 </div>
             </div>
-            <p:dataTable var="traductions" value="#{traductionGroupBean.nodeGroupTraductionses}" style="font-size: 14px;">
+            <p:dataTable var="traductions" value="#{traductionGroupBean.nodeGroupTraductionses}" style="font-size: 14px;" lazy="false">
                 <p:column headerText="label">
                     <h:outputText value="#{traductions.title}" style="color: #43B572; font-size: 14px;"/>
                 </p:column>    

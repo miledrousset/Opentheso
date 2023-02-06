@@ -33,7 +33,6 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
-import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.ws.RestRDFHelper;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,7 +45,6 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -55,7 +53,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -106,6 +103,7 @@ public class ConceptView implements Serializable {
     private int offset;
     private int step;    
     private boolean haveNext;
+    private boolean dejaAfficher;
     
     // total de la branche
     private int countOfBranch;
@@ -271,6 +269,14 @@ public class ConceptView implements Serializable {
         
         return "https://countryflagsapi.com/png/" + codePays;      
     }
+    public String getDrapeauImgLocal(String codePays) {
+        if (StringUtils.isEmpty(codePays)) {
+            return FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequestContextPath() + "/resources/img/No_flag.png";
+        }
+        return FacesContext.getCurrentInstance().getExternalContext()
+                .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";   
+    }    
     
     /**
      * récuparation des informations pour le concept sélectionné c'est pour la
@@ -362,12 +368,10 @@ public class ConceptView implements Serializable {
         }
         
         setOffset();
-
-
+        
         // récupération des informations sur les corpus liés
-        CorpusHelper corpusHelper = new CorpusHelper();
         haveCorpus = false;
-        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
@@ -406,12 +410,12 @@ public class ConceptView implements Serializable {
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));               
         }
-        
-         
         setNotes();
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
     
-    public void getAltLabelWithAllLanguages(){
+    public void getAltLabelWithAllLanguages(){   
         TermHelper termHelper = new TermHelper();
         
         if(toggleSwitchAltLabelLang)
@@ -422,8 +426,9 @@ public class ConceptView implements Serializable {
                     nodeConcept.getTerm().getId_term(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }    
-    
     
     
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang){
@@ -705,12 +710,20 @@ public class ConceptView implements Serializable {
     }
     
     public void getNextNT(String idTheso, String idConcept, String idLang) {
-        if(tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
+    /*    if(tree != null 
+                && CollectionUtils.isNotEmpty(tree.getClickselectedNodes()) 
+                && tree.getClickselectedNodes().get(0) != null 
+                && tree.getClickselectedNodes().get(0).getData() != null) {*/
+            if(tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {            
             RelationsHelper relationsHelper = new RelationsHelper();
+          /*  ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
+                    ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId(),
+                    idTheso,
+                    idLang, step+1, offset);*/
             ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
                     ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
                     idTheso,
-                    idLang, step+1, offset);
+                    idLang, step+1, offset);            
             if(nodeNTs != null && !nodeNTs.isEmpty()) {
                 nodeConcept.getNodeNT().addAll(nodeNTs);
                 setOffset();
@@ -728,25 +741,6 @@ public class ConceptView implements Serializable {
         this.step = step;
     }
     
-/*    private void setSizeToShowNT() {
-        // Max to show = step
-        if (nodeConcept.getNodeNT().size() > step) {
-            offset = step;
-        } else {
-            offset = nodeConcept.getNodeNT().size();
-        }
-    }
-
-
-
-    public int getSizeToShowNT() {
-        return offset;
-    }
-
-    public void setSizeToShowNT(int sizeToShowNT) {
-        this.offset = sizeToShowNT;
-    }*/
-
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
         ArrayList<Path> paths = pathHelper.getPathOfConcept(
@@ -776,6 +770,13 @@ public class ConceptView implements Serializable {
         }
         UserHelper userHelper = new UserHelper();;
         return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getConcept().getContributor());
+    }
+    
+    public String getNoteSource(String noteSource){
+        if(StringUtils.isEmpty(noteSource))
+            return "";
+        else
+            return " (" + noteSource + ")";
     }
 
 /////////////////////////////////
