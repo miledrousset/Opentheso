@@ -905,6 +905,23 @@ public class RestRDFHelper {
         return writeRdf4j;
     }
 
+    public String getChildsArkId(HikariDataSource ds, String idArk){
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> childsIdArks = conceptHelper.getListChildrenOfConceptByArk(ds, idArk);
+        
+        if(childsIdArks.isEmpty()) return null;
+        
+        JsonArrayBuilder jsonArrayBuilderChildsArk = Json.createArrayBuilder();
+        JsonObjectBuilder job = Json.createObjectBuilder();
+        int count = childsIdArks.size();
+        job.add("count", count);
+        for (String childsIdArk : childsIdArks) {
+            jsonArrayBuilderChildsArk.add(childsIdArk);
+        }
+        job.add("arks", jsonArrayBuilderChildsArk.build());
+        return job.build().toString();
+    }
+
     /**
      * Permet de retourner les concepts au format Json avec valeur et URI (pour
      * les programmes qui utilisent l'autocomplétion)

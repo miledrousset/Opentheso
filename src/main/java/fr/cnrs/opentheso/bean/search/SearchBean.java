@@ -294,7 +294,7 @@ public class SearchBean implements Serializable {
         }
 
         if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
-            Collections.sort(nodeConceptSearchs);
+        //    Collections.sort(nodeConceptSearchs);
             if (nodeConceptSearchs.size() == 1) {
                 conceptBean.getConcept(nodeConceptSearchs.get(0).getIdTheso(), nodeConceptSearchs.get(0).getIdConcept(),nodeConceptSearchs.get(0).getCurrentLang());                
                 isSelectedItem = true;
@@ -434,7 +434,7 @@ public class SearchBean implements Serializable {
                 concepts.add(nodeConceptSearch);
             }
         }
-        Collections.sort(concepts);
+    //    Collections.sort(concepts);
         return concepts;
     }
 

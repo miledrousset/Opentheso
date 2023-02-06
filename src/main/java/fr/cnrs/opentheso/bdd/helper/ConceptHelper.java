@@ -4829,6 +4829,47 @@ public class ConceptHelper {
         }
         return listIdsOfConcept;
     }
+    
+    /**
+     * Cette fonction permet de récupérer les IdArk des concepts suivant l'idArk du
+     * Concept-Père et le thésaurus
+     * @param ds
+     * @param idArk
+     * @return 
+     */
+    public ArrayList<String> getListChildrenOfConceptByArk(HikariDataSource ds, String idArk) {
+        ArrayList<String> listIdsArks = new ArrayList<>();
+        
+        String idTheso = getIdThesaurusFromArkId(ds, idArk);
+        String idConcept = getIdConceptFromArkId(ds, idArk, idTheso);
+       
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select concept.id_ark  from hierarchical_relationship, concept" +
+                        " where" +
+                        " concept.id_concept = hierarchical_relationship.id_concept2" +
+                        " and" +
+                        " concept.id_thesaurus = hierarchical_relationship.id_thesaurus" +
+                        " and" +
+                        " hierarchical_relationship.id_thesaurus = '" + idTheso + "'" +
+                        " and" +
+                        " hierarchical_relationship.id_concept1 = '" + idConcept + "'" +
+                        " and" +
+                        " hierarchical_relationship.role LIKE 'NT%'" +
+                        " and" +
+                        " concept.status != 'CA'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        listIdsArks.add(resultSet.getString("id_ark"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting List of Id of Concept : " + idConcept, sqle);
+        }
+        return listIdsArks;
+    }    
+    
 
     private ArrayList<NodeHieraRelation> getRelations(ArrayList<NodeHieraRelation> nodeHieraRelations,
             ArrayList<String> relations) {

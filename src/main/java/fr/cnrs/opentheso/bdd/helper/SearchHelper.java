@@ -1105,9 +1105,15 @@ public class SearchHelper {
                         + " unaccent(lower(lexical_value)) like unaccent(lower('%ʿ" + value + "%'))"
                         + " or"
                         + " unaccent(lower(lexical_value)) like unaccent(lower('%[" + value + "%')) "                                
-                                
                         + "	)"
-                        + " order by lexical_value limit 50");
+
+                        + " order by" 
+                        + " CASE " 
+                        + " WHEN unaccent(lower(lexical_value)) ilike '" + value + "' THEN 1" 
+                        + " WHEN unaccent(lower(lexical_value)) ilike '" + value + " %' THEN 2" 
+                        + " END, unaccent(lower(lexical_value))"
+                               
+                        + " limit 50");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {

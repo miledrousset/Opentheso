@@ -38,6 +38,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * REST Web Service
@@ -2823,14 +2824,14 @@ public class Rest_new {
         if (idConcept.isEmpty()) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            }   RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.getInfosOfConcept(ds,
+                    idTheso, idConcept, "fr");
         }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.getInfosOfConcept(ds,
-                idTheso, idConcept, "fr");
-        ds.close();
         if (datas == null) {
             return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
         }
@@ -2842,7 +2843,65 @@ public class Rest_new {
     }
 
 
+    /**
+     * Permet de retourner les Ids Ark fils pour un concept
+     * 
+     * /ark/allchilds?ark=un_ark 
+     * http://localhost:8080/opentheso2/api/ark/allchilds?ark=67717/T124-66
+     * {
+        count: 10,
+        arks: [ark1, ark2, ..., ark10]
+       }
+     * @param uri JSON
+     * @return
+     */
+    @Path("/ark/allchilds")
+    @GET
+    @Produces("application/json;charset=UTF-8")
+    public Response getIdArkOfConceptNT(@Context UriInfo uri) {
+        String idArk = null;
+        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
+            for (String valeur : e.getValue()) {
+                if (e.getKey().equalsIgnoreCase("ark")) {
+                    idArk = valeur;
+                }
+            }
+        }
+        if (StringUtils.isEmpty(idArk)) {
+            return Response
+                    .status(Response.Status.OK).entity(getJsonMessage("The id ark is missing")).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build(); 
+        }
 
+        String datas;
+        RestRDFHelper restRDFHelper = new RestRDFHelper();
+        
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return Response
+                        .status(Response.Status.OK).entity(getJsonMessage("No connection")).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build(); 
+            }
+            datas = restRDFHelper.getChildsArkId(ds, idArk);
+        }    
+
+        if (StringUtils.isEmpty(datas)) {
+            return Response
+                    .status(Response.Status.OK).entity(getJsonMessage("No datas")).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();            
+            
+        }
+        return Response
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+    }    
+    
+    
+    
 
 
 
@@ -2921,6 +2980,9 @@ public class Rest_new {
 
 
 
+    
+    
+    
     
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
