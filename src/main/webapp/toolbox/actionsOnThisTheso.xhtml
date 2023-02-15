@@ -82,7 +82,16 @@
                                 oncomplete="PF('listAddConceptsCsv').show();"
                                 update="idListAddConceptsCsv listAddConceptsCsvForm"
                                 action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                   
-                    <p:divider style="margin-bottom: 10px; margin-bottom: 20px;" />  
+
+                    <!-- Import d'une liste tabulée pour déprécier des concepts -->
+                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.importListForDeprecate')}" 
+                                title="#{langueBean.getMsg('actions.importListForDeprecateTooltip')}"
+                                oncomplete="PF('listDeprecateConceptsCsv').show();"
+                                update="idListDeprecateConceptsCsv listDeprecateConceptsCsvForm"
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                      
+                    
+                    <p:divider style="margin-bottom: 20px;" />  
+                    
                     
                     <!-- Récupère les Identifiant d'après un prefLabel -->
                     <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.getIdFromPrefLabel')}" 
@@ -90,8 +99,6 @@
                                 oncomplete="PF('getIdFromPrefLabel').show();"
                                 update="idGetIdFromPrefLabel getIdFromPrefLabelForm"
                                 action="#{importFileBean.init()}" icon="pi pi-upload" style="font-size: 12px;"/>                          
-                    
-                    
                 </p:menuButton>
             </p:panel>           
         </div>
@@ -105,6 +112,7 @@
     <ui:include src="../dialog/import/listNotationCsv.xhtml" />     
     <ui:include src="../dialog/import/listForMergeCsv.xhtml" />    
     <ui:include src="../dialog/import/listReplaceValueByNewValueCsv.xhtml" />  
+    <ui:include src="../dialog/import/listDeprecateConceptsCsv.xhtml" />      
     <ui:include src="../dialog/import/listAddConceptsCsv.xhtml" />   
     <ui:include src="../dialog/actions/getIdFromPrefLabel.xhtml" />     
     

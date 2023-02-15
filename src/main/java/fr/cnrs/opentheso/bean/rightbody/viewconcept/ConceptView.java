@@ -9,6 +9,7 @@ import com.jsf2leaf.model.LatLong;
 import com.jsf2leaf.model.Layer;
 import com.jsf2leaf.model.Map;
 import com.jsf2leaf.model.Marker;
+import com.jsf2leaf.model.Polyline;
 import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
@@ -461,6 +462,7 @@ public class ConceptView implements Serializable {
 
         String titre = nodeConcept.getTerm() != null ? nodeConcept.getTerm().getLexical_value() : "";
         titre = titre.replaceAll("'", "_");
+        
         mapModel = new Map();
         mapModel.setWidth("100%");
         mapModel.setHeight("250px");
@@ -471,7 +473,24 @@ public class ConceptView implements Serializable {
         mapModel.setLayerControl(false);
         mapModel.setDraggingEnabled(true);
         mapModel.setZoomEnabled(true);
-        mapModel.addLayer(new Layer().addMarker(new Marker(place, titre, new Pulse(true, 10, "#F47B2A"))));
+        
+        // pour marquer un point 
+        Layer placesLayer = (new Layer()).setLabel(titre);
+        placesLayer.addMarker(new Marker(new LatLong(nodeConcept.getNodeGps().getLatitude() + "",
+                nodeConcept.getNodeGps().getLongitude() + ""), titre, new Pulse(true, 10, "#F47B2A")));
+        
+        // pour marquer un polyline
+        Layer polycircleLayer = (new Layer()).setLabel(titre);
+        polycircleLayer.addPolyline((new Polyline())
+             /*   .addPoint(new LatLong(nodeConcept.getNodeGps().getLatitude() + "", nodeConcept.getNodeGps().getLongitude() + ""))
+                .addPoint(new LatLong("45.7466304","4.8344027"))
+                .addPoint(new LatLong("45.7575158","4.831995239159291"))
+                .addPoint(new LatLong("45.766704700000005","4.833645109701492"))
+                .addPoint(new LatLong("45.7592161","4.8473512"))  
+                .addPoint(new LatLong(nodeConcept.getNodeGps().getLatitude() + "", nodeConcept.getNodeGps().getLongitude() + ""))*/
+                .setColor("#F47B2A")
+        );
+        mapModel.addLayer(placesLayer).addLayer(polycircleLayer);
     }
 
     private void setCorpus() {

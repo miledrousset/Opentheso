@@ -393,7 +393,7 @@
                         
                         <p:commandButton value="#{langueBean.getMsg('toolbox.oldMethod')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
-                                         rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
+                                         rendered="e"
                                          styleClass="ui-button-success" icon="fa fa-upload" 
                                          title="#{langueBean.getMsg('toolbox.oldMethodTooltip')}" style="margin-left: 20px">
                             <p:fileDownload value="#{exportFileBean.exportThesorus()}" />

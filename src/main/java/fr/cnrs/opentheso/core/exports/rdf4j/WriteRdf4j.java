@@ -5,10 +5,12 @@
  */
 package fr.cnrs.opentheso.core.exports.rdf4j;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.skosapi.*;
+import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -80,36 +82,51 @@ public class WriteRdf4j {
 
     private void writeConcept() {
     //    int i = 0;
-        for (SKOSResource concept : xmlDocument.getConceptList()) {
-            builder.subject(vf.createIRI(concept.getUri()));
+        for (SKOSResource sResource : xmlDocument.getConceptList()) {
+            builder.subject(vf.createIRI(sResource.getUri()));
             builder.add(RDF.TYPE, SKOS.CONCEPT);
-            writeLabel(concept);
-            writeRelation(concept);
-            writeMatch(concept);
-            writeNotation(concept);
-            writeDate(concept);
-            writeIdentifier(concept);
-            writePath(concept);
-            writeCreator(concept);
-            writeDocumentation(concept);
-            writeGPS(concept);
-            writeImageUri(concept);
-            writeStatusCandidat(concept);
-            writeDiscussions(concept);
-            writeVotes(concept);
+            writeLabel(sResource);
+            writeRelation(sResource);
+            writeMatch(sResource);
+            writeNotation(sResource);
+            writeDate(sResource);
+            writeIdentifier(sResource);
+            writePath(sResource);
+            writeCreator(sResource);
+            writeDocumentation(sResource);
+            writeGPS(sResource);
+            writeExternalResources(sResource);            
 
-            writeStatus(concept);
-            writeReplaces(concept);
+            writeStatusCandidat(sResource);
+            writeDiscussions(sResource);
+            writeVotes(sResource);
+
+            writeStatus(sResource);
+            writeReplaces(sResource);
+            
+            // écriture d'un objet FOF pour les images
+        //    writeImageUri(sResource);            
+            writeNodeImage(sResource);
         }
     }
 
+    private void writeNodeImage(SKOSResource resource) {
+        for (NodeImage nodeImage : resource.getNodeImage()) {
+            builder.subject(vf.createIRI(nodeImage.getUri().replaceAll(" ", "%20")));
+            builder.add(RDF.TYPE, FOAF.IMAGE);
+            builder.add(DCTERMS.IDENTIFIER, resource.getSdc().getIdentifier());
+            builder.add(DCTERMS.TITLE, nodeImage.getImageName());
+            builder.add(DCTERMS.RIGHTS, nodeImage.getCopyRight());
+        }
+    }    
+    /*
     private void writeImageUri(SKOSResource resource) {
-        if (resource.getImageUris() != null) {
-            if (!resource.getImageUris().isEmpty()) {
-                for (String imageUri : resource.getImageUris()) {
+        if (resource.getNodeImage() != null ) {
+            if (!resource.getNodeImage().isEmpty()) {
+                for (NodeImage nodeImage : resource.getNodeImage()) {
                     try {
-                        imageUri = imageUri.replaceAll(" ", "%20");
-                        IRI uri = vf.createIRI(imageUri);
+                        nodeImage.setUri(nodeImage.getUri().replaceAll(" ", "%20"));
+                        IRI uri = vf.createIRI(nodeImage.getUri());
                         builder.add(FOAF.IMAGE, uri);
                     } catch (Exception e) {
                         return;
@@ -117,7 +134,7 @@ public class WriteRdf4j {
                 }
             }
         }
-    }
+    }*/
 
     private void writeReplaces(SKOSResource resource) {
         for (SKOSReplaces replace : resource.getsKOSReplaces()) {
@@ -198,16 +215,24 @@ public class WriteRdf4j {
         SKOSGPSCoordinates gps = resource.getGPSCoordinates();
         Double lat = null;
         Double lon = null;
+        if(gps.getLat() == null || gps.getLon() == null) return;
         try {
-            lat = Double.parseDouble(gps.getLat());
-            lon = Double.parseDouble(gps.getLon());
-        } catch (Exception e) {
+            lat = Double.valueOf(gps.getLat());
+            lon = Double.valueOf(gps.getLon());
+        } catch (NumberFormatException e) {
         }
         if (lat != null && lon != null) {
             builder.add("geo:lat", lat);
             builder.add("geo:long", lon);
         }
     }
+    
+    private void writeExternalResources(SKOSResource resource) {
+        ArrayList<String> externalResources = resource.getExternalResources();
+        for (String externalResource : externalResources) {
+            builder.add(DCTERMS.RELATION, externalResource);
+        }
+    }    
 
     private void writeDocumentation(SKOSResource resource) {
         int prop;

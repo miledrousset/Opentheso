@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
@@ -59,7 +60,7 @@ public class AddConceptsStruct {
     public List<VoteDto> votes = new ArrayList<>();
     public List<MessageDto> messages = new ArrayList<>();
 
-    public ArrayList<String> nodeImages = new ArrayList<>();
+    public ArrayList<NodeImage> nodeImages = new ArrayList<>();
     public Term term = new Term();
 
 }

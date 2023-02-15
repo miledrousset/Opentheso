@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
@@ -68,7 +69,7 @@ public class NodeConceptExport {
     private ArrayList <NodeHieraRelation> replaces;       
     
     //images (permet de gérer plusieurs images
-    private ArrayList<String> nodeimages;    
+    private ArrayList<NodeImage> nodeImages;    
     
     private List<String> listFacetsOfConcept;
 
@@ -189,12 +190,12 @@ public class NodeConceptExport {
         return relationsRT;
     }    
 
-    public ArrayList<String> getNodeimages() {
-        return nodeimages;
+    public ArrayList<NodeImage> getNodeImages() {
+        return nodeImages;
     }
 
-    public void setNodeimages(ArrayList<String> nodeimages) {
-        this.nodeimages = nodeimages;
+    public void setNodeImages(ArrayList<NodeImage> nodeImages) {
+        this.nodeImages = nodeImages;
     }
 
     public NodeStatus getNodeStatus() {

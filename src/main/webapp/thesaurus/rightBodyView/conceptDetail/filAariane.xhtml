@@ -114,13 +114,17 @@
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark_for_branch')}"
-                            disabled="false" action="#{editConcept.generateArkForThisBranch()}"
-                            update="messageIndex" />
+                            disabled="false" 
+                            oncomplete="PF('generateArkForThisBranch').show();"
+                            actionListener="#{editConcept.clear()}"
+                            update="idGenerateArkForThisBranch generateArkForThisBranchForm" />
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_ark')}"
-                            disabled="false" action="#{editConcept.generateAllArk()}"
-                            update="messageIndex"/>
+                            oncomplete="PF('generateAllArk').show();"
+                            disabled="false"
+                            actionListener="#{editConcept.clear()}"
+                            update="idGenerateAllArk generateAllArkForm"/>
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_handle')}" 
@@ -178,7 +182,9 @@
     <ui:include src="../../../dialog/concept/generateArk.xhtml" />
     <ui:include src="../../../dialog/concept/generateHandle.xhtml" />
     <ui:include src="../../../dialog/concept/deleteHandle.xhtml" />
-
+    <ui:include src="../../../dialog/concept/generateAllArk.xhtml" />    
+    <ui:include src="../../../dialog/concept/generateArkForThisBranch.xhtml" /> 
+    
     <ui:include src="../../../dialog/import/listImportCsv.xhtml" />
 
     <ui:include src="../../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />    

@@ -20,7 +20,10 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,9 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -43,27 +48,13 @@ import org.primefaces.model.TreeNode;
 
 @javax.enterprise.context.SessionScoped
 public class EditConcept implements Serializable {
-
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-
-    @Inject
-    private LanguageBean languageBean;
-
-    @Inject
-    private ConceptView conceptView;
-
-    @Inject
-    private SelectedTheso selectedTheso;
-
-    @Inject
-    private Tree tree;
-    
-    @Inject 
-    private ConceptView conceptBean;
+    @Inject private Connect connect;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private LanguageBean languageBean;
+    @Inject private ConceptView conceptView;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private Tree tree;
+    @Inject private ConceptView conceptBean;
     
     private String prefLabel;
     private String notation;
@@ -73,6 +64,8 @@ public class EditConcept implements Serializable {
     private boolean duplicate;
     private boolean forDelete;
 
+    private boolean inProgress;
+    
     private boolean isReplacedByRTrelation;
     
     private ArrayList<NodeConceptType> nodeConceptTypes;
@@ -83,6 +76,7 @@ public class EditConcept implements Serializable {
     
     private NodeSearchMini searchSelected;    
     
+    private ArrayList<NodeIdValue> nodeIdValues;
 
     @PreDestroy
     public void destroy() {
@@ -94,10 +88,12 @@ public class EditConcept implements Serializable {
             nodeReplaceBy.clear();
             nodeReplaceBy = null;
         }
+        inProgress = false;
         prefLabel = null;
         notation = null;
         source = null;
         selectedConceptType = null;
+        nodeIdValues = null;
     }
 
     public EditConcept() {
@@ -110,6 +106,8 @@ public class EditConcept implements Serializable {
         notation = "";
         forDelete = false;
         isReplacedByRTrelation = false;
+        inProgress = false;
+        nodeIdValues = null;        
 
         nodeReplaceBy = conceptView.getNodeConcept().getReplacedBy();
     }
@@ -641,7 +639,7 @@ public class EditConcept implements Serializable {
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
         generateArkIds(conceptHelper, idConcepts);
     }
-
+    
     /**
      * permet de générer les identifiants Ark pour cette branche, si un
      * identifiant n'existe pas, il sera créé, sinon, il sera mis à jour.
@@ -653,14 +651,14 @@ public class EditConcept implements Serializable {
         if (conceptView.getNodeConcept() == null) {
             return;
         }
-
+        nodeIdValues = new ArrayList<>();
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> idConcepts = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        generateArkIds(conceptHelper, idConcepts);
+        nodeIdValues = generateArkIds(conceptHelper, idConcepts);
     }
 
     /**
@@ -683,8 +681,9 @@ public class EditConcept implements Serializable {
     /**
      * permet de générer la totalité des identifiants Ark, si un identifiant
      * n'existe pas, il sera créé, sinon, il sera mis à jour.
-     */
+    */
     public void generateAllArk() {
+       
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> idConcepts;
         idConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
@@ -692,29 +691,26 @@ public class EditConcept implements Serializable {
         if (roleOnThesoBean.getNodePreference() == null) {
             return;
         }
+        nodeIdValues = new ArrayList<>();
         //idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
-        generateArkIds(conceptHelper, idConcepts);
+        nodeIdValues = generateArkIds(conceptHelper, idConcepts);
     }
 
-    private void generateArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {
+    private ArrayList<NodeIdValue> generateArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {
         FacesMessage msg;
-        if (!conceptHelper.generateArkId(
+        nodeIdValues = conceptHelper.generateArkId(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 idConcepts,
-                selectedTheso.getCurrentLang())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", conceptHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
+                selectedTheso.getCurrentLang());
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("messageIndex");
         }
+        return nodeIdValues;
     }
 
 
@@ -738,6 +734,27 @@ public class EditConcept implements Serializable {
     }
 
 
+    /**
+     * récupération du résultat du traitement
+     * @return 
+     */
+    public StreamedContent getResultOfProcess(){
+        if(nodeIdValues == null) return null; 
+        /// pour retourner le résultat du traitement
+        CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+        byte[] datas = csvWriteHelper.writeCsvResultProcess(nodeIdValues, "idConcept", "Résultat");
+
+        try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+            return DefaultStreamedContent.builder()
+                    .contentType("text/csv")
+                    .name("resultat.csv")
+                    .stream(() -> input)
+                    .build();
+        } catch (IOException ex) {
+            System.out.println(ex.toString());
+        }
+        return new DefaultStreamedContent();            
+    }    
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -970,6 +987,14 @@ public class EditConcept implements Serializable {
 
     public void setSelectedConceptType(String selectedConceptType) {
         this.selectedConceptType = selectedConceptType;
+    }
+
+    public boolean isInProgress() {
+        return inProgress;
+    }
+
+    public void setInProgress(boolean inProgress) {
+        this.inProgress = inProgress;
     }
 
 

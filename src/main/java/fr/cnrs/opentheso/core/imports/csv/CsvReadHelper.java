@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.core.imports.csv;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
@@ -46,6 +47,8 @@ public class CsvReadHelper {
     private ArrayList<NodeAlignmentImport> nodeAlignmentImports;
     private ArrayList<NodeNote> nodeNotes;
     private ArrayList<NodeIdValue> nodeIdValues;
+    
+    private ArrayList<NodeDeprecated> nodeDeprecateds;
 
     private ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues;    
     
@@ -90,7 +93,70 @@ public class CsvReadHelper {
         }
         return false;
     }              
+    
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileCsvDeprecateConcepts(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+
+            CSVParser cSVParser = cSVFormat.parse(in);
+            String lang= "fr";
+            Map<String, Integer> headers = cSVParser.getHeaderMap();
+            String values[];
+            for (String columnName : headers.keySet()) {
+                if (columnName.contains("@")) {
+                    values = columnName.split("@");
+                    if (values[1] != null) {
+                        lang = values[1];
+                    }
+                }
+            }
             
+            String value;
+            nodeDeprecateds = new ArrayList<>();
+            for (CSVRecord record : cSVParser) {
+                NodeDeprecated nodeDeprecated = new NodeDeprecated();
+                try {
+                    value = record.get("deprecated");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeDeprecated.setDeprecatedId(value);
+                } catch (Exception e) {
+                    continue;
+                }
+                try {
+                    value = record.get("isReplacedBy");
+                    if (value == null) {
+                    } else {
+                        nodeDeprecated.setReplacedById(value);
+                    }
+                } catch (Exception e) {
+                }
+                try {
+                    value = record.get("skos:note@" + lang);
+                    if (value == null) {
+                    } else {
+                        nodeDeprecated.setNote(value);
+                        nodeDeprecated.setNoteLang(lang);
+                    }
+                } catch (Exception e) {
+                }                
+                nodeDeprecateds.add(nodeDeprecated);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }         
+    
     /**
      * permet de lire un fichier CSV complet pour importer les alignements
      *
@@ -1568,6 +1634,14 @@ public class CsvReadHelper {
 
     public void setIdLang(String idLang) {
         this.idLang = idLang;
+    }
+
+    public ArrayList<NodeDeprecated> getNodeDeprecateds() {
+        return nodeDeprecateds;
+    }
+
+    public void setNodeDeprecateds(ArrayList<NodeDeprecated> nodeDeprecateds) {
+        this.nodeDeprecateds = nodeDeprecateds;
     }
 
     public class ConceptObject {

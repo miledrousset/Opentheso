@@ -490,6 +490,45 @@ public class CsvWriteHelper {
     /**
      * Export des données Id valeur en CSV
      * @param nodeIdValues
+     * @param header1
+     * @param header2
+     * @return 
+     */
+    public byte[] writeCsvResultProcess(ArrayList<NodeIdValue> nodeIdValues, String header1, String header2){
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+                    CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().build())) {
+
+                /// écriture des headers
+                ArrayList<String> header = new ArrayList<>();
+                header.add(header1);
+                header.add(header2);
+                csvFilePrinter.printRecord(header);
+                
+                ArrayList<Object> record = new ArrayList<>();
+                for (NodeIdValue nodeIdValue : nodeIdValues) {
+                    try {
+                        record.add(nodeIdValue.getId());
+                        record.add(nodeIdValue.getValue());
+                        csvFilePrinter.printRecord(record);
+                        record.clear();
+                    } catch (IOException e){
+                        System.err.println(e.toString());
+                    }
+                }
+            }
+            return os.toByteArray();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+            return null;
+        }
+    }      
+    
+    
+    /**
+     * Export des données Id valeur en CSV
+     * @param nodeIdValues
      * @param idLang
      * @return 
      */

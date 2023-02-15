@@ -9,6 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
@@ -477,9 +478,9 @@ public class ExportRdf4jHelperNew {
         }
         
         // les images
-        if(nodeConcept.getNodeimages() != null || (!nodeConcept.getNodeimages().isEmpty())) {
-            for (String imageUri : nodeConcept.getNodeimages()) {
-                sKOSResource.addImageUri(imageUri);
+        if(nodeConcept.getNodeImages() != null || (!nodeConcept.getNodeImages().isEmpty())) {
+            for (NodeImage nodeImage : nodeConcept.getNodeImages()) {
+                sKOSResource.addNodeImage(nodeImage);
             }
         }
 

@@ -885,7 +885,7 @@ public class CsvImportHelper {
 
         NoteHelper noteHelper = new NoteHelper();
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
-            noteHelper.addConceptNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+            noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "note","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {

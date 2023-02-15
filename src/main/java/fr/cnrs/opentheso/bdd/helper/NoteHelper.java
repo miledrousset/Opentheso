@@ -604,7 +604,7 @@ public class NoteHelper {
                 try {
                     String query = "SELECT note.id, note.notetypecode,"
                             + " note.lexicalvalue, note.created,"
-                            + " note.modified FROM note, note_type"
+                            + " note.modified, note.notesource FROM note, note_type"
                             + " WHERE note.notetypecode = note_type.code"
                             + " and note_type.isconcept = true"
                             + " and note.id_concept = '" + idConcept + "'"
@@ -622,6 +622,7 @@ public class NoteHelper {
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
+                        nodeNote.setNoteSource(resultSet.getString("notesource"));
                         nodeNotes.add(nodeNote);
                     }
 
@@ -706,7 +707,7 @@ public class NoteHelper {
                 try {
                     String query = "SELECT note.id, note.notetypecode,"
                             + " note.lexicalvalue, note.created,"
-                            + " note.modified FROM note, note_type"
+                            + " note.modified, note.notesource FROM note, note_type"
                             + " WHERE note.notetypecode = note_type.code"
                             + " and note_type.isterm = true"
                             + " and note.id_term = '" + idTerm + "'"
@@ -724,6 +725,7 @@ public class NoteHelper {
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
+                        nodeNote.setNoteSource(resultSet.getString("notesource"));
                         nodeNotes.add(nodeNote);
                     }
 

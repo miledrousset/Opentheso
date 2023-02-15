@@ -10,6 +10,7 @@ import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
@@ -27,6 +28,7 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -121,7 +123,9 @@ public class ImportFileBean implements Serializable {
 
     
     private ArrayList<NodeReplaceValueByValue> nodeReplaceValueByValues;
-
+    private ArrayList<NodeDeprecated> nodeDeprecateds;
+    
+    
     //CSV Structuré
     private NodeTree racine;
 
@@ -734,7 +738,48 @@ public class ImportFileBean implements Serializable {
             PrimeFaces.current().executeScript("PF('waitDialog').hide()");
         }
     }    
-            
+           
+    
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
+    public void loadFileCsvDeprecateConcepts(FileUploadEvent event) {
+        initError();
+        
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+
+            try (Reader reader = new InputStreamReader(event.getFile().getInputStream())) {
+                /// option true to read empty data
+                if (!csvReadHelper.readFileCsvDeprecateConcepts(reader)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+
+                warning = csvReadHelper.getMessage();
+                nodeDeprecateds = csvReadHelper.getNodeDeprecateds();
+                if (nodeDeprecateds != null) {
+                    total = nodeDeprecateds.size();
+                    uri = "";//csvReadHelper.getUri();
+                    loadDone = true;
+                    BDDinsertEnable = true;
+                    info = "File correctly loaded";
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+        }
+    }    
             
     /**
      * permet de charger un fichier en Csv
@@ -1322,6 +1367,127 @@ public class ImportFileBean implements Serializable {
     }    
     
     /**
+     * permet de déprécier les concepts donnés par tableau CSV
+     *
+     * @param idTheso
+     * @param idUser1
+     */
+    public void deprecateConcepts(String idTheso, int idUser1) {
+
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+
+        if (nodeDeprecateds == null || nodeDeprecateds.isEmpty()) {
+            return;
+        }
+        if (StringUtils.isEmpty(idTheso)) {
+            return;
+        }        
+
+        if (importInProgress) {
+            return;
+        }
+
+        initError();
+
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+        String idConcept;
+        String idConceptReplacedBy;        
+        ConceptHelper conceptHelper = new ConceptHelper();
+        try {
+            for (NodeDeprecated nodeDeprecated : nodeDeprecateds) {
+                if (nodeDeprecated == null) {
+                    continue;
+                }
+                if (StringUtils.isEmpty(nodeDeprecated.getDeprecatedId())) {
+                    continue;
+                }
+                idConcept=  getIdConcept(nodeDeprecated.getDeprecatedId(), idTheso);
+                if (idConcept == null || idConcept.isEmpty()) {
+                    continue;
+                }
+                if (!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, idTheso)) {
+                    continue;
+                }
+                DeprecateHelper deprecateHelper = new DeprecateHelper();
+                if (!deprecateHelper.deprecateConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser1)) {
+                    error.append("ce concept n'a pas été déprécié : ");
+                    error.append(idConcept);
+                    return;
+                }
+                if(!StringUtils.isEmpty(nodeDeprecated.getReplacedById())){
+                    idConceptReplacedBy = getIdConcept(nodeDeprecated.getReplacedById(), idTheso);
+                    if (!deprecateHelper.addReplacedBy(connect.getPoolConnexion(),
+                            idConcept, idTheso, idConceptReplacedBy, idUser1)) {
+                        error.append("Ce concept n'a pas été replacé par : ");
+                        error.append(idConceptReplacedBy);
+                        return;
+                    }                
+                }
+                NoteHelper noteHelper = new NoteHelper();
+
+                if (noteHelper.isNoteExistOfConcept(
+                        connect.getPoolConnexion(),
+                        idConcept,
+                        idTheso,
+                        nodeDeprecated.getNoteLang(),
+                        nodeDeprecated.getNote(),
+                        "note")) {
+                } else {
+
+                noteHelper.addConceptNote(
+                        connect.getPoolConnexion(),
+                        idConcept,
+                        nodeDeprecated.getNoteLang(),
+                        idTheso,
+                        nodeDeprecated.getNote(),
+                        "note",
+                        "",
+                        idUser1);   
+                }
+                
+                conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                        selectedTheso.getCurrentIdTheso(),
+                        idConcept, idUser1);
+                total++;
+            }
+            log.error(csvImportHelper.getMessage());
+
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            //total = 0;
+            info = info + "\n" + "total = " + total ;
+            error.append(csvImportHelper.getMessage());
+            roleOnThesoBean.showListTheso();
+            viewEditionBean.init();
+
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("toolBoxForm");
+                pf.ajax().update("toolBoxForm:listThesoForm");
+            }
+
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+
+        conceptObjects = null;
+        //    System.gc();
+        //    System.gc();
+
+        onComplete();
+    }    
+    
+    
+    /**
      * insérer un thésaurus dans la BDD (CSV)
      *
      * @param idTheso
@@ -1418,6 +1584,7 @@ public class ImportFileBean implements Serializable {
         String idConcept = null;
         ConceptHelper conceptHelper = new ConceptHelper();
         if ("ark".equalsIgnoreCase(selectedIdentifierImportAlign)) {
+            
             idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), idToFind, idTheso);
         }
         if ("handle".equalsIgnoreCase(selectedIdentifierImportAlign)) {
@@ -2457,6 +2624,8 @@ public class ImportFileBean implements Serializable {
         importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
         importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);
 
+        importRdf4jHelper.addFoafImages(sKOSXmlDocument.getFoafImage(), idTheso);        
+        
         roleOnThesoBean.showListTheso();
         viewEditionBean.init();
 

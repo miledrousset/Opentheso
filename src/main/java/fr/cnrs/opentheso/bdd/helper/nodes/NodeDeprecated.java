@@ -12,6 +12,8 @@ public class NodeDeprecated implements Comparable {
     private String deprecatedLabel;
     private String replacedById;
     private String replacedByLabel;
+    private String note;
+    private String noteLang;
     
     public NodeDeprecated() {
     }
@@ -46,6 +48,22 @@ public class NodeDeprecated implements Comparable {
 
     public void setReplacedByLabel(String replacedByLabel) {
         this.replacedByLabel = replacedByLabel;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNoteLang() {
+        return noteLang;
+    }
+
+    public void setNoteLang(String noteLang) {
+        this.noteLang = noteLang;
     }
     
     

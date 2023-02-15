@@ -486,6 +486,20 @@ begin
 end
 $$language plpgsql;
 
+--
+-- mise a jour de la table GPS pour permettre de gérer la polyline
+--
+create or replace function update_table_gps_constraint() returns void as $$
+begin
+    if exists (SELECT * from information_schema.table_constraints where table_name = 'gps'
+	and constraint_name ='gps_pkey') then
+	execute
+	'ALTER TABLE ONLY gps drop CONSTRAINT gps_pkey;
+         Alter TABLE ONLY gps add CONSTRAINT gps_pkey2 PRIMARY KEY (id_concept, id_theso, latitude, longitude);';
+    END IF;
+end
+$$language plpgsql;
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -513,6 +527,8 @@ SELECT update_table_preferences_useConceptTree();
 SELECT update_table_preferences_displayUserName();
 SELECT update_table_preferences_suggestion();
 SELECT update_table_note_source();
+SELECT update_table_gps_constraint();
+
 
 
 
@@ -544,6 +560,8 @@ SELECT delete_fonction('update_table_preferences_useConceptTree', '');
 SELECT delete_fonction('update_table_preferences_displayUserName', '');
 SELECT delete_fonction('update_table_preferences_suggestion', '');
 SELECT delete_fonction('update_table_note_source', '');
+SELECT delete_fonction('update_table_gps_constraint', '');
+
 
 
 
@@ -1111,7 +1129,7 @@ AS $$
 DECLARE
 
 	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+	sous_seperateur constant varchar := '@@';
 
 	rec record;
 	con record;
@@ -1132,6 +1150,7 @@ DECLARE
 	replace_rec record;
 	replacedBy_rec record;
 	facet_rec record;
+        externalResource_rec record;
 
 	tmp text;
 	uri text;
@@ -1161,6 +1180,8 @@ DECLARE
 	replacedBy text;
 	replaces text;
 	facets text;
+        externalResources text;
+        
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -1253,7 +1274,7 @@ BEGIN
 			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri,
 					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
 					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, id_theso, path)
-					|| '@' || relation_rec.relationship_role || '@' || relation_rec.relationship_id_concept || '@' ;
+					|| sous_seperateur || relation_rec.relationship_role || sous_seperateur || relation_rec.relationship_id_concept || sous_seperateur ;
 
 			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI'
 					OR relation_rec.relationship_role = 'NTG') THEN
@@ -1311,7 +1332,7 @@ BEGIN
 		img = '';
 		FOR img_rec IN SELECT * FROM opentheso_get_images(id_theso, con.id_concept)
 		LOOP
-			img = img || img_rec.url || seperateur;
+                    img = img || img_rec.name || sous_seperateur || img_rec.copyright || sous_seperateur || img_rec.url || seperateur;
 		END LOOP;
 
 		SELECT username INTO creator FROM users WHERE id_user = con.creator;
@@ -1352,10 +1373,19 @@ BEGIN
 			facets = facets || facet_rec.id_facet || seperateur;
 		END LOOP;
 
+		externalResources = '';
+		FOR externalResource_rec IN SELECT external_resources.external_uri
+						 FROM external_resources
+						 WHERE external_resources.id_thesaurus = id_theso
+						 AND external_resources.id_concept = con.id_concept
+		LOOP
+			externalResources = externalResources || externalResource_rec.external_uri || seperateur;
+		END LOOP;
+
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
 				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified, img,
-				creator, contributor, replaces, replacedBy, facets INTO rec;
+				creator, contributor, replaces, replacedBy, facets, externalResources INTO rec;
 
   		RETURN NEXT rec;
     END LOOP;
@@ -1370,7 +1400,7 @@ AS $$
 DECLARE
 
 	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+	sous_seperateur constant varchar := '@@';
 
 	rec record;
 	con record;
@@ -1391,6 +1421,7 @@ DECLARE
 	replace_rec record;
 	replacedBy_rec record;
 	facet_rec record;
+        externalResource_rec record;
 
 	tmp text;
 	uri text;
@@ -1420,6 +1451,7 @@ DECLARE
 	replaces text;
 	replacedBy text;
 	facets text;
+        externalResources text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -1433,9 +1465,9 @@ BEGIN
 
 		-- LocalUri
 		local_URI = path || '/?idc=' || con.id_concept || '&idt=' || id_theso;
-		prefLab = '';
-
+		
 		-- PrefLab
+                prefLab = '';
 		FOR traduction_rec IN SELECT * FROM opentheso_get_traductions(id_theso, con.id_concept)
 		LOOP
 			prefLab = prefLab || traduction_rec.term_lexical_value || sous_seperateur || traduction_rec.term_lang || seperateur;
@@ -1510,7 +1542,7 @@ BEGIN
 			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri,
 					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
 					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, id_theso, path)
-					|| '@' || relation_rec.relationship_role || '@' || relation_rec.relationship_id_concept || '@' ;
+					|| sous_seperateur || relation_rec.relationship_role || sous_seperateur || relation_rec.relationship_id_concept || sous_seperateur ;
 
 			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI'
 					OR relation_rec.relationship_role = 'NTG') THEN
@@ -1568,7 +1600,7 @@ BEGIN
 		img = '';
 		FOR img_rec IN SELECT * FROM opentheso_get_images(id_theso, con.id_concept)
 		LOOP
-			img = img || img_rec.url || seperateur;
+			img = img || img_rec.name || sous_seperateur || img_rec.copyright || sous_seperateur || img_rec.url || seperateur;
 		END LOOP;
 
 		SELECT username INTO creator FROM users WHERE id_user = con.creator;
@@ -1609,10 +1641,19 @@ BEGIN
 			facets = facets || facet_rec.id_facet || seperateur;
 		END LOOP;
 
+		externalResources = '';
+		FOR externalResource_rec IN SELECT external_resources.external_uri
+						 FROM external_resources
+						 WHERE external_resources.id_thesaurus = id_theso
+						 AND external_resources.id_concept = con.id_concept
+		LOOP
+                    externalResources = externalResources || externalResource_rec.external_uri || seperateur;
+		END LOOP;
+
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
 				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified,
-				img, creator, contributor, replaces, replacedBy, facets INTO rec;
+				img, creator, contributor, replaces, replacedBy, facets, externalResources INTO rec;
 
   		RETURN NEXT rec;
     END LOOP;
@@ -1631,7 +1672,7 @@ CREATE OR REPLACE procedure opentheso_add_terms(
 AS $BODY$
 DECLARE
 	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+	sous_seperateur constant varchar := '@@';
 	term_rec record;
 	array_string   text[];
 BEGIN
@@ -1660,7 +1701,7 @@ CREATE OR REPLACE procedure opentheso_add_hierarchical_relations(
 AS $BODY$
 DECLARE
 	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+	sous_seperateur constant varchar := '@@';
 	
 	relations_rec record;
 	array_string   text[];
@@ -1688,7 +1729,7 @@ CREATE OR REPLACE procedure opentheso_add_notes(
 AS $BODY$
 DECLARE
 	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+	sous_seperateur constant varchar := '@@';
 	
 	notes_rec record;
 	array_string   text[];
@@ -1726,7 +1767,7 @@ CREATE OR REPLACE procedure opentheso_add_non_preferred_term(id_thesaurus charac
 AS $BODY$
 DECLARE
 	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+	sous_seperateur constant varchar := '@@';
 	
 	non_pref_rec record;
 	array_string   text[];
@@ -1756,15 +1797,17 @@ CREATE OR REPLACE procedure opentheso_add_external_images(
 AS $BODY$
 DECLARE
     seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+    sous_seperateur constant varchar := '@@';
     images_rec record;
+    array_string text[];
 BEGIN
 
     FOR images_rec IN SELECT unnest(string_to_array(images, seperateur)) AS image_value
-    LOOP
-		Insert into external_images (id_concept, id_thesaurus, id_user, image_name, external_uri, image_copyright) 
-            values (id_concept, id_thesaurus, id_user, '', images_rec.image_value, '');	
-    END LOOP;
+        LOOP
+            SELECT string_to_array(images_rec.image_value, sous_seperateur) INTO array_string;
+            Insert into external_images (id_concept, id_thesaurus, id_user, image_name, image_copyright, external_uri) 
+            values (id_concept, id_thesaurus, id_user, array_string[1], array_string[2], array_string[3]);	
+        END LOOP;
 END;
 $BODY$;
 
@@ -1776,16 +1819,15 @@ LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
 	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+	sous_seperateur constant varchar := '@@';
 	
 	alignements_rec record;
-	array_string   text[];
+	array_string text[];
 BEGIN
 
-	FOR alignements_rec IN SELECT unnest(string_to_array(alignements, seperateur)) AS alignement_value
-    LOOP
+    FOR alignements_rec IN SELECT unnest(string_to_array(alignements, seperateur)) AS alignement_value
+        LOOP
 		SELECT string_to_array(alignements_rec.alignement_value, sous_seperateur) INTO array_string;
-		
 		Insert into alignement (author, concept_target, thesaurus_target, uri_target, alignement_id_type, internal_id_thesaurus, internal_id_concept) 
 			values (CAST(array_string[1] AS int), array_string[2], array_string[3], array_string[4], CAST(array_string[5] AS int), array_string[6], array_string[7]);
 	END LOOP;
@@ -1891,7 +1933,7 @@ CREATE OR REPLACE procedure opentheso_add_facet(
 AS $BODY$
 DECLARE
 	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@';
+	sous_seperateur constant varchar := '@@';
 	
 	label_rec record;
 	membres_rec record;
