@@ -37,15 +37,15 @@
 
             <ui:include src="../commun/menu.xhtml" />
 
-            <div id="content-wrapper" style="width: 100%">
+            <div id="content-wrapper" style="min-height:100%; position:relative;">
 
-                <h:form id="containerIndex" style="min-height:100%; position:relative;"> 
+                <h:form id="containerIndex" > 
 
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
 
-                    <div class="container-fluid" style="padding-bottom: 70px">
+                    <div class="container-fluid" >
 
                         <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.my_authorized_projects')}</span></h1>
@@ -227,7 +227,9 @@
                 <ui:include src="../dialog/profile/modifyRole.xhtml" />  
                 <ui:include src="../dialog/profile/confirmRemoveUserFromProject.xhtml" /> 
 
-                <ui:include src="../dialog/profile/moveThesoToAnotherProject.xhtml" />  
+                <ui:include src="../dialog/profile/moveThesoToAnotherProject.xhtml" /> 
+                
+                <ui:include src="../dialog/login/logout.xhtml" />
             </div>
         </h:panelGroup> 
     </h:body>

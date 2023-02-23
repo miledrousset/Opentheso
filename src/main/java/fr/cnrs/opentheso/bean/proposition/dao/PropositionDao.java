@@ -34,6 +34,8 @@ public class PropositionDao implements Serializable {
     
     private String codeDrapeau;
     
+    private String adminComment;
+    
     public boolean isEnvoyer() {
         return PropositionStatusEnum.ENVOYER.name().equals(status);
     }
@@ -160,6 +162,14 @@ public class PropositionDao implements Serializable {
 
     public void setThesoName(String thesoName) {
         this.thesoName = thesoName;
+    }
+
+    public String getAdminComment() {
+        return adminComment;
+    }
+
+    public void setAdminComment(String adminComment) {
+        this.adminComment = adminComment;
     }
     
 }

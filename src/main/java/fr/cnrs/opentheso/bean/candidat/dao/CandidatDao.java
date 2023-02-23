@@ -101,7 +101,7 @@ public class CandidatDao {
 
         try (Connection conn = hikariDataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("SELECT concept.id_concept, concept.created, candidat_status.id_user" +
+                stmt.executeQuery("SELECT concept.id_concept, concept.created, candidat_status.id_user, candidat_status.message" +
                         " FROM concept, candidat_status" +
                         " WHERE concept.id_concept = candidat_status.id_concept" +
                         " AND concept.id_thesaurus = candidat_status.id_thesaurus" +
@@ -117,6 +117,7 @@ public class CandidatDao {
                         candidatDto.setStatut("" + etat);
                         candidatDto.setCreatedById(resultSet.getInt("id_user"));
                         candidatDto.setIdThesaurus(idTheso);
+                        candidatDto.setAdminMessage(resultSet.getString("message"));
                         candidatDtos.add(candidatDto);
                     }
                 }

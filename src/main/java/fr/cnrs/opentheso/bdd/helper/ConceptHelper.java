@@ -47,9 +47,17 @@ import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
 import fr.cnrs.opentheso.ws.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 import org.apache.commons.collections.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -961,6 +969,49 @@ public class ConceptHelper {
         }
         return conceptLabels;
     }
+    
+    /**
+     * permet de trouver les idConcepts en partant d'un label
+     *
+     * @param ds
+     * @param idTheso
+     * @param label
+     * @param idLang
+     * @return
+     */
+    public ArrayList<String> getIdConceptsFromAltLabel(HikariDataSource ds,
+            String idTheso, String label, String idLang) {
+        ArrayList<String> conceptLabels = new ArrayList<>();
+        StringPlus stringPlus = new StringPlus();
+        label = stringPlus.convertString(label);
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select concept.id_concept from concept, preferred_term, non_preferred_term "
+                        + " where"
+                        + " concept.id_concept = preferred_term.id_concept"
+                        + " and"
+                        + " concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and"
+                        + " preferred_term.id_term = non_preferred_term.id_term"
+                        + " and"
+                        + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
+                        + " and"
+                        + " non_preferred_term.id_thesaurus = '" + idTheso + "'"
+                        + " and "
+                        + " non_preferred_term.lang = '" + idLang + "'"
+                        + " and"
+                        + " lower(non_preferred_term.lexical_value) = lower('" + label + "')");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        conceptLabels.add(resultSet.getString("id_concept"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting idConcepts from AltLabels of theso : " + idTheso, sqle);
+        }
+        return conceptLabels;
+    }    
 
     /**
      * Cette fonction permet de récupérer toutes les informations concernant un
@@ -980,7 +1031,18 @@ public class ConceptHelper {
         TermHelper termHelper = new TermHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         GroupHelper groupHelper = new GroupHelper();
+        
+        ArrayList<String> conceptIdsAltLabel;
+        
         ArrayList<String> conceptIds = getIdConceptsFromLabel(ds, idThesaurus, label, idLang);
+    //    if(conceptIds == null || conceptIds.isEmpty()) {
+        conceptIdsAltLabel = getIdConceptsFromAltLabel(ds, idThesaurus, label, idLang);
+        if(conceptIdsAltLabel == null || conceptIdsAltLabel.isEmpty()) {
+
+        } else {
+            conceptIds.addAll(conceptIdsAltLabel);
+        }
+    //    }
         for (String conceptId : conceptIds) {
             NodeConceptSearch nodeConceptSearch = new NodeConceptSearch();
 
@@ -1931,6 +1993,135 @@ public class ConceptHelper {
         return true;
     }
 
+    /**
+     * Cette fonction regenerer tous les idArk des concepts fournis en paramètre
+     * cette action se fait en une seule fois, ne prends en charge que les métadonnées obligatoires
+     * traitement rapide
+     *
+     * @param ds
+     * @param idTheso
+     * @param idConcepts
+     * @param idLang
+     * @return
+     */
+    public ArrayList<NodeIdValue> generateArkIdFast(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts, String idLang) {
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+
+        ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
+        if (!arkHelper2.login()) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setId("");
+            nodeIdValue.setValue("Erreur de connexion !!");
+            nodeIdValues.add(nodeIdValue);
+            message = "Erreur de connexion !!";
+            return nodeIdValues;
+        }
+
+
+        Concept concept;
+
+        if (nodePreference == null) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setId("");
+            nodeIdValue.setValue("Erreur: Veuillez paramétrer les préférences pour ce thésaurus !!");
+            nodeIdValues.add(nodeIdValue);
+            return nodeIdValues;
+        }
+        if (!nodePreference.isUseArk()) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setId("");
+            nodeIdValue.setValue("Erreur: Veuillez activer Ark dans les préférences !!");
+            nodeIdValues.add(nodeIdValue);
+            return nodeIdValues;
+        }
+
+        JsonArrayBuilder jsonArrayBuilderMetas = Json.createArrayBuilder();
+        
+        JsonObjectBuilder joDatas = Json.createObjectBuilder();
+        if(arkHelper2.getToken()== null) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setValue("Erreur: token non fourni");
+            nodeIdValues.add(nodeIdValue);
+            return nodeIdValues;            
+        }
+
+        joDatas.add("token", arkHelper2.getToken());
+        
+        for (String idConcept : idConcepts) {
+            concept = getThisConcept(ds, idConcept, idTheso);
+            if (concept == null) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                nodeIdValue.setId(idConcept);
+                nodeIdValue.setValue("Erreur: ce concept n'existe pas");
+                nodeIdValues.add(nodeIdValue);
+                continue;
+            }
+            JsonObjectBuilder jo = Json.createObjectBuilder();
+            jo.add("idConcept", concept.getIdConcept());
+            jo.add("ark", concept.getIdArk());
+            
+            jo.add("naan", nodePreference.getIdNaan());
+            jo.add("type", nodePreference.getPrefixArk());
+            jo.add("urlTarget", nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso);
+            jo.add("title", getLexicalValueOfConcept(ds, idConcept, idTheso, idLang));
+            jo.add("creator", concept.getCreatorName());
+           
+            jsonArrayBuilderMetas.add(jo.build());            
+        }
+        joDatas.add("arks", jsonArrayBuilderMetas.build());       
+        
+        String jsonResult = arkHelper2.addBatchArk(joDatas.build().toString());
+        
+        JsonArray jsonArray;
+        JsonObject jsonObject;
+        String idConcept = null;
+        String idArk;
+        try {
+            JsonReader reader = Json.createReader(new StringReader(jsonResult));
+            jsonArray = reader.readArray();
+            System.out.println("/////////////////// traitement des mises à jour dans Opentheso /////////////////////");
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                jsonObject = jsonArray.getJsonObject(i);
+                try {
+                    idConcept = jsonObject.getString("idConcept"); 
+                    idArk = jsonObject.getString("idArk"); 
+                    if(StringUtils.isEmpty(idConcept) || StringUtils.isEmpty(idArk)) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(idConcept);
+                        nodeIdValue.setValue("Error: id Ark ou Concept vide : " + idArk);     
+                        nodeIdValues.add(nodeIdValue);
+                    } else {
+                        if(StringUtils.contains(idArk, "Error:")){
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setId(idConcept);
+                            nodeIdValue.setValue(idArk);   
+                            nodeIdValues.add(nodeIdValue);
+                        } else {
+                            if(!updateArkIdOfConcept(ds, idConcept, idTheso, idArk)){
+                                NodeIdValue nodeIdValue = new NodeIdValue();
+                                nodeIdValue.setId(idConcept);
+                                nodeIdValue.setValue("Error: erreur de mise à jour de Ark dans Opentheso : " + idArk);   
+                                nodeIdValues.add(nodeIdValue);                                
+                            } else {
+                                NodeIdValue nodeIdValue = new NodeIdValue();
+                                nodeIdValue.setId(idConcept);
+                                nodeIdValue.setValue(idArk);   
+                                nodeIdValues.add(nodeIdValue);                                  
+                            }
+                        }
+                    }
+                } catch(Exception e){
+                    NodeIdValue nodeIdValue = new NodeIdValue();
+                    nodeIdValue.setId(idConcept);
+                    nodeIdValue.setValue(e.toString());
+                    nodeIdValues.add(nodeIdValue);
+                }
+            }
+        } catch (Exception e) {
+        }        
+        return nodeIdValues;
+    }    
+    
     /**
      * Cette fonction regenère tous les idArk des concepts fournis en paramètre
      *

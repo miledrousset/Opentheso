@@ -441,7 +441,7 @@ public class ExportFileBean implements Serializable {
             try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
                 return DefaultStreamedContent.builder()
                         .contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> input)
                         .build();
             } catch (IOException ex) {
@@ -476,7 +476,7 @@ public class ExportFileBean implements Serializable {
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent.builder().contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
@@ -507,7 +507,7 @@ public class ExportFileBean implements Serializable {
             try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
                 return DefaultStreamedContent.builder()
                         .contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> input)
                         .build();
             } catch (IOException ex) {
@@ -535,7 +535,7 @@ public class ExportFileBean implements Serializable {
                 return DefaultStreamedContent
                         .builder()
                         .contentType("application/pdf")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".pdf")
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
@@ -556,7 +556,7 @@ public class ExportFileBean implements Serializable {
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
                 
                 return DefaultStreamedContent.builder().contentType("text/csv")
-                        .name(viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
+                        .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".csv")
                         .stream(() -> flux)
                         .build();
             } catch (Exception ex) {
@@ -603,7 +603,7 @@ public class ExportFileBean implements Serializable {
 
                     return DefaultStreamedContent.builder()
                             .contentType("application/xml")
-                            .name(viewExportBean.getNodeIdValueOfTheso().getId() + extention)
+                            .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + extention)
                             .stream(() -> input)
                             .build();
                 }

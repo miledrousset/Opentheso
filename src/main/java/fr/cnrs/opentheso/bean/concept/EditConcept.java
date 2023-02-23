@@ -696,6 +696,37 @@ public class EditConcept implements Serializable {
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
         nodeIdValues = generateArkIds(conceptHelper, idConcepts);
     }
+    
+    /**
+     * permet de générer la totalité des identifiants Ark, si un identifiant
+     * n'existe pas, il sera créé, sinon, il sera mis à jour.
+    */
+    public void generateAllArkFast() {
+       
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> idConcepts;
+        idConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+
+        if (roleOnThesoBean.getNodePreference() == null) {
+            return;
+        }
+        nodeIdValues = new ArrayList<>();
+        //idConcepts.add(conceptView.getNodeConcept().getConcept().getIdConcept());
+        conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        
+        FacesMessage msg;
+        nodeIdValues = conceptHelper.generateArkIdFast(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                idConcepts,
+                selectedTheso.getCurrentLang());
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+        }        
+    }    
 
     private ArrayList<NodeIdValue> generateArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {
         FacesMessage msg;

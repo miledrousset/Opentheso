@@ -14,6 +14,7 @@ public class CandidatDto implements Serializable {
     private String idConcepte;
     private String idThesaurus;
     private String lang;
+    private String adminMessage;
     
     private String createdBy;
     private int createdById;
@@ -63,6 +64,7 @@ public class CandidatDto implements Serializable {
         employePour = "";
         participants = new ArrayList<>();
         collections = new ArrayList<>();
+        adminMessage = "";
     }
 
     public CandidatDto(String nomPref) {
@@ -85,7 +87,8 @@ public class CandidatDto implements Serializable {
         this.corpus = source.getCorpus();
         this.messages = source.getMessages();
         this.traductions = source.getTraductions();
-        this.domaine = domaine;
+        this.adminMessage = source.getAdminMessage();
+        this.domaine = source.getDomaine();
     }
 
     public String getDomaine() {
@@ -322,6 +325,14 @@ public class CandidatDto implements Serializable {
 
     public void setCreatedById(int createdById) {
         this.createdById = createdById;
+    }
+
+    public String getAdminMessage() {
+        return adminMessage;
+    }
+
+    public void setAdminMessage(String adminMessage) {
+        this.adminMessage = adminMessage;
     }
     
 }

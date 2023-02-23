@@ -266,6 +266,10 @@ public class PropositionBean implements Serializable {
 
     public void executionAction() throws IOException {
         if (null != actionNom) {
+            if(propositionSelected != null) {
+                propositionSelected.setAdminComment(commentaireAdmin);
+                propositionSelected.setThesoName(selectedTheso.getThesoName());
+            }
             switch (actionNom) {
                 case "envoyerProposition":
                     envoyerProposition();

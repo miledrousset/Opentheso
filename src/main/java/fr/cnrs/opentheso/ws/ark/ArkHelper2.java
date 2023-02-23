@@ -140,6 +140,23 @@ public class ArkHelper2 {
     
     /**
      * Permet de créer un identifiant ARK et un identifiant Handle (serveur MOM)
+     * @param jsonDatas
+     * @return
+     */
+    public String addBatchArk(String jsonDatas) {
+        if (nodePreference == null) {
+            return null;
+        }
+        if (!nodePreference.isUseArk()) {
+            return null;
+        }
+        
+        return arkClientRest.addBatchArk2(jsonDatas);
+
+    }    
+    
+    /**
+     * Permet de créer un identifiant ARK et un identifiant Handle (serveur MOM)
      * @param privateUri
      * @param nodeMetaData
      * @return
@@ -280,7 +297,10 @@ public class ArkHelper2 {
         return true;
     }       
     
-    
+    public String getToken() {
+        return arkClientRest.getToken();
+    }
+            
     
     
     

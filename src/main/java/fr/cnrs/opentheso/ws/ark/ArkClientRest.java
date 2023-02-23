@@ -1,11 +1,23 @@
 package fr.cnrs.opentheso.ws.ark;
 
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
+import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -134,6 +146,86 @@ public final class ArkClientRest {
         setForGet();
         return true;
     }     
+    
+    /**
+     * permet d'ajouter un lot d'identifiants Ark
+     * le retour de résultat est sous forme de tableau json 
+     * @param arkString
+     * @return 
+     */
+    public String addBatchArk(String arkString) {
+        jsonArk = null;
+       
+        // il faut vérifier la connexion avant 
+        if(loginJson == null) {
+            message = "Erreur de connexion";
+            return null;
+        }
+
+        Client client= ClientBuilder.newClient();
+        try (Response response = client
+            .target(propertiesArk.getProperty("serverHost"))
+            .path("rest/v1/ark/batchAdd")
+            .request(MediaType.APPLICATION_JSON)
+            .header("Content-type", "application/json")
+            .put(Entity.json(arkString))){
+            
+            if (response.getStatus() != 200) {
+                message =  "Erreur lors de l'ajout d'un Ark" + response.getStatus();
+                response.close();
+                client.close();
+                return null;
+            }
+            jsonArk = response.readEntity(String.class);            
+            
+        } catch (Exception e) {
+            message =  "Exception lors de l'ajout d'un Ark";
+            return null;            
+        }
+        return jsonArk;
+    }    
+    /////// TEST TEST TEST ///////////
+    public String addBatchArk2(String arkString) {
+        String apiUrl = propertiesArk.getProperty("serverHost") + "rest/v1/ark/batchAdd";
+        System.out.println("/////////////////// avant envoie au serveur Ark /////////////////////");
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+            
+            OutputStream outputStream = connection.getOutputStream();
+            outputStream.write(arkString.getBytes());
+            outputStream.flush();
+
+            StringBuffer response;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String line;
+                response = new StringBuffer();
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+            }
+
+          //  System.out.println(response.toString());
+            connection.disconnect();
+            System.out.println("/////////////////// retour du serveur Ark /////////////////////");            
+            return response.toString();
+
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        return null;
+    }     
+    /////// TEST TEST TEST ///////////    
+    
     
     /**
      * permet d'ajouter un identifiant Ark et Handle
