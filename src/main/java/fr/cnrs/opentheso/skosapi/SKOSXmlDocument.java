@@ -31,6 +31,7 @@ public class SKOSXmlDocument {
     private ArrayList<SKOSResource> groupList;
     private ArrayList<SKOSResource> conceptList;
     private ArrayList<SKOSResource> facetList;
+    private ArrayList<SKOSResource> foafImage;
     private String title;
     
 
@@ -46,6 +47,7 @@ public class SKOSXmlDocument {
         groupList = new ArrayList<>();
         conceptList = new ArrayList<>();
         facetList = new ArrayList<>();
+        foafImage = new ArrayList<>();
         equivalenceUriArkHandle = new HashMap();
     }
 
@@ -70,7 +72,14 @@ public class SKOSXmlDocument {
             });
             facetList.clear();
             facetList = null;
-        }   
+        }  
+        if(foafImage != null){
+            foafImage.forEach(sKOSResource -> {
+                sKOSResource.clear();
+            });
+            foafImage.clear();
+            foafImage = null;
+        }         
         if(equivalenceUriArkHandle != null){
             equivalenceUriArkHandle.clear();
             equivalenceUriArkHandle = null;
@@ -89,6 +98,14 @@ public class SKOSXmlDocument {
 
     public void addFacet(SKOSResource r) {
         facetList.add(r);
+    }
+    
+    public void addFoafImage(SKOSResource r) {
+        foafImage.add(r);
+    }    
+
+    public ArrayList<SKOSResource> getFoafImage() {
+        return foafImage;
     }
 
     public void addconcept(SKOSResource r) {

@@ -776,6 +776,17 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     font-weight: bold;
 }
 
+.ui-button-danger-private {
+    background-color: #D32F2F !important;
+    border-color: #D32F2F !important;
+    font-size: 30px !important;
+    padding: 0.5rem 1rem 0.5rem 2rem;
+}
+.ui-button-danger-private:hover {
+    background-color: #C02929 !important;
+    border-color: #C02929 !important;
+}
+
 .ui-button-secondary {
     min-width: 100px;
     padding: 0.5rem 1rem 0.5rem 2rem;

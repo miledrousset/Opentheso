@@ -105,7 +105,7 @@
 
                             </h:panelGroup>
 
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px;">
 
                                 <p:menuButton title="#{langueBean.getMsg('rightbody.concept.tooltip_image')}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
@@ -132,11 +132,12 @@
                                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                                    style="font-size: 12px; color: grey; font-style: italic " />
                                 </h:panelGroup>
-                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}">
-                                    <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="photo" numVisible="5" 
+                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}" >
+                                    <p:galleria value="#{conceptView.nodeConcept.nodeimages}" var="photo" numVisible="5"
+                                                autoPlay="true" circular="true"
                                                 showThumbnails="false" showIndicators="true" changeItemOnIndicatorHover="true" 
-                                                showIndicatorsOnItem="false" style="max-width: 300px; margin-left: 40px">
-                                        <p:graphicImage alt="#{photo.oldUri}" url="#{photo.uri}" style="width: 100%; display: block;" />
+                                                showIndicatorsOnItem="false" style="max-width: 300px; margin-left: 100px;">
+                                        <p:graphicImage alt="#{photo.oldUri}" value="#{photo.uri}" url="#{photo.uri}" style="width: 100%; display: block;" />
                                     </p:galleria>
                                 </h:panelGroup>
                             </div>

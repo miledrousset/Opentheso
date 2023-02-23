@@ -37,7 +37,7 @@
 
             <ui:include src="../commun/menu.xhtml" />
 
-            <div id="content-wrapper" style="width: 100%">
+            <div id="content-wrapper" style="min-height:100%; position:relative;">
 
                 <h:form id="containerIndex" style="min-height:100%; position:relative;">
                     
@@ -84,6 +84,7 @@
                 </h:form>
                 <ui:include src="../toolbox/edition/addLangToTheso.xhtml" />
                 <ui:include src="../toolbox/edition/confirmDelete.xhtml" />     
+                <ui:include src="../dialog/login/logout.xhtml" />
             </div>
         </h:panelGroup>
     </h:body>

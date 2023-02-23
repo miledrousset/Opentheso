@@ -444,15 +444,12 @@ public class PropositionService implements Serializable {
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
-            if(commentaireAdmin == null)
-                commentaireAdmin = "";
-
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Votre proposition d’enrichissement sur le concept " + propositionSelected.getNomConcept() + " du thésaurus " + propositionSelected.getThesoName()
                     + " a été refusée par les adminisatrateurs.<br/>"
                     + "Voici leur message: <br/>" 
-                    + commentaireAdmin + "<br/>"
+                    + propositionSelected.getAdminComment() + "<br/>"
                     + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention. <b>" 
                     + "<br/><br/> Cordialement,<br/>"
                     + "L'équipe " + propositionSelected.getThesoName() 
@@ -689,17 +686,13 @@ public class PropositionService implements Serializable {
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
-            
-            if(commentaireAdmin == null)
-                commentaireAdmin = "";
-
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Votre proposition d'enrichissement sur le concept " + propositionSelected.getNomConcept()
                     + " du thésaurus " + propositionSelected.getThesoName()
                     + " a été acceptée par les adminisatrateurs.<br/>"
                     + " voici leur message : "
-                    + commentaireAdmin
+                    + propositionSelected.getAdminComment()
                     + "<br/>"
                     + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention." 
                     + "<br/><br/> Cordialement,<br/>"

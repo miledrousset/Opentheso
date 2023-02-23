@@ -256,9 +256,18 @@ public class CandidatBean implements Serializable {
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
     
-    public String getOuntOfCandidats(){
+    public String getCountOfCandidats(){
         return "" + candidatList.size();
     }
+    
+    public String getCountOfAcceptedCandidats(){
+        return "" + acceptedCadidat.size();
+    }    
+    
+    public String getCountOfRejectedCandidats(){
+        return "" + rejetCadidat.size();
+    }      
+    
 
     public void selectMyRejectCandidats() {
         if (myCandidatsSelected3) {
@@ -666,6 +675,8 @@ public class CandidatBean implements Serializable {
         allTermes = candidatList;
 
         initialCandidat = null;
+        definition = null;
+        
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());

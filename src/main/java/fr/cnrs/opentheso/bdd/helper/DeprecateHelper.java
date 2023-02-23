@@ -201,6 +201,12 @@ public class DeprecateHelper {
 
     /**
      * Cette fonction permet de déprécier un concept (status = DEP)
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @param idUser
+     * @return 
      */
     public boolean deprecateConcept(HikariDataSource ds, String idConcept, String idTheso, int idUser) {
         try ( Connection conn = ds.getConnection()) {

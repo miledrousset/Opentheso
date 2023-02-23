@@ -37,9 +37,9 @@
 
             <ui:include src="../commun/menu.xhtml" />
 
-            <div id="content-wrapper" style="width: 100%">
+            <div id="content-wrapper" style="min-height:100%; position:relative;">
 
-                <h:form id="containerIndex" style="min-height:100%; position:relative;">
+                <h:form id="containerIndex">
 
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
@@ -217,6 +217,7 @@
                                      actionListener="#{newUSerBean.addNewUserBySuperAdmin()}" />
                 </div>
             </h:form>
-        </p:dialog>          
+        </p:dialog> 
+        <ui:include src="../dialog/login/logout.xhtml" />
     </h:body>
 </html>

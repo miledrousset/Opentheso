@@ -75,6 +75,7 @@ public interface SKOSProperty {
     public static final int narrowMatch = 74;
 
     //Ressource
+    public static final int FoafImage = 79;
     public static final int Concept = 80;
     public static final int ConceptScheme = 81;
     public static final int Collection = 82;

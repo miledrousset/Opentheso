@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
@@ -24,7 +25,7 @@ import fr.cnrs.opentheso.bdd.tools.StringPlus;
 public class ExportHelper {
 
     private final static String SEPERATEUR = "##";
-    private final static String SUB_SEPERATEUR = "@";
+    private final static String SUB_SEPERATEUR = "@@";
 
     
     public List<SKOSResource> getAllFacettes(HikariDataSource ds, String idTheso, String baseUrl, 
@@ -144,7 +145,9 @@ public class ExportHelper {
                         addMembres(sKOSResource, resultSet.getString("membre"), resultSet.getString("IDENTIFIER"));
 
                         addFacets(sKOSResource, resultSet.getString("facets"), idTheso, originalUri);
-
+                        
+                        addExternalResources(sKOSResource, resultSet.getString("externalResources"));
+                        
                         if (resultSet.getString("latitude") != null || resultSet.getString("longitude") != null) {
                             sKOSResource.setGPSCoordinates(new SKOSGPSCoordinates(
                                     resultSet.getDouble("latitude"), resultSet.getDouble("longitude")));
@@ -220,7 +223,7 @@ public class ExportHelper {
                 + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
                 + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, "
                 + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
-                + "replaces text, replaced_by text, facets text);";
+                + "replaces text, replaced_by text, facets text, externalResources text);";
     }
 
     private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
@@ -243,9 +246,18 @@ public class ExportHelper {
     private void addImages(SKOSResource resource, String textBrut) {
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] images = textBrut.split(SEPERATEUR);
+            ArrayList<NodeImage> nodeImages = new ArrayList<>();
             for (String image : images) {
-                resource.addImageUri(image);
+                String[] imageDetail = image.split(SUB_SEPERATEUR);
+                if(imageDetail.length != 3) return;
+                
+                NodeImage nodeImage = new NodeImage();
+                nodeImage.setImageName(imageDetail[0]);
+                nodeImage.setCopyRight(imageDetail[1]);
+                nodeImage.setUri(imageDetail[2]);
+                nodeImages.add(nodeImage);
             }
+            resource.setNodeImage(nodeImages);
         }
     }
 
@@ -258,6 +270,14 @@ public class ExportHelper {
             }
         }
     }
+    private void addExternalResources(SKOSResource resource, String textBrut) {
+        if (StringUtils.isNotEmpty(textBrut)) {
+            String[] externalResources = textBrut.split(SEPERATEUR);
+            for (String externalResource : externalResources) {
+                resource.addExternalResource(externalResource);
+            }
+        }
+    }    
 
     private void setStatusOfConcept(String status, SKOSResource sKOSResource) {
         switch (status.toLowerCase()) {

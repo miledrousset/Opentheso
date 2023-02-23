@@ -20,6 +20,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class WritePdf {
     HashMap<String, ArrayList<String>> idToDocumentation = new HashMap<>();
     HashMap<String, ArrayList<String>> idToDocumentation2 = new HashMap<>();
     HashMap<String, ArrayList<String>> idToMatch = new HashMap<>();
-    HashMap<String, ArrayList<String>> idToImg = new HashMap<>();
+    HashMap<String, ArrayList<NodeImage>> idToImg = new HashMap<>();
     HashMap<String, String> idToGPS = new HashMap<>();
 
     HashMap<String, ArrayList<Integer>> idToIsTrad = new HashMap<>();
@@ -305,9 +306,9 @@ public class WritePdf {
         }
         
         if (CollectionUtils.isNotEmpty(idToImg.get(key))) {
-            for (String img : idToImg.get(key)) {
+            for (NodeImage nodeImage : idToImg.get(key)) {
                 try {
-                    Image image = Image.getInstance(new URL(img));
+                    Image image = Image.getInstance(new URL(nodeImage.getUri()));
                     image.scaleAbsolute(200f, 200f);                    
                     paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
                 } catch (BadElementException | IOException ex) {}
@@ -609,10 +610,10 @@ public class WritePdf {
 
         }
         
-        if (CollectionUtils.isNotEmpty(concept.getImageUris())) {
-            for(String imageURL : concept.getImageUris()) {
+        if (CollectionUtils.isNotEmpty(concept.getNodeImage())) {
+            for(NodeImage nodeImage : concept.getNodeImage()) {
                 try {
-                    Image image = Image.getInstance(new URL(imageURL));
+                    Image image = Image.getInstance(new URL(nodeImage.getUri()));
                     image.scaleAbsolute(200f, 200f);                    
                     paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
                 } catch (BadElementException | IOException ex) {}

@@ -151,7 +151,7 @@ public class SynonymBean implements Serializable {
         if (termHelper.isTermExist(connect.getPoolConnexion(),
                 value,
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getSelectedLang())) {
+                selectedLang)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             duplicate = true;
@@ -163,7 +163,7 @@ public class SynonymBean implements Serializable {
         if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
                 value,
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getSelectedLang())) {
+                selectedLang)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             duplicate = true;

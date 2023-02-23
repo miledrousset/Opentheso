@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
+import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
@@ -24,6 +25,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
@@ -42,6 +44,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import org.apache.commons.collections.CollectionUtils;
 
 /**
@@ -51,7 +55,7 @@ import org.apache.commons.collections.CollectionUtils;
 public class ImportRdf4jHelper {
 
     private final static String SEPERATEUR = "##";
-    private final static String SOUS_SEPERATEUR = "@";
+    private final static String SOUS_SEPERATEUR = "@@";
 
     private ArrayList<String> idGroups; // tous les idGroupes du thésaurus
     private String langueSource;
@@ -465,11 +469,11 @@ public class ImportRdf4jHelper {
         // IMAGES
         //-- 'url1##url2'
         String images = null;
-        if (CollectionUtils.isNotEmpty(conceptResource.getImageUris())) {
+        if (CollectionUtils.isNotEmpty(conceptResource.getNodeImage())) {
             images = "";
-            for (String imageUri : conceptResource.getImageUris()) {
-                if (StringUtils.isNotEmpty(imageUri)) {
-                    images = images + SEPERATEUR + imageUri;
+            for (NodeImage nodeImage : conceptResource.getNodeImage()) {
+                if (StringUtils.isNotEmpty(nodeImage.getUri())) {
+                    images = images + SEPERATEUR + nodeImage.getImageName() + SOUS_SEPERATEUR + nodeImage.getCopyRight() + SOUS_SEPERATEUR + nodeImage.getUri();
                 }
             }
             if (images.length() > 0) {
@@ -747,8 +751,55 @@ public class ImportRdf4jHelper {
             System.out.println(e.getMessage());
             System.out.println("--------------------------------");
         }
+        
+        addExternalResources(idTheso,idConcept, conceptResource.getDcRelations());
+    }
+    private void addExternalResources(String idTheso, String idConcept, ArrayList<String> externalRelations) {
+        StringPlus stringPlus = new StringPlus();        
+        ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();        
+        
+        for (String externalRelation : externalRelations) {
+            if(externalRelation == null || externalRelation.isEmpty()) {
+                return;
+            }
+            if(!stringPlus.urlValidator(externalRelation)){
+                return;            
+            }
+            if(!externalResourcesHelper.addExternalResource(
+                    ds,
+                    idConcept,
+                    idTheso,
+                    "",
+                    externalRelation,
+                    idUser)) {
+            }
+        }
     }
 
+    public void addFoafImages(ArrayList<SKOSResource> foafImages, String idTheso){
+        String images;        
+        for (SKOSResource sKOSResource : foafImages) {
+            FoafImage foafImage = sKOSResource.getFoafImage();
+            if(foafImage == null) return;
+            images = foafImage.getImageName() + SOUS_SEPERATEUR + foafImage.getCopyRight() + SOUS_SEPERATEUR + sKOSResource.getUri();
+            if(StringUtils.isEmpty(images)) return;
+            String sql = "";
+            try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
+                sql = "CALL opentheso_add_external_images("
+                    + "'" + idTheso + "',"
+                    + "'" + sKOSResource.getIdentifier() + "',"
+                    + idUser
+                    + ",'" + images + "'" 
+                    + ")";
+                stmt.executeUpdate(sql);
+            } catch (SQLException e) {
+                System.out.println("SQL : " + sql);
+                System.out.println(e.getMessage());
+                System.out.println("--------------------------------");
+            }  
+        }
+    }
+    
     public void addFacetsV2(ArrayList<SKOSResource> facetResources, String idTheso) {
 
         for (SKOSResource facetSKOSResource : facetResources) {
@@ -1122,8 +1173,8 @@ public class ImportRdf4jHelper {
         }
 
         // ajout des images externes URI
-        for (String imageUri : acs.nodeImages) {
-            acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, "", "", imageUri, idUser);
+        for (NodeImage nodeImage : acs.nodeImages) {
+            acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight() ,nodeImage.getUri(), idUser);
         }
 
         DeprecateHelper deprecateHelper = new DeprecateHelper();
@@ -1277,9 +1328,13 @@ public class ImportRdf4jHelper {
     }
 
     private void addImages(AddConceptsStruct acs) {
-        for (String imageUri : acs.conceptResource.getImageUris()) {
-            if (imageUri != null && (!imageUri.isEmpty())) {
-                acs.nodeImages.add(imageUri);
+        for (NodeImage nodeImage : acs.conceptResource.getNodeImage()) {
+            if (nodeImage != null && (!nodeImage.getUri().isEmpty())) {
+                NodeImage nodeImage1 = new NodeImage();
+                nodeImage1.setImageName(nodeImage.getImageName());
+                nodeImage1.setCopyRight(nodeImage.getCopyRight());
+                nodeImage1.setUri(nodeImage.getUri());
+                acs.nodeImages.add(nodeImage1);
             }
         }
     }

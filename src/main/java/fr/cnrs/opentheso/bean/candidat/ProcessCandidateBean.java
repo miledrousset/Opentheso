@@ -50,6 +50,7 @@ public class ProcessCandidateBean implements Serializable {
 
     public void reset(CandidatDto candidatSelected) {
         this.selectedCandidate = candidatSelected;
+        adminMessage = null;
     }
 
     public void insertCandidat(int idUser) {

@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -44,12 +45,18 @@ public class SKOSResource {
     private SKOSGPSCoordinates GPSCoordinates;
     private ArrayList<SKOSNotation> notationList;
     private ArrayList<SKOSMatch> matchList;
+    
+    private ArrayList<String> dcRelations;    
 
+    private ArrayList<String> externalResources;
+    
     // Autopostage the complete path to the concept
     private ArrayList<String> paths;
 
     // images
-    private ArrayList<String> imageUris;
+    private ArrayList<NodeImage> nodeImages;
+    
+    private FoafImage foafImage;    
 
     // pour les labels et le DC du thésaurus
     private Thesaurus thesaurus;
@@ -67,12 +74,15 @@ public class SKOSResource {
         GPSCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
-        imageUris = new ArrayList<>();
+        nodeImages = new ArrayList<>();
         messages = new ArrayList<>();
         votes = new ArrayList<>();
         status = 80;
         sKOSReplaces = new ArrayList<>();
         thesaurus = new Thesaurus();
+        foafImage = new FoafImage();
+        dcRelations = new ArrayList<>();
+        externalResources = new ArrayList<>();
     }
 
     public SKOSResource(String uri, int property) {
@@ -87,7 +97,7 @@ public class SKOSResource {
         GPSCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
-        imageUris = new ArrayList<>();
+        nodeImages = new ArrayList<>();
         messages = new ArrayList<>();
         votes = new ArrayList<>();
         status = 80;
@@ -116,8 +126,8 @@ public class SKOSResource {
             notationList.clear();
         if(matchList != null)
             matchList.clear();
-        if(imageUris != null)
-            imageUris.clear();
+        if(nodeImages != null)
+            nodeImages.clear();
         if(messages != null)
             messages.clear();
         if(votes != null)
@@ -125,6 +135,9 @@ public class SKOSResource {
         if(sKOSReplaces != null)
             sKOSReplaces.clear();
         thesaurus = null;
+        foafImage = null;
+        dcRelations = null;
+        externalResources = null;
     }
 
     public String getArkId() {
@@ -153,6 +166,14 @@ public class SKOSResource {
      */
     public String getIdentifier() {
         return identifier;
+    }
+
+    public ArrayList<String> getDcRelations() {
+        return dcRelations;
+    }
+
+    public void addDcRelations(String dcRelation) {
+        this.dcRelations.add(dcRelation);
     }
 
     /**
@@ -185,6 +206,14 @@ public class SKOSResource {
 
     public void setThesaurus(Thesaurus thesaurus) {
         this.thesaurus = thesaurus;
+    }
+
+    public FoafImage getFoafImage() {
+        return foafImage;
+    }
+
+    public void setFoafImage(FoafImage foafImage) {
+        this.foafImage = foafImage;
     }
 
     /**
@@ -251,6 +280,14 @@ public class SKOSResource {
      */
     public void addNotation(String notation) {
         notationList.add(new SKOSNotation(notation));
+    }
+
+    public ArrayList<String> getExternalResources() {
+        return externalResources;
+    }
+
+    public void addExternalResource(String externalResource) {
+        this.externalResources.add(externalResource);
     }
 
     /**
@@ -363,7 +400,7 @@ public class SKOSResource {
             e.getMessage();
         }
     }
-
+    
     /**
      * Méthode d'ajout des Idetifier type DC
      *
@@ -383,16 +420,16 @@ public class SKOSResource {
         this.GPSCoordinates = GPSCoordinates;
     }
 
-    public ArrayList<String> getImageUris() {
-        return imageUris;
+    public ArrayList<NodeImage> getNodeImage() {
+        return nodeImages;
     }
 
-    public void setImageUris(ArrayList<String> imageUris) {
-        this.imageUris = imageUris;
+    public void setNodeImage(ArrayList<NodeImage> nodeImages) {
+        this.nodeImages = nodeImages;
     }
 
-    public void addImageUri(String uri) {
-        this.imageUris.add(uri);
+    public void addNodeImage(NodeImage nodeImage) {
+        this.nodeImages.add(nodeImage);
     }
 
     public int getStatus() {
@@ -506,7 +543,7 @@ public class SKOSResource {
     public static Comparator<SKOSResource> sortForHiera(HikariDataSource hikariDataSource, boolean isTrad, String langCode,
             String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation,
             HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS,
-            HashMap<String, ArrayList<String>> idToImg, ArrayList<String> resourceChecked,
+            HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
             HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
         return new HieraComparator(hikariDataSource, isTrad, langCode, langCode2, idToNameHashMap,
                 idToChildId, idToDocumentation, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff);
@@ -521,7 +558,7 @@ public class SKOSResource {
         HashMap<String, ArrayList<String>> idToDocumentation;
         HashMap<String, ArrayList<String>> idToMatch;
         HashMap<String, String> idToGPS;
-        HashMap<String, ArrayList<String>> idToImg;
+        HashMap<String, ArrayList<NodeImage>> idToImg;
         boolean isTrad;
         ArrayList<String> resourceChecked;
         HikariDataSource hikariDataSource;
@@ -530,7 +567,7 @@ public class SKOSResource {
         public HieraComparator(HikariDataSource hikariDataSource, boolean isTrad, String langCode, String langCode2,
                 HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId,
                 HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch,
-                HashMap<String, String> idToGPS, HashMap<String, ArrayList<String>> idToImg, ArrayList<String> resourceChecked,
+                HashMap<String, String> idToGPS, HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
                 HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
 
             this.hikariDataSource = hikariDataSource;
@@ -637,8 +674,8 @@ public class SKOSResource {
         private void writeIdToImg(SKOSResource resource) {
             String key = getIdFromUri(resource.getUri());
 
-            if (CollectionUtils.isNotEmpty(resource.getImageUris())) {
-                idToImg.put(key, resource.getImageUris());
+            if (CollectionUtils.isNotEmpty(resource.getNodeImage())) {
+                idToImg.put(key, resource.getNodeImage());
             }
         }
 

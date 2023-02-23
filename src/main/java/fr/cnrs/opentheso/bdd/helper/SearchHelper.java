@@ -1341,6 +1341,37 @@ public class SearchHelper {
                     }
                 }
             }
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select lower(term.lexical_value) from term, non_preferred_term"
+                        + " where"
+                        + " term.id_thesaurus = non_preferred_term.id_thesaurus"
+                        + " and"
+                        + " term.lang = non_preferred_term.lang"
+                        + " and"
+                        + " lower(term.lexical_value) = lower(non_preferred_term.lexical_value)"
+                        + " and"
+                        + " term.id_thesaurus = '" + idTheso + "'"
+                        + " and term.lang = '" + idLang + "'"
+                        + " limit 100");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        conceptLabels.add(resultSet.getString("lower"));
+                    }
+                }
+            }
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select lower(lexical_value) from non_preferred_term "
+                        + " where"
+                        + " id_thesaurus = '" + idTheso + "'"
+                        + " and"
+                        + " lang = '" + idLang + "'"
+                        + " group by lower(lexical_value) having count(*) > 1 limit 100");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        conceptLabels.add(resultSet.getString("lower"));
+                    }
+                }
+            }            
         } catch (SQLException sqle) {
             log.error("Error while getting dupplicated labels of theso : " + idTheso, sqle);
         }
