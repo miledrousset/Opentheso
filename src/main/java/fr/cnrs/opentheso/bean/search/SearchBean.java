@@ -479,6 +479,11 @@ public class SearchBean implements Serializable {
             PrimeFaces.current().executeScript("disparaitre();");
         }
     }
+    
+    public void managerSearchBar() {
+        PrimeFaces.current().executeScript("afficheSearchBar();");
+    }
+
 
     /**
      * permet de retourner la liste des concepts qui ont une poly-hiérarchie
