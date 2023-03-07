@@ -6,12 +6,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>23.02.05</version>
+    <version>23.02.06</version>
     <packaging>war</packaging>
     <name>opentheso2</name>
 
     <dependencies>
-
         <!-- for QrCode --> 
         <dependency>
             <groupId>io.nayuki</groupId>

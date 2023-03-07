@@ -5,34 +5,38 @@
              xmlns:p="http://primefaces.org/ui">
 
     <p:dialog id="idAddImage" header="#{langueBean.getMsg('rightbody.conceptdialog.add_image')}" widgetVar="addImage" 
-              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form>
             
             <p:defaultCommand target="addImageBtn" />
             
-            <div class="row">
-                <div class="col-12">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
+
+            
+            <div class="row" style="margin-top: 10px;font-size: 14px;">
+                <div class="col-3" style="text-align: right; ">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')}" />           
+                </div>
+                <div class="col-9" style="text-align: left">
                     <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
                 </div>
-            </div>
+            </div>            
 
             <div class="row" style="margin-top: 10px; text-align: right">
-                <div class="col-5" >
+                <div class="col-3" >
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri_image')}" />              
                 </div>
-                <div class="col-7">
+                <div class="col-9">
                     <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_uri')} ..."  
                                  value="#{imageBean.uri}" style="width: 100%;"/> 
                 </div>
             </div>
 
             <div class="row" style="margin-top: 10px; text-align: right">
-                <div class="col-5" >
+                <div class="col-3" >
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.copyright')}" />
                 </div>
-                <div class="col-7">
+                <div class="col-9">
                     <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.copyright')} ..."  
                                  value="#{imageBean.copyright}" style="width: 100%;"/>
                 </div>

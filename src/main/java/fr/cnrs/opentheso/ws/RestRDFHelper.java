@@ -1493,7 +1493,7 @@ public class RestRDFHelper {
         
         exportRdf4jHelperNew.exportCollections(ds, idTheso);
         List<SKOSResource> concepts = exportHelper.getAllConcepts(ds, idTheso,
-                    baseUrl, null, nodePreference.getOriginalUri());
+                    baseUrl, null, nodePreference.getOriginalUri(), nodePreference);
             
         List<SKOSResource> facettes = exportHelper.getAllFacettes(ds, idTheso, baseUrl,
                 nodePreference.getOriginalUri(), nodePreference);

@@ -41,24 +41,10 @@
     </application>
     <application>
         <resource-bundle>
-            <base-name>language/site_de</base-name>
-            <var>langue_de</var>
-        </resource-bundle>
-        <message-bundle>language/site_de</message-bundle>
-    </application>
-    <application>
-        <resource-bundle>
             <base-name>language/site_es</base-name>
             <var>langue_es</var>
         </resource-bundle>
         <message-bundle>language/site_es</message-bundle>
-    </application>
-    <application>
-        <resource-bundle>
-            <base-name>language/site_it</base-name>
-            <var>langue_it</var>
-        </resource-bundle>
-        <message-bundle>language/site_it</message-bundle>
     </application>
 
     <filter>

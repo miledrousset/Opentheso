@@ -723,10 +723,13 @@ public class ExportRdf4jHelperNew {
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////// 
     public String getUriFromId(String id) {
-        
+
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty() 
             && !"null".equals(nodePreference.getOriginalUri())) {
-            return nodePreference.getOriginalUri() + "/" + id;
+            if(nodePreference.isOriginalUriIsArk()) {
+                return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
+            }            
+            return nodePreference.getOriginalUri() + "/" + nodePreference.getIdNaan() + "/" + id;
         } else {            
             return getPath() + "/?idt=" + id;
         }

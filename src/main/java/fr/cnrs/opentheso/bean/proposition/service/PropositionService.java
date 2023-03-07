@@ -447,7 +447,7 @@ public class PropositionService implements Serializable {
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Votre proposition d’enrichissement sur le concept " + propositionSelected.getNomConcept() + " du thésaurus " + propositionSelected.getThesoName()
-                    + " a été refusée par les adminisatrateurs.<br/>"
+                    + " a été refusée par les administrateurs.<br/>"
                     + "Voici leur message: <br/>" 
                     + propositionSelected.getAdminComment() + "<br/>"
                     + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention. <b>" 
@@ -690,7 +690,7 @@ public class PropositionService implements Serializable {
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Votre proposition d'enrichissement sur le concept " + propositionSelected.getNomConcept()
                     + " du thésaurus " + propositionSelected.getThesoName()
-                    + " a été acceptée par les adminisatrateurs.<br/>"
+                    + " a été acceptée par les administrateurs.<br/>"
                     + " voici leur message : "
                     + propositionSelected.getAdminComment()
                     + "<br/>"

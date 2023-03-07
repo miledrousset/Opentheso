@@ -112,11 +112,15 @@ public class WriteRdf4j {
 
     private void writeNodeImage(SKOSResource resource) {
         for (NodeImage nodeImage : resource.getNodeImage()) {
+            if(StringUtils.isEmpty(nodeImage.getUri())) continue;
+            
             builder.subject(vf.createIRI(nodeImage.getUri().replaceAll(" ", "%20")));
             builder.add(RDF.TYPE, FOAF.IMAGE);
             builder.add(DCTERMS.IDENTIFIER, resource.getSdc().getIdentifier());
-            builder.add(DCTERMS.TITLE, nodeImage.getImageName());
-            builder.add(DCTERMS.RIGHTS, nodeImage.getCopyRight());
+            if(!StringUtils.isEmpty(nodeImage.getImageName()))
+                builder.add(DCTERMS.TITLE, nodeImage.getImageName());
+            if(!StringUtils.isEmpty(nodeImage.getCopyRight()))
+                builder.add(DCTERMS.RIGHTS, nodeImage.getCopyRight());
         }
     }    
     /*
@@ -230,7 +234,7 @@ public class WriteRdf4j {
     private void writeExternalResources(SKOSResource resource) {
         ArrayList<String> externalResources = resource.getExternalResources();
         for (String externalResource : externalResources) {
-            builder.add(DCTERMS.RELATION, externalResource);
+            builder.add(DCTERMS.SOURCE, externalResource);
         }
     }    
 

@@ -77,7 +77,7 @@ public class ExportHelper {
     }
 
     public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso,
-            String baseUrl, String idGroup, String originalUri) throws Exception {
+            String baseUrl, String idGroup, String originalUri, NodePreference nodePreference) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
 
@@ -104,7 +104,7 @@ public class ExportHelper {
                         getLabels(resultSet.getString("altLab"), sKOSResource, SKOSProperty.altLabel);
 
                         if (resultSet.getString("broader") == null || resultSet.getString("broader").isEmpty()) {
-                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri),
+                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri, nodePreference),
                                     SKOSProperty.topConceptOf));
                         }
 
@@ -130,7 +130,7 @@ public class ExportHelper {
                             addRelationsGiven(resultSet.getString("broader"), sKOSResource);
                         }
 
-                        sKOSResource.addRelation(idTheso, getUriFromId(idTheso, originalUri), SKOSProperty.inScheme);
+                        sKOSResource.addRelation(idTheso, getUriFromId(idTheso, originalUri, nodePreference), SKOSProperty.inScheme);
                         
                         addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
                         
@@ -192,8 +192,14 @@ public class ExportHelper {
         return concepts;
     }
 
-    private String getUriFromId(String id, String originalUri) {
-
+    private String getUriFromId(String id, String originalUri, NodePreference nodePreference) {
+        if(nodePreference.isOriginalUriIsArk()) {
+            return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
+        }
+        if(nodePreference.isOriginalUriIsHandle()) {
+            return "https://hdl.handle.net/" + id;
+        }
+        
         if (originalUri != null && !originalUri.isEmpty()) {
             return originalUri + "/" + id;
         } else {

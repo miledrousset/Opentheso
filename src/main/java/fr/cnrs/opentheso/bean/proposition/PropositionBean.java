@@ -80,6 +80,16 @@ public class PropositionBean implements Serializable {
             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
             editorialNotesAccepted, examplesAccepted, historyAccepted;
 
+    public void init(){
+        nom = "";
+        email = "";
+        commentaire = "";
+        commentaireAdmin = "";
+        message = "";
+        propositionSelected = null;
+        propositions = null;
+    }
+    
     public void onSelectConcept(PropositionDao propositionDao) throws IOException {
 
         this.propositionSelected = propositionDao;
@@ -308,7 +318,7 @@ public class PropositionBean implements Serializable {
     }
 
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
-
+        init();
         isRubriqueVisible = true;
         if(currentUser.getNodeUser() == null)
             rightBodySetting.setIndex("2");

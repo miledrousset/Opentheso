@@ -5,7 +5,7 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idDeleteImage" header="#{langueBean.getMsg('rightbody.conceptdialog.deleting_images')}" 
-              widgetVar="deleteImage" width="550" showEffect="fade" modal="true" 
+              widgetVar="deleteImage" width="750" showEffect="fade" modal="true" 
               resizable="false" position="top" style="margin-top: 30px" >
         <h:form>
             <div class="row">
@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px; margin-bottom: 20px;">
                 <p:dataTable size="small" var="imageToEdit" value="#{imageBean.nodeImagesForEdit}"
                              widgetVar="listThesoTable" styleClass="products-table"
                              style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
@@ -29,28 +29,28 @@
                     <f:facet name="header">
                         <div class="products-table-header">
                             <span style="font-weight: bold">
-                                List des images
+                                #{langueBean.getMsg('rightbody.conceptdialog.imageList')}
                             </span>
                         </div>
                     </f:facet>
 
-                    <p:column width="50" headerText="URI">
-                        <h:outputText value="#{images.uri} (#{images.copyRight})" style="color: #43B572; font-size: 14px;" />        
+                    <p:column width="70%" headerText="URI">
+                        <h:outputText value="#{imageToEdit.uri}" style="color: #43B572; font-size: 14px;" />        
                     </p:column>
 
-                    <p:column width="40" headerText="Copy Right">
-                        <p:inputText value="#{imageToEdit.copyRight}" style="width: 100%;"/>
+                    <p:column width="20%" headerText="CopyRight">
+                        <h:outputText value="#{imageToEdit.copyRight}"/>
                     </p:column>
 
-                    <p:column width="10" headerText="Action" style="color: black">                        
-                        <p:commandLink style="color: #FF7979" ajax="true" process="@form" 
+                    <p:column width="10%" headerText="Action" >                        
+                        <p:commandLink title="#{langueBean.getMsg('candidat.remove')}" ajax="true" process="@form" 
                                        action="#{imageBean.deleteImage( imageToEdit, currentUser.nodeUser.idUser)}"
                                        update="containerIndex:formRightTab containerIndex:idDeleteImage messageIndex">
-                            <i class="pi pi-trash" />
+                            <i class="pi pi-trash" style="color: #C63632; font-size: 1.1rem; padding-top: 4px;"/>
                         </p:commandLink>
                     </p:column>                        
                 </p:dataTable>
-            </div>
+            </div>                    
         </h:form>        
     </p:dialog>
 </ui:fragment>

@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
@@ -184,16 +183,17 @@ public final class ArkClientRest {
         }
         return jsonArk;
     }    
-    /////// TEST TEST TEST ///////////
+    /////// la même méthode au dessus mais avec httpUrlConnection ///////////
     public String addBatchArk2(String arkString) {
         String apiUrl = propertiesArk.getProperty("serverHost") + "rest/v1/ark/batchAdd";
         System.out.println("/////////////////// avant envoie au serveur Ark /////////////////////");
         try {
             URL url = new URL(apiUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("PUT");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
+            connection.setConnectTimeout(3600000);
             
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(arkString.getBytes());
@@ -224,7 +224,6 @@ public final class ArkClientRest {
         } 
         return null;
     }     
-    /////// TEST TEST TEST ///////////    
     
     
     /**

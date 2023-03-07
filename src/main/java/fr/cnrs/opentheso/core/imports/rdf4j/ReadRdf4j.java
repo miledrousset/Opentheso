@@ -232,7 +232,7 @@ public class ReadRdf4j {
                                                                 if (readConceptStatus(readStruct)) { // pour le reconnaitre le status du concept
                                                                     if (readRights(readStruct)) {
                                                                         if (readTitle(readStruct)) {
-                                                                            if (readDcRelation(readStruct)) {
+                                                                            if (readDcSource(readStruct)) {
                                                                                 //debug
                                                                                 if (!nonReco.contains(readStruct.property.getLocalName())) {
                                                                                     if (!readStruct.property.getLocalName().contains("superOrdinate")
@@ -714,8 +714,8 @@ public class ReadRdf4j {
      * @param readStruct
      * @return false si on a lus une balise de Identifier true sinon
      */
-    private boolean readDcRelation(ReadStruct readStruct) {
-        if (readStruct.property.getLocalName().equals("relation")) {
+    private boolean readDcSource(ReadStruct readStruct) {
+        if (readStruct.property.getLocalName().equals("source")) {
             readStruct.resource.addDcRelations(readStruct.value.stringValue());
             return false;
         } else {
