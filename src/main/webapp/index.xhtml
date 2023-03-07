@@ -33,7 +33,7 @@
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
     </h:head>
 
-    <h:body id="page-top" onload="initMenu()" style="overflow-x: hidden;">
+    <h:body id="page-top" onload="initMenu(); disparaitreAdvanceRecherche();" style="overflow-x: hidden;">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -54,10 +54,10 @@
             }
             body .ui-growl .ui-growl-item-container .ui-growl-item {
                 background-color: #ECF8F1;
-            }            
+            }
         </style>
 
-            <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
 
         <div id="wrapper" style="height: 100%">
             <ui:include src="commun/menu.xhtml" />
@@ -97,7 +97,7 @@
                         </div>
 
                         <p:panel id="searchBar">
-                            <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px; width: 100%; margin: 25px;">
+                            <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px; width: 100%; margin: 20px;">
                                 <div style="position: relative; height: 100%; width: 100%;" >
                                     <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
                                         <ui:include src="thesaurus/search.xhtml"/>
@@ -149,7 +149,7 @@
 
         <ui:include src="dialog/login/login.xhtml" />
         <ui:include src="dialog/login/logout.xhtml" />
-   
+
         <ui:include src="dialog/login/forgetPass.xhtml" />
 
         <script>
