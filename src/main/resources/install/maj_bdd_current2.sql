@@ -500,6 +500,16 @@ begin
 end
 $$language plpgsql;
 
+-- proposition : ajout de la colonne commentaire de l'administrateur
+--
+create or replace function update_table_proposition_modification() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='proposition_modification' AND column_name='admin_comment') THEN
+        execute 'ALTER TABLE proposition_modification ADD COLUMN admin_comment character varying COLLATE pg_catalog."default";';
+END IF;
+end
+$$language plpgsql;
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -528,6 +538,7 @@ SELECT update_table_preferences_displayUserName();
 SELECT update_table_preferences_suggestion();
 SELECT update_table_note_source();
 SELECT update_table_gps_constraint();
+SELECT update_table_proposition_modification();
 
 
 
@@ -561,7 +572,7 @@ SELECT delete_fonction('update_table_preferences_displayUserName', '');
 SELECT delete_fonction('update_table_preferences_suggestion', '');
 SELECT delete_fonction('update_table_note_source', '');
 SELECT delete_fonction('update_table_gps_constraint', '');
-
+SELECT delete_fonction('update_table_proposition_modification', '');
 
 
 

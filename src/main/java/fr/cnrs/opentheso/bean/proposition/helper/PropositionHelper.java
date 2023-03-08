@@ -154,6 +154,7 @@ public class PropositionHelper {
         proposition.setDateUpdate(resultSet.getString("approuve_date"));
         proposition.setNomConcept(resultSet.getString("lexical_value"));
         proposition.setCodeDrapeau(resultSet.getString("code_pays"));
+        proposition.setAdminComment(resultSet.getString("admin_comment"));        
         return proposition;
     }
 
@@ -182,12 +183,14 @@ public class PropositionHelper {
         }
     }
 
-    public boolean updateStatusProposition(HikariDataSource ds, String status, String approuvePar, String approuveDate, int propositionId) {
+    public boolean updateStatusProposition(HikariDataSource ds, String status, String approuvePar, String approuveDate, int propositionId, String adminComment) {
         boolean updateStatus = false;
+        StringPlus stringPlus = new StringPlus();
+        adminComment = stringPlus.convertString(adminComment);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("UPDATE proposition_modification SET status = '" + status + "', approuve_par = '" 
-                        + approuvePar + "', approuve_date = 'now()' WHERE id = " + propositionId);
+                        + approuvePar + "', approuve_date = 'now()', admin_comment = '" + adminComment + "' WHERE id = " + propositionId);
                 updateStatus = true;
             }
         } catch (SQLException sqle) {

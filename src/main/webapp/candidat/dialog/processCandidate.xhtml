@@ -38,7 +38,7 @@
 
                 <p:commandButton class="btn btn-primary" title="Insérer" ajax="true"
                                  update="tabViewCandidat messageIndex" oncomplete="PF('processCandidate').hide();"
-                                 actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{processCandidateBean.insertCandidat(currentUser.nodeUser.idUser, roleOnTheso.nodePreference)}"/>
             </div>
         </h:form>
     </p:dialog>   

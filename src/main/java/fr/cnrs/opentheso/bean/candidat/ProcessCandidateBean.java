@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.bean.candidat;
 
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
@@ -8,6 +10,9 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
@@ -53,7 +58,7 @@ public class ProcessCandidateBean implements Serializable {
         adminMessage = null;
     }
 
-    public void insertCandidat(int idUser) {
+    public void insertCandidat(int idUser, NodePreference nodePreference) {
         if (selectedCandidate == null) {
             printErreur("Pas de candidat sélectionné");
             return;
@@ -64,14 +69,14 @@ public class ProcessCandidateBean implements Serializable {
             printErreur("Erreur d'insertion");
             return;
         }
-
         // envoie de mail au créateur du candidat si l'option mail est activée
         UserHelper userHelper = new UserHelper();
         NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
         if(nodeUser.isIsAlertMail())
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
         
-
+        generateArk(nodePreference, selectedCandidate);
+        
         printMessage("Canditat inséré avec succès");
         reset(null);
         candidatBean.getAllCandidatsByThesoAndLangue();
@@ -86,6 +91,42 @@ public class ProcessCandidateBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
         pf.ajax().update("containerIndex:tabViewCandidat");
+    }
+    
+    private void generateArk(NodePreference nodePreference, CandidatDto selectedCandidateTemp){
+        if (nodePreference != null) {
+            ConceptHelper conceptHelper = new ConceptHelper();
+            conceptHelper.setNodePreference(nodePreference);
+
+            // création de l'identifiant Handle
+            if (nodePreference.isUseHandle()) {
+                if (!conceptHelper.generateIdHandle(connect.getPoolConnexion(), selectedCandidateTemp.getIdConcepte(),
+                        selectedCandidateTemp.getIdThesaurus())) {
+                    printErreur("La création Handle a échouée");
+                    Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Handle a échoué");
+                }
+            }     
+            // serveur Ark
+            if (nodePreference.isUseArk()) {
+                if (!conceptHelper.generateArkId(connect.getPoolConnexion(), 
+                        selectedCandidateTemp.getIdThesaurus(), selectedCandidateTemp.getIdConcepte(),
+                        selectedCandidateTemp.getLang())) {
+                    printErreur("La création Ark a échoué");
+                    Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Ark a échoué");
+                }
+            }
+            // ark Local
+            if (nodePreference.isUseArkLocal()) {
+                ArrayList<String> idConcepts = new ArrayList<>();
+                idConcepts.add(selectedCandidateTemp.getIdConcepte());
+                if (!conceptHelper.generateArkIdLocal(connect.getPoolConnexion(),
+                        selectedCandidateTemp.getIdThesaurus(),
+                        idConcepts)) {
+                    printErreur("La création du Ark local a échoué");
+                    Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création du Ark local a échoué");
+                }
+            }                
+        }          
     }
     
     public void rejectCandidat(int idUser) {
@@ -124,7 +165,7 @@ public class ProcessCandidateBean implements Serializable {
         pf.ajax().update("containerIndex:tabViewCandidat");
     }
 
-    public void insertListCandidat(int idUser) {
+    public void insertListCandidat(int idUser, NodePreference nodePreference) {
         if (candidatBean.getSelectedCandidates() == null || candidatBean.getSelectedCandidates().isEmpty()) {
             printErreur("Pas de candidat sélectionné");
             return;
@@ -142,12 +183,13 @@ public class ProcessCandidateBean implements Serializable {
                 printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
+            generateArk(nodePreference, selectedCandidate1);
             nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
             if(nodeUser.isIsAlertMail())
                 sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate1);
         }
 
-        printMessage("Canditats insérés avec succès");
+        printMessage("Candidats insérés avec succès");
         reset(null);
         candidatBean.initCandidatModule();
         candidatBean.getAllCandidatsByThesoAndLangue();

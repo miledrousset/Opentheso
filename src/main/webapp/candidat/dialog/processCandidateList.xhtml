@@ -33,7 +33,7 @@
                 <p:commandButton class="btn btn-primary" title="Insérer"
                                  update="processCandidateListForm tabViewCandidat messageIndex" 
                                  oncomplete="PF('processCandidateList').hide();" process="@this"
-                                 actionListener="#{processCandidateBean.insertListCandidat(currentUser.nodeUser.idUser)}" />
+                                 actionListener="#{processCandidateBean.insertListCandidat(currentUser.nodeUser.idUser, roleOnTheso.nodePreference)}" />
             </div>
         </h:form>
     </p:dialog>   

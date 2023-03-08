@@ -1279,7 +1279,8 @@ public class Rest_new {
         String filter = null;
         boolean showLabels = false;
         String idArk;
-
+        boolean match = false; // match=exact (pour limiter la recherche aux termes exactes)
+        
         String datas;
 
         MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
@@ -1331,6 +1332,9 @@ public class Rest_new {
                     if(valeur.equalsIgnoreCase("true"))
                         showLabels = true;
                 }
+                if (e.getKey().equalsIgnoreCase("match")) {
+                    match = true;
+                }                  
             }
         }
         if (value == null) {
@@ -1441,26 +1445,23 @@ public class Rest_new {
             String [] groups,
             String value,
             String format, String filter) {
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return null;
-        }
         String datas;
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-
-        if (filter != null) {
-            switch (filter) {
-                case "notation:":
-                    value = value.substring(value.indexOf(":") + 1);
-                    datas = restRDFHelper.findNotation(ds, idTheso, value, format);
-                    ds.close();
-                    return datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
             }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            if (filter != null) {
+                switch (filter) {
+                    case "notation:":
+                        value = value.substring(value.indexOf(":") + 1);
+                        datas = restRDFHelper.findNotation(ds, idTheso, value, format);
+                        ds.close();
+                        return datas;
+                }
+            }   datas = restRDFHelper.findConcepts(ds,
+                    idTheso, idLang, groups, value, format);
         }
-
-        datas = restRDFHelper.findConcepts(ds,
-                idTheso, idLang, groups, value, format);
-        ds.close();
         if (datas == null) {
             return null;
         }

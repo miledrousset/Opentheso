@@ -117,7 +117,9 @@ public class PropositionBean implements Serializable {
 
         nom = propositionDao.getNom();
         email = propositionDao.getEmail();
-
+        commentaire = propositionDao.getCommentaire();
+        commentaireAdmin = propositionDao.getAdminComment();
+        
         chercherProposition();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
         
@@ -383,6 +385,10 @@ public class PropositionBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("rightbody.proposal.alertEmptyMail"));
             return;
         }
+        if (StringUtils.isEmpty(commentaire)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.send_message.msg1"));
+            return;
+        }        
 
         if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent() && !isTraductionProPresent()
                 && !isNoteProPresent() && !isChangeNoteProPresent() && !isDefinitionProPresent()

@@ -3415,6 +3415,24 @@ public class ConceptHelper {
         }
         return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);
     }
+    
+    public boolean generateIdHandle(HikariDataSource conn, String idConcept, String idThesaurus) {
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseHandle()) {
+            return false;
+        }
+        String privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
+        HandleHelper handleHelper = new HandleHelper(nodePreference);
+
+        String idHandle = handleHelper.addIdHandle(privateUri);
+        if (idHandle == null) {
+            message = handleHelper.getMessage();
+            return false;
+        }
+        return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);
+    }    
 
     /**
      * permet de générer les identifiants Handle des concepts en paramètres
@@ -5784,6 +5802,12 @@ public class ConceptHelper {
     /**
      * Cette fonction permet d'ajouter un Handle Id au concept ou remplacer l'Id
      * existant
+     * 
+     * @param conn
+     * @param idConcept
+     * @param idTheso
+     * @param idHandle
+     * @return 
      */
     public boolean updateHandleIdOfConcept(Connection conn, String idConcept, String idTheso, String idHandle) {
 
@@ -5800,6 +5824,12 @@ public class ConceptHelper {
     /**
      * Cette fonction permet d'ajouter un Handle Id au concept ou remplacer l'Id
      * existant
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @param idHandle
+     * @return 
      */
     public boolean updateHandleIdOfConcept(HikariDataSource ds, String idConcept, String idTheso, String idHandle) {
 
@@ -5818,7 +5848,13 @@ public class ConceptHelper {
 
     /**
      * Cette fonction permet de mettre à jour la notation pour un concept
-     */
+    * 
+    * @param conn
+    * @param idConcept
+    * @param idTheso
+    * @param notation
+    * @return 
+    */
     public boolean updateNotation(Connection conn, String idConcept, String idTheso, String notation) {
         boolean status = false;
         try (Statement stmt = conn.createStatement()) {

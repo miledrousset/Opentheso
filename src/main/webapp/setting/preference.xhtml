@@ -78,8 +78,9 @@
                                                                   title="#{langueBean.getMsg('preferences.exportUriInfo')}"
                                                                   style="font-size: 14px; font-weight: bold;"/>
                                                     <p:commandButton id="infoUri" type="button" icon="fas fa-info-circle"  styleClass="rounded-button ui-button-flat"/>
-                                                    
-                                                    <p:tooltip for="infoUri" value="#{langueBean.getMsg('preferences.uriInfo')} https://ark.mondomaine.fr/ark:  #{langueBean.getMsg('preferences.uriInfo2')} https://mondomaine.fr/opentheso2"
+                                                    <p:tooltip for="infoUri" 
+                                                               value="#{langueBean.getMsg('preferences.uriInfo')} 
+                                                               https://ark.mondomaine.fr/ark:  #{langueBean.getMsg('preferences.uriInfo2')} https://mondomaine.fr/opentheso2"
                                                                showDelay="1000" style="max-width: 300px;"/>
                                                 </div>
                                                 <div class="col-6">
@@ -92,7 +93,14 @@
                                                     <p:inputText value="#{preferenceBean.nodePreference.originalUri}" 
                                                                  style="width: 100%;"/> 
                                                 </div> 
-                                            </div>      
+                                                <div class="col-1" style="margin-top: 22px; margin-left: -10px;">
+                                                    <p:commandButton id="infoUri2"  value="Ark"  styleClass="rounded-button ui-button-info"/>
+                                                    <p:tooltip for="infoUri2" 
+                                                              value="Pour utiliser Opentheso comme serveur Ark, cochez Ark, puis ajouter (/api/) à l'URL, exemple: https://ark.mondomaine.fr/api/ark:"
+                                                               showDelay="500" style="max-width: 300px;"/>                                                    
+                                                </div>
+                                            </div>
+
                                         </div>
 
                                         <!-- Langue Source -->
@@ -138,8 +146,8 @@
                                                     <p:inputText value="#{preferenceBean.nodePreference.preferredName}" style="width: 100%;"/>
                                                 </div>
                                                 <div class="col-3" style="text-align: left; margin-top: 6px;">
-                                                     <a class="fas fa-link" style="font-size: 12px; color: #43B572;" />
-                                                     <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="#{langueBean.getMsg('preferences.testLink')}" style="font-size: 12px; margin-left: 5px; color: #601e18"/>
+                                                    <a class="fas fa-link" style="font-size: 12px; color: #43B572;" />
+                                                    <p:link href="#{request.contextPath}/api/theso/#{preferenceBean.nodePreference.preferredName}" value="#{langueBean.getMsg('preferences.testLink')}" style="font-size: 12px; margin-left: 5px; color: #601e18"/>
                                                 </div>                                                
                                             </div>
 
@@ -196,7 +204,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <!-- Activer/ désactiver le fil d'ariane Breadcrumb -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
@@ -221,7 +229,7 @@
                                                 </div>
                                             </div>
                                         </div>  
-                                        
+
                                         <!-- Activer/ désactiver l'affichage des noms des personnes qui ont créé ou modifié les concepts en pulic -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">
@@ -234,7 +242,7 @@
                                                 </div>
                                             </div>
                                         </div>    
-                                        
+
                                         <!-- Activer/ désactiver les suggestions / propositions de modification d'un concept -->
                                         <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
                                             <div class="row" style="padding-top: 3px;">

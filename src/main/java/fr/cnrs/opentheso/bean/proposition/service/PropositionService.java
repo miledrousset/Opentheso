@@ -391,6 +391,7 @@ public class PropositionService implements Serializable {
     }
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
+        //return true;
         return mailBean.sendMail(emailDestination, subject,  contentFile);
   
 
@@ -440,7 +441,7 @@ public class PropositionService implements Serializable {
                 PropositionStatusEnum.REFUSER.name(),
                 currentUser.getNodeUser().getName(),
                 DATE_FORMAT.format(new Date()),
-                propositionSelected.getId());
+                propositionSelected.getId(), commentaireAdmin);
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
@@ -679,7 +680,7 @@ public class PropositionService implements Serializable {
                 PropositionStatusEnum.APPROUVER.name(),
                 currentUser.getNodeUser().getName(),
                 DATE_FORMAT.format(new Date()),
-                propositionSelected.getId());
+                propositionSelected.getId(), commentaireAdmin);
 
         conceptView.getConcept(propositionSelected.getIdTheso(), propositionSelected.getIdConcept(),
                 propositionSelected.getLang());
