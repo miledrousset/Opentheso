@@ -11,27 +11,22 @@
     <name>opentheso2</name>
 
     <dependencies>
-        <!-- for QrCode --> 
         <dependency>
             <groupId>io.nayuki</groupId>
             <artifactId>qrcodegen</artifactId>
-            <version>1.8.0</version>
+            <version>${qrcodegen.version}</version>
         </dependency>
 
-        <!-- fin QrCode--> 
-
-        <!-- ne marche pas au delà de cette version 2.25 pour java 8-->
-        <!-- ne marche pas au delà de cette version 2.33 pour java 11-->        
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
-            <version>2.33</version>
+            <version>${jersey.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
-            <version>2.33</version>
+            <version>${jersey.version}</version>
         </dependency>
 
         <dependency>
@@ -199,7 +194,7 @@
         <dependency>
             <groupId>com.openlink.virtuoso</groupId>
             <artifactId>virtjdbc4</artifactId>
-            <version>4.0</version>
+            <version>${virtjdbc4.version}</version>
         </dependency>
 
         <dependency>
@@ -211,38 +206,38 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.21</version>
+            <version>${commons-compress.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.9.0</version>
+            <version>${commons-csv.version}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
-            <version>4.1.0</version>
+            <version>${jena-arq.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
-            <version>1.6.2</version>
+            <version>${javax-mail.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
-            <version>4.0.1</version>
+            <version>${sendgrid-java.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.13.3</version>
+            <version>${jackson-annotations.version}</version>
         </dependency>
 
     </dependencies>
@@ -337,20 +332,29 @@
         <rdf4j.version>3.6.2</rdf4j.version>
         <jdom2.version>2.0.6</jdom2.version>
         <sparql.version>1.1</sparql.version>
+        <jersey.version>2.33</jersey.version>
         <junit.version>4.13.1</junit.version>
         <cdi-api.version>2.0</cdi-api.version>
         <jsf2leaf.version>1.0</jsf2leaf.version>
         <jsf-api.version>2.2.20</jsf-api.version>
-        <itextpdf.version>5.5.13.3</itextpdf.version>
         <hikariCP.version>5.0.1</hikariCP.version>
+        <jena-arq.version>4.1.0</jena-arq.version>
+        <virtjdbc4.version>4.0</virtjdbc4.version>
+        <qrcodegen.version>1.8.0</qrcodegen.version>
+        <itextpdf.version>5.5.13.3</itextpdf.version>
+        <javax-mail.version>1.6.2</javax-mail.version>
         <treelayout.version>1.0.3</treelayout.version>
         <all.themes.version>1.0.8</all.themes.version>
         <javax.json.version>1.1.4</javax.json.version>
         <postgresql.version>42.5.1</postgresql.version>
+        <commons-csv.version>1.9.0</commons-csv.version>
         <font-awesome.version>6.1.2</font-awesome.version>
         <primefaces.version>12.0.0-RC3</primefaces.version>
+        <sendgrid-java.version>4.0.1</sendgrid-java.version>
         <javaee-web-api.version>8.0.1</javaee-web-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>
+        <commons-compress.version>1.21</commons-compress.version>
+        <jackson-annotations.version>2.13.3</jackson-annotations.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <weld-servlet-shaded.version>3.1.2.Final</weld-servlet-shaded.version>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
