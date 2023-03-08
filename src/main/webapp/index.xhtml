@@ -33,7 +33,7 @@
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
     </h:head>
 
-    <h:body id="page-top" onload="initMenu(); disparaitreAdvanceRecherche();" style="overflow-x: hidden;">
+    <h:body id="page-top" onload="initMenu();" style="overflow-x: hidden;">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -72,7 +72,7 @@
                         <ui:include src="commun/header.xhtml" />
                     </h:panelGroup>
 
-                    <div id="boutonNotification" style="top: 103px; right: 0; position: absolute; z-index: 10" >
+                    <div id="boutonNotification" style="top: 85px; right: 0; position: absolute; z-index: 10; margin-top: -25px" >
                         <h:panelGroup id="resultSearch" style="z-index: 10">
                             <div style="margin-top: 5px; margin-bottom: -5px; right: 0; margin-right: 11px; z-index: 11;">
                                 <p:commandButton  icon="fa fa-list-ol" style="height: 25px;"
@@ -106,7 +106,7 @@
                             </div>
                         </p:panel>
 
-                        <div id="contenuPrincipale">
+                        <div id="contenuPrincipale" style="margin-top: -25px">
                             <h:panelGroup id="contentConcept">
                                 <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                                     <ui:include src="thesaurus/main_thesaurus.xhtml" />
