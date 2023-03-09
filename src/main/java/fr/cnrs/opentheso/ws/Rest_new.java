@@ -1279,7 +1279,7 @@ public class Rest_new {
         String filter = null;
         boolean showLabels = false;
         String idArk;
-        boolean match = false; // match=exact (pour limiter la recherche aux termes exactes)
+        String match = null; // match=exact (pour limiter la recherche aux termes exactes) match=exactone (pour chercher les prefLable, s'il n'existe pas, on cherche sur les altLabels
         
         String datas;
 
@@ -1333,7 +1333,8 @@ public class Rest_new {
                         showLabels = true;
                 }
                 if (e.getKey().equalsIgnoreCase("match")) {
-                    match = true;
+                    if("exact".equalsIgnoreCase(valeur) || "exactone".equalsIgnoreCase(valeur))
+                        match = valeur;
                 }                  
             }
         }
@@ -1382,7 +1383,7 @@ public class Rest_new {
         switch (format) {
             case "rdf": {
                 format = "application/rdf+xml";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
@@ -1394,7 +1395,7 @@ public class Rest_new {
             }
             case "jsonld":
                 format = "application/ld+json";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
@@ -1405,7 +1406,7 @@ public class Rest_new {
                         .build();
             case "turtle":
                 format = "text/turtle";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
                 }
@@ -1416,7 +1417,7 @@ public class Rest_new {
                         .build();
             case "json":
                 format = "application/json";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
@@ -1444,7 +1445,8 @@ public class Rest_new {
             String idTheso, String idLang,
             String [] groups,
             String value,
-            String format, String filter) {
+            String format, String filter,
+            String match) {
         String datas;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
@@ -1460,7 +1462,7 @@ public class Rest_new {
                         return datas;
                 }
             }   datas = restRDFHelper.findConcepts(ds,
-                    idTheso, idLang, groups, value, format);
+                    idTheso, idLang, groups, value, format, match);
         }
         if (datas == null) {
             return null;

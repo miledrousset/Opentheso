@@ -41,6 +41,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 
@@ -770,15 +771,16 @@ public class RestRDFHelper {
      * @param groups
      * @param format
      * @param value
+     * @param match
      * @return
      */
     public String findConcepts(HikariDataSource ds,
             String idTheso, String lang, String [] groups,
-            String value, String format) {
+            String value, String format, String match) {
 
         RDFFormat rDFFormat = getRDFFormat(format);
         WriteRdf4j writeRdf4j = findConcepts__(ds,
-                value, idTheso, lang, groups);
+                value, idTheso, lang, groups, match);
         if (writeRdf4j == null) {
             return null;
         }
@@ -801,7 +803,7 @@ public class RestRDFHelper {
      */
     private WriteRdf4j findConcepts__(
             HikariDataSource ds,
-            String value, String idTheso, String lang,  String [] groups) {
+            String value, String idTheso, String lang,  String [] groups, String match) {
 
         if (value == null || idTheso == null) {
             return null;
@@ -824,7 +826,19 @@ public class RestRDFHelper {
         if (idConcepts2 != null) {
             idConcepts.addAll(idConcepts2);
         }*/
-        ArrayList<String> idConcepts = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
+        ArrayList<String> idConcepts = null;
+        if(StringUtils.isEmpty(match)){
+            idConcepts = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
+        } else {
+            if(match.equalsIgnoreCase("exact")) {
+                idConcepts = searchHelper.searchAutoCompletionWSForWidgetMatchExact(ds, value, lang, groups, idTheso);               
+            }
+            if(match.equalsIgnoreCase("exactone")) {
+                idConcepts = searchHelper.searchAutoCompletionWSForWidgetMatchExactForOneLabel(ds, value, lang, groups, idTheso);            
+            }
+        }
+
+        if(idConcepts == null) return null;
         
         // pour enlever les doublons.
        // List<String> deDupStringList = idConcepts.stream().distinct().collect(Collectors.toList());

@@ -714,7 +714,7 @@ public class SearchBean implements Serializable {
                 selectedTheso.getCurrentLang());
 
         for (String label : nodeSearchLabels) {
-            nodeConceptSearchs.addAll(
+            nodeConceptSearchs.add(
                     conceptHelper.getConceptForSearchFromLabel(
                             connect.getPoolConnexion(),
                             label,
