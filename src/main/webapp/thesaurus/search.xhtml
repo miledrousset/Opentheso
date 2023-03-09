@@ -193,12 +193,12 @@
                                         </p:autoComplete>
                                     </div>
                                     <div style="width: 25%; text-align: right; z-index: 100; position: relative; display: inline-block;">
-                                        <div id="searchBarVisible" style="display: inline-block">
+                                        <div id="searchBarVisible" style="display: none">
                                             <p:commandLink class="btn btn-base" action="#{searchBean.managerSearchBar()}">
                                                 <i class="pi pi-chevron-up" style="color: #f47b2a; font-size: 14px;"/>
                                             </p:commandLink>
                                         </div>
-                                        <div id="searchBarInvisible" style="display: none">
+                                        <div id="searchBarInvisible" style="display: inline-block">
                                             <p:commandLink class="btn btn-base" action="#{searchBean.managerSearchBar()}">
                                                 <i class="pi pi-chevron-down" style="color: #f47b2a; font-size: 14px"/>
                                             </p:commandLink>
@@ -265,34 +265,35 @@
         <div class="col-2"/>
 
         <div id="choixPanelDiv" class="col-8 researchAdvanceClass" style="display:flex; flex-direction: row; justify-content: center; align-items: center; visibility: hidden">
-            <h:panelGroup id="choixPanel" style="background-color: #43B572; padding-left: 20px; padding-right: 20px; z-index: 1;
+            <h:panelGroup id="choixPanel" style="background-color: #b0efcb; padding-left: 20px; padding-right: 20px; z-index: 1;
                           padding-bottom: 5px; padding-top: 3px; border-radius: 0px 0px 7px 7px;">
                 <p:selectBooleanCheckbox id="select1" itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}" 
-                                         style="color: #000; background-color: transparent; font-size: 12px">
+                                         style="color: #143a1e; background-color: transparent; font-size: 12px">
                     <p:ajax listener="#{searchBean.activateIndexMatch()}" update="choixPanel"/>
                     <p:tooltip for="select1" value="#{langueBean.getMsg('search.tooltip_startWith')}" showDelay="1000" position="bottom"/>
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox id="select2" itemLabel="#{langueBean.getMsg('search.exact')}" value="#{searchBean.exactMatch}"
-                                         style="color: #000; background-color: transparent; font-size: 12px;">
+                                         style="color: #143a1e; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateExactMatch()}" update="choixPanel"/>
                     <p:tooltip for="select2" value="#{langueBean.getMsg('search.search_exact_word')}" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox id="select3" itemLabel="#{langueBean.getMsg('search.note')}" value="#{searchBean.withNote}"
-                                         style="color: #000; background-color: transparent; font-size: 12px;">
+                                         style="color: #143a1e; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateWithNote()}" update="choixPanel"/>
                     <p:tooltip for="select3" value="#{langueBean.getMsg('search.search_only_note')}" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
                 <p:selectBooleanCheckbox id="select4" itemLabel="#{langueBean.getMsg('search.identifier')}" value="#{searchBean.withId}"
-                                         style="color: #000; background-color: transparent; font-size: 12px;">
+                                         style="color: #143a1e; background-color: transparent; font-size: 12px;">
                     <p:ajax listener="#{searchBean.activateWithId()}"  update="choixPanel"/>
                     <p:tooltip for="select4" value="#{langueBean.getMsg('search.search_by_identifier')} (Id, Ark, Handle, Notation)" showDelay="1000" position="bottom"/>                    
                 </p:selectBooleanCheckbox>
 
                 <p:selectCheckboxMenu rendered="#{selectedTheso.currentIdTheso == null}" id="select5" 
-                                      value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}" style="color: #000; font-size: 12px;"
+                                      value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}" 
+                                      style="color: #143a1e; font-size: 12px;"
                                       panelStyle="width: 15rem; font-size: 1rem" scrollHeight="250" >
                     <f:selectItems value="#{roleOnTheso.listTheso}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
                 </p:selectCheckboxMenu>

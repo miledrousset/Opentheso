@@ -186,20 +186,17 @@ public class ExportFileBean implements Serializable {
                     createMatrice(tab, nodeTree);
                 } else {
                     tab[posX][posJ] = nodeTree.getPreferredTerm();
-                    if (posJ > tab.length - 1) {
-                        posJ--;
-                    }
+                    if (posX < tab.length-1) posX++;
+                    if (posJ > tab.length - 1) posJ--;
                 }
             }
             posJ--;
-            if (posX < tab.length-1) posX++;
         }
     }
 
     private List<NodeTree> parcourirArbre(String thesoId, String langId, String parentId) {
 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        List<NodeTree> concepts = conceptHelper.getListChildrenOfConceptWithTerm(
+        List<NodeTree> concepts = new ConceptHelper().getListChildrenOfConceptWithTerm(
                 connect.getPoolConnexion(), parentId, langId, thesoId);
         for (NodeTree concept : concepts) {
             sizeOfTheso++;
@@ -266,7 +263,7 @@ public class ExportFileBean implements Serializable {
                         topConcept.getIdConcept()));
             }
 
-            String[][] tab = new String[sizeOfTheso][20];
+            String[][] tab = new String[sizeOfTheso+20][20+20];
             posX = 0;
             for (NodeTree topConcept : topConcepts) {
                 posJ = 0;
