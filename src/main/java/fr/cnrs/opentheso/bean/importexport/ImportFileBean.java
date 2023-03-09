@@ -866,7 +866,7 @@ public class ImportFileBean implements Serializable {
                 for (int j = 0; j < nbrMaxElement; j++) {
                     if (lines.get(i).length > j) {
                         matrix[i][j] = lines.get(i)[j];
-                        if (!StringUtils.isEmpty(lines.get(i)[j])) {
+                        if (StringUtils.isNotEmpty(lines.get(i)[j])) {
                             total = total + 1;
                         }
                     }
@@ -876,9 +876,8 @@ public class ImportFileBean implements Serializable {
             racine = new NodeTree();
 
             for (int i = 0; i < matrix.length; i++) {
-                if (!StringUtils.isEmpty(matrix[i][0])) {
+                if (StringUtils.isNotEmpty(matrix[i][0])) {
                     racine.getChildrens().add(createTree(matrix, i, 0));
-                    //racine.getChildrens().add(createTreeMR(matrix, i, 0));
                 }
             }
 
@@ -896,6 +895,7 @@ public class ImportFileBean implements Serializable {
         element.setPreferredTerm(matrix[ligne][colone]);
 
         colone++;
+        ligne++;
         if (ligne < matrix.length && colone < matrix[ligne].length) {
             while (matrix[ligne][colone] != null) {
                 if (matrix[ligne][colone - 1] != null && matrix[ligne][colone - 1].length() > 0 && !matrix[ligne][colone - 1].equals(element.getPreferredTerm())) {
@@ -932,20 +932,6 @@ public class ImportFileBean implements Serializable {
             }
         }
         return element;
-        //  colone++;
-        /*      if (ligne < matrix.length && colone < matrix[ligne].length) {
-            while (matrix[ligne][colone] != null) {
-                if (matrix[ligne][colone - 1] != null && matrix[ligne][colone - 1].length() > 0 && !matrix[ligne][colone - 1].equals(element.getPreferredTerm())) {
-                    break;
-                }
-                if (matrix[ligne][colone].length() > 0) {
-                    element.getChildrens().add(createTree(matrix, ligne+1, colone));
-                }
-                ligne++;
-            }
-        }
-
-        return element;*/
     }
 
     public void addCsvStrucToDB() {
