@@ -292,7 +292,7 @@
                 </p:selectBooleanCheckbox>
 
                 <p:selectCheckboxMenu rendered="#{selectedTheso.currentIdTheso == null}" id="select5" 
-                                      value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}" 
+                                      value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}"
                                       style="color: #143a1e; font-size: 12px;"
                                       panelStyle="width: 15rem; font-size: 1rem" scrollHeight="250" >
                     <f:selectItems value="#{roleOnTheso.listTheso}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
