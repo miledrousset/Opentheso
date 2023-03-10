@@ -712,6 +712,7 @@ public class SearchBean implements Serializable {
         ArrayList<String> nodeSearchLabels = searchHelper.searchConceptDuplicated(
                 connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang());
+    //    Collections.sort(nodeSearchLabels);
 
         for (String label : nodeSearchLabels) {
             nodeConceptSearchs.add(

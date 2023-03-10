@@ -23,6 +23,8 @@ public class NodeConceptSearch implements Comparable {
     private ArrayList <NodeRT> nodeRT;
     private ArrayList<NodeEM> nodeEM;
     private ArrayList<NodeGroup> nodeConceptGroup;    
+    
+    private ArrayList<String> dupplicateWithIds;
 
 //    private ArrayList<NodeNote> nodeNotesTerm;
 //    private ArrayList<NodeNote> nodeNotesConcept;
@@ -42,6 +44,8 @@ public class NodeConceptSearch implements Comparable {
             nodeEM.clear(); 
         if(nodeConceptGroup != null)
             nodeConceptGroup.clear();
+        if(dupplicateWithIds != null)
+            dupplicateWithIds.clear();
     }
     
     public NodeConceptSearch() {

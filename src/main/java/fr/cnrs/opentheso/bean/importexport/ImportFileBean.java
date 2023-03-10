@@ -1367,6 +1367,91 @@ public class ImportFileBean implements Serializable {
     }    
     
     /**
+     * permet de récupérer les identifiants depuis le prefLabel
+     *
+     * @param idTheso
+     * @param idUser
+     * @return 
+     */
+    public StreamedContent compareListToTheso(String idTheso, int idUser) {
+
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+
+        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+            return null;
+        }
+        if (idTheso == null || idTheso.isEmpty()) {
+            return null;
+        }     
+        if (idLang == null || idLang.isEmpty()) {
+            return null;
+        }
+        initError();
+
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+        ArrayList<String> idConcepts;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        // mise à jouor des concepts
+        try {
+            for (NodeIdValue nodeIdValue : nodeIdValues) {
+                if (nodeIdValue == null) {
+                    continue;
+                }
+                if (nodeIdValue.getValue()== null || nodeIdValue.getValue().isEmpty()) {
+                    continue;
+                }
+                idConcepts =  conceptHelper.getIdConceptsFromLabel(connect.getPoolConnexion(),
+                        idTheso, nodeIdValue.getValue(), idLang );
+                if (idConcepts == null || idConcepts.isEmpty()) {
+                    idConcepts =  conceptHelper.getIdConceptsFromAltLabel(connect.getPoolConnexion(),
+                        idTheso, nodeIdValue.getValue(), idLang );
+                }
+                if (idConcepts == null || idConcepts.isEmpty()) {
+                    continue;
+                }
+                for (String idConcept : idConcepts) {
+                    nodeIdValue.setId(idConcept);
+                    total++;                                    
+                }
+            }
+            log.error(csvImportHelper.getMessage());
+
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            //total = 0;
+            info = info + "\n" + "total = " + total ;
+            error.append(csvImportHelper.getMessage());
+            
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas = csvWriteHelper.writeCsvIdValue(nodeIdValues, idLang);
+
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name("resultat.csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();            
+            
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+        return null;
+    }      
+    
+    /**
      * permet de déprécier les concepts donnés par tableau CSV
      *
      * @param idTheso

@@ -999,6 +999,7 @@ public class ConceptHelper {
                         + " term.id_thesaurus = '" + idTheso + "'"
                         + " and "
                         + " term.lang = '" + idLang + "'"
+                        + " and concept.status != 'DEP'"
                         + " and"
                         + " lower(term.lexical_value) = lower('" + label + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -1085,6 +1086,7 @@ public class ConceptHelper {
                         + " non_preferred_term.id_thesaurus = '" + idTheso + "'"
                         + " and "
                         + " non_preferred_term.lang = '" + idLang + "'"
+                        + " and concept.status != 'DEP'"
                         + " and"
                         + " lower(non_preferred_term.lexical_value) = lower('" + label + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
