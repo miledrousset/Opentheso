@@ -2380,121 +2380,30 @@ public class ImportFileBean implements Serializable {
         error = new StringBuffer();
         info = "";
         warning = "";
-        switch (typeImport) {
-            case 0:
-                loadSkos(event, isCandidatImport);
-                break;
-            case 1:
-                loadJsonLd(event, isCandidatImport);
-                break;
-            case 2:
-                loadTurtle(event, isCandidatImport);
-                break;
-            case 3:
-                loadJson(event, isCandidatImport);
-                break;
+        progress = 0;
+
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            try (InputStream is = event.getFile().getInputStream()) {
+                ReadRdf4j readRdf4j = new ReadRdf4j(is, typeImport, isCandidatImport, connect.getWorkLanguage());
+                warning = readRdf4j.getMessage();
+                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
+                total = sKOSXmlDocument.getConceptList().size();
+                uri = sKOSXmlDocument.getTitle();
+                loadDone = true;
+                BDDinsertEnable = true;
+                info = "File correctly loaded";
+            } catch (Exception e) {
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
         }
+        
         PrimeFaces.current().executeScript("PF('waitDialog').hide()");
-    }
-
-    private void loadSkos(FileUploadEvent event, Boolean isCandidatImport) {
-        progress = 0;
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-                readRdf4j.clean();
-                //        System.gc();
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
-    }
-
-    private void loadJsonLd(FileUploadEvent event, boolean isCandidatImport) {
-        progress = 0;
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 1, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
-    }
-
-    private void loadJson(FileUploadEvent event, boolean isCandidatImport) {
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 3, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
-    }
-
-    private void loadTurtle(FileUploadEvent event, boolean isCandidatImport) {
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 2, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
     }
 
     /**
@@ -2623,7 +2532,6 @@ public class ImportFileBean implements Serializable {
         importRdf4jHelper.addFacetsV2(sKOSXmlDocument.getFacetList(), idTheso);
         importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
         importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);
-
         importRdf4jHelper.addFoafImages(sKOSXmlDocument.getFoafImage(), idTheso);        
         
         roleOnThesoBean.showListTheso();
