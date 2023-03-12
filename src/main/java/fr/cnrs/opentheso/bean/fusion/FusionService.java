@@ -341,11 +341,8 @@ public class FusionService implements Serializable {
             total = sourceSkos.getConceptList().size();
             uri = sourceSkos.getTitle();
             loadDone = true;
-            readRdf4j.clean();
-        //    System.gc();
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) {}
+        
         PrimeFaces.current().executeScript("PF('waitDialog').hide();");
         PrimeFaces.current().ajax().update("statistiques");
     }
