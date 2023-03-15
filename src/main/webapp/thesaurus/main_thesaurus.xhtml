@@ -8,17 +8,18 @@
     <div class="container-fluid col-xl-12 col-lg-12">
         <div class="card shadow mb-4">
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}">
-                <div class="card-header py-3" style="width: 100%; display: flex;">
-                    <div style="width: 50%; text-align: right;">
+                <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
+                    <div style="width: 90%; text-align: right;">
                         <p:column style="text-align: right">
                             <p:selectOneMenu value="#{selectedTheso.optionThesoSelected}" style="color: #000;">
                                 <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedOptionTheso()}" update="containerIndex" />
                                 <f:selectItem itemLabel="Actions ..." itemValue="Option1"/>
-                                <f:selectItem itemLabel="Modifier la page d'accueil" itemValue="Option2"/>
+                                <f:selectItem itemLabel="#{langueBean.getMsg('index.modifyHomepage')}" itemValue="Option2"/>
                                 <f:selectItem itemLabel="Code Google Analytics" itemValue="Option3"/>
                             </p:selectOneMenu> 
                         </p:column>
                     </div>
+                    <i class="fa-regular fa-pen-to-square" style="font-size: 18px; margin-left: 10px; padding-top: 4px;"></i>
                 </div>
             </h:panelGroup>
 

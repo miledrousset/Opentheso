@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idNewNote" header="Nouvelle note" widgetVar="newNote" 
+    <p:dialog id="idNewNote" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="newNote" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
         <h:form id="newNoteForm">
             <div class="row">
@@ -47,16 +47,14 @@
                 </div>
             </div>
 
-            <div class="row" style="margin-top: 10px">
-                <div class="col-12" style="text-align: right">
-                    <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('newNote').hide();" update="idNewNote"/>
-                    
-                    <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="tabViewCandidat messageIndex"
-                                     ajax="true" class="btn btn-primary" style="margin-left: 10px"
-                                     oncomplete="PF('newNote').hide();"
-                                     action="#{noteBeanCandidat.addNewNote(currentUser.nodeUser.idUser)}"/>
-                </div>
+            <div style="width: 100%; text-align: right; margin-top: 10px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
+                                 actionListener="PF('newNote').hide();" update="idNewNote" style="margin-right: 10px"/>
+                <p:commandButton value="#{langueBean.getMsg('btnAdd')}" styleClass="ui-button-success" icon="pi pi-check"
+                                 update="tabViewCandidat messageIndex"
+                                 ajax="true"  
+                                 oncomplete="PF('newNote').hide();"
+                                 action="#{noteBeanCandidat.addNewNote(currentUser.nodeUser.idUser)}"/>
             </div>
         </h:form>
     </p:dialog>   

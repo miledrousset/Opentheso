@@ -19,11 +19,11 @@
                              style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                     <p:column headerText="Label">
-                        <h:outputText value="#{traductions.lexicalValue}" style="color: #43B572; font-size: 14px;"/>
+                        <h:outputText value="#{traductions.lexicalValue}" style="font-size: 14px;"/>
                     </p:column>
                     
                     <p:column width="60" headerText="Lang">
-                        <h:outputText value="#{traductions.lang}" style="color: #43B572; text-align: center; font-size: 14px;"/>
+                        <h:outputText value="#{traductions.lang}" style="text-align: center; font-size: 14px;"/>
                     </p:column>     
                     
                     <p:column width="60" headerText="Action">
@@ -37,6 +37,15 @@
                     </p:column>                  
                 </p:dataTable>
             </div>
+            
+            <p:spacer height="20px" />
+            
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 style="margin-right: 10px" update="containerIndex:idDeleteTraduction"
+                                 actionListener="PF('deleteTraduction').hide();"/>
+            </div>            
         </h:form>
     </p:dialog> 
 </ui:fragment>

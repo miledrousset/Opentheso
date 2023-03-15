@@ -1,0 +1,10 @@
+Alignement:
+    - correction module d'alignement auto (cas de l'ajout d'un alignement manuel)
+    - correction module d'alignement auto (intitulé des colonnes non conformes)
+
+Export CSV :
+    - correction de l'import de fichier structuré (hiérarchie par tabulation)
+
+Dialogue Traduction : 
+    - correction des intitulés 
+    - traductions des dialogues
