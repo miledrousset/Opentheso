@@ -145,6 +145,12 @@
                             actionListener="#{editConcept.infosDelete()}" icon="fas fa-file-download"
                             update="idListImportCsv listImportCsvForm" action="#{importFileBean.init()}"
                             oncomplete="PF('listImportCsv').show();"/>
+                
+                <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
+                <p:menuitem value="#{langueBean.getMsg('actions.repairLoopedRelationships')}"
+                            title="#{langueBean.getMsg('actions.repairLoopedRelationshipsToolTip')}"
+                            action="#{restoreTheso.deleteLoopRelations(selectedTheso.currentIdTheso, conceptView.nodeConcept.concept.idConcept)}" icon="fas fa-file-download"
+                            update="containerIndex:rightTab:idConceptViewActions"/>                
 
             </p:menuButton>
             <p:tooltip for="newConcept" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_concept')} #{conceptView.nodeConcept.term.lexical_value}" showDelay="1000" />                

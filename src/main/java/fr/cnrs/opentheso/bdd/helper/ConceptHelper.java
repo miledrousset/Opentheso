@@ -1758,6 +1758,8 @@ public class ConceptHelper {
     private ArrayList<String> getIdsOfBranch__(HikariDataSource hd, String idConceptDeTete,
             String idTheso, ArrayList<String> lisIds) {
 
+        if(lisIds.contains(idConceptDeTete)) return lisIds;
+        
         lisIds.add(idConceptDeTete);
 
         ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(hd, idConceptDeTete, idTheso);
@@ -1766,6 +1768,36 @@ public class ConceptHelper {
         }
         return lisIds;
     }
+    
+    /**
+     * Cette fonction permet de retrouver tous tes identifiants d'une branche en
+     * partant du concept en paramètre, 
+     * elle évite les boucles à l'infini
+     *
+     * @param hd
+     * @param idConceptDeTete
+     * @param idTheso
+     * @return
+     */
+    public ArrayList<String> getIdsOfBranchWithoutLoop(HikariDataSource hd, String idConceptDeTete, String idTheso) {
+        ArrayList<String> lisIds = new ArrayList<>();
+        lisIds = getIdsOfBranchWithoutLoop__(hd, idConceptDeTete, idTheso, lisIds);
+        return lisIds;
+    }
+
+    private ArrayList<String> getIdsOfBranchWithoutLoop__(HikariDataSource hd, String idConceptDeTete,
+            String idTheso, ArrayList<String> lisIds) {
+
+        if(lisIds.contains(idConceptDeTete)) return lisIds;
+        
+        lisIds.add(idConceptDeTete);
+
+        ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(hd, idConceptDeTete, idTheso);
+        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
+            getIdsOfBranchWithoutLoop__(hd, listIdsOfConceptChildren1, idTheso, lisIds);
+        }
+        return lisIds;
+    }    
 
     /**
      * Cette fonction permet de retrouver tous tes identifiants d'une branche en

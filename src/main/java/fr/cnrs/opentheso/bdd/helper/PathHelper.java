@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
@@ -20,7 +21,7 @@ import javax.json.JsonObjectBuilder;
  * @author miledrousset
  */
 public class PathHelper {
-
+    private String message;
     
     public ArrayList<NodePath> getPathWithLabel(HikariDataSource ds, ArrayList<Path> paths,
             String idTheso, String idLang, String selectedIdConcept) {
@@ -229,7 +230,7 @@ public class PathHelper {
     
     public ArrayList<Path> getPathOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus) {
-
+        message = null;
         ArrayList<Path> allPaths = new ArrayList<>();
         ArrayList<String> path = new ArrayList<>();
         path.add(idConcept);
@@ -270,8 +271,13 @@ public class PathHelper {
         ArrayList<String> idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
         if(idBTs == null) return null;
         if (idBTs.size() > 1) {
+            Collections.reverse(path);
+            if(path.equals(firstPath)){
+                message = "!! Attention, erreur de boucle détectée :" + firstPath.toString();
+                return allPaths;
+            }
             for (String idBT1 : path) {
-                firstPath.add(0,idBT1);
+                firstPath.add(idBT1);
             }
         }
         if (idBTs.isEmpty()) {
@@ -491,5 +497,13 @@ public class PathHelper {
         return allPaths;
 
     }    
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
     
 }

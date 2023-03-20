@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -273,7 +274,7 @@ public class ConceptView implements Serializable {
     public String getDrapeauImgLocal(String codePays) {
         if (StringUtils.isEmpty(codePays)) {
             return FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequestContextPath() + "/resources/img/No_flag.png";
+                    .getRequestContextPath() + "/resources/img/flag/noflag.png";
         }
         return FacesContext.getCurrentInstance().getExternalContext()
                 .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";   
@@ -764,6 +765,10 @@ public class ConceptView implements Serializable {
         PathHelper pathHelper = new PathHelper();
         ArrayList<Path> paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
+        if(pathHelper.getMessage() != null){
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
         if (paths == null) {
             System.out.println("Erreur de path pour le concept :" + idConcept);
             if (pathLabel != null) {

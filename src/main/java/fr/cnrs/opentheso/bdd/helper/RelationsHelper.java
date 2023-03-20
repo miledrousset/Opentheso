@@ -1171,6 +1171,55 @@ public class RelationsHelper {
             }
         }
     }
+    
+    public NodeRelation getLoopRelation(HikariDataSource ds,
+             String idTheso, String idConcept){
+        // récupération la relation en Loop
+        NodeRelation nodeRelation = null;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept1, role, id_concept2 from hierarchical_relationship " +
+                        "where " +
+                        "id_concept1 = '" + idConcept + "' and role = 'BT' " +
+                        "and id_thesaurus = '" + idTheso + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        nodeRelation = new NodeRelation();
+                        nodeRelation.setIdConcept1(resultSet.getString("id_concept1"));
+                        nodeRelation.setRelation(resultSet.getString("role"));
+                        nodeRelation.setIdConcept2(resultSet.getString("id_concept2"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if id exist : " + idConcept, sqle);
+        }        
+        if(nodeRelation == null) return null;
+        
+        NodeRelation nodeRelation2 = null;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept2, role, id_concept1 from hierarchical_relationship " +
+                        "where " +
+                        "id_concept1 = '" + nodeRelation.getIdConcept1() + "' and role = 'BT' and id_concept2 = '" + nodeRelation.getIdConcept2() + "' and id_thesaurus = '" + idTheso + "'" +
+                        "and id_concept1 IN" +
+                        "(select id_concept2 from hierarchical_relationship where " +
+                        "id_concept1 = '" + nodeRelation.getIdConcept2() +"' and role = 'BT' and id_concept2 = '" + nodeRelation.getIdConcept1() + "' and id_thesaurus = '" + idTheso + "')");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        nodeRelation2 = new NodeRelation();
+                        nodeRelation2.setIdConcept2(resultSet.getString("id_concept2"));
+                        nodeRelation2.setRelation(resultSet.getString("role"));
+                        nodeRelation2.setIdConcept1(resultSet.getString("id_concept1"));
+                    }
+                }
+                return nodeRelation2;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if id exist : " + idConcept, sqle);
+        }
+        return null;          
+    }
 
     /**
      * Cette fonction permet de récupérer la liste de l'historique des relations

@@ -8,3 +8,17 @@ Export CSV :
 Dialogue Traduction : 
     - correction des intitulés 
     - traductions des dialogues
+
+### commité
+
+Note:
+    - distinguer la note à modifier en affichant la langue utilisée
+
+Couper/coller manuel : 
+    - Controle renforcer pour éviter les boucles à l'infini
+
+Navigation: 
+    - detection en temps réel des branches qui bouclent à l'infini
+    - proposition de correction de ces boucles
+
+

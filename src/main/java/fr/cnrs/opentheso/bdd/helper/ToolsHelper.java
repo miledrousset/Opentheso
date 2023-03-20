@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -394,6 +396,23 @@ public class ToolsHelper {
     }    
 
     /**
+     * permet de supprimer la relation en boucle de type (a -> BT -> b et b -> BT -> a ) 
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @return 
+     */
+    public boolean removeLoopRelation(HikariDataSource ds, String idTheso, String idConcept) {
+        RelationsHelper relationsHelper = new RelationsHelper();
+        NodeRelation nodeRelation = relationsHelper.getLoopRelation(ds, idTheso, idConcept);
+        if(nodeRelation!= null){
+            relationsHelper.deleteThisRelation(ds, nodeRelation.getIdConcept2(), idTheso, "BT", nodeRelation.getIdConcept1());
+            relationsHelper.deleteThisRelation(ds, nodeRelation.getIdConcept1(), idTheso, "NT", nodeRelation.getIdConcept2());
+        }
+        return true;   
+    }        
+    
+    /**
      * Permet de supprimer les relations en boucle qui sont interdites (100 ->
      * BT -> 100) ou (100 -> NT -> 100)ou (100 -> RT -> 100) c'est incohérent et
      * ca provoque une boucle à l'infini
@@ -402,7 +421,7 @@ public class ToolsHelper {
      * @param idThesaurus
      * @return 
      */
-    public boolean removeLoopRelations(HikariDataSource ds, String role, String idThesaurus) {
+    public boolean removeSameRelations(HikariDataSource ds, String role, String idThesaurus) {
 
         RelationsHelper relationsHelper = new RelationsHelper();
 

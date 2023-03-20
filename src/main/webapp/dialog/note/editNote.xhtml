@@ -10,23 +10,27 @@
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/>
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="font-size: 14px; color: #C63632;"/>
                 </div>
             </div> 
-            
+            <p:spacer height="20px;"/>
             <p:panel style=" max-height: 500px; overflow-y:scroll">
                 <ui:repeat var="noteToEdit" value="#{noteBean.nodeToEdit()}" >
                     <div class="row" style="margin-bottom: 10px;">
-                        <div class="col-11" offset="1" colXs="10" style="background: #FAFAFA">
+                        <div class="col-10" colXs="9" style="background: #FAFAFA">
                             <p:textEditor value="#{noteToEdit.lexicalvalue}" allowLinks="true" secure="false"
                                           placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />          
                         </div>
+                
 
-                        <div class="col-1" style="align-self: center;">                            
+                        <div class="col-2" style="align-self: center;">  
+                            <img src="#{conceptView.getDrapeauImgLocal(noteToEdit.lang)}" width="25" height="20" style="margin-right: 7px"/>
                             <p:commandButton update="containerIndex:formRightTab containerIndex:idEditNote messageIndex"
                                          action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}"
-                                         icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
-                                         style="font-size: 13px; color: #43B572" ajax="true" process="@form" 
+                                         icon="pi pi-save" 
+                                         value="#{noteToEdit.lang}"
+                                         styleClass="rounded-button ui-button-success"
+                                         style="font-size: 13px; background-color: red"  ajax="true" process="@form" 
                                          oncomplete="PF('editNote').show();"/>
                         </div>
                     </div>                    

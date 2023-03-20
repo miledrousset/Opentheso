@@ -277,6 +277,16 @@ public class DragAndDrop implements Serializable {
     
     
     private void pasteWithTreeControl(){
+        if(!isDropToRoot) {
+            validatePaste();
+            if(!isValidPaste) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+              //  rollBackAfterErrorOrCancelDragDrop();
+                updateMessage();
+                return;
+            }         
+        }
         /// préparer le noeud à couper
         setBTsToCut();
         
