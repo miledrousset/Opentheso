@@ -408,6 +408,7 @@ public class SKOSResource {
      * @param prop un int SKOSProperty
      */
     public void addIdentifier(String identifier, int prop) {
+        this.identifier = identifier;
         try {
             SKOSdc dc = new SKOSdc(identifier, prop);
             this.sdc = dc;

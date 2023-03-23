@@ -482,7 +482,7 @@ public class CandidatDao {
     }
 
     public boolean insertCandidate(HikariDataSource hikariDataSource, CandidatDto candidatDto, String adminMessage, int idUser) {
-
+        ConceptHelper conceptHelper = new ConceptHelper();
         try (Connection conn = hikariDataSource.getConnection()) {
             conn.setAutoCommit(false);
             try (Statement stmt = conn.createStatement()){
@@ -495,18 +495,21 @@ public class CandidatDao {
                     conn.rollback();
                     return false;
                 }
-                if(candidatDto.getTermesGenerique().isEmpty()) {
-                    if(!setTopTermToConcept(candidatDto, stmt)){
-                        conn.rollback();
-                        return false;
-                    }
-                }
             }
             conn.commit();
-            return true;
         } catch (SQLException e) {
             return false;
         }
+        if(candidatDto.getTermesGenerique().isEmpty()) {
+            if(!conceptHelper.setTopConcept(hikariDataSource, candidatDto.getIdConcepte(), candidatDto.getIdThesaurus())){
+                return false;
+            }
+        } else {
+            if(!conceptHelper.setNotTopConcept(hikariDataSource, candidatDto.getIdConcepte(), candidatDto.getIdThesaurus())){
+                return false;
+            }                    
+        }        
+        return true;
     }     
     
     public boolean rejectCandidate(HikariDataSource hikariDataSource, CandidatDto candidatDto, String adminMessage, int idUser) {

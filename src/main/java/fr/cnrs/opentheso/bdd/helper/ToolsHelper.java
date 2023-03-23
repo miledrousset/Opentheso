@@ -337,7 +337,28 @@ public class ToolsHelper {
         }         
         return true;
     }
-         
+          
+    /**
+     * Permet de supprimer le status TopTerm pour les concepts qui ont une relation BT
+     * @param ds
+     * @param idThesaurus
+     * @return 
+     */
+    public boolean removeTopTermForConceptWithBT(HikariDataSource ds, String idThesaurus) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        RelationsHelper relationsHelper = new RelationsHelper();
+
+        // récupération de tous les Id TT du thésaurus
+        ArrayList<String> tabIdTT = conceptHelper.getAllTopTermOfThesaurus(ds, idThesaurus);
+        for (String idConcept : tabIdTT) {
+            if(relationsHelper.isConceptHaveRelationBT(ds, idConcept, idThesaurus)){
+                conceptHelper.setNotTopConcept(ds, idConcept, idThesaurus);
+            }
+        }
+        return true;
+    }        
+        
+        
     /**
      * Permet de supprimer les BT à un concept qui est Top terme, 
      * c'est incohérent et ca provoque une boucle à l'infini
@@ -345,7 +366,7 @@ public class ToolsHelper {
      * @param idThesaurus
      * @return 
      */
-    public boolean removeBTofTopTerm(HikariDataSource ds, String idThesaurus) {
+/*    public boolean removeBTofTopTerm(HikariDataSource ds, String idThesaurus) {
         ConceptHelper conceptHelper = new ConceptHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         ArrayList<String> idBTs;
@@ -373,7 +394,7 @@ public class ToolsHelper {
             Logger.getLogger(ToolsHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }
+    }*/
             
     /**
      * Permet de detecter les concepts qui n'ont pas de BT,

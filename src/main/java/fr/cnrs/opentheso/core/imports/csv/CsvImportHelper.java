@@ -425,7 +425,7 @@ public class CsvImportHelper {
     }
 
     private final static String SEPERATEUR = "##";
-    private final static String SOUS_SEPERATEUR = "@";
+    private final static String SOUS_SEPERATEUR = "@@";
 
     public boolean addConceptV2(HikariDataSource ds, String idTheso, 
             CsvReadHelper.ConceptObject conceptObject, int idUser) {

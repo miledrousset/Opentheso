@@ -21,4 +21,11 @@ Navigation:
     - detection en temps réel des branches qui bouclent à l'infini
     - proposition de correction de ces boucles
 
+### commité
 
+Projets :
+    - déscativation pour Admin de la possibilité d'ajouter des projets (ajout abusif et incontrôlé) 
+    - correction du module Candidat (insertion des candidats)
+
+import CSV
+    - correction d'une petite erreur qui empêchait l'import

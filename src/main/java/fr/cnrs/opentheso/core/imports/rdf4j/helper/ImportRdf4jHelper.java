@@ -440,8 +440,12 @@ public class ImportRdf4jHelper {
     }
 
     public void addConceptV2(SKOSResource conceptResource, String idTheso) throws SQLException {
+        String idConcept;
+        if(StringUtils.isEmpty(conceptResource.getIdentifier())){
+            idConcept = getOriginalId(conceptResource.getUri());
+        } else
+            idConcept = conceptResource.getIdentifier();
 
-        String idConcept = getOriginalId(conceptResource.getUri());
 
         String conceptStatus = "";
         if (conceptResource.getStatus() == SKOSProperty.deprecated) {

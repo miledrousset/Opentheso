@@ -234,7 +234,7 @@ public class RestoreTheso implements Serializable {
             return;
         }
 
-        // permet de detecter les concepts TT erronnés : si le concept n'a pas de BT, alors, il est forcement TopTerme (en ignorant les candidtas)
+        // permet de detecter les concepts TT erronnés : si le concept n'a pas de BT, alors, il est forcement TopTerme (en ignorant les candidats)
         if(!reorganizingTopTerm(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la correction des TT")); 
             return;            
@@ -246,8 +246,8 @@ public class RestoreTheso implements Serializable {
             return;              
         }
 
-        // permet de supprimer les BT pour un TopTerm, c'est incohérent
-        if(!removeBTofTopTerm(idTheso)){
+        // permet de detecter si le concept à un BT et il est aussi TopTerm, c'est incohérent, il faut alors supprimer le status TopTerm
+        if(!removeTopTermForConceptWithBT(idTheso)){
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des BT pour les topTermes")); 
             return;             
         }
@@ -265,9 +265,13 @@ public class RestoreTheso implements Serializable {
     private boolean reorganizingTheso(String idTheso) {
         return new ToolsHelper().reorganizingTheso(connect.getPoolConnexion(), idTheso);
     }        
-    private boolean removeBTofTopTerm(String idTheso){
+/*    private boolean removeBTofTopTerm(String idTheso){
         return new ToolsHelper().removeBTofTopTerm(connect.getPoolConnexion(), idTheso);
-    }
+    }*/
+    private boolean removeTopTermForConceptWithBT(String idTheso){
+        return new ToolsHelper().removeTopTermForConceptWithBT(connect.getPoolConnexion(), idTheso);
+    }    
+    
     private boolean removeSameRelations(String idTheso) {
         if(!new ToolsHelper().removeSameRelations(connect.getPoolConnexion(), "BT", idTheso))
             return false;

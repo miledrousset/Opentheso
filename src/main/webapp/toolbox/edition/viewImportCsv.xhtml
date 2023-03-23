@@ -170,7 +170,7 @@
                                                  disabled="#{!importFileBean.loadDone}"
                                                  title="Import rapide" style="margin-left: 20px"/>
 
-                                <p:commandButton value="Ancienne méthode" ajax="false" update="containerIndex"
+                                <p:commandButton rendered="ee" value="Ancienne méthode" ajax="false" update="containerIndex"
                                                  actionListener="#{importFileBean.addCsvThesoToBDD()}"
                                                  styleClass="ui-button-success" icon="fa fa-upload"
                                                  disabled="#{!importFileBean.loadDone}"
