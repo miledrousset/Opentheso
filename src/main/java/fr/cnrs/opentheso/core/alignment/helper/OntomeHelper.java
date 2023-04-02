@@ -5,17 +5,10 @@
  */
 package fr.cnrs.opentheso.core.alignment.helper;
 
-import com.bordercloud.sparql.Endpoint;
-import com.bordercloud.sparql.EndpointException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.core.alignment.SelectedResource;
-import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

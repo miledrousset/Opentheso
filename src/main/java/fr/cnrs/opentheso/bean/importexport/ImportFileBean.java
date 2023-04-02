@@ -50,6 +50,7 @@ import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
+import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
@@ -73,6 +74,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -2458,9 +2460,9 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, typeImport, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
+                //ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
+                //sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
+                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, RDFFormat.RDFXML, connect.getWorkLanguage());
                 total = sKOSXmlDocument.getConceptList().size();
                 uri = sKOSXmlDocument.getTitle();
                 loadDone = true;
@@ -2475,6 +2477,22 @@ public class ImportFileBean implements Serializable {
         }
         
         PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+    }
+
+    private RDFFormat getRdfFormat(int format) {
+        RDFFormat rdfFormat = RDFFormat.RDFJSON;
+        switch (format) {
+            case 0:
+                rdfFormat = RDFFormat.RDFXML;
+                break;
+            case 1:
+                rdfFormat = RDFFormat.JSONLD;
+                break;
+            case 2:
+                rdfFormat = RDFFormat.TURTLE;
+                break;
+        }
+        return rdfFormat;
     }
 
     /**

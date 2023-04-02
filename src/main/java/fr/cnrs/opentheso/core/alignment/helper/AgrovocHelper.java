@@ -27,12 +27,14 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.core.alignment.SelectedResource;
-import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
+import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import org.eclipse.rdf4j.rio.RDFFormat;
+
 import javax.net.ssl.HttpsURLConnection;
 
 
@@ -252,8 +254,9 @@ public class AgrovocHelper {
         SKOSXmlDocument sxd;
         try {
             inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
-            ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, currentLang); /// read XML SKOS
-            sxd = readRdf4j.getsKOSXmlDocument();
+            //ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, currentLang); /// read XML SKOS
+            //sxd = readRdf4j.getsKOSXmlDocument();
+            sxd = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFXML, currentLang);
 
             for (SKOSResource resource : sxd.getConceptList()) {
                 for(SKOSLabel label : resource.getLabelsList()) {
