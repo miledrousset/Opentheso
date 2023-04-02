@@ -11,12 +11,13 @@ import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.AddConceptsStruct;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
+import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.skosapi.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
@@ -223,7 +224,6 @@ public class FusionService implements Serializable {
     /**
      * pour comparer la traduction locale à la traduction importée
      * @param nodeTermTraductionImport
-     * @param nodeTermTraductionLocal
      * @return 
      * #MR
      */
@@ -336,8 +336,9 @@ public class FusionService implements Serializable {
     public void importTheso(FileUploadEvent event) {
 
         try (InputStream is = event.getFile().getInputStream()) {
-            ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
-            sourceSkos = readRdf4j.getsKOSXmlDocument();
+            //ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
+            //sourceSkos = readRdf4j.getsKOSXmlDocument();
+            sourceSkos = new ReadRDF4JNewGen().readRdfFlux(is, RDFFormat.RDFXML, connect.getWorkLanguage());
             total = sourceSkos.getConceptList().size();
             uri = sourceSkos.getTitle();
             loadDone = true;
