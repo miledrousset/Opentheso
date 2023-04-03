@@ -284,7 +284,7 @@ public class StatistiqueBean implements Serializable {
         }
 
         ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
-        resources.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        resources.setInfos(nodePreference);
         resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
         ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
         for (String idConcept : allConcepts) {

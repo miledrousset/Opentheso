@@ -59,7 +59,6 @@ import virtuoso.jena.driver.VirtuosoUpdateRequest;
 @SessionScoped
 public class ExportFileBean implements Serializable {
 
-    private final static String DATE_FORMAT = "dd-mm-yyyy";
     @Inject
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
@@ -128,7 +127,7 @@ public class ExportFileBean implements Serializable {
         candidatBean.setProgressBarStep(100 / candidatBean.getCandidatList().size());
 
         ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
-        resources.setInfos(nodePreference, DATE_FORMAT, false, false);
+        resources.setInfos(nodePreference);
         resources.exportTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference);
 
         for (CandidatDto candidat : candidatBean.getCandidatList()) {
@@ -621,7 +620,7 @@ public class ExportFileBean implements Serializable {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(),
                 idTheso, nodePreference);
 
@@ -741,7 +740,7 @@ public class ExportFileBean implements Serializable {
         progressStep = (float) 100 / sizeOfTheso;
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
 
         if (!viewExportBean.isToogleFilterByGroup()) {
@@ -823,7 +822,7 @@ public class ExportFileBean implements Serializable {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference(), DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());
         exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
 
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
