@@ -45,6 +45,7 @@ import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
 import java.util.List;
 
+
 /**
  *
  * @author Quincy
@@ -306,11 +307,12 @@ public class WritePdf {
         }
         
         if (CollectionUtils.isNotEmpty(idToImg.get(key))) {
+            paragraphs.add(new Paragraph(Chunk.NEWLINE));
             for (NodeImage nodeImage : idToImg.get(key)) {
                 try {
                     Image image = Image.getInstance(new URL(nodeImage.getUri()));
-                    image.scaleAbsolute(200f, 200f);                    
-                    paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
+                    image.scaleAbsolute(resiseImage(image));
+                    paragraphs.add(new Paragraph(new Chunk(image, indenatation.length()*(2.9f), 20, true)));
                 } catch (BadElementException | IOException ex) {}
             }
         }
@@ -606,21 +608,43 @@ public class WritePdf {
         if (lat != null && lon != null) {
 
             paragraphs.add(new Paragraph("    lat: " + lat, textFont));
-            paragraphs.add(new Paragraph("    lat: " + lon, textFont));
-
+            paragraphs.add(new Paragraph("    long: " + lon, textFont));
         }
         
         if (CollectionUtils.isNotEmpty(concept.getNodeImage())) {
+            paragraphs.add(new Paragraph(Chunk.NEWLINE));
             for(NodeImage nodeImage : concept.getNodeImage()) {
                 try {
                     Image image = Image.getInstance(new URL(nodeImage.getUri()));
-                    image.scaleAbsolute(200f, 200f);                    
-                    paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
+                    image.scaleAbsolute(resiseImage(image));                
+                    paragraphs.add(new Paragraph(new Chunk(image, 11, 20, true)));
                 } catch (BadElementException | IOException ex) {}
             }
         }
     }
+    
+    private Rectangle resiseImage(Image image){
+        float width = image.getWidth();
+        float height = image.getHeight();
+        float rate;
+        // Vérification si l'image est horizontale ou verticale
+        if (width > height) {
+            //L'image est horizontale.
+            rate = getRate(width);
+        } else {
+            //L'image est verticale
+            rate = getRate(height);
+        }   
+        return new Rectangle(width/rate, height/rate);          
+    }
+    // pour définir la taille souhaitée, 
+    // la valeur size/200 est pour obtenir une image de (200x200)
+    private float getRate(float size){
+        return size/250;
+    }
 
+
+    
     public static String getIdFromUri(String uri) {
         if (uri.contains("idg=")) {
             if (uri.contains("&")) {

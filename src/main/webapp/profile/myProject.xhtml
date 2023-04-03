@@ -63,7 +63,8 @@
                                     <p:selectOneMenu id="selectProjects" value="#{myProjectBean.selectedProject}"
                                                      styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                                      style="width: 100%; height: 35px; background: none;  box-shadow: none; "
-                                                     panelStyle="border: none; box-shadow: none; width: 300px">
+                                                     panelStyle="border: none; box-shadow: none; width: 300px"
+                                                     filter="true" filterMatchMode="contains">
 
                                         <f:selectItem itemLabel="...." itemValue="" />
                                         <f:selectItems value="#{myProjectBean.listeGroupsOfUser.entrySet()}" var="project" itemLabel="#{project.value}" itemValue="#{project.key}"/>

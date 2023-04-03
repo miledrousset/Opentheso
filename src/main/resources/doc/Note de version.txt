@@ -1,31 +1,12 @@
-Alignement:
-    - correction module d'alignement auto (cas de l'ajout d'un alignement manuel)
-    - correction module d'alignement auto (intitulé des colonnes non conformes)
+Copier/coller d'un thésaurus à un autre
+    - correction de la procédure.
 
-Export CSV :
-    - correction de l'import de fichier structuré (hiérarchie par tabulation)
+correction de la dialogue de la gestion des projets
 
-Dialogue Traduction : 
-    - correction des intitulés 
-    - traductions des dialogues
+correction de l'export PDF pour mieux afficher les images
 
 ### commité
 
-Note:
-    - distinguer la note à modifier en affichant la langue utilisée
 
-Couper/coller manuel : 
-    - Controle renforcer pour éviter les boucles à l'infini
 
-Navigation: 
-    - detection en temps réel des branches qui bouclent à l'infini
-    - proposition de correction de ces boucles
 
-### commité
-
-Projets :
-    - déscativation pour Admin de la possibilité d'ajouter des projets (ajout abusif et incontrôlé) 
-    - correction du module Candidat (insertion des candidats)
-
-import CSV
-    - correction d'une petite erreur qui empêchait l'import

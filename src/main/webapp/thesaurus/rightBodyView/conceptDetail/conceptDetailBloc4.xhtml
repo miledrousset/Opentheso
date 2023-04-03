@@ -122,18 +122,16 @@
                             <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}" > 
                                 <p:remoteCommand name="rc" actionListener="#{galleriaView.changeActiveIndex}" 
                                                  update="containerIndex:rightTab:custom" oncomplete="PF('galleria').show()" />   
-
-                                <p:galleria id="custom" widgetVar="galleria"
-                                            value="#{conceptView.nodeConcept.nodeimages}" var="photo" numVisible="5"
-                                            circular="true"
-                                            fullScreen="true"
-                                            showItemNavigators="true"
-                                            activeIndex="#{galleriaView.activeIndex}"
-                                            responsiveOptions="#{galleriaView.responsiveOptions3}"
-                                            style="max-width: 900px;">     
-                                    <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}"  style="width: 100%; display: block;" />
-                                </p:galleria>
-
+                                    <p:galleria id="custom" widgetVar="galleria"
+                                                value="#{conceptView.nodeConcept.nodeimages}" var="photo" numVisible="5"
+                                                circular="true"
+                                                fullScreen="true"
+                                                showItemNavigators="true"
+                                                activeIndex="#{galleriaView.activeIndex}"
+                                                responsiveOptions="#{galleriaView.responsiveOptions1}"
+                                                style="max-width: 600px;">    
+                                        <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}"  style="width: 100%; display: block;" />
+                                    </p:galleria>
                                 <div class="grid">
                                     <ui:repeat value="#{conceptView.nodeConcept.nodeimages}" var="photo" varStatus="status">
                                         <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}" style="cursor: pointer; max-height: 200px; max-width: 500px; margin-left: 10px;"
