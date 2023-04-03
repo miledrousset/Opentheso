@@ -86,7 +86,7 @@ public class ReadRDF4JNewGen {
                 String lang = defaultLang;
                 Literal literal = null;
                 if (value instanceof Literal) {
-                    // Si la ligne en cours contient une langue spécifique
+                    // Si la ligne en cours contient une langue spécifique, on récupère la langue dans
                     literal = (Literal) value;
                     if (ObjectUtils.isNotEmpty(literal) && literal.getLanguage().isPresent()) {
                         lang = literal.getLanguage().get();
