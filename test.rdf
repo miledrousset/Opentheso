@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcterms="http://purl.org/dc/terms/"
+	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+	xmlns:iso-thes="http://purl.org/iso25964/skos-thes#"
+	xmlns:opentheso="http://purl.org/umu/uneskos#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+    <rdf:Description rdf:about="http://mondomaine.fr/th378">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+        <skos:prefLabel xml:lang="fr">Import export 347</skos:prefLabel>
+        <skos:prefLabel xml:lang="en">theso_th378_en</skos:prefLabel>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=246&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=100&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=101&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=103&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=104&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=106&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=107&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=109&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=110&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=112&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=113&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=114&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=115&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=116&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=117&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=118&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=119&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=120&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=121&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=122&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=123&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=124&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=125&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=126&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=127&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=128&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=130&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=131&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=132&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=133&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=134&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=135&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=136&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=137&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=138&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=139&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=141&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=142&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=143&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=144&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=145&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=149&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=151&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=152&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=153&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=154&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=156&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=158&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=159&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=165&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=166&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=167&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=168&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=169&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=170&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=171&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=172&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=173&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=174&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=175&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=176&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=177&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=178&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=179&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=180&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=181&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=182&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=183&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=184&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=192&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=193&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=194&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=195&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=198&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=199&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=200&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=201&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=202&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=203&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=204&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=205&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=206&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=207&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=208&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=497806&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=209&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=210&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=211&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=212&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=214&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=215&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=216&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=185&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=218&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=219&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=220&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=221&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=223&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=224&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=225&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=105&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=226&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=227&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=228&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=229&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=129&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=230&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=231&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=232&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=233&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=155&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=234&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=235&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=236&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=217&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=237&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=239&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=238&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=240&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=241&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=242&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=243&amp;idt=th378"/>
+        <skos:hasTopConcept rdf:resource="http://mondomaine.fr/?idc=244&amp;idt=th378"/>
+        <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-01-19</dcterms:created>
+        <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-01-19</dcterms:modified>
+        <dcterms:creator>Emmanuel Reynaud</dcterms:creator>
+        <dcterms:contributor>Emmanuel Reynaud</dcterms:contributor>
+        <dcterms:title>theso_th378_en</dcterms:title>
+        <dcterms:language>en</dcterms:language>
+    </rdf:Description>
+
+</rdf:RDF>

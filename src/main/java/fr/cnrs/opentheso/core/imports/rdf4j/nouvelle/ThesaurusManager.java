@@ -12,6 +12,7 @@ public class ThesaurusManager {
     public void addStructData(SKOSResource skosResource, Resource subject, SKOSXmlDocument sKOSXmlDocument, int prop) {
 
         skosResource.setProperty(prop);
+
         switch (prop) {
             case SKOSProperty.ConceptScheme:
                 sKOSXmlDocument.setConceptScheme(skosResource);
