@@ -57,19 +57,15 @@ public class ReadRDF4JNewGen {
                 value = st.getObject();
                 subject = st.getSubject();
 
-                System.out.println("-------------------------------");
-                System.out.println("-- Predicate : " + predicate.stringValue());
-                System.out.println("-- Value : " + st.getObject().stringValue());
-                System.out.println("-- Subject : " + subject.stringValue());
-                System.out.println("-------------------------------");
-
-                if (st.getObject().stringValue().equals("Wikidata_sparql")) {
-                    System.out.println("-------------------------------");
-                }
-
+                // On teste si on est au niveau du début/fin d'une balise de type "rdf:Description"
                 if (RESOURCE_TAG.equalsIgnoreCase(predicate.stringValue())) {
+
+                    // Ajouter l'objet SKOSResource dans SKOSXmlDocument
+                    // Ce code est executé à la fin de chaque balise "rdf:Description"
                     addNewResources();
 
+                    // Définir la nature de l'élément "rdf:Description"
+                    // Ce code est executé au début de chaque balise "rdf:Description"
                     if (!isConceptScheme && !isFacet && !isConcept && !isCollection && !isImage) {
                         skosResource = new SKOSResource();
                         skosResource.setUri(subject.stringValue());
@@ -90,25 +86,32 @@ public class ReadRDF4JNewGen {
                 String lang = defaultLang;
                 Literal literal = null;
                 if (value instanceof Literal) {
+                    // Si la ligne en cours contient une langue spécifique
                     literal = (Literal) value;
                     if (ObjectUtils.isNotEmpty(literal) && literal.getLanguage().isPresent()) {
                         lang = literal.getLanguage().get();
                     }
 
                     if (isConceptScheme) {
+                        // Dans le cas d'un conceptScheme
                         genericReader.setThesaurusData(skosResource, predicate, literal, lang);
                     } else if (isImage) {
+                        // Dans le cas d'une image
                         genericReader.setFoatImageDatas(skosResource, literal, predicate);
                     } else {
+                        // Dans le cas d'un Concept, Collection, ..
                         conceptReader.readGeneric(skosResource, predicate, literal, lang);
                     }
                 } else {
+                    // Pour traiter les lignes d'un concept qui ne contiennent pas une langue
                     conceptReader.readConcept(skosXmlDocument, skosResource, predicate, value, literal);
                 }
             }
 
             @Override
             public void endRDF() throws RDFHandlerException {
+                // On execute ce cas à la fin de la lecture du fichier RDF :
+                // on doit enregistrer le dernier object skosResource (la dernière balise lu)
                 addNewResources();
             }
 

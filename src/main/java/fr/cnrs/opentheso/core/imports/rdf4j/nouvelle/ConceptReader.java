@@ -8,6 +8,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
 
+
 public class ConceptReader {
 
     public void readGeneric(SKOSResource skosConcept, IRI predicate, Literal literal, String lang) {
@@ -80,22 +81,6 @@ public class ConceptReader {
             case "long":
                 skosConcept.getGPSCoordinates().setLon(literal.getLabel());
                 break;
-        }
-    }
-
-
-    public void setFoatImageDatas(SKOSResource skosResource, Literal literal, IRI predicate) {
-
-        if (predicate.getLocalName().equals("identifier")) {
-            skosResource.setIdentifier(literal.getLabel());
-        }
-
-        if (predicate.getLocalName().equals("title")) {
-            skosResource.getFoafImage().setImageName(literal.getLabel());
-        }
-
-        if (predicate.getLocalName().equals("rights")) {
-            skosResource.getFoafImage().setCopyRight(literal.getLabel());
         }
     }
 

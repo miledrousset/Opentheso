@@ -3,13 +3,16 @@ package fr.cnrs.opentheso.core.imports.rdf4j.nouvelle;
 import fr.cnrs.opentheso.bdd.tools.FileUtilities;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
+
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
+
 
 
 public class GenericReader {
 
     public void setThesaurusData(SKOSResource skosConcept, IRI predicate, Literal literal, String lang) {
+
         switch (predicate.getLocalName()) {
             case "title":
                 skosConcept.getThesaurus().setTitle(literal.getLabel());
@@ -59,16 +62,16 @@ public class GenericReader {
 
     public void setFoatImageDatas(SKOSResource skosResource, Literal literal, IRI predicate) {
 
-        if (predicate.getLocalName().equals("identifier")) {
-            skosResource.setIdentifier(literal.getLabel());
-        }
-
-        if (predicate.getLocalName().equals("title")) {
-            skosResource.getFoafImage().setImageName(literal.getLabel());
-        }
-
-        if (predicate.getLocalName().equals("rights")) {
-            skosResource.getFoafImage().setCopyRight(literal.getLabel());
+        switch(predicate.getLocalName()) {
+            case "identifier":
+                skosResource.setIdentifier(literal.getLabel());
+                break;
+            case "title":
+                skosResource.getFoafImage().setImageName(literal.getLabel());
+                break;
+            case "rights":
+                skosResource.getFoafImage().setCopyRight(literal.getLabel());
+                break;
         }
     }
 
