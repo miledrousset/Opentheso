@@ -1501,23 +1501,35 @@ public class RestRDFHelper {
         exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
         exportRdf4jHelperNew.exportTheso(ds, idTheso, nodePreference);
 
+        
+    //System.out.println(">> " + "Export du thésaurus OK ");        
+        
         String baseUrl = "https" + "://" + nodePreference.getCheminSite();
 
         ExportHelper exportHelper = new ExportHelper();
         
         exportRdf4jHelperNew.exportCollections(ds, idTheso);
+        
+    //System.out.println(">> " + "Export Collections OK ");         
+        
         List<SKOSResource> concepts = exportHelper.getAllConcepts(ds, idTheso,
                     baseUrl, null, nodePreference.getOriginalUri(), nodePreference);
-            
+        
+    //System.out.println(">> " + "Récupération des concepts de la BDD OK");             
+        
+        
         List<SKOSResource> facettes = exportHelper.getAllFacettes(ds, idTheso, baseUrl,
                 nodePreference.getOriginalUri(), nodePreference);
         for (SKOSResource facette : facettes) {
             exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
         }
+    //System.out.println(">> " + "Export Facettes OK ");          
 
         for (SKOSResource concept : concepts) {
             exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
         }
+    //System.out.println(">> " + "Transformation des concepts en Objet XmlDocument OK ");          
+        
         exportRdf4jHelperNew.exportFacettes(ds, idTheso);
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
         return writeRdf4j;        

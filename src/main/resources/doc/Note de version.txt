@@ -6,6 +6,8 @@ correction de la dialogue de la gestion des projets
 correction de l'export PDF pour mieux afficher les images
 
 ### commité
+masquer l'affichage d'un bloc vide qui s'affichait en mode non connecté 
+
 
 
 

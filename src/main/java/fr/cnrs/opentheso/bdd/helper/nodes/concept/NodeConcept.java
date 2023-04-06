@@ -65,6 +65,9 @@ public class NodeConcept {
     
     // les concepts dépréciés qui sont reliés à ce concept
     private ArrayList <NodeIdValue> replaces;    
+    
+    // liste des Qualificatifs
+    private ArrayList <NodeNT> listQualifiers;
 
     public NodeConcept() {
         nodeNotesTerm = new ArrayList<>();
@@ -199,6 +202,14 @@ public class NodeConcept {
         this.nodeExternalResources = nodeExternalResources;
     }
 
+    public ArrayList<NodeNT> getListQualifiers() {
+        return listQualifiers;
+    }
+
+    public void setListQualifiers(ArrayList<NodeNT> listQualifiers) {
+        this.listQualifiers = listQualifiers;
+    }
+
 
     public void clear(){
         if(nodeBT != null) nodeBT.clear();
@@ -216,7 +227,8 @@ public class NodeConcept {
         nodeGps = null;
         if(replacedBy != null) replacedBy.clear();    
         if(replaces != null) replaces.clear();    
-        if(nodeExternalResources != null) nodeExternalResources.clear();  
+        if(nodeExternalResources != null) nodeExternalResources.clear(); 
+        if(listQualifiers != null) listQualifiers.clear(); 
     }
     
 }

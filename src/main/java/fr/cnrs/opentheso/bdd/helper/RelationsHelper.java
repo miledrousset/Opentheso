@@ -45,7 +45,52 @@ public class RelationsHelper {
     ////////////////////////////////////////////////////////////////////
     ////////////////// Nouvelles fontions #MR//////////////////////////////
     ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////        
+    ////////////////////////////////////////////////////////////////////     
+    
+    
+    
+    /**
+     * permet de retourner la liste des termes de type Qualifier avec les libellés
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return
+     */
+    public ArrayList<NodeNT> getListQualifier(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+
+        ArrayList<NodeNT> nodeListNT = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept2 from hierarchical_relationship, concept"
+                        + " where hierarchical_relationship.id_concept2 = concept.id_concept"
+                        + " and hierarchical_relationship.id_thesaurus = concept.id_thesaurus"
+                        + " and hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
+                        + " and id_concept1 = '" + idConcept + "'"
+                        + " and role = 'QUALIFIER'"
+                        + " and concept.status != 'CA'"
+                );
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeNT nodeNT = new NodeNT();
+                        nodeNT.setIdConcept(resultSet.getString("id_concept2"));
+                        nodeListNT.add(nodeNT);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting NT of Concept : " + idConcept, sqle);
+        }
+        for (NodeNT nodeNT : nodeListNT) {
+            nodeNT.setTitle(new ConceptHelper().getLexicalValueOfConcept(ds, nodeNT.getIdConcept(), idThesaurus, idLang));
+        }
+        Collections.sort(nodeListNT);
+        return nodeListNT;
+    }    
+    
+    
     /**
      * permet de retourner la liste des termes spécifiques avec le libellé ##MR
      * ajout de limitNT, si = -1, pas de limit pour gérer la récupération par
@@ -871,6 +916,37 @@ public class RelationsHelper {
     }
 
     /**
+     * Cette fonction permet d'ajouter une relation de qualificatif entre le concept1 et le concept2
+     *
+     * @param ds
+     * @param idConcept1
+     * @param idConcept2
+     * @param idThesaurus
+     * @param idUser
+     * @return boolean
+     */
+    public boolean addRelationQualifier(HikariDataSource ds,
+            String idConcept1, String idThesaurus,
+            String idConcept2, int idUser) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("Insert into hierarchical_relationship"
+                            + "(id_concept1, id_thesaurus, role, id_concept2)"
+                            + " values ("
+                            + "'" + idConcept1 + "'"
+                            + ",'" + idThesaurus + "'"
+                            + ",'QUALIFIER'"
+                            + ",'" + idConcept2 + "') ON CONFLICT DO NOTHING");
+            }
+            addRelationHistorique(conn, idConcept1, idThesaurus, idConcept2, "QUALIFIER", idUser, "ADD");
+            return true;
+        } catch (SQLException sqle) {
+            log.error("Error while adding relation RT of Concept : " + idConcept1, sqle);
+        }
+        return false;
+    }    
+    
+    /**
      * Cette fonction permet de rajouter une relation associative entre deux
      * concepts
      *
@@ -1453,6 +1529,40 @@ public class RelationsHelper {
         return status;
     }
 
+        
+    /**
+     * Cette fonction permet de supprimer une relation qualificatif à  un
+     * concept
+     *
+     * @param ds
+     * @param idConcept1
+     * @param idThesaurus
+     * @param idConcept2
+     * @param idUser
+     * @return boolean
+     */
+    public boolean deleteQualifierLink(HikariDataSource ds,
+            String idConcept1, String idThesaurus,
+            String idConcept2, int idUser) {
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from hierarchical_relationship"
+                            + " where id_concept1 ='" + idConcept1 + "'"
+                            + " and id_thesaurus = '" + idThesaurus + "'"
+                            + " and role = 'QUALIFIER'"
+                            + " and id_concept2 = '" + idConcept2 + "'");
+                
+                addRelationHistorique(conn, idConcept1, idThesaurus, idConcept2, "QUALIFIER", idUser, "delete");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while deleting relation QUALIFIER of Concept : " + idConcept1, sqle);
+        }
+        return true;
+    }        
+        
     /**
      * Cette fonction permet de supprimer une relation terme associé à  un
      * concept

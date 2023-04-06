@@ -454,7 +454,7 @@ public class WriteRdf4j {
                 }
             } catch (Exception ex) {
                 Logger.getLogger(WriteRdf4j.class.getName()).log(Level.SEVERE,
-                        "Error URI Alignement : " + resource.getUri(), ex);
+                        "Error URI Alignement : " + resource.getUri() + " : " + resource.getIdentifier(), ex);
             }
         }
     }

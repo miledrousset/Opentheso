@@ -7,13 +7,30 @@
     <p:dialog id="idDeleteConcept" header="#{langueBean.getMsg('rightbody.concept.delete_concept')}" widgetVar="deleteConcept" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >       
         <h:form>
+            <p:spacer height="20px;" />
             <div class="row">
                 <div class="col-12">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
                     <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
                 </div>
             </div>
-
+            <p:spacer height="20px;" />
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="!!! Attention !!!" style="color: #C63632" /> 
+                </div>
+            </div>      
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="!!! Le concept et ses fils seront supprimés !!! " style="color: #C63632" /> 
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="!!! la suppression est définitive !!! " style="color: #C63632"/> 
+                </div>
+            </div>            
+            <p:spacer height="20px;" />
             <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}"  
                                  styleClass="ui-button-secondary button" 

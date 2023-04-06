@@ -182,6 +182,7 @@ public class ExportHelper {
                         }
 
                         concepts.add(sKOSResource);
+                    //System.out.println(">> " + "Ajout d'un concept " + sKOSResource.getIdentifier());                         
                     }
                 }
             }

@@ -5621,12 +5621,19 @@ public class ConceptHelper {
         // les concepts dépécés que ce concept remplace
         nodeConcept.setReplaces(deprecatedHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
 
+        // permet de récupérer les qualificatifs
+        nodeConcept.setListQualifiers(relationsHelper.getListQualifier(ds, idConcept, idThesaurus, idLang));
         return nodeConcept;
     }
 
     /**
      * Cette fonction permet de retourner l'id du Concept d'après un idTerm
-     */
+    * 
+    * @param ds
+    * @param idTerm
+    * @param idThesaurus
+    * @return 
+    */
     public String getIdConceptOfTerm(HikariDataSource ds, String idTerm, String idThesaurus) {
 
         String idConcept = null;
