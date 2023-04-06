@@ -2462,7 +2462,7 @@ public class ImportFileBean implements Serializable {
             try (InputStream is = event.getFile().getInputStream()) {
                 //ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
                 //sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, RDFFormat.RDFXML, connect.getWorkLanguage());
+                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, getRdfFormat(typeImport), connect.getWorkLanguage());
                 total = sKOSXmlDocument.getConceptList().size();
                 uri = sKOSXmlDocument.getTitle();
                 loadDone = true;

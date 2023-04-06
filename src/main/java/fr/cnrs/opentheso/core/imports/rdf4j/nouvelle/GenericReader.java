@@ -14,6 +14,9 @@ public class GenericReader {
     public void setThesaurusData(SKOSResource skosConcept, IRI predicate, Literal literal, String lang) {
 
         switch (predicate.getLocalName()) {
+            case "prefLabel":
+                skosConcept.addLabel(literal.getLabel(), lang, SKOSProperty.prefLabel);
+                break;
             case "title":
                 skosConcept.getThesaurus().setTitle(literal.getLabel());
                 skosConcept.addLabel(literal.getLabel(), lang, SKOSProperty.prefLabel);
