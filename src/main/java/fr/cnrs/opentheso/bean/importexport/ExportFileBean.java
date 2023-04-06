@@ -539,9 +539,6 @@ public class ExportFileBean implements Serializable {
             }
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-
-            //char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
-            //byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
             
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
             byte[] str = csvWriteHelper.writeCsv(skosxd,
@@ -558,56 +555,39 @@ public class ExportFileBean implements Serializable {
                 return new DefaultStreamedContent();
             }
         } else {
-            RDFFormat format = null;
-            String extention = ".xml";
 
             switch (viewExportBean.getSelectedExportFormat().toLowerCase()) {
                 case "rdf":
-                    format = RDFFormat.RDFXML;
-                    extention = ".rdf";
-                    break;
+                    return generateRdfResources(skosxd, RDFFormat.RDFXML, ".rdf");
                 case "jsonld":
-                    format = RDFFormat.JSONLD;
-                    extention = ".json";
-                    break;
+                    return generateRdfResources(skosxd, RDFFormat.JSONLD, ".json");
                 case "turtle":
-                    format = RDFFormat.TURTLE;
-                    extention = ".ttl";
-                    break;
+                    return generateRdfResources(skosxd, RDFFormat.TURTLE, ".ttl");
                 case "json":
-                    format = RDFFormat.RDFJSON;
-                    extention = ".json";
-                    break;
-            }
-
-            try ( ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                //   System.out.println("total 2 = " + skosxd.getConceptList().size());
-                WriteRdf4j writeRdf4j = new WriteRdf4j(skosxd);
-                Rio.write(writeRdf4j.getModel(), out, format);
-                writeRdf4j.closeCache();
-
-                skosxd.clear();
-                skosxd = null;
-            //    System.gc();
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                try ( ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray())) {
-                    out.close();
-                    /*          System.out.println(">>> FIN 2 : " + System.currentTimeMillis());
-                    System.out.println(">>> FIN 2 : " + (System.currentTimeMillis() - start));
-                    System.out.println(">>> FIN (SEC) 2 : " + ((System.currentTimeMillis() - start) / 1000));*/
-
-                    return DefaultStreamedContent.builder()
-                            .contentType("application/xml")
-                            .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + extention)
-                            .stream(() -> input)
-                            .build();
-                }
-            } catch (Exception ex) {
-                PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-                return new DefaultStreamedContent();
+                    return generateRdfResources(skosxd, RDFFormat.RDFJSON, ".json");
+                default:
+                    throw new Exception("Le format d'export n'est pas valide !");
             }
         }
 
+    }
+
+    private StreamedContent generateRdfResources(SKOSXmlDocument xmlDocument, RDFFormat format, String extension) {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            WriteRdf4j writeRdf4j = new WriteRdf4j(xmlDocument);
+            Rio.write(writeRdf4j.getModel(), out, format);
+            writeRdf4j.closeCache();
+
+            ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray());
+
+            return DefaultStreamedContent.builder()
+                    .contentType("application/xml")
+                    .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + extension)
+                    .stream(() -> input)
+                    .build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private SKOSXmlDocument getConcepts(String idTheso) throws Exception {
