@@ -144,9 +144,7 @@ public class PreferencesHelper {
                         np.setBreadcrumb(resultSet.getBoolean("breadcrumb"));
                         np.setSuggestion(resultSet.getBoolean("suggestion"));
                         
-                        np.setUseQualifier(resultSet.getBoolean("usequalifier"));
-                        np.setUseAttribute(resultSet.getBoolean("useattribute"));
-                        np.setUseAttitude(resultSet.getBoolean("useattitude"));
+                        np.setUseCustomRelation(resultSet.getBoolean("use_custom_relation"));
                         
                         
                         np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
@@ -336,9 +334,7 @@ public class PreferencesHelper {
                         + ", breadcrumb=" + np.isBreadcrumb()
                         + ", suggestion=" + np.isSuggestion()
                         
-                        + ", usequalifier=" + np.isUseQualifier()
-                        + ", useattribute=" + np.isUseAttribute()
-                        + ", useattitude=" + np.isUseAttitude()
+                        + ", use_custom_relation=" + np.isUseCustomRelation()
                         
                         + ", display_user_name=" + np.isDisplayUserName()
                         
@@ -381,7 +377,7 @@ public class PreferencesHelper {
                         + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
                         + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
                         + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb,"
-                        + " suggestion, usequalifier, useattribute, useattitude,"
+                        + " suggestion, use_custom_relation,"
                         + " useConceptTree, display_user_name)"
 
                         + " values('" + idThesaurus + "'"
@@ -436,9 +432,7 @@ public class PreferencesHelper {
                         + "," + np.isBreadcrumb()
                         + "," + np.isSuggestion()
                         
-                        + "," + np.isUseQualifier()
-                        + "," + np.isUseAttribute()
-                        + "," + np.isUseAttitude()
+                        + "," + np.isUseCustomRelation()
                         
                         + "," + np.isUseConceptTree()
                         + "," + np.isDisplayUserName()
