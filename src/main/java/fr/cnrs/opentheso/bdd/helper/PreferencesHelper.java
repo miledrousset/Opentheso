@@ -144,6 +144,10 @@ public class PreferencesHelper {
                         np.setBreadcrumb(resultSet.getBoolean("breadcrumb"));
                         np.setSuggestion(resultSet.getBoolean("suggestion"));
                         
+                        np.setUseQualifier(resultSet.getBoolean("usequalifier"));
+                        np.setUseAttribute(resultSet.getBoolean("useattribute"));
+                        np.setUseAttitude(resultSet.getBoolean("useattitude"));
+                        
                         
                         np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
                     }
@@ -332,6 +336,10 @@ public class PreferencesHelper {
                         + ", breadcrumb=" + np.isBreadcrumb()
                         + ", suggestion=" + np.isSuggestion()
                         
+                        + ", usequalifier=" + np.isUseQualifier()
+                        + ", useattribute=" + np.isUseAttribute()
+                        + ", useattitude=" + np.isUseAttitude()
+                        
                         + ", display_user_name=" + np.isDisplayUserName()
                         
 
@@ -372,7 +380,9 @@ public class PreferencesHelper {
                         + " user_handle, pass_handle, path_key_handle, path_cert_handle,"
                         + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
                         + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
-                        + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb, useConceptTree, display_user_name, suggestion)"
+                        + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb,"
+                        + " suggestion, usequalifier, useattribute, useattitude,"
+                        + " useConceptTree, display_user_name)"
 
                         + " values('" + idThesaurus + "'"
                         + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
@@ -425,6 +435,10 @@ public class PreferencesHelper {
                         + "," + np.getSizeIdArkLocal()
                         + "," + np.isBreadcrumb()
                         + "," + np.isSuggestion()
+                        
+                        + "," + np.isUseQualifier()
+                        + "," + np.isUseAttribute()
+                        + "," + np.isUseAttitude()
                         
                         + "," + np.isUseConceptTree()
                         + "," + np.isDisplayUserName()

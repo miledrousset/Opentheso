@@ -67,6 +67,10 @@ public class NodePreference {
     
     private boolean suggestion;
     
+    private boolean useQualifier;
+    private boolean useAttribute;
+    private boolean useAttitude;    
+    
     // pour affichager le nom des personnes qui ont modifié les concepts
     private boolean displayUserName;
 
@@ -453,6 +457,30 @@ public class NodePreference {
 
     public void setSuggestion(boolean suggestion) {
         this.suggestion = suggestion;
+    }
+
+    public boolean isUseQualifier() {
+        return useQualifier;
+    }
+
+    public void setUseQualifier(boolean useQualifier) {
+        this.useQualifier = useQualifier;
+    }
+
+    public boolean isUseAttribute() {
+        return useAttribute;
+    }
+
+    public void setUseAttribute(boolean useAttribute) {
+        this.useAttribute = useAttribute;
+    }
+
+    public boolean isUseAttitude() {
+        return useAttitude;
+    }
+
+    public void setUseAttitude(boolean useAttitude) {
+        this.useAttitude = useAttitude;
     }
     
 }
