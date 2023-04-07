@@ -1549,7 +1549,8 @@ public class ImportRdf4jHelper {
 
         if (uri.contains("idc=")) {
             if (uri.contains("&")) {
-                uri = uri.substring(uri.indexOf("idc=") + 4, uri.indexOf("&"));
+                String str = uri.substring(uri.indexOf("idc="));
+                uri = str.substring(4, str.indexOf("&"));
             } else {
                 uri = uri.substring(uri.indexOf("idc=") + 4, uri.length());
             }

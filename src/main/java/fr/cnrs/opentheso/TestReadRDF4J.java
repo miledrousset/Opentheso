@@ -17,10 +17,12 @@ public class TestReadRDF4J {
 
     public static void main(String[] args) throws IOException {
 
-        File inputFile = new File("test2.rdf");
+        File inputFile = new File("test.json");
         InputStream inputStream = new FileInputStream(inputFile);
 
-        SKOSXmlDocument skosXmlDocument = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFXML, "fr");
+        SKOSXmlDocument skosXmlDocument = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFJSON, "fr");
+
+        //SKOSXmlDocument skosXmlDocument = new ReadRdf4j(inputStream, 3, false, "fr").getsKOSXmlDocument();
 
         Assert.assertNotNull(skosXmlDocument);
     }
