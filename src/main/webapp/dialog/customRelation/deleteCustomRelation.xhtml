@@ -3,8 +3,8 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idDeleteQualifierLink" header="#{langueBean.getMsg('rightbody.concept.deleteQualifier')}"
-              widgetVar="deleteQualifierLink" width="550" showEffect="fade" modal="true" position="top" resizable="false" style="margin-top: 30px">   
+    <p:dialog id="idDeleteCustomRelation" header="#{langueBean.getMsg('rightbody.concept.deleteCustomRelation')}"
+              widgetVar="deleteCustomRelation" width="550" showEffect="fade" modal="true" position="top" resizable="false" style="margin-top: 30px">   
 
         <h:form>
             <div class="row">
@@ -25,8 +25,8 @@
                     <p:column width="80" headerText="#{langueBean.getMsg('candidat.remove')}">
                         <p:commandLink style="color: #FF7979; text-align: center"
                                        ajax="true" process="@form"
-                                       update="messageIndex containerIndex:idDeleteQualifierLink"
-                                       oncomplete="PF('deleteQualifierLink').show();"
+                                       update="messageIndex containerIndex:idDeleteCustomRelation"
+                                       oncomplete="PF('deleteCustomRelation').show();"
                                        action="#{relatedBean.deleteQualifierLink(qualifier, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-trash" style="font-size: 1rem; padding-top: 5px; color: #C63632;" />
                         </p:commandLink>

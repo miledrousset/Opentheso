@@ -239,14 +239,14 @@
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addQualifier')}" 
-                                                title="#{langueBean.getMsg('rightbody.concept.addQualifier')}"
-                                                actionListener="#{relatedBean.reset()}" oncomplete="PF('addQualifierLink').show();"
-                                                update="containerIndex:idAddQualifierLink" icon="fas fa-plus" />
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addCustomRelation')}" 
+                                                title="#{langueBean.getMsg('rightbody.concept.addCustomRelation')}"
+                                                actionListener="#{relatedBean.reset()}" oncomplete="PF('addCustomRelation').show();"
+                                                update="containerIndex:idAddCustomRelation" icon="fas fa-plus" />
 
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.deleteQualifier')}"
-                                                title="#{langueBean.getMsg('rightbody.concept.deleteQualifier')}"
-                                                oncomplete="PF('deleteQualifierLink').show();" update="containerIndex:idDeleteQualifierLink"
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.deleteCustomRelation')}"
+                                                title="#{langueBean.getMsg('rightbody.concept.deleteCustomRelation')}"
+                                                oncomplete="PF('deleteCustomRelation').show();" update="containerIndex:idDeleteCustomRelation"
                                                 icon="fas fa-minus" disabled="#{conceptView.nodeConcept.listQualifiers.size() == 0}" />
                                 </p:menuButton>
 
