@@ -11,7 +11,7 @@ import org.eclipse.rdf4j.model.Value;
 
 public class ConceptReader {
 
-    public void readGeneric(SKOSResource skosConcept, IRI predicate, Literal literal, String lang) {
+    public void readGeneric(SKOSXmlDocument sKOSXmlDocument, SKOSResource skosConcept, IRI predicate, Literal literal, String lang) {
 
         switch (predicate.getLocalName()) {
             case "prefLabel":
@@ -80,6 +80,12 @@ public class ConceptReader {
 
             case "long":
                 skosConcept.getGPSCoordinates().setLon(literal.getLabel());
+                break;
+
+            //identifier
+            case "identifier":
+                skosConcept.setIdentifier(literal.getLabel());
+                sKOSXmlDocument.getEquivalenceUriArkHandle().put(skosConcept.getUri(), literal.getLabel());
                 break;
         }
     }
