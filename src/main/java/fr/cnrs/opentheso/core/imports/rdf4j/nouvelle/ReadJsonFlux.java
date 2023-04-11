@@ -90,7 +90,7 @@ public class ReadJsonFlux extends AbstractRDFHandler {
                 genericReader.setFoatImageDatas(skosResource, literal, predicate);
             } else {
                 // Dans le cas d'un Concept, Collection, ..
-                conceptReader.readGeneric(skosResource, predicate, literal, lang);
+                conceptReader.readGeneric(skosXmlDocument, skosResource, predicate, literal, lang);
             }
         } else {
             // Pour traiter les lignes d'un concept qui ne contiennent pas une langue
