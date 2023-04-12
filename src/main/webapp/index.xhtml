@@ -84,18 +84,6 @@
                     </div>
                     <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative; padding-bottom: 25px">
 
-                        <div id="notification" style="top: 70px; width: 20%; right: 0px; position: absolute; display: none; z-index: 10" class="card py-3" >
-                            <h:panelGroup id="notificationPanel" >
-                                <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
-                                </h:panelGroup>
-
-                                <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
-                                </h:panelGroup>
-                            </h:panelGroup>
-                        </div>
-
                         <p:panel id="searchBar">
                             <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px; width: 100%; margin: 20px;">
                                 <div style="position: relative; height: 100%; width: 100%;" >
@@ -118,6 +106,18 @@
                             </h:panelGroup>
                         </div>
                     </p:panel>
+
+                        <div id="notification" style="top: 100px; width: 20%; right: 0px; position: absolute; display: none; z-index: 10" class="card py-3" >
+                            <h:panelGroup id="notificationPanel" >
+                                <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
+                                    <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
+                                </h:panelGroup>
+
+                                <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
+                                    <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </div>
                 </h:form>
 
                 <footer class="sticky-footer bg-white" style="width: 100%;">
