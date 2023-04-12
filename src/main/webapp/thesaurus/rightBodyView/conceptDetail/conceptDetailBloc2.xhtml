@@ -195,7 +195,7 @@
     
     
     <!-- Bloc de gestion de type de concepts et des relations personnalisées -->
-    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.listQualifiers.size() != 0)}" >
+    <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeCustomRelations.size() != 0)}" >
         <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
 
@@ -247,17 +247,17 @@
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.deleteCustomRelation')}"
                                                 title="#{langueBean.getMsg('rightbody.concept.deleteCustomRelation')}"
                                                 oncomplete="PF('deleteCustomRelation').show();" update="containerIndex:idDeleteCustomRelation"
-                                                icon="fas fa-minus" disabled="#{conceptView.nodeConcept.listQualifiers.size() == 0}" />
+                                                icon="fas fa-minus" disabled="#{conceptView.nodeConcept.nodeCustomRelations.size() == 0}" />
                                 </p:menuButton>
 
-                                <h:panelGroup rendered="#{conceptView.nodeConcept.listQualifiers.size() == 0}" >            
+                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeCustomRelations.size() == 0}" >            
                                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                                 </h:panelGroup>                        
 
 
 
-                                <h:panelGroup rendered="#{conceptView.nodeConcept.listQualifiers.size() != 0}" > 
-                                    <ui:repeat var="qualifier" value="#{conceptView.nodeConcept.listQualifiers}" varStatus="status2">
+                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeCustomRelations.size() != 0}" > 
+                                    <ui:repeat var="customRelation" value="#{conceptView.nodeConcept.nodeCustomRelations}" varStatus="status2">
                                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                                                   or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">
                                             <p:spacer width="1" rendered="#{status2.first}" />
@@ -265,10 +265,10 @@
                                         </h:panelGroup>
 
 
-                                        <p:commandLink value="#{qualifier.title} " title="#{qualifier.idConcept}"
-                                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, qualifier.idConcept, conceptView.selectedLang)}"
+                                        <p:commandLink value="#{customRelation.targetLabel} " title="#{customRelation.targetConcept}"
+                                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, customRelation.targetConcept, conceptView.selectedLang)}"
                                                        update="containerIndex:formRightTab indexTitle"/>
-                                        <h:outputText value="(#{langueBean.getMsg('rightbody.concept.qualifier')})" style="font-size: 14px; font-style: italic; font-weight: 300; margin-left: 5px; "/>
+                                        <h:outputText value="(#{customRelation.relationLabel})" style="font-size: 14px; font-style: italic; font-weight: 300; margin-left: 5px; "/>
                                         <br/>                                
                                     </ui:repeat>
                                 </h:panelGroup>

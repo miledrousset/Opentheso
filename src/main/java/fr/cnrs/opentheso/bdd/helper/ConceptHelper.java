@@ -5625,8 +5625,7 @@ public class ConceptHelper {
         // les concepts dépécés que ce concept remplace
         nodeConcept.setReplaces(deprecatedHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
 
-        // permet de récupérer les qualificatifs
-        nodeConcept.setListQualifiers(relationsHelper.getListQualifier(ds, idConcept, idThesaurus, idLang));
+
         return nodeConcept;
     }
 

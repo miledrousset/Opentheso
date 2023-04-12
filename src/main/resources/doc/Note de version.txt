@@ -9,7 +9,8 @@ correction de l'export PDF pour mieux afficher les images
 masquer l'affichage d'un bloc vide qui s'affichait en mode non connecté 
 
 ### commité
-
+Activer la commande de génération d'identifiants ARK en local
+ 
 
 
 

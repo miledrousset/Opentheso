@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Relation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
@@ -56,39 +57,101 @@ public class RelationsHelper {
      * @param idConcept
      * @param idThesaurus
      * @param idLang
+     * @param interfaceLang
      * @return
      */
-    public ArrayList<NodeNT> getListQualifier(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+    public ArrayList<NodeCustomRelation> getNodeCustomRelation(HikariDataSource ds, String idConcept, String idThesaurus, String idLang, String interfaceLang) {
 
-        ArrayList<NodeNT> nodeListNT = new ArrayList<>();
+        ArrayList<NodeCustomRelation> nodeCustomRelations = new ArrayList<>();
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept2 from hierarchical_relationship, concept"
-                        + " where hierarchical_relationship.id_concept2 = concept.id_concept"
-                        + " and hierarchical_relationship.id_thesaurus = concept.id_thesaurus"
-                        + " and hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
-                        + " and id_concept1 = '" + idConcept + "'"
-                        + " and role = 'QUALIFIER'"
-                        + " and concept.status != 'CA'"
+                stmt.executeQuery("select id_concept2, role from hierarchical_relationship, concept" +
+                        " where hierarchical_relationship.id_concept2 = concept.id_concept" +
+                        " and hierarchical_relationship.id_thesaurus = concept.id_thesaurus" +
+                        " and hierarchical_relationship.id_thesaurus = 'th1'" +
+                        " and id_concept1 = '" + idConcept + "'" +
+                        " and role not in ('BT', 'BTG', 'BTP', 'BTI', 'NT', 'NTG', 'NTP', 'NTI', 'RT')" +
+                        " and concept.status != 'CA'"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
-                        NodeNT nodeNT = new NodeNT();
-                        nodeNT.setIdConcept(resultSet.getString("id_concept2"));
-                        nodeListNT.add(nodeNT);
+                        NodeCustomRelation nodeCustomRelation = new NodeCustomRelation();
+                        nodeCustomRelation.setTargetConcept(resultSet.getString("id_concept2"));
+                        nodeCustomRelation.setRelation(resultSet.getString("role"));
+                        nodeCustomRelations.add(nodeCustomRelation);
                     }
                 }
             }
         } catch (SQLException sqle) {
             log.error("Error while getting NT of Concept : " + idConcept, sqle);
         }
-        for (NodeNT nodeNT : nodeListNT) {
-            nodeNT.setTitle(new ConceptHelper().getLexicalValueOfConcept(ds, nodeNT.getIdConcept(), idThesaurus, idLang));
+        for (NodeCustomRelation nodeCustomRelation : nodeCustomRelations) {
+            nodeCustomRelation.setTargetLabel(new ConceptHelper().getLexicalValueOfConcept(ds, nodeCustomRelation.getTargetConcept(), idThesaurus, idLang));
+            nodeCustomRelation = getLabelOfCustomRelation(ds, nodeCustomRelation.getRelation(), idThesaurus, interfaceLang, nodeCustomRelation);
         }
-        Collections.sort(nodeListNT);
-        return nodeListNT;
+//        Collections.sort(nodeCustomRelations);
+        return nodeCustomRelations;
     }    
+    
+    /**
+     * permet de retourner les infos sur un type de concept
+     *
+     * @param ds
+     * @param customRelation
+     * @param idTheso
+     * @param interfaceLang
+     * @param nodeCustomRelation
+     * @return
+     */
+    public NodeCustomRelation getLabelOfCustomRelation(HikariDataSource ds, String customRelation, String idTheso, String interfaceLang, NodeCustomRelation nodeCustomRelation) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select label_" + interfaceLang +  ", onway from concept_type" +
+                        " where code = '" + customRelation + "'" +
+                        " and id_theso = '" + idTheso + "'"
+                );
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        nodeCustomRelation.setRelationLabel(resultSet.getString("label_" + interfaceLang));
+                        nodeCustomRelation.setOnway(resultSet.getBoolean("onway"));
+                        return nodeCustomRelation;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting label of Custom Relation : " + customRelation, sqle);
+        }
+        return null;
+    }      
+    
+    /**
+     * permet de retourner le label du type de concept
+     *
+     * @param ds
+     * @param customRelation
+     * @param idTheso
+     * @param idLang
+     * @return
+     */
+    public String getLabelOfTypeConcept(HikariDataSource ds, String customRelation, String idTheso, String idLang) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select label_" + idLang +  " from concept_type" +
+                        " where code = '" + customRelation + "'" +
+                        " and id_theso = '" + idTheso + "'"
+                );
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        return resultSet.getString("label_" + idLang);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting label of Custom Relation : " + customRelation, sqle);
+        }
+        return "";
+    }      
     
     
     /**
