@@ -837,8 +837,8 @@ public class SearchBean implements Serializable {
         
         PrimeFaces.current().ajax().update("containerIndex:contentConcept");
         PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
-    //    PrimeFaces.current().ajax().update("containerIndex:sideBarSearch");
-    //    PrimeFaces.current().ajax().update("containerIndex:searchBar");
+
+        PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
     public NodeSearchMini getSearchSelected() {
