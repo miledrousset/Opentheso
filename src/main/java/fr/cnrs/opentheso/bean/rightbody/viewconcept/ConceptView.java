@@ -27,6 +27,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -93,6 +94,8 @@ public class ConceptView implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
     private SelectedTheso selectedTheso;
+    @Inject
+    private LanguageBean languageBean;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -281,6 +284,26 @@ public class ConceptView implements Serializable {
     }    
     
     /**
+     * permet de retourner le label du type de concept en focntion de la langue de l'interface
+     * @param conceptType
+     * @param idTheso
+     * @return 
+     */
+    public String getLabelOfConceptType(String conceptType, String idTheso){
+        String idLang;
+        RelationsHelper relationsHelper = new RelationsHelper();
+        if("en".equalsIgnoreCase(languageBean.getIdLangue()) || "fr".equalsIgnoreCase(languageBean.getIdLangue())){
+            idLang = languageBean.getIdLangue();
+        } else
+            idLang = "en";
+        
+        return relationsHelper.getLabelOfTypeConcept(connect.getPoolConnexion(),
+                conceptType,
+                idTheso, 
+                idLang);
+    }
+    
+    /**
      * récuparation des informations pour le concept sélectionné c'est pour la
      * navigation entre les concepts dans la vue de droite avec deployement de
      * l'arbre
@@ -354,8 +377,21 @@ public class ConceptView implements Serializable {
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
         offset = 0; 
-        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
+        ConceptHelper conceptHelper = new ConceptHelper();
+        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
         if(nodeConcept == null) return;
+        
+        // permet de récupérer les qualificatifs
+        if(roleOnThesoBean.getNodePreference().isUseCustomRelation()){
+            String interfaceLang = languageBean.getIdLangue();
+            if("en".equalsIgnoreCase(interfaceLang) || "fr".equalsIgnoreCase(interfaceLang)) {
+            } else
+                interfaceLang = "en";
+            nodeConcept.setNodeCustomRelations(new RelationsHelper().getNodeCustomRelation(
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
+        }
+            
+
 
         if(roleOnThesoBean.getNodePreference().isBreadcrumb())
             pathOfConcept(idTheso, idConcept, idLang);

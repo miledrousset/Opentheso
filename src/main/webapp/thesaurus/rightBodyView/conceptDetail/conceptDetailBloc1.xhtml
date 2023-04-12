@@ -28,8 +28,14 @@
                                       style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-size: 1.1rem;
                                       letter-spacing: .2px; color: #666666; font-weight: bold; text-shadow: none;" />
 
-                        <h:outputText value=" (#{conceptView.nodeConcept.term.lang})" style="font-size: 1rem; font-weight: 300; margin-left: 5px;"/>
+                        <h:outputText rendered="#{conceptView.nodeConcept.concept.conceptType != 'concept'}" 
+                                      value="(#{conceptView.getLabelOfConceptType(
+                                                conceptView.nodeConcept.concept.conceptType,
+                                                conceptView.nodeConcept.concept.idThesaurus)})"
+                                      style="font-style: italic; font-size: 1rem; font-weight: 300; margin-left: 5px;"/>
 
+                        <h:outputText value=" (#{conceptView.nodeConcept.term.lang})" style="font-size: 1rem; font-weight: 300; margin-left: 5px;"/>
+                        
                         <p:tooltip for="textPrefLabel" value="#{conceptView.nodeConcept.concept.idConcept}" showDelay="1000" />
 
                         <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"

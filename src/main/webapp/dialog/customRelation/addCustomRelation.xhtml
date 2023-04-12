@@ -4,13 +4,13 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idAddQualifierLink" header="#{langueBean.getMsg('rightbody.concept.addQualifier')}" 
-              widgetVar="addQualifierLink" width="450" showEffect="fade" modal="true" 
+    <p:dialog id="idAddCustomRelation" header="#{langueBean.getMsg('rightbody.concept.addCustomRelation')}" 
+              widgetVar="addCustomRelation" width="450" showEffect="fade" modal="true" 
               resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form rendered="#{conceptView.nodeConcept != null}" id="addQualifierLinkForm" >
+        <h:form rendered="#{conceptView.nodeConcept != null}" id="addCustomRelationForm" >
             
-            <p:defaultCommand target="addQualifierLinkBtn" />
+            <p:defaultCommand target="addCustomRelationBtn" />
             
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
@@ -49,10 +49,10 @@
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" style="margin-right: 10px"
-                                 actionListener="PF('addQualifierLink').hide();" update="containerIndex:idAddQualifierLink"/>
+                                 actionListener="PF('addCustomRelation').hide();" update="containerIndex:idAddCustomRelation"/>
 
-                <p:commandButton id="addQualifierLinkBtn" update="messageIndex containerIndex:idAddQualifierLink"
-                                 oncomplete="PF('addQualifierLink').show();" value="#{langueBean.getMsg('btnValidate')}"
+                <p:commandButton id="addCustomRelationBtn" update="messageIndex containerIndex:idAddCustomRelation"
+                                 oncomplete="PF('addCustomRelation').show();" value="#{langueBean.getMsg('btnValidate')}"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{relatedBean.addNewQualifierLink(currentUser.nodeUser.idUser)}" />
             </div>            

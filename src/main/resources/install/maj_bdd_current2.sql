@@ -510,6 +510,18 @@ END IF;
 end
 $$language plpgsql;
 
+
+-- Préférences : ajout des options pour qualifier, attribute et attitude
+--
+create or replace function update_table_preferences_custom_relation() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='use_custom_relation') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN use_custom_relation boolean DEFAULT false;';
+END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -539,6 +551,7 @@ SELECT update_table_preferences_suggestion();
 SELECT update_table_note_source();
 SELECT update_table_gps_constraint();
 SELECT update_table_proposition_modification();
+SELECT update_table_preferences_custom_relation();
 
 
 
@@ -573,7 +586,7 @@ SELECT delete_fonction('update_table_preferences_suggestion', '');
 SELECT delete_fonction('update_table_note_source', '');
 SELECT delete_fonction('update_table_gps_constraint', '');
 SELECT delete_fonction('update_table_proposition_modification', '');
-
+SELECT delete_fonction('update_table_preferences_custom_relation', '');
 
 
 -- auto_suppression de nettoyage

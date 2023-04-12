@@ -33,6 +33,17 @@
                     </p:selectOneMenu>  
                 </div>
             </div>
+
+            <div class="row" style="margin-top: 5px">
+                <div class="col-8 offset-4" style="margin-top: 3px; font-size: 14px;">
+                    <p:selectBooleanCheckbox value="#{editConcept.applyToBranch}"
+                                             itemLabel="#{langueBean.getMsg('concept.changeTypeBranch')}" 
+                                             title="#{langueBean.getMsg('concept.changeTypeBranch')}" 
+                                             style="font-size: 14px;"/> 
+                </div>
+            </div>            
+            
+            
             <p:spacer/>
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}"

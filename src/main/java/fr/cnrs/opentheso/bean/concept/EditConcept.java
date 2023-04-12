@@ -59,7 +59,9 @@ public class EditConcept implements Serializable {
     private String prefLabel;
     private String notation;
     private String source;
-
+    private boolean applyToBranch;
+    
+    
     private boolean isCreated;
     private boolean duplicate;
     private boolean forDelete;
@@ -115,6 +117,7 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         nodeConceptTypes = conceptHelper.getAllTypesOfConcept(connect.getPoolConnexion());
         selectedConceptType = conceptView.getNodeConcept().getConcept().getConceptType();
+        applyToBranch = false;
     }
 
     public void infos() {
@@ -136,18 +139,49 @@ public class EditConcept implements Serializable {
 
         ConceptHelper conceptHelper = new ConceptHelper();
 
-        if(!conceptHelper.setConceptType(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedConceptType,
-                idUser)) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Une erreur s'est produite !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
+        if(isApplyToBranch()) {
+            ArrayList<String> allId  = conceptHelper.getIdsOfBranch(
+                    connect.getPoolConnexion(),
+                    conceptView.getNodeConcept().getConcept().getIdConcept(),
+                    selectedTheso.getCurrentIdTheso());
+
+            if( (allId == null) || (allId.isEmpty())) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "aucun concept sélectionné !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }                
+                return;
             }
-            return;            
+            for (String conceptId : allId) {
+                if(!conceptHelper.setConceptType(connect.getPoolConnexion(),
+                        selectedTheso.getCurrentIdTheso(),
+                        conceptId,
+                        selectedConceptType,
+                        idUser)) {
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Une erreur s'est produite !!");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    if (pf.isAjaxRequest()) {
+                        pf.ajax().update("messageIndex");
+                    }
+                    return;            
+                }             
+            }
+        } else {
+            if(!conceptHelper.setConceptType(connect.getPoolConnexion(),
+                    selectedTheso.getCurrentIdTheso(),
+                    conceptView.getNodeConcept().getConcept().getIdConcept(),
+                    selectedConceptType,
+                    idUser)) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Une erreur s'est produite !!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
+                return;            
+            }            
         }
+
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -156,7 +190,7 @@ public class EditConcept implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
         
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été modifié");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le changement a réussi");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
@@ -1027,6 +1061,16 @@ public class EditConcept implements Serializable {
     public void setInProgress(boolean inProgress) {
         this.inProgress = inProgress;
     }
+
+    public boolean isApplyToBranch() {
+        return applyToBranch;
+    }
+
+    public void setApplyToBranch(boolean applyToBranch) {
+        this.applyToBranch = applyToBranch;
+    }
+
+
 
 
     
