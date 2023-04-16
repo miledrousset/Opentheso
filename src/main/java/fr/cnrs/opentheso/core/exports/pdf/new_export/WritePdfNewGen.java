@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.core.exports.pdf.new_export;
 
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.PageSize;
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
@@ -46,32 +45,32 @@ public class WritePdfNewGen {
     private ArrayList<String> resourceChecked = new ArrayList<>();
 
 
-    public byte[] createPdfFile(HikariDataSource hikariDataSource, SKOSXmlDocument xmlDocument, String codeLang,
-                                String codeLang2, PdfExportType pdfExportType) throws DocumentException, IOException {
+    public byte[] createPdfFile(HikariDataSource hikariDataSource, SKOSXmlDocument xmlDocument, String codeLanguage1,
+                                String codeLanguage2, PdfExportType pdfExportType) throws DocumentException, IOException {
 
         Document document = new Document();
         idToNameHashMap = new HashMap<>();
 
         WritePdfSettings writePdfSettings = new WritePdfSettings();
-        WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF(writePdfSettings);
+        WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF(writePdfSettings, xmlDocument);
         WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings);
 
         try ( ByteArrayOutputStream output = new ByteArrayOutputStream()) {
 
-            preparePdfFile(document, output, xmlDocument, codeLang2);
+            preparePdfFile(document, output, xmlDocument, codeLanguage2);
 
             document.open();
 
-            new WriteConceptShemas().writeConceptSchemas(writePdfSettings, document, xmlDocument, codeLang, codeLang2);
+            new WriteConceptShemas().writeConceptSchemas(writePdfSettings, document, xmlDocument, codeLanguage1, codeLanguage2);
 
             // Préparation des données
             if (pdfExportType == PdfExportType.ALPHABETIQUE) {
-                alphabetiqueMode(writeAlphaPDF, xmlDocument, codeLang, codeLang2);
+                writeAlphaPDF.writeAlphabetiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
             } else {
-                hiarchiqueMode(writeHierachiquePDF, hikariDataSource, xmlDocument, codeLang, codeLang2);
+                hiarchiqueMode(writeHierachiquePDF, hikariDataSource, xmlDocument, codeLanguage1, codeLanguage2);
             }
 
-            createPdfFile(document, codeLang2);
+            createPdfFile(document, codeLanguage2);
 
             document.close();
             return output.toByteArray();
@@ -95,18 +94,6 @@ public class WritePdfNewGen {
             writeHierachiquePDF.writeHieraPDF(xmlDocument, hikariDataSource, paragraphTradList,
                     codeLanguage2, codeLanguage1, true, idToDocumentation2,
                     idToNameHashMap, idToChildId, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff);
-        }
-    }
-
-    private void alphabetiqueMode(WriteAlphaPDF writeAlphaPDF, SKOSXmlDocument xmlDocument, String codeLanguage1,
-                                  String codeLanguage2) throws BadElementException, IOException {
-
-        writeAlphaPDF.writeAlphabetiquePDF(xmlDocument, paragraphList, codeLanguage1, codeLanguage2, false,
-                idToNameHashMap, idToIsTrad, resourceChecked);
-
-        if (StringUtils.isNotEmpty(codeLanguage2)) {
-            writeAlphaPDF.writeAlphabetiquePDF(xmlDocument, paragraphTradList, codeLanguage2, codeLanguage1, true,
-                    idToNameHashMap, idToIsTrad, resourceChecked);
         }
     }
 

@@ -24,34 +24,51 @@ public class WriteAlphaPDF {
     private final static String LATITUDE = TAB_NIVEAU + "lat: ";
     private final static String LONGITUDE = TAB_NIVEAU + "lon: ";
 
+    private String uri;
+    private ArrayList<SKOSResource> conceptList;
     private WritePdfSettings writePdfSettings;
 
+    private HashMap<String, String> idToNameHashMap;
+    private HashMap<String, ArrayList<Integer>> idToIsTrad;
+    private ArrayList<String> resourceChecked;
 
-    public WriteAlphaPDF(WritePdfSettings writePdfSettings) {
+
+    public WriteAlphaPDF(WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument) {
+
         this.writePdfSettings = writePdfSettings;
+
+        uri = xmlDocument.getConceptScheme().getUri();
+        conceptList = xmlDocument.getConceptList();
+
+        resourceChecked = new ArrayList<>();
+        idToNameHashMap = new HashMap<>();
+        idToIsTrad = new HashMap<>();
     }
 
 
-    public void writeAlphabetiquePDF(SKOSXmlDocument xmlDocument, ArrayList<Paragraph> paragraphs, String langue,
-                                      String langue2, boolean isTrad, HashMap<String, String> idToNameHashMap,
-                                      HashMap<String, ArrayList<Integer>> idToIsTrad,
-                                      ArrayList<String> resourceChecked) throws BadElementException, IOException {
+    public void writeAlphabetiquePDF(ArrayList<Paragraph> paragraphs, ArrayList<Paragraph> paragraphTradList,
+                                     String codeLanguage1, String codeLanguage2) throws BadElementException, IOException {
 
-        ArrayList<SKOSResource> conceptList = xmlDocument.getConceptList();
+        traitement(paragraphs, false, codeLanguage1, codeLanguage2);
 
-        // Trier les concepts selon leurs labels
-        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
-        Collections.sort(conceptList, sortAlphabeticInLang(isTrad, langue, langue2, idToNameHashMap, idToIsTrad, resourceChecked));
-
-        // Construire la liste des concepts sous forme d'une suite des paragraphs
-        for (SKOSResource concept : conceptList) {
-            writeTerm(xmlDocument, concept, paragraphs, langue, langue2, idToIsTrad, idToNameHashMap);
+        if (StringUtils.isNotEmpty(codeLanguage2)) {
+            traitement(paragraphTradList, true, codeLanguage2, codeLanguage1);
         }
     }
 
-    private void writeTerm(SKOSXmlDocument xmlDocument, SKOSResource concept, ArrayList<Paragraph> paragraphs,
-                           String langue, String langue2, HashMap<String, ArrayList<Integer>> idToIsTrad,
-                           HashMap<String, String> idToNameHashMap) throws BadElementException, IOException {
+    private void traitement(ArrayList<Paragraph> paragraphs, boolean isTrad, String codeLanguage1, String codeLanguage2) throws BadElementException, IOException {
+
+        // Trier les concepts selon leurs labels
+        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+        Collections.sort(conceptList, sortAlphabeticInLang(isTrad, codeLanguage1, codeLanguage2, idToNameHashMap, idToIsTrad, resourceChecked));
+
+        // Construire la liste des concepts sous forme d'une suite des paragraphs
+        for (SKOSResource concept : conceptList) {
+            writeTerm(concept, paragraphs, codeLanguage1, codeLanguage2);
+        }
+    }
+
+    private void writeTerm(SKOSResource concept, ArrayList<Paragraph> paragraphs, String codeLanguage1, String codeLanguage2) throws BadElementException, IOException {
 
         int altLabelCount = 0;
         ArrayList<Integer> tradList = idToIsTrad.get(writePdfSettings.getIdFromUri(concept.getUri()));
@@ -61,12 +78,12 @@ public class WriteAlphaPDF {
 
         int altLabelWrite = 0;
         for (SKOSLabel label : concept.getLabelsList()) {
-            if (label.getLanguage().equals(langue) || label.getLanguage().equals(langue2)) {
+            if (label.getLanguage().equals(codeLanguage1) || label.getLanguage().equals(codeLanguage2)) {
                 String labelValue;
                 boolean prefIsTrad = false;
                 boolean altIsTrad = false;
 
-                if (label.getLanguage().equals(langue)) {
+                if (label.getLanguage().equals(codeLanguage1)) {
                     labelValue = label.getLabel();
                 } else {
                     if (CollectionUtils.isNotEmpty(tradList)) {
@@ -85,7 +102,7 @@ public class WriteAlphaPDF {
 
                 if (label.getProperty() == SKOSProperty.prefLabel && !prefIsTrad) {
                     Anchor anchor = new Anchor(labelValue, writePdfSettings.termFont);
-                    anchor.setReference(xmlDocument.getConceptScheme().getUri() + "&idc=" + writePdfSettings.getIdFromUri(concept.getUri()));
+                    anchor.setReference(uri + "&idc=" + writePdfSettings.getIdFromUri(concept.getUri()));
                     paragraphs.add(new Paragraph(anchor));
                 } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {
                     paragraphs.add(new Paragraph(USE + labelValue, writePdfSettings.textFont));
@@ -107,7 +124,7 @@ public class WriteAlphaPDF {
 
         for (SKOSDocumentation doc : concept.getDocumentationsList()) {
 
-            if (!doc.getLanguage().equals(langue) && !doc.getLanguage().equals(langue2)) {
+            if (!doc.getLanguage().equals(codeLanguage1) && !doc.getLanguage().equals(codeLanguage2)) {
                 continue;
             }
 
@@ -122,7 +139,7 @@ public class WriteAlphaPDF {
 
             String docText = "";
             boolean docIsTrad = false;
-            if (doc.getLanguage().equals(langue)) {
+            if (doc.getLanguage().equals(codeLanguage1)) {
                 docText = doc.getText();
             } else {
                 if (tradList != null && tradList.contains(SKOSProperty.note)) {
