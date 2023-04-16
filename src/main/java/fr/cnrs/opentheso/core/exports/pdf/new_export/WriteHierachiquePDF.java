@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
 
@@ -30,17 +31,19 @@ import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
 public class WriteHierachiquePDF {
 
     private String uri;
-    private ArrayList<SKOSResource> conceptList;
-    private WritePdfSettings writePdfSettings;
 
     private HashMap<String, String> idToNameHashMap;
     private HashMap<String, List<String>> idToChildId;
     private HashMap<String, ArrayList<String>> idToMatch;
     private HashMap<String, ArrayList<NodeImage>> idToImg;
-    private HashMap<String, String> idToGPS;
     private HashMap<String, ArrayList<Integer>> idToIsTradDiff;
     private HashMap<String, ArrayList<String>> idToDoc;
+    private HashMap<String, String> idToGPS;
+
     private ArrayList<String> resourceChecked;
+    private List<SKOSResource> conceptList;
+
+    private WritePdfSettings writePdfSettings;
 
 
 
@@ -123,72 +126,80 @@ public class WriteHierachiquePDF {
                 name = "";
             }
 
-            Paragraph paragraph = new Paragraph();
             Anchor anchor = new Anchor(indentation + name + " (" + idFils + ")", writePdfSettings.textFont);
             anchor.setReference(uri + "&idc=" + idFils);
-            paragraph.add(anchor);
-            paragraphs.add(paragraph);
+            paragraphs.add(new Paragraph(anchor));
 
             writeHieraTermInfo(idFils, indentation, paragraphs);
             writeHieraTermRecursif(idFils, indentation, paragraphs);
         }
     }
 
+    private void writeHieraTermInfo(String key, String indentation, List<Paragraph> paragraphs) {
 
-    private void writeHieraTermInfo(String key, String indenatation, ArrayList<Paragraph> paragraphs) {
+        String space = getSpace(indentation);
+        addDocuments(paragraphs, key, space);
+        addMatchs(paragraphs, key, space);
+        addGpsCoordiantes(paragraphs, key, space);
+        addImages(paragraphs, key, indentation);
+    }
 
-        ArrayList<Integer> tradList = idToIsTradDiff.get(key);
-
+    private String getSpace(String indentation) {
         String space = "";
-        for (int i = 0; i < indenatation.length(); i++) {
+        for (int i = 0; i < indentation.length(); i++) {
             space += " ";
         }
+        return space;
+    }
 
-        //doc
-        ArrayList<String> docList = idToDoc.get(key);
+    private void addDocuments(List<Paragraph> paragraphs, String key, String space) {
+
         int docCount = 0;
-
-        if (tradList != null) {
-            for (int lab : tradList) {
-                if (lab == SKOSProperty.note) {
-                    docCount++;
-                }
-            }
+        if (CollectionUtils.isNotEmpty(idToIsTradDiff.get(key))) {
+            docCount = (int) idToIsTradDiff.get(key).stream().filter(traduction -> traduction == SKOSProperty.note).count();
         }
-        int docWrite = 0;
 
-        if (docList != null) {
-            for (String doc : docList) {
-                paragraphs.add(new Paragraph(space + doc, writePdfSettings.hieraInfoFont));
-                docWrite++;
-            }
-
+        AtomicInteger docWrite = new AtomicInteger();
+        if (CollectionUtils.isNotEmpty(idToDoc.get(key))) {
+            idToDoc.get(key).stream().forEach(document  -> {
+                paragraphs.add(new Paragraph(space + document, writePdfSettings.hieraInfoFont));
+                docWrite.getAndIncrement();
+            });
         }
-        if (docWrite < docCount) {
+
+        if (docWrite.get() < docCount) {
             for (int i = 0; i < docCount; i++) {
                 paragraphs.add(new Paragraph(space + "-", writePdfSettings.hieraInfoFont));
             }
         }
+    }
 
-        //match
+    private void addMatchs(List<Paragraph> paragraphs, String key, String space) {
+
         if (CollectionUtils.isNotEmpty(idToMatch.get(key))) {
-            for (String match : idToMatch.get(key)) {
-                paragraphs.add(new Paragraph(space + match, writePdfSettings.hieraInfoFont));
-            }
+            idToMatch.get(key).stream().forEach(match -> paragraphs.add(
+                    new Paragraph(space + match, writePdfSettings.hieraInfoFont)));
         }
+    }
+
+    private void addGpsCoordiantes(List<Paragraph> paragraphs, String key, String space) {
 
         if (StringUtils.isNotEmpty(idToGPS.get(key))) {
             paragraphs.add(new Paragraph(space + idToGPS.get(key), writePdfSettings.hieraInfoFont));
         }
+    }
+
+    private void addImages(List<Paragraph> paragraphs, String key, String indentation) {
 
         if (CollectionUtils.isNotEmpty(idToImg.get(key))) {
-            for (NodeImage nodeImage : idToImg.get(key)) {
-                try {
-                    Image image = Image.getInstance(new URL(nodeImage.getUri()));
-                    image.scaleAbsolute(writePdfSettings.resiseImage(image));
-                    paragraphs.add(new Paragraph(new Chunk(image, indenatation.length() * (2.9f), 20, true)));
-                } catch (BadElementException | IOException ex) {}
-            }
+            idToImg.get(key).stream()
+                    .forEach(imageElement -> {
+                        try {
+                            Image image = Image.getInstance(new URL(imageElement.getUri()));
+                            image.scaleAbsolute(writePdfSettings.resiseImage(image));
+                            paragraphs.add(new Paragraph(new Chunk(image, indentation.length() * (2.9f), 20, true)));
+                        } catch (BadElementException | IOException ex) {}
+                    });
         }
     }
 }
