@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 public class WriteConceptShemas {
 
 
-    public void writeConceptShemas(WritePdfSettings writePdfSettings, Document document, SKOSXmlDocument xmlDocument,
+    public void writeConceptSchemas(WritePdfSettings writePdfSettings, Document document, SKOSXmlDocument xmlDocument,
                                    String codeLang, String codeLang2) throws DocumentException {
 
         PdfPTable table = new PdfPTable(StringUtils.isNotEmpty(codeLang2) ? 2 : 1);
