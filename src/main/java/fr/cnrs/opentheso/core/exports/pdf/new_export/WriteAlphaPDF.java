@@ -18,11 +18,17 @@ import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
 
 public class WriteAlphaPDF {
 
+    private final static String TAB_NIVEAU = "    ";
+    private final static String ID = TAB_NIVEAU + "ID: ";
+    private final static String USE = TAB_NIVEAU + "USE: ";
+    private final static String LATITUDE = TAB_NIVEAU + "lat: ";
+    private final static String LONGITUDE = TAB_NIVEAU + "lon: ";
+
     private WritePdfSettings writePdfSettings;
 
 
-    public WriteAlphaPDF() throws DocumentException, IOException {
-        writePdfSettings = new WritePdfSettings();
+    public WriteAlphaPDF(WritePdfSettings writePdfSettings) {
+        this.writePdfSettings = writePdfSettings;
     }
 
 
@@ -32,8 +38,12 @@ public class WriteAlphaPDF {
                                       ArrayList<String> resourceChecked) throws BadElementException, IOException {
 
         ArrayList<SKOSResource> conceptList = xmlDocument.getConceptList();
+
+        // Trier les concepts selon leurs labels
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         Collections.sort(conceptList, sortAlphabeticInLang(isTrad, langue, langue2, idToNameHashMap, idToIsTrad, resourceChecked));
+
+        // Construire la liste des concepts sous forme d'une suite des paragraphs
         for (SKOSResource concept : conceptList) {
             writeTerm(xmlDocument, concept, paragraphs, langue, langue2, idToIsTrad, idToNameHashMap);
         }
@@ -59,12 +69,11 @@ public class WriteAlphaPDF {
                 if (label.getLanguage().equals(langue)) {
                     labelValue = label.getLabel();
                 } else {
-                    if (tradList != null) {
+                    if (CollectionUtils.isNotEmpty(tradList)) {
                         if (tradList.contains(SKOSProperty.prefLabel) && label.getProperty() == SKOSProperty.prefLabel) {
                             prefIsTrad = true;
                         }
                         if (tradList.contains(SKOSProperty.altLabel) && label.getProperty() == SKOSProperty.altLabel) {
-
                             if (altLabelCount > altLabelWrite) {
                                 altIsTrad = true;
                             }
@@ -79,33 +88,31 @@ public class WriteAlphaPDF {
                     anchor.setReference(xmlDocument.getConceptScheme().getUri() + "&idc=" + writePdfSettings.getIdFromUri(concept.getUri()));
                     paragraphs.add(new Paragraph(anchor));
                 } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {
-                    paragraphs.add(new Paragraph("    USE: " + labelValue, writePdfSettings.textFont));
+                    paragraphs.add(new Paragraph(USE + labelValue, writePdfSettings.textFont));
                 }
             }
         }
 
-        paragraphs.add(new Paragraph("    ID: " + writePdfSettings.getIdFromUri(concept.getUri()), writePdfSettings.textFont));
+        paragraphs.add(new Paragraph(ID + writePdfSettings.getIdFromUri(concept.getUri()), writePdfSettings.textFont));
 
         for (SKOSRelation relation : concept.getRelationsList()) {
-            String key = writePdfSettings.getIdFromUri(relation.getTargetUri());
-            String targetName = idToNameHashMap.get(key);
-            if (targetName == null) {
-                targetName = key;
+            String targetName = idToNameHashMap.get(writePdfSettings.getIdFromUri(relation.getTargetUri()));
+            if (ObjectUtils.isEmpty(writePdfSettings.getIdFromUri(relation.getTargetUri()))) {
+                targetName = writePdfSettings.getIdFromUri(relation.getTargetUri());
             }
-            Chunk chunk = new Chunk("    " + writePdfSettings.getCodeRelation(relation.getProperty()) + ": " + targetName, writePdfSettings.relationFont);
+            Chunk chunk = new Chunk(TAB_NIVEAU + writePdfSettings.getCodeRelation(relation.getProperty()) + ": " + targetName, writePdfSettings.relationFont);
             chunk.setLocalGoto(writePdfSettings.getIdFromUri(relation.getTargetUri()));
             paragraphs.add(new Paragraph(chunk));
         }
 
         for (SKOSDocumentation doc : concept.getDocumentationsList()) {
 
-            if (!doc.getLanguage().equals(langue)
-                    && !doc.getLanguage().equals(langue2)) {
+            if (!doc.getLanguage().equals(langue) && !doc.getLanguage().equals(langue2)) {
                 continue;
             }
 
             int docCount = 0;
-            if (tradList != null) {
+            if (CollectionUtils.isNotEmpty(tradList)) {
                 for (int lab : tradList) {
                     if (lab == SKOSProperty.note) {
                         docCount++;
@@ -125,27 +132,28 @@ public class WriteAlphaPDF {
                 }
             }
             if (!docIsTrad) {
-                paragraphs.add(new Paragraph("    " + writePdfSettings.getDocTypeName(doc.getProperty())
+                paragraphs.add(new Paragraph(TAB_NIVEAU + writePdfSettings.getDocTypeName(doc.getProperty())
                         + ": " + docText, writePdfSettings.textFont));
             }
         }
 
         for (SKOSMatch match : concept.getMatchList()) {
-            paragraphs.add(new Paragraph("    " + writePdfSettings.getMatchTypeName(match.getProperty()) + ": "
-                    + match.getValue(), writePdfSettings.textFont));
+            paragraphs.add(new Paragraph(TAB_NIVEAU + writePdfSettings.getMatchTypeName(match.getProperty())
+                    + ": " + match.getValue(), writePdfSettings.textFont));
         }
 
         if (ObjectUtils.isNotEmpty(concept.getGPSCoordinates())
                 && StringUtils.isNotEmpty(concept.getGPSCoordinates().getLat())
                 && StringUtils.isNotEmpty(concept.getGPSCoordinates().getLon())) {
-            paragraphs.add(new Paragraph("    lat: " + concept.getGPSCoordinates().getLat(), writePdfSettings.textFont));
-            paragraphs.add(new Paragraph("    lat: " + concept.getGPSCoordinates().getLon(), writePdfSettings.textFont));
+
+            paragraphs.add(new Paragraph(LATITUDE + concept.getGPSCoordinates().getLat(), writePdfSettings.textFont));
+            paragraphs.add(new Paragraph(LONGITUDE + concept.getGPSCoordinates().getLon(), writePdfSettings.textFont));
         }
 
         if (CollectionUtils.isNotEmpty(concept.getNodeImage())) {
             for (NodeImage nodeImage : concept.getNodeImage()) {
                 Image image = Image.getInstance(new URL(nodeImage.getUri()));
-                image.scaleAbsolute(200f, 200f);
+                image.scaleAbsolute(writePdfSettings.resiseImage(image));
                 paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
             }
         }

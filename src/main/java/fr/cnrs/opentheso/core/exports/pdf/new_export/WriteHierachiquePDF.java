@@ -22,8 +22,8 @@ public class WriteHierachiquePDF {
     private WritePdfSettings writePdfSettings;
 
 
-    public WriteHierachiquePDF() throws DocumentException, IOException {
-        writePdfSettings = new WritePdfSettings();
+    public WriteHierachiquePDF(WritePdfSettings writePdfSettings) {
+        this.writePdfSettings = writePdfSettings;
     }
 
     public void writeHieraPDF(SKOSXmlDocument xmlDocument,
@@ -81,9 +81,7 @@ public class WriteHierachiquePDF {
         }
     }
 
-    /**
-     * fonction recursive qui sert a ecrire tout les fils des term
-     */
+
     private void writeHieraTermRecursif(SKOSXmlDocument xmlDocument, String id,
                                         String indentation, ArrayList<Paragraph> paragraphs,
                                         HashMap<String, ArrayList<String>> idToDoc,
@@ -119,9 +117,7 @@ public class WriteHierachiquePDF {
         }
     }
 
-    /**
-     * ecri les données d'un term pour le format hiérarchique
-     */
+
     private void writeHieraTermInfo(String key,
                                     String indenatation,
                                     ArrayList<Paragraph> paragraphs,
@@ -180,7 +176,7 @@ public class WriteHierachiquePDF {
                 try {
                     Image image = Image.getInstance(new URL(nodeImage.getUri()));
                     image.scaleAbsolute(writePdfSettings.resiseImage(image));
-                    paragraphs.add(new Paragraph(new Chunk(image, indenatation.length()*(2.9f), 20, true)));
+                    paragraphs.add(new Paragraph(new Chunk(image, indenatation.length() * (2.9f), 20, true)));
                 } catch (BadElementException | IOException ex) {}
             }
         }

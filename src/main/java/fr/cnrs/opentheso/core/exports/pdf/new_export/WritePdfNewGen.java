@@ -1,6 +1,11 @@
 package fr.cnrs.opentheso.core.exports.pdf.new_export;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -48,8 +53,8 @@ public class WritePdfNewGen {
         idToNameHashMap = new HashMap<>();
 
         WritePdfSettings writePdfSettings = new WritePdfSettings();
-        WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF();
-        WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF();
+        WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF(writePdfSettings);
+        WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings);
 
         try ( ByteArrayOutputStream output = new ByteArrayOutputStream()) {
 
