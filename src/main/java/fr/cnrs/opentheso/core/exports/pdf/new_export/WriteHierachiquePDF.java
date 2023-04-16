@@ -1,17 +1,27 @@
 package fr.cnrs.opentheso.core.exports.pdf.new_export;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Anchor;
+import com.itextpdf.text.Paragraph;
+
 import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
@@ -19,29 +29,50 @@ import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
 
 public class WriteHierachiquePDF {
 
+    private String uri;
+    private ArrayList<SKOSResource> conceptList;
     private WritePdfSettings writePdfSettings;
 
+    private HashMap<String, String> idToNameHashMap;
+    private HashMap<String, List<String>> idToChildId;
+    private HashMap<String, ArrayList<String>> idToMatch;
+    private HashMap<String, ArrayList<NodeImage>> idToImg;
+    private HashMap<String, String> idToGPS;
+    private HashMap<String, ArrayList<Integer>> idToIsTradDiff;
+    private HashMap<String, ArrayList<String>> idToDoc;
+    private ArrayList<String> resourceChecked;
 
-    public WriteHierachiquePDF(WritePdfSettings writePdfSettings) {
+
+
+    public WriteHierachiquePDF(WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument) {
+
         this.writePdfSettings = writePdfSettings;
+
+        idToNameHashMap = new HashMap<>();
+        idToChildId = new HashMap<>();
+        idToMatch = new HashMap<>();
+        idToDoc = new HashMap<>();
+        idToImg = new HashMap<>();
+        idToGPS = new HashMap<>();
+        idToIsTradDiff = new HashMap<>();
+        resourceChecked = new ArrayList<>();
+        uri = xmlDocument.getConceptScheme().getUri();
+        conceptList = xmlDocument.getConceptList();
     }
 
-    public void writeHieraPDF(SKOSXmlDocument xmlDocument,
-                              HikariDataSource hikariDataSource,
-                              ArrayList<Paragraph> paragraphs,
-                              String langue,
-                              String langue2,
-                              boolean isTrad,
-                              HashMap<String, ArrayList<String>> idToDoc,
-                              HashMap<String, String> idToNameHashMap,
-                              HashMap<String, List<String>> idToChildId,
-                              HashMap<String, ArrayList<String>> idToMatch,
-                              HashMap<String, String> idToGPS,
-                              HashMap<String, ArrayList<NodeImage>> idToImg,
-                              ArrayList<String> resourceChecked,
-                              HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
+    public void writeHieraPDF(HikariDataSource hikariDataSource, ArrayList<Paragraph> paragraphs,
+                              ArrayList<Paragraph> paragraphTradList, String codeLanguage1, String codeLanguage2) {
 
-        ArrayList<SKOSResource> conceptList = xmlDocument.getConceptList();
+        traitement(hikariDataSource, paragraphs, codeLanguage1, codeLanguage2, false);
+
+        if (StringUtils.isNotEmpty(codeLanguage2)) {
+            traitement(hikariDataSource, paragraphTradList, codeLanguage2, codeLanguage1, true);
+        }
+    }
+
+    private void traitement(HikariDataSource hikariDataSource, ArrayList<Paragraph> paragraphs, String langue,
+                            String langue2, boolean isTrad) {
+
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         Collections.sort(conceptList, sortForHiera(hikariDataSource, isTrad, langue, langue2, idToNameHashMap,
                 idToChildId, idToDoc, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff));
@@ -50,11 +81,8 @@ public class WriteHierachiquePDF {
             boolean isAtRoot = true;
             String conceptID = writePdfSettings.getIdFromUri(concept.getUri());
             Iterator i = idToChildId.keySet().iterator();
-            ArrayList<String> valeur;
             while (i.hasNext()) {
-                String clef = (String) i.next();
-                valeur = (ArrayList<String>) idToChildId.get(clef);
-
+                ArrayList<String> valeur = (ArrayList<String>) idToChildId.get((String) i.next());
                 for (String id : valeur) {
                     if (id.equals(conceptID)) {
                         isAtRoot = false;
@@ -69,28 +97,18 @@ public class WriteHierachiquePDF {
                 }
 
                 Anchor anchor = new Anchor(name + " (" + conceptID + ")", writePdfSettings.termFont);
-                anchor.setReference(xmlDocument.getConceptScheme().getUri() + "&idc=" + conceptID);
+                anchor.setReference(uri + "&idc=" + conceptID);
                 paragraphs.add(new Paragraph(anchor));
 
                 String indentation = "";
-                writeHieraTermInfo(conceptID, indentation, paragraphs, idToDoc, idToIsTradDiff,
-                        idToMatch, idToGPS, idToImg);
-                writeHieraTermRecursif(xmlDocument, conceptID, indentation, paragraphs, idToDoc,
-                        idToIsTradDiff, idToMatch, idToGPS, idToImg, idToChildId, idToNameHashMap);
+                writeHieraTermInfo(conceptID, indentation, paragraphs);
+                writeHieraTermRecursif(conceptID, indentation, paragraphs);
             }
         }
     }
 
 
-    private void writeHieraTermRecursif(SKOSXmlDocument xmlDocument, String id,
-                                        String indentation, ArrayList<Paragraph> paragraphs,
-                                        HashMap<String, ArrayList<String>> idToDoc,
-                                        HashMap<String, ArrayList<Integer>> idToIsTradDiff,
-                                        HashMap<String, ArrayList<String>> idToMatch,
-                                        HashMap<String, String> idToGPS,
-                                        HashMap<String, ArrayList<NodeImage>> idToImg,
-                                        HashMap<String, List<String>> idToChildId,
-                                        HashMap<String, String> idToNameHashMap) {
+    private void writeHieraTermRecursif(String id, String indentation, ArrayList<Paragraph> paragraphs) {
 
         indentation += ".......";
 
@@ -107,25 +125,17 @@ public class WriteHierachiquePDF {
 
             Paragraph paragraph = new Paragraph();
             Anchor anchor = new Anchor(indentation + name + " (" + idFils + ")", writePdfSettings.textFont);
-            anchor.setReference(xmlDocument.getConceptScheme().getUri() + "&idc=" + idFils);
+            anchor.setReference(uri + "&idc=" + idFils);
             paragraph.add(anchor);
             paragraphs.add(paragraph);
 
-            writeHieraTermInfo(idFils, indentation, paragraphs, idToDoc, idToIsTradDiff, idToMatch, idToGPS, idToImg);
-            writeHieraTermRecursif(xmlDocument, idFils, indentation, paragraphs, idToDoc, idToIsTradDiff,
-                    idToMatch, idToGPS, idToImg, idToChildId, idToNameHashMap);
+            writeHieraTermInfo(idFils, indentation, paragraphs);
+            writeHieraTermRecursif(idFils, indentation, paragraphs);
         }
     }
 
 
-    private void writeHieraTermInfo(String key,
-                                    String indenatation,
-                                    ArrayList<Paragraph> paragraphs,
-                                    HashMap<String, ArrayList<String>> idToDoc,
-                                    HashMap<String, ArrayList<Integer>> idToIsTradDiff,
-                                    HashMap<String, ArrayList<String>> idToMatch,
-                                    HashMap<String, String> idToGPS,
-                                    HashMap<String, ArrayList<NodeImage>> idToImg) {
+    private void writeHieraTermInfo(String key, String indenatation, ArrayList<Paragraph> paragraphs) {
 
         ArrayList<Integer> tradList = idToIsTradDiff.get(key);
 

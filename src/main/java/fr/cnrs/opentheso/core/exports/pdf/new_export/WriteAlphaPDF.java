@@ -1,14 +1,27 @@
 package fr.cnrs.opentheso.core.exports.pdf.new_export;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Anchor;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Paragraph;
+
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.skosapi.*;
+import fr.cnrs.opentheso.skosapi.SKOSResource;
+import fr.cnrs.opentheso.skosapi.SKOSLabel;
+import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
+import fr.cnrs.opentheso.skosapi.SKOSRelation;
+import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
+import fr.cnrs.opentheso.skosapi.SKOSMatch;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,11 +38,12 @@ public class WriteAlphaPDF {
     private final static String LONGITUDE = TAB_NIVEAU + "lon: ";
 
     private String uri;
-    private ArrayList<SKOSResource> conceptList;
     private WritePdfSettings writePdfSettings;
 
     private HashMap<String, String> idToNameHashMap;
     private HashMap<String, ArrayList<Integer>> idToIsTrad;
+
+    private ArrayList<SKOSResource> conceptList;
     private ArrayList<String> resourceChecked;
 
 
@@ -56,7 +70,8 @@ public class WriteAlphaPDF {
         }
     }
 
-    private void traitement(ArrayList<Paragraph> paragraphs, boolean isTrad, String codeLanguage1, String codeLanguage2) throws BadElementException, IOException {
+    private void traitement(ArrayList<Paragraph> paragraphs, boolean isTrad, String codeLanguage1, String codeLanguage2)
+            throws BadElementException, IOException {
 
         // Trier les concepts selon leurs labels
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
@@ -68,7 +83,8 @@ public class WriteAlphaPDF {
         }
     }
 
-    private void writeTerm(SKOSResource concept, ArrayList<Paragraph> paragraphs, String codeLanguage1, String codeLanguage2) throws BadElementException, IOException {
+    private void writeTerm(SKOSResource concept, ArrayList<Paragraph> paragraphs, String codeLanguage1, String codeLanguage2)
+            throws BadElementException, IOException {
 
         int altLabelCount = 0;
         ArrayList<Integer> tradList = idToIsTrad.get(writePdfSettings.getIdFromUri(concept.getUri()));
@@ -114,12 +130,15 @@ public class WriteAlphaPDF {
 
         for (SKOSRelation relation : concept.getRelationsList()) {
             String targetName = idToNameHashMap.get(writePdfSettings.getIdFromUri(relation.getTargetUri()));
-            if (ObjectUtils.isEmpty(writePdfSettings.getIdFromUri(relation.getTargetUri()))) {
+            if (ObjectUtils.isEmpty(targetName)) {
                 targetName = writePdfSettings.getIdFromUri(relation.getTargetUri());
             }
-            Chunk chunk = new Chunk(TAB_NIVEAU + writePdfSettings.getCodeRelation(relation.getProperty()) + ": " + targetName, writePdfSettings.relationFont);
-            chunk.setLocalGoto(writePdfSettings.getIdFromUri(relation.getTargetUri()));
-            paragraphs.add(new Paragraph(chunk));
+            if (StringUtils.isNotEmpty(writePdfSettings.getCodeRelation(relation.getProperty()))) {
+                Chunk chunk = new Chunk(TAB_NIVEAU + writePdfSettings.getCodeRelation(relation.getProperty())
+                        + ": " + targetName, writePdfSettings.relationFont);
+                chunk.setLocalGoto(writePdfSettings.getIdFromUri(relation.getTargetUri()));
+                paragraphs.add(new Paragraph(chunk));
+            }
         }
 
         for (SKOSDocumentation doc : concept.getDocumentationsList()) {

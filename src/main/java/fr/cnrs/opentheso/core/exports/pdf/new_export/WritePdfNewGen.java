@@ -8,20 +8,17 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.zaxxer.hikari.HikariDataSource;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import com.zaxxer.hikari.HikariDataSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
-import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,27 +30,13 @@ public class WritePdfNewGen {
     private ArrayList<Paragraph> paragraphList = new ArrayList<>();
     private ArrayList<Paragraph> paragraphTradList = new ArrayList<>();
 
-    private HashMap<String, String> idToNameHashMap;
-    private HashMap<String, List<String>> idToChildId = new HashMap<>();
-    private HashMap<String, ArrayList<String>> idToDocumentation = new HashMap<>();
-    private HashMap<String, ArrayList<String>> idToDocumentation2 = new HashMap<>();
-    private HashMap<String, ArrayList<String>> idToMatch = new HashMap<>();
-    private HashMap<String, ArrayList<NodeImage>> idToImg = new HashMap<>();
-    private HashMap<String, String> idToGPS = new HashMap<>();
-    private HashMap<String, ArrayList<Integer>> idToIsTrad = new HashMap<>();
-    private HashMap<String, ArrayList<Integer>> idToIsTradDiff = new HashMap<>();
-    private ArrayList<String> resourceChecked = new ArrayList<>();
-
 
     public byte[] createPdfFile(HikariDataSource hikariDataSource, SKOSXmlDocument xmlDocument, String codeLanguage1,
                                 String codeLanguage2, PdfExportType pdfExportType) throws DocumentException, IOException {
 
         Document document = new Document();
-        idToNameHashMap = new HashMap<>();
 
         WritePdfSettings writePdfSettings = new WritePdfSettings();
-        WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF(writePdfSettings, xmlDocument);
-        WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings);
 
         try ( ByteArrayOutputStream output = new ByteArrayOutputStream()) {
 
@@ -65,9 +48,11 @@ public class WritePdfNewGen {
 
             // Préparation des données
             if (pdfExportType == PdfExportType.ALPHABETIQUE) {
+                WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF(writePdfSettings, xmlDocument);
                 writeAlphaPDF.writeAlphabetiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
             } else {
-                hiarchiqueMode(writeHierachiquePDF, hikariDataSource, xmlDocument, codeLanguage1, codeLanguage2);
+                WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings, xmlDocument);
+                writeHierachiquePDF.writeHieraPDF(hikariDataSource, paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
             }
 
             createPdfFile(document, codeLanguage2);
@@ -80,20 +65,6 @@ public class WritePdfNewGen {
             }
             Logger.getLogger(WritePdf.class.getName()).log(Level.SEVERE, null, ex);
             return new byte[0];
-        }
-    }
-
-    private void hiarchiqueMode(WriteHierachiquePDF writeHierachiquePDF, HikariDataSource hikariDataSource,
-                                SKOSXmlDocument xmlDocument, String codeLanguage1, String codeLanguage2) {
-
-        writeHierachiquePDF.writeHieraPDF(xmlDocument, hikariDataSource, paragraphList,
-                codeLanguage1, codeLanguage2, false, idToDocumentation,
-                idToNameHashMap, idToChildId, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff);
-
-        if (StringUtils.isNotEmpty(codeLanguage2)) {
-            writeHierachiquePDF.writeHieraPDF(xmlDocument, hikariDataSource, paragraphTradList,
-                    codeLanguage2, codeLanguage1, true, idToDocumentation2,
-                    idToNameHashMap, idToChildId, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff);
         }
     }
 
