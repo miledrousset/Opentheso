@@ -11,7 +11,7 @@ public class NodeCustomRelation {
     
     private String relationLabel;
     
-    private boolean onway;
+    private boolean reciprocal;
 
     public String getTargetConcept() {
         return targetConcept;
@@ -45,13 +45,12 @@ public class NodeCustomRelation {
         this.relationLabel = relationLabel;
     }
 
-
-    public boolean isOnway() {
-        return onway;
+    public boolean isReciprocal() {
+        return reciprocal;
     }
 
-    public void setOnway(boolean onway) {
-        this.onway = onway;
+    public void setReciprocal(boolean reciprocal) {
+        this.reciprocal = reciprocal;
     }
     
 }

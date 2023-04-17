@@ -13,6 +13,8 @@ public class NodeConceptType {
     private String code;
     private String label_fr;
     private String label_en;
+    private boolean reciprocal;
+    private boolean permanent;
     
     public NodeConceptType() {
     }
@@ -39,6 +41,22 @@ public class NodeConceptType {
 
     public void setLabel_en(String label_en) {
         this.label_en = label_en;
+    }
+
+    public boolean isReciprocal() {
+        return reciprocal;
+    }
+
+    public void setReciprocal(boolean reciprocal) {
+        this.reciprocal = reciprocal;
+    }
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
     }
     
 }

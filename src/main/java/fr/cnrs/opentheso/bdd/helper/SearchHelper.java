@@ -2514,6 +2514,118 @@ public class SearchHelper {
         }
 
         return nodeSearchMinis;
+    }    
+    
+    /**
+     * Cette fonction permet de récupérer une liste de termes pour
+     * l'autocomplétion pour créer des relations entre les concepts
+     *
+     * @param ds
+     * @param value
+     * @param idTheso
+     * @param idLang
+     * @return #MR
+     */
+    public List<NodeSearchMini> searchAutoCompletionForCustomRelation(
+            HikariDataSource ds,
+            String value,
+            String idLang,
+            String idTheso) {
+
+        Connection conn;
+        Statement stmt;
+        ResultSet resultSet;
+        List<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
+        StringPlus stringPlus = new StringPlus();
+
+        value = stringPlus.convertString(value);
+        value = stringPlus.unaccentLowerString(value);
+
+        try {
+            // Get connection from pool
+            conn = ds.getConnection();
+            try {
+                stmt = conn.createStatement();
+                try {
+                    String query = "SELECT "
+                            + " term.lexical_value,"
+                            + " preferred_term.id_concept, concept.concept_type"
+                            + " FROM"
+                            + " concept, preferred_term, term"
+                            + " WHERE"
+                            + " preferred_term.id_concept = concept.id_concept "
+                            + " AND  preferred_term.id_thesaurus = concept.id_thesaurus "
+                            + " AND  term.id_term = preferred_term.id_term "
+                            + " AND  term.id_thesaurus = preferred_term.id_thesaurus "
+                            + " AND  concept.status != 'hidden' "
+                            + " AND term.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'"
+                            + " and concept.concept_type != 'concept'"
+                            + " AND term.id_thesaurus = '" + idTheso + "'"
+                            + " AND f_unaccent(lower(term.lexical_value)) LIKE '%" + value + "%' order by term.lexical_value <-> '" + value + "' limit 20";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
+                        nodeSearchMini.setConceptType(resultSet.getString("concept_type"));
+                        nodeSearchMini.setIsAltLabel(false);
+                        nodeSearchMinis.add(nodeSearchMini);
+                    }
+                    query = "SELECT "
+                            + "  non_preferred_term.lexical_value as npt,"
+                            + "  term.lexical_value as pt,"
+                            + "  preferred_term.id_concept,"
+                            + "  concept.concept_type"
+                            + " FROM "
+                            + "  concept, "
+                            + "  preferred_term, "
+                            + "  non_preferred_term, "
+                            + "  term "
+                            + " WHERE "
+                            + "  preferred_term.id_concept = concept.id_concept AND"
+                            + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
+                            + "  non_preferred_term.id_term = preferred_term.id_term AND"
+                            + "  non_preferred_term.id_thesaurus = preferred_term.id_thesaurus AND"
+                            + "  term.id_term = preferred_term.id_term AND"
+                            + "  term.id_thesaurus = preferred_term.id_thesaurus AND"
+                            + "  term.lang = non_preferred_term.lang AND"
+                            + "  concept.status != 'hidden' AND"
+                            + "  non_preferred_term.id_thesaurus = '" + idTheso + "' AND"
+                            + "  non_preferred_term.lang = '" + idLang + "'"
+                            + " and concept.status != 'CA'"
+                            + " and concept.concept_type != 'concept'"
+                            + " AND"
+                            + " f_unaccent(lower(non_preferred_term.lexical_value)) LIKE '%" + value + "%'"
+                            + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 20";
+
+                    stmt.executeQuery(query);
+                    resultSet = stmt.getResultSet();
+                    while (resultSet.next()) {
+                        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMini.setAltLabel(resultSet.getString("npt"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
+                        nodeSearchMini.setConceptType(resultSet.getString("concept_type"));                        
+                        nodeSearchMini.setIsAltLabel(true);
+                        nodeSearchMinis.add(nodeSearchMini);
+                    }
+                } finally {
+                    stmt.close();
+                }
+            } finally {
+                conn.close();
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List of autocompletion of Text : " + value, sqle);
+        }
+
+        return nodeSearchMinis;
     }
 
     public String searchIDConceptByPrefLab(HikariDataSource ds, String value, String idTheso, String idLang) {

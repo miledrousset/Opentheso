@@ -10,7 +10,14 @@ masquer l'affichage d'un bloc vide qui s'affichait en mode non connecté
 
 ### commité
 Activer la commande de génération d'identifiants ARK en local
- 
+
+Correction de l'import CSV pour mieux gérer les identifiants Majuscule Minuscule 
+
+Intégration de la gestion de type de concept (Qualificatif, Period, Place ...)
+
+
+
+
 
 
 

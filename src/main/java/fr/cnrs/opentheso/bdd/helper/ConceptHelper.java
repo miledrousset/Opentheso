@@ -57,7 +57,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
-import javax.json.JsonValue;
 import org.apache.commons.collections.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -83,6 +82,99 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
+    
+    /**
+     * permet de changer les valeurs d'un type de concept dans la table ConceptType
+     * @param ds
+     * @param idThesaurus
+     * @param nodeConceptType
+     * @return 
+     */
+    public boolean applyChangeForConceptType(HikariDataSource ds,
+            String idThesaurus, NodeConceptType nodeConceptType){
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept_type set "
+                        + " label_fr = '" + nodeConceptType.getLabel_fr() + "',"
+                        + " label_en = '" + nodeConceptType.getLabel_en() + "',"
+                        + " reciprocal = " + nodeConceptType.isReciprocal() + ","
+                        + " id_theso = '" + idThesaurus + "'"
+                        + " WHERE code ='" + nodeConceptType.getCode() + "'"
+                        + " AND id_theso ='" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating type of concept : " + nodeConceptType.getCode(), sqle);
+        }
+        return false;        
+    }
+    
+    /**
+     * permet de supprimer un type de concept
+     * @param ds
+     * @param idThesaurus
+     * @param nodeConceptType
+     * @return 
+     */
+    public boolean deleteConceptType(HikariDataSource ds,
+            String idThesaurus, NodeConceptType nodeConceptType){
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from concept_type where "
+                        + " code = '" + nodeConceptType.getCode() + "'"
+                        + " AND id_theso ='" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while deleting type of concept : " + nodeConceptType.getCode(), sqle);
+        }
+        return false;        
+    }    
+    
+    /**
+     * Permet d'ajouter un nouveau type de concept
+     * @param ds
+     * @param idThesaurus
+     * @param nodeConceptType
+     * @return 
+     */
+    public boolean addNewConceptType(HikariDataSource ds,
+            String idThesaurus, NodeConceptType nodeConceptType){
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("insert into concept_type (code, label_fr, label_en, reciprocal, id_theso) values ("
+                        + "'" + nodeConceptType.getCode() + "',"
+                        + "'" + nodeConceptType.getLabel_fr() + "',"
+                        + "'" + nodeConceptType.getLabel_en() + "',"
+                        + nodeConceptType.isReciprocal() + ","     
+                        + "'" + idThesaurus + "'"                                
+                        + ")");
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while adding type of concept : " + nodeConceptType.getCode(), sqle);
+        }
+        return false;        
+    }    
+
+    public boolean isConceptTypeExist(HikariDataSource ds, String idTheso, NodeConceptType nodeConceptType) {
+        boolean existe = false;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select code from concept_type where " + "code = '" + nodeConceptType.getCode() + "'"
+                                + " and id_theso = '" + idTheso + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        existe = true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if concept_type exist : " + nodeConceptType.getCode(), sqle);
+        }
+        return existe;
+    }
+    
     /**
      * Cette fonction permet de changer le type du concept
      *
@@ -115,19 +207,30 @@ public class ConceptHelper {
      * Permet de retourner la liste de types de concepts date de type 2021-02-01
      *
      * @param ds
+     * @param idTheso
      * @return
      */
-    public ArrayList<NodeConceptType> getAllTypesOfConcept(HikariDataSource ds) {
+    public ArrayList<NodeConceptType> getAllTypesOfConcept(HikariDataSource ds, String idTheso) {
         ArrayList<NodeConceptType> nodeConceptTypes = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from concept_type");
+                stmt.executeQuery("select * from concept_type where id_theso in ('" + idTheso + "', 'all')"
+                        + " order by " 
+                        + " CASE unaccent(lower(code))"
+                        + " WHEN 'concept' THEN 1"
+                        + " END");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeConceptType nodeConceptType = new NodeConceptType();
                         nodeConceptType.setCode(resultSet.getString("code"));
                         nodeConceptType.setLabel_fr(resultSet.getString("label_fr"));
                         nodeConceptType.setLabel_en(resultSet.getString("label_en"));
+                        nodeConceptType.setReciprocal(resultSet.getBoolean("reciprocal"));
+                        if("all".equalsIgnoreCase(resultSet.getString("id_theso"))) {
+                            nodeConceptType.setPermanent(true);
+                        } else
+                            nodeConceptType.setPermanent(false);
+                        
                         nodeConceptTypes.add(nodeConceptType);
                     }
                 }
@@ -4509,6 +4612,35 @@ public class ConceptHelper {
         return notation;
     }
 
+    /**
+     * Cette fonction permet de récupérer la notation sinon renvoie une chaine
+     * vide
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return
+     */
+    public String getTypeOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+
+        String conceptType = "";
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select concept_type from concept where id_thesaurus = '" + idThesaurus
+                        + "' and id_concept = '" + idConcept + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        conceptType = resultSet.getString("concept_type") == null ? "" : resultSet.getString("concept_type").trim();
+                        //notation = resultSet.getString("notation").trim();
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting notation of Concept : " + idConcept, sqle);
+        }
+        return conceptType;
+    }    
+    
     /**
      * Cette fonction permet de récupérer les identifiants d'un concept idArk,
      * idHandle, idConcept sous forme de nodeUri

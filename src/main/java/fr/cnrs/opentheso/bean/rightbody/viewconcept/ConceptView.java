@@ -19,7 +19,9 @@ import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
@@ -108,7 +110,6 @@ public class ConceptView implements Serializable {
     private int offset;
     private int step;    
     private boolean haveNext;
-    private boolean dejaAfficher;
     
     // total de la branche
     private int countOfBranch;
@@ -126,6 +127,8 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> editorialNotes;
     private ArrayList<NodeNote> examples;
     private ArrayList<NodeNote> historyNotes;
+
+    private ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals;
     
     private List<ResponsiveOption> responsiveOptions;
     
@@ -185,6 +188,7 @@ public class ConceptView implements Serializable {
         
         selectedLang = null;
         mapModel = null;
+        nodeCustomRelationReciprocals = null;
     }
 
     /**
@@ -217,7 +221,7 @@ public class ConceptView implements Serializable {
         nodeCorpuses = null;
         countOfBranch = 0;
         haveCorpus = false;
-
+        nodeCustomRelationReciprocals = null;
 
         if (mapModel == null) {
             mapModel = new Map();
@@ -292,10 +296,7 @@ public class ConceptView implements Serializable {
     public String getLabelOfConceptType(String conceptType, String idTheso){
         String idLang;
         RelationsHelper relationsHelper = new RelationsHelper();
-        if("en".equalsIgnoreCase(languageBean.getIdLangue()) || "fr".equalsIgnoreCase(languageBean.getIdLangue())){
-            idLang = languageBean.getIdLangue();
-        } else
-            idLang = "en";
+        idLang = getIdLangOfInterface();
         
         return relationsHelper.getLabelOfTypeConcept(connect.getPoolConnexion(),
                 conceptType,
@@ -318,6 +319,15 @@ public class ConceptView implements Serializable {
         if (nodeConcept == null) {
             return;
         }
+        // permet de récupérer les qualificatifs
+        if(roleOnThesoBean.getNodePreference().isUseCustomRelation()){
+            String interfaceLang = getIdLangOfInterface();            
+
+            nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
+            setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
+        }        
+        
         setOffset();
         if (nodeConcept.getNodeGps() != null) {
             initMap();
@@ -383,12 +393,10 @@ public class ConceptView implements Serializable {
         
         // permet de récupérer les qualificatifs
         if(roleOnThesoBean.getNodePreference().isUseCustomRelation()){
-            String interfaceLang = languageBean.getIdLangue();
-            if("en".equalsIgnoreCase(interfaceLang) || "fr".equalsIgnoreCase(interfaceLang)) {
-            } else
-                interfaceLang = "en";
-            nodeConcept.setNodeCustomRelations(new RelationsHelper().getNodeCustomRelation(
+            String interfaceLang = getIdLangOfInterface();
+            nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
                     connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
+            setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
         }
             
 
@@ -765,6 +773,16 @@ public class ConceptView implements Serializable {
 
     }
     
+    public void setNodeCustomRelationWithReciprocal(ArrayList<NodeCustomRelation> nodeCustomRelations) {
+        nodeCustomRelationReciprocals = new ArrayList<>();
+        for (NodeCustomRelation nodeCustomRelation : nodeCustomRelations) {
+            if(nodeCustomRelation.isReciprocal())
+                nodeCustomRelationReciprocals.add(nodeCustomRelation);
+        }
+        if(nodeCustomRelationReciprocals.isEmpty())
+            nodeCustomRelationReciprocals = null;
+    }
+    
     public void getNextNT(String idTheso, String idConcept, String idLang) {
     /*    if(tree != null 
                 && CollectionUtils.isNotEmpty(tree.getClickselectedNodes()) 
@@ -875,6 +893,36 @@ public class ConceptView implements Serializable {
                     break;
             }
         }
+    }
+    
+    public String getColorOfTypeConcept(){
+        if("concept".equalsIgnoreCase(nodeConcept.getConcept().getConceptType()))
+                return "";
+        else
+            return "#fcd8bf";
+    }
+    
+    public String geLabelReciprocal(NodeConceptType nodeConceptType){
+        if("concept".equalsIgnoreCase(nodeConceptType.getCode())) {
+            return "";
+        }
+        String idLang = languageBean.getIdLangue();
+        if(nodeConceptType.isReciprocal()) {
+            if("fr".equalsIgnoreCase(idLang)){
+                return " - Relation réciproque";
+            }
+            if("en".equalsIgnoreCase(idLang)){
+                return " - Reciprocal relation";
+            }            
+        } else {
+            if("fr".equalsIgnoreCase(idLang)){
+                return " - Relation à sens unique";
+            }
+            if("en".equalsIgnoreCase(idLang)){
+                return " - One-way relationship";
+            }               
+        }
+        return "";
     }
     
     public void changeStateAltLabelOtherLang() {
@@ -1023,5 +1071,24 @@ public class ConceptView implements Serializable {
         this.toggleSwitchNotesLang = toggleSwitchNotesLang;
     }
 
+    public ArrayList<NodeCustomRelation> getNodeCustomRelationReciprocals() {
+        return nodeCustomRelationReciprocals;
+    }
 
+    public void setNodeCustomRelationReciprocals(ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals) {
+        this.nodeCustomRelationReciprocals = nodeCustomRelationReciprocals;
+    }
+
+    /**
+     * permet de retouver la langue de l'interface et se limiter au fr et en
+     * @return 
+     */
+    private String getIdLangOfInterface(){
+        String idLang;
+        if("en".equalsIgnoreCase(languageBean.getIdLangue()) || "fr".equalsIgnoreCase(languageBean.getIdLangue())){
+            idLang = languageBean.getIdLangue();
+        } else
+            idLang = "en";
+        return idLang;  
+    }
 }
