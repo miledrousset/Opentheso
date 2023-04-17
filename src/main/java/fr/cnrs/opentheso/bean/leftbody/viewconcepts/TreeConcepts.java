@@ -15,8 +15,7 @@ import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 
-import org.apache.commons.collections4.CollectionUtils;
-
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
