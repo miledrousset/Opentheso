@@ -24,11 +24,10 @@ class HeaderFooterPdfPageEvent extends PdfPageEventHelper {
         float headerX = document.left() + 50;
         float headerY = document.top() + 10;
 
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, header, headerX, headerY, 0);
+        //ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, header, headerX, headerY, 0);
     }
 
     public void onEndPage(PdfWriter writer, Document document) {
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase("https://opentheso2.mom.fr"), 110, 30, 0);
         ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase("Page " + document.getPageNumber()), 550, 30, 0);
     }
 }

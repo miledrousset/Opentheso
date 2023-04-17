@@ -32,19 +32,18 @@ public class WriteHierachiquePDF {
 
     private String uri;
 
+    private HashMap<String, String> idToGPS;
     private HashMap<String, String> idToNameHashMap;
     private HashMap<String, List<String>> idToChildId;
-    private HashMap<String, ArrayList<String>> idToMatch;
-    private HashMap<String, ArrayList<NodeImage>> idToImg;
-    private HashMap<String, ArrayList<Integer>> idToIsTradDiff;
     private HashMap<String, ArrayList<String>> idToDoc;
-    private HashMap<String, String> idToGPS;
+    private HashMap<String, ArrayList<String>> idToMatch;
+    private HashMap<String, ArrayList<Integer>> idToIsTradDiff;
+    private HashMap<String, ArrayList<NodeImage>> idToImg;
 
     private ArrayList<String> resourceChecked;
     private List<SKOSResource> conceptList;
 
     private WritePdfSettings writePdfSettings;
-
 
 
     public WriteHierachiquePDF(WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument) {
@@ -54,12 +53,12 @@ public class WriteHierachiquePDF {
         idToNameHashMap = new HashMap<>();
         idToChildId = new HashMap<>();
         idToMatch = new HashMap<>();
-        idToDoc = new HashMap<>();
         idToImg = new HashMap<>();
         idToGPS = new HashMap<>();
         idToIsTradDiff = new HashMap<>();
         resourceChecked = new ArrayList<>();
         uri = xmlDocument.getConceptScheme().getUri();
+
         conceptList = xmlDocument.getConceptList();
     }
 
@@ -73,11 +72,13 @@ public class WriteHierachiquePDF {
         }
     }
 
-    private void traitement(HikariDataSource hikariDataSource, ArrayList<Paragraph> paragraphs, String langue,
-                            String langue2, boolean isTrad) {
+    private void traitement(HikariDataSource hikariDataSource, ArrayList<Paragraph> paragraphs, String codeLanguage1,
+                            String codeLanguage2, boolean isTrad) {
+
+        idToDoc = new HashMap<>();
 
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
-        Collections.sort(conceptList, sortForHiera(hikariDataSource, isTrad, langue, langue2, idToNameHashMap,
+        Collections.sort(conceptList, sortForHiera(hikariDataSource, isTrad, codeLanguage1, codeLanguage2, idToNameHashMap,
                 idToChildId, idToDoc, idToMatch, idToGPS, idToImg, resourceChecked, idToIsTradDiff));
 
         for (SKOSResource concept : conceptList) {
@@ -85,8 +86,7 @@ public class WriteHierachiquePDF {
             String conceptID = writePdfSettings.getIdFromUri(concept.getUri());
             Iterator i = idToChildId.keySet().iterator();
             while (i.hasNext()) {
-                ArrayList<String> valeur = (ArrayList<String>) idToChildId.get((String) i.next());
-                for (String id : valeur) {
+                for (String id : idToChildId.get((String) i.next())) {
                     if (id.equals(conceptID)) {
                         isAtRoot = false;
                     }
@@ -112,19 +112,17 @@ public class WriteHierachiquePDF {
         }
     }
 
-
     private void writeHieraTermRecursif(String id, String indentation, ArrayList<Paragraph> paragraphs) {
 
         indentation += ".......";
 
-        List<String> childList = idToChildId.get(id);
-        if (childList == null) {
+        if (idToChildId.get(id) == null) {
             return;
         }
 
-        for (String idFils : childList) {
+        for (String idFils : idToChildId.get(id)) {
             String name = idToNameHashMap.get(idFils);
-            if (name == null) {
+            if (StringUtils.isEmpty(null)) {
                 name = "";
             }
 
@@ -142,10 +140,10 @@ public class WriteHierachiquePDF {
     private void writeHieraTermInfo(String key, String indentation, List<Paragraph> paragraphs) {
 
         String space = getSpace(indentation);
-        addDocuments(paragraphs, key, space);
-        addMatchs(paragraphs, key, space);
-        addGpsCoordiantes(paragraphs, key, space);
-        addImages(paragraphs, key, indentation);
+        addNotes(paragraphs, space, idToDoc.get(key), idToIsTradDiff.get(key));
+        addMatchs(paragraphs, idToMatch.get(key), space);
+        addGpsCoordiantes(paragraphs, idToGPS.get(key), space);
+        addImages(paragraphs, idToImg.get(key), indentation);
     }
 
     private String getSpace(String indentation) {
@@ -156,16 +154,16 @@ public class WriteHierachiquePDF {
         return space;
     }
 
-    private void addDocuments(List<Paragraph> paragraphs, String key, String space) {
+    private void addNotes(List<Paragraph> paragraphs, String space, ArrayList<String> idToDoc, ArrayList<Integer> idTradDiff) {
 
         int docCount = 0;
-        if (CollectionUtils.isNotEmpty(idToIsTradDiff.get(key))) {
-            docCount = (int) idToIsTradDiff.get(key).stream().filter(traduction -> traduction == SKOSProperty.note).count();
+        if (CollectionUtils.isNotEmpty(idTradDiff)) {
+            docCount = (int) idTradDiff.stream().filter(traduction -> traduction == SKOSProperty.note).count();
         }
 
         AtomicInteger docWrite = new AtomicInteger();
-        if (CollectionUtils.isNotEmpty(idToDoc.get(key))) {
-            idToDoc.get(key).stream().forEach(document  -> {
+        if (CollectionUtils.isNotEmpty(idToDoc)) {
+            idToDoc.stream().forEach(document  -> {
                 paragraphs.add(new Paragraph(space + document, writePdfSettings.hieraInfoFont));
                 docWrite.getAndIncrement();
             });
@@ -178,25 +176,24 @@ public class WriteHierachiquePDF {
         }
     }
 
-    private void addMatchs(List<Paragraph> paragraphs, String key, String space) {
+    private void addMatchs(List<Paragraph> paragraphs, ArrayList<String> matchs, String space) {
 
-        if (CollectionUtils.isNotEmpty(idToMatch.get(key))) {
-            idToMatch.get(key).stream().forEach(match -> paragraphs.add(
-                    new Paragraph(space + match, writePdfSettings.hieraInfoFont)));
+        if (CollectionUtils.isNotEmpty(matchs)) {
+            matchs.stream().forEach(match -> paragraphs.add(new Paragraph(space + match, writePdfSettings.hieraInfoFont)));
         }
     }
 
-    private void addGpsCoordiantes(List<Paragraph> paragraphs, String key, String space) {
+    private void addGpsCoordiantes(List<Paragraph> paragraphs, String gps, String space) {
 
-        if (StringUtils.isNotEmpty(idToGPS.get(key))) {
-            paragraphs.add(new Paragraph(space + idToGPS.get(key), writePdfSettings.hieraInfoFont));
+        if (StringUtils.isNotEmpty(gps)) {
+            paragraphs.add(new Paragraph(space + gps, writePdfSettings.hieraInfoFont));
         }
     }
 
-    private void addImages(List<Paragraph> paragraphs, String key, String indentation) {
+    private void addImages(List<Paragraph> paragraphs, ArrayList<NodeImage> images, String indentation) {
 
-        if (CollectionUtils.isNotEmpty(idToImg.get(key))) {
-            idToImg.get(key).stream()
+        if (CollectionUtils.isNotEmpty(images)) {
+            images.stream()
                     .forEach(imageElement -> {
                         try {
                             Image image = Image.getInstance(new URL(imageElement.getUri()));
