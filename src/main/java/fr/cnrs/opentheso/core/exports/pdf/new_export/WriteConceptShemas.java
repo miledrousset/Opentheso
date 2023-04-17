@@ -49,8 +49,11 @@ public class WriteConceptShemas {
     }
 
     private Paragraph createTitle(SKOSXmlDocument xmlDocument, SKOSLabel label, String codeLang, WritePdfSettings writePdfSettings) {
+
+        Paragraph paragraph = new Paragraph();
         Anchor anchor = new Anchor(label.getLabel() + " (" + codeLang + ")", writePdfSettings.titleFont);
         anchor.setReference(xmlDocument.getConceptScheme().getUri());
-        return new Paragraph(anchor);
+        paragraph.add(anchor);
+        return paragraph;
     }
 }

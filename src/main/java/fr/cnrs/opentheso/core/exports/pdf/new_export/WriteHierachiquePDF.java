@@ -99,9 +99,11 @@ public class WriteHierachiquePDF {
                     name = "";
                 }
 
+                Paragraph paragraph = new Paragraph();
                 Anchor anchor = new Anchor(name + " (" + conceptID + ")", writePdfSettings.termFont);
                 anchor.setReference(uri + "&idc=" + conceptID);
-                paragraphs.add(new Paragraph(anchor));
+                paragraph.add(anchor);
+                paragraphs.add(paragraph);
 
                 String indentation = "";
                 writeHieraTermInfo(conceptID, indentation, paragraphs);
@@ -126,9 +128,11 @@ public class WriteHierachiquePDF {
                 name = "";
             }
 
+            Paragraph paragraph = new Paragraph();
             Anchor anchor = new Anchor(indentation + name + " (" + idFils + ")", writePdfSettings.textFont);
             anchor.setReference(uri + "&idc=" + idFils);
-            paragraphs.add(new Paragraph(anchor));
+            paragraph.add(anchor);
+            paragraphs.add(paragraph);
 
             writeHieraTermInfo(idFils, indentation, paragraphs);
             writeHieraTermRecursif(idFils, indentation, paragraphs);

@@ -128,9 +128,11 @@ public class WriteAlphaPDF {
                 }
 
                 if (label.getProperty() == SKOSProperty.prefLabel && !prefIsTrad) {
+                    Paragraph paragraph = new Paragraph();
                     Anchor anchor = new Anchor(labelValue, writePdfSettings.termFont);
                     anchor.setReference(uri + "&idc=" + idFromUri);
-                    paragraphs.add(new Paragraph(anchor));
+                    paragraph.add(anchor);
+                    paragraphs.add(paragraph);
                 } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {
                     paragraphs.add(new Paragraph(USE + labelValue, writePdfSettings.textFont));
                 }

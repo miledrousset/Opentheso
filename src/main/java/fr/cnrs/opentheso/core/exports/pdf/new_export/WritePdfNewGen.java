@@ -80,8 +80,7 @@ public class WritePdfNewGen {
         // Ajout de l'entête et pied de page
         writer.setPageEvent(new HeaderFooterPdfPageEvent(
                 xmlDocument.getConceptScheme().getThesaurus().getId_thesaurus()
-                        + " - " + xmlDocument.getConceptScheme().getThesaurus().getTitle()
-                        + " ( " + xmlDocument.getConceptScheme().getThesaurus().getLanguage() + " )"));
+                        + " - " + xmlDocument.getConceptScheme().getThesaurus().getTitle()));
     }
 
     private void createPdfFile(Document document, String language2) throws DocumentException {
@@ -93,15 +92,13 @@ public class WritePdfNewGen {
             PdfPTable table = new PdfPTable(2);
             int listSize = Integer.min(paragraphList.size(), paragraphTradList.size());
             for (int i = 0; i < listSize; i++) {
-                Paragraph paragraph = paragraphList.get(i);
-                Paragraph paragraphTrad = paragraphTradList.get(i);
 
                 PdfPCell cell1 = new PdfPCell();
-                cell1.addElement(paragraph);
+                cell1.addElement(paragraphList.get(i));
                 cell1.setBorderWidth(Rectangle.NO_BORDER);
 
                 PdfPCell cell2 = new PdfPCell();
-                cell2.addElement(paragraphTrad);
+                cell2.addElement(paragraphTradList.get(i));
                 cell2.setBorder(Rectangle.NO_BORDER);
 
                 table.addCell(cell1);
