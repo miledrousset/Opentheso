@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Relation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
@@ -49,6 +50,38 @@ public class RelationsHelper {
     ////////////////////////////////////////////////////////////////////     
     
     
+    /**
+     * permet de retourner les informations sur le type du concept 
+     *
+     * @param ds
+     * @param conceptType
+     * @param idTheso
+     * @return
+     */
+    public NodeConceptType getNodeTypeConcept(HikariDataSource ds, String conceptType, String idTheso) {
+        NodeConceptType nodeConceptType = new NodeConceptType();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select * from concept_type"
+                        + " where "
+                        + " code = '" + conceptType + "'" 
+                        + " and id_theso = '" +  idTheso + "'"
+                );
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        nodeConceptType.setCode(conceptType);
+                        nodeConceptType.setLabel_fr(resultSet.getString("label_fr"));
+                        nodeConceptType.setLabel_en(resultSet.getString("label_en"));                        
+                        nodeConceptType.setReciprocal(resultSet.getBoolean("reciprocal"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting NT of Concept : " + conceptType, sqle);
+        }
+        return nodeConceptType;
+    }    
+    
     
     /**
      * permet de retourner la liste des termes de type Qualifier avec les libellés
@@ -60,7 +93,7 @@ public class RelationsHelper {
      * @param interfaceLang
      * @return
      */
-    public ArrayList<NodeCustomRelation> getNodeCustomRelation(HikariDataSource ds, String idConcept, String idThesaurus, String idLang, String interfaceLang) {
+    public ArrayList<NodeCustomRelation> getAllNodeCustomRelation(HikariDataSource ds, String idConcept, String idThesaurus, String idLang, String interfaceLang) {
 
         ArrayList<NodeCustomRelation> nodeCustomRelations = new ArrayList<>();
 
@@ -69,7 +102,7 @@ public class RelationsHelper {
                 stmt.executeQuery("select id_concept2, role from hierarchical_relationship, concept" +
                         " where hierarchical_relationship.id_concept2 = concept.id_concept" +
                         " and hierarchical_relationship.id_thesaurus = concept.id_thesaurus" +
-                        " and hierarchical_relationship.id_thesaurus = 'th1'" +
+                        " and hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'" +
                         " and id_concept1 = '" + idConcept + "'" +
                         " and role not in ('BT', 'BTG', 'BTP', 'BTI', 'NT', 'NTG', 'NTP', 'NTI', 'RT')" +
                         " and concept.status != 'CA'"
@@ -104,17 +137,17 @@ public class RelationsHelper {
      * @param nodeCustomRelation
      * @return
      */
-    public NodeCustomRelation getLabelOfCustomRelation(HikariDataSource ds, String customRelation, String idTheso, String interfaceLang, NodeCustomRelation nodeCustomRelation) {
+    private NodeCustomRelation getLabelOfCustomRelation(HikariDataSource ds, String customRelation, String idTheso, String interfaceLang, NodeCustomRelation nodeCustomRelation) {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select label_" + interfaceLang +  ", onway from concept_type" +
+                stmt.executeQuery("select label_" + interfaceLang +  ", reciprocal from concept_type" +
                         " where code = '" + customRelation + "'" +
-                        " and id_theso = '" + idTheso + "'"
+                        " and id_theso in ('" + idTheso + "', 'all')"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if(resultSet.next()) {
                         nodeCustomRelation.setRelationLabel(resultSet.getString("label_" + interfaceLang));
-                        nodeCustomRelation.setOnway(resultSet.getBoolean("onway"));
+                        nodeCustomRelation.setReciprocal(resultSet.getBoolean("reciprocal"));
                         return nodeCustomRelation;
                     }
                 }
@@ -139,7 +172,7 @@ public class RelationsHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select label_" + idLang +  " from concept_type" +
                         " where code = '" + customRelation + "'" +
-                        " and id_theso = '" + idTheso + "'"
+                        " and id_theso in ('" + idTheso + "', 'all')"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if(resultSet.next()) {
@@ -979,18 +1012,21 @@ public class RelationsHelper {
     }
 
     /**
-     * Cette fonction permet d'ajouter une relation de qualificatif entre le concept1 et le concept2
+     * Cette fonction permet d'ajouter une relation personnalisée entre le concept1 et le concept2
      *
      * @param ds
      * @param idConcept1
      * @param idConcept2
      * @param idThesaurus
      * @param idUser
+     * @param relationType
+     * @param isReciprocal
      * @return boolean
      */
-    public boolean addRelationQualifier(HikariDataSource ds,
+    public boolean addCustomRelationship(HikariDataSource ds,
             String idConcept1, String idThesaurus,
-            String idConcept2, int idUser) {
+            String idConcept2, int idUser, 
+            String relationType, boolean isReciprocal) {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into hierarchical_relationship"
@@ -998,10 +1034,19 @@ public class RelationsHelper {
                             + " values ("
                             + "'" + idConcept1 + "'"
                             + ",'" + idThesaurus + "'"
-                            + ",'QUALIFIER'"
+                            + ",'" + relationType + "'"
                             + ",'" + idConcept2 + "') ON CONFLICT DO NOTHING");
+                if(isReciprocal) {
+                    stmt.executeUpdate("Insert into hierarchical_relationship"
+                                + "(id_concept1, id_thesaurus, role, id_concept2)"
+                                + " values ("
+                                + "'" + idConcept2 + "'"
+                                + ",'" + idThesaurus + "'"
+                                + ",'" + relationType + "'"
+                                + ",'" + idConcept1 + "') ON CONFLICT DO NOTHING");                    
+                }
             }
-            addRelationHistorique(conn, idConcept1, idThesaurus, idConcept2, "QUALIFIER", idUser, "ADD");
+            addRelationHistorique(conn, idConcept1, idThesaurus, idConcept2, relationType, idUser, "ADD");
             return true;
         } catch (SQLException sqle) {
             log.error("Error while adding relation RT of Concept : " + idConcept1, sqle);
@@ -1602,20 +1647,28 @@ public class RelationsHelper {
      * @param idThesaurus
      * @param idConcept2
      * @param idUser
+     * @param conceptType
+     * @param isReciprocal
      * @return boolean
      */
-    public boolean deleteQualifierLink(HikariDataSource ds,
+    public boolean deleteCustomRelationship(HikariDataSource ds,
             String idConcept1, String idThesaurus,
-            String idConcept2, int idUser) {
+            String idConcept2, int idUser, String conceptType, boolean isReciprocal) {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from hierarchical_relationship"
                             + " where id_concept1 ='" + idConcept1 + "'"
                             + " and id_thesaurus = '" + idThesaurus + "'"
-                            + " and role = 'QUALIFIER'"
+                            + " and role = '" + conceptType + "'"
                             + " and id_concept2 = '" + idConcept2 + "'");
-                
+                if(isReciprocal){
+                    stmt.executeUpdate("delete from hierarchical_relationship"
+                                + " where id_concept2 ='" + idConcept1 + "'"
+                                + " and id_thesaurus = '" + idThesaurus + "'"
+                                + " and role = '" + conceptType + "'"
+                                + " and id_concept1 = '" + idConcept2 + "'");                    
+                }
                 addRelationHistorique(conn, idConcept1, idThesaurus, idConcept2, "QUALIFIER", idUser, "delete");
                 return true;
             }

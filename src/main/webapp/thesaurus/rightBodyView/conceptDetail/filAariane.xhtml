@@ -5,7 +5,6 @@
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
     <div style="width: 100%; display: flex; background-color: #ecf8f1; padding-top: 3px; padding-bottom: 3px;">
-
         <h:panelGroup id="idConceptViewActions" 
                       rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
                                   or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
@@ -17,6 +16,18 @@
                             update="containerIndex:idAddNT" 
                             value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
 
+                <!-- gestion de type de concept -->
+                <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeConcept.nodeCustomRelations.size() == 0}"
+                            value="#{langueBean.getMsg('concept.editConceptType')}" 
+                            action="#{editConcept.initForConceptType()}" update="containerIndex:idEditConceptType" icon="fas fa-edit"
+                            oncomplete="PF('editConceptType').show();"  />                
+                <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation}"
+                            value="#{langueBean.getMsg('concept.manageConceptType')}" 
+                            action="#{editConcept.initForConceptType()}" update="containerIndex:idManageConceptType containerIndex:manageConceptTypeForm" icon="fas fa-cog"
+                            oncomplete="PF('manageConceptType').show();"  />        
+                
+                
+                
                 <p:menuitem id="newFacet" oncomplete="PF('addFacet').show();" 
                             actionListener="#{editFacet.initNewFacet()}" 
                             update="containerIndex:idAddFacet" icon="fas fa-magnet"
@@ -149,8 +160,8 @@
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
                 <p:menuitem value="#{langueBean.getMsg('actions.repairLoopedRelationships')}"
                             title="#{langueBean.getMsg('actions.repairLoopedRelationshipsToolTip')}"
-                            action="#{restoreTheso.deleteLoopRelations(selectedTheso.currentIdTheso, conceptView.nodeConcept.concept.idConcept)}" icon="fas fa-file-download"
-                            update="containerIndex:rightTab:idConceptViewActions"/>                
+                            action="#{restoreTheso.deleteLoopRelations(selectedTheso.currentIdTheso, conceptView.nodeConcept.concept.idConcept)}" icon="fas fa-toolbox"
+                            update="messageIndex containerIndex:rightTab:idConceptViewActions"/>                
 
             </p:menuButton>
             <p:tooltip for="newConcept" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_concept')} #{conceptView.nodeConcept.term.lexical_value}" showDelay="1000" />                

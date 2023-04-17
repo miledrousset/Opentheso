@@ -713,7 +713,7 @@ public class CsvImportHelper {
                     + "'" + conceptStatus + "', "
                     + (conceptObject.getNotation() == null ? null : "'" + conceptObject.getNotation() + "'") + ""
                     + ","
-                    + (conceptObject.getArkId() == null ? "":  "'" + conceptObject.getArkId() + "'") + ", "
+                    + (conceptObject.getArkId() == null ? "''":  "'" + conceptObject.getArkId() + "'") + ", "
                     + isTopConcept + ", "
                     + "'" + idHandle + "', "
                     + "'" + idDoi + "', "

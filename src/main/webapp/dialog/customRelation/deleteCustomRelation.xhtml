@@ -27,7 +27,7 @@
                                        ajax="true" process="@form"
                                        update="messageIndex containerIndex:idDeleteCustomRelation"
                                        oncomplete="PF('deleteCustomRelation').show();"
-                                       action="#{relatedBean.deleteQualifierLink(qualifier, currentUser.nodeUser.idUser)}">
+                                       action="#{relatedBean.deleteCustomRelationship(customRelation, currentUser.nodeUser.idUser)}">
                             <i class="pi pi-trash" style="font-size: 1rem; padding-top: 5px; color: #C63632;" />
                         </p:commandLink>
                     </p:column>                    

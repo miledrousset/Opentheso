@@ -4,8 +4,8 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
 
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; margin: 20px;">
-        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; margin: 20px; background-color: #{conceptView.getColorOfTypeConcept()}">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px;">
             <!-- ligne PrefLabel -->
             <div class="list-group-item list-group-item-action">
                 <div class="row" style="margin-left: 0px;">
@@ -32,7 +32,7 @@
                                       value="(#{conceptView.getLabelOfConceptType(
                                                 conceptView.nodeConcept.concept.conceptType,
                                                 conceptView.nodeConcept.concept.idThesaurus)})"
-                                      style="font-style: italic; font-size: 1rem; font-weight: 300; margin-left: 5px;"/>
+                                      style="font-style: italic; font-size: 1rem; font-weight: 300; margin-left: 5px; font-size: 14px; font-weight: bold; color: #F47B2A"/>
 
                         <h:outputText value=" (#{conceptView.nodeConcept.term.lang})" style="font-size: 1rem; font-weight: 300; margin-left: 5px;"/>
                         

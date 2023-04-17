@@ -5,13 +5,13 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddCustomRelation" header="#{langueBean.getMsg('rightbody.concept.addCustomRelation')}" 
-              widgetVar="addCustomRelation" width="450" showEffect="fade" modal="true" 
+              widgetVar="addCustomRelation" width="550" showEffect="fade" modal="true" 
               resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form rendered="#{conceptView.nodeConcept != null}" id="addCustomRelationForm" >
             
             <p:defaultCommand target="addCustomRelationBtn" />
-            
+             <p:spacer/>
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
@@ -21,7 +21,7 @@
 
             <div class="row" style="margin-top: 5px">
                 <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.qualifier')} : " /> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.customRelation')} : " /> 
                 </div>
                 <div class="col-7">
                     <p:autoComplete value="#{relatedBean.searchSelected}"
@@ -34,27 +34,29 @@
                         <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
                             <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
                                           style="font-style: italic;" />
-                            <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
+                            <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />
+                            <h:outputText value=" (type: #{values.conceptType})" style="color: #C63632; font-style: italic" /> 
                         </p:column>
 
                         <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
                             <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
+                            <h:outputText value=" (type: #{values.conceptType})" style="color: #C63632; font-style: italic" />  
                         </p:column>
 
                     </p:autoComplete>  
                 </div>
             </div>
-
+            <p:spacer/>
             
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" style="margin-right: 10px"
                                  actionListener="PF('addCustomRelation').hide();" update="containerIndex:idAddCustomRelation"/>
 
-                <p:commandButton id="addCustomRelationBtn" update="messageIndex containerIndex:idAddCustomRelation"
+                <p:commandButton id="addCustomRelationBtn" update="messageIndex containerIndex:idAddCustomRelation containerIndex:formRightTab"
                                  oncomplete="PF('addCustomRelation').show();" value="#{langueBean.getMsg('btnValidate')}"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
-                                 actionListener="#{relatedBean.addNewQualifierLink(currentUser.nodeUser.idUser)}" />
+                                 actionListener="#{relatedBean.addNewCustomRelationship(nodeUser.idUser)}" />
             </div>            
         </h:form>            
     </p:dialog>   

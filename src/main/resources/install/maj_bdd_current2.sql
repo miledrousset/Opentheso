@@ -521,6 +521,17 @@ END IF;
 end
 $$language plpgsql;
 
+-- Mise à jour de la table Concept_type 
+--
+create or replace function update_table_concept_type2() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept_type' AND column_name='reciprocal') THEN
+        execute 'ALTER TABLE concept_type ADD COLUMN reciprocal boolean DEFAULT false;
+                 ALTER TABLE concept_type ADD COLUMN id_theso character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''all''::character varying;';
+    END IF;
+end
+$$language plpgsql;
+
 
 ----------------------------------------------------------------------------
 -- exécution des fonctions
@@ -552,6 +563,7 @@ SELECT update_table_note_source();
 SELECT update_table_gps_constraint();
 SELECT update_table_proposition_modification();
 SELECT update_table_preferences_custom_relation();
+SELECT update_table_concept_type2();
 
 
 
@@ -587,7 +599,7 @@ SELECT delete_fonction('update_table_note_source', '');
 SELECT delete_fonction('update_table_gps_constraint', '');
 SELECT delete_fonction('update_table_proposition_modification', '');
 SELECT delete_fonction('update_table_preferences_custom_relation', '');
-
+SELECT delete_fonction('update_table_concept_type2', '');
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');

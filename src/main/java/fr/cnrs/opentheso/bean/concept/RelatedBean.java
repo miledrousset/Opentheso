@@ -5,6 +5,8 @@ import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
@@ -28,6 +30,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -93,7 +96,7 @@ public class RelatedBean implements Serializable {
         List<NodeSearchMini> liste = new ArrayList<>();
         SearchHelper searchHelper = new SearchHelper();
         if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null) {
-            liste = searchHelper.searchAutoCompletionForRelation(
+            liste = searchHelper.searchAutoCompletionForCustomRelation(
                     connect.getPoolConnexion(),
                     value,
                     conceptBean.getSelectedLang(),
@@ -107,7 +110,7 @@ public class RelatedBean implements Serializable {
      *
      * @param idUser
      */
-    public void addNewQualifierLink(int idUser) {
+    public void addNewCustomRelationship(int idUser) {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
@@ -116,12 +119,31 @@ public class RelatedBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-
+        ConceptHelper conceptHelper = new ConceptHelper();        
         RelationsHelper relationsHelper = new RelationsHelper();
-        if (!relationsHelper.addRelationQualifier(
+        
+        String conceptType = conceptHelper.getTypeOfConcept(
+                connect.getPoolConnexion(),
+                searchSelected.getIdConcept(),
+                 selectedTheso.getCurrentIdTheso());
+        
+        if(StringUtils.isEmpty(conceptType)){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le type de concept n'est pas reconnu !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            return;
+        }
+        
+        NodeConceptType nodeConceptType = relationsHelper.getNodeTypeConcept(
+                connect.getPoolConnexion(), conceptType, selectedTheso.getCurrentIdTheso());
+        
+        if (!relationsHelper.addCustomRelationship(
                 connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser)) {
+                selectedTheso.getCurrentIdTheso(), searchSelected.getIdConcept(), idUser,
+                conceptType,
+                nodeConceptType.isReciprocal()
+            )) {
+            
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La création a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -132,7 +154,7 @@ public class RelatedBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
 
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
@@ -142,34 +164,33 @@ public class RelatedBean implements Serializable {
 
         reset();
         if (pf.isAjaxRequest()) {
-            pf.ajax().update("containerIndex:formLeftTab");
             pf.ajax().update("containerIndex:formRightTab");
-            pf.executeScript("PF('addQualifierLink').show();");
         }
     }
     
     /**
      * permet de supprimer une relation Qualificatif au concept
      *
-     * @param nodeNT
+     * @param nodeCustomRelation
      * @param idUser
      */
-    public void deleteQualifierLink(NodeNT nodeNT, int idUser) {
+    public void deleteCustomRelationship(NodeCustomRelation nodeCustomRelation, int idUser) {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
-        if (nodeNT == null || nodeNT.getIdConcept() == null || nodeNT.getIdConcept().isEmpty()) {
+        if (nodeCustomRelation == null || nodeCustomRelation.getTargetConcept() == null || nodeCustomRelation.getTargetConcept().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
         RelationsHelper relationsHelper = new RelationsHelper();
-        if (!relationsHelper.deleteQualifierLink(connect.getPoolConnexion(),
+        
+        if (!relationsHelper.deleteCustomRelationship(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
-                nodeNT.getIdConcept(),
-                idUser)) {
+                nodeCustomRelation.getTargetConcept(),
+                idUser, nodeCustomRelation.getRelation(), nodeCustomRelation.isReciprocal())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
