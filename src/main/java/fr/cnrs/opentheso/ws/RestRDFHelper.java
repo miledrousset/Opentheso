@@ -165,7 +165,6 @@ public class RestRDFHelper {
     /**
      * @param ds
      * @param idTheso
-     * @param lang
      * @return
      */
     private String getInfosOfConcept__(
@@ -288,7 +287,6 @@ public class RestRDFHelper {
      *
      * @param ds
      * @param idTheso
-     * @param lang
      * @return
      */
     private String getNarrower__(
@@ -349,7 +347,6 @@ public class RestRDFHelper {
      *
      * @param ds
      * @param idTheso
-     * @param lang
      * @return
      */
     private String getTopTerms__(
@@ -409,9 +406,6 @@ public class RestRDFHelper {
      * recherche par valeur
      *
      * @param ds
-     * @param value
-     * @param idTheso
-     * @param lang
      * @return
      */
     private String getPrefLabelFromArk__(
@@ -494,7 +488,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
 
@@ -517,7 +511,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         for (String idConcept : ids) {
             exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
@@ -574,7 +568,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
 
@@ -631,7 +625,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         exportRdf4jHelperNew.addSignleConceptByLang(ds, idTheso, idConcept, idLang, showLabels);
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
@@ -679,7 +673,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
 
@@ -728,7 +722,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
 
@@ -844,7 +838,7 @@ public class RestRDFHelper {
        // List<String> deDupStringList = idConcepts.stream().distinct().collect(Collectors.toList());
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         for (String idConcept : idConcepts) {
             exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
@@ -886,7 +880,6 @@ public class RestRDFHelper {
      * @param ds
      * @param value
      * @param idTheso
-     * @param lang
      * @return
      */
     private WriteRdf4j findNotation__(
@@ -910,7 +903,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         for (String idConcept : idConcepts) {
             exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
@@ -1036,8 +1029,6 @@ public class RestRDFHelper {
      * recherche par valeur
      *
      * @param ds
-     * @param value
-     * @param idTheso
      * @param lang
      * @return
      */
@@ -1223,7 +1214,7 @@ public class RestRDFHelper {
         branchs = conceptHelper.getPathOfConceptWithoutGroup(ds, idConcept, idTheso, path, branchs);
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         for (ArrayList<String> branch : branchs) {
             for (String idc : branch) {
@@ -1282,7 +1273,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         ArrayList<String> path;// = new ArrayList<>();
         //    ArrayList<ArrayList<String>> branchs = new ArrayList<>();
@@ -1329,7 +1320,6 @@ public class RestRDFHelper {
      * concept et en allant jusqu'à la racine (vers le haut)
      *
      * @param ds
-     * @param idConcept
      * @param idTheso
      * @return skos
      */
@@ -1346,7 +1336,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(ds, idTheso, groups);
@@ -1471,7 +1461,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
@@ -1498,7 +1488,7 @@ public class RestRDFHelper {
         if (nodePreference == null) return null;
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
         exportRdf4jHelperNew.exportTheso(ds, idTheso, nodePreference);
 
         
@@ -1603,7 +1593,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         exportRdf4jHelperNew.addSingleGroup(ds, idTheso, idGroup);
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
@@ -1622,7 +1612,7 @@ public class RestRDFHelper {
         }
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, "dd-mm-yyyy", false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         exportRdf4jHelperNew.addSingleGroup(ds, idTheso, idGroup);
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
@@ -1633,7 +1623,6 @@ public class RestRDFHelper {
      * Cette fonction permet de retourner l'URI du concept avec identifiant Ark
      * ou Handle si renseignés, sinon l'URL du Site
      *
-     * @param nodeConceptExport
      * @return
      */
     private String getUri(NodePreference nodePreference,

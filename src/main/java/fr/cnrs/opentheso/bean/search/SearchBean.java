@@ -34,7 +34,8 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.apache.commons.collections4.CollectionUtils;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -837,8 +838,8 @@ public class SearchBean implements Serializable {
         
         PrimeFaces.current().ajax().update("containerIndex:contentConcept");
         PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
-    //    PrimeFaces.current().ajax().update("containerIndex:sideBarSearch");
-    //    PrimeFaces.current().ajax().update("containerIndex:searchBar");
+
+        PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
     public NodeSearchMini getSearchSelected() {

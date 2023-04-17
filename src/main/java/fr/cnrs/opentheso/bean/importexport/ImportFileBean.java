@@ -50,6 +50,7 @@ import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
+import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
@@ -73,6 +74,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -2451,121 +2453,46 @@ public class ImportFileBean implements Serializable {
         error = new StringBuffer();
         info = "";
         warning = "";
-        switch (typeImport) {
-            case 0:
-                loadSkos(event, isCandidatImport);
-                break;
-            case 1:
-                loadJsonLd(event, isCandidatImport);
-                break;
-            case 2:
-                loadTurtle(event, isCandidatImport);
-                break;
-            case 3:
-                loadJson(event, isCandidatImport);
-                break;
+        progress = 0;
+
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            try (InputStream is = event.getFile().getInputStream()) {
+                //ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
+                //sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
+                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, getRdfFormat(typeImport), connect.getWorkLanguage());
+                total = sKOSXmlDocument.getConceptList().size();
+                uri = sKOSXmlDocument.getTitle();
+                loadDone = true;
+                BDDinsertEnable = true;
+                info = "File correctly loaded";
+            } catch (Exception e) {
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
         }
+        
         PrimeFaces.current().executeScript("PF('waitDialog').hide()");
     }
 
-    private void loadSkos(FileUploadEvent event, Boolean isCandidatImport) {
-        progress = 0;
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-                readRdf4j.clean();
-                //        System.gc();
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
+    private RDFFormat getRdfFormat(int format) {
+        RDFFormat rdfFormat = RDFFormat.RDFJSON;
+        switch (format) {
+            case 0:
+                rdfFormat = RDFFormat.RDFXML;
+                break;
+            case 1:
+                rdfFormat = RDFFormat.JSONLD;
+                break;
+            case 2:
+                rdfFormat = RDFFormat.TURTLE;
+                break;
         }
-    }
-
-    private void loadJsonLd(FileUploadEvent event, boolean isCandidatImport) {
-        progress = 0;
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 1, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
-    }
-
-    private void loadJson(FileUploadEvent event, boolean isCandidatImport) {
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 3, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
-    }
-
-    private void loadTurtle(FileUploadEvent event, boolean isCandidatImport) {
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 2, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
+        return rdfFormat;
     }
 
     /**
@@ -2694,7 +2621,6 @@ public class ImportFileBean implements Serializable {
         importRdf4jHelper.addFacetsV2(sKOSXmlDocument.getFacetList(), idTheso);
         importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
         importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);
-
         importRdf4jHelper.addFoafImages(sKOSXmlDocument.getFoafImage(), idTheso);        
         
         roleOnThesoBean.showListTheso();

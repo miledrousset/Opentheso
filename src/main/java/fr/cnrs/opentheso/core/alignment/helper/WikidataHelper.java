@@ -17,7 +17,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.core.alignment.SelectedResource;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -34,8 +33,6 @@ import javax.net.ssl.HttpsURLConnection;
 public class WikidataHelper {
 
     private StringBuffer messages;
-    // private ArrayList<NodeAlignment> listAlignValues;
-
     // les informations récupérées de Wikidata
     private ArrayList<SelectedResource> resourceWikidataTraductions;
     private ArrayList<SelectedResource> resourceWikidataDefinitions;
@@ -48,8 +45,6 @@ public class WikidataHelper {
     public ArrayList<NodeAlignment> queryWikidata_rest(String idC, String idTheso,
             String lexicalValue, String lang,
             String query, String source) {
-        
-       // query = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language=##lang##&search=##value##&format=json&limit=10";
         
         if (query.trim().equals("") ) {
             return null;
@@ -89,15 +84,14 @@ public class WikidataHelper {
             }
             cons.disconnect();
             br.close();
-            listeAlign = getValuesFromJson(xmlRecord, idC, lang, idTheso, source);
+            listeAlign = getValuesFromJson(xmlRecord, idC, idTheso, source);
             
-        } catch (MalformedURLException e) {
-        } catch (IOException e) {
+        } catch (Exception e) {
         }
         return listeAlign;        
      }
     
-    private ArrayList<NodeAlignment> getValuesFromJson(String jsonValue, String idConcept, String lang, String idTheso, String source){
+    private ArrayList<NodeAlignment> getValuesFromJson(String jsonValue, String idConcept, String idTheso, String source){
         JsonObject object;
         JsonArray jsonArray;
         JsonObject value;   
@@ -169,12 +163,6 @@ public class WikidataHelper {
         
         try {
             Endpoint sp = new Endpoint("https://query.wikidata.org/sparql", false);
-
-            /*       String querySelect = "SELECT ?item ?itemLabel ?itemDescription WHERE {" +
-                                    "  ?item rdfs:label \"fibula\"@en." +
-                                    "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }" +
-                                    "}";*/
-            //sp.setUserAgentRequestHeader("WDQS-Example Java"); 
             requete = requete.replaceAll("##value##", lexicalValue);
             requete = requete.replaceAll("##lang##", lang);
 
@@ -283,8 +271,6 @@ public class WikidataHelper {
 
         JsonHelper jsonHelper = new JsonHelper();
         JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);
-
-        //    JsonObject test = jsonObject.getJsonObject("entities");
         JsonObject jsonObject1;
         JsonValue jsonValue;
 
@@ -294,7 +280,6 @@ public class WikidataHelper {
         try {
             jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("labels");
         } catch (Exception e) {
-            //System.err.println(e.toString());
             return null;
         }
         for (String language : languages) {
@@ -338,7 +323,6 @@ public class WikidataHelper {
         try {
             jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("descriptions");
         } catch (Exception e) {
-            //System.err.println(e.toString());
             return null;
         }
 
@@ -374,10 +358,7 @@ public class WikidataHelper {
 
         JsonHelper jsonHelper = new JsonHelper();
         JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);
-
-        //    JsonObject test = jsonObject.getJsonObject("entities");
         JsonObject jsonObject1;
-
         JsonObject jsonObject2;
         JsonValue jsonValue;
 
@@ -386,7 +367,6 @@ public class WikidataHelper {
         try {
             jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("claims");//.getJsonObject("P18");
         } catch (Exception e) {
-            //System.err.println(e.toString());
             return null;
         }
 

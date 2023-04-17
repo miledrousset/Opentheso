@@ -82,6 +82,7 @@
                             </div>
                         </h:panelGroup>
                     </div>
+
                     <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative; padding-bottom: 25px">
 
                         <p:panel id="searchBar">
@@ -107,17 +108,18 @@
                         </div>
                     </p:panel>
 
-                        <div id="notification" style="top: 100px; width: 20%; right: 0px; position: absolute; display: none; z-index: 10" class="card py-3" >
-                            <h:panelGroup id="notificationPanel" >
-                                <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
-                                </h:panelGroup>
-
-                                <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
-                                </h:panelGroup>
+                    <div id="notification" style="top: 100px; width: 15%; right: 0px; position: absolute;
+                        display: none; z-index: 10; margin-right:10px;" class="card py-3" >
+                        <h:panelGroup id="notificationPanel" >
+                            <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
+                                <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
                             </h:panelGroup>
-                        </div>
+
+                            <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
+                                <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </div>
                 </h:form>
 
                 <footer class="sticky-footer bg-white" style="width: 100%;">

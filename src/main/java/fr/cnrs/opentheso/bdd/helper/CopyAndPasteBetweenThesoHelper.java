@@ -126,7 +126,7 @@ public class CopyAndPasteBetweenThesoHelper {
         String DATE_FORMAT = "dd-mm-yyyy";
         
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
         exportRdf4jHelperNew.exportTheso(ds, fromIdTheso, nodePreference);        
         
         ConceptHelper conceptHelper = new ConceptHelper();

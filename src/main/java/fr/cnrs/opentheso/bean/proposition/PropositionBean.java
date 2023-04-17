@@ -138,6 +138,8 @@ public class PropositionBean implements Serializable {
         checkSynonymPropositionStatus();
         checkTraductionPropositionStatus();
         checkNotePropositionStatus();
+        
+        PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
     public void checkSynonymPropositionStatus() {
