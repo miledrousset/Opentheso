@@ -86,7 +86,8 @@
                     <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative; padding-bottom: 25px">
 
                         <p:panel id="searchBar">
-                            <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px; width: 100%; margin: 20px;">
+                            <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px;
+                            width: 100%; margin: 20px;">
                                 <div style="position: relative; height: 100%; width: 100%;" >
                                     <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
                                         <ui:include src="thesaurus/search.xhtml"/>
@@ -95,7 +96,21 @@
                             </div>
                         </p:panel>
 
-                        <div id="contenuPrincipale" style="margin-top: -25px">
+                        <div id="contenuPrincipale" style="margin-top: -8px">
+
+                            <div id="notification" style="top: 57px; width: 15%; right: 0px; position: absolute;
+                            display: none; z-index: 10; margin-right:10px;" class="card py-3" >
+                                <h:panelGroup id="notificationPanel" >
+                                    <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
+                                        <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
+                                    </h:panelGroup>
+
+                                    <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
+                                        <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+
                             <h:panelGroup id="contentConcept">
                                 <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                                     <ui:include src="thesaurus/main_thesaurus.xhtml" />
@@ -107,19 +122,6 @@
                             </h:panelGroup>
                         </div>
                     </p:panel>
-
-                    <div id="notification" style="top: 100px; width: 15%; right: 0px; position: absolute;
-                        display: none; z-index: 10; margin-right:10px;" class="card py-3" >
-                        <h:panelGroup id="notificationPanel" >
-                            <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
-                                <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
-                            </h:panelGroup>
-
-                            <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
-                                <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
-                            </h:panelGroup>
-                        </h:panelGroup>
-                    </div>
                 </h:form>
 
                 <footer class="sticky-footer bg-white" style="width: 100%;">

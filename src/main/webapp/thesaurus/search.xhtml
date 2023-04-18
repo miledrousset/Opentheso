@@ -234,28 +234,12 @@
             $("#choixPanelDiv").css("visibility", "visible");
             $('#choixPanelDiv').animate({marginTop: '0px', opacity: 1}, 300, 'swing');
 
-            $('#contenuPrincipale').animate({marginTop: '0px'}, 300, 'swing');
-            $('#notification').animate({marginTop: '25px'}, 300, 'swing');
-            $('#boutonNotification').animate({marginTop: '0px'}, 300, 'swing');
-
-            $("#searchBarInvisible").css("display", "none");
-            $("#searchBarVisible").css("display", "block");
-            $("#searchBarVisible").css("display", "inline-block");
-
             searchBarAnimated = true;
         }
 
         function disparaitreAdvanceRecherche() {
 
             $('#choixPanelDiv').animate({marginTop: '-25px', opacity: 0}, 300, 'swing');
-
-            $('#contenuPrincipale').animate({marginTop: '-25px'}, 300, 'swing');
-            $('#boutonNotification').animate({marginTop: '-25px'}, 300, 'swing');
-            $('#notification').animate({marginTop: '-0px'}, 300, 'swing');
-
-            $("#searchBarInvisible").css("display", "block");
-            $("#searchBarInvisible").css("display", "inline-block");
-            $("#searchBarVisible").css("display", "none");
 
             searchBarAnimated = false;
         }
