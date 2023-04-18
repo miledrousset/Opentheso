@@ -40,10 +40,10 @@ public class WriteAlphaPDF {
     private String uri;
     private WritePdfSettings writePdfSettings;
 
-    private HashMap<String, String> idToNameHashMap;
-    private HashMap<String, ArrayList<Integer>> idToIsTrad;
+    private HashMap<String, String> labels;
+    private HashMap<String, ArrayList<Integer>> traductions;
 
-    private ArrayList<SKOSResource> conceptList;
+    private ArrayList<SKOSResource> concepts;
     private ArrayList<String> resourceChecked;
 
 
@@ -52,11 +52,11 @@ public class WriteAlphaPDF {
         this.writePdfSettings = writePdfSettings;
 
         uri = xmlDocument.getConceptScheme().getUri();
-        conceptList = xmlDocument.getConceptList();
+        concepts = xmlDocument.getConceptList();
 
         resourceChecked = new ArrayList<>();
-        idToNameHashMap = new HashMap<>();
-        idToIsTrad = new HashMap<>();
+        labels = new HashMap<>();
+        traductions = new HashMap<>();
     }
 
     public void writeAlphabetiquePDF(ArrayList<Paragraph> paragraphs, ArrayList<Paragraph> paragraphTradList,
@@ -73,10 +73,10 @@ public class WriteAlphaPDF {
 
         // Trier les concepts selon leurs labels
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
-        Collections.sort(conceptList, sortAlphabeticInLang(isTrad, codeLanguage1, codeLanguage2, idToNameHashMap, idToIsTrad, resourceChecked));
+        Collections.sort(concepts, sortAlphabeticInLang(isTrad, codeLanguage1, codeLanguage2, labels, traductions, resourceChecked));
 
         // Construire la liste des concepts sous forme d'une suite des paragraphs
-        for (SKOSResource concept : conceptList) {
+        for (SKOSResource concept : concepts) {
             writeTerm(concept, paragraphs, codeLanguage1, codeLanguage2);
         }
     }
@@ -85,22 +85,22 @@ public class WriteAlphaPDF {
 
         String idFromUri = writePdfSettings.getIdFromUri(concept.getUri());
 
-        addTraductions(paragraphs, concept.getLabelsList(), codeLanguage1, codeLanguage2, idFromUri);
+        addLabels(paragraphs, concept.getLabelsList(), codeLanguage1, codeLanguage2, idFromUri);
         paragraphs.add(new Paragraph(ID + idFromUri, writePdfSettings.textFont));
         addRelations(paragraphs, concept.getRelationsList());
-        addDocuments(paragraphs, concept.getDocumentationsList(), idToIsTrad.get(idFromUri), codeLanguage1, codeLanguage2);
+        addDocuments(paragraphs, concept.getDocumentationsList(), traductions.get(idFromUri), codeLanguage1, codeLanguage2);
         addMatchs(paragraphs, concept.getMatchList());
         addGpsCoordiantes(paragraphs, concept.getGPSCoordinates());
         addImages(paragraphs, concept.getNodeImage());
 
     }
 
-    private void addTraductions(List<Paragraph> paragraphs, ArrayList<SKOSLabel> labels, String codeLanguage1,
+    private void addLabels(List<Paragraph> paragraphs, ArrayList<SKOSLabel> labels, String codeLanguage1,
                                 String codeLanguage2, String idFromUri) {
 
         int altLabelCount = 0;
-        if (CollectionUtils.isNotEmpty(idToIsTrad.get(idFromUri))) {
-            altLabelCount = (int) idToIsTrad.get(idFromUri).stream().filter(trad -> trad == SKOSProperty.altLabel).count();
+        if (CollectionUtils.isNotEmpty(traductions.get(idFromUri))) {
+            altLabelCount = (int) traductions.get(idFromUri).stream().filter(trad -> trad == SKOSProperty.altLabel).count();
         }
 
         int altLabelWrite = 0;
@@ -113,11 +113,11 @@ public class WriteAlphaPDF {
                 if (label.getLanguage().equals(codeLanguage1)) {
                     labelValue = label.getLabel();
                 } else {
-                    if (CollectionUtils.isNotEmpty(idToIsTrad.get(idFromUri))) {
-                        if (idToIsTrad.get(idFromUri).contains(SKOSProperty.prefLabel) && label.getProperty() == SKOSProperty.prefLabel) {
+                    if (CollectionUtils.isNotEmpty(traductions.get(idFromUri))) {
+                        if (traductions.get(idFromUri).contains(SKOSProperty.prefLabel) && label.getProperty() == SKOSProperty.prefLabel) {
                             prefIsTrad = true;
                         }
-                        if (idToIsTrad.get(idFromUri).contains(SKOSProperty.altLabel) && label.getProperty() == SKOSProperty.altLabel) {
+                        if (traductions.get(idFromUri).contains(SKOSProperty.altLabel) && label.getProperty() == SKOSProperty.altLabel) {
                             if (altLabelCount > altLabelWrite) {
                                 altIsTrad = true;
                             }
@@ -145,7 +145,7 @@ public class WriteAlphaPDF {
         if (CollectionUtils.isNotEmpty(relations)) {
             relations.stream()
                     .forEach(relation -> {
-                        String targetName = idToNameHashMap.get(writePdfSettings.getIdFromUri(relation.getTargetUri()));
+                        String targetName = labels.get(writePdfSettings.getIdFromUri(relation.getTargetUri()));
                         if (ObjectUtils.isEmpty(targetName)) {
                             targetName = writePdfSettings.getIdFromUri(relation.getTargetUri());
                         }

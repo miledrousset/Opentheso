@@ -1,10 +1,6 @@
 package fr.cnrs.opentheso.core.exports.pdf.new_export;
 
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -13,6 +9,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +19,6 @@ import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
 
 
 public class WritePdfNewGen {
@@ -52,7 +48,8 @@ public class WritePdfNewGen {
                 writeAlphaPDF.writeAlphabetiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
             } else {
                 WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings, xmlDocument);
-                writeHierachiquePDF.writeHieraPDF(hikariDataSource, paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
+                writeHierachiquePDF.writeHierachiquePDF(hikariDataSource, paragraphList, paragraphTradList,
+                        codeLanguage1, codeLanguage2);
             }
 
             createPdfFile(document, codeLanguage2);

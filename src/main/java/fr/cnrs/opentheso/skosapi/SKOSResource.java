@@ -13,7 +13,6 @@ import java.util.Iterator;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.collections4.CollectionUtils;
 
 /**
  *
@@ -675,7 +674,7 @@ public class SKOSResource {
         private void writeIdToImg(SKOSResource resource) {
             String key = getIdFromUri(resource.getUri());
 
-            if (CollectionUtils.isNotEmpty(resource.getNodeImage())) {
+            if (resource.getNodeImage() != null) {
                 idToImg.put(key, resource.getNodeImage());
             }
         }
@@ -805,7 +804,7 @@ public class SKOSResource {
             }
 
             List<String> childs = idToChildId.get(key);
-            if (CollectionUtils.isNotEmpty(childs)) {
+            if (childs != null) {
                 ArrayList<TermTemp> conceptIdsTemps = new ArrayList<>();
                 for (String child : childs) {
                     String idTheso = resource.getUri().substring(resource.getUri().indexOf("idt=") + 4); 

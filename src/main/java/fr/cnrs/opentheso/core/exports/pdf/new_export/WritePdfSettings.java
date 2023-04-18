@@ -122,16 +122,23 @@ public class WritePdfSettings {
     }
 
     public Rectangle resiseImage(Image image){
-
+        float width = image.getWidth();
+        float height = image.getHeight();
+        float rate;
         // Vérification si l'image est horizontale ou verticale
-        if (image.getWidth() > image.getHeight()) {
+        if (width > height) {
             //L'image est horizontale.
-            float rate = image.getWidth() / 250;
-            return new Rectangle(image.getWidth()/rate, image.getHeight()/rate);
+            rate = getRate(width);
         } else {
             //L'image est verticale
-            float rate = image.getHeight() / 250;
-            return new Rectangle(image.getWidth()/rate, image.getHeight()/rate);
+            rate = getRate(height);
         }
+        return new Rectangle(width/rate, height/rate);
+    }
+    
+    // pour définir la taille souhaitée,
+    // la valeur size/200 est pour obtenir une image de (200x200)
+    private float getRate(float size){
+        return size/250;
     }
 }
