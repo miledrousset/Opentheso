@@ -2560,7 +2560,7 @@ public class SearchHelper {
                             + " AND  concept.status != 'hidden' "
                             + " AND term.lang = '" + idLang + "'"
                             + " and concept.status != 'CA'"
-                            + " and concept.concept_type != 'concept'"
+                            + " and (concept.concept_type != 'concept' and concept.concept_type != '')"
                             + " AND term.id_thesaurus = '" + idTheso + "'"
                             + " AND f_unaccent(lower(term.lexical_value)) LIKE '%" + value + "%' order by term.lexical_value <-> '" + value + "' limit 20";
 
@@ -2597,7 +2597,7 @@ public class SearchHelper {
                             + "  non_preferred_term.id_thesaurus = '" + idTheso + "' AND"
                             + "  non_preferred_term.lang = '" + idLang + "'"
                             + " and concept.status != 'CA'"
-                            + " and concept.concept_type != 'concept'"
+                            + " and (concept.concept_type != 'concept' and concept.concept_type != '')"
                             + " AND"
                             + " f_unaccent(lower(non_preferred_term.lexical_value)) LIKE '%" + value + "%'"
                             + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 20";

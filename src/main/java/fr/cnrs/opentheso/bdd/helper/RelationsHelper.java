@@ -141,7 +141,7 @@ public class RelationsHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select label_" + interfaceLang +  ", reciprocal from concept_type" +
-                        " where code = '" + customRelation + "'" +
+                        " where code = '" + customRelation.toLowerCase() + "'" +
                         " and id_theso in ('" + idTheso + "', 'all')"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {

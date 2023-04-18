@@ -3928,7 +3928,7 @@ public class ConceptHelper {
                         concept.setCreator(resultSet.getInt("creator"));
                         concept.setContributor(resultSet.getInt("contributor"));
                         concept.setIdGroup("");//resultSet.getString("idgroup"));
-                        concept.setConceptType(resultSet.getString("concept_type"));
+                        concept.setConceptType(resultSet.getString("concept_type").toLowerCase());
                     }
                 }
                 UserHelper userHelper = new UserHelper();

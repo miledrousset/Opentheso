@@ -590,7 +590,6 @@ public class ImportFileBean implements Serializable {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
             // première lecrture pour charger les langues
             try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
-
                 if (!csvReadHelper.setLangs(reader1)) {
                     error.append(csvReadHelper.getMessage());
                 }

@@ -15,6 +15,8 @@ Correction de l'import CSV pour mieux gérer les identifiants Majuscule Minuscul
 
 Intégration de la gestion de type de concept (Qualificatif, Period, Place ...)
 
+* changment du coeur d'import RDF en utilisant la dernière version et en ajoutant des nouvelles classes
+
 
 
 

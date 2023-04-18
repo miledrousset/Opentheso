@@ -1754,6 +1754,28 @@ END;
 $BODY$;
 
 
+CREATE OR REPLACE procedure opentheso_add_custom_relations(
+	id_thesaurus character varying,
+	relations text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@@';
+	
+	relations_rec record;
+	array_string   text[];
+BEGIN
+
+	FOR relations_rec IN SELECT unnest(string_to_array(relations, seperateur)) AS relation_value
+    LOOP
+		SELECT string_to_array(relations_rec.relation_value, sous_seperateur) INTO array_string;
+		
+		INSERT INTO hierarchical_relationship (id_concept1, id_thesaurus, role, id_concept2) 
+			VALUES (array_string[1], id_thesaurus, array_string[2], array_string[3]) ON CONFLICT DO NOTHING; 
+	END LOOP;
+END;
+$BODY$;
 
 
 CREATE OR REPLACE procedure opentheso_add_notes(
@@ -1877,6 +1899,7 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	id_con character varying,
 	id_user int,
 	conceptStatus character varying,
+        conceptType text,
 	notationConcept character varying,
 	id_ark character varying, 
 	isTopConcept Boolean, 
@@ -1884,6 +1907,7 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	id_doi character varying,
 	prefterms text,
 	relation_hiarchique text,
+	custom_relation text,
 	notes text,
 	non_pref_terms text,
 	alignements text,
@@ -1904,8 +1928,8 @@ DECLARE
     replaces_rec record;
 BEGIN
 
-	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
-		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
+	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, concept_type, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
+		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, conceptType, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
 		
 	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
 		
@@ -1921,6 +1945,12 @@ BEGIN
 			CALL opentheso_add_hierarchical_relations(id_thesaurus, relation_hiarchique);
 		END IF;
 		
+		IF (custom_relation IS NOT NULL AND custom_relation != 'null') THEN
+			-- 'id_concept1@role@id_concept2'
+			CALL opentheso_add_custom_relations(id_thesaurus, custom_relation);
+		END IF;
+
+
 		IF (notes IS NOT NULL AND notes != 'null') THEN
 			-- 'value@typeCode@lang@id_term'
 			CALL opentheso_add_notes(id_new_concet, id_thesaurus, id_user, notes);

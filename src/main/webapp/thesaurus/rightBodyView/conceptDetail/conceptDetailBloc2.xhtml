@@ -191,9 +191,9 @@
         </div>
     </div>
 
-
     <!-- Bloc de gestion de type de concepts et des relations personnalisées -->
-    <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeConcept.concept.conceptType == 'concept'}" >
+    <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and
+                              (conceptView.nodeConcept.concept.conceptType == 'concept' or conceptView.nodeConcept.concept.conceptType == '') }" >
 
         <!-- Custom relation  -->
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeCustomRelations.size() != 0)}">    
@@ -238,7 +238,11 @@
                                         <p:commandLink value="#{customRelation.targetLabel} " title="#{customRelation.targetConcept}"
                                                        action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, customRelation.targetConcept, conceptView.selectedLang)}"
                                                        update="containerIndex:formRightTab indexTitle"/>
-                                        <h:outputText value="(#{customRelation.relationLabel})" style="font-size: 14px; font-style: italic; font-weight: 300; margin-left: 5px; color: #F47B2A"/>
+                                        
+                                        <p:tag styleClass="mr-2" 
+                                               severity="warning" style="font-style: italic;margin-left: 5px;font-weight: 300; height: 20px;"
+                                               value=" #{customRelation.relationLabel}">
+                                        </p:tag>                                        
                                         <br/>                                
                                     </ui:repeat>
                                 </h:panelGroup>
@@ -273,10 +277,19 @@
                                             <p:spacer width="1" rendered="#{status2.first}" />
                                             <p:spacer width="39" rendered="#{!status2.first}" />
                                         </h:panelGroup>
+                                        
+                                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #78261f; font-size: 14px;"/>
+                                        <i class="fas fa-arrows-alt-h" style="color: #78261f; margin-right: 10px; margin-left: 10px"/>                                        
                                         <p:commandLink value="#{customRelation.targetLabel} " title="#{customRelation.targetConcept}"
                                                        action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, customRelation.targetConcept, conceptView.selectedLang)}"
                                                        update="containerIndex:formRightTab indexTitle"/>
-                                        <h:outputText value="(#{customRelation.relationLabel})" style="font-size: 14px; font-style: italic; font-weight: 300; margin-left: 5px; color: #F47B2A"/>
+
+                                        
+                                        
+                                        <p:tag styleClass="mr-2" 
+                                               severity="warning" style="font-style: italic;margin-left: 5px;font-weight: 300; height: 20px;"
+                                               value=" #{customRelation.relationLabel}">
+                                        </p:tag>   
                                         <br/>                                
                                     </ui:repeat>
                                 </h:panelGroup>

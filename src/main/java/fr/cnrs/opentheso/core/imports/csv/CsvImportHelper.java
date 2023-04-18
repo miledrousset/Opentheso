@@ -23,6 +23,7 @@ import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
@@ -436,11 +437,15 @@ public class CsvImportHelper {
         }
 
         String conceptStatus = "";
+        String conceptType;
         String idHandle = "";
         String idDoi = "";
         boolean isTopConcept = true;
         
-     
+        // concept type
+        conceptType = conceptObject.getConceptType();
+        if(StringUtils.isEmpty(conceptType)) 
+            conceptType = "concept";
 
         // IMAGES
         //-- 'url1##url2'
@@ -622,6 +627,26 @@ public class CsvImportHelper {
             relations = relations.substring(SEPERATEUR.length(), relations.length());
         }
 
+        //CustomRelation
+        //-- 'id_concept1@role@id_concept2'
+        String customRelations = null;        
+        if (CollectionUtils.isNotEmpty(conceptObject.getCustomRelations())) {
+            customRelations = "";
+            for (NodeIdValue nodeIdValue  : conceptObject.getCustomRelations()) {
+                customRelations += SEPERATEUR + conceptObject.getIdConcept()
+                        + SOUS_SEPERATEUR + nodeIdValue.getValue()
+                        + SOUS_SEPERATEUR + nodeIdValue.getId();
+            /*    relations += SEPERATEUR + idCostomRelation
+                        + SOUS_SEPERATEUR + "NT"
+                        + SOUS_SEPERATEUR + conceptObject.getIdConcept();                
+                */
+            }
+        }    
+        if (customRelations != null && customRelations.length() > 0) {
+            customRelations = customRelations.substring(SEPERATEUR.length(), customRelations.length());
+        }        
+        
+        
         
         //Notes
         //-- 'value@typeCode@lang@id_term'
@@ -711,6 +736,7 @@ public class CsvImportHelper {
                     + "'" + conceptObject.getIdConcept() + "', "
                     + idUser + ", "
                     + "'" + conceptStatus + "', "
+                    + "'" + conceptType + "', "
                     + (conceptObject.getNotation() == null ? null : "'" + conceptObject.getNotation() + "'") + ""
                     + ","
                     + (conceptObject.getArkId() == null ? "''":  "'" + conceptObject.getArkId() + "'") + ", "
@@ -719,6 +745,7 @@ public class CsvImportHelper {
                     + "'" + idDoi + "', "
                     + (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'") + ", "
                     + (relations == null ? null : "'" + relations + "'") + ", "
+                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "                    
                     + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'") + ", "
                     + (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'") + ", "
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "

@@ -41,6 +41,7 @@ public class CsvReadHelper {
     private String uri;
 
     private ArrayList<String> langs;
+    private ArrayList<String> customRelations;    
     private String idLang;
 
     private ArrayList<ConceptObject> conceptObjects;
@@ -631,6 +632,7 @@ public class CsvReadHelper {
 ////////////////////////////////////////////////////////////////////////////////
     public boolean setLangs(Reader in) {
         langs = new ArrayList<>();
+        customRelations = new ArrayList<>();        
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
@@ -647,6 +649,15 @@ public class CsvReadHelper {
                         }
                     }
                 }
+                if (columnName.contains("customRelationId")) {
+                    values = columnName.split(":");
+                    if(values.length < 2) continue;
+                    if (values[1] != null) {
+                        if (!customRelations.contains(values[1])) {
+                            customRelations.add(values[1].toLowerCase());//columnName.substring(columnName.indexOf("@"), columnName.indexOf("@" +2)));
+                        }
+                    }
+                }                
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
@@ -723,6 +734,9 @@ public class CsvReadHelper {
                 // on récupère les relations (BT, NT, RT)
                 conceptObject = getRelations(conceptObject, record);
 
+                // on récupère les relations (BT, NT, RT)
+                conceptObject = getCustomRelations(conceptObject, record);                
+                
                 // on récupère les alignements 
                 conceptObject = getAlignments(conceptObject, record, readEmptyData);
 
@@ -893,24 +907,8 @@ public class CsvReadHelper {
         } catch (Exception e) {
             //System.err.println("");
         }
-        
-        if("concept".equalsIgnoreCase(type)){
-            // on récupère le type du concept s'il y en a 
-            try {
-                String conceptType = record.get("dct:type");
-                if(!StringUtils.isEmpty(conceptType)){
-                    
-                }
-            } catch (Exception e) {
-                //System.err.println("");
-            }            
-        }
-        try {
-            type = record.get("rdf:type");
-        } catch (Exception e) {
-            //System.err.println("");
-        }        
-        return type.trim();
+  
+        return type.trim().toLowerCase();
     }
     
     /**
@@ -926,7 +924,7 @@ public class CsvReadHelper {
         } catch (Exception e) {
             //System.err.println("");
         }
-        return conceptType.trim();
+        return conceptType.trim().toLowerCase();
     }    
 
     /**
@@ -1316,6 +1314,43 @@ public class CsvReadHelper {
         }
         return conceptObject;
     }
+    
+    /**
+     * permet de charger toutes les relations d'un concept
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getCustomRelations(
+            ConceptObject conceptObject,
+            CSVRecord record) {
+        String value;
+        String values[];
+        
+        // liste des relations personnalisées (Qualifier, Poeple, Place ...) 
+        for (String customRelation : customRelations) {
+            if (record.isMapped("customRelationId:"+ customRelation )) {
+                try {
+                    value = record.get("customRelationId:"+ customRelation);
+                    value = value.toLowerCase();
+                    values = value.split("##");
+                    for (String value1 : values) {
+                        if (!value1.isEmpty()) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setId(value1.trim());
+                            nodeIdValue.setValue(customRelation);
+                            conceptObject.customRelations.add(nodeIdValue);
+                        }
+                    }
+                } catch (Exception e) {
+                    //System.err.println("");
+                }
+            }             
+        }        
+
+        return conceptObject;
+    }    
 
     /**
      * permet de charger tous les labels d'un concept dans toutes les langues
@@ -1329,20 +1364,20 @@ public class CsvReadHelper {
         Label label;
         String values[];
 
-        for (String idLang : langs) {
+        for (String idLang2 : langs) {
             // prefLabel
             try {
-                value = record.get("skos:prefLabel@" + idLang.trim());
+                value = record.get("skos:prefLabel@" + idLang2.trim());
                 if(readEmptyData) {
                     label = new Label();
                     label.setLabel(value);
-                    label.setLang(idLang);
+                    label.setLang(idLang2);
                     conceptObject.prefLabels.add(label);                    
                 } else {
                     if (!value.isEmpty()) {
                         label = new Label();
                         label.setLabel(value);
-                        label.setLang(idLang);
+                        label.setLang(idLang2);
                         conceptObject.prefLabels.add(label);
                     }
                 }
@@ -1352,19 +1387,19 @@ public class CsvReadHelper {
 
             // altLabel
             try {
-                value = record.get("skos:altLabel@" + idLang.trim());
+                value = record.get("skos:altLabel@" + idLang2.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang2);
                         conceptObject.altLabels.add(label);                        
                     } else {
                         if (!value.isEmpty()) {
                             label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang2);
                             conceptObject.altLabels.add(label);
                         }
                     }
@@ -1375,19 +1410,19 @@ public class CsvReadHelper {
 
             // hiddenLabel
             try {
-                value = record.get("skos:hiddenLabel@" + idLang.trim());
+                value = record.get("skos:hiddenLabel@" + idLang2.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang2);
                         conceptObject.hiddenLabels.add(label);                        
                     } else {
                         if (!value.isEmpty()) {
                             label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang2);
                             conceptObject.hiddenLabels.add(label);
                         }
                     }
@@ -1723,6 +1758,9 @@ public class CsvReadHelper {
         private ArrayList<String> broaders;
         private ArrayList<String> narrowers;
         private ArrayList<String> relateds;
+        
+        // pour les relations personnalisées
+        private ArrayList<NodeIdValue> customRelations;        
 
         // les aligenements 
         private ArrayList<String> exactMatchs;
@@ -1765,6 +1803,7 @@ public class CsvReadHelper {
             broaders = new ArrayList<>();
             narrowers = new ArrayList<>();
             relateds = new ArrayList<>();
+            customRelations = new ArrayList<>();
 
             exactMatchs = new ArrayList<>();
             closeMatchs = new ArrayList<>();
@@ -1817,6 +1856,9 @@ public class CsvReadHelper {
             if (relateds != null) {
                 relateds.clear();
             }
+            if(customRelations != null)
+                customRelations.clear();
+            
             if (exactMatchs != null) {
                 exactMatchs.clear();
             }
@@ -2015,6 +2057,14 @@ public class CsvReadHelper {
 
         public void setRelateds(ArrayList<String> relateds) {
             this.relateds = relateds;
+        }
+
+        public ArrayList<NodeIdValue> getCustomRelations() {
+            return customRelations;
+        }
+
+        public void setCustomRelations(ArrayList<NodeIdValue> customRelations) {
+            this.customRelations = customRelations;
         }
 
         public ArrayList<String> getExactMatchs() {
