@@ -17,7 +17,7 @@ Intégration de la gestion de type de concept (Qualificatif, Period, Place ...)
 
 * changment du coeur d'import RDF en utilisant la dernière version et en ajoutant des nouvelles classes
 
-
+correction de l'export pour les URLs vides
 
 
 
