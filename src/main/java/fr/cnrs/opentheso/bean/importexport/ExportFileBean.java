@@ -598,7 +598,13 @@ public class ExportFileBean implements Serializable {
         if (nodePreference == null) {
             return null;
         }
-
+        //controle si l'URL d'origine est vide
+        if(StringUtils.isEmpty(nodePreference.getOriginalUri())) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Veuillez ajouter une URI valide dans les préférences du thésaurus !"));  
+            return null;
+        }
+        
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference);
         exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(),
