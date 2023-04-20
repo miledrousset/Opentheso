@@ -64,6 +64,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ActionEvent;
@@ -75,6 +77,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -2467,9 +2470,12 @@ public class ImportFileBean implements Serializable {
                 loadDone = true;
                 BDDinsertEnable = true;
                 info = "File correctly loaded";
-            } catch (Exception e) {
+            } catch (RDFParseException | EnumConstantNotPresentException | ExceptionInInitializerError | IOException e) {
                 error.append(System.getProperty("line.separator"));
                 error.append(e.toString());
+            } catch (Exception ex2) {
+                error.append(System.getProperty("line.separator"));
+                error.append(ex2.toString());  
             } finally {
                 showError();
             }

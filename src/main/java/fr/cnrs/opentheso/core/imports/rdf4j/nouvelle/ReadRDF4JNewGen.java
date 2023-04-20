@@ -22,7 +22,6 @@ public class ReadRDF4JNewGen {
         } else {
             parser.setRDFHandler(new ReadCommunFlux(skosXmlDocument, defaultLang));
         }
-
         parser.parse(inputStream, "");
 
         return skosXmlDocument;
