@@ -17,7 +17,8 @@ import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.exports.csv.WriteCSV;
-import fr.cnrs.opentheso.core.exports.pdf.WritePdf;
+import fr.cnrs.opentheso.core.exports.pdf.new_export.PdfExportType;
+import fr.cnrs.opentheso.core.exports.pdf.new_export.WritePdfNewGen;
 import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.core.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
@@ -25,7 +26,6 @@ import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -213,7 +213,7 @@ public class ExportFileBean implements Serializable {
         return concepts;
     }
 
-    public StreamedContent exportThesorus() throws SQLException {
+    public StreamedContent exportThesorus() {
         
         /// export des concepts dépréciés
         if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) { 
@@ -326,12 +326,17 @@ public class ExportFileBean implements Serializable {
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(
+            PdfExportType pdfExportType = PdfExportType.ALPHABETIQUE;
+            if (viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected()) == 0) {
+                pdfExportType = PdfExportType.HIERARCHIQUE;
+            }
+
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdfNewGen().createPdfFile(
                     connect.getPoolConnexion(),
                     skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
                     viewExportBean.getSelectedLang2_PDF(),
-                    viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
+                    pdfExportType))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent
                         .builder()
@@ -519,12 +524,17 @@ public class ExportFileBean implements Serializable {
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
 
-            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdf().createPdfFile(
+            PdfExportType pdfExportType = PdfExportType.ALPHABETIQUE;
+            if (viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected()) == 0) {
+                pdfExportType = PdfExportType.HIERARCHIQUE;
+            }
+
+            try ( ByteArrayInputStream flux = new ByteArrayInputStream(new WritePdfNewGen().createPdfFile(
                     connect.getPoolConnexion(),
                     skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
                     viewExportBean.getSelectedLang2_PDF(),
-                    viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected())))) {
+                    pdfExportType))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
 
                 return DefaultStreamedContent
