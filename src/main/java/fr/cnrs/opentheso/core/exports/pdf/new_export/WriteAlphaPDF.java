@@ -213,11 +213,12 @@ public class WriteAlphaPDF {
     private void addImages(List<Paragraph> paragraphs, List<NodeImage> images) {
 
         if (CollectionUtils.isNotEmpty(images)) {
+            paragraphs.add(new Paragraph(Chunk.NEWLINE));
             images.stream().forEach(element -> {
                 try {
                     Image image = Image.getInstance(new URL(element.getUri()));
                     image.scaleAbsolute(writePdfSettings.resiseImage(image));
-                    paragraphs.add(new Paragraph(new Chunk(image, 0, 0, true)));
+                    paragraphs.add(new Paragraph(new Chunk(image, 11, 0, true)));
                 } catch(Exception ex) {}
             });
         }

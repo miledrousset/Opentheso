@@ -200,12 +200,13 @@ public class WriteHierachiquePDF {
     private void addImages(List<Paragraph> paragraphs, ArrayList<NodeImage> images, String indentation) {
 
         if (CollectionUtils.isNotEmpty(images)) {
+            paragraphs.add(new Paragraph(Chunk.NEWLINE));
             images.stream()
                     .forEach(imageElement -> {
                         try {
                             Image image = Image.getInstance(new URL(imageElement.getUri()));
                             image.scaleAbsolute(writePdfSettings.resiseImage(image));
-                            paragraphs.add(new Paragraph(new Chunk(image, indentation.length() * (2.9f), 20, true)));
+                            paragraphs.add(new Paragraph(new Chunk(image, indentation.length() * (2.9f), 0, true)));
                         } catch (BadElementException | IOException ex) {}
                     });
         }
