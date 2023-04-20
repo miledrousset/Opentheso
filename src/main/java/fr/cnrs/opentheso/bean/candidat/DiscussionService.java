@@ -99,8 +99,10 @@ public class DiscussionService implements Serializable {
         //// envoie de mail aux participants à la discussion
         
         String subject = "Nouveau message module candidat";
-        String message = "Vous avez participez à la discussion pour ce candidat " + candidatBean.getCandidatSelected().getIdConcepte() +
-                " un nouveau message a été posté";
+        String message = "Vous avez participé à la discussion pour ce candidat "
+                + candidatBean.getCandidatSelected().getNomPref() + ", " 
+                + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
+                + ". Sachez qu’un nouveau message a été posté.";
 
         getParticipantsInConversation();
         if(nodeUsers != null) {

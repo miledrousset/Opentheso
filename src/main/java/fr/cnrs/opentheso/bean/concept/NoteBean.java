@@ -18,8 +18,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.apache.commons.text.StringEscapeUtils;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -86,9 +86,16 @@ public class NoteBean implements Serializable {
     }
 
     private String clearValue(String rawNote) {
+        rawNote = rawNote.replaceAll("<br></p>", "");
         rawNote = rawNote.replaceAll("<p>", "");
-        rawNote = rawNote.replaceAll("</p>", "\n");
-
+        rawNote = rawNote.replaceAll("</p>", "</br>");
+        try {
+            if("</br>".equalsIgnoreCase(rawNote.substring(rawNote.length() -5, rawNote.length()))){
+                rawNote = rawNote.substring(0, rawNote.length() -5);
+            }            
+        } catch (Exception e) {
+        }
+       
         // enlève les code ascii non visibles
         return rawNote.replace((char) 27, ' ');
     }
@@ -309,6 +316,9 @@ public class NoteBean implements Serializable {
                     conceptBean.getSelectedLang());            
             return;            
         }
+        nodeNote.setLexicalvalue(clearValue(nodeNote.getLexicalvalue()));
+        nodeNote.setLexicalvalue(StringEscapeUtils.unescapeXml(nodeNote.getLexicalvalue()));        
+        
         if (selectedTypeNote.equalsIgnoreCase("note") || selectedTypeNote.equalsIgnoreCase("scopeNote") || selectedTypeNote.equalsIgnoreCase("historyNote")) {
             if (!noteHelper.updateConceptNote(connect.getPoolConnexion(),
                     nodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  

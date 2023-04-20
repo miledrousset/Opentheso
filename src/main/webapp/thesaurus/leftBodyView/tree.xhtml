@@ -33,6 +33,26 @@
             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
                 <p:menuButton style="background-color: transparent" icon="pi pi-align-justify" >
 
+                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addTopTerm')}" actionListener="#{newConcept.reset()}" icon="fas fa-folder-plus"
+                                oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
+                                process="@this"
+                                rendered="#{(currentUser.nodeUser != null) and 
+                                            (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
+                    
+                    <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
+                                            and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
+                                value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
+                                update="containerIndex messageIndex" icon="far fa-window-close" />
+
+                    <p:menuitem disabled="false" styleClass="buttonIconOrange"
+                                rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
+                                value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
+                                actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
+                                action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
+                                update="containerIndex:idCopyAndPasteBetweenThesoToTop"
+                                process="@this"
+                                oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />                    
+                    
                     <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
                                 actionListener="#{selectedTheso.setSortByNotation(false)}" ajax="true"
                                 action="#{selectedTheso.reloadSelectedTheso()}"
@@ -45,25 +65,6 @@
                                 disabled="#{selectedTheso.sortByNotation}" icon="fas fa-sort-numeric-down"
                                 process="@this" update="containerIndex:formLeftTab" />
 
-                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addTopTerm')}" actionListener="#{newConcept.reset()}" icon="fas fa-folder-plus"
-                                oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
-                                process="@this"
-                                rendered="#{(currentUser.nodeUser != null) and 
-                                            (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
-
-                    <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
-                                            and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" 
-                                value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
-                                update="containerIndex messageIndex" icon="far fa-window-close" />
-
-                    <p:menuitem disabled="false" styleClass="buttonIconOrange"
-                                rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                                value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
-                                actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
-                                action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
-                                update="containerIndex:rightTab:idCopyAndPasteBetweenThesoToTop"
-                                process="@this"
-                                oncomplete="PF('copyAndPasteBetweenThesoToTop').show();" />
                 </p:menuButton> 
             </div>
         </div>
@@ -83,7 +84,7 @@
 
                     <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
                     <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-                    <p:ajax event="select" listener="#{tree.onNodeSelect}"/>
+                    <p:ajax event="select" listener="#{tree.onNodeSelect}" update="messageIndex"/>
                     <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree messageIndex" />
 
                     <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">

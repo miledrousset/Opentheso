@@ -69,11 +69,11 @@
                 <h:outputText value="#{alignement.labelConceptOrig}" />
             </p:column>
 
-            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}" sortBy="#{alignement.labelConceptCible}">
-                <h:outputText value="#{alignement.labelConceptCible}" />
+            <p:column headerText="#{langueBean.getMsg('alignment.source')}">
+                <h:outputText value="#{alignement.thesaurus_target}" />
             </p:column>
 
-            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.conceptTarget')}">
+            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}" sortBy="#{alignement.labelConceptCible}">
                 <h:outputText value="#{alignement.typeAlignement}" />
             </p:column>
 

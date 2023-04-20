@@ -3,9 +3,8 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
              xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
-
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; margin: 20px;">
-        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
+    <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; margin: 20px; ">
+        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px;">
             <!-- ligne PrefLabel -->
             <div class="list-group-item list-group-item-action">
                 <div class="row" style="margin-left: 0px;">
@@ -28,8 +27,15 @@
                                       style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-size: 1.1rem;
                                       letter-spacing: .2px; color: #666666; font-weight: bold; text-shadow: none;" />
 
-                        <h:outputText value=" (#{conceptView.nodeConcept.term.lang})" style="font-size: 1rem; font-weight: 300; margin-left: 5px;"/>
+                        <h:outputText value=" (#{conceptView.nodeConcept.term.lang})" style="font-size: 1rem; font-weight: 300; "/>
 
+                        <p:tag rendered="#{conceptView.nodeConcept.concept.conceptType != '' and conceptView.nodeConcept.concept.conceptType != 'concept'}" styleClass="mr-2" 
+                               severity="warning" style="font-style: italic;margin-left: 5px;font-weight: 300;" rounded="true"
+                               value=" #{conceptView.getLabelOfConceptType(
+                                                conceptView.nodeConcept.concept.conceptType,
+                                                conceptView.nodeConcept.concept.idThesaurus)} ">
+                        </p:tag>
+                        
                         <p:tooltip for="textPrefLabel" value="#{conceptView.nodeConcept.concept.idConcept}" showDelay="1000" />
 
                         <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"

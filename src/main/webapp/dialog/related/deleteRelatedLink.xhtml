@@ -16,13 +16,13 @@
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
                 <p:dataTable var="related" value="#{conceptView.nodeConcept.nodeRT}" size="small"
-                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
+                             style="margin-bottom: -17px; margin-top: -16px; overflow: auto; max-height: 400px" lazy="false">
 
-                    <p:column headerText="Label">
-                        <h:outputText value="#{related.title} (#{related.idConcept})" style="color: #43B572; font-size: 14px;"/>
+                    <p:column headerText="#{langueBean.getMsg('statistique.label')}">
+                        <h:outputText value="#{related.title} (#{related.idConcept})" style="font-size: 14px;"/>
                     </p:column>
 
-                    <p:column width="80" headerText="Supprimer">
+                    <p:column width="80" headerText="#{langueBean.getMsg('candidat.remove')}">
                         <p:commandLink style="color: #FF7979; text-align: center"
                                        ajax="true" process="@form"
                                        update="messageIndex containerIndex:idDeleteRelatedLink"
@@ -33,6 +33,7 @@
                     </p:column>                    
                 </p:dataTable>
             </div>
+            <p:spacer height="20px;"/>            
         </h:form>
     </p:dialog> 
 </ui:fragment>

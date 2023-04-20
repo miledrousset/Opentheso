@@ -126,7 +126,7 @@ public class CopyAndPasteBetweenThesoHelper {
         String DATE_FORMAT = "dd-mm-yyyy";
         
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
-        exportRdf4jHelperNew.setInfos(nodePreference, DATE_FORMAT, false, false);
+        exportRdf4jHelperNew.setInfos(nodePreference);
         exportRdf4jHelperNew.exportTheso(ds, fromIdTheso, nodePreference);        
         
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -170,7 +170,7 @@ public class CopyAndPasteBetweenThesoHelper {
         importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);
         try {
             for (SKOSResource sKOSResource : sKOSXmlDocument.getConceptList()) {
-                importRdf4jHelper.addConcept(sKOSResource, idTheso, false);
+                importRdf4jHelper.addConceptV2(sKOSResource, idTheso);
             }
             return true;
         } catch (Exception e) {

@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -65,6 +66,9 @@ public class NodeConcept {
     
     // les concepts dépréciés qui sont reliés à ce concept
     private ArrayList <NodeIdValue> replaces;    
+    
+    // liste des Qualificatifs
+    private ArrayList <NodeCustomRelation> nodeCustomRelations;
 
     public NodeConcept() {
         nodeNotesTerm = new ArrayList<>();
@@ -199,6 +203,13 @@ public class NodeConcept {
         this.nodeExternalResources = nodeExternalResources;
     }
 
+    public ArrayList<NodeCustomRelation> getNodeCustomRelations() {
+        return nodeCustomRelations;
+    }
+
+    public void setNodeCustomRelations(ArrayList<NodeCustomRelation> nodeCustomRelations) {
+        this.nodeCustomRelations = nodeCustomRelations;
+    }
 
     public void clear(){
         if(nodeBT != null) nodeBT.clear();
@@ -216,7 +227,8 @@ public class NodeConcept {
         nodeGps = null;
         if(replacedBy != null) replacedBy.clear();    
         if(replaces != null) replaces.clear();    
-        if(nodeExternalResources != null) nodeExternalResources.clear();  
+        if(nodeExternalResources != null) nodeExternalResources.clear(); 
+        if(nodeCustomRelations != null) nodeCustomRelations.clear(); 
     }
     
 }

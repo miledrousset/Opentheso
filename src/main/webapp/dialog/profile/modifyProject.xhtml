@@ -7,11 +7,10 @@
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form id="idModifyProjectForm">
-
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable size="small" var="projectList" value="#{newProjectBean.listeProjectOfUser}" rowKey="#{product.id}"
                              widgetVar="listThesoTable" styleClass="products-table"
-                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
+                             style="margin-bottom: -17px; margin-top: -16px; overflow: auto; max-height: 400px" lazy="false">
                     <p:column width="70" headerText="#{langueBean.getMsg('statistique.label')}">
                         <p:inputText value="#{projectList.groupName}" style="width: 100%"/>
                     </p:column>

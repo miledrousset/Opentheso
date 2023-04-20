@@ -5,44 +5,74 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idListForMergeCsv" header="#{langueBean.getMsg('actions.importListForMerging')}" widgetVar="listForMergeCsv"  
-              width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="850" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
         <h:form id="listForMergeCsvForm">              
 
-            <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px; overflow-y: auto; max-height: 300px;">
-                Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
-                Si l'identifiant n'existe pas dans le thésaurus, la ligne sera rejetée.<br/>
-                Chaque concept trouvé par identifiant sera mise à jour avec les nouvelles valeurs du tableau.<br/>
-                !!!! Les concepts qui ne figurent pas dans le fichier ne sont pas modifiés !!!<br/>
-                Le format accepté est le même pour importer un thésaurus en CSV.<br/>
-                exemple :<br/>
-                Si nous avons un concept comme suit :<br/>
-                Id = 300<br/>
-                prefLabel@fr = gourde<br/>
-                altLabel@fr = récipient de transport, contenant, vase fermé<br/>
-                Définition@fr = vase à col étroit<br/>
+            <p:outputPanel deferred="true"  style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px; overflow-y: auto; max-height: 300px;">
+                <fieldset>
+                    <p:scrollPanel mode="native" >
+                        <p:panelGrid style="font-size: 12px;">
+                            <f:facet name="header">
+                                <p:row style="font-size: 12px;">
+                                    <p:column colspan="1">identifier</p:column>
+                                    <p:column colspan="1">skos:prefLabel@fr</p:column>
+                                    <p:column colspan="1">skos:prefLabel@it</p:column>
+                                    <p:column colspan="1">skos:altLabel@en</p:column>  
+                                    <p:column colspan="1" style="color: #C63632">skos:altLabel@fr</p:column>
+                                </p:row>
+                            </f:facet>
+                            <p:row style="font-size: 12px;">
+                                <p:column colspan="1">4587</p:column>
+                                <p:column colspan="1">astre</p:column>
+                                <p:column colspan="1">astro</p:column>
+                                <p:column colspan="1">heavenly body##astronomical body</p:column>
+                                <p:column colspan="1" style="color: #C63632">..... si la valeur est vide, on supprime le contenu existant</p:column>
+                            </p:row>
+                        </p:panelGrid>    
+                        <p:spacer/>
+                    </p:scrollPanel>    
 
-                Et si nous souhaitons mettre à jour ce concept, on propose alors les informations suivantes :<br/>
-                Id = 300<br/>
-                prefLabel@fr = récipient de transport<br/>
-                prefLabel@en = flask<br/>                
-                altLabel@fr = douïre, gourde, contenant, vase fermé<br/>
-                altLabel@en = costrel<br/>
-                Définition@fr = Récipient muni d'un goulot<br/>
-                Définition@en = Definition in english<br/>                
-                Le résultat final, le concept devient comme suit :<br/>
+                    <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px;">
+                        Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>
+                        Si l'identifiant n'existe pas dans le thésaurus, la ligne sera rejetée.<br/>
+                        Chaque concept trouvé par identifiant sera mise à jour avec les nouvelles valeurs du tableau.<br/>
+                        !!!! Les concepts qui ne figurent pas dans le fichier ne sont pas modifiés !!!<br/>
+                        Le format accepté est le même pour importer un thésaurus en CSV.<br/>
+                        exemple :<br/>
+                        Si nous avons un concept comme suit :<br/>
+                        Id = 300<br/>
+                        prefLabel@fr = gourde<br/>
+                        altLabel@fr = récipient de transport, contenant, vase fermé<br/>
+                        Définition@fr = vase à col étroit<br/>
 
-                Id = 300<br/>
-                prefLabel = (fr) récipient de transport, (en) flask<br/>
-                altLabel =  (fr) douïre, gourde, contenant, vase fermé (en) costrel<br/>
-                Définition = (fr) Récipient muni d'un goulot (en) Definition in english<br/>
+                        Et si nous souhaitons mettre à jour ce concept, on propose alors les informations suivantes :<br/>
+                        Id = 300<br/>
+                        prefLabel@fr = récipient de transport<br/>
+                        prefLabel@en = flask<br/>                
+                        altLabel@fr = douïre, gourde, contenant, vase fermé<br/>
+                        altLabel@en = costrel<br/>
+                        Définition@fr = Récipient muni d'un goulot<br/>
+                        Définition@en = Definition in english<br/>                
+                        Le résultat final, le concept devient comme suit :<br/>
 
-                Tous les champs fournis par l’utilisateur remplacent l’existant.<br/>
-                si on souhaite supprimer une valeur dans une langue donnée, on fourni la colonne vide exp :<br/>
-                altLabel@en = <br/>
-                C’est à dire, si nous avons un champ (Note d’application), il ne sera pas modifié.
-                
-            </p:outputPanel>
+                        Id = 300<br/>
+                        prefLabel = (fr) récipient de transport, (en) flask<br/>
+                        altLabel =  (fr) douïre, gourde, contenant, vase fermé (en) costrel<br/>
+                        Définition = (fr) Récipient muni d'un goulot (en) Definition in english<br/>
+
+                        Tous les champs fournis par l’utilisateur remplacent l’existant.<br/>
+                        si on souhaite supprimer une valeur dans une langue donnée, on fourni la colonne vide exp :<br/>
+                        altLabel@en = <br/>
+                        C’est à dire, si nous avons un champ (Note d’application), il ne sera pas modifié.
+
+                    </p:panel>            
+                </fieldset>
+
+            </p:outputPanel>            
+
+
+
 
             <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
 
@@ -109,6 +139,6 @@
                 </div> 
             </h:panelGroup>
         </h:form>
- 
+
     </p:dialog> 
 </ui:fragment>

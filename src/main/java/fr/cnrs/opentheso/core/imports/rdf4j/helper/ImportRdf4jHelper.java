@@ -220,7 +220,7 @@ public class ImportRdf4jHelper {
             if (selectedIdentifier.equalsIgnoreCase("doi")) {
                 nodePreference.setOriginalUriIsDoi(true);
             }
-//            preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
+   
         } else {
             nodePreference.setCheminSite(uri);
             nodePreference.setPreferredName(idTheso);
@@ -235,7 +235,7 @@ public class ImportRdf4jHelper {
                 nodePreference.setOriginalUriIsDoi(true);
             }
         }
-        preferencesHelper.addPreference(ds, nodePreference, idTheso);
+        preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
     }
 
     private void setOriginalUri(String idTheso, String uri) {
@@ -440,14 +440,25 @@ public class ImportRdf4jHelper {
     }
 
     public void addConceptV2(SKOSResource conceptResource, String idTheso) throws SQLException {
+        String idConcept;
+        if(StringUtils.isEmpty(conceptResource.getIdentifier())){
+            idConcept = getOriginalId(conceptResource.getUri());
+        } else
+            idConcept = conceptResource.getIdentifier();
 
-        String idConcept = getOriginalId(conceptResource.getUri());
 
         String conceptStatus = "";
+        
+       
         if (conceptResource.getStatus() == SKOSProperty.deprecated) {
             conceptStatus = "dep";
         }
-
+        // concept type
+        String conceptType = "concept";// conceptResource.getConceptType();
+        //if(StringUtils.isEmpty(conceptType)) 
+        //    conceptType = "concept";
+        
+        
         // option cochée
         String idArk = "";
         if ("ark".equalsIgnoreCase(selectedIdentifier)) {
@@ -626,6 +637,25 @@ public class ImportRdf4jHelper {
             }
         }
 
+        //CustomRelation
+        //-- 'id_concept1@role@id_concept2'
+        String customRelations = null;        
+    /*    if (CollectionUtils.isNotEmpty(conceptResource.getCustomRelations())) {
+            customRelations = "";
+            for (NodeIdValue nodeIdValue  : conceptObject.getCustomRelations()) {
+                customRelations += SEPERATEUR + conceptObject.getIdConcept()
+                        + SOUS_SEPERATEUR + nodeIdValue.getValue()
+                        + SOUS_SEPERATEUR + nodeIdValue.getId();
+            //    relations += SEPERATEUR + idCostomRelation
+            //            + SOUS_SEPERATEUR + "NT"
+            //            + SOUS_SEPERATEUR + conceptObject.getIdConcept();                
+            //   
+            }
+        }    
+        if (customRelations != null && customRelations.length() > 0) {
+            customRelations = customRelations.substring(SEPERATEUR.length(), customRelations.length());
+        }   */      
+        
         //Notes
         //-- 'value@typeCode@lang@id_term'
         String notes = null;
@@ -724,13 +754,16 @@ public class ImportRdf4jHelper {
                     + "'" + idConcept + "', "
                     + idUser + ", "
                     + "'" + conceptStatus + "', "
+                    + "'" + conceptType + "', "
                     + (notationConcept == null ? null : "'" + notationConcept + "'") + ""
-                    + ", '" + idArk + "', "
+                    + ", " 
+                    + (idArk == null ? "''":  "'" + idArk + "'") + ", "
                     + isTopConcept + ", "
                     + "'" + idHandle + "', "
                     + "'" + idDoi + "', "
                     + (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'") + ", "
                     + (relations == null ? null : "'" + relations + "'") + ", "
+                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "    
                     + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'") + ", "
                     + (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'") + ", "
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
@@ -1549,7 +1582,8 @@ public class ImportRdf4jHelper {
 
         if (uri.contains("idc=")) {
             if (uri.contains("&")) {
-                uri = uri.substring(uri.indexOf("idc=") + 4, uri.indexOf("&"));
+                String str = uri.substring(uri.indexOf("idc="));
+                uri = str.substring(4, str.indexOf("&"));
             } else {
                 uri = uri.substring(uri.indexOf("idc=") + 4, uri.length());
             }

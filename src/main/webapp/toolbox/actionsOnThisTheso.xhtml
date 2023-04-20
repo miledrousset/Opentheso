@@ -98,7 +98,14 @@
                                 title="#{langueBean.getMsg('actions.getIdFromPrefLabelTooltip')}"
                                 oncomplete="PF('getIdFromPrefLabel').show();"
                                 update="idGetIdFromPrefLabel getIdFromPrefLabelForm"
-                                action="#{importFileBean.init()}" icon="pi pi-upload" style="font-size: 12px;"/>                          
+                                action="#{importFileBean.init()}" icon="pi pi-upload" style="font-size: 12px;"/> 
+                    
+                    <!-- Compare une liste de mots avec les termes existants du thésaurus (recherche étendue sur altLabel) -->
+                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.compareListToTheso')}" 
+                                title="#{langueBean.getMsg('actions.compareListToThesoTooltip')}"
+                                oncomplete="PF('compareListToTheso').show();"
+                                update="idCompareListToTheso compareListToThesoForm"
+                                action="#{importFileBean.init()}" icon="pi pi-upload" style="font-size: 12px;"/>                     
                 </p:menuButton>
             </p:panel>           
         </div>
@@ -115,6 +122,6 @@
     <ui:include src="../dialog/import/listDeprecateConceptsCsv.xhtml" />      
     <ui:include src="../dialog/import/listAddConceptsCsv.xhtml" />   
     <ui:include src="../dialog/actions/getIdFromPrefLabel.xhtml" />     
-    
+    <ui:include src="../dialog/actions/compareListToTheso.xhtml" />       
     
 </ui:fragment>

@@ -1,19 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.core.exports.rdf4j;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.cnrs.opentheso.skosapi.*;
-import java.util.ArrayList;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -24,11 +17,8 @@ import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfResource;
-/**
- *
- * @author Quincy
- */
+
+
 public class WriteRdf4j {
 
     public final static String DELIMINATE = "##";
@@ -41,10 +31,7 @@ public class WriteRdf4j {
     private SKOSXmlDocument xmlDocument;
     private ValueFactory vf;
 
-    /**
-     *
-     * @param xmlDocument
-     */
+    
     public WriteRdf4j(SKOSXmlDocument xmlDocument) {
         this.xmlDocument = xmlDocument;
         vf = SimpleValueFactory.getInstance();
@@ -58,7 +45,6 @@ public class WriteRdf4j {
         model = null;
         vf = null;
         builder = null;
-    //    System.gc();
     }
 
     private void loadModel() {
@@ -81,7 +67,6 @@ public class WriteRdf4j {
     }
 
     private void writeConcept() {
-    //    int i = 0;
         for (SKOSResource sResource : xmlDocument.getConceptList()) {
             builder.subject(vf.createIRI(sResource.getUri()));
             builder.add(RDF.TYPE, SKOS.CONCEPT);
@@ -95,7 +80,7 @@ public class WriteRdf4j {
             writeCreator(sResource);
             writeDocumentation(sResource);
             writeGPS(sResource);
-            writeExternalResources(sResource);            
+            writeExternalResources(sResource);
 
             writeStatusCandidat(sResource);
             writeDiscussions(sResource);
@@ -103,69 +88,52 @@ public class WriteRdf4j {
 
             writeStatus(sResource);
             writeReplaces(sResource);
-            
-            // écriture d'un objet FOF pour les images
-        //    writeImageUri(sResource);            
+
             writeNodeImage(sResource);
         }
     }
 
     private void writeNodeImage(SKOSResource resource) {
         for (NodeImage nodeImage : resource.getNodeImage()) {
+            if (StringUtils.isEmpty(nodeImage.getUri())) {
+                continue;
+            }
+
             builder.subject(vf.createIRI(nodeImage.getUri().replaceAll(" ", "%20")));
             builder.add(RDF.TYPE, FOAF.IMAGE);
             builder.add(DCTERMS.IDENTIFIER, resource.getSdc().getIdentifier());
-            builder.add(DCTERMS.TITLE, nodeImage.getImageName());
-            builder.add(DCTERMS.RIGHTS, nodeImage.getCopyRight());
-        }
-    }    
-    /*
-    private void writeImageUri(SKOSResource resource) {
-        if (resource.getNodeImage() != null ) {
-            if (!resource.getNodeImage().isEmpty()) {
-                for (NodeImage nodeImage : resource.getNodeImage()) {
-                    try {
-                        nodeImage.setUri(nodeImage.getUri().replaceAll(" ", "%20"));
-                        IRI uri = vf.createIRI(nodeImage.getUri());
-                        builder.add(FOAF.IMAGE, uri);
-                    } catch (Exception e) {
-                        return;
-                    }
-                }
+            if (!StringUtils.isEmpty(nodeImage.getImageName())) {
+                builder.add(DCTERMS.TITLE, nodeImage.getImageName());
+            }
+            if (!StringUtils.isEmpty(nodeImage.getCopyRight())) {
+                builder.add(DCTERMS.RIGHTS, nodeImage.getCopyRight());
             }
         }
-    }*/
+    }
 
     private void writeReplaces(SKOSResource resource) {
         for (SKOSReplaces replace : resource.getsKOSReplaces()) {
-            IRI uri = vf.createIRI(replace.getTargetUri());
-            int prop = replace.getProperty();
-            switch (prop) {
+            switch (replace.getProperty()) {
                 case SKOSProperty.isReplacedBy:
-                    builder.add(DCTERMS.IS_REPLACED_BY, uri);
+                    builder.add(DCTERMS.IS_REPLACED_BY, vf.createIRI(replace.getTargetUri()));
                     break;
                 case SKOSProperty.replaces:
-                    builder.add(DCTERMS.REPLACES, uri);
+                    builder.add(DCTERMS.REPLACES, vf.createIRI(replace.getTargetUri()));
                     break;
             }
         }
     }
 
     private void writeStatus(SKOSResource resource) {
-        int prop = resource.getStatus();
-        switch (prop) {
-            case SKOSProperty.deprecated:
-                builder.add(OWL.DEPRECATED, true);
-                break;
-            default:
-                break;
+        if (SKOSProperty.deprecated == resource.getStatus()) {
+            builder.add(OWL.DEPRECATED, true);
         }
     }
 
     private void writeFacet() {
         for (SKOSResource facet : xmlDocument.getFacetList()) {
             builder.subject(vf.createIRI(facet.getUri()));
-            builder.add(RDF.TYPE, vf.createIRI("http://purl.org/iso25964/skos-thes#ThesaurusArray"));//vf.createIRI(facet.getUri()));//RDF.TYPE, SKOS.COLLECTION);
+            builder.add(RDF.TYPE, vf.createIRI("http://purl.org/iso25964/skos-thes#ThesaurusArray"));
             writeRelation(facet);
             writeLabel(facet);
             writeDate(facet);
@@ -198,7 +166,6 @@ public class WriteRdf4j {
 
         builder.add(RDF.TYPE, SKOS.CONCEPT_SCHEME);
 
-
         writeLabel(conceptScheme);
         writeRelation(conceptScheme);
         writeMatch(conceptScheme);
@@ -212,147 +179,107 @@ public class WriteRdf4j {
     }
 
     private void writeGPS(SKOSResource resource) {
-        SKOSGPSCoordinates gps = resource.getGPSCoordinates();
-        Double lat = null;
-        Double lon = null;
-        if(gps.getLat() == null || gps.getLon() == null) return;
-        try {
-            lat = Double.valueOf(gps.getLat());
-            lon = Double.valueOf(gps.getLon());
-        } catch (NumberFormatException e) {
-        }
-        if (lat != null && lon != null) {
-            builder.add("geo:lat", lat);
-            builder.add("geo:long", lon);
+        if (StringUtils.isNotEmpty(resource.getGPSCoordinates().getLat())
+                && StringUtils.isNotEmpty(resource.getGPSCoordinates().getLon())) {
+            builder.add("geo:lat", Double.valueOf(resource.getGPSCoordinates().getLat()));
+            builder.add("geo:long", Double.valueOf(resource.getGPSCoordinates().getLon()));
         }
     }
-    
+
     private void writeExternalResources(SKOSResource resource) {
-        ArrayList<String> externalResources = resource.getExternalResources();
-        for (String externalResource : externalResources) {
-            builder.add(DCTERMS.RELATION, externalResource);
+        for (String externalResource : resource.getExternalResources()) {
+            builder.add(DCTERMS.SOURCE, externalResource);
         }
-    }    
+    }
 
     private void writeDocumentation(SKOSResource resource) {
-        int prop;
         for (SKOSDocumentation doc : resource.getDocumentationsList()) {
-            prop = doc.getProperty();
-            Literal literal = vf.createLiteral(doc.getText(), doc.getLanguage());
-            switch (prop) {
+            switch (doc.getProperty()) {
                 case SKOSProperty.definition:
-                    builder.add(SKOS.DEFINITION, literal);
+                    builder.add(SKOS.DEFINITION, vf.createLiteral(doc.getText(), doc.getLanguage()));
                     break;
                 case SKOSProperty.scopeNote:
-                    builder.add(SKOS.SCOPE_NOTE, literal);
+                    builder.add(SKOS.SCOPE_NOTE, vf.createLiteral(doc.getText(), doc.getLanguage()));
                     break;
                 case SKOSProperty.example:
-                    builder.add(SKOS.EXAMPLE, literal);
+                    builder.add(SKOS.EXAMPLE, vf.createLiteral(doc.getText(), doc.getLanguage()));
                     break;
                 case SKOSProperty.historyNote:
-                    builder.add(SKOS.HISTORY_NOTE, literal);
+                    builder.add(SKOS.HISTORY_NOTE, vf.createLiteral(doc.getText(), doc.getLanguage()));
                     break;
                 case SKOSProperty.editorialNote:
-                    builder.add(SKOS.EDITORIAL_NOTE, literal);
+                    builder.add(SKOS.EDITORIAL_NOTE, vf.createLiteral(doc.getText(), doc.getLanguage()));
                     break;
                 case SKOSProperty.changeNote:
-                    builder.add(SKOS.CHANGE_NOTE, literal);
+                    builder.add(SKOS.CHANGE_NOTE, vf.createLiteral(doc.getText(), doc.getLanguage()));
                     break;
                 case SKOSProperty.note:
-                    builder.add(SKOS.NOTE, literal);
-                    break;
-                default:
+                    builder.add(SKOS.NOTE, vf.createLiteral(doc.getText(), doc.getLanguage()));
                     break;
             }
         }
     }
 
     private void writeCreator(SKOSResource resource) {
-        int prop;
         for (SKOSCreator creator : resource.getCreatorList()) {
-            if (creator == null) {
-                return;
-            }
-            if (creator.getCreator() == null) {
-                return;
-            }
-            if (creator.getCreator().isEmpty()) {
-                return;
-            }
-
-            prop = creator.getProperty();
-            if (prop == SKOSProperty.creator) {
-                builder.add(DCTERMS.CREATOR, creator.getCreator());
-            } else if (prop == SKOSProperty.contributor) {
-                builder.add(DCTERMS.CONTRIBUTOR, creator.getCreator());
-            }
-        }
-    }
-
-    private void writeDate(SKOSResource resource) {
-        int prop;
-        Literal literal;
-
-        for (SKOSDate date : resource.getDateList()) {
-            literal = vf.createLiteral(date.getDate(), XMLSchema.DATE);
-            prop = date.getProperty();
-            switch (prop) {
-                case SKOSProperty.created:
-                    builder.add(DCTERMS.CREATED, literal);
-                    break;
-                case SKOSProperty.modified:
-                    builder.add(DCTERMS.MODIFIED, literal);
-                    break;
-                case SKOSProperty.date:
-                    builder.add(DCTERMS.DATE, literal);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-    }
-
-    /**
-     * Pour écrire le chemin complet / autopostage
-     *
-     * @param resource
-     */
-    private void writePath(SKOSResource resource) {
-        if (resource.getPaths() != null) {
-            if (!resource.getPaths().isEmpty()) {
-                for (String path1 : resource.getPaths()) {
-                    builder.add(DCTERMS.DESCRIPTION, path1.trim());
+            if (ObjectUtils.isNotEmpty(creator) && StringUtils.isNotEmpty(creator.getCreator())) {
+                if (SKOSProperty.creator == creator.getProperty()) {
+                    builder.add(DCTERMS.CREATOR, creator.getCreator());
+                } else if (SKOSProperty.contributor == creator.getProperty()) {
+                    builder.add(DCTERMS.CONTRIBUTOR, creator.getCreator());
                 }
             }
         }
     }
 
+    private void writeDate(SKOSResource resource) {
+        for (SKOSDate date : resource.getDateList()) {
+            switch (date.getProperty()) {
+                case SKOSProperty.created:
+                    builder.add(DCTERMS.CREATED, vf.createLiteral(date.getDate(), XMLSchema.DATE));
+                    break;
+                case SKOSProperty.modified:
+                    builder.add(DCTERMS.MODIFIED, vf.createLiteral(date.getDate(), XMLSchema.DATE));
+                    break;
+                case SKOSProperty.date:
+                    builder.add(DCTERMS.DATE, vf.createLiteral(date.getDate(), XMLSchema.DATE));
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Pour écrire le chemin complet / autopostage
+     */
+    private void writePath(SKOSResource resource) {
+        if (CollectionUtils.isNotEmpty(resource.getPaths())) {
+            for (String path : resource.getPaths()) {
+                builder.add(DCTERMS.DESCRIPTION, path.trim());
+            }
+        }
+    }
+
     private void writeIdentifier(SKOSResource resource) {
-        if (resource.getSdc() != null) {
+        if (ObjectUtils.isNotEmpty(resource.getSdc())) {
             builder.add(DCTERMS.IDENTIFIER, resource.getSdc().getIdentifier());
         }
     }
 
     private void writeNotation(SKOSResource resource) {
         for (SKOSNotation notation : resource.getNotationList()) {
-            if (notation == null) {
-                return;
+            if (ObjectUtils.isNotEmpty(notation) && StringUtils.isNotEmpty(notation.getNotation())) {
+                builder.add(SKOS.NOTATION, notation.getNotation());
             }
-            if (notation.getNotation() == null) {
-                return;
-            }
-            if (notation.getNotation().isEmpty()) {
-                return;
-            }
-
-            builder.add(SKOS.NOTATION, notation.getNotation());
         }
     }
 
     private void writeDiscussions(SKOSResource resource) {
         for (SKOSDiscussion discussion : resource.getMessages()) {
-            builder.add(SKOS.NOTE, vf.createLiteral(discussion.getDate() + DELIMINATE + discussion.getIdUser() + DELIMINATE + discussion.getMsg(), DISCUSSION_TAG));
+            builder.add(SKOS.NOTE, vf.createLiteral(discussion.getDate() 
+                    + DELIMINATE 
+                    + discussion.getIdUser() 
+                    + DELIMINATE 
+                    + discussion.getMsg(), DISCUSSION_TAG));
         }
     }
 
@@ -364,93 +291,89 @@ public class WriteRdf4j {
     }
 
     private void writeLabel(SKOSResource resource) {
-        int prop;
         for (SKOSLabel label : resource.getLabelsList()) {
-            prop = label.getProperty();
-            Literal literal = vf.createLiteral(label.getLabel(), label.getLanguage());
-            switch (prop) {
+            switch (label.getProperty()) {
                 case SKOSProperty.prefLabel:
-                    builder.add(SKOS.PREF_LABEL, literal);
+                    builder.add(SKOS.PREF_LABEL, vf.createLiteral(label.getLabel(), label.getLanguage()));
                     break;
                 case SKOSProperty.altLabel:
-                    builder.add(SKOS.ALT_LABEL, literal);
+                    builder.add(SKOS.ALT_LABEL, vf.createLiteral(label.getLabel(), label.getLanguage()));
                     break;
                 case SKOSProperty.hiddenLabel:
-                    builder.add(SKOS.HIDDEN_LABEL, literal);
-                    break;
-                default:
+                    builder.add(SKOS.HIDDEN_LABEL, vf.createLiteral(label.getLabel(), label.getLanguage()));
                     break;
             }
         }
     }
 
-    private void writeDcTerms(SKOSResource resource){
-        if(resource.getThesaurus().getTitle()!= null && !resource.getThesaurus().getTitle().isEmpty())
+    private void writeDcTerms(SKOSResource resource) {
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getTitle())) {
             builder.add(DCTERMS.TITLE, resource.getThesaurus().getTitle());
+        }
 
-        if(resource.getThesaurus().getCreator()!= null && !resource.getThesaurus().getCreator().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getCreator())) {
             builder.add(DCTERMS.CREATOR, resource.getThesaurus().getCreator());
+        }
 
-        if(resource.getThesaurus().getContributor() != null && !resource.getThesaurus().getContributor().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getContributor())) {
             builder.add(DCTERMS.CONTRIBUTOR, resource.getThesaurus().getContributor());
+        }
 
-        if(resource.getThesaurus().getPublisher()!= null && !resource.getThesaurus().getPublisher().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getPublisher())) {
             builder.add(DCTERMS.PUBLISHER, resource.getThesaurus().getPublisher());
+        }
 
-        if(resource.getThesaurus().getDescription()!= null && !resource.getThesaurus().getDescription().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getDescription())) {
             builder.add(DCTERMS.DESCRIPTION, resource.getThesaurus().getDescription());
+        }
 
-        if(resource.getThesaurus().getType()!= null && !resource.getThesaurus().getType().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getType())) {
             builder.add(DCTERMS.TYPE, resource.getThesaurus().getType());
+        }
 
-        if(resource.getThesaurus().getRights()!= null && !resource.getThesaurus().getRights().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getRights())) {
             builder.add(DCTERMS.RIGHTS, resource.getThesaurus().getRights());
+        }
 
-        if(resource.getThesaurus().getSubject()!= null && !resource.getThesaurus().getSubject().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getSubject())) {
             builder.add(DCTERMS.SUBJECT, resource.getThesaurus().getSubject());
+        }
 
-        if(resource.getThesaurus().getCoverage()!= null && !resource.getThesaurus().getCoverage().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getCoverage())) {
             builder.add(DCTERMS.COVERAGE, resource.getThesaurus().getCoverage());
+        }
 
-        if(resource.getThesaurus().getLanguage()!= null && !resource.getThesaurus().getLanguage().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getLanguage())) {
             builder.add(DCTERMS.LANGUAGE, resource.getThesaurus().getLanguage());
+        }
 
-        if(resource.getThesaurus().getRelation()!= null && !resource.getThesaurus().getRelation().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getRelation())) {
             builder.add(DCTERMS.RELATION, resource.getThesaurus().getRelation());
+        }
 
-        if(resource.getThesaurus().getSource()!= null && !resource.getThesaurus().getSource().isEmpty())
+        if (StringUtils.isNotEmpty(resource.getThesaurus().getSource())) {
             builder.add(DCTERMS.SOURCE, resource.getThesaurus().getSource());
+        }
     }
 
     private void writeMatch(SKOSResource resource) {
-        int prop;
-        IRI uri;
         for (SKOSMatch match : resource.getMatchList()) {
-            prop = match.getProperty();
-            try {
-                uri = vf.createIRI(match.getValue());
-                switch (prop) {
-                    case SKOSProperty.exactMatch:
-                        builder.add(SKOS.EXACT_MATCH, uri);
-                        break;
-                    case SKOSProperty.closeMatch:
-                        builder.add(SKOS.CLOSE_MATCH, uri);
-                        break;
-                    case SKOSProperty.broadMatch:
-                        builder.add(SKOS.BROAD_MATCH, uri);
-                        break;
-                    case SKOSProperty.relatedMatch:
-                        builder.add(SKOS.RELATED_MATCH, uri);
-                        break;
-                    case SKOSProperty.narrowMatch:
-                        builder.add(SKOS.NARROW_MATCH, uri);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (Exception ex) {
-                Logger.getLogger(WriteRdf4j.class.getName()).log(Level.SEVERE,
-                        "Error URI Alignement : " + resource.getUri(), ex);
+            switch (match.getProperty()) {
+                case SKOSProperty.exactMatch:
+                    builder.add(SKOS.EXACT_MATCH, vf.createIRI(match.getValue()));
+                    break;
+                case SKOSProperty.closeMatch:
+                    builder.add(SKOS.CLOSE_MATCH, vf.createIRI(match.getValue()));
+                    break;
+                case SKOSProperty.broadMatch:
+                    builder.add(SKOS.BROAD_MATCH, vf.createIRI(match.getValue()));
+                    break;
+                case SKOSProperty.relatedMatch:
+                    builder.add(SKOS.RELATED_MATCH, vf.createIRI(match.getValue()));
+                    break;
+                case SKOSProperty.narrowMatch:
+                    builder.add(SKOS.NARROW_MATCH, vf.createIRI(match.getValue()));
+                    break;
             }
         }
     }
@@ -463,92 +386,75 @@ public class WriteRdf4j {
     }
 
     private void writeRelation(SKOSResource resource) {
-        int prop;
 
         for (SKOSRelation relation : resource.getRelationsList()) {
-
-            IRI uri = vf.createIRI(relation.getTargetUri());
-            prop = relation.getProperty();
-            switch (prop) {
+            switch (relation.getProperty()) {
                 case SKOSProperty.member:
-                    builder.add(SKOS.MEMBER, uri);
+                    builder.add(SKOS.MEMBER, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.broader:
-                    builder.add(SKOS.BROADER, uri);
+                    builder.add(SKOS.BROADER, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.broaderGeneric:
-                    builder.add("iso-thes:broaderGeneric", uri);
+                    builder.add("iso-thes:broaderGeneric", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.broaderInstantial:
-                    builder.add("iso-thes:broaderInstantial", uri);
+                    builder.add("iso-thes:broaderInstantial", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.broaderPartitive:
-                    builder.add("iso-thes:broaderPartitive", uri);
+                    builder.add("iso-thes:broaderPartitive", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.narrower:
-                    builder.add(SKOS.NARROWER, uri);
+                    builder.add(SKOS.NARROWER, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.narrowerGeneric:
-                    builder.add("iso-thes:narrowerGeneric", uri);
+                    builder.add("iso-thes:narrowerGeneric", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.narrowerInstantial:
-                    builder.add("iso-thes:narrowerInstantial", uri);
+                    builder.add("iso-thes:narrowerInstantial", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.narrowerPartitive:
-                    builder.add("iso-thes:narrowerPartitive", uri);
+                    builder.add("iso-thes:narrowerPartitive", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.related:
-                    builder.add(SKOS.RELATED, uri);
+                    builder.add(SKOS.RELATED, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.relatedHasPart:
-                    builder.add("iso-thes:relatedHasPart", uri);
+                    builder.add("iso-thes:relatedHasPart", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.relatedPartOf:
-                    builder.add("iso-thes:relatedPartOf", uri);
+                    builder.add("iso-thes:relatedPartOf", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.hasTopConcept:
-                    builder.add(SKOS.HAS_TOP_CONCEPT, uri);
+                    builder.add(SKOS.HAS_TOP_CONCEPT, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.inScheme:
-                    builder.add(SKOS.IN_SCHEME, uri);
+                    builder.add(SKOS.IN_SCHEME, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.topConceptOf:
-                    builder.add(SKOS.TOP_CONCEPT_OF, uri);
+                    builder.add(SKOS.TOP_CONCEPT_OF, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.subGroup:
-                    builder.add("iso-thes:subGroup", uri);
+                    builder.add("iso-thes:subGroup", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.microThesaurusOf:
-                    builder.add("iso-thes:microThesaurusOf", uri);
+                    builder.add("iso-thes:microThesaurusOf", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.superGroup:
-                    builder.add("iso-thes:superGroup", uri);
+                    builder.add("iso-thes:superGroup", vf.createIRI(relation.getTargetUri()));
                     break;
-
-                /// unesco properties for Groups or Collections    
                 case SKOSProperty.memberOf:
-                    builder.add("opentheso:memberOf", uri);
+                    builder.add("opentheso:memberOf", vf.createIRI(relation.getTargetUri()));
                     break;
-
-/*                case SKOSProperty.TOP_FACET:
-                    builder.add("opentheso:topFacet", uri);
-                    break;
-                case SKOSProperty.FACET:
-                    builder.add("opentheso:facet", uri);
-                    break;*/
                 case SKOSProperty.superOrdinate:
-                    builder.add("iso-thes:superOrdinate", uri);
+                    builder.add("iso-thes:superOrdinate", vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.subordinateArray:
-                    builder.add("iso-thes:subordinateArray", uri);
-                    break;                       
+                    builder.add("iso-thes:subordinateArray", vf.createIRI(relation.getTargetUri()));
             }
-
         }
-
     }
-
-    //********
+    
     public Model getModel() {
         return model;
     }

@@ -4,16 +4,16 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idNewTraduction" header="Ajouter une nouvelle traduction" widgetVar="newTraduction" 
+    <p:dialog id="idNewTraduction" header="#{langueBean.getMsg('rightbody.concept.add_traduction')}" widgetVar="newTraduction" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" > 
         <h:form id="newTraductionForm">
             <!-- Langues du thésaurus -->
             <div class="row">
                 <div class="col-5">
-                    <h:outputText value="Langues du thésaurus :"/>
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}"/>
                 </div>
                 <div class="col-7">
-                    <p:selectOneMenu id="collection" label="Langue" value="#{traductionService.newLangage}" 
+                    <p:selectOneMenu id="collection" label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{traductionService.newLangage}" 
                                      style="width: 100%; background: white; border-color: #43B572">
                         <f:selectItems  value="#{traductionService.nodeLangsFiltered}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}" />
                     </p:selectOneMenu>
@@ -23,7 +23,7 @@
             <!-- traduction à ajouter -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-5">
-                    <h:outputText value="Traduction :" />
+                    <h:outputText value="#{traductionService.traduction}" />
                 </div>
                 <div class="col-7">
                     <p:inputText value="#{traductionService.newTraduction}" required="true" style="width: 100%" />
@@ -31,10 +31,11 @@
             </div>       
 
             <div style="width: 100%; text-align: right; margin-top: 10px;">
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
-                                 actionListener="PF('newTraduction').hide();" update="idNewTraduction"/>
+                <p:commandButton  value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
+                                  style="margin-right: 10px" ajax="true"
+                                  actionListener="PF('newTraduction').hide();" update="idNewTraduction"/>
 
-                <p:commandButton class="btn btn-primary" title="#{langueBean.getMsg('btnAdd')}"
+                <p:commandButton value="#{langueBean.getMsg('btnAdd')}" styleClass="ui-button-success" icon="pi pi-check"
                                  oncomplete="PF('newTraduction').hide();" ajax="true" update="tabViewCandidat"
                                  actionListener="#{traductionService.addTraductionCandidat()}"/>
             </div>

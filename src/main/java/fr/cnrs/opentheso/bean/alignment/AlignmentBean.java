@@ -128,6 +128,10 @@ public class AlignmentBean implements Serializable {
 
     //les alignements existants
     private ArrayList<NodeAlignment> existingAlignments;
+    
+    
+    /// pour l'alignement manuel en cas de non réponse
+    private String manualAlignmentUri;
 
     @PreDestroy
     public void destroy() {
@@ -231,6 +235,7 @@ public class AlignmentBean implements Serializable {
             nodeAlignmentSmall.clear();
             nodeAlignmentSmall = null;
         }
+        manualAlignmentUri = null;
     }
 
     public AlignmentBean() {
@@ -520,7 +525,7 @@ public class AlignmentBean implements Serializable {
             PrimeFaces.current().executeScript("PF('saerchAlignement').show();");
         }*/
         selectConceptForAlignment(alignement.getIdConceptOrig());
-        PrimeFaces.current().executeScript("PF('saerchAlignement').show();");
+        PrimeFaces.current().executeScript("PF('searchAlignement').show();");
     }
 
     private void setExistingAlignment(String idConcept, String idTheso) {
@@ -654,6 +659,7 @@ public class AlignmentBean implements Serializable {
         isSelectedAllLang = true;
         reset();
         resetAlignmentResult();
+        manualAlignmentUri = null;
 
     }
 
@@ -688,6 +694,7 @@ public class AlignmentBean implements Serializable {
         isSelectedAllLang = true;
         isViewResult = true;
         isViewSelection = false;
+        manualAlignmentUri = null;
 
     }
 
@@ -707,11 +714,14 @@ public class AlignmentBean implements Serializable {
         isSelectedAllLang = true;
         nom = "";
         prenom = "";
+        manualAlignmentUri = null;        
     }
 
     private void resetAlignmentResult() {
         alignementResult = null;
         error = false;
+        listAlignValues = null;
+        manualAlignmentUri = null;        
     }
 
     /// récupération des infos sur le concept local qui est en cours d'alignement
@@ -1700,6 +1710,54 @@ public class AlignmentBean implements Serializable {
 
         resetVariables();
     }
+    
+    /**
+     * permet d'ajouter l'alignement et les options choisis (traductions,
+     * définitions et images) la focntion gère les erreurs en cas de problème
+     *
+     * @param idTheso
+     * @param idConcept
+     * @param idUser
+     */
+    public void addManualAlignement(String idTheso, String idConcept, int idUser) {
+        FacesMessage msg;
+        AlignmentHelper alignmentHelper = new AlignmentHelper();
+        // ajout de l'alignement séléctionné
+        if (!alignmentHelper.addNewAlignment(connect.getPoolConnexion(),
+                idUser,
+                "",
+                selectedAlignement,
+                manualAlignmentUri,
+                selectedAlignementType,
+                idConcept, idTheso,
+                -1)) {
+            alignementResult = "Erreur pendant l'ajout de l'alignement: " + alignmentHelper.getMessage();
+            alignmentInProgress = false;
+            selectedNodeAlignment = null;
+            resetVariables();
+            error = true;
+            return;
+        }
+
+        alignementResult = alignementResult + alignmentHelper.getMessage();
+        selectedNodeAlignment = null;
+        alignmentInProgress = false;
+        //conceptView.getConcept(idTheso, idConcept, conceptView.getSelectedLang());
+
+        updateDateOfConcept(idTheso, idConcept, idUser);
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        isViewResult = true;
+        isViewSelection = false;
+        setExistingAlignment(idConcept, idTheso);
+
+        getIdsAndValues2(conceptView.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        //getIdsAndValues(selectedTheso.getCurrentLang(), idTheso);
+
+        resetVariables();
+    }    
 
     /**
      *
@@ -1891,7 +1949,7 @@ public class AlignmentBean implements Serializable {
         resetVariables();
     }
 
-    public void validManualAlignment() {
+    public void validManualAlignment(String idTheso, String idConcept, int idUser) {
         isViewResult = false;
         isViewSelection = false;
         setExistingAlignment(
@@ -1900,6 +1958,15 @@ public class AlignmentBean implements Serializable {
         selectedNodeAlignment = null;
         alignmentInProgress = false;
         listAlignValues = null;
+        
+        updateDateOfConcept(idTheso, idConcept, idUser);
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        isViewResult = true;
+        isViewSelection = false;
+        setExistingAlignment(idConcept, idTheso);
+        getIdsAndValues2(conceptView.getSelectedLang(), selectedTheso.getCurrentIdTheso());        
         resetVariables();
     }
 
@@ -1951,6 +2018,7 @@ public class AlignmentBean implements Serializable {
         if (selectedAlignement == null) {
             return;
         }
+        resetAlignmentResult();
         if (selectedAlignement.equalsIgnoreCase("idRefAuteurs")) {
             isNameAlignment = true;
             prepareValuesForIdRef();
@@ -2195,6 +2263,14 @@ public class AlignmentBean implements Serializable {
 
     public void setSelectedLastPositionReportDtos(AlignementElement selectedLastPositionReportDtos) {
         this.selectedLastPositionReportDtos = selectedLastPositionReportDtos;
+    }
+
+    public String getManualAlignmentUri() {
+        return manualAlignmentUri;
+    }
+
+    public void setManualAlignmentUri(String manualAlignmentUri) {
+        this.manualAlignmentUri = manualAlignmentUri;
     }
 
 }

@@ -13,304 +13,301 @@
             margin-left: -0.35rem;
             font-size: 0.7rem;
         }
-   
+
 
     </style>
-
-    <div class="row">
-        <div class="col-12">
-            <h:outputText style="font-weight: bold;margin-top: 10px;" value="#{langueBean.getMsg('candidat.file')} "/>
-            <h:outputText style="font-size: 14px; color: #f47b2a;" value=" (#{candidatBean.candidatSelected.createdBy})" 
-                          title="#{langueBean.getMsg('rightbody.concept.createdBy')} #{candidatBean.candidatSelected.createdBy}"/>
-        </div>
-    </div>
-
-    <!-- prefLabel -->
-    <div class="row" style="margin-top: 10px">
-        <div class="col-12">
-            <h:outputText value="#{langueBean.getMsg('candidat.title')} *"/>
-        </div>
-    </div>
-    <div class="row" id="vote">
-        <div class="col-8">
-            <h:panelGroup id="candidateLabel" rendered="#{!candidatBean.isNewCandidatActivate()}">
-                <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate() }"
-                             value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" >
-                </p:inputText>
-                <p:tooltip for="inputTextCandidate" value="Ne peut être modifié que par le créateur" showDelay="1000" position="top"/>
-            </h:panelGroup>
-            <h:panelGroup id="candidateLabel2" rendered="#{candidatBean.isNewCandidatActivate()}">
-                <p:inputText
-                    value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" >
-                </p:inputText>
-            </h:panelGroup>              
-        </div>
-        <h:panelGroup id="votePanel" rendered="#{!candidatBean.isNewCandidatActivate()}">
-            <div class="col-1" style="margin-top: 8px">
-                <p:commandButton rendered="#{candidatBean.candidatSelected.voted}"
-                                 actionListener="#{candidatBean.addVote()}"  update="votePanel"
-                                 styleClass="rounded-button ui-button-outlined"
-                                 icon="fas fa-thumbs-up" style="color : #E45C00;"/>
-
-                <p:commandButton rendered="#{!candidatBean.candidatSelected.voted}"
-                                 actionListener="#{candidatBean.addVote()}" update="votePanel"
-                                 styleClass="rounded-button ui-button-outlined"
-                                 icon="fas fa-thumbs-down" style="color: #666666"/>
+        <div class="row">
+            <div class="col-12">
+                <h:outputText style="font-weight: bold;margin-top: 10px;" value="#{langueBean.getMsg('candidat.file')} "/>
+                <h:outputText style="font-size: 14px; color: #f47b2a;" value=" (#{candidatBean.candidatSelected.createdBy})" 
+                              title="#{langueBean.getMsg('rightbody.concept.createdBy')} #{candidatBean.candidatSelected.createdBy}"/>
             </div>
+        </div>
+
+        <!-- prefLabel -->
+        <div class="row" style="margin-top: 10px">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('candidat.title')} *"/>
+            </div>
+        </div>
+        <div class="row" id="vote">
+            <div class="col-8">
+                <h:panelGroup id="candidateLabel" rendered="#{!candidatBean.isNewCandidatActivate()}">
+                    <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate() }"
+                                 value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" >
+                    </p:inputText>
+                    <p:tooltip for="inputTextCandidate" value="Ne peut être modifié que par le créateur" showDelay="1000" position="top"/>
+                </h:panelGroup>
+                <h:panelGroup id="candidateLabel2" rendered="#{candidatBean.isNewCandidatActivate()}">
+                    <p:inputText
+                        value="#{candidatBean.candidatSelected.nomPref}" style="width: 100%; height: 35px" >
+                    </p:inputText>
+                </h:panelGroup>              
+            </div>
+            <h:panelGroup id="votePanel" rendered="#{!candidatBean.isNewCandidatActivate()}">
+                <div class="col-1" style="margin-top: 8px">
+                    <p:commandButton rendered="#{candidatBean.candidatSelected.voted}"
+                                     actionListener="#{candidatBean.addVote()}"  update="votePanel"
+                                     styleClass="rounded-button ui-button-outlined"
+                                     icon="fas fa-thumbs-up" style="color : #E45C00;"/>
+
+                    <p:commandButton rendered="#{!candidatBean.candidatSelected.voted}"
+                                     actionListener="#{candidatBean.addVote()}" update="votePanel"
+                                     styleClass="rounded-button ui-button-outlined"
+                                     icon="fas fa-thumbs-down" style="color: #666666"/>
+                </div>
+            </h:panelGroup>
+        </div>
+
+        <!-- pour la première définition qui est obligatoire-->      
+        <h:panelGroup id="candidateDef" rendered="#{candidatBean.isNewCandidatActivate()}">
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-12">
+                    <h:outputText value="#{langueBean.getMsg('candidat.definition')} *" style="margin-top: 15px;"/>
+                </div>
+            </div>
+            <div class="row">    
+                <div class="col-10">
+                    <p:textEditor id="textEditorDef" widgetVar="DefinitionNew"
+                                  value="#{candidatBean.definition}" allowLinks="true" 
+                                  secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
+                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
+                    </p:textEditor>   
+                </div>
+            </div>          
         </h:panelGroup>
-    </div>
 
 
-    <!-- pour la première définition qui est obligatoire-->      
-    <h:panelGroup id="candidateDef" rendered="#{candidatBean.isNewCandidatActivate()}">
+        <!-- collection -->
+        <div class="row" style="margin-top: 7px">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('candidat.domaine')}"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8" >
+                <p:autoComplete value="#{candidatBean.candidatSelected.collections}" multiple="true"
+                                var="values" forceSelection="true" completeMethod="#{candidatBean.searchCollection}"                                  
+                                minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue"
+                                scrollHeight="300" style="width: 100%;">
+                    <p:column style="font-size: 12px;">
+                        <h:outputText title="#{values.id}" value="#{values.value}"/>
+                    </p:column>                
+                </p:autoComplete> 
+            </div>
+        </div>
+
+        <!-- pour les relations BT -->    
+        <div class="row" style="margin-top: 7px">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('candidat.generic_term')}" />
+            </div>
+        </div>    
+        <div class="row">    
+            <div class="col-8">
+                <p:autoComplete id="autoBroaderLink" value="#{candidatBean.candidatSelected.termesGenerique}"
+                                multiple="true" var="values" forceSelection="true" style="width: 100%;"
+                                completeMethod="#{candidatBean.searchTerme2}" minQueryLength="1" scrollHeight="300"
+                                itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue">
+                    <p:column style="font-size: 12px;">
+                        <h:outputText style="vertical-align: middle; margin-left: .5rem" title="#{values.id}" value="#{values.value}"/>
+                    </p:column>
+                </p:autoComplete>   
+            </div>
+        </div>
+
+        <!-- pour les relations RT -->       
         <div class="row" style="margin-top: 10px;">
             <div class="col-12">
-                <h:outputText value="#{langueBean.getMsg('candidat.definition')} *" style="margin-top: 15px;"/>
+                <h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <p:autoComplete id="autoRelatedLink" value="#{candidatBean.candidatSelected.termesAssocies}"
+                                multiple="true" var="values" forceSelection="true" style="width: 100%"
+                                completeMethod="#{candidatBean.searchTerme2}" minQueryLength="1" scrollHeight="300" 
+                                itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue" >
+                    <p:column  style="font-size: 12px;">
+                        <h:outputText title="#{values.id}" value="#{values.value}" />
+                    </p:column>
+                </p:autoComplete>               
+            </div>
+        </div>
+
+        <!-- pour les synonymes -->     
+        <div class="row" style="margin-top: 10px;">
+            <div class="col-12">
+                <h:outputText value="#{langueBean.getMsg('candidat.used_for')}" style="margin-top: 15px;"/>
             </div>
         </div>
         <div class="row">    
             <div class="col-10">
-                <p:textEditor id="textEditorDef" widgetVar="Definition1"
-                              value="#{candidatBean.definition}" allowLinks="true" 
-                              secure="false" height="200" style="font-size: 12px; color: black; border-color: #43B572" 
-                              placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}">
-                </p:textEditor>   
-            </div>
-        </div>          
-    </h:panelGroup>
-
-
-    <!-- collection -->
-    <div class="row" style="margin-top: 7px">
-        <div class="col-12">
-            <h:outputText value="#{langueBean.getMsg('candidat.domaine')}"/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-8" >
-            <p:autoComplete value="#{candidatBean.candidatSelected.collections}" multiple="true"
-                            var="values" forceSelection="true" completeMethod="#{candidatBean.searchCollection}"                                  
-                            minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue"
-                            scrollHeight="300" style="width: 100%;">
-                <p:column style="font-size: 12px;">
-                    <h:outputText title="#{values.id}" value="#{values.value}"/>
-                </p:column>                
-            </p:autoComplete> 
-        </div>
-    </div>
-
-    <!-- pour les relations BT -->    
-    <div class="row" style="margin-top: 7px">
-        <div class="col-12">
-            <h:outputText value="#{langueBean.getMsg('candidat.generic_term')}" />
-        </div>
-    </div>    
-    <div class="row">    
-        <div class="col-8">
-            <p:autoComplete id="autoBroaderLink" value="#{candidatBean.candidatSelected.termesGenerique}"
-                            multiple="true" var="values" forceSelection="true" style="width: 100%;"
-                            completeMethod="#{candidatBean.searchTerme2}" minQueryLength="1" scrollHeight="300"
-                            itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue">
-                <p:column style="font-size: 12px;">
-                    <h:outputText title="#{values.id}" value="#{values.value}"/>
-                </p:column>
-            </p:autoComplete>   
-        </div>
-    </div>
-
-    <!-- pour les relations RT -->       
-    <div class="row" style="margin-top: 10px;">
-        <div class="col-12">
-            <h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-8">
-            <p:autoComplete id="autoRelatedLink" value="#{candidatBean.candidatSelected.termesAssocies}"
-                            multiple="true" var="values" forceSelection="true" style="width: 100%"
-                            completeMethod="#{candidatBean.searchTerme2}" minQueryLength="1" scrollHeight="300" 
-                            itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue" >
-                <p:column  style="font-size: 12px;">
-                    <h:outputText title="#{values.id}" value="#{values.value}" />
-                </p:column>
-            </p:autoComplete>               
-        </div>
-    </div>
-
-    <!-- pour les synonymes -->     
-    <div class="row" style="margin-top: 10px;">
-        <div class="col-12">
-            <h:outputText value="#{langueBean.getMsg('candidat.used_for')}" style="margin-top: 15px;"/>
-        </div>
-    </div>
-    <div class="row">    
-        <div class="col-10">
-            <p:inputText value="#{candidatBean.candidatSelected.employePour}"
-                         placeholder="Entrer ou virgule pour un autre label"  style="width: 100%"/>
-        </div>
-    </div>
-
-
-
-    <!-- Validation et enregistrement des nouvelles données ci-dessus -->
-    <div class="row" style="margin-top: 10px">
-        <div class="col-8" style="text-align: right" >
-            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
-                             icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
-                             oncomplete="PF('addTraduction').hide();" 
-                             ajax="true" process="@this"
-                             actionListener="#{candidatBean.setIsListCandidatsActivate(true)}"
-                             action="#{candidatBean.getAllCandidatsByThesoAndLangue()}"
-                             update="tabViewCandidat"/>
-
-        </div>        
-        <div class="col-2" style="text-align: right" >
-            <p:commandButton value="#{langueBean.getMsg('candidat.save')}" ajax="true"
-                             icon="pi pi-check"
-                             styleClass="ui-button-success" actionListener="#{candidatBean.saveConcept()}"
-                             update="messageIndex" />
-        </div>
-    </div>
-
-    <!-- pour les 2 sections ci-dessous, l'enregistrement des données est automatique -->
-    <h:panelGroup id="candidateInfos" rendered="#{!candidatBean.isNewCandidatActivate()}" style="margin: 10px;" >
-
-
-        <!-- gestion des notes -->
-        <div class="row">
-            <div class="col-12">
-                <p:commandLink value="#{langueBean.getMsg('rightbody.concept.add_note')}" actionListener="#{noteBeanCandidat.reset()}" 
-                               oncomplete="PF('newNote').show();" update="idNewNote" ajax="true" process="@this">
-                    <a class="fas fa-plus-circle" style="color: #f47b2a"  />
-                </p:commandLink>
+                <p:inputText value="#{candidatBean.candidatSelected.employePour}"
+                             placeholder="Entrer ou virgule pour un autre label"  style="width: 100%"/>
             </div>
         </div>
 
-        <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes == null ||
-                                  candidatBean.candidatSelected.nodeNotes.size() == 0}">
+
+
+        <!-- Validation et enregistrement des nouvelles données ci-dessus -->
+        <div class="row" style="margin-top: 10px">
+            <div class="col-8" style="text-align: right" >
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                                                  
+                                 actionListener="#{candidatBean.setIsListCandidatsActivate(true)}"
+                                 action="#{candidatBean.getAllCandidatsByThesoAndLangue()}"
+                                 update="tabViewCandidat"/>
+
+            </div>        
+            <div class="col-2" style="text-align: right" >
+                <p:commandButton value="#{langueBean.getMsg('candidat.save')}" 
+                                 icon="pi pi-check" 
+                                 styleClass="ui-button-success" action="#{candidatBean.saveConcept()}"
+                                 update="messageIndex" />
+            </div>
+        </div>
+
+        <!-- pour les 2 sections ci-dessous, l'enregistrement des données est automatique -->
+        <h:panelGroup id="candidateInfos" rendered="#{!candidatBean.isNewCandidatActivate()}" style="margin: 10px;" >
+
+
+            <!-- gestion des notes -->
             <div class="row">
                 <div class="col-12">
-                    <h:outputText value="Aucune note pour le moment ..." style="color: grey; font-style: italic"/>
+                    <p:commandLink value="#{langueBean.getMsg('rightbody.concept.add_note')}" actionListener="#{noteBeanCandidat.reset()}" 
+                                   oncomplete="PF('newNote').show();" update="idNewNote" ajax="true" process="@this">
+                        <a class="fas fa-plus-circle" style="color: #f47b2a"  />
+                    </p:commandLink>
                 </div>
             </div>
-        </h:panelGroup>
 
-        <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}" >
-            <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
-                <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
-                     tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}" tooltip-delay-show="500">
-                    <div class="col-4" >
-                        <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                    </div>
-                    <div class="col-2" >
-                        <h:outputText value="#{candidatBean.getUserName(note.idUser)}" escape="false" style="font-size: 14px;"/>
-                    </div>                    
-                    <div class="col-2" >
-                        <h:outputText value="#{note.notetypecode}" escape="false" style="font-size: 14px;"/>
-                    </div>
-                    <div class="col-1" >
-                        <h:outputText value="#{note.lang}" style="font-size: 14px;"/>
-                    </div>
-                    <div class="col-1" >                        
-                        <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}"
-                                         styleClass="rounded-button ui-button-outlined" icon="fas fa-pen" process="@this"
-                                         actionListener="#{noteBeanCandidat.resetEditNode(note)}" update="editNoteForm"
-                                         oncomplete="PF('editNote').show();" style="color: #43B572"/>
-
-                    </div>
-                    <div class="col-1" >
-                        <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" icon="pi pi-trash" 
-                                         styleClass="rounded-button ui-button-danger ui-button-outlined" process="@this" ajax="true"
-                                         actionListener="#{noteBeanCandidat.setSelectedNodeNote(note)}" update="idDeleteNote"
-                                         oncomplete="PF('deleteNote').show();" />
-                    </div>
-                    <div class="col-1" >
-                        <p:commandButton rendered="#{note.voted}" actionListener="#{candidatBean.addNoteVote(note)}"
-                                         update="tabViewCandidat messageIndex" ajax="true" process="@this"
-                                         styleClass="rounded-button ui-button-outlined"
-                                         icon="fas fa-thumbs-up" style="color: #E45C00; "/>
-
-                        <p:commandButton rendered="#{!note.voted}" update="tabViewCandidat messageIndex"
-                                         icon="fas fa-thumbs-down" styleClass="rounded-button ui-button-outlined"
-                                         actionListener="#{candidatBean.addNoteVote(note)}" ajax="true" process="@this"
-                                         style="color: #666666"/>
+            <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes == null ||
+                                      candidatBean.candidatSelected.nodeNotes.size() == 0}">
+                <div class="row">
+                    <div class="col-12">
+                        <h:outputText value="Aucune note pour le moment ..." style="color: grey; font-style: italic"/>
                     </div>
                 </div>
-            </ui:repeat>
-        </h:panelGroup>
+            </h:panelGroup>
 
-        <!-- gestion des traductions -->
-        <div class="row" style="margin-top: 20px">
-            <div class="col-12">
-                <p:commandLink value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" update="idNewTraduction newTraductionForm"
-                               oncomplete="PF('newTraduction').show();" actionListener="#{traductionService.init()}">
-                    <a class="fas fa-plus-circle" style="color: #f47b2a" />
-                </p:commandLink>
-            </div>
-        </div>
+            <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}" >
+                <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
+                    <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
+                         tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}" tooltip-delay-show="500">
+                        <div class="col-4" >
+                            <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                        </div>
+                        <div class="col-2" >
+                            <h:outputText value="#{candidatBean.getUserName(note.idUser)}" escape="false" style="font-size: 14px;"/>
+                        </div>                    
+                        <div class="col-2" >
+                            <h:outputText value="#{note.notetypecode}" escape="false" style="font-size: 14px;"/>
+                        </div>
+                        <div class="col-1" >
+                            <h:outputText value="#{note.lang}" style="font-size: 14px;"/>
+                        </div>
+                        <div class="col-1" >                        
+                            <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}"
+                                             styleClass="rounded-button ui-button-outlined" icon="fas fa-pen" process="@this"
+                                             actionListener="#{noteBeanCandidat.resetEditNode(note)}" update="editNoteForm"
+                                             oncomplete="PF('editNote').show();" style="color: #43B572"/>
 
-        <h:panelGroup rendered="#{candidatBean.candidatSelected.traductions.size() == 0}" style="margin-top: 10px">
-            <div class="row">
+                        </div>
+                        <div class="col-1" >
+                            <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" icon="pi pi-trash" 
+                                             styleClass="rounded-button ui-button-danger ui-button-outlined" process="@this" ajax="true"
+                                             actionListener="#{noteBeanCandidat.setSelectedNodeNote(note)}" update="idDeleteNote"
+                                             oncomplete="PF('deleteNote').show();" />
+                        </div>
+                        <div class="col-1" >
+                            <p:commandButton rendered="#{note.voted}" actionListener="#{candidatBean.addNoteVote(note)}"
+                                             update="tabViewCandidat messageIndex" ajax="true" process="@this"
+                                             styleClass="rounded-button ui-button-outlined"
+                                             icon="fas fa-thumbs-up" style="color: #E45C00; "/>
+
+                            <p:commandButton rendered="#{!note.voted}" update="tabViewCandidat messageIndex"
+                                             icon="fas fa-thumbs-down" styleClass="rounded-button ui-button-outlined"
+                                             actionListener="#{candidatBean.addNoteVote(note)}" ajax="true" process="@this"
+                                             style="color: #666666"/>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </h:panelGroup>
+
+            <!-- gestion des traductions -->
+            <div class="row" style="margin-top: 20px">
                 <div class="col-12">
-                    <h:outputText  value="Aucune traduction pour le moment ..." style="color: grey; font-style: italic " />
-                </div>
-            </div>
-        </h:panelGroup>
-
-        <h:panelGroup rendered="#{candidatBean.candidatSelected.traductions.size() > 0}" style="margin-top: 10px">
-            <div class="row" style="font-size: 12px; color: #666666">
-                <div class="col-4" style="margin-top: -2px;">
-                    <h:outputText value="#{langueBean.getMsg('candidat.language')}"/>
-                </div>
-                <div class="col-4">
-                    <h:outputText value="#{langueBean.getMsg('candidat.traduction')}"/>
-                </div>
-                <div class="col-2">
-                    <h:outputText value="#{langueBean.getMsg('candidat.edit')}"/>
-                </div>
-                <div class="col-2">
-                    <h:outputText value="#{langueBean.getMsg('candidat.remove')}"/>
+                    <p:commandLink value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" update="idNewTraduction newTraductionForm"
+                                   oncomplete="PF('newTraduction').show();" actionListener="#{traductionService.init()}">
+                        <a class="fas fa-plus-circle" style="color: #f47b2a" />
+                    </p:commandLink>
                 </div>
             </div>
 
-            <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
-                <div class="row" style="background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.traductions.indexOf(traduction))};
-                     padding-top: 5px" >
-                    <div class="col-4" style="margin-top: -2px;">
-                        <h:outputText value="#{traduction.langue}" style="font-size: 14px;"/>
+            <h:panelGroup rendered="#{candidatBean.candidatSelected.traductions.size() == 0}" style="margin-top: 10px">
+                <div class="row">
+                    <div class="col-12">
+                        <h:outputText  value="Aucune traduction pour le moment ..." style="color: grey; font-style: italic " />
                     </div>
-                    <div class="col-4" style="margin-top: -2px;">
-                        <h:outputText value="#{traduction.traduction}" style="font-size: 14px;"/>
-                    </div>
-                    <div class="col-2" style="margin-top: -2px;">
-                        <p:commandButton icon="fas fa-pen"
-                                         style="color: #43B572"
-                                         update=":manage-traduction-content"
-                                         oncomplete="PF('editTraduction').show();" 
-                                         actionListener="#{traductionService.init(traduction)}" process="@this"
-                                         styleClass="rounded-button ui-button-outlined">
-                            <p:resetInput target=":manage-traduction-content"/>
-                        </p:commandButton>
-                    </div>
+                </div>
+            </h:panelGroup>
 
+            <h:panelGroup rendered="#{candidatBean.candidatSelected.traductions.size() > 0}" style="margin-top: 10px">
+                <div class="row" style="font-size: 12px; color: #666666">
+                    <div class="col-4" style="margin-top: -2px;">
+                        <h:outputText value="#{langueBean.getMsg('candidat.language')}"/>
+                    </div>
+                    <div class="col-4">
+                        <h:outputText value="#{langueBean.getMsg('candidat.traduction')}"/>
+                    </div>
                     <div class="col-2">
-                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
-                                         actionListener="#{traductionService.init(traduction)}" update="confirmDeleteForm"
-                                         oncomplete="PF('confirmDeleteTraduction').show();" />
+                        <h:outputText value="#{langueBean.getMsg('candidat.edit')}"/>
+                    </div>
+                    <div class="col-2">
+                        <h:outputText value="#{langueBean.getMsg('candidat.remove')}"/>
                     </div>
                 </div>
-            </ui:repeat>
+
+                <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
+                    <div class="row" style="background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.traductions.indexOf(traduction))};
+                         padding-top: 5px" >
+                        <div class="col-4" style="margin-top: -2px;">
+                            <h:outputText value="#{traduction.langue}" style="font-size: 14px;"/>
+                        </div>
+                        <div class="col-4" style="margin-top: -2px;">
+                            <h:outputText value="#{traduction.traduction}" style="font-size: 14px;"/>
+                        </div>
+                        <div class="col-2" style="margin-top: -2px;">
+                            <p:commandButton icon="fas fa-pen"
+                                             style="color: #43B572"
+                                             update=":manage-traduction-content"
+                                             oncomplete="PF('editTraduction').show();" 
+                                             actionListener="#{traductionService.init(traduction)}" process="@this"
+                                             styleClass="rounded-button ui-button-outlined">
+                                <p:resetInput target=":manage-traduction-content"/>
+                            </p:commandButton>
+                        </div>
+
+                        <div class="col-2">
+                            <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
+                                             actionListener="#{traductionService.init(traduction)}" update="confirmDeleteForm"
+                                             oncomplete="PF('confirmDeleteTraduction').show();" />
+                        </div>
+                    </div>
+                </ui:repeat>
+            </h:panelGroup>
         </h:panelGroup>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and candidatBean.isShowCandidatActivate()}">
-        <div class="row" style="margin-bottom: 20px">
-            <div class="col-12" style="align-content: center; margin-top: 10px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.submit')}"
-                                 icon="pi pi-check" styleClass="ui-button-success"
-                                 ajax="true" process="@this"
-                                 actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"
-                                 update="idProcessCandidate processCandidateForm" oncomplete="PF('processCandidate').show();"/>
+        <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) and candidatBean.isShowCandidatActivate()}">
+            <div class="row" style="margin-bottom: 20px">
+                <div class="col-12" style="align-content: center; margin-top: 10px;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.submit')}"
+                                     icon="pi pi-check" styleClass="ui-button-success"
+                                     ajax="true" process="@this"
+                                     actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"
+                                     update="idProcessCandidate processCandidateForm" oncomplete="PF('processCandidate').show();"/>
+                </div>
             </div>
-        </div>
-    </h:panelGroup>
+        </h:panelGroup>
 </ui:fragment>

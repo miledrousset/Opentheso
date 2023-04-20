@@ -71,6 +71,7 @@ public StringPlus() {
             return null;
         }
         // Handle quotes
+        s = s.replaceAll("’", "\'");
         s = s.replaceAll("\\'", "''");
         // Handle backslashes (You like the Java style...)
         s = s.replaceAll("\\\\", "\\\\\\\\");

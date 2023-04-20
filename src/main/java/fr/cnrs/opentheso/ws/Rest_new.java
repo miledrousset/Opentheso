@@ -1279,7 +1279,8 @@ public class Rest_new {
         String filter = null;
         boolean showLabels = false;
         String idArk;
-
+        String match = null; // match=exact (pour limiter la recherche aux termes exactes) match=exactone (pour chercher les prefLable, s'il n'existe pas, on cherche sur les altLabels
+        
         String datas;
 
         MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
@@ -1331,6 +1332,10 @@ public class Rest_new {
                     if(valeur.equalsIgnoreCase("true"))
                         showLabels = true;
                 }
+                if (e.getKey().equalsIgnoreCase("match")) {
+                    if("exact".equalsIgnoreCase(valeur) || "exactone".equalsIgnoreCase(valeur))
+                        match = valeur;
+                }                  
             }
         }
         if (value == null) {
@@ -1378,7 +1383,7 @@ public class Rest_new {
         switch (format) {
             case "rdf": {
                 format = "application/rdf+xml";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
                 }
@@ -1390,7 +1395,7 @@ public class Rest_new {
             }
             case "jsonld":
                 format = "application/ld+json";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
@@ -1401,7 +1406,7 @@ public class Rest_new {
                         .build();
             case "turtle":
                 format = "text/turtle";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
                 }
@@ -1412,7 +1417,7 @@ public class Rest_new {
                         .build();
             case "json":
                 format = "application/json";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter);
+                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
                 if (datas == null) {
                     return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
                 }
@@ -1440,27 +1445,25 @@ public class Rest_new {
             String idTheso, String idLang,
             String [] groups,
             String value,
-            String format, String filter) {
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return null;
-        }
+            String format, String filter,
+            String match) {
         String datas;
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-
-        if (filter != null) {
-            switch (filter) {
-                case "notation:":
-                    value = value.substring(value.indexOf(":") + 1);
-                    datas = restRDFHelper.findNotation(ds, idTheso, value, format);
-                    ds.close();
-                    return datas;
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return null;
             }
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            if (filter != null) {
+                switch (filter) {
+                    case "notation:":
+                        value = value.substring(value.indexOf(":") + 1);
+                        datas = restRDFHelper.findNotation(ds, idTheso, value, format);
+                        ds.close();
+                        return datas;
+                }
+            }   datas = restRDFHelper.findConcepts(ds,
+                    idTheso, idLang, groups, value, format, match);
         }
-
-        datas = restRDFHelper.findConcepts(ds,
-                idTheso, idLang, groups, value, format);
-        ds.close();
         if (datas == null) {
             return null;
         }

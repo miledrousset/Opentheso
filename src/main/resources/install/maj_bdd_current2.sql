@@ -500,6 +500,39 @@ begin
 end
 $$language plpgsql;
 
+-- proposition : ajout de la colonne commentaire de l'administrateur
+--
+create or replace function update_table_proposition_modification() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='proposition_modification' AND column_name='admin_comment') THEN
+        execute 'ALTER TABLE proposition_modification ADD COLUMN admin_comment character varying COLLATE pg_catalog."default";';
+END IF;
+end
+$$language plpgsql;
+
+
+-- Préférences : ajout des options pour qualifier, attribute et attitude
+--
+create or replace function update_table_preferences_custom_relation() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='use_custom_relation') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN use_custom_relation boolean DEFAULT false;';
+END IF;
+end
+$$language plpgsql;
+
+-- Mise à jour de la table Concept_type 
+--
+create or replace function update_table_concept_type2() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept_type' AND column_name='reciprocal') THEN
+        execute 'ALTER TABLE concept_type ADD COLUMN reciprocal boolean DEFAULT false;
+                 ALTER TABLE concept_type ADD COLUMN id_theso character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''all''::character varying;';
+    END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -528,6 +561,9 @@ SELECT update_table_preferences_displayUserName();
 SELECT update_table_preferences_suggestion();
 SELECT update_table_note_source();
 SELECT update_table_gps_constraint();
+SELECT update_table_proposition_modification();
+SELECT update_table_preferences_custom_relation();
+SELECT update_table_concept_type2();
 
 
 
@@ -561,9 +597,9 @@ SELECT delete_fonction('update_table_preferences_displayUserName', '');
 SELECT delete_fonction('update_table_preferences_suggestion', '');
 SELECT delete_fonction('update_table_note_source', '');
 SELECT delete_fonction('update_table_gps_constraint', '');
-
-
-
+SELECT delete_fonction('update_table_proposition_modification', '');
+SELECT delete_fonction('update_table_preferences_custom_relation', '');
+SELECT delete_fonction('update_table_concept_type2', '');
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');
@@ -594,7 +630,7 @@ ces (T)', 'Czech', 'tchèque', 34, 'cz');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('da', 'dan', 'Danish', 'danois', 35, 'dk');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('sq', 'alb (B)
 sqi (T)', 'Albanian', 'albanais', 6, 'al');
-INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('ar', 'ara', 'Arabic', 'arabe', 8, 'lb');
+INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('ar', 'ara', 'Arabic', 'arabe', 8, 'dad');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('be', 'bel', 'Belarusian', 'biélorusse', 18, 'by');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('bs', 'bos', 'Bosnian', 'bosniaque', 22, 'ba');
 INSERT INTO public.languages_iso639 (iso639_1, iso639_2, english_name, french_name, id, code_pays) VALUES ('bg', 'bul', 'Bulgarian', 'bulgare', 24, 'bg');
@@ -1718,6 +1754,28 @@ END;
 $BODY$;
 
 
+CREATE OR REPLACE procedure opentheso_add_custom_relations(
+	id_thesaurus character varying,
+	relations text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@@';
+	
+	relations_rec record;
+	array_string   text[];
+BEGIN
+
+	FOR relations_rec IN SELECT unnest(string_to_array(relations, seperateur)) AS relation_value
+    LOOP
+		SELECT string_to_array(relations_rec.relation_value, sous_seperateur) INTO array_string;
+		
+		INSERT INTO hierarchical_relationship (id_concept1, id_thesaurus, role, id_concept2) 
+			VALUES (array_string[1], id_thesaurus, array_string[2], array_string[3]) ON CONFLICT DO NOTHING; 
+	END LOOP;
+END;
+$BODY$;
 
 
 CREATE OR REPLACE procedure opentheso_add_notes(
@@ -1841,6 +1899,7 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	id_con character varying,
 	id_user int,
 	conceptStatus character varying,
+        conceptType text,
 	notationConcept character varying,
 	id_ark character varying, 
 	isTopConcept Boolean, 
@@ -1848,6 +1907,7 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	id_doi character varying,
 	prefterms text,
 	relation_hiarchique text,
+	custom_relation text,
 	notes text,
 	non_pref_terms text,
 	alignements text,
@@ -1868,8 +1928,8 @@ DECLARE
     replaces_rec record;
 BEGIN
 
-	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
-		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
+	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, concept_type, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
+		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, conceptType, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
 		
 	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
 		
@@ -1885,6 +1945,12 @@ BEGIN
 			CALL opentheso_add_hierarchical_relations(id_thesaurus, relation_hiarchique);
 		END IF;
 		
+		IF (custom_relation IS NOT NULL AND custom_relation != 'null') THEN
+			-- 'id_concept1@role@id_concept2'
+			CALL opentheso_add_custom_relations(id_thesaurus, custom_relation);
+		END IF;
+
+
 		IF (notes IS NOT NULL AND notes != 'null') THEN
 			-- 'value@typeCode@lang@id_term'
 			CALL opentheso_add_notes(id_new_concet, id_thesaurus, id_user, notes);

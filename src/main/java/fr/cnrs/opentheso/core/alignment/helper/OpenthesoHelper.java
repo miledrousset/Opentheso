@@ -26,13 +26,14 @@ import javax.net.ssl.HttpsURLConnection;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.core.alignment.SelectedResource;
-import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
+import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import org.eclipse.rdf4j.rio.RDFFormat;
 
 /**
  *
@@ -135,14 +136,14 @@ public class OpenthesoHelper {
             String idC, String idLang, String idTheso, String source) {
 
         ArrayList<NodeAlignment> listAlignValues = new ArrayList<>();
-    //    StringBuffer sb = new StringBuffer(xmlDatas);
         
         InputStream inputStream;
         SKOSXmlDocument sxd;
         try {
             inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
-            ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, idLang); /// read XML SKOS
-            sxd = readRdf4j.getsKOSXmlDocument();
+            sxd = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFXML, idLang);
+            //ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, idLang); /// read XML SKOS
+            //sxd = readRdf4j.getsKOSXmlDocument();
 
             for (SKOSResource resource : sxd.getConceptList()) {
                 NodeAlignment na = new NodeAlignment();

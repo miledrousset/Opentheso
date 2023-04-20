@@ -36,6 +36,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -200,6 +201,27 @@ public class RestoreTheso implements Serializable {
         fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction réussie !!!"));
     }      
         
+    /**
+     * permet de supprimer les relations de type (a -> BT -> b et b -> BT -> a ) 
+     * parcours toute la bracnche en partant du concept en paramètre
+     * @param idTheso
+     * @param idConcept
+     */
+    public void deleteLoopRelations(String idTheso, String idConcept){
+        FacesContext fc = FacesContext.getCurrentInstance();           
+        if(StringUtils.isEmpty(idTheso) || StringUtils.isAllEmpty(idConcept)) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur manque de paramètres")); 
+            return;            
+        } 
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> listIds = conceptHelper.getIdsOfBranchWithoutLoop(connect.getPoolConnexion(), idConcept, idTheso);
+        ToolsHelper toolsHelper = new ToolsHelper();
+        for (String id : listIds) {
+            toolsHelper.removeLoopRelation(connect.getPoolConnexion(), idTheso, id);            
+        }
+        fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction terminée")); 
+
+    }
         
     public void reorganizing(String idTheso) {
         if(idTheso == null || idTheso.isEmpty()) return;
@@ -212,7 +234,7 @@ public class RestoreTheso implements Serializable {
             return;
         }
 
-        // permet de detecter les concepts TT erronnés : si le concept n'a pas de BT, alors, il est forcement TopTerme (en ignorant les candidtas)
+        // permet de detecter les concepts TT erronnés : si le concept n'a pas de BT, alors, il est forcement TopTerme (en ignorant les candidats)
         if(!reorganizingTopTerm(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la correction des TT")); 
             return;            
@@ -224,14 +246,14 @@ public class RestoreTheso implements Serializable {
             return;              
         }
 
-        // permet de supprimer les BT pour un TopTerm, c'est incohérent
-        if(!removeBTofTopTerm(idTheso)){
+        // permet de detecter si le concept à un BT et il est aussi TopTerm, c'est incohérent, il faut alors supprimer le status TopTerm
+        if(!removeTopTermForConceptWithBT(idTheso)){
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des BT pour les topTermes")); 
             return;             
         }
 
         // permet de supprimer les relations en boucle (100 -> BT -> 100) ou  (100 -> NT -> 100)ou (100 -> RT -> 100)
-        if(!removeLoopRelations(idTheso)){
+        if(!removeSameRelations(idTheso)){
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations en boucle")); 
         }
         fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction réussie !!!"));
@@ -243,15 +265,19 @@ public class RestoreTheso implements Serializable {
     private boolean reorganizingTheso(String idTheso) {
         return new ToolsHelper().reorganizingTheso(connect.getPoolConnexion(), idTheso);
     }        
-    private boolean removeBTofTopTerm(String idTheso){
+/*    private boolean removeBTofTopTerm(String idTheso){
         return new ToolsHelper().removeBTofTopTerm(connect.getPoolConnexion(), idTheso);
-    }
-    private boolean removeLoopRelations(String idTheso) {
-        if(!new ToolsHelper().removeLoopRelations(connect.getPoolConnexion(), "BT", idTheso))
+    }*/
+    private boolean removeTopTermForConceptWithBT(String idTheso){
+        return new ToolsHelper().removeTopTermForConceptWithBT(connect.getPoolConnexion(), idTheso);
+    }    
+    
+    private boolean removeSameRelations(String idTheso) {
+        if(!new ToolsHelper().removeSameRelations(connect.getPoolConnexion(), "BT", idTheso))
             return false;
-        if(!new ToolsHelper().removeLoopRelations(connect.getPoolConnexion(), "NT", idTheso))
+        if(!new ToolsHelper().removeSameRelations(connect.getPoolConnexion(), "NT", idTheso))
             return false;
-        return new ToolsHelper().removeLoopRelations(connect.getPoolConnexion(), "RT", idTheso);
+        return new ToolsHelper().removeSameRelations(connect.getPoolConnexion(), "RT", idTheso);
     }    
     
     public void switchRolesFromTermToConcept(String idTheso) {

@@ -66,7 +66,7 @@ public class MessageDao {
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeQuery(new StringBuffer("SELECT users.id_user, users.username, cand.value, cand.date FROM candidat_messages cand, users ")
                     .append("WHERE id_concept = '").append(idconcept).append("' AND id_thesaurus = '")
-                    .append(idThesaurus).append("' AND cand.id_user = users.id_user").toString());
+                    .append(idThesaurus).append("' AND cand.id_user = users.id_user order by cand.date").toString());
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         MessageDto messageDto = new MessageDto();

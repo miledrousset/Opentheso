@@ -80,6 +80,16 @@ public class PropositionBean implements Serializable {
             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
             editorialNotesAccepted, examplesAccepted, historyAccepted;
 
+    public void init(){
+        nom = "";
+        email = "";
+        commentaire = "";
+        commentaireAdmin = "";
+        message = "";
+        propositionSelected = null;
+        propositions = null;
+    }
+    
     public void onSelectConcept(PropositionDao propositionDao) throws IOException {
 
         this.propositionSelected = propositionDao;
@@ -107,7 +117,9 @@ public class PropositionBean implements Serializable {
 
         nom = propositionDao.getNom();
         email = propositionDao.getEmail();
-
+        commentaire = propositionDao.getCommentaire();
+        commentaireAdmin = propositionDao.getAdminComment();
+        
         chercherProposition();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
         
@@ -126,6 +138,8 @@ public class PropositionBean implements Serializable {
         checkSynonymPropositionStatus();
         checkTraductionPropositionStatus();
         checkNotePropositionStatus();
+        
+        PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
     public void checkSynonymPropositionStatus() {
@@ -308,7 +322,7 @@ public class PropositionBean implements Serializable {
     }
 
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
-
+        init();
         isRubriqueVisible = true;
         if(currentUser.getNodeUser() == null)
             rightBodySetting.setIndex("2");
@@ -373,6 +387,10 @@ public class PropositionBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("rightbody.proposal.alertEmptyMail"));
             return;
         }
+        if (StringUtils.isEmpty(commentaire)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.send_message.msg1"));
+            return;
+        }        
 
         if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent() && !isTraductionProPresent()
                 && !isNoteProPresent() && !isChangeNoteProPresent() && !isDefinitionProPresent()

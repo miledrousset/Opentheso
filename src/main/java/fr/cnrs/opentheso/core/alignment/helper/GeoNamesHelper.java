@@ -232,8 +232,9 @@ public class GeoNamesHelper {
             ArrayList<String> languages) {
         ArrayList<SelectedResource> traductions = new ArrayList<>();
 
-        String lang = null;
-        String value = null;        
+        String lang;
+        String value;  
+        boolean isPreferredName;
         
         // lecture du fichier Json des langues
         JsonArray dataArray;
@@ -241,17 +242,20 @@ public class GeoNamesHelper {
         try (JsonReader reader = Json.createReader(new StringReader(jsonDatas))) {
             dataObject = reader.readObject();
             dataArray= dataObject.getJsonArray("alternateNames");
+            
             for(int i = 0; i < dataArray.size(); ++i) {
                 dataObject = dataArray.getJsonObject(i);
 
                 try {
                     lang = dataObject.getString("lang");
-                    value = dataObject.getString("name");                    
+                    value = dataObject.getString("name");   
+                    isPreferredName = dataObject.getBoolean("isPreferredName"); 
                 } catch (Exception e) {
+                    continue;
                 }
 
 
-                if(lang == null || value == null || lang.isEmpty() || value.isEmpty())  continue;
+                if(lang == null || value == null || lang.isEmpty() || value.isEmpty() || !isPreferredName)  continue;
 
                 if(languages.contains(lang)) {
                     SelectedResource selectedResource = new SelectedResource();

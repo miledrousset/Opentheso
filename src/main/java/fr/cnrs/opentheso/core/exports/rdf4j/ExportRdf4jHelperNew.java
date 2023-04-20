@@ -38,11 +38,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ExportRdf4jHelperNew {
 
-    private String formatDate;
-
-    private boolean useUriArk;
-    private boolean useUriHandle;
-
     private NodePreference nodePreference;
     private SKOSXmlDocument skosXmlDocument;
 
@@ -58,29 +53,11 @@ public class ExportRdf4jHelperNew {
         superGroupHashMap = new HashMap();
     }
 
-    public boolean setInfos(NodePreference nodePreference, String formatDate, boolean useUriArk, boolean useUriHandle) {
-        this.formatDate = formatDate;
-        this.useUriArk = useUriArk;
-        this.useUriHandle = useUriHandle;
+    public boolean setInfos(NodePreference nodePreference) {
         this.nodePreference = nodePreference;
         messages = "";
         return true;
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    //////////////////////// Nouvelles fonctions ///////////////////////////////    
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////    
-    ///// étapes pour exporter un thésaurus sans limitation de langues ni de collections :
-    ///// - export des infos sur le thésaurus
-    ///// - ajout des balises (hasTopConcept) au thésaurus thésaurus
-    ///// - export des collections et les membres
-    ///// - export des concepts 
-    
-    
-    
-    
     
     /**
      * fonction qui permet de récuperer les concepts avec les labels pour les relations RT BT NT
@@ -90,17 +67,16 @@ public class ExportRdf4jHelperNew {
      * @param idLang 
      * @param showLabels 
      */
-    public void addSignleConceptByLang(HikariDataSource ds,
-            String idTheso, String idConcept, String idLang, boolean showLabels) {
-        ConceptHelper conceptHelper = new ConceptHelper();
+    public void addSignleConceptByLang(HikariDataSource ds, String idTheso, String idConcept, String idLang, boolean showLabels) {
+
         SKOSResource sKOSResource = new SKOSResource();
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, false, false);
+        NodeConceptExport nodeConcept = new ConceptHelper().getConceptForExport(ds, idConcept, idTheso,
+                false, false);
 
         if (nodeConcept == null) {
             return;
         }
 
-    //    concept.setUri(getUriFromId(idConcept));
         sKOSResource.setUri(getUri(nodeConcept));
         sKOSResource.setProperty(SKOSProperty.Concept);
 
@@ -109,6 +85,7 @@ public class ExportRdf4jHelperNew {
             if(traduction.getLang().equalsIgnoreCase(idLang))
                 sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.prefLabel);
         }
+
         // altLabel
         for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
             if(nodeEM.getLang().equalsIgnoreCase(idLang)) {
@@ -131,10 +108,7 @@ public class ExportRdf4jHelperNew {
         addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
         addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
         
-        if(showLabels) {
- //           addRelationGivenWithLabel(nodeConcept.getNodeListOfBT(), nodeConcept.getNodeListOfNT(),
- //               nodeConcept.getNodeListIdsOfRT(), sKOSResource, nodeConcept.getConcept().getIdThesaurus(), idLang);            
-        } else {
+        if(!showLabels) {
             addRelationGiven(nodeConcept.getNodeListOfBT(), nodeConcept.getNodeListOfNT(),
                 nodeConcept.getNodeListIdsOfRT(), sKOSResource, nodeConcept.getConcept().getIdThesaurus());
         }
@@ -166,7 +140,6 @@ public class ExportRdf4jHelperNew {
         ArrayList<String> pathFromArray = getPathFromArray(paths);
         if(!pathFromArray.isEmpty())
             sKOSResource.setPaths(pathFromArray);
-    //    sKOSResource.setPath("A/B/C/D/"+idConcept);
         skosXmlDocument.addconcept(sKOSResource);
     }        
     
@@ -396,7 +369,6 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.topConceptOf);
         }
 
-        //    concept.setUri(getUriFromId(idConcept));
         sKOSResource.setUri(getUri(nodeConcept));
         sKOSResource.setLocalUri(getLocalUri(nodeConcept));
         sKOSResource.setProperty(SKOSProperty.Concept);
@@ -723,10 +695,13 @@ public class ExportRdf4jHelperNew {
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////// 
     public String getUriFromId(String id) {
-        
+
         if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty() 
             && !"null".equals(nodePreference.getOriginalUri())) {
-            return nodePreference.getOriginalUri() + "/" + id;
+            if(nodePreference.isOriginalUriIsArk()) {
+                return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
+            }            
+            return nodePreference.getOriginalUri() + "/" + nodePreference.getIdNaan() + "/" + id;
         } else {            
             return getPath() + "/?idt=" + id;
         }

@@ -33,7 +33,7 @@
         <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
     </h:head>
 
-    <h:body id="page-top" onload="initMenu()" style="overflow-x: hidden;">
+    <h:body id="page-top" onload="initMenu();" style="overflow-x: hidden;">
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
@@ -54,10 +54,10 @@
             }
             body .ui-growl .ui-growl-item-container .ui-growl-item {
                 background-color: #ECF8F1;
-            }            
+            }
         </style>
 
-            <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
+        <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
 
         <div id="wrapper" style="height: 100%">
             <ui:include src="commun/menu.xhtml" />
@@ -72,7 +72,7 @@
                         <ui:include src="commun/header.xhtml" />
                     </h:panelGroup>
 
-                    <div id="boutonNotification" style="top: 103px; right: 0; position: absolute; z-index: 10" >
+                    <div id="boutonNotification" style="top: 85px; right: 0; position: absolute; z-index: 10; margin-top: -25px" >
                         <h:panelGroup id="resultSearch" style="z-index: 10">
                             <div style="margin-top: 5px; margin-bottom: -5px; right: 0; margin-right: 11px; z-index: 11;">
                                 <p:commandButton  icon="fa fa-list-ol" style="height: 25px;"
@@ -82,22 +82,12 @@
                             </div>
                         </h:panelGroup>
                     </div>
+
                     <p:panel id="thesorusContent" style="margin-left: 10px; margin-right: 10px; position: relative; padding-bottom: 25px">
 
-                        <div id="notification" style="top: 70px; width: 20%; right: 0px; position: absolute; display: none; z-index: 10" class="card py-3" >
-                            <h:panelGroup id="notificationPanel" >
-                                <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
-                                </h:panelGroup>
-
-                                <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
-                                    <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
-                                </h:panelGroup>
-                            </h:panelGroup>
-                        </div>
-
                         <p:panel id="searchBar">
-                            <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px; width: 100%; margin: 25px;">
+                            <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height: 45px;
+                            width: 100%; margin: 20px;">
                                 <div style="position: relative; height: 100%; width: 100%;" >
                                     <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; ">
                                         <ui:include src="thesaurus/search.xhtml"/>
@@ -106,7 +96,21 @@
                             </div>
                         </p:panel>
 
-                        <div id="contenuPrincipale">
+                        <div id="contenuPrincipale" style="margin-top: -8px">
+
+                            <div id="notification" style="top: 57px; width: 15%; right: 0px; position: absolute;
+                            display: none; z-index: 10; margin-right:10px;" class="card py-3" >
+                                <h:panelGroup id="notificationPanel" >
+                                    <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
+                                        <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
+                                    </h:panelGroup>
+
+                                    <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
+                                        <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+
                             <h:panelGroup id="contentConcept">
                                 <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
                                     <ui:include src="thesaurus/main_thesaurus.xhtml" />
@@ -149,7 +153,7 @@
 
         <ui:include src="dialog/login/login.xhtml" />
         <ui:include src="dialog/login/logout.xhtml" />
-   
+
         <ui:include src="dialog/login/forgetPass.xhtml" />
 
         <script>

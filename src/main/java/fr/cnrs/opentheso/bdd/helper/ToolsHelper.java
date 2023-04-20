@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -335,7 +337,28 @@ public class ToolsHelper {
         }         
         return true;
     }
-         
+          
+    /**
+     * Permet de supprimer le status TopTerm pour les concepts qui ont une relation BT
+     * @param ds
+     * @param idThesaurus
+     * @return 
+     */
+    public boolean removeTopTermForConceptWithBT(HikariDataSource ds, String idThesaurus) {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        RelationsHelper relationsHelper = new RelationsHelper();
+
+        // récupération de tous les Id TT du thésaurus
+        ArrayList<String> tabIdTT = conceptHelper.getAllTopTermOfThesaurus(ds, idThesaurus);
+        for (String idConcept : tabIdTT) {
+            if(relationsHelper.isConceptHaveRelationBT(ds, idConcept, idThesaurus)){
+                conceptHelper.setNotTopConcept(ds, idConcept, idThesaurus);
+            }
+        }
+        return true;
+    }        
+        
+        
     /**
      * Permet de supprimer les BT à un concept qui est Top terme, 
      * c'est incohérent et ca provoque une boucle à l'infini
@@ -343,7 +366,7 @@ public class ToolsHelper {
      * @param idThesaurus
      * @return 
      */
-    public boolean removeBTofTopTerm(HikariDataSource ds, String idThesaurus) {
+/*    public boolean removeBTofTopTerm(HikariDataSource ds, String idThesaurus) {
         ConceptHelper conceptHelper = new ConceptHelper();
         RelationsHelper relationsHelper = new RelationsHelper();
         ArrayList<String> idBTs;
@@ -371,7 +394,7 @@ public class ToolsHelper {
             Logger.getLogger(ToolsHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
-    }
+    }*/
             
     /**
      * Permet de detecter les concepts qui n'ont pas de BT,
@@ -394,6 +417,23 @@ public class ToolsHelper {
     }    
 
     /**
+     * permet de supprimer la relation en boucle de type (a -> BT -> b et b -> BT -> a ) 
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @return 
+     */
+    public boolean removeLoopRelation(HikariDataSource ds, String idTheso, String idConcept) {
+        RelationsHelper relationsHelper = new RelationsHelper();
+        NodeRelation nodeRelation = relationsHelper.getLoopRelation(ds, idTheso, idConcept);
+        if(nodeRelation!= null){
+            relationsHelper.deleteThisRelation(ds, nodeRelation.getIdConcept2(), idTheso, "BT", nodeRelation.getIdConcept1());
+            relationsHelper.deleteThisRelation(ds, nodeRelation.getIdConcept1(), idTheso, "NT", nodeRelation.getIdConcept2());
+        }
+        return true;   
+    }        
+    
+    /**
      * Permet de supprimer les relations en boucle qui sont interdites (100 ->
      * BT -> 100) ou (100 -> NT -> 100)ou (100 -> RT -> 100) c'est incohérent et
      * ca provoque une boucle à l'infini
@@ -402,7 +442,7 @@ public class ToolsHelper {
      * @param idThesaurus
      * @return 
      */
-    public boolean removeLoopRelations(HikariDataSource ds, String role, String idThesaurus) {
+    public boolean removeSameRelations(HikariDataSource ds, String role, String idThesaurus) {
 
         RelationsHelper relationsHelper = new RelationsHelper();
 

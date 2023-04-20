@@ -391,6 +391,7 @@ public class PropositionService implements Serializable {
     }
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
+        //return true;
         return mailBean.sendMail(emailDestination, subject,  contentFile);
   
 
@@ -440,14 +441,14 @@ public class PropositionService implements Serializable {
                 PropositionStatusEnum.REFUSER.name(),
                 currentUser.getNodeUser().getName(),
                 DATE_FORMAT.format(new Date()),
-                propositionSelected.getId());
+                propositionSelected.getId(), commentaireAdmin);
 
         try {
             String subject = "[Opentheso] Résultat de votre proposition";
             String contentFile = "<html><body>"
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Votre proposition d’enrichissement sur le concept " + propositionSelected.getNomConcept() + " du thésaurus " + propositionSelected.getThesoName()
-                    + " a été refusée par les adminisatrateurs.<br/>"
+                    + " a été refusée par les administrateurs.<br/>"
                     + "Voici leur message: <br/>" 
                     + propositionSelected.getAdminComment() + "<br/>"
                     + "N’hésitez pas à faire de nouvelles propositions, nous les étudierons avec attention. <b>" 
@@ -679,7 +680,7 @@ public class PropositionService implements Serializable {
                 PropositionStatusEnum.APPROUVER.name(),
                 currentUser.getNodeUser().getName(),
                 DATE_FORMAT.format(new Date()),
-                propositionSelected.getId());
+                propositionSelected.getId(), commentaireAdmin);
 
         conceptView.getConcept(propositionSelected.getIdTheso(), propositionSelected.getIdConcept(),
                 propositionSelected.getLang());
@@ -690,7 +691,7 @@ public class PropositionService implements Serializable {
                     + "Cher(e) " + propositionSelected.getNom() + ", <br/> "
                     + "<p>Votre proposition d'enrichissement sur le concept " + propositionSelected.getNomConcept()
                     + " du thésaurus " + propositionSelected.getThesoName()
-                    + " a été acceptée par les adminisatrateurs.<br/>"
+                    + " a été acceptée par les administrateurs.<br/>"
                     + " voici leur message : "
                     + propositionSelected.getAdminComment()
                     + "<br/>"

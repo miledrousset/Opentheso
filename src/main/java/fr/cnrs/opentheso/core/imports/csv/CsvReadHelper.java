@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 //import org.apache.commons.csv.CSVFormat;
 //import org.apache.commons.csv.CSVRecord;
 
@@ -40,6 +41,7 @@ public class CsvReadHelper {
     private String uri;
 
     private ArrayList<String> langs;
+    private ArrayList<String> customRelations;    
     private String idLang;
 
     private ArrayList<ConceptObject> conceptObjects;
@@ -630,6 +632,7 @@ public class CsvReadHelper {
 ////////////////////////////////////////////////////////////////////////////////
     public boolean setLangs(Reader in) {
         langs = new ArrayList<>();
+        customRelations = new ArrayList<>();        
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
                     .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
@@ -646,6 +649,15 @@ public class CsvReadHelper {
                         }
                     }
                 }
+                if (columnName.contains("customRelationId")) {
+                    values = columnName.split(":");
+                    if(values.length < 2) continue;
+                    if (values[1] != null) {
+                        if (!customRelations.contains(values[1])) {
+                            customRelations.add(values[1].toLowerCase());//columnName.substring(columnName.indexOf("@"), columnName.indexOf("@" +2)));
+                        }
+                    }
+                }                
             }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
@@ -696,6 +708,10 @@ public class CsvReadHelper {
                     } catch (Exception e) {
                     }
                 }
+                if(StringUtils.isEmpty(conceptObject.getIdConcept())){
+                    message = message + "\n" + "concept sans Id : " + record.toString();
+                    continue;
+                }
 
                 // on récupère l'id Ark s'il existe
                 conceptObject = getArkId(conceptObject, record);
@@ -706,8 +722,11 @@ public class CsvReadHelper {
                 // on récupère les notes
                 conceptObject = getNotes(conceptObject, record, readEmptyData);
 
-                // on récupère le type
+                // on récupère le type de l'enregistrement (concept, collection)
                 conceptObject.setType(getType(record));
+                
+                // on récupérer du concept (People, qualifier ...)
+                conceptObject.setConceptType(getConceptType(record));
 
                 // on récupère la notation
                 conceptObject.setNotation(getNotation(record));
@@ -715,6 +734,9 @@ public class CsvReadHelper {
                 // on récupère les relations (BT, NT, RT)
                 conceptObject = getRelations(conceptObject, record);
 
+                // on récupère les relations (BT, NT, RT)
+                conceptObject = getCustomRelations(conceptObject, record);                
+                
                 // on récupère les alignements 
                 conceptObject = getAlignments(conceptObject, record, readEmptyData);
 
@@ -873,7 +895,7 @@ public class CsvReadHelper {
     }
 
     /**
-     * permet de récupérer le type du concept (collection, groupe ...)
+     * permet de récupérer le type de l'enregistrement (concept, collection, groupe ...)
      *
      * @param record
      * @return
@@ -885,8 +907,25 @@ public class CsvReadHelper {
         } catch (Exception e) {
             //System.err.println("");
         }
-        return type.trim();
+  
+        return type.trim().toLowerCase();
     }
+    
+    /**
+     * permet de récupérer le type du concept (People, qualifier, place ...)
+     *
+     * @param record
+     * @return
+     */
+    private String getConceptType(CSVRecord record) {
+        String conceptType = "";
+        try {
+            conceptType = record.get("dct:type");
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+        return conceptType.trim().toLowerCase();
+    }    
 
     /**
      * permet de récupérer la notation du concept
@@ -1179,7 +1218,7 @@ public class CsvReadHelper {
     private ConceptObject getRelations(
             ConceptObject conceptObject,
             CSVRecord record) {
-        String value = null;
+        String value;
         String values[];
 
         // skos:narrowerId (on vérifie si ce champs est renseigné, on le prend avant skos:narrower pour éviter de découper les identifiants
@@ -1188,6 +1227,7 @@ public class CsvReadHelper {
         if (record.isMapped("narrowerid")) {
             try {
                 value = record.get("narrowerid");
+                value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1201,6 +1241,7 @@ public class CsvReadHelper {
             // skos:narrower
             try {
                 value = record.get("skos:narrower");
+                value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1216,6 +1257,7 @@ public class CsvReadHelper {
         if (record.isMapped("broaderid")) {
             try {
                 value = record.get("broaderid");
+                value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1229,6 +1271,7 @@ public class CsvReadHelper {
             // skos:broader
             try {
                 value = record.get("skos:broader");
+                value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1244,6 +1287,7 @@ public class CsvReadHelper {
             // relatedId        
             try {
                 value = record.get("relatedid");
+                value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1257,6 +1301,7 @@ public class CsvReadHelper {
             // skos:related
             try {
                 value = record.get("skos:related");
+                value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1269,6 +1314,43 @@ public class CsvReadHelper {
         }
         return conceptObject;
     }
+    
+    /**
+     * permet de charger toutes les relations d'un concept
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getCustomRelations(
+            ConceptObject conceptObject,
+            CSVRecord record) {
+        String value;
+        String values[];
+        
+        // liste des relations personnalisées (Qualifier, Poeple, Place ...) 
+        for (String customRelation : customRelations) {
+            if (record.isMapped("customRelationId:"+ customRelation )) {
+                try {
+                    value = record.get("customRelationId:"+ customRelation);
+                    value = value.toLowerCase();
+                    values = value.split("##");
+                    for (String value1 : values) {
+                        if (!value1.isEmpty()) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setId(value1.trim());
+                            nodeIdValue.setValue(customRelation);
+                            conceptObject.customRelations.add(nodeIdValue);
+                        }
+                    }
+                } catch (Exception e) {
+                    //System.err.println("");
+                }
+            }             
+        }        
+
+        return conceptObject;
+    }    
 
     /**
      * permet de charger tous les labels d'un concept dans toutes les langues
@@ -1282,20 +1364,20 @@ public class CsvReadHelper {
         Label label;
         String values[];
 
-        for (String idLang : langs) {
+        for (String idLang2 : langs) {
             // prefLabel
             try {
-                value = record.get("skos:prefLabel@" + idLang.trim());
+                value = record.get("skos:prefLabel@" + idLang2.trim());
                 if(readEmptyData) {
                     label = new Label();
                     label.setLabel(value);
-                    label.setLang(idLang);
+                    label.setLang(idLang2);
                     conceptObject.prefLabels.add(label);                    
                 } else {
                     if (!value.isEmpty()) {
                         label = new Label();
                         label.setLabel(value);
-                        label.setLang(idLang);
+                        label.setLang(idLang2);
                         conceptObject.prefLabels.add(label);
                     }
                 }
@@ -1305,19 +1387,19 @@ public class CsvReadHelper {
 
             // altLabel
             try {
-                value = record.get("skos:altLabel@" + idLang.trim());
+                value = record.get("skos:altLabel@" + idLang2.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang2);
                         conceptObject.altLabels.add(label);                        
                     } else {
                         if (!value.isEmpty()) {
                             label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang2);
                             conceptObject.altLabels.add(label);
                         }
                     }
@@ -1328,19 +1410,19 @@ public class CsvReadHelper {
 
             // hiddenLabel
             try {
-                value = record.get("skos:hiddenLabel@" + idLang.trim());
+                value = record.get("skos:hiddenLabel@" + idLang2.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang2);
                         conceptObject.hiddenLabels.add(label);                        
                     } else {
                         if (!value.isEmpty()) {
                             label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang2);
                             conceptObject.hiddenLabels.add(label);
                         }
                     }
@@ -1355,22 +1437,22 @@ public class CsvReadHelper {
 
         String value;
         String values[];
-        for (String idLang : langs) {
+        for (String idLang1 : langs) {
             // note
             try {
-                value = record.get("skos:note@" + idLang.trim());
+                value = record.get("skos:note@" + idLang1.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         Label label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang1);
                         conceptObject.note.add(label);                        
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang1);
                             conceptObject.note.add(label);
                         }
                     }
@@ -1381,19 +1463,19 @@ public class CsvReadHelper {
             }
             // définition
             try {
-                value = record.get("skos:definition@" + idLang.trim());
+                value = record.get("skos:definition@" + idLang1.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         Label label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang1);
                         conceptObject.definitions.add(label);                        
                     } else {                 
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang1);
                             conceptObject.definitions.add(label);
                         }
                     }
@@ -1405,19 +1487,19 @@ public class CsvReadHelper {
 
             // scopeNotes note d'application
             try {
-                value = record.get("skos:scopeNote@" + idLang.trim());
+                value = record.get("skos:scopeNote@" + idLang1.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         Label label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang1);
                         conceptObject.scopeNotes.add(label);                        
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang1);
                             conceptObject.scopeNotes.add(label);
                         }                        
                     }
@@ -1429,19 +1511,19 @@ public class CsvReadHelper {
 
             // example
             try {
-                value = record.get("skos:example@" + idLang.trim());
+                value = record.get("skos:example@" + idLang1.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         Label label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang1);
                         conceptObject.examples.add(label);                        
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang1);
                             conceptObject.examples.add(label);
                         }                        
                     }
@@ -1453,19 +1535,19 @@ public class CsvReadHelper {
 
             // historyNotes
             try {
-                value = record.get("skos:historyNote@" + idLang.trim());
+                value = record.get("skos:historyNote@" + idLang1.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         Label label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang1);
                         conceptObject.historyNotes.add(label);                        
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang1);
                             conceptObject.historyNotes.add(label);
                         }                        
                     }
@@ -1477,19 +1559,19 @@ public class CsvReadHelper {
 
             // changeNotes
             try {
-                value = record.get("skos:changeNote@" + idLang.trim());
+                value = record.get("skos:changeNote@" + idLang1.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         Label label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang1);
                         conceptObject.changeNotes.add(label);                        
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang1);
                             conceptObject.changeNotes.add(label);
                         }                        
                     }
@@ -1501,19 +1583,19 @@ public class CsvReadHelper {
 
             // editorialNotes
             try {
-                value = record.get("skos:editorialNote@" + idLang.trim());
+                value = record.get("skos:editorialNote@" + idLang1.trim());
                 values = value.split("##");
                 for (String value1 : values) {
                     if(readEmptyData) {
                         Label label = new Label();
                         label.setLabel(value1);
-                        label.setLang(idLang);
+                        label.setLang(idLang1);
                         conceptObject.editorialNotes.add(label);                        
                     } else {
                         if (!value1.isEmpty()) {
                             Label label = new Label();
                             label.setLabel(value1);
-                            label.setLang(idLang);
+                            label.setLang(idLang1);
                             conceptObject.editorialNotes.add(label);
                         }                        
                     }
@@ -1653,6 +1735,7 @@ public class CsvReadHelper {
         private String idTerm;
         // rdf:type pour distinguer les concepts des collections, groupes ...
         private String type;
+        private String conceptType;
 
         // notation
         private String notation;
@@ -1675,6 +1758,9 @@ public class CsvReadHelper {
         private ArrayList<String> broaders;
         private ArrayList<String> narrowers;
         private ArrayList<String> relateds;
+        
+        // pour les relations personnalisées
+        private ArrayList<NodeIdValue> customRelations;        
 
         // les aligenements 
         private ArrayList<String> exactMatchs;
@@ -1717,6 +1803,7 @@ public class CsvReadHelper {
             broaders = new ArrayList<>();
             narrowers = new ArrayList<>();
             relateds = new ArrayList<>();
+            customRelations = new ArrayList<>();
 
             exactMatchs = new ArrayList<>();
             closeMatchs = new ArrayList<>();
@@ -1726,6 +1813,7 @@ public class CsvReadHelper {
 
             members = new ArrayList<>();
             alignments = new ArrayList<>();
+            conceptType = null;
         }
 
         public void clear() {
@@ -1768,6 +1856,9 @@ public class CsvReadHelper {
             if (relateds != null) {
                 relateds.clear();
             }
+            if(customRelations != null)
+                customRelations.clear();
+            
             if (exactMatchs != null) {
                 exactMatchs.clear();
             }
@@ -1789,6 +1880,7 @@ public class CsvReadHelper {
             if (alignments != null) {
                 alignments.clear();
             }
+            conceptType = null;
         }
 
         public ArrayList<NodeImage> getImages() {
@@ -1845,6 +1937,14 @@ public class CsvReadHelper {
 
         public void setType(String type) {
             this.type = type;
+        }
+
+        public String getConceptType() {
+            return conceptType;
+        }
+
+        public void setConceptType(String conceptType) {
+            this.conceptType = conceptType;
         }
 
         public String getNotation() {
@@ -1957,6 +2057,14 @@ public class CsvReadHelper {
 
         public void setRelateds(ArrayList<String> relateds) {
             this.relateds = relateds;
+        }
+
+        public ArrayList<NodeIdValue> getCustomRelations() {
+            return customRelations;
+        }
+
+        public void setCustomRelations(ArrayList<NodeIdValue> customRelations) {
+            this.customRelations = customRelations;
         }
 
         public ArrayList<String> getExactMatchs() {

@@ -67,6 +67,8 @@ public class NodePreference {
     
     private boolean suggestion;
     
+    private boolean useCustomRelation;
+    
     // pour affichager le nom des personnes qui ont modifié les concepts
     private boolean displayUserName;
 
@@ -454,5 +456,14 @@ public class NodePreference {
     public void setSuggestion(boolean suggestion) {
         this.suggestion = suggestion;
     }
+
+    public boolean isUseCustomRelation() {
+        return useCustomRelation;
+    }
+
+    public void setUseCustomRelation(boolean useCustomRelation) {
+        this.useCustomRelation = useCustomRelation;
+    }
+
     
 }

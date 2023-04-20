@@ -19,7 +19,9 @@ import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
@@ -27,6 +29,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -55,6 +58,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -92,6 +96,8 @@ public class ConceptView implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
     private SelectedTheso selectedTheso;
+    @Inject
+    private LanguageBean languageBean;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -104,7 +110,6 @@ public class ConceptView implements Serializable {
     private int offset;
     private int step;    
     private boolean haveNext;
-    private boolean dejaAfficher;
     
     // total de la branche
     private int countOfBranch;
@@ -122,6 +127,8 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> editorialNotes;
     private ArrayList<NodeNote> examples;
     private ArrayList<NodeNote> historyNotes;
+
+    private ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals;
     
     private List<ResponsiveOption> responsiveOptions;
     
@@ -181,6 +188,7 @@ public class ConceptView implements Serializable {
         
         selectedLang = null;
         mapModel = null;
+        nodeCustomRelationReciprocals = null;
     }
 
     /**
@@ -213,7 +221,7 @@ public class ConceptView implements Serializable {
         nodeCorpuses = null;
         countOfBranch = 0;
         haveCorpus = false;
-
+        nodeCustomRelationReciprocals = null;
 
         if (mapModel == null) {
             mapModel = new Map();
@@ -273,11 +281,28 @@ public class ConceptView implements Serializable {
     public String getDrapeauImgLocal(String codePays) {
         if (StringUtils.isEmpty(codePays)) {
             return FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequestContextPath() + "/resources/img/No_flag.png";
+                    .getRequestContextPath() + "/resources/img/flag/noflag.png";
         }
         return FacesContext.getCurrentInstance().getExternalContext()
                 .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";   
     }    
+    
+    /**
+     * permet de retourner le label du type de concept en focntion de la langue de l'interface
+     * @param conceptType
+     * @param idTheso
+     * @return 
+     */
+    public String getLabelOfConceptType(String conceptType, String idTheso){
+        String idLang;
+        RelationsHelper relationsHelper = new RelationsHelper();
+        idLang = getIdLangOfInterface();
+        
+        return relationsHelper.getLabelOfTypeConcept(connect.getPoolConnexion(),
+                conceptType,
+                idTheso, 
+                idLang);
+    }
     
     /**
      * récuparation des informations pour le concept sélectionné c'est pour la
@@ -294,6 +319,15 @@ public class ConceptView implements Serializable {
         if (nodeConcept == null) {
             return;
         }
+        // permet de récupérer les qualificatifs
+        if(roleOnThesoBean.getNodePreference().isUseCustomRelation()){
+            String interfaceLang = getIdLangOfInterface();            
+
+            nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
+            setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
+        }        
+        
         setOffset();
         if (nodeConcept.getNodeGps() != null) {
             initMap();
@@ -353,8 +387,19 @@ public class ConceptView implements Serializable {
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
         offset = 0; 
-        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
+        ConceptHelper conceptHelper = new ConceptHelper();
+        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
         if(nodeConcept == null) return;
+        
+        // permet de récupérer les qualificatifs
+        if(roleOnThesoBean.getNodePreference().isUseCustomRelation()){
+            String interfaceLang = getIdLangOfInterface();
+            nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
+            setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
+        }
+            
+
 
         if(roleOnThesoBean.getNodePreference().isBreadcrumb())
             pathOfConcept(idTheso, idConcept, idLang);
@@ -728,6 +773,16 @@ public class ConceptView implements Serializable {
 
     }
     
+    public void setNodeCustomRelationWithReciprocal(ArrayList<NodeCustomRelation> nodeCustomRelations) {
+        nodeCustomRelationReciprocals = new ArrayList<>();
+        for (NodeCustomRelation nodeCustomRelation : nodeCustomRelations) {
+            if(nodeCustomRelation.isReciprocal())
+                nodeCustomRelationReciprocals.add(nodeCustomRelation);
+        }
+        if(nodeCustomRelationReciprocals.isEmpty())
+            nodeCustomRelationReciprocals = null;
+    }
+    
     public void getNextNT(String idTheso, String idConcept, String idLang) {
     /*    if(tree != null 
                 && CollectionUtils.isNotEmpty(tree.getClickselectedNodes()) 
@@ -764,6 +819,10 @@ public class ConceptView implements Serializable {
         PathHelper pathHelper = new PathHelper();
         ArrayList<Path> paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
+        if(pathHelper.getMessage() != null){
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
         if (paths == null) {
             System.out.println("Erreur de path pour le concept :" + idConcept);
             if (pathLabel != null) {
@@ -834,6 +893,36 @@ public class ConceptView implements Serializable {
                     break;
             }
         }
+    }
+    
+    public String getColorOfTypeConcept(){
+        if("concept".equalsIgnoreCase(nodeConcept.getConcept().getConceptType()))
+                return "";
+        else
+            return "#fcd8bf";
+    }
+    
+    public String geLabelReciprocal(NodeConceptType nodeConceptType){
+        if("concept".equalsIgnoreCase(nodeConceptType.getCode())) {
+            return "";
+        }
+        String idLang = languageBean.getIdLangue();
+        if(nodeConceptType.isReciprocal()) {
+            if("fr".equalsIgnoreCase(idLang)){
+                return " - Relation réciproque";
+            }
+            if("en".equalsIgnoreCase(idLang)){
+                return " - Reciprocal relation";
+            }            
+        } else {
+            if("fr".equalsIgnoreCase(idLang)){
+                return " - Relation à sens unique";
+            }
+            if("en".equalsIgnoreCase(idLang)){
+                return " - One-way relationship";
+            }               
+        }
+        return "";
     }
     
     public void changeStateAltLabelOtherLang() {
@@ -982,5 +1071,24 @@ public class ConceptView implements Serializable {
         this.toggleSwitchNotesLang = toggleSwitchNotesLang;
     }
 
+    public ArrayList<NodeCustomRelation> getNodeCustomRelationReciprocals() {
+        return nodeCustomRelationReciprocals;
+    }
 
+    public void setNodeCustomRelationReciprocals(ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals) {
+        this.nodeCustomRelationReciprocals = nodeCustomRelationReciprocals;
+    }
+
+    /**
+     * permet de retouver la langue de l'interface et se limiter au fr et en
+     * @return 
+     */
+    private String getIdLangOfInterface(){
+        String idLang;
+        if("en".equalsIgnoreCase(languageBean.getIdLangue()) || "fr".equalsIgnoreCase(languageBean.getIdLangue())){
+            idLang = languageBean.getIdLangue();
+        } else
+            idLang = "en";
+        return idLang;  
+    }
 }

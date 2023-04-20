@@ -5,34 +5,48 @@
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dialog id="idEditConceptType" header="#{langueBean.getMsg('concept.editConceptType')}" 
-              widgetVar="editConceptType" position="top" width="450" showEffect="fade" 
+              widgetVar="editConceptType" position="top" width="550" showEffect="fade" 
               modal="true" resizable="false" style="margin-top: 30px" >   
 
         <h:form>
             
             <p:defaultCommand target="addNotationBtn" />
-                        
+            
+            <p:spacer/>   
+            
             <div class="row">
-                <div class="col-4" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : "  style="font-size: 14px;"/> 
+                <div class="col-4" style="margin-top: 3px; text-align: right">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : "  style="font-size: 14px; "/> 
                 </div>
                 <div class="col-8" style="margin-top: 3px">
                     <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632; font-size: 14px;"/> 
                 </div>                
             </div>
-            <p:spacer/>
+            
             <div class="row" style="margin-top: 5px">
-                <div class="col-4" style="margin-top: 3px">
+                <div class="col-4" style="margin-top: 3px; text-align: right">
                     <h:outputText value="#{langueBean.getMsg('statistique.type')} : " style="font-size: 14px;"/> 
                 </div>
                 <div class="col-8">
                     <p:selectOneMenu value="#{editConcept.selectedConceptType}" 
                                      style="font-size: 12px; background: white; border-color: #43B572; width: 100%; color: #000">
                         <f:selectItems value="#{editConcept.nodeConceptTypes}" var="conceptTypes"
-                                       itemLabel="#{conceptTypes.label_en} (#{conceptTypes.code})" itemValue="#{conceptTypes.code}"/>
+                                       itemLabel="#{conceptTypes.label_en} (#{conceptTypes.code}#{conceptView.geLabelReciprocal(conceptTypes)})" itemValue="#{conceptTypes.code}"/>
                     </p:selectOneMenu>  
                 </div>
             </div>
+
+            
+            <div class="row" style="margin-top: 5px">
+                <div class="col-8 offset-4" style="margin-top: 3px; font-size: 14px;">
+                    <p:selectBooleanCheckbox value="#{editConcept.applyToBranch}"
+                                             itemLabel="#{langueBean.getMsg('concept.changeTypeBranch')}" 
+                                             title="#{langueBean.getMsg('concept.changeTypeBranch')}" 
+                                             style="font-size: 14px;"/> 
+                </div>
+            </div>            
+            
+            
             <p:spacer/>
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}"

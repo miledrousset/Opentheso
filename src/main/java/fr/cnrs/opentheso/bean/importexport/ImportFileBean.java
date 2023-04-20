@@ -50,6 +50,7 @@ import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
 import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
+import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
@@ -63,6 +64,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ActionEvent;
@@ -73,6 +76,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParseException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -588,7 +593,6 @@ public class ImportFileBean implements Serializable {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
             // première lecrture pour charger les langues
             try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
-
                 if (!csvReadHelper.setLangs(reader1)) {
                     error.append(csvReadHelper.getMessage());
                 }
@@ -866,7 +870,7 @@ public class ImportFileBean implements Serializable {
                 for (int j = 0; j < nbrMaxElement; j++) {
                     if (lines.get(i).length > j) {
                         matrix[i][j] = lines.get(i)[j];
-                        if (!StringUtils.isEmpty(lines.get(i)[j])) {
+                        if (StringUtils.isNotEmpty(lines.get(i)[j])) {
                             total = total + 1;
                         }
                     }
@@ -876,9 +880,8 @@ public class ImportFileBean implements Serializable {
             racine = new NodeTree();
 
             for (int i = 0; i < matrix.length; i++) {
-                if (!StringUtils.isEmpty(matrix[i][0])) {
+                if (StringUtils.isNotEmpty(matrix[i][0])) {
                     racine.getChildrens().add(createTree(matrix, i, 0));
-                    //racine.getChildrens().add(createTreeMR(matrix, i, 0));
                 }
             }
 
@@ -896,6 +899,7 @@ public class ImportFileBean implements Serializable {
         element.setPreferredTerm(matrix[ligne][colone]);
 
         colone++;
+        ligne++;
         if (ligne < matrix.length && colone < matrix[ligne].length) {
             while (matrix[ligne][colone] != null) {
                 if (matrix[ligne][colone - 1] != null && matrix[ligne][colone - 1].length() > 0 && !matrix[ligne][colone - 1].equals(element.getPreferredTerm())) {
@@ -932,20 +936,6 @@ public class ImportFileBean implements Serializable {
             }
         }
         return element;
-        //  colone++;
-        /*      if (ligne < matrix.length && colone < matrix[ligne].length) {
-            while (matrix[ligne][colone] != null) {
-                if (matrix[ligne][colone - 1] != null && matrix[ligne][colone - 1].length() > 0 && !matrix[ligne][colone - 1].equals(element.getPreferredTerm())) {
-                    break;
-                }
-                if (matrix[ligne][colone].length() > 0) {
-                    element.getChildrens().add(createTree(matrix, ligne+1, colone));
-                }
-                ligne++;
-            }
-        }
-
-        return element;*/
     }
 
     public void addCsvStrucToDB() {
@@ -1365,6 +1355,91 @@ public class ImportFileBean implements Serializable {
         }
         return null;
     }    
+    
+    /**
+     * permet de récupérer les identifiants depuis le prefLabel
+     *
+     * @param idTheso
+     * @param idUser
+     * @return 
+     */
+    public StreamedContent compareListToTheso(String idTheso, int idUser) {
+
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+
+        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+            return null;
+        }
+        if (idTheso == null || idTheso.isEmpty()) {
+            return null;
+        }     
+        if (idLang == null || idLang.isEmpty()) {
+            return null;
+        }
+        initError();
+
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+        ArrayList<String> idConcepts;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        // mise à jouor des concepts
+        try {
+            for (NodeIdValue nodeIdValue : nodeIdValues) {
+                if (nodeIdValue == null) {
+                    continue;
+                }
+                if (nodeIdValue.getValue()== null || nodeIdValue.getValue().isEmpty()) {
+                    continue;
+                }
+                idConcepts =  conceptHelper.getIdConceptsFromLabel(connect.getPoolConnexion(),
+                        idTheso, nodeIdValue.getValue(), idLang );
+                if (idConcepts == null || idConcepts.isEmpty()) {
+                    idConcepts =  conceptHelper.getIdConceptsFromAltLabel(connect.getPoolConnexion(),
+                        idTheso, nodeIdValue.getValue(), idLang );
+                }
+                if (idConcepts == null || idConcepts.isEmpty()) {
+                    continue;
+                }
+                for (String idConcept : idConcepts) {
+                    nodeIdValue.setId(idConcept);
+                    total++;                                    
+                }
+            }
+            log.error(csvImportHelper.getMessage());
+
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            //total = 0;
+            info = info + "\n" + "total = " + total ;
+            error.append(csvImportHelper.getMessage());
+            
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas = csvWriteHelper.writeCsvIdValue(nodeIdValues, idLang);
+
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name("resultat.csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();            
+            
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+        return null;
+    }      
     
     /**
      * permet de déprécier les concepts donnés par tableau CSV
@@ -2380,121 +2455,49 @@ public class ImportFileBean implements Serializable {
         error = new StringBuffer();
         info = "";
         warning = "";
-        switch (typeImport) {
-            case 0:
-                loadSkos(event, isCandidatImport);
-                break;
-            case 1:
-                loadJsonLd(event, isCandidatImport);
-                break;
-            case 2:
-                loadTurtle(event, isCandidatImport);
-                break;
-            case 3:
-                loadJson(event, isCandidatImport);
-                break;
+        progress = 0;
+
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            try (InputStream is = event.getFile().getInputStream()) {
+                //ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
+                //sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
+                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, getRdfFormat(typeImport), connect.getWorkLanguage());
+                total = sKOSXmlDocument.getConceptList().size();
+                uri = sKOSXmlDocument.getTitle();
+                loadDone = true;
+                BDDinsertEnable = true;
+                info = "File correctly loaded";
+            } catch (RDFParseException | EnumConstantNotPresentException | ExceptionInInitializerError | IOException e) {
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } catch (Exception ex2) {
+                error.append(System.getProperty("line.separator"));
+                error.append(ex2.toString());  
+            } finally {
+                showError();
+            }
         }
+        
         PrimeFaces.current().executeScript("PF('waitDialog').hide()");
     }
 
-    private void loadSkos(FileUploadEvent event, Boolean isCandidatImport) {
-        progress = 0;
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-                readRdf4j.clean();
-                //        System.gc();
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
+    private RDFFormat getRdfFormat(int format) {
+        RDFFormat rdfFormat = RDFFormat.RDFJSON;
+        switch (format) {
+            case 0:
+                rdfFormat = RDFFormat.RDFXML;
+                break;
+            case 1:
+                rdfFormat = RDFFormat.JSONLD;
+                break;
+            case 2:
+                rdfFormat = RDFFormat.TURTLE;
+                break;
         }
-    }
-
-    private void loadJsonLd(FileUploadEvent event, boolean isCandidatImport) {
-        progress = 0;
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 1, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
-    }
-
-    private void loadJson(FileUploadEvent event, boolean isCandidatImport) {
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 3, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
-    }
-
-    private void loadTurtle(FileUploadEvent event, boolean isCandidatImport) {
-
-        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
-            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
-            event.queue();
-        } else {
-            try (InputStream is = event.getFile().getInputStream()) {
-                ReadRdf4j readRdf4j = new ReadRdf4j(is, 2, isCandidatImport, connect.getWorkLanguage());
-                warning = readRdf4j.getMessage();
-                sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                total = sKOSXmlDocument.getConceptList().size();
-                uri = sKOSXmlDocument.getTitle();
-                loadDone = true;
-                BDDinsertEnable = true;
-                info = "File correctly loaded";
-            } catch (Exception e) {
-                error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } finally {
-                showError();
-            }
-        }
+        return rdfFormat;
     }
 
     /**
@@ -2623,7 +2626,6 @@ public class ImportFileBean implements Serializable {
         importRdf4jHelper.addFacetsV2(sKOSXmlDocument.getFacetList(), idTheso);
         importRdf4jHelper.addGroups(sKOSXmlDocument.getGroupList(), idTheso);
         importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), idTheso);
-
         importRdf4jHelper.addFoafImages(sKOSXmlDocument.getFoafImage(), idTheso);        
         
         roleOnThesoBean.showListTheso();

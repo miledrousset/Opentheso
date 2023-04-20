@@ -20,6 +20,8 @@ public class NodeSearchMini {
     private boolean isGroup;
     private boolean isFacet;
     private boolean isDeprecated;
+    
+    private String conceptType;
 
     
     public NodeSearchMini() {
@@ -95,6 +97,14 @@ public class NodeSearchMini {
 
     public void setIsDeprecated(boolean isDeprecated) {
         this.isDeprecated = isDeprecated;
+    }
+
+    public String getConceptType() {
+        return conceptType;
+    }
+
+    public void setConceptType(String conceptType) {
+        this.conceptType = conceptType;
     }
 
 

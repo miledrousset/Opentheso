@@ -34,7 +34,8 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.apache.commons.collections4.CollectionUtils;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -479,6 +480,11 @@ public class SearchBean implements Serializable {
             PrimeFaces.current().executeScript("disparaitre();");
         }
     }
+    
+    public void managerSearchBar() {
+        PrimeFaces.current().executeScript("afficheSearchBar();");
+    }
+
 
     /**
      * permet de retourner la liste des concepts qui ont une poly-hiérarchie
@@ -707,9 +713,10 @@ public class SearchBean implements Serializable {
         ArrayList<String> nodeSearchLabels = searchHelper.searchConceptDuplicated(
                 connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang());
+    //    Collections.sort(nodeSearchLabels);
 
         for (String label : nodeSearchLabels) {
-            nodeConceptSearchs.addAll(
+            nodeConceptSearchs.add(
                     conceptHelper.getConceptForSearchFromLabel(
                             connect.getPoolConnexion(),
                             label,
@@ -831,8 +838,8 @@ public class SearchBean implements Serializable {
         
         PrimeFaces.current().ajax().update("containerIndex:contentConcept");
         PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
-    //    PrimeFaces.current().ajax().update("containerIndex:sideBarSearch");
-    //    PrimeFaces.current().ajax().update("containerIndex:searchBar");
+
+        PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
     public NodeSearchMini getSearchSelected() {

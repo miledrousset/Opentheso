@@ -1,0 +1,27 @@
+Copier/coller d'un thésaurus à un autre
+    - correction de la procédure.
+
+correction de la dialogue de la gestion des projets
+
+correction de l'export PDF pour mieux afficher les images
+
+### commité
+masquer l'affichage d'un bloc vide qui s'affichait en mode non connecté 
+
+### commité
+Activer la commande de génération d'identifiants ARK en local
+
+Correction de l'import CSV pour mieux gérer les identifiants Majuscule Minuscule 
+
+Intégration de la gestion de type de concept (Qualificatif, Period, Place ...)
+
+* changment du coeur d'import RDF en utilisant la dernière version et en ajoutant des nouvelles classes
+
+correction de l'export pour les URLs vides
+
+
+
+
+
+
+
