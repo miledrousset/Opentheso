@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.core.exports.csv;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -560,7 +561,48 @@ public class CsvWriteHelper {
             System.out.println(e.toString());
             return null;
         }
-    }    
+    }   
+    
+    /**
+     * Export des données Id valeur en CSV
+     * @param nodeCompareThesos
+     * @param idLang
+     * @return 
+     */
+    public byte[] writeCsvFromNodeCompareTheso(ArrayList<NodeCompareTheso> nodeCompareThesos, String idLang){
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+                    CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().build())) {
+
+                /// écriture des headers
+                ArrayList<String> header = new ArrayList<>();
+                header.add("originalPrefLabel@"+idLang);
+                header.add("conceptId");
+                header.add("skos:prefLabel@"+idLang);
+                header.add("skos:altLabel@"+idLang);                
+                
+                csvFilePrinter.printRecord(header);
+                ArrayList<Object> record = new ArrayList<>();
+                for (NodeCompareTheso nodeCompareTheso : nodeCompareThesos) {
+                    try {
+                        record.add(nodeCompareTheso.getOriginalPrefLabel());                        
+                        record.add(nodeCompareTheso.getIdConcept());
+                        record.add(nodeCompareTheso.getPrefLabel());
+                        record.add(nodeCompareTheso.getAltLabel());                        
+                        csvFilePrinter.printRecord(record);
+                        record.clear();
+                    } catch (IOException e){
+                        System.err.println(e.toString());
+                    }
+                }
+            }
+            return os.toByteArray();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+            return null;
+        }
+    }       
     
     /**
      * permet d'écrire un tableau CSV comme un graphe

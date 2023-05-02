@@ -50,8 +50,9 @@ public class CandidatDto implements Serializable {
     //private List<String> termesAssocies;    
     private ArrayList<NodeIdValue> termesAssocies;   
     
-    //private List<String> employePour;    
+    private List<String> employePourList;    
     private String employePour;    
+    
     
     
     public CandidatDto() {
@@ -65,6 +66,7 @@ public class CandidatDto implements Serializable {
         participants = new ArrayList<>();
         collections = new ArrayList<>();
         adminMessage = "";
+        employePourList = new ArrayList<>();
     }
 
     public CandidatDto(String nomPref) {
@@ -269,6 +271,14 @@ public class CandidatDto implements Serializable {
 
     public void setEmployePour(String employePour) {
         this.employePour = employePour;
+    }
+
+    public List<String> getEmployePourList() {
+        return employePourList;
+    }
+
+    public void setEmployePourList(List<String> employePourList) {
+        this.employePourList = employePourList;
     }
 
     public boolean isVoted() {

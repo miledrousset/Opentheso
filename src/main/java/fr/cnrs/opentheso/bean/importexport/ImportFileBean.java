@@ -16,6 +16,7 @@ import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
@@ -37,6 +39,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -49,7 +52,6 @@ import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
 import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
-import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
 import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
@@ -64,8 +66,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ActionEvent;
@@ -163,6 +163,11 @@ public class ImportFileBean implements Serializable {
     private boolean clearBefore;
 
     private ArrayList<NodeIdValue> nodeIdValues;
+    private ArrayList<NodeCompareTheso> nodeCompareThesos;    
+    
+    private String fileName;
+    
+    private String selectedSearchType;
 
     @PreDestroy
     public void destroy() {
@@ -203,10 +208,11 @@ public class ImportFileBean implements Serializable {
             nodeNotes.clear();
         }
         nodeNotes = null;
-
+        fileName = null;
     }
 
     public void init() {
+        selectedSearchType = "exactWord"; // containsExactWord, startWith, elastic
         selectedIdentifierImportAlign="identifier";
         choiceDelimiter = 0;
         delimiterCsv = ',';
@@ -228,6 +234,7 @@ public class ImportFileBean implements Serializable {
         importInProgress = false;
         selectedIdentifier = "sans";
         sKOSXmlDocument = null;
+        fileName = null;
         if (conceptObjects != null) {
             conceptObjects.clear();
         }
@@ -246,7 +253,7 @@ public class ImportFileBean implements Serializable {
         // récupération des toutes les langues pour le choix de le langue source
         LanguageHelper languageHelper = new LanguageHelper();
         allLangs = languageHelper.getAllLanguages(connect.getPoolConnexion());
-        selectedLang = null;
+        selectedLang = connect.getWorkLanguage();
         thesaurusName = null;
 
         UserHelper userHelper = new UserHelper();
@@ -584,6 +591,62 @@ public class ImportFileBean implements Serializable {
      *
      * @param event
      */
+    public void loadFileCsvList(FileUploadEvent event) {
+        initError();
+        if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
+            event.setPhaseId(PhaseId.INVOKE_APPLICATION);
+            event.queue();
+        } else {
+            CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
+            // première lecrture pour charger les langues
+            try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
+                if (!csvReadHelper.setLangs(reader1)) {
+                    error.append(csvReadHelper.getMessage());
+                }
+                //deuxième lecture pour les données
+                try (Reader reader2 = new InputStreamReader(event.getFile().getInputStream())) {
+                    // false to not read empty data
+                    if (!csvReadHelper.readListFile(reader2)) {
+                        error.append(csvReadHelper.getMessage());
+                    }
+
+                    warning = csvReadHelper.getMessage();
+                    conceptObjects = csvReadHelper.getConceptObjects();
+                    if (conceptObjects != null) {
+                        if (conceptObjects.get(0).getPrefLabels() != null) {
+                            if (conceptObjects.get(0).getPrefLabels().isEmpty()) {
+                                haveError = true;
+                                error.append(System.getProperty("line.separator"));
+                                error.append("La lecture a échouée, vérifiez le séparateur des colonnes !!");
+                                warning = "";
+                            } else {
+                                langs = csvReadHelper.getLangs();
+                                total = conceptObjects.size();
+                                uri = "";//csvReadHelper.getUri();
+                                loadDone = true;
+                                BDDinsertEnable = true;
+                                info = "File correctly loaded";
+                            }
+                        }
+                    }
+                }
+                PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+            } catch (Exception e) {
+                haveError = true;
+                error.append(System.getProperty("line.separator"));
+                error.append(e.toString());
+            } finally {
+                showError();
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide()");
+        }
+    }    
+    
+    /**
+     * permet de charger un fichier en Csv
+     *
+     * @param event
+     */
     public void loadFileCsv(FileUploadEvent event) {
         initError();
         if (!PhaseId.INVOKE_APPLICATION.equals(event.getPhaseId())) {
@@ -697,7 +760,7 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             CsvReadHelper csvReadHelper = new CsvReadHelper(delimiterCsv);
-            
+            fileName = event.getFile().getFileName();
             // première lecrture pour charger les langues
             try (Reader reader1 = new InputStreamReader(event.getFile().getInputStream())) {
                 /// option true to read empty data
@@ -722,10 +785,10 @@ public class ImportFileBean implements Serializable {
                 }
 
                 warning = csvReadHelper.getMessage();
-                nodeIdValues = csvReadHelper.getNodeIdValues();
+                nodeCompareThesos = csvReadHelper.getNodeCompareThesos();
                 idLang = csvReadHelper.getIdLang();
-                if (nodeIdValues != null) {
-                    total = nodeIdValues.size();
+                if (nodeCompareThesos != null) {
+                    total = nodeCompareThesos.size();
                     uri = "";//csvReadHelper.getUri();
                     loadDone = true;
                     BDDinsertEnable = true;
@@ -1301,7 +1364,7 @@ public class ImportFileBean implements Serializable {
         initError();
 
         CsvImportHelper csvImportHelper = new CsvImportHelper();
-        ArrayList<String> idConcepts;
+        String idConcept;
         ConceptHelper conceptHelper = new ConceptHelper();
         // mise à jouor des concepts
         try {
@@ -1312,15 +1375,13 @@ public class ImportFileBean implements Serializable {
                 if (nodeIdValue.getValue()== null || nodeIdValue.getValue().isEmpty()) {
                     continue;
                 }
-                idConcepts =  conceptHelper.getIdConceptsFromLabel(connect.getPoolConnexion(),
+                idConcept =  conceptHelper.getOneIdConceptFromLabel(connect.getPoolConnexion(),
                         idTheso, nodeIdValue.getValue(), idLang );
-                if (idConcepts == null || idConcepts.isEmpty() || idConcepts.size() > 1) {
+                if (StringUtils.isEmpty(idConcept)) {
                     continue;
                 }
-                for (String idConcept : idConcepts) {
-                    nodeIdValue.setId(idConcept);
-                    total++;                                    
-                }
+                nodeIdValue.setId(idConcept);
+                total++;                                    
             }
             log.error(csvImportHelper.getMessage());
 
@@ -1343,6 +1404,7 @@ public class ImportFileBean implements Serializable {
                         .stream(() -> input)
                         .build();
             } catch (IOException ex) {
+                error.append(System.getProperty(ex.getMessage()));
             }
             PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             return new DefaultStreamedContent();            
@@ -1370,7 +1432,7 @@ public class ImportFileBean implements Serializable {
         progress = 0;
         total = 0;
 
-        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+        if (nodeCompareThesos == null || nodeCompareThesos.isEmpty()) {
             return null;
         }
         if (idTheso == null || idTheso.isEmpty()) {
@@ -1381,34 +1443,65 @@ public class ImportFileBean implements Serializable {
         }
         initError();
 
+        PrimeFaces.current().executeScript("PF('waitDialog').show();");
+
         CsvImportHelper csvImportHelper = new CsvImportHelper();
-        ArrayList<String> idConcepts;
-        ConceptHelper conceptHelper = new ConceptHelper();
+        SearchHelper searchHelper = new SearchHelper();
+        ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
+        
+        ArrayList<NodeCompareTheso> nodeCompareThesosTemp = new ArrayList<>();
+        boolean writtenInfo;
+        
         // mise à jouor des concepts
         try {
-            for (NodeIdValue nodeIdValue : nodeIdValues) {
-                if (nodeIdValue == null) {
+            for (NodeCompareTheso nodeCompareTheso : nodeCompareThesos) {
+                writtenInfo = false;
+                if (nodeCompareTheso == null) {
                     continue;
                 }
-                if (nodeIdValue.getValue()== null || nodeIdValue.getValue().isEmpty()) {
+                if (StringUtils.isEmpty(nodeCompareTheso.getOriginalPrefLabel())) {
                     continue;
                 }
-                idConcepts =  conceptHelper.getIdConceptsFromLabel(connect.getPoolConnexion(),
-                        idTheso, nodeIdValue.getValue(), idLang );
-                if (idConcepts == null || idConcepts.isEmpty()) {
-                    idConcepts =  conceptHelper.getIdConceptsFromAltLabel(connect.getPoolConnexion(),
-                        idTheso, nodeIdValue.getValue(), idLang );
+                switch (selectedSearchType) {
+                    case "exactWord":
+                        nodeSearchMinis = searchHelper.searchExactTermForAutocompletion(connect.getPoolConnexion(), nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
+                        break;                        
+                    case "containsExactWord":
+                        nodeSearchMinis = searchHelper.searchExactMatch(connect.getPoolConnexion(), nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
+                        break;
+                    case "startWith":
+                        nodeSearchMinis = searchHelper.searchStartWith(connect.getPoolConnexion(), nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
+                        break;       
+                    case "elastic":
+                        nodeSearchMinis = searchHelper.searchFullTextElastic(connect.getPoolConnexion(), nodeCompareTheso.getOriginalPrefLabel(), idLang, idTheso);
+                        break;                        
+                    default:
+                        break; 
                 }
-                if (idConcepts == null || idConcepts.isEmpty()) {
-                    continue;
+                
+                              
+                
+                
+                for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
+                    if(nodeSearchMini.isIsConcept() || nodeSearchMini.isIsAltLabel()) {
+                        writtenInfo = true;
+                        NodeCompareTheso nodeCompareTheso2 = new NodeCompareTheso(); 
+                        nodeCompareTheso2.setOriginalPrefLabel(nodeCompareTheso.getOriginalPrefLabel());
+                        nodeCompareTheso2.setIdConcept(nodeSearchMini.getIdConcept());
+                        nodeCompareTheso2.setPrefLabel(nodeSearchMini.getPrefLabel());
+                        nodeCompareTheso2.setAltLabel(nodeSearchMini.getAltLabel());
+                        nodeCompareThesosTemp.add(nodeCompareTheso2);                         
+                    }
                 }
-                for (String idConcept : idConcepts) {
-                    nodeIdValue.setId(idConcept);
-                    total++;                                    
+                if(!writtenInfo) {
+                    NodeCompareTheso nodeCompareTheso2 = new NodeCompareTheso(); 
+                    nodeCompareTheso2.setOriginalPrefLabel(nodeCompareTheso.getOriginalPrefLabel());                    
+                    nodeCompareThesosTemp.add(nodeCompareTheso2);  
                 }
             }
+            nodeCompareThesos = nodeCompareThesosTemp;
             log.error(csvImportHelper.getMessage());
-
+            total= nodeCompareThesos.size();
             loadDone = false;
             importDone = true;
             BDDinsertEnable = false;
@@ -1419,7 +1512,7 @@ public class ImportFileBean implements Serializable {
             error.append(csvImportHelper.getMessage());
             
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
-            byte[] datas = csvWriteHelper.writeCsvIdValue(nodeIdValues, idLang);
+            byte[] datas = csvWriteHelper.writeCsvFromNodeCompareTheso(nodeCompareThesos, idLang);
 
             try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
                 return DefaultStreamedContent.builder()
@@ -2464,7 +2557,11 @@ public class ImportFileBean implements Serializable {
             try (InputStream is = event.getFile().getInputStream()) {
                 //ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
                 //sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
-                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, getRdfFormat(typeImport), connect.getWorkLanguage());
+                if(StringUtils.isEmpty(selectedLang)) {
+                    selectedLang = connect.getWorkLanguage();
+                }
+                
+                sKOSXmlDocument = new ReadRDF4JNewGen().readRdfFlux(is, getRdfFormat(typeImport), selectedLang);
                 total = sKOSXmlDocument.getConceptList().size();
                 uri = sKOSXmlDocument.getTitle();
                 loadDone = true;
@@ -2589,7 +2686,11 @@ public class ImportFileBean implements Serializable {
         long tempsDebut, tempsFin;
         double seconds;
         tempsDebut = System.currentTimeMillis();
-
+        
+        if(StringUtils.isEmpty(selectedLang)) {
+            selectedLang = connect.getWorkLanguage();
+        }
+        
         int idGroup;
         if (selectedUserProject == null || selectedUserProject.isEmpty()) {
             idGroup = -1;
@@ -2602,7 +2703,7 @@ public class ImportFileBean implements Serializable {
                 formatDate,
                 currentUser.getNodeUser().getIdUser(),
                 idGroup,
-                connect.getWorkLanguage());
+                selectedLang);
 
         importRdf4jHelper.setSelectedIdentifier(selectedIdentifier);
         importRdf4jHelper.setPrefixHandle(prefixHandle);
@@ -2782,6 +2883,14 @@ public class ImportFileBean implements Serializable {
         this.total = total;
     }
 
+    public int getTotalInt() {
+        return (int)total;
+    }
+
+    public void setTotalInt(int total) {
+        this.total = total;
+    }    
+    
     public boolean isLoadDone() {
         return loadDone;
     }
@@ -2988,6 +3097,22 @@ public class ImportFileBean implements Serializable {
 
     public void setSelectedIdentifierImportAlign(String selectedIdentifierImportAlign) {
         this.selectedIdentifierImportAlign = selectedIdentifierImportAlign;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getSelectedSearchType() {
+        return selectedSearchType;
+    }
+
+    public void setSelectedSearchType(String selectedSearchType) {
+        this.selectedSearchType = selectedSearchType;
     }
 
 }

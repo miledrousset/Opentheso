@@ -96,7 +96,7 @@ public class RelatedBean implements Serializable {
         List<NodeSearchMini> liste = new ArrayList<>();
         SearchHelper searchHelper = new SearchHelper();
         if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null) {
-            liste = searchHelper.searchAutoCompletionForCustomRelation(
+            liste = searchHelper.searchAutoCompletionForRelation(
                     connect.getPoolConnexion(),
                     value,
                     conceptBean.getSelectedLang(),
@@ -104,6 +104,27 @@ public class RelatedBean implements Serializable {
         }
         return liste;
     }
+    
+    /**
+     * permet de retourner la liste des concepts possibles pour ajouter une
+     * relation NT (en ignorant les relations interdites) on ignore les concepts
+     * de type TT on ignore les concepts de type RT
+     *
+     * @param value
+     * @return
+     */
+    public List<NodeSearchMini> getAutoCompletCustomRelation(String value) {
+        List<NodeSearchMini> liste = new ArrayList<>();
+        SearchHelper searchHelper = new SearchHelper();
+        if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null) {
+            liste = searchHelper.searchAutoCompletionForCustomRelation(
+                    connect.getPoolConnexion(),
+                    value,
+                    conceptBean.getSelectedLang(),
+                    selectedTheso.getCurrentIdTheso());
+        }
+        return liste;
+    }    
 
     /**
      * permet d'ajouter un lien Qualifier

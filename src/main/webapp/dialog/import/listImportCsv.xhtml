@@ -58,9 +58,9 @@
                                 </p:row>                  
                             </p:panelGrid>     
                             <br/>
-                            <p:outputPanel deferred="true" style="font-size: 12px; max-width: 500px;">
+                            <p:outputPanel deferred="true" style="font-size: 12px; width: 600px;">
                                 <p>
-                                    #{langueBean.getMsg('import.listCsv.help')}
+                                    #{langueBean.getMsg('import.simpleListCsv.help')}
                                 </p>
                             </p:outputPanel>
                         </fieldset>
@@ -89,7 +89,7 @@
                     <!-- Choix du fichier -->   
                     <div class="row" style="margin-left: 30px; margin-right: 30px; ">
                         <div class="col-12" > 
-                            <p:fileUpload listener="#{importFileBean.loadFileCsv}" 
+                            <p:fileUpload listener="#{importFileBean.loadFileCsvList}" 
                                           label="#{langueBean.getMsg('candidat.parcourir')}" 
                                           mode="advanced" auto="true"
                                           style="padding-left: 10px; padding-right: 10px; font-size: 12px;"

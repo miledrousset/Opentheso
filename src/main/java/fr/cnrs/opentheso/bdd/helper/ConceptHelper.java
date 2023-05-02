@@ -1103,6 +1103,7 @@ public class ConceptHelper {
                         + " and "
                         + " term.lang = '" + idLang + "'"
                         + " and concept.status != 'DEP'"
+                        + " and concept.status != 'CA'"                                
                         + " and"
                         + " lower(term.lexical_value) = lower('" + label + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {

@@ -1,27 +1,6 @@
-Copier/coller d'un thésaurus à un autre
-    - correction de la procédure.
+- Correction d'un bug pour l'import CSV quand il n'y a pas d'Id pour l'URI
+- ajout de la précision de la langue source pour l'imprt SKOS
 
-correction de la dialogue de la gestion des projets
-
-correction de l'export PDF pour mieux afficher les images
-
-### commité
-masquer l'affichage d'un bloc vide qui s'affichait en mode non connecté 
-
-### commité
-Activer la commande de génération d'identifiants ARK en local
-
-Correction de l'import CSV pour mieux gérer les identifiants Majuscule Minuscule 
-
-Intégration de la gestion de type de concept (Qualificatif, Period, Place ...)
-
-* changment du coeur d'import RDF en utilisant la dernière version et en ajoutant des nouvelles classes
-
-correction de l'export pour les URLs vides
-
-
-
-
-
-
+- Ajout d'une action pour comparer une liste de concepts au thésaurus (avec des
+    options préciser le type de recherche à effectuer)
 

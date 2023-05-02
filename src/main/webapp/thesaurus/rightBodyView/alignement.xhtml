@@ -47,7 +47,7 @@
                      rows="10" 
                      resizableColumns="true" 
                      showGridlines="true" 
-                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} alignement"
+                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{langueBean.getMsg('rightbody.concept.alignment')}"
                      rowsPerPageTemplate="5,10,{ShowAll|'All'}" 
                      rowStyleClass="#{alignement.targetUri == null ? 'alignementVide' : null}"  
                      scrollHeight="69%" 

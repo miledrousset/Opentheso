@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.core.imports.csv;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
@@ -49,6 +50,8 @@ public class CsvReadHelper {
     private ArrayList<NodeAlignmentImport> nodeAlignmentImports;
     private ArrayList<NodeNote> nodeNotes;
     private ArrayList<NodeIdValue> nodeIdValues;
+    private ArrayList<NodeCompareTheso> nodeCompareThesos;    
+    
     
     private ArrayList<NodeDeprecated> nodeDeprecateds;
 
@@ -172,20 +175,20 @@ public class CsvReadHelper {
 
             CSVParser cSVParser = cSVFormat.parse(in);
             String value;
-            nodeIdValues = new ArrayList<>();
+            nodeCompareThesos = new ArrayList<>();
             for (CSVRecord record : cSVParser) {
-                NodeIdValue nodeIdValue = new NodeIdValue();
+                NodeCompareTheso nodeCompareTheso = new NodeCompareTheso();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     value = record.get("skos:prefLabel@" + idLang);
                     if (value == null) {
                         continue;
                     }
-                    nodeIdValue.setValue(value);
+                    nodeCompareTheso.setOriginalPrefLabel(value);
                 } catch (Exception e) {
                     continue;
                 }
-                nodeIdValues.add(nodeIdValue);
+                nodeCompareThesos.add(nodeCompareTheso);
             }
             return true;
         } catch (IOException ex) {
@@ -666,7 +669,7 @@ public class CsvReadHelper {
     }
 
     /**
-     * permet de lire un fichier CSV complet pour changer un thésaurus
+     * permet de lire un fichier CSV complet pour charger un thésaurus
      *
      * @param in
      * @param readEmptyData
@@ -1724,6 +1727,14 @@ public class CsvReadHelper {
 
     public void setNodeDeprecateds(ArrayList<NodeDeprecated> nodeDeprecateds) {
         this.nodeDeprecateds = nodeDeprecateds;
+    }
+
+    public ArrayList<NodeCompareTheso> getNodeCompareThesos() {
+        return nodeCompareThesos;
+    }
+
+    public void setNodeCompareThesos(ArrayList<NodeCompareTheso> nodeCompareThesos) {
+        this.nodeCompareThesos = nodeCompareThesos;
     }
 
     public class ConceptObject {
