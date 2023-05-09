@@ -157,7 +157,12 @@ public class ImportFileBean implements Serializable {
 
     private ArrayList<Languages_iso639> allLangs;
     private String selectedLang;
-
+    
+    // pour les alignements
+    private String selectedConcept;
+    private String alignmentSource;
+    
+    
     private boolean haveError;
 
     private boolean clearBefore;
@@ -209,6 +214,8 @@ public class ImportFileBean implements Serializable {
         }
         nodeNotes = null;
         fileName = null;
+        selectedConcept = null;
+        alignmentSource = null;
     }
 
     public void init() {
@@ -249,6 +256,8 @@ public class ImportFileBean implements Serializable {
             nodeNotes.clear();
         }
         idLang = null;
+        selectedConcept = null;
+        alignmentSource = null;
 
         // récupération des toutes les langues pour le choix de le langue source
         LanguageHelper languageHelper = new LanguageHelper();
@@ -1337,6 +1346,106 @@ public class ImportFileBean implements Serializable {
 
         onComplete();
     }
+    
+    
+    /**
+     * permet de récupérer les identifiants depuis le prefLabel
+     *
+     * @param idTheso
+     * @return 
+     */
+    public StreamedContent getAlignmentsOfTheso(String idTheso) {
+
+        loadDone = false;
+        progressStep = 0;
+        progress = 0;
+        total = 0;
+
+        if (StringUtils.isEmpty(idTheso)) {
+            return null;
+        }     
+
+        if (StringUtils.isEmpty(alignmentSource)) {
+            error.append("La source est obligatoire !!");
+            showError();
+            return null;
+        }           
+        
+        initError();
+        
+        CsvImportHelper csvImportHelper = new CsvImportHelper();
+        ConceptHelper conceptHelper = new ConceptHelper();
+        AlignmentHelper alignmentHelper = new AlignmentHelper(); 
+        
+        ArrayList<NodeIdValue> listAlignments = new ArrayList<>();
+        ArrayList<String> branchIds; 
+        ArrayList<NodeAlignmentSmall> nodeAlignmentSmalls;
+        try {
+            if (StringUtils.isEmpty(selectedConcept)) {
+                // on exporte tous les alignements
+                branchIds  = conceptHelper.getAllIdConceptOfThesaurus(
+                        connect.getPoolConnexion(),
+                        idTheso);                
+            } else {
+                // on exporte la branche
+                if (!conceptHelper.isIdExiste(connect.getPoolConnexion(), selectedConcept, idTheso)) {
+                    error.append("L'identifiant n'existe pas !!");
+                    showError();
+                    return null;
+                }            
+                branchIds  = conceptHelper.getIdsOfBranch(
+                        connect.getPoolConnexion(),
+                        selectedConcept,
+                        idTheso);
+            }
+            if(branchIds != null) {
+                for (String idConcept : branchIds) {
+                    nodeAlignmentSmalls = alignmentHelper.getAllAlignmentOfConceptNew(connect.getPoolConnexion(), idConcept, idTheso);
+                    if(!nodeAlignmentSmalls.isEmpty()) {
+                        for (NodeAlignmentSmall nodeAlignmentSmall : nodeAlignmentSmalls) {
+                            NodeIdValue nodeIdValue = new NodeIdValue();
+                            nodeIdValue.setId(idConcept);
+                            nodeIdValue.setValue(nodeAlignmentSmall.getUri_target());
+                            listAlignments.add(nodeIdValue);
+                            total++; 
+                        }
+                    }
+                }
+            }
+            log.error(csvImportHelper.getMessage());
+
+            loadDone = false;
+            importDone = true;
+            BDDinsertEnable = false;
+            importInProgress = false;
+            uri = null;
+            //total = 0;
+            info = info + "\n" + "total = " + total ;
+            error.append(csvImportHelper.getMessage());
+            
+            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+            byte[] datas = csvWriteHelper.writeCsvForAlignment(listAlignments, alignmentSource);
+
+            try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+                return DefaultStreamedContent.builder()
+                        .contentType("text/csv")
+                        .name("resultat.csv")
+                        .stream(() -> input)
+                        .build();
+            } catch (IOException ex) {
+                error.append(System.getProperty(ex.getMessage()));
+            }
+            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+            return new DefaultStreamedContent();            
+            
+        } catch (Exception e) {
+            error.append(System.getProperty("line.separator"));
+            error.append(e.toString());
+        } finally {
+            showError();
+        }
+        return null;
+    }     
 
     /**
      * permet de récupérer les identifiants depuis le prefLabel
@@ -1711,6 +1820,9 @@ public class ImportFileBean implements Serializable {
                     }
                     nodeReplaceValueByValue.setOldValue(oldBt);
                     nodeReplaceValueByValue.setNewValue(newBt);
+                }
+                if(StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
+                    continue;
                 }
                 if (csvImportHelper.updateConceptValueByNewValue(connect.getPoolConnexion(), idTheso, nodeReplaceValueByValue, idUser1)) {
                     total++;
@@ -3113,6 +3225,22 @@ public class ImportFileBean implements Serializable {
 
     public void setSelectedSearchType(String selectedSearchType) {
         this.selectedSearchType = selectedSearchType;
+    }
+
+    public String getSelectedConcept() {
+        return selectedConcept;
+    }
+
+    public void setSelectedConcept(String selectedConcept) {
+        this.selectedConcept = selectedConcept;
+    }
+
+    public String getAlignmentSource() {
+        return alignmentSource;
+    }
+
+    public void setAlignmentSource(String alignmentSource) {
+        this.alignmentSource = alignmentSource;
     }
 
 }

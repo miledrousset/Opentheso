@@ -232,6 +232,18 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <!-- size of Id Ark -->
+                                            <div class="list-group-item list-group-item-action">
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                        <h:outputText value="#{langueBean.getMsg('setting.isUpperCaseForArk')}"
+                                                                      title="#{langueBean.getMsg('setting.isUpperCaseForArkTooltip')}" style="font-weight: bold;" />
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.uppercase_for_ark}" style="font-size: 12px;" />
+                                                    </div>
+                                                </div>
+                                            </div>                                            
 
                                             <!-- size of Id Ark -->
                                             <div class="row" style="padding: 3px;">

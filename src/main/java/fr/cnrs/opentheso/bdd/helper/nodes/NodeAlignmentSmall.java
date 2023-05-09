@@ -11,7 +11,6 @@ package fr.cnrs.opentheso.bdd.helper.nodes;
  * @author miled.rousset
  */
 public class NodeAlignmentSmall {
-
     private String uri_target;
     private int alignement_id_type;
     private String source;    
@@ -43,5 +42,4 @@ public class NodeAlignmentSmall {
     public void setSource(String source) {
         this.source = source;
     }
-
 }

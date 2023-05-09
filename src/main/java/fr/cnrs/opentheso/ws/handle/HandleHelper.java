@@ -124,7 +124,7 @@ public class HandleHelper {
         HandleClient handleClient = new HandleClient();
 
         while (duplicateId) {
-            idHandle = toolsHelper.getNewId(10);
+            idHandle = toolsHelper.getNewId(10, false);
             if (!handleClient.isHandleExist(
                     nodePreference.getUrlApiHandle(),
                     nodePreference.getPrefixIdHandle() + "/" + idHandle)) {

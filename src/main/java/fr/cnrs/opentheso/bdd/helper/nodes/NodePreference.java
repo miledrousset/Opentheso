@@ -68,6 +68,7 @@ public class NodePreference {
     private boolean suggestion;
     
     private boolean useCustomRelation;
+    private boolean uppercase_for_ark;
     
     // pour affichager le nom des personnes qui ont modifié les concepts
     private boolean displayUserName;
@@ -464,6 +465,15 @@ public class NodePreference {
     public void setUseCustomRelation(boolean useCustomRelation) {
         this.useCustomRelation = useCustomRelation;
     }
+
+    public boolean isUppercase_for_ark() {
+        return uppercase_for_ark;
+    }
+
+    public void setUppercase_for_ark(boolean uppercase_for_ark) {
+        this.uppercase_for_ark = uppercase_for_ark;
+    }
+
 
     
 }

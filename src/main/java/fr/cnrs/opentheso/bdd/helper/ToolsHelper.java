@@ -458,14 +458,17 @@ public class ToolsHelper {
         return true;
     }
 
-    public String getNewId(int length) {
-        String chars = "abcdefghijklmnopqrstuvwxyz1234567890";
+    public String getNewId(int length, boolean isUpperCase) {
+        String chars = "0123456789bcdfghjkmnpqrstvwxz";
         StringBuilder pass = new StringBuilder();
         for (int x = 0; x < length; x++) {
             int i = (int) Math.floor(Math.random() * (chars.length() - 1));
             pass.append(chars.charAt(i));
         }
-        return pass.toString();
+        if(isUpperCase)
+            return pass.toString().toUpperCase();
+        else
+            return pass.toString();
     }
 
     public Date getDate() {

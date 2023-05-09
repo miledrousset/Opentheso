@@ -370,11 +370,9 @@ public class TermHelper {
                         + " and id_term  = '" + idTerm + "'"
                         + " and lang = '" + idLang + "'");
             }
-            if (oldLabel != null && !oldLabel.isEmpty()) {
-                if (addNewTermHistorique(conn, idTerm, oldLabel, idLang, idTheso, "", "Delete", idUser)) {
-                    status = true;
-                }
+            if (addNewTermHistorique(conn, idTerm, oldLabel, idLang, idTheso, "", "Delete", idUser)) {
             }
+            status = true;
         } catch (SQLException sqle) {
             log.error("Error while deleting traduction of Term : " + idTerm, sqle);
         }

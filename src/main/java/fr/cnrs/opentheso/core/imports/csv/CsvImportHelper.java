@@ -1220,25 +1220,35 @@ public class CsvImportHelper {
         String oldLabel;
 
         for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
-            // on supprime les preflabels dans cette langue
-            oldLabel = termHelper.getLexicalValue(ds, idTerm, idTheso, prefLabel.getLang());
-
-            // on test si c'est identique, on ne fait rien.
-            if (oldLabel.trim().equals(prefLabel.getLabel().trim())) {
-                continue;
-            }
-
-            if (!oldLabel.isEmpty()) {
-                if (!termHelper.deleteTraductionOfTerm(ds, idTerm, oldLabel, prefLabel.getLang(), idTheso, idUser1)) {
-                    return false;
-                }
-            }
-            // on ajoute les nouveaux prefLabels dans cette langue
-            if (!prefLabel.getLabel().isEmpty()) {
+            // si le label n'existe pas dans cette langue, on l'ajoute
+            if (!termHelper.isTermExistInThisLang(ds, idTerm, prefLabel.getLang(), idTheso)) {
                 if (!termHelper.addTraduction(ds, prefLabel.getLabel(), idTerm, prefLabel.getLang(), "import", "", idTheso, idUser1)) {
                     return false;
-                }
-            }
+                }                  
+            } else {
+                oldLabel = termHelper.getLexicalValue(ds, idTerm, idTheso, prefLabel.getLang());
+                
+                // si le label est fourni vide, il faut alors supprimer cette traduction
+                if (prefLabel.getLabel().isEmpty()) {
+                    return termHelper.deleteTraductionOfTerm(ds, idTerm, oldLabel, prefLabel.getLang(), idTheso, idUser1);
+                } 
+                
+                // si le label d'origine est vide (cas rare et normalement impossible)
+                if (oldLabel.isEmpty()) {
+                    //le terme est alors à mettre à jour
+                    return termHelper.updateTraduction(ds, prefLabel.getLabel(), idTerm, prefLabel.getLang(), idTheso, idUser1);
+                }        
+                
+                // on vérifie si le terme est identique, on ne fait rien
+                if (oldLabel.trim().equals(prefLabel.getLabel().trim())) {
+                    continue;
+                }  
+                
+                // le terme est alors à mettre à jour
+                if (!termHelper.updateTraduction(ds, prefLabel.getLabel(), idTerm, prefLabel.getLang(), idTheso, idUser1)) {
+                    return false;
+                }                   
+            }            
         }
         return true;
     }

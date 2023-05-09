@@ -4,3 +4,5 @@
 - Ajout d'une action pour comparer une liste de concepts au thésaurus (avec des
     options préciser le type de recherche à effectuer)
 
+- Affichage des titres des images et des copyriht avec un lien cliquable
+

@@ -564,7 +564,22 @@ public class CsvReadHelper {
                     if (nodeReplaceValueByValue != null) {
                         nodeReplaceValueByValue.setIdConcept(idConcept);
                         nodeReplaceValueByValues.add(nodeReplaceValueByValue);
-                    }                  
+                    }
+                    NodeReplaceValueByValue nodeReplaceValueByValue2 = new NodeReplaceValueByValue();
+                    // on récupère les altLabels 
+                    nodeReplaceValueByValue2 = getValueAndPropertyAltLabel(nodeReplaceValueByValue2, record, idLang1);     
+                    if (nodeReplaceValueByValue2 != null) {
+                        nodeReplaceValueByValue2.setIdConcept(idConcept);
+                        nodeReplaceValueByValues.add(nodeReplaceValueByValue2);
+                    }   
+                    NodeReplaceValueByValue nodeReplaceValueByValue3 = new NodeReplaceValueByValue();
+                    // on récupère les définitions
+                    nodeReplaceValueByValue3 = getValueAndPropertyDefinition(nodeReplaceValueByValue3, record, idLang1);     
+                    if (nodeReplaceValueByValue3 != null) {
+                        nodeReplaceValueByValue3.setIdConcept(idConcept);
+                        nodeReplaceValueByValues.add(nodeReplaceValueByValue3);
+                    }                     
+                    
                 }
                  // on récupère les BTs 
                 NodeReplaceValueByValue nodeReplaceValueByValue = new NodeReplaceValueByValue();
@@ -586,6 +601,7 @@ public class CsvReadHelper {
             String idLang) {
         String value;
         try {
+            //récupère les prefLabels
             value = record.get("new_skos:preflabel@"+ idLang);
             if(value != null && !value.isEmpty()) {
                 nodeReplaceValueByValue.setIdLang(idLang);
@@ -606,6 +622,59 @@ public class CsvReadHelper {
         }      
         return null;
     }
+    private NodeReplaceValueByValue getValueAndPropertyAltLabel(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record,
+            String idLang) {
+        String value;
+        try {
+            //récupère les altLabels
+            value = record.get("new_skos:altLabel@"+ idLang);
+            if(value != null && !value.isEmpty()) {
+                nodeReplaceValueByValue.setIdLang(idLang);
+                nodeReplaceValueByValue.setNewValue(value);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.altLabel);
+            } else {
+                return null;
+            }
+            try {
+                value = record.get("skos:altlabel@"+ idLang);
+                if(value != null && !value.isEmpty()) {
+                    nodeReplaceValueByValue.setOldValue(value);
+                }                 
+            } catch (Exception e) {
+            }
+            return nodeReplaceValueByValue;
+        } catch (Exception e) {
+            //System.err.println("");
+        }      
+        return null;
+    }   
+    private NodeReplaceValueByValue getValueAndPropertyDefinition(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record,
+            String idLang) {
+        String value;
+        try {
+            //récupère les définitons
+            value = record.get("new_skos:definition@"+ idLang);
+            if(value != null && !value.isEmpty()) {
+                nodeReplaceValueByValue.setIdLang(idLang);
+                nodeReplaceValueByValue.setNewValue(value);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.definition);
+            } else {
+                return null;
+            }
+            try { 
+                value = record.get("skos:definition@"+ idLang);
+                if(value != null && !value.isEmpty()) {
+                    nodeReplaceValueByValue.setOldValue(value);
+                }                 
+            } catch (Exception e) {
+            }                
+            return nodeReplaceValueByValue;
+        } catch (Exception e) {
+            //System.err.println("");
+        }      
+        return null;
+    }     
+    
     private NodeReplaceValueByValue getValueAndPropertyBT(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record) {
         String value;
         try {

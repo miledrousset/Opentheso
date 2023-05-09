@@ -532,6 +532,16 @@ begin
 end
 $$language plpgsql;
 
+-- Préférences : ajout une option pour choisir si l'id ARK est majuscule ou non 
+--
+create or replace function update_table_preferences_uppercase_ark() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='uppercase_for_ark') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN uppercase_for_ark boolean DEFAULT false;';
+END IF;
+end
+$$language plpgsql;
+
 
 ----------------------------------------------------------------------------
 -- exécution des fonctions
@@ -564,6 +574,7 @@ SELECT update_table_gps_constraint();
 SELECT update_table_proposition_modification();
 SELECT update_table_preferences_custom_relation();
 SELECT update_table_concept_type2();
+SELECT update_table_preferences_uppercase_ark();
 
 
 
@@ -600,6 +611,9 @@ SELECT delete_fonction('update_table_gps_constraint', '');
 SELECT delete_fonction('update_table_proposition_modification', '');
 SELECT delete_fonction('update_table_preferences_custom_relation', '');
 SELECT delete_fonction('update_table_concept_type2', '');
+SELECT delete_fonction('update_table_preferences_uppercase_ark', '');
+
+
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');

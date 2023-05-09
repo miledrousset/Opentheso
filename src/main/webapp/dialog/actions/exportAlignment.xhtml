@@ -1,0 +1,106 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idExportAlignment" header="#{langueBean.getMsg('actions.exportAlignments')}" widgetVar="exportAlignment"  
+              width="850" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <h:panelGroup id="exportAlignmentForm">              
+
+            <p:outputPanel deferred="true"  style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px; overflow-y: auto; max-height: 300px;">
+
+
+                <fieldset>
+                    <p:scrollPanel mode="native" >
+                        <p:panelGrid style="font-size: 12px;">
+                            <f:facet name="header">
+                                <p:row style="font-size: 12px;">
+                                    <p:column colspan="1"><h:outputText value="localId"/></p:column>                                
+                                    <p:column colspan="1">URI</p:column>
+                                </p:row>
+                            </f:facet>
+                            <p:row style="font-size: 12px;">
+                                <p:column colspan="1">230</p:column>                            
+                                <p:column colspan="1">https://www.wikidata.org/wiki/Q65955</p:column>
+                            </p:row>
+                        </p:panelGrid>    
+                        <p:spacer/>
+                    </p:scrollPanel>    
+
+                    <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px;">
+                        <p style="color: #000;">
+                            Permet de récupérer les alignements du thésaurus sélectionné.<br/>
+                            Le résultat sera équivalent à l'exemple ci-dessus.
+                        </p>
+                    </p:panel>         
+                </fieldset>
+            </p:outputPanel>
+
+            <p:spacer height="20" />
+            <div class="row" >
+                <div class="col-9" style="text-align: right">
+                    <h:outputText value="#{langueBean.getMsg('actions.exportAlignments')} #{langueBean.getMsg('search.for')} : "  />
+                </div>  
+                <div class="col-3" >                    
+                    <h:outputText value=" #{selectedTheso.thesoName} (#{selectedTheso.selectedIdTheso})" style="color: #F47B2A"/>                    
+                </div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-9" style="text-align: right">
+                    <h:outputText value="#{langueBean.getMsg('actions.exportBranch')} : "  />
+                </div>  
+                <div class="col-3" >
+                    <p:inputText value="#{importFileBean.selectedConcept}"/>    
+                </div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="col-9" style="text-align: right">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.source_name')} : (*)"  />
+                </div>  
+                <div class="col-3" >
+                    <p:inputText placeholder="Wikidata" value="#{importFileBean.alignmentSource}" />    
+                </div>
+            </div>             
+
+            <p:spacer height="5" />
+         
+       
+            <h:panelGroup id="panelExportAlignment_result">
+                <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}" icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                     style="margin-right: 10px"
+                                     actionListener="#{importFileBean.init()}"
+                                     oncomplete="PF('exportAlignment').hide();"
+                                     update="exportAlignmentForm"/>
+
+                    <p:commandButton value="#{langueBean.getMsg('candidat.export')}" 
+                                     onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     ajax="false"
+                                     styleClass="ui-button-success" icon="fa fa-upload" 
+                                     update="exportAlignmentForm messageIndex"
+                                     title="#{langueBean.getMsg('actions.exportAlignments')}" style="margin-left: 20px">
+                        <p:fileDownload value="#{importFileBean.getAlignmentsOfTheso(selectedTheso.selectedIdTheso)}" />
+                    </p:commandButton>                     
+
+                </div> 
+                <p:dialog widgetVar="waitDialogExportAlignment" modal="true" draggable="false"  closable="false" resizable="false" showHeader="false" position="top" 
+                          style="margin-top: 250px; border: none;">
+                    <i class="pi pi-spinner pi-spin" style="font-size:2rem; color: #43B572; margin-top: 15px"></i>
+                </p:dialog>                   
+                <script type="text/javascript">
+                    function start() {
+                        if(#{importFileBean.alignmentSource == null}) return;
+                        PF('waitDialogExportAlignment').show();
+                    }
+                    function stop() {
+                        PF('waitDialogExportAlignment').hide();
+                        PF('exportAlignment').hide();
+                    }
+                </script>                
+            </h:panelGroup>
+        </h:panelGroup>
+
+    </p:dialog> 
+</ui:fragment>

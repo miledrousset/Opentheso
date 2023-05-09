@@ -33,8 +33,15 @@
                                 update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
                                 process="@this" ajax="true"
                                 action="#{importFileBean.init()}" icon="pi pi-times" style="font-size: 12px; "/>      
+                    
+                    <p:menuitem value="#{langueBean.getMsg('actions.exportAlignments')}" 
+                                title="#{langueBean.getMsg('actions.exportAlignmentsTooltip')}"
+                                oncomplete="PF('exportAlignment').show();"
+                                update="idExportAlignment exportAlignmentForm"
+                                process="@this" ajax="true"
+                                action="#{importFileBean.init()}" icon="pi pi-upload" style="font-size: 12px; "/>                       
 
-                    <p:divider style="font-size: 11px; color: #F47B2A"/>   
+                    <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 10px;"/>   
 
                     <p:menuitem value="#{langueBean.getMsg('actions.importNotes')}" 
                                 title="#{langueBean.getMsg('actions.importNotesTooltip')}"
@@ -49,7 +56,7 @@
                                 update="idListArkCsv listArkCsvForm"
                                 process="@this" ajax="true"
                                 action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>               
-                    <p:divider style="font-size: 11px; color: #F47B2A"/> 
+                    <p:divider style="font-size: 11px; color: #F47B2A ;margin-bottom: 10px;"/> 
 
                     <p:menuitem value="#{langueBean.getMsg('actions.importImages')}" 
                                 title="#{langueBean.getMsg('actions.importImagesTooltip')}"
@@ -75,7 +82,7 @@
                                 action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
                     
                     
-                    <p:divider style="margin-bottom: 10px; margin-bottom: 20px;" />                    
+                    <p:divider style="margin-bottom: 10px;" />                    
                     <!-- Import d'une liste tabulée pour remplacer valeur par valeur_new pour, si la valeur_new est vide, on ne change rien -->
                     <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.importListForReplaceBy')}" 
                                 title="#{langueBean.getMsg('actions.importListForReplaceByTooltip')}"
@@ -100,7 +107,7 @@
                                 process="@this" ajax="true"
                                 action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                      
                     
-                    <p:divider style="margin-bottom: 20px;" />  
+                    <p:divider style="margin-bottom: 10px;" />  
                     
                     
                     <!-- Récupère les Identifiant d'après un prefLabel -->
@@ -126,6 +133,7 @@
 
     <ui:include src="../dialog/import/listAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/import/deleteListAlignmentCsv.xhtml" />   
+    <ui:include src="../dialog/actions/exportAlignment.xhtml" />      
     <ui:include src="../dialog/import/listNoteCsv.xhtml" />      
     <ui:include src="../dialog/import/listArkCsv.xhtml" />      
     <ui:include src="../dialog/import/listImageCsv.xhtml" />      

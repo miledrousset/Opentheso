@@ -824,7 +824,7 @@ body .ui-accordion .ui-accordion-header {
     border: 1px solid #226b40;
     border-top: 0 none;
     background: #ecf8f1;
-    color: #43B572;
+/*    color: #43B572;*/
     padding: 0.5em;
 }
 
@@ -841,12 +841,7 @@ body .ui-accordion .ui-accordion-header:first-child {
     border-top-left-radius: 4px;
 }
 
-body .ui-accordion .ui-accordion-header {
-    border: 1px solid #226b40;
-    border-top: 0 none;
-    color: #43B572;
-    padding: 0.5em;
-}
+
 
 body .ui-accordion .ui-accordion-content {
     border: 1px solid #226b40;
