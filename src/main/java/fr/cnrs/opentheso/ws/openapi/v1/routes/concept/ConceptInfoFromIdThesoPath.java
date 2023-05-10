@@ -43,9 +43,6 @@ public class ConceptInfoFromIdThesoPath {
                     @ApiResponse(responseCode = "400", description = "responses.400.description"),
                     @ApiResponse(responseCode = "404", description = "responses.concept.404.description"),
                     @ApiResponse(responseCode = "503", description = "responses.503.description")
-            },
-            security = {
-                    @SecurityRequirement(name = "CLE-API-EXEMPLE")
             })
     public Response getSkosFromidConcept(@Parameter(name = "idTheso", description = "getSkosFromidConcept.idTheso.description", required = true) @PathParam("idTheso") String idThesaurus,
                                          @Parameter(name = "idConcept", description = "getSkosFromidConcept.idConcept.description", required = true) @PathParam("idConcept") String idConcept,

@@ -28,7 +28,7 @@ import javax.ws.rs.ext.Provider;
                 @Tag(name = "Ark", description = "definition.tags.ark.description"),
         },
         servers = {
-                @Server(url = "http://localhost:8080/opentheso2/openapi/v1", description = "Version 1")
+                @Server(url = "http://localhost:8080/opentheso2/openapi/v1")
         }
 )
 @SecurityScheme(name = "CLE-API-EXEMPLE", paramName = "CLE-API-EXEMPLE", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)
