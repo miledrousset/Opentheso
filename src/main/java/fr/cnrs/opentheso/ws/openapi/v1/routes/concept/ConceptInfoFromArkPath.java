@@ -23,11 +23,11 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
-@Path("/concept/ark")
+@Path("/concept/ark:")
 public class ConceptInfoFromArkPath {
 
 
-    @Path("/{naan}/{idArk}")
+    @Path("/{naan}/{ark}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(summary = "getConceptByArk.summary",
@@ -44,15 +44,15 @@ public class ConceptInfoFromArkPath {
                     @ApiResponse(responseCode = "503", description = "responses.503.description")
             })
     public Response getConceptByArk(
-            @Parameter(name = "naan", description = "getConceptByArk.naan.description", required = true) @PathParam("naan") String naan,
-            @Parameter(name = "idArk", description = "getConceptByArk.idArk.description", required = true) @PathParam("idArk") String idArk,
+            @Parameter(name = "naan", description = "getConceptByArk.naan.description", required = true, example = "66666") @PathParam("naan") String naan,
+            @Parameter(name = "ark", description = "getConceptByArk.idArk.description", required = true, example = "lkp6ure1g7b6") @PathParam("ark") String idArk,
             @Context HttpHeaders headers
     ) {
         String format = HeaderHelper.getContentTypeFromHeader(headers);
         return directFetchConcept(naan + "/" + idArk, format);
     }
 
-    @Path("/{arkId}/childs")
+    @Path("/{naan}/{ark}/childs")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "getIdArkOfConceptNT.summary",
@@ -65,11 +65,11 @@ public class ConceptInfoFromArkPath {
                     @ApiResponse(responseCode = "400", description = "getIdArkOfConceptNT.400.description"),
                     @ApiResponse(responseCode = "503", description = "responses.503.description")
             })
-    public Response getIdArkOfConceptNT(@Parameter(name = "arkId", description = "getIdArkOfConceptNT.arkId.description") @PathParam("arkId") String arkId) {
-
-        if (StringUtils.isEmpty(arkId)) {
-            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "Missing Ark ID", APPLICATION_JSON_UTF_8);
-        }
+    public Response getIdArkOfConceptNT(
+            @Parameter(name = "naan", description = "getIdArkOfConceptNT.naan.description", example = "66666") @PathParam("naan") String naan,
+            @Parameter(name = "ark", description = "getIdArkOfConceptNT.arkId.description", example = "lkhsq27fw3z6") @PathParam("ark") String arkLocalId
+    ) {
+        String arkId = naan + "/" + arkLocalId;
 
         String datas;
         RestRDFHelper restRDFHelper = new RestRDFHelper();
@@ -102,8 +102,8 @@ public class ConceptInfoFromArkPath {
                     @ApiResponse(responseCode = "500", description = "responses.500.description")
             })
     public Response searchJsonForWidgetArk(
-            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "searchJsonForWidgetArk.q.description") @QueryParam("q") String q,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "searchJsonForWidgetArk.lang.description") @QueryParam("lang") String lang,
+            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "searchJsonForWidgetArk.q.description", example = "66666/lkp6ure1g7b6,66666/lkubqlukv7i5") @QueryParam("q") String q,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "searchJsonForWidgetArk.lang.description", example = "fr") @QueryParam("lang") String lang,
             @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), description = "searchJsonForWidgetArk.full.description") @QueryParam("full") String fullString
     ) {
         String[] idArks = q.split(",");
@@ -128,7 +128,7 @@ public class ConceptInfoFromArkPath {
         return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
     }
 
-    @Path("/{naan}/{idArk}/prefLabel/{lang}")
+    @Path("/{naan}/{ark}/prefLabel/{lang}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(
@@ -145,9 +145,9 @@ public class ConceptInfoFromArkPath {
             }
     )
     public Response getPrefLabelFromArk(
-            @Parameter(name = "naan", description = "getPrefLabelFromArk.naan.description", required = true) @PathParam("naan") String naan,
-            @Parameter(name = "idArk", description = "getPrefLabelFromArk.idArk.description", required = true) @PathParam("idArk") String idArk,
-            @Parameter(name = "lang", description = "getPrefLabelFromArk.lang.description", required = true) @PathParam("lang") String lang
+            @Parameter(name = "naan", description = "getPrefLabelFromArk.naan.description", required = true, example = "66666") @PathParam("naan") String naan,
+            @Parameter(name = "ark", description = "getPrefLabelFromArk.idArk.description", required = true, example = "lkp6ure1g7b6") @PathParam("ark") String idArk,
+            @Parameter(name = "lang", description = "getPrefLabelFromArk.lang.description", required = true, example = "fr") @PathParam("lang") String lang
     ) {
         HikariDataSource ds = connect();
         if (ds == null) {

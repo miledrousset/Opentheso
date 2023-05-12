@@ -29,7 +29,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 @Path("/group")
 public class GroupPath {
 
-    @Path("/ark/{naan}/{arkId}")
+    @Path("/ark:/{naan}/{ark}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "getGroupIdFromArk.summary",
@@ -43,7 +43,7 @@ public class GroupPath {
                     @ApiResponse(responseCode = "503", description = "responses.503.description")
             })
     public Response getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "getGroupIdFromArk.naan.description") @PathParam("naan") String naan,
-                                      @Parameter(name = "arkId", required = true, description = "getGroupIdFromArk.arkId.description") @PathParam("arkId") String arkId) {
+                                      @Parameter(name = "ark", required = true, description = "getGroupIdFromArk.arkId.description") @PathParam("ark") String arkId) {
 
         String datas;
         String format = APPLICATION_JSON_UTF_8;
