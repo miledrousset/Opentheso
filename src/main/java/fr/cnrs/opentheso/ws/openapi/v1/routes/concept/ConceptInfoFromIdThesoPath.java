@@ -24,6 +24,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getContentTypeFromHeader;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 
 @Path("/concept/{idTheso}")
 public class ConceptInfoFromIdThesoPath {
@@ -135,12 +136,11 @@ public class ConceptInfoFromIdThesoPath {
         String datas;
         try (HikariDataSource ds = connect()) {
             datas = new D3jsHelper().findDatasForGraph__(ds, idConcept, idThesaurus, lang);
-        }
-
-        if (datas == null) {
-            return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, emptyMessage(APPLICATION_JSON_LD_UTF_8), APPLICATION_JSON_LD_UTF_8);
+            if (datas == null) {
+            return ResponseHelper.response(Response.Status.NOT_FOUND, emptyMessage(APPLICATION_JSON_LD_UTF_8), APPLICATION_JSON_LD_UTF_8);
         } else {
             return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_LD_UTF_8);
+        }
         }
     }
 
@@ -233,11 +233,11 @@ public class ConceptInfoFromIdThesoPath {
                 return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", APPLICATION_JSON_UTF_8);
             }
             datas = new RestRDFHelper().getNarrower(ds, idTheso, idConcept, lang);
-        }
-        if (StringUtils.isEmpty(datas)) {
+            if (StringUtils.isEmpty(datas)) {
             return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Concept not found", APPLICATION_JSON_UTF_8);
         } else {
             return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
+        }
         }
     }
 
@@ -260,7 +260,7 @@ public class ConceptInfoFromIdThesoPath {
     )
     public Response getConceptsFromDate(
             @Parameter(name = "idTheso", description = "getConceptsFromDate.idTheso.description", required = true) @PathParam("idTheso") String idTheso,
-            @Parameter(name = "date", description = "getConceptsFromDate.date.description", required = true, schema = @Schema(type = "string", format = "date")) @PathParam("date") String date,
+            @Parameter(name = "date", description = "getConceptsFromDate.date.description", required = true, schema = @Schema(type = "string", format = "date"), example = "2014-07-21") @PathParam("date") String date,
             @Context HttpHeaders headers
     ) {
         String format = getContentTypeFromHeader(headers);
@@ -271,7 +271,7 @@ public class ConceptInfoFromIdThesoPath {
         }
 
         if (datas == null) {
-            return ResponseHelper.errorResponse(Response.Status.OK, emptyMessage(format), format);
+            return ResponseHelper.response(Response.Status.OK, emptyMessage(format), format);
         } else {
             return ResponseHelper.response(Response.Status.OK, datas, format);
         }

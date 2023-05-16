@@ -96,16 +96,18 @@ public class OpenApiPath extends BaseOpenApiResource {
             description = "testAuth.description",
             tags = {"Test"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "testAuth.200.description"),
+                @ApiResponse(responseCode = "200", description = "testAuth.200.description", content = {
+                    @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8)
+                }),
                 @ApiResponse(responseCode = "403", description = "testAuth.403.description"),
                 @ApiResponse(responseCode = "500", description = "responses.500.description"),
                 @ApiResponse(responseCode = "503", description = "responses.503.description")
             },
             security = {
-                @SecurityRequirement(name = "CLE-API-EXAMPLE")
+                @SecurityRequirement(name = "CLE-API-EXEMPLE")
             }
     )
-    public Response testAuth(@Parameter(name = "CLE-API-EXEMPLE", hidden = true) @HeaderParam("CLE-API-EXEMPLE") String cleAPI) {
+    public Response testAuth(@HeaderParam("CLE-API-EXEMPLE") String cleAPI) {
         ApiKeyHelper helper = new ApiKeyHelper();
         ApiKeyState keyState = helper.checkApiKeyExistance(cleAPI);
         if (keyState != ApiKeyState.VALID) {

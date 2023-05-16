@@ -137,7 +137,7 @@ public class ConceptSearchPath {
         }
         String format = getContentTypeFromHeader(headers);
         String datas;
-        boolean showLabels = showLabelsString.equalsIgnoreCase("true");
+        boolean showLabels = showLabelsString != null && showLabelsString.equalsIgnoreCase("true");
 
         if (idArk == null) {
             return ResponseHelper.response(Response.Status.BAD_REQUEST, "No Ark ID specified", format);

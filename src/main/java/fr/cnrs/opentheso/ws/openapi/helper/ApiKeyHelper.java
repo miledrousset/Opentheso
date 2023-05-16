@@ -14,8 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 /**
- *
- * @author julie
+ * Helper permettant de vérifier l'existence d'une clé API dans la table useres
  */
 public class ApiKeyHelper {
     
@@ -52,7 +51,12 @@ public class ApiKeyHelper {
             return ApiKeyState.SQL_ERROR;
         }
     }
-    
+
+    /**
+     * Renvoie une réponse adaptée si l'état de la clé n'est pas VALID
+     * @param state Etat de la clé API
+     * @return Response avec le message erreur correspondant
+     */
     public Response errorResponse(ApiKeyState state) {
         Status code = null;
         String msg = null;
@@ -77,7 +81,13 @@ public class ApiKeyHelper {
         
         return ResponseHelper.errorResponse(code, msg, CustomMediaType.APPLICATION_JSON_UTF_8);
     }
-    
+
+    /**
+     * Envoie une requête SQL à la base de donnée pour vérifier si la clé API existe dans la table users
+     * @param apiKey Clé API à vérifier
+     * @return True si la clé existe dans la table, False sinon
+     * @throws SQLException Appelé quand il y a eu une erreur dans l'exécution de la commande SQL
+     */
     private boolean apiKeyExistInDatabase(String apiKey) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement("SELECT COUNT(*) AS NB_LINES FROM users WHERE apikey = ?")) {
            stmt.setString(1, apiKey);
