@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.ws.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,8 +25,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
 @Path("/concept/{idTheso}/search")
 public class ConceptSearchPath {
-
-    private final LanguageBean languageBean = new LanguageBean();
 
     @Path("/")
     @GET
@@ -224,7 +221,7 @@ public class ConceptSearchPath {
         String datas = getDatasForWidget(idTheso, lang, groups, q, fullFormat, exactMatch);
         return ResponseHelper.response(Response.Status.OK, Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)), APPLICATION_JSON_UTF_8);
     }
-
+    
     private String getDatasForWidget(String idTheso, String idLang, String[] groups, String value, String format, boolean match) {
         String datas;
         try (HikariDataSource ds = connect()) {
@@ -232,10 +229,10 @@ public class ConceptSearchPath {
                 return null;
             }
             RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.findDatasForWidget(ds,
-                    idTheso, idLang, groups, value, format, match);
+            datas = restRDFHelper.findDatasForWidget(ds, idTheso, idLang, groups, value, format, match);
+
+            return datas;
         }
-        return datas;
     }
 
     private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {
