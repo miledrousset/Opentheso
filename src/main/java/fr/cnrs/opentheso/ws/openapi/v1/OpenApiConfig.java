@@ -27,6 +27,7 @@ import javax.ws.rs.ext.Provider;
                 @Tag(name = "Thesaurus", description = "definition.tags.thesaurus.description"),
                 @Tag(name = "Group", description = "definition.tags.group.description"),
                 @Tag(name = "Ark", description = "definition.tags.ark.description"),
+                @Tag(name = "Ontome", description = "definition.tags.ontome.description")
         },
         servers = {
             @Server(url = "http://localhost:8080/opentheso2/openapi/v1")
