@@ -32,15 +32,12 @@ public class DataHelper {
                 return null;
             }
             RestRDFHelper restRDFHelper = new RestRDFHelper();
-            if (filter != null) {
-                switch (filter) {
-                    case "notation:":
-                        value = value.substring(value.indexOf(":") + 1);
-                        datas = restRDFHelper.findNotation(ds, idTheso, value, format);
-                        ds.close();
-                        return datas;
-                }
-            }   datas = restRDFHelper.findConcepts(ds,
+            if (filter != null && filter.equalsIgnoreCase("notation:")) {
+                datas = restRDFHelper.findNotation(ds, idTheso, value, format);
+                ds.close();
+                return datas;
+            }
+            datas = restRDFHelper.findConcepts(ds,
                     idTheso, idLang, groups, value, format, match);
         }
         if (datas == null) {
