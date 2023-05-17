@@ -23,11 +23,11 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
-@Path("/concept/ark:")
+@Path("/concept/ark:/{naan}/{ark}")
 public class ConceptInfoFromArkPath {
 
 
-    @Path("/{naan}/{ark}")
+    @Path("/")
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(summary = "getConceptByArk.summary",
@@ -52,7 +52,7 @@ public class ConceptInfoFromArkPath {
         return directFetchConcept(naan + "/" + idArk, format);
     }
 
-    @Path("/{naan}/{ark}/childs")
+    @Path("/childs")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "getIdArkOfConceptNT.summary",
@@ -88,7 +88,7 @@ public class ConceptInfoFromArkPath {
         return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
     }
 
-    @Path("/{naan}/{ark}/prefLabel/{lang}")
+    @Path("/prefLabel/{lang}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(
