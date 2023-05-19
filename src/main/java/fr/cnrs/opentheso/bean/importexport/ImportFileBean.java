@@ -1812,7 +1812,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
 
-                if(nodeReplaceValueByValue.getSKOSProperty() == SKOSProperty.broader) {
+    /*            if(nodeReplaceValueByValue.getSKOSProperty() == SKOSProperty.broader) {
                     String oldBt = getIdConcept(nodeReplaceValueByValue.getOldValue(), idTheso);
                     String newBt = getIdConcept(nodeReplaceValueByValue.getNewValue(), idTheso);
                     if(oldBt == null || newBt == null) {
@@ -1820,10 +1820,10 @@ public class ImportFileBean implements Serializable {
                     }
                     nodeReplaceValueByValue.setOldValue(oldBt);
                     nodeReplaceValueByValue.setNewValue(newBt);
-                }
-                if(StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
+                }*/
+            /*    if(StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
                     continue;
-                }
+                }*/
                 if (csvImportHelper.updateConceptValueByNewValue(connect.getPoolConnexion(), idTheso, nodeReplaceValueByValue, idUser1)) {
                     total++;
                 }
