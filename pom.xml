@@ -262,6 +262,18 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson-annotations.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.kostaskougios</groupId>
+            <artifactId>cloning</artifactId>
+            <version>${cloning.version}</version>
+        </dependency>
 
     </dependencies>
 
@@ -379,6 +391,8 @@
         <jackson-core.version>2.15.0-rc2</jackson-core.version>
         <commons-compress.version>1.21</commons-compress.version>
         <jackson-annotations.version>2.13.3</jackson-annotations.version>
+        <swagger.version>2.2.9</swagger.version>
+        <cloning.version>1.10.3</cloning.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <weld-servlet-shaded.version>3.1.2.Final</weld-servlet-shaded.version>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
