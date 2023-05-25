@@ -154,9 +154,9 @@ public class ThesaurusHelper {
         try ( Statement stmt = conn.createStatement()) {
             if (identifierType.equalsIgnoreCase("1")) { // identifiants types alphanumérique
                 ToolsHelper toolsHelper = new ToolsHelper();
-                idThesaurus = toolsHelper.getNewId(10, false);
+                idThesaurus = toolsHelper.getNewId(10, false, false);
                 while (isThesaurusExiste(conn, idThesaurus)) {
-                    idThesaurus = toolsHelper.getNewId(10, false);
+                    idThesaurus = toolsHelper.getNewId(10, false, false);
                 }
             } else {
               //  stmt.executeQuery("select max(id) from thesaurus");

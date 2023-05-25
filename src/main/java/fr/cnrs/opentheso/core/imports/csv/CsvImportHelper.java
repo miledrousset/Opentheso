@@ -375,8 +375,25 @@ public class CsvImportHelper {
                 groupHelper.addSubGroup(ds, idFatherGroup, idGroup, idTheso);
             }
         }
+        
+        if (StringUtils.isEmpty(formatDate)) {
+            formatDate = "dd-mm-yyyy";
+        }
+        Date created = null;
+        Date modified = null;
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);        
+        try {
+            if(conceptObject.getCreated() != null && !conceptObject.getCreated().isEmpty())
+                created = simpleDateFormat.parse(conceptObject.getCreated());
+            if(conceptObject.getModified() != null && !conceptObject.getModified().isEmpty())
+                modified = simpleDateFormat.parse(conceptObject.getModified());            
+        } catch (ParseException ex) {
+            Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        
         groupHelper.insertGroup(ds, idGroup, idTheso, "", "C", conceptObject.getNotation(),
-                "", false, idUser);
+                "", false, created, modified, idUser);
 
         ConceptGroupLabel conceptGroupLabel = new ConceptGroupLabel();
         for (CsvReadHelper.Label label : conceptObject.getPrefLabels()) {

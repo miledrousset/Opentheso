@@ -303,20 +303,22 @@ public class ExportRdf4jHelperNew {
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.ConceptGroup);
 
+        //dates
+        String created = null;
+        String modified = null;
+        if(nodeGroupLabel.getCreated()!=null)
+            created = nodeGroupLabel.getCreated().toString();
+        if(nodeGroupLabel.getModified()!=null)
+            modified = nodeGroupLabel.getModified().toString();
+        if (created != null) {
+            sKOSResource.addDate(created, SKOSProperty.created);
+        }
+        if (modified != null) {
+            sKOSResource.addDate(modified, SKOSProperty.modified);
+        }
+        
         for (NodeGroupTraductions traduction : nodeGroupLabel.getNodeGroupTraductionses()) {
             sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.prefLabel);
-
-            //dates
-            String created;
-            String modified;
-            created = traduction.getCreated().toString();
-            modified = traduction.getModified().toString();
-            if (created != null) {
-                sKOSResource.addDate(created, SKOSProperty.created);
-            }
-            if (modified != null) {
-                sKOSResource.addDate(modified, SKOSProperty.modified);
-            }
         }
 
         ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idOfGroupChild, idTheso);

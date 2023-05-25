@@ -151,33 +151,19 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        try {
-            Connection conn = connect.getPoolConnexion().getConnection();
-            conn.setAutoCommit(false);
-            if (!groupHelper.addGroupTraductionRollBack(conn,
-                    groupView.getNodeGroup().getConceptGroup().getIdgroup(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedLang,
-                    traductionValue)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur d'ajout de traduction !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                conn.rollback();
-                conn.close();
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
-                return;
-            }
-            conn.commit();
-            conn.close();
-        } catch (SQLException e) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", e.getMessage());
+        if (!groupHelper.addGroupTraduction(connect.getPoolConnexion(),
+                groupView.getNodeGroup().getConceptGroup().getIdgroup(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedLang,
+                traductionValue)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur d'ajout de traduction !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("messageIndex");
             }
             return;
         }
+        groupHelper.updateModifiedDate(connect.getPoolConnexion(), groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),

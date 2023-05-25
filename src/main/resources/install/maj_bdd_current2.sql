@@ -531,6 +531,18 @@ END IF;
 end
 $$language plpgsql;
 
+-- Collections : ajout des dates (created et modified )
+--
+create or replace function update_table_group() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept_group' AND column_name='created') THEN
+        execute 'ALTER TABLE concept_group ADD COLUMN created timestamp without time zone;
+                 ALTER TABLE concept_group ADD COLUMN modified timestamp without time zone;
+                ';
+END IF;
+end
+$$language plpgsql;
+
 
 ----------------------------------------------------------------------------
 -- exécution des fonctions
@@ -562,8 +574,7 @@ SELECT update_table_proposition_modification();
 SELECT update_table_preferences_custom_relation();
 SELECT update_table_concept_type2();
 SELECT update_table_preferences_uppercase_ark();
-
-
+SELECT update_table_group();
 
 
 
@@ -597,7 +608,7 @@ SELECT delete_fonction('update_table_proposition_modification', '');
 SELECT delete_fonction('update_table_preferences_custom_relation', '');
 SELECT delete_fonction('update_table_concept_type2', '');
 SELECT delete_fonction('update_table_preferences_uppercase_ark', '');
-
+SELECT delete_fonction('update_table_group', '');
 
 
 -- auto_suppression de nettoyage

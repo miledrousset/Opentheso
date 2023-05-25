@@ -248,7 +248,7 @@ public class NewUSerBean implements Serializable {
         
         myProjectBean.setLists();
         
-        PrimeFaces.current().executeScript("PF('newUser').hide();");
+        PrimeFaces.current().executeScript("PF('newUserForProject').hide();");
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

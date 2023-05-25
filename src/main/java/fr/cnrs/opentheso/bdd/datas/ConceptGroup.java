@@ -5,6 +5,8 @@
  */
 package fr.cnrs.opentheso.bdd.datas;
 
+import java.sql.Date;
+
 /**
  *
  * @author miled.rousset
@@ -19,6 +21,9 @@ public class ConceptGroup {
     private String notation;
     private String idconcept; 
     private int id;
+    
+    private Date created;
+    private Date modified;    
 
     public ConceptGroup() {
     }
@@ -94,6 +99,22 @@ public class ConceptGroup {
 
     public void setIdHandle(String idHandle) {
         this.idHandle = idHandle;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
     }
     
 }

@@ -103,7 +103,7 @@
                                                         <p:commandButton value="#{langueBean.getMsg('profile.new_userOnProject')}" icon="fas fa-user-plus"
                                                                          actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
                                                                          style="padding-left: 35px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px;"
-                                                                         update="idNewUserForProject" oncomplete="PF('newUserForProject').show();"
+                                                                         update="idNewUserForProject newUserForProjectForm" oncomplete="PF('newUserForProject').show();"
                                                                          styleClass="ui-button-success" 
                                                                          title="#{langueBean.getMsg('profile.new_userOnProject')}"/>
 

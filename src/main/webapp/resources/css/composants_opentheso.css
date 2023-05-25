@@ -694,10 +694,6 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content.ui-state-high
     font-weight: bold;
 }
 
-body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
-    color: #F47B2A;
-    padding: 0;
-}
 
 body .ui-tree {
     padding: 0;
@@ -743,6 +739,8 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-togg
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-tree-toggler.ui-icon-triangle-1-e:before {
+    color: #F47B2A;
+    padding: 0;
     font-size: 0.7rem;
 }
 

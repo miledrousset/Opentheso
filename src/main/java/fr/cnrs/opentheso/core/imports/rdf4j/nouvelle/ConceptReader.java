@@ -4,7 +4,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
@@ -88,6 +87,13 @@ public class ConceptReader {
                 skosConcept.setIdentifier(literal.getLabel());
                 sKOSXmlDocument.getEquivalenceUriArkHandle().put(skosConcept.getUri(), literal.getLabel());
                 break;
+                
+            case "created":
+                skosConcept.addDate(literal.getLabel(), SKOSProperty.created);
+                break;
+            case "modified":
+                skosConcept.addDate(literal.getLabel(), SKOSProperty.modified);
+                break;                
         }
     }
 

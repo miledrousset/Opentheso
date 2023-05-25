@@ -43,7 +43,7 @@ public class ForgetPassBean implements Serializable {
         UserHelper userHelper = new UserHelper();
         if (userHelper.isUserMailExist(connect.getPoolConnexion(), sendTo)) {
             ToolsHelper toolsHelper = new ToolsHelper();
-            String password = toolsHelper.getNewId(10, false);
+            String password = toolsHelper.getNewId(10, false, false);
             String passwordMD5 = MD5Password.getEncodedPassword(password);
             String pseudo = userHelper.getNameUser(connect.getPoolConnexion(), sendTo);
             int idUser = userHelper.getIdUserFromMail(connect.getPoolConnexion(), sendTo);

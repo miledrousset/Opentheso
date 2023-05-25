@@ -2064,18 +2064,18 @@ public class ConceptHelper {
 
     private String getAlphaNumericId(Connection conn) {
         ToolsHelper toolsHelper = new ToolsHelper();
-        String id = toolsHelper.getNewId(15, false);
+        String id = toolsHelper.getNewId(15, false, false);
         while (isIdExiste(conn, id)) {
-            id = toolsHelper.getNewId(15, false);
+            id = toolsHelper.getNewId(15, false, false);
         }
         return id;
     }
 
     private String getAlphaNumericId(HikariDataSource ds) {
         ToolsHelper toolsHelper = new ToolsHelper();
-        String id = toolsHelper.getNewId(15, false);
+        String id = toolsHelper.getNewId(15, false, false);
         while (isIdExiste(ds, id)) {
-            id = toolsHelper.getNewId(15, false);
+            id = toolsHelper.getNewId(15, false, false);
         }
         return id;
     }
@@ -2562,7 +2562,7 @@ public class ConceptHelper {
         ToolsHelper toolsHelper = new ToolsHelper();
         String idArk;
         for (String idConcept : idConcepts) {
-            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark());
+            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
             idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
             if (!updateArkIdOfConcept(ds, idConcept, idTheso, idArk)) {
                 return false;
@@ -2687,9 +2687,9 @@ public class ConceptHelper {
                 if (idConcept == null) {
                     if (nodePreference.getIdentifierType() == 1) { // identifiants types alphanumérique
                         ToolsHelper toolsHelper = new ToolsHelper();
-                        idConcept = toolsHelper.getNewId(10, false);
+                        idConcept = toolsHelper.getNewId(10, false, false);
                         while (isIdExiste(ds, idConcept)) {
-                            idConcept = toolsHelper.getNewId(10, false);
+                            idConcept = toolsHelper.getNewId(10, false, false);
                         }
                     } else {
                         idConcept = getNumericConceptId(ds);

@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bdd.helper.nodes.group;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class NodeGroupLabel {
 
@@ -10,6 +11,8 @@ public class NodeGroupLabel {
     private String idDoi;
     private String notation;
     private String idThesaurus;
+    private Date created;
+    private Date modified;
     
     private ArrayList<NodeGroupTraductions> nodeGroupTraductionses = new ArrayList<>();
 
@@ -70,6 +73,22 @@ public class NodeGroupLabel {
 
     public void setIdDoi(String idDoi) {
         this.idDoi = idDoi;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
     }
 
            

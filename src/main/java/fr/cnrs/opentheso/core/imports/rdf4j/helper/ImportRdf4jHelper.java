@@ -365,8 +365,31 @@ public class ImportRdf4jHelper {
             if (idArkHandle == null) {
                 idArkHandle = "";
             }
+            
+            if (StringUtils.isEmpty(formatDate)) {
+                formatDate = "dd-mm-yyyy";
+            }
+            Date created = null;
+            Date modified = null;
 
-            groupHelper.insertGroup(ds, idGroup, idTheso, idArkHandle, type, notationValue, "", false, idUser);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);
+            for (SKOSDate sKOSDate : group.getDateList()) {
+                try {
+                    if(!StringUtils.isEmpty(sKOSDate.getDate())) {
+                        if(sKOSDate.getProperty() == SKOSProperty.created){
+                            created = simpleDateFormat.parse(sKOSDate.getDate());
+                        }
+                        if(sKOSDate.getProperty() == SKOSProperty.modified){
+                            modified = simpleDateFormat.parse(sKOSDate.getDate());
+                        }                        
+                    }
+                } catch (ParseException ex) {
+                    Logger.getLogger(ImportRdf4jHelper.class.getName()).log(Level.SEVERE, null, ex);
+                }                  
+            }
+            
+
+            groupHelper.insertGroup(ds, idGroup, idTheso, idArkHandle, type, notationValue, "", false, created, modified, idUser);
 
             // group/sous_group
             for (SKOSRelation relation : group.getRelationsList()) {

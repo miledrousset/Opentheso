@@ -83,6 +83,7 @@ public class GroupHelper {
 
                     stmt.executeUpdate(query);
                     status = true;
+                    updateModifiedDate(ds, idGroup, idTheso);
                 } finally {
                     stmt.close();
                 }
@@ -127,12 +128,57 @@ public class GroupHelper {
                             + " AND idgroup ='" + idGroup + "'");
                 status = true;
                 addGroupTraductionHistoriqueRollBack(conn, idGroup, idTheso, idLang, label, idUser);
+                updateModifiedDate(ds, idGroup, idTheso);
             }
         } catch (SQLException sqle) {
             Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, sqle);
         }
         return status;
     }
+    
+    /**
+     * mettre à jour la date de modification du groupe/collection
+     * @param ds
+     * @param idGroup
+     * @param idTheso 
+     */
+    private void updateCreatedDate(
+            HikariDataSource ds,
+            String idGroup,
+            String idTheso) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept_group "
+                            + "set created = current_date"
+                            + " WHERE idthesaurus='" + idTheso + "'"
+                            + " AND idgroup ='" + idGroup + "'");
+            }
+        } catch (SQLException sqle) {
+            Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, sqle);
+        }
+    } 
+    
+    /**
+     * mettre à jour la date de modification du groupe/collection
+     * @param ds
+     * @param idGroup
+     * @param idTheso 
+     */
+    public void updateModifiedDate(
+            HikariDataSource ds,
+            String idGroup,
+            String idTheso) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept_group "
+                            + "set modified = current_date"
+                            + " WHERE idthesaurus='" + idTheso + "'"
+                            + " AND idgroup ='" + idGroup + "'");
+            }
+        } catch (SQLException sqle) {
+            Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, sqle);
+        }
+    }    
 
     /**
      * Permet de retourner le type de groupe en utilisant le code
@@ -238,6 +284,7 @@ public class GroupHelper {
                 }
                 conn.commit();
                 conn.close();
+                updateModifiedDate(ds, idGroup, idTheso);
                 return true;
             } catch (SQLException sqle) {
                 // Log exception
@@ -267,6 +314,7 @@ public class GroupHelper {
                 "", //notation
                 "",
                 false,
+                null, null,
                 1);
 
         // Création du domaine par défaut 
@@ -380,6 +428,7 @@ public class GroupHelper {
             }
             conn.commit();
             conn.close();
+            updateCreatedDate(ds, idGroup, nodeConceptGroup.getConceptGroup().getIdthesaurus());
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while adding ConceptGroup : " + idGroup, sqle);
@@ -398,7 +447,7 @@ public class GroupHelper {
      * @param idTheso
      * @return
      */
-    public boolean addGroupTraductionRollBack(Connection conn,
+    private boolean addGroupTraductionRollBack(Connection conn,
             String idGroup, String idTheso,
             String idLang, String value) {
         Statement stmt;
@@ -457,7 +506,7 @@ public class GroupHelper {
                         + ",'" + idLang + "'"
                         + ",'" + idTheso + "'"
                         + ",'" + idGroup + "'" + ")");
-                status = true;                
+                status = true;  
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -1205,6 +1254,8 @@ public class GroupHelper {
                             conceptGroup.setIdHandle(resultSet.getString("id_handle"));
                             conceptGroup.setIdtypecode(resultSet.getString("idtypecode"));
                             conceptGroup.setNotation(resultSet.getString("notation"));
+                            conceptGroup.setCreated(resultSet.getDate("created"));
+                            conceptGroup.setModified(resultSet.getDate("modified"));
                         }
                     }
                     if (conceptGroup != null) {
@@ -1248,6 +1299,7 @@ public class GroupHelper {
         }
         return nodeConceptGroup;
     }
+    
 
     /**
      * Permet de retourner la liste des sous_groupes d'un Group (type G/C/MT/T)
@@ -1758,15 +1810,30 @@ public class GroupHelper {
      * @param notation
      * @param urlSite
      * @param isArkActive
+     * @param created
+     * @param modified
      * @param idUser
      * @return
      */
     public boolean insertGroup(HikariDataSource ds, String idGroup, String idThesaurus, String idArk, String typeCode,
-            String notation, String urlSite, boolean isArkActive, int idUser) {
+            String notation, String urlSite, boolean isArkActive, Date created, Date modified, int idUser) {
 
         if (idArk == null) {
             idArk = "";
         }
+        String createdTemp;
+        String modifiedTemp;
+        if (created == null) {
+            createdTemp = null;
+        } else {
+            createdTemp = "'" + created + "'";
+        }
+        if (modified == null) {
+            modifiedTemp = null;
+        } else {
+            modifiedTemp = "'" + modified + "'";
+        }        
+        
         String idHandle = "";
         /*
          * récupération de l'identifiant Ark pour le ConceptGroup de type : ark:/66666/srvq9a5Ll41sk
@@ -1775,8 +1842,8 @@ public class GroupHelper {
         // à faire
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate("Insert into concept_group(idgroup, id_ark, idthesaurus, idtypecode, notation, id_handle) values ('" + idGroup + "','" + idArk + "','"
-                        + idThesaurus + "','" + typeCode + "','" + notation + "','" + idHandle + "')");
+                stmt.executeUpdate("Insert into concept_group(idgroup, id_ark, idthesaurus, idtypecode, notation, id_handle, created, modified) values ('" + idGroup + "','" + idArk + "','"
+                        + idThesaurus + "','" + typeCode + "','" + notation + "','" + idHandle + "'," + createdTemp + "," + modifiedTemp + ")");
                 return true;
             }
         } catch (SQLException sqle) {
@@ -1969,6 +2036,7 @@ public class GroupHelper {
                         + conceptGroupLabel.getLang() + "','" + conceptGroupLabel.getIdthesaurus() + "','"
                         + conceptGroupLabel.getIdgroup() + "'" + ")");
                 addGroupTraductionHistorique(ds, conceptGroupLabel, idUser);
+
                 return true;
             }
         } catch (SQLException sqle) {
@@ -2201,12 +2269,13 @@ public class GroupHelper {
     public NodeGroupLabel getNodeGroupLabel(HikariDataSource ds, String idConceptGroup, String idThesaurus) {
 
         NodeGroupLabel nodeGroupLabel = new NodeGroupLabel();
-
         nodeGroupLabel.setIdGroup(idConceptGroup);
         nodeGroupLabel.setIdThesaurus(idThesaurus);
         nodeGroupLabel.setIdArk(getIdArkOfGroup(ds, idConceptGroup, idThesaurus));
         nodeGroupLabel.setIdHandle(getIdHandleOfGroup(ds, idConceptGroup, idThesaurus));
         nodeGroupLabel.setNotation(getNotationOfGroup(ds, idConceptGroup, idThesaurus));
+        nodeGroupLabel.setCreated(getCreatedDate(ds, idConceptGroup, idThesaurus));
+        nodeGroupLabel.setModified(getModifiedDate(ds, idConceptGroup, idThesaurus));
         nodeGroupLabel.setNodeGroupTraductionses(getAllGroupTraduction(ds, idConceptGroup, idThesaurus));
 
         return nodeGroupLabel;
@@ -2289,6 +2358,7 @@ public class GroupHelper {
                             + " and lang = '" + idLang + "'";
                     stmt.executeUpdate(query);
                     status = true;
+                    updateModifiedDate(ds, idGroup, idThesaurus);                    
                 } finally {
                     stmt.close();
                 }
@@ -2823,6 +2893,60 @@ public class GroupHelper {
         }
         return ark;
     }
+    /**
+     * Cette fonction permet de récupérer la date de modification
+     *
+     * @param ds
+     * @param idGroup
+     * @param idThesaurus
+     * @return Objet class Concept
+     */
+    private Date getModifiedDate(HikariDataSource ds, String idGroup, String idThesaurus) {
+
+        Date date = null;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select modified from concept_group where idthesaurus = '" + idThesaurus
+                        + "' and idgroup = '" + idGroup + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        date = resultSet.getDate("modified");
+                    }
+                }
+
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting modified date of Group : " + idGroup, sqle);
+        }
+        return date;
+    }    
+    /**
+     * Cette fonction permet de récupérer la date de modification
+     *
+     * @param ds
+     * @param idGroup
+     * @param idThesaurus
+     * @return Objet class Concept
+     */
+    private Date getCreatedDate(HikariDataSource ds, String idGroup, String idThesaurus) {
+
+        Date date = null;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select created from concept_group where idthesaurus = '" + idThesaurus
+                        + "' and idgroup = '" + idGroup + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        date = resultSet.getDate("created");
+                    }
+                }
+
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting created date of Group : " + idGroup, sqle);
+        }
+        return date;
+    }     
 
     /**
      * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une
@@ -2943,6 +3067,7 @@ public class GroupHelper {
                             + " and idgroup = '" + idGroup + "'";
                     stmt.executeUpdate(query);
                     status = true;
+                    updateModifiedDate(ds, idGroup, idThesaurus);  
                 } finally {
                     stmt.close();
                 }
@@ -3124,6 +3249,7 @@ public class GroupHelper {
                     stmt.executeUpdate(query);
                     status = true;
                     addGroupTraductionHistorique(ds, conceptGroupLabel, idUser);
+                    updateModifiedDate(ds, conceptGroupLabel.getIdgroup(), conceptGroupLabel.getIdthesaurus());  
                 } finally {
                     stmt.close();
                 }

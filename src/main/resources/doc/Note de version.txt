@@ -5,4 +5,11 @@
     options préciser le type de recherche à effectuer)
 
 - Affichage des titres des images et des copyriht avec un lien cliquable
+- correction de l'affichage erronné des candidats dans la vue concept (relation RT)
+-correction d'un bug pour l'import des dates pour les concepts
 
+- correction de l'import des dates pour les collections
+- correction de la boite de dialogue de création d'utilisateur
+
+
+- Passage de l'API REST vers la norme OpenAPI 
