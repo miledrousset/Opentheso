@@ -6,13 +6,14 @@ import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -24,7 +25,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
 @Path("/concept/ark:/{naan}/{ark}")
-public class ConceptInfoFromArkPath {
+public class ConceptArkController {
 
 
     @Path("/")

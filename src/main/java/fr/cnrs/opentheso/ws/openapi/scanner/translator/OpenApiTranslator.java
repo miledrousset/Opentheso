@@ -6,15 +6,18 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javax.ws.rs.core.UriInfo;
 
 public class OpenApiTranslator {
 
     private OpenAPI openAPI;
+    private UriInfo uriInfo;
 
     private final ResourceBundle bundle;
 
@@ -70,17 +73,26 @@ public class OpenApiTranslator {
 
         }
     }
+    
+    private void changeServer() {
+        for (Server server : openAPI.getServers()) {
+            if (server.getUrl().equalsIgnoreCase("BASE_SERVER")) {
+                server.setUrl(uriInfo.getBaseUri().toString());
+            }
+        }
+    }
 
-
-    public OpenAPI translate(OpenAPI openAPI) {
+    public OpenAPI translate(OpenAPI openAPI, UriInfo uri) {
 
         Cloner cloner = new Cloner();
 
         this.openAPI = cloner.deepClone(openAPI);
+        this.uriInfo = uri;
 
         translateInfoDescription();
         translateTagsDescription();
         translatePathsInfos();
+        changeServer();
         return this.openAPI;
     }
 }

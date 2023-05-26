@@ -27,7 +27,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
  * @author julie
  */
 @Path("/group")
-public class GroupPath {
+public class GroupController {
 
     @Path("/ark:/{naan}/{ark}")
     @GET

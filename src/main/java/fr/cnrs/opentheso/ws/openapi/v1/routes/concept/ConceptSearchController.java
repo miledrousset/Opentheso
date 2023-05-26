@@ -24,7 +24,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getContentTypeFro
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
 @Path("/concept/{idTheso}/search")
-public class ConceptSearchPath {
+public class ConceptSearchController {
 
     @Path("/")
     @GET

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +29,7 @@ import javax.ws.rs.ext.Provider;
                 @Tag(name = "Ontome", description = "definition.tags.ontome.description")
         },
         servers = {
-            @Server(url = "http://localhost:8080/opentheso2/openapi/v1")
+            @Server(url = "BASE_SERVER")
         }
 )
 @SecurityScheme(name = "CLE-API-EXEMPLE", paramName = "CLE-API-EXEMPLE", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)

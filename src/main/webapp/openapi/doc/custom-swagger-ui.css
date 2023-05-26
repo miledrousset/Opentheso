@@ -2,6 +2,8 @@ header {
     background: black;
     padding: 1vh;
     display: flex;
-    align-items: end;
-    justify-content: end;
+}
+
+header > * {
+    padding-right: 1vw;
 }
