@@ -26,7 +26,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
  * @author julie
  */
 @Path("/thesaurus")
-public class ThesaurusPath {
+public class ThesaurusController {
 
     @Path("/")
     @GET

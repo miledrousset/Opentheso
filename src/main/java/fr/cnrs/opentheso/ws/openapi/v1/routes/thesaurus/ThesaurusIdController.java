@@ -29,7 +29,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 
 @Path("/thesaurus/{thesaurusId}")
-public class ThesaurusInfoFromThesaurusId {
+public class ThesaurusIdController {
 
     @Path("/")
     @GET

@@ -23,12 +23,9 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getContentTypeFromHeader;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
-import java.util.List;
-import java.util.Map;
-import javax.ws.rs.core.MediaType;
 
 @Path("/concept/{idTheso}")
-public class ConceptInfoFromIdThesoPath {
+public class ConceptThesoController {
 
     @Path("/{idConcept}")
     @GET

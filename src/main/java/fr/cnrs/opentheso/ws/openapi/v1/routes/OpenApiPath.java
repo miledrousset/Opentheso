@@ -3,19 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cnrs.opentheso.ws.openapi.v1;
+package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.ws.RestRDFHelper;
-import fr.cnrs.opentheso.ws.Rest_new;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
-import fr.cnrs.opentheso.ws.openapi.helper.MessageHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import fr.cnrs.opentheso.ws.openapi.scanner.io.swagger.v3.jaxrs2.integration.resources.BaseOpenApiResource;
+import fr.cnrs.opentheso.ws.openapi.v1.OpenApiConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -54,7 +53,7 @@ public class OpenApiPath extends BaseOpenApiResource {
 
     @Context
     Application app;
-
+    
     @Path("/{lang:en|fr}/openapi.{type:json|yaml}")
     @GET
     @Produces({MediaType.APPLICATION_JSON, "application/yaml"})
@@ -65,7 +64,7 @@ public class OpenApiPath extends BaseOpenApiResource {
             @PathParam("lang") String lang) throws Exception {
 
         ResourceBundle bundle = ResourceBundle.getBundle("language.openapi", new Locale(lang));
-
+        
         try {
             Response openapi = super.getOpenApi(headers, config, app, uriInfo, type, bundle);
             return openapi;

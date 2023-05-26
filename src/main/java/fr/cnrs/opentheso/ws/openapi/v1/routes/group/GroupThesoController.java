@@ -22,7 +22,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 
 @Path("/group/{idTheso}")
-public class GroupInfoFromThesoId {
+public class GroupThesoController {
 
     @Path("/{idGroup}")
     @GET

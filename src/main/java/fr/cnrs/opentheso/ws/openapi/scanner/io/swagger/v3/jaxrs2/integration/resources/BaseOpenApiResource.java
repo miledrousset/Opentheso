@@ -62,10 +62,11 @@ public abstract class BaseOpenApiResource {
         if (oas == null) {
             return Response.status(404).build();
         }
-
+        
+        
         OpenApiTranslator translator = new OpenApiTranslator(bundle);
         try {
-            oas = translator.translate(oas);
+            oas = translator.translate(oas, uriInfo);
         } catch (Exception e) {
             java.util.logging.Logger.getLogger(BaseOpenApiResource.class.getName()).log(Level.SEVERE, e.getMessage());
         }

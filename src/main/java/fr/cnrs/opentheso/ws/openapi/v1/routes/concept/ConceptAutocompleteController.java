@@ -17,7 +17,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.getAutocompleteData
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
 @Path("/concept/{idTheso}/autocomplete")
-public class ConceptAutocompletePath {
+public class ConceptAutocompleteController {
 
     @Path("/{input}")
     @GET
