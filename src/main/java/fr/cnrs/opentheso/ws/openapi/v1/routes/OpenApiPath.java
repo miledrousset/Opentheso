@@ -107,6 +107,7 @@ public class OpenApiPath extends BaseOpenApiResource {
                 @ApiResponse(responseCode = "200", description = "testAuth.200.description", content = {
                     @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8)
                 }),
+                @ApiResponse(responseCode = "401", description = "testAuth.401.description"),
                 @ApiResponse(responseCode = "403", description = "testAuth.403.description"),
                 @ApiResponse(responseCode = "500", description = "responses.500.description"),
                 @ApiResponse(responseCode = "503", description = "responses.503.description")
