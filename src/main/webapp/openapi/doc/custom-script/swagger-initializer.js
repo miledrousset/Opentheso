@@ -125,7 +125,7 @@ const loadQueryLang = () => {
         const queryString = getCurrentURL().split("?")[1];
         const parameters = new URLSearchParams(queryString);
         if (parameters.has("lang") && (AVAILABLE_LANG.indexOf(parameters.get("lang").toLowerCase()) !== -1)) { 
-            const LANG = parameters.get("lang").toLowerCase();
+            LANG = parameters.get("lang").toLowerCase();
             changeSelector(LANG);
         }
     } 
