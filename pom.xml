@@ -274,7 +274,21 @@
             <artifactId>cloning</artifactId>
             <version>${cloning.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
+            <version>2.1.2</version>
+         </dependency>
+         
+         <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>2.1.14</version>
+        </dependency>
 
+      
+    
     </dependencies>
 
     <build>
@@ -326,6 +340,25 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+                <execution>
+                    <phase>initialize</phase>
+                    <configuration>
+                        <target>
+                            <mkdir dir="${project.build.directory}/openapi" />
+                        </target>
+                    </configuration>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                </execution>
+                </executions>
+            </plugin>
+            
         </plugins>
     </build>
 
@@ -392,6 +425,7 @@
         <commons-compress.version>1.21</commons-compress.version>
         <jackson-annotations.version>2.13.3</jackson-annotations.version>
         <swagger.version>2.2.9</swagger.version>
+        <swagger2markup.version>1.3.3</swagger2markup.version>
         <cloning.version>1.10.3</cloning.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <weld-servlet-shaded.version>3.1.2.Final</weld-servlet-shaded.version>

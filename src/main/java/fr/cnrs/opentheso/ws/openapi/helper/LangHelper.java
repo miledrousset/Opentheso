@@ -7,6 +7,11 @@ package fr.cnrs.opentheso.ws.openapi.helper;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -30,6 +35,21 @@ public class LangHelper {
         }
    
         return languages;
+    }
+    
+    
+    public String translate(String jsonOAS, ResourceBundle bundle) {
+        
+        Matcher matcher = Pattern.compile("\\$\\{.*?\\}\\$").matcher(jsonOAS);
+        
+        while (matcher.find()) {
+            String s = matcher.group();
+            Logger.getLogger(LangHelper.class.getName()).log(Level.SEVERE, s);
+            String bracketLessKey = s.replace("${","").replace("}$","");
+            jsonOAS = jsonOAS.replace(s, bundle.getString(bracketLessKey));
+        }
+        
+        return jsonOAS;
     }
     
 }

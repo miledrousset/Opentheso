@@ -5,25 +5,22 @@
  */
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
-import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.ws.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
+import fr.cnrs.opentheso.ws.openapi.helper.LangHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
-import fr.cnrs.opentheso.ws.openapi.scanner.io.swagger.v3.jaxrs2.integration.resources.BaseOpenApiResource;
+import io.swagger.v3.jaxrs2.integration.resources.BaseOpenApiResource;
 import fr.cnrs.opentheso.ws.openapi.v1.OpenApiConfig;
+import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import java.net.URI;
-import java.net.URISyntaxException;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import io.swagger.v3.parser.util.OpenAPIDeserializer.ParseResult;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.ws.rs.GET;
@@ -54,7 +51,7 @@ public class OpenApiPath extends BaseOpenApiResource {
     @Context
     Application app;
     
-    @Path("/{lang:en|fr}/openapi.{type:json|yaml}")
+    @Path("/{lang}/openapi.{type:json|yaml}")
     @GET
     @Produces({MediaType.APPLICATION_JSON, "application/yaml"})
     @Operation(hidden = true)
@@ -62,29 +59,40 @@ public class OpenApiPath extends BaseOpenApiResource {
             @Context UriInfo uriInfo,
             @PathParam("type") String type,
             @PathParam("lang") String lang) throws Exception {
-
-        ResourceBundle bundle = ResourceBundle.getBundle("language.openapi", new Locale(lang));
         
+        LangHelper helper = new LangHelper();
+         List<String> languages = helper.availableLang();
+         
+         if (!languages.contains(lang.toLowerCase())) {
+             return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "The lang " + lang + " is not available", CustomMediaType.APPLICATION_JSON_UTF_8);
+         }
+        
+         ResourceBundle bundle = ResourceBundle.getBundle("language.openapi", new Locale(lang));
+         
         try {
-            Response openapi = super.getOpenApi(headers, config, app, uriInfo, type, bundle);
-            return openapi;
+            Response openapi = super.getOpenApi(headers, config, app, uriInfo, type);
+            
+            String jsonOAS = (String) openapi.getEntity();
+            jsonOAS = helper.translate(jsonOAS, bundle);
+
+            return ResponseHelper.response(Response.Status.OK, jsonOAS, CustomMediaType.APPLICATION_JSON_UTF_8);
         } catch (Exception e) {
             Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, e.getMessage());
         }
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
-
+   
     @Path("/ping")
     @GET
     @Produces({CustomMediaType.APPLICATION_JSON_UTF_8})
-    @Operation(summary = "testWS.summary",
-            description = "testWS.description",
+    @Operation(summary = "${testWS.summary}$",
+            description = "${testWS.description}$",
             responses = {
-                @ApiResponse(responseCode = "200", description = "testWS.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${testWS.200.description}$", content = {
             @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "400", description = "responses.400.description")
+                @ApiResponse(responseCode = "400", description = "${responses.400.description}$")
             },
             tags = {"Test"})
     public Response testWS() {
@@ -131,44 +139,4 @@ public class OpenApiPath extends BaseOpenApiResource {
         
         return myResponse;
     }
-    
-    
-    @Path("/redirect/ark:/{naan}/{idArk}")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getUriFromArk.summary",
-            description = "getUriFromArk.description",
-            tags = {"Ark"},
-            responses = {
-                @ApiResponse(responseCode = "200", description = "getUriFromArk.200.description"),
-                @ApiResponse(responseCode = "307", description = "getUriFromArk.307.description"),
-                @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                @ApiResponse(responseCode = "404", description = "getUriFromArk.404.description", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8)
-        }),
-                @ApiResponse(responseCode = "500", description = "responses.500.description")
-            })
-    public Response getUriFromArk(
-            @Parameter(name = "naan", in = ParameterIn.PATH, schema = @Schema(type = "string"), description = "getUriFromArk.naan.description") @PathParam("naan") String naan,
-            @Parameter(name = "idArk", in = ParameterIn.PATH, schema = @Schema(type = "string"), description = "getUriFromArk.idArk.description") @PathParam("idArk") String arkId
-    ) {
-        String webUrl;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "No database connection", APPLICATION_JSON_UTF_8);
-            }
-
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            webUrl = restRDFHelper.getUrlFromIdArk(ds, naan, arkId);
-            if (webUrl == null) {
-                return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Ark ID not found", APPLICATION_JSON_UTF_8);
-            }
-            URI uri = new URI(webUrl);
-            return Response.temporaryRedirect(uri).build();
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(OpenApiPath.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
-    }
-
 }
