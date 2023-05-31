@@ -12,14 +12,10 @@ import fr.cnrs.opentheso.ws.openapi.helper.LangHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.jaxrs2.integration.resources.BaseOpenApiResource;
 import fr.cnrs.opentheso.ws.openapi.v1.OpenApiConfig;
-import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import io.swagger.v3.parser.util.OpenAPIDeserializer.ParseResult;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
