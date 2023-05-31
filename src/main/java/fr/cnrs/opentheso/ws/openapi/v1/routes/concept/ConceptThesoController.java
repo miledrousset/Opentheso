@@ -30,21 +30,21 @@ public class ConceptThesoController {
     @Path("/{idConcept}")
     @GET
     @Produces({APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
-    @Operation(summary = "getSkosFromidConcept.summary",
-            description = "getSkosFromidConcept.description",
+    @Operation(summary = "${getSkosFromidConcept.summary}$",
+            description = "${getSkosFromidConcept.description}$",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "getSkosFromidConcept.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${getSkosFromidConcept.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8)
         }),
-                @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                @ApiResponse(responseCode = "404", description = "responses.concept.404.description"),
-                @ApiResponse(responseCode = "503", description = "responses.503.description")
+                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
-    public Response getSkosFromidConcept(@Parameter(name = "idTheso", description = "getSkosFromidConcept.idTheso.description", required = true) @PathParam("idTheso") String idThesaurus,
-            @Parameter(name = "idConcept", description = "getSkosFromidConcept.idConcept.description", required = true) @PathParam("idConcept") String idConcept,
+    public Response getSkosFromidConcept(@Parameter(name = "idTheso", description = "${getSkosFromidConcept.idTheso.description}$", required = true) @PathParam("idTheso") String idThesaurus,
+            @Parameter(name = "idConcept", description = "${getSkosFromidConcept.idConcept.description}$", required = true) @PathParam("idConcept") String idConcept,
             @Context HttpHeaders headers) {
 
         String format = getContentTypeFromHeader(headers);
@@ -73,21 +73,21 @@ public class ConceptThesoController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(
-            summary = "getJsonFromIdConceptWithLabels.summary",
-            description = "getJsonFromIdConceptWithLabels.description",
+            summary = "${getJsonFromIdConceptWithLabels.summary}$",
+            description = "${getJsonFromIdConceptWithLabels.description}$",
             responses = {
-                @ApiResponse(responseCode = "200", description = "getJsonFromIdConceptWithLabels.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${getJsonFromIdConceptWithLabels.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "404", description = "responses.concept.404.description"),
-                @ApiResponse(responseCode = "503", description = "responses.503.description")
+                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             },
             tags = {"Concept"}
     )
     public Response getJsonFromIdConceptWithLabels(
-            @Parameter(name = "idTheso", description = "getJsonFromIdConceptWithLabels.idTheso.description", required = true) @PathParam("idTheso") String idTheso,
-            @Parameter(name = "idConcept", description = "getJsonFromIdConceptWithLabels.idConcept.description", required = true) @PathParam("idConcept") String idConcept,
-            @Parameter(name = "lang", description = "getJsonFromIdConceptWithLabels.lang.description", required = false) @QueryParam("lang") String lang
+            @Parameter(name = "idTheso", description = "${getJsonFromIdConceptWithLabels.idTheso.description}$", required = true) @PathParam("idTheso") String idTheso,
+            @Parameter(name = "idConcept", description = "${getJsonFromIdConceptWithLabels.idConcept.description}$", required = true) @PathParam("idConcept") String idConcept,
+            @Parameter(name = "lang", description = "${getJsonFromIdConceptWithLabels.lang.description}$", required = false) @QueryParam("lang") String lang
     ) {
 
         String datas;
@@ -116,20 +116,20 @@ public class ConceptThesoController {
     @GET
     @Produces({APPLICATION_JSON_LD_UTF_8})
     @Operation(
-            summary = "getDatasForGraph.summary",
-            description = "getDatasForGraph.description",
+            summary = "${getDatasForGraph.summary}$",
+            description = "${getDatasForGraph.description}$",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "getDatasForGraph.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${getDatasForGraph.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8)
         }),
-                @ApiResponse(responseCode = "404", description = "responses.concept.404.description")
+                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$")
             }
     )
     public Response getDatasForGraph(
-            @Parameter(name = "idTheso", description = "getDatasForGraph.idTheso.description", required = true) @PathParam("idTheso") String idThesaurus,
-            @Parameter(name = "idArk", description = "getDatasForGraph.idArk.description", required = true) @PathParam("idConcept") String idConcept,
-            @Parameter(name = "lang", description = "getDatasForGraph.lang.description", required = true) @QueryParam("lang") String lang
+            @Parameter(name = "idTheso", description = "${getDatasForGraph.idTheso.description}$", required = true) @PathParam("idTheso") String idThesaurus,
+            @Parameter(name = "idArk", description = "${getDatasForGraph.idArk.description}$", required = true) @PathParam("idConcept") String idConcept,
+            @Parameter(name = "lang", description = "${getDatasForGraph.lang.description}$", required = true) @QueryParam("lang") String lang
     ) {
         String datas;
         try (HikariDataSource ds = connect()) {
@@ -146,10 +146,10 @@ public class ConceptThesoController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_RDF_UTF_8, APPLICATION_TURTLE_UTF_8})
     @Operation(
-            summary = "getBrancheOfConcepts.summary",
-            description = "getBrancheOfConcepts.description",
+            summary = "${getBrancheOfConcepts.summary}$",
+            description = "${getBrancheOfConcepts.description}$",
             responses = {
-                @ApiResponse(responseCode = "200", description = "getBrancheOfConcepts.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${getBrancheOfConcepts.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8),
@@ -159,9 +159,9 @@ public class ConceptThesoController {
             tags = {"Concept"}
     )
     public Response getBrancheOfConcepts(
-            @Parameter(name = "idTheso", description = "getBrancheOfConcepts.idTheso.description", required = true, example = "th3") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "idConcept", description = "getBrancheOfConcepts.idConcept.description", required = true, example = "3") @PathParam("idConcept") String idConcept,
-            @Parameter(name = "way", description = "getBrancheOfConcepts.way.description", required = true,
+            @Parameter(name = "idTheso", description = "${getBrancheOfConcepts.idTheso.description}$", required = true, example = "th3") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "idConcept", description = "${getBrancheOfConcepts.idConcept.description}$", required = true, example = "3") @PathParam("idConcept") String idConcept,
+            @Parameter(name = "way", description = "${getBrancheOfConcepts.way.description}$", required = true,
                     schema = @Schema(type = "string", allowableValues = {"top", "down"})) @QueryParam("way") String way,
             @Context HttpHeaders headers
     ) {
@@ -209,20 +209,20 @@ public class ConceptThesoController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(
-            summary = "getNarrower.summary",
-            description = "getNarrower.description",
+            summary = "${getNarrower.summary}$",
+            description = "${getNarrower.description}$",
             responses = {
-                @ApiResponse(responseCode = "200", description = "getNarrower.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${getNarrower.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)}),
-                @ApiResponse(responseCode = "404", description = "responses.concept.404.description"),
-                @ApiResponse(responseCode = "503", description = "responses.503.description")
+                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             },
             tags = {"Concept"}
     )
     public Response getNarrower(
-            @Parameter(name = "idTheso", description = "getNarrower.idTheso.description", required = true, example = "th3") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "idConcept", description = "getNarrower.idConcept.description", required = true, example = "3") @PathParam("idConcept") String idConcept,
-            @Parameter(name = "lang", description = "getNarrower.lang.description", required = true, example = "fr") @PathParam("lang") String lang
+            @Parameter(name = "idTheso", description = "${getNarrower.idTheso.description}$", required = true, example = "th3") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "idConcept", description = "${getNarrower.idConcept.description}$", required = true, example = "3") @PathParam("idConcept") String idConcept,
+            @Parameter(name = "lang", description = "${getNarrower.lang.description}$", required = true, example = "fr") @PathParam("lang") String lang
     ) {
         String datas;
         try (HikariDataSource ds = connect()) {
@@ -242,22 +242,22 @@ public class ConceptThesoController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_RDF_UTF_8, APPLICATION_TURTLE_UTF_8})
     @Operation(
-            summary = "getConceptsFromDate.summary",
-            description = "getConceptsFromDate.description",
+            summary = "${getConceptsFromDate.summary}$",
+            description = "${getConceptsFromDate.description}$",
             responses = {
-                @ApiResponse(responseCode = "200", description = "getConceptsFromDate.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${getConceptsFromDate.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8),
             @Content(mediaType = APPLICATION_TURTLE_UTF_8)
         }),
-                @ApiResponse(responseCode = "503", description = "responses.503.description")
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             },
             tags = {"Concept"}
     )
     public Response getConceptsFromDate(
-            @Parameter(name = "idTheso", description = "getConceptsFromDate.idTheso.description", required = true, example = "th3") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "date", description = "getConceptsFromDate.date.description", required = true, schema = @Schema(type = "string", format = "date"), example = "2014-07-21") @PathParam("date") String date,
+            @Parameter(name = "idTheso", description = "${getConceptsFromDate.idTheso.description}$", required = true, example = "th3") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "date", description = "${getConceptsFromDate.date.description}$", required = true, schema = @Schema(type = "string", format = "date"), example = "2014-07-21") @PathParam("date") String date,
             @Context HttpHeaders headers
     ) {
         String format = getContentTypeFromHeader(headers);
@@ -277,19 +277,19 @@ public class ConceptThesoController {
     @Path("/ontome/{cidocClass}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getAllLinkedConceptsWithOntome.summary",
-            description = "getAllLinkedConceptsWithOntome.description",
+    @Operation(summary = "${getAllLinkedConceptsWithOntome.summary}$",
+            description = "${getAllLinkedConceptsWithOntome.description}$",
             tags = {"Concept", "Ontome"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "getAllLinkedConceptsWithOntome.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${getAllLinkedConceptsWithOntome.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                @ApiResponse(responseCode = "500", description = "responses.500.description")
+                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
     public Response getAllLinkedConceptsWithOntome(
-            @Parameter(name = "idTheso", description = "getAllLinkedConceptsWithOntome.idTheso.description", required = true, example = "th3") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "cidocClass", description = "getAllLinkedConceptsWithOntome.cidocClass.description", required = true, example = "364") @PathParam("cidocClass") String cidocClass
+            @Parameter(name = "idTheso", description = "${getAllLinkedConceptsWithOntome.idTheso.description}$", required = true, example = "th3") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "cidocClass", description = "${getAllLinkedConceptsWithOntome.cidocClass.description}$", required = true, example = "364") @PathParam("cidocClass") String cidocClass
     ) {
         String datas;
         try (HikariDataSource ds = connect()) {
