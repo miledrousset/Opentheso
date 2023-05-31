@@ -14,15 +14,6 @@ const generateURL = (version, lang) => {
     return BASE_URL + version + "/" + lang  + "/openapi.json";
 };
 
-/**
- * Récupère la version de l'API à partir de l'URL passée en paramètre
- * @param {string} url URL du fichier openapi.json
- * @return {string} Version de l'API
- */
-const getVersion = (url) => {
-    const selectedParts = url.split("/");
-    return selectedParts[selectedParts.length - 1];
-};
 
 /**
  * @returns { string } URL de la page actuelle
@@ -46,18 +37,33 @@ const getAvailableLangages = () => {
 };
 
 /**
+ * 
+ * @returns { Array<string> } Liste des versions disponibles
+ */
+const getAvailableVersions = () => {
+    let selector = document.getElementById("version-selector");
+    const versions = [];
+    selector.childNodes.forEach((elt) => {
+        if (elt.localName === "option") {
+          versions.push(elt.value);
+        }
+    });
+    return versions;
+};
+
+/**
  * Ajoute un listener sur le selecteur de serveur pour recharger la page avec la selection de la bonne version.<br>
  * La fonction est appelée toutes les 100ms jusqu'à ce que le selecteur soit trouvé, le selecteur du serveur n'étant pas toujours présent au chargement de la page.
  */
-const addServerSelectorListener = () => {
+const addVersionSelectorListener = () => {
     const id = setTimeout(() => {
-        const serverSelector = document.querySelectorAll(".servers > label > select")[0];
+        const versionSelector = document.getElementById("version-selector");
 
-        if (serverSelector !== undefined) {
-            serverSelector.addEventListener("change", () => {
-                let langSelector = document.getElementById("lang-selector");
-                const version = getVersion(serverSelector.value);
-                displayServerDoc("Opentheso2 - API " + version, version, langSelector.value);
+        if (versionSelector !== undefined) {
+            versionSelector.addEventListener("change", () => {
+                VERSION = versionSelector.value;
+                // displayServerDoc("Opentheso2 - API ", VERSION, LANG);
+                location.href = `http://localhost:8080/opentheso2/openapi/doc/?lang=${LANG}&version=${VERSION}`;
             })
             clearTimeout(id);
         }
@@ -69,12 +75,12 @@ const addServerSelectorListener = () => {
 /**
  * Ajoute un listener sur le selecteur de langue pour recharger la page avec la selection de la bonne langue
  */
-const setupLangSelector = () => {
+const addLangSelectorListener = () => {
     let selector = document.getElementById("lang-selector");
     selector.addEventListener("change", () => {
         LANG = selector.value;
         // displayServerDoc("Opentheso2 - API",  VERSION, LANG);
-        location.href = `http://localhost:8080/opentheso2/openapi/doc/?lang=${LANG}`;
+        location.href = `http://localhost:8080/opentheso2/openapi/doc/?lang=${LANG}&version=${VERSION}`;
     });
 };
 
@@ -82,10 +88,17 @@ const setupLangSelector = () => {
  * Change valeur sélectionné par défaut du sélecteur de langue
  * @param {string} langCode Code de la langue choisie
  */
-const changeSelector = (langCode) => {
+const changeLangSelectorDefault = (langCode) => {
     if (AVAILABLE_LANG.indexOf(langCode.toLowerCase()) !== -1) {
         let selector = document.getElementById("lang-selector");
         selector.value = langCode.toLowerCase();
+    }
+};
+
+const changeVersionSelectorDefault = (version) => {
+    if (AVAILABLE_VERSION.indexOf(version.toLowerCase()) !== -1) {
+        let selector = document.getElementById("version-selector");
+        selector.value = version.toLowerCase();
     }
 };
 
@@ -120,15 +133,48 @@ const hideSearchBar = () => {
     });
 };
 
+/**
+ * Si le query parameter "lang" existe dans l'URL. Charger la langue correspoondante ainsi que la valeur seléctionné par défaut.
+ */
 const loadQueryLang = () => {
     if (getCurrentURL().indexOf("?") !== -1) {
         const queryString = getCurrentURL().split("?")[1];
         const parameters = new URLSearchParams(queryString);
         if (parameters.has("lang") && (AVAILABLE_LANG.indexOf(parameters.get("lang").toLowerCase()) !== -1)) { 
             LANG = parameters.get("lang").toLowerCase();
-            changeSelector(LANG);
+        }
+    }
+    changeLangSelectorDefault(LANG);
+};
+
+const loadQueryVersion = () => {
+    if (getCurrentURL().indexOf("?") !== -1) {
+        const queryString = getCurrentURL().split("?")[1];
+        const parameters = new URLSearchParams(queryString);
+        if (parameters.has("version") && (AVAILABLE_VERSION.indexOf(parameters.get("version").toLowerCase()) !== -1)) { 
+            VERSION = parameters.get("version").toLowerCase();
+            changeVersionSelectorDefault(VERSION);
         }
     } 
+};
+
+
+const fetchAvailableLanguages = () => {
+    return fetch(BASE_URL + "doc/config/lang", {
+        method: "GET",
+    }).then(response => {
+        return response.json();
+    }).then(data => {
+        const selector = document.getElementById("lang-selector");
+        for (var i = 0; i < data.length; i++) {
+            const option = document.createElement("option");
+            option.value = data[i].code;
+            option.text = data[i].display;
+            
+            selector.add(option);
+            AVAILABLE_LANG.push(data[i].code);
+        }
+    });
 };
 
 /**
@@ -137,7 +183,7 @@ const loadQueryLang = () => {
  * - Change le titre de la page
  * - Génère l'interface SwaggerUIBundle et l'assigne à la variable globale ui
  * - Cache la barre de recherche
- * - Ajoute un listener sur le selecteur de serveur pour recharger la page avec la selection de la bonne version
+ * - Ajoute un listener sur le selecteur de version pour recharger la page lors du changement de selection d'une version
  * @param {string} title Titre à afficher dans les méta-données de la page
  * @param {string} version Version de l'API
  * @param {string} lang Langue de la doc
@@ -146,7 +192,8 @@ const displayServerDoc = (title, version, lang) => {
     changeTitle(title);
     window.ui = uiBundle(generateURL(version, lang));
     hideSearchBar();
-    addServerSelectorListener();
+    addVersionSelectorListener();
+    addLangSelectorListener();
 };
 
 
@@ -154,10 +201,14 @@ const displayServerDoc = (title, version, lang) => {
 let VERSION = "v1";
 let LANG = "fr";
 const BASE_URL = window.location.href.split("/doc")[0]  + "/";
-const AVAILABLE_LANG = getAvailableLangages();
+const AVAILABLE_LANG = [];
+const AVAILABLE_VERSION = getAvailableVersions();
 
 window.onload = function() {
-    loadQueryLang();
-    setupLangSelector();
-    displayServerDoc("Opentheso2 - API" ,VERSION, LANG);
+    fetchAvailableLanguages()
+            .then(() => {
+                loadQueryLang();
+                loadQueryVersion();
+                displayServerDoc("Opentheso2 - API" ,VERSION, LANG);
+            });
 };
