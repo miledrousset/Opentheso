@@ -61,7 +61,7 @@ public class RedirectController {
             URI uri = new URI(webUrl);
             return Response.temporaryRedirect(uri).build();
         } catch (URISyntaxException ex) {
-            Logger.getLogger(OpenApiPath.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RedirectController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
     }

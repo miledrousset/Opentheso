@@ -43,7 +43,7 @@ import javax.ws.rs.HeaderParam;
  */
 //general path = /openapi/v1
 @Path("/")
-public class OpenApiPath extends BaseOpenApiResource {
+public class OpenApiController extends BaseOpenApiResource {
 
     @Context
     ServletConfig config;
