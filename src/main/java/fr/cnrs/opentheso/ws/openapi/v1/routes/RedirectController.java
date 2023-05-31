@@ -31,21 +31,21 @@ public class RedirectController {
     @Path("/ark:/{naan}/{idArk}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getUriFromArk.summary",
-            description = "getUriFromArk.description",
+    @Operation(summary = "${getUriFromArk.summary}$",
+            description = "${getUriFromArk.description}$",
             tags = {"Ark"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "getUriFromArk.200.description"),
-                @ApiResponse(responseCode = "307", description = "getUriFromArk.307.description"),
-                @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                @ApiResponse(responseCode = "404", description = "getUriFromArk.404.description", content = {
+                @ApiResponse(responseCode = "200", description = "${getUriFromArk.200.description}$"),
+                @ApiResponse(responseCode = "307", description = "${getUriFromArk.307.description}$"),
+                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "404", description = "${getUriFromArk.404.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "500", description = "responses.500.description")
+                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
     public Response getUriFromArk(
-            @Parameter(name = "naan", in = ParameterIn.PATH, schema = @Schema(type = "string"), description = "getUriFromArk.naan.description") @PathParam("naan") String naan,
-            @Parameter(name = "idArk", in = ParameterIn.PATH, schema = @Schema(type = "string"), description = "getUriFromArk.idArk.description") @PathParam("idArk") String arkId
+            @Parameter(name = "naan", in = ParameterIn.PATH, schema = @Schema(type = "string"), description = "${getUriFromArk.naan.description}$") @PathParam("naan") String naan,
+            @Parameter(name = "idArk", in = ParameterIn.PATH, schema = @Schema(type = "string"), description = "${getUriFromArk.idArk.description}$") @PathParam("idArk") String arkId
     ) {
         String webUrl;
         try (HikariDataSource ds = connect()) {
