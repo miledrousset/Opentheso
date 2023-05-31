@@ -8,8 +8,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +43,9 @@ public class LangHelper {
         while (matcher.find()) {
             String s = matcher.group();
             String bracketLessKey = s.replace("${","").replace("}$","");
-            jsonOAS = jsonOAS.replace(s, bundle.getString(bracketLessKey));
+            if (!bracketLessKey.equals("BASE_SERVER")) {
+                jsonOAS = jsonOAS.replace(s, bundle.getString(bracketLessKey));
+            }
         }
         
         return jsonOAS;
