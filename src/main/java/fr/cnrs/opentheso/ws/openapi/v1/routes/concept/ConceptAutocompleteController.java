@@ -23,7 +23,7 @@ public class ConceptAutocompleteController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "${searchAutocomplete.summary}$",
-            description = "${searchAutocomplete.description}",
+            description = "${searchAutocomplete.description}$",
             tags = {"Concept"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "${searchAutocomplete.200.description}$", content = {

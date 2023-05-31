@@ -108,17 +108,17 @@ public class OpenApiPath extends BaseOpenApiResource {
     @Path("/testAuth")
     @GET
     @Produces(CustomMediaType.APPLICATION_JSON_UTF_8)
-    @Operation(summary = "testAuth.summary",
-            description = "testAuth.description",
+    @Operation(summary = "${testAuth.summary}$",
+            description = "${testAuth.description}$",
             tags = {"Test"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "testAuth.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${testAuth.200.description}$", content = {
                     @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8)
                 }),
-                @ApiResponse(responseCode = "401", description = "testAuth.401.description"),
-                @ApiResponse(responseCode = "403", description = "testAuth.403.description"),
-                @ApiResponse(responseCode = "500", description = "responses.500.description"),
-                @ApiResponse(responseCode = "503", description = "responses.503.description")
+                @ApiResponse(responseCode = "401", description = "${testAuth.401.description}$"),
+                @ApiResponse(responseCode = "403", description = "${testAuth.403.description}$"),
+                @ApiResponse(responseCode = "500", description = "${responses.500.description}$"),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             },
             security = {
                 @SecurityRequirement(name = "CLE-API-EXEMPLE")

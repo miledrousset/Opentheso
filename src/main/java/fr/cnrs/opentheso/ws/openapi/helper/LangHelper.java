@@ -44,7 +44,6 @@ public class LangHelper {
         
         while (matcher.find()) {
             String s = matcher.group();
-            Logger.getLogger(LangHelper.class.getName()).log(Level.SEVERE, s);
             String bracketLessKey = s.replace("${","").replace("}$","");
             jsonOAS = jsonOAS.replace(s, bundle.getString(bracketLessKey));
         }
