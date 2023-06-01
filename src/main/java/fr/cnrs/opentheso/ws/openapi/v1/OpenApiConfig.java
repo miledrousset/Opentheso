@@ -17,19 +17,19 @@ import javax.ws.rs.ext.Provider;
 @OpenAPIDefinition(
         info = @Info(
                 title = "Opentheso2",
-                description = "definition.description",
+                description = "${definition.description}$",
                 version = "v1"
         ),
         tags = {
-                @Tag(name = "Test", description = "definition.tags.test.description"),
-                @Tag(name = "Concept", description = "definition.tags.concept.description"),
-                @Tag(name = "Thesaurus", description = "definition.tags.thesaurus.description"),
-                @Tag(name = "Group", description = "definition.tags.group.description"),
-                @Tag(name = "Ark", description = "definition.tags.ark.description"),
-                @Tag(name = "Ontome", description = "definition.tags.ontome.description")
+                @Tag(name = "Test", description = "${definition.tags.test.description}$"),
+                @Tag(name = "Concept", description = "${definition.tags.concept.description}$"),
+                @Tag(name = "Thesaurus", description = "${definition.tags.thesaurus.description}$"),
+                @Tag(name = "Group", description = "${definition.tags.group.description}$"),
+                @Tag(name = "Ark", description = "${definition.tags.ark.description}$"),
+                @Tag(name = "Ontome", description = "${definition.tags.ontome.description}$")
         },
         servers = {
-            @Server(url = "BASE_SERVER")
+            @Server(url = "${BASE_SERVER}$")
         }
 )
 @SecurityScheme(name = "CLE-API-EXEMPLE", paramName = "CLE-API-EXEMPLE", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)

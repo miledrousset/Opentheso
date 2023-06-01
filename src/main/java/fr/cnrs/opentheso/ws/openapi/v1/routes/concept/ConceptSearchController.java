@@ -29,25 +29,25 @@ public class ConceptSearchController {
     @Path("/")
     @GET
     @Produces({APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
-    @Operation(summary = "search.summary",
-            description = "search.description",
+    @Operation(summary = "${search.summary}$",
+            description = "${search.description}$",
             tags = {"Concept"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "search.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
                             @Content(mediaType = APPLICATION_RDF_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                    @ApiResponse(responseCode = "500", description = "responses.500.description")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
-    public Response search(@Parameter(name = "idTheso", description = "search.idTheso.description", required = true) @PathParam("idTheso") String idTheso,
-                           @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "search.q.description") @QueryParam("q") String q,
-                           @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "search.lang.description") @QueryParam("lang") String lang,
-                           @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "search.group.description") @QueryParam("group") String group,
+    public Response search(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathParam("idTheso") String idTheso,
+                           @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @QueryParam("q") String q,
+                           @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @QueryParam("lang") String lang,
+                           @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @QueryParam("group") String group,
                            @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), required = false,
-                                   description = "search.match.description") @QueryParam("match") String match,
+                                   description = "${search.match.description}$") @QueryParam("match") String match,
                            @Context HttpHeaders headers) {
 
         return searchFilter(idTheso, headers, q, lang, group, match, null);
@@ -57,25 +57,25 @@ public class ConceptSearchController {
     @Path("/notation")
     @GET
     @Produces({APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
-    @Operation(summary = "searchNotation.summary",
-            description = "searchNotation.description",
+    @Operation(summary = "${searchNotation.summary}$",
+            description = "${searchNotation.description}$",
             tags = {"Concept"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "search.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
                             @Content(mediaType = APPLICATION_RDF_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                    @ApiResponse(responseCode = "500", description = "responses.500.description")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
-    public Response searchNotation(@Parameter(name = "idTheso", description = "search.idTheso.description", required = true) @PathParam("idTheso") String idTheso,
-                                   @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "search.q.description") @QueryParam("q") String q,
-                                   @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "search.lang.description") @QueryParam("lang") String lang,
-                                   @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "search.group.description") @QueryParam("group") String group,
+    public Response searchNotation(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathParam("idTheso") String idTheso,
+                                   @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @QueryParam("q") String q,
+                                   @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @QueryParam("lang") String lang,
+                                   @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @QueryParam("group") String group,
                                    @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), required = false,
-                                           description = "search.match.description") @QueryParam("match") String match,
+                                           description = "${search.match.description}$") @QueryParam("match") String match,
                                    @Context HttpHeaders headers) {
         return searchFilter(idTheso, headers, q, lang, group, match, "notation:");
     }
@@ -84,26 +84,26 @@ public class ConceptSearchController {
     @Path("/prefLabel")
     @GET
     @Produces({APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
-    @Operation(summary = "searchPrefLabel.summary",
-            description = "searchPrefLabel.description",
+    @Operation(summary = "${searchPrefLabel.summary}$",
+            description = "${searchPrefLabel.description}$",
             tags = {"Concept"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "search.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
                             @Content(mediaType = APPLICATION_RDF_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                    @ApiResponse(responseCode = "500", description = "responses.500.description")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
 
-    public Response searchPrefLabel(@Parameter(name = "idTheso", description = "search.idTheso.description", required = true) @PathParam("idTheso") String idTheso,
-                                    @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "search.q.description") @QueryParam("q") String q,
-                                    @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "search.lang.description") @QueryParam("lang") String lang,
-                                    @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "search.group.description") @QueryParam("group") String group,
+    public Response searchPrefLabel(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathParam("idTheso") String idTheso,
+                                    @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @QueryParam("q") String q,
+                                    @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @QueryParam("lang") String lang,
+                                    @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @QueryParam("group") String group,
                                     @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string",
-                                            allowableValues = {"exact", "exactone"}), required = false, description = "search.match.description")
+                                            allowableValues = {"exact", "exactone"}), required = false, description = "${search.match.description}$")
                                     @QueryParam("match") String match,
                                     @Context HttpHeaders headers) {
         return searchFilter(idTheso, headers, q, lang, group, match, "prefLabel:");
@@ -113,20 +113,20 @@ public class ConceptSearchController {
     @Path("/ark")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "searchByArkId.summary",
-            description = "searchByArkId.description",
+    @Operation(summary = "${searchByArkId.summary}$",
+            description = "${searchByArkId.description}$",
             tags = {"Concept", "Ark"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "search.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                    @ApiResponse(responseCode = "500", description = "responses.500.description")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
-    public Response searchByArkId(@Parameter(name = "idTheso", description = "search.idTheso.description") @PathParam("idTheso") String idTheso,
-                                  @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "searchByArkId.q.description") @QueryParam("q") String idArk,
-                                  @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "searchByArkId.lang.description") @QueryParam("lang") String lang,
-                                  @Parameter(name = "showLabels", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "searchByArkId.showLabels.description") @QueryParam("showLabels") String showLabelsString,
+    public Response searchByArkId(@Parameter(name = "idTheso", description = "${search.idTheso.description}$") @PathParam("idTheso") String idTheso,
+                                  @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchByArkId.q.description}$") @QueryParam("q") String idArk,
+                                  @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchByArkId.lang.description}$") @QueryParam("lang") String lang,
+                                  @Parameter(name = "showLabels", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchByArkId.showLabels.description}$") @QueryParam("showLabels") String showLabelsString,
                                   @Context HttpHeaders headers) {
 
         if (lang == null) {
@@ -180,24 +180,24 @@ public class ConceptSearchController {
     @Path("/fullpath")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "searchJsonForWidget.summary",
-            description = "searchJsonForWidget.description",
+    @Operation(summary = "${searchJsonForWidget.summary}$",
+            description = "${searchJsonForWidget.description}$",
             tags = {"Concept"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "search.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                    @ApiResponse(responseCode = "500", description = "responses.500.description")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
     public Response searchJsonForWidget(
-            @Parameter(name = "idTheso", description = "search.idTheso.description", required = true) @PathParam("idTheso") String idTheso,
-            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "searchJsonForWidget.q.description") @QueryParam("q") String q,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "search.lang.description") @QueryParam("lang") String lang,
-            @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "searchJsonForWidget.group.description") @QueryParam("group") String groupStrings,
-            @Parameter(name = "arkgroup", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "searchJsonForWidget.arkgroup.description") @QueryParam("arkgroup") String arkgroupStrings,
-            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "searchJsonForWidget.full.description") @QueryParam("full") String fullString,
-            @Parameter(name = "exactMatch", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "searchJsonForWidget.exactMatch.description") @QueryParam("exactMatch") String exactMatchString
+            @Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true, example = "th3") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidget.q.description}$", example = "Lyon") @QueryParam("q") String q,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.lang.description}$", example = "fr") @QueryParam("lang") String lang,
+            @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.group.description}$") @QueryParam("group") String groupStrings,
+            @Parameter(name = "arkgroup", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.arkgroup.description}$") @QueryParam("arkgroup") String arkgroupStrings,
+            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.full.description}$") @QueryParam("full") String fullString,
+            @Parameter(name = "exactMatch", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.exactMatch.description}$") @QueryParam("exactMatch") String exactMatchString
     ) {
         if (q == null) {
             return ResponseHelper.response(Response.Status.BAD_REQUEST, "No term specified", APPLICATION_JSON_UTF_8);

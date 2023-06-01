@@ -28,22 +28,22 @@ public class GroupThesoController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
-            summary = "getGroupFromIdThesoIdGroup.summary",
-            description = "getGroupFromIdThesoIdGroup.description",
+            summary = "${getGroupFromIdThesoIdGroup.summary}$",
+            description = "${getGroupFromIdThesoIdGroup.description}$",
             tags = {"Group"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getGroupFromIdThesoIdGroup.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getGroupFromIdThesoIdGroup.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8),
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "404", description = "responses.group.404.description"),
+                    @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
                     @ApiResponse(responseCode = "503", description = "responses.503.description")
             })
     public Response getGroupFromIdThesoIdGroup(
-            @Parameter(name = "idTheso", required = true, description = "getGroupFromIdThesoIdGroup.idTheso.description") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "idGroup", required = true, description = "getGroupFromIdThesoIdGroup.idGroup.description") @PathParam("idGroup") String idGroup,
+            @Parameter(name = "idTheso", required = true, description = "${getGroupFromIdThesoIdGroup.idTheso.description}$") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathParam("idGroup") String idGroup,
             @Context HttpHeaders headers
             ) {
         RestRDFHelper restRDFHelper = new RestRDFHelper();
@@ -60,23 +60,23 @@ public class GroupThesoController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
-            summary = "getAllBranchOfGroup.summary",
-            description = "getAllBranchOfGroup.description",
+            summary = "${getAllBranchOfGroup.summary}$",
+            description = "${getAllBranchOfGroup.description}$",
             tags = {"Group"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getAllBranchOfGroup.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getAllBranchOfGroup.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8),
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "404", description = "responses.group.404.description"),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description")
+                    @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             }
     )
     public Response getAllBranchOfGroup(
-            @Parameter(name = "idTheso", required = true, description = "getAllBranchOfGroup.idTheso.description") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "idGroups", required = true, description = "getAllBranchOfGroup.idGroups.description", example = "g1,g2,g3") @PathParam("idGroups") String idGroups,
+            @Parameter(name = "idTheso", required = true, description = "${getAllBranchOfGroup.idTheso.description}$") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "idGroups", required = true, description = "${getAllBranchOfGroup.idGroups.description}$", example = "g1,g2,g3") @PathParam("idGroups") String idGroups,
             @Context HttpHeaders headers
     ) {
         String[] groups = idGroups.split(",");

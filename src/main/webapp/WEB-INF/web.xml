@@ -62,7 +62,7 @@
         <init-param>
             <param-name>jersey.config.server.provider.packages</param-name>
             <param-value>
-                fr.cnrs.opentheso.ws.openapi.scanner.io.swagger.v3.jaxrs2.integration,
+                io.swagger.v3.jaxrs2.integration.resources,
                 fr.cnrs.opentheso.ws.openapi.v1
             </param-value>
         </init-param>

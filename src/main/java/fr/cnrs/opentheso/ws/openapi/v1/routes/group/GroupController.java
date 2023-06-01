@@ -32,18 +32,18 @@ public class GroupController {
     @Path("/ark:/{naan}/{ark}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getGroupIdFromArk.summary",
-            description = "getGroupIdFromArk.description",
+    @Operation(summary = "${getGroupIdFromArk.summary}$",
+            description = "${getGroupIdFromArk.description}$",
             tags = {"Group", "Ark"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getGroupIdFromArk.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getGroupIdFromArk.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
-    public Response getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "getGroupIdFromArk.naan.description") @PathParam("naan") String naan,
-                                      @Parameter(name = "ark", required = true, description = "getGroupIdFromArk.arkId.description") @PathParam("ark") String arkId) {
+    public Response getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "${getGroupIdFromArk.naan.description}$") @PathParam("naan") String naan,
+                                      @Parameter(name = "ark", required = true, description = "${getGroupIdFromArk.arkId.description}$") @PathParam("ark") String arkId) {
 
         String datas;
         String format = APPLICATION_JSON_UTF_8;

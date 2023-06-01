@@ -31,22 +31,22 @@ public class ConceptArkController {
     @Path("/")
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
-    @Operation(summary = "getConceptByArk.summary",
-            description = "getConceptByArk.description",
+    @Operation(summary = "${getConceptByArk.summary}$",
+            description = "${getConceptByArk.description}$",
             tags = {"Concept", "Ark"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getConceptByArk.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getConceptByArk.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8),
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "404", description = "responses.concept.404.description"),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description")
+                    @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
     public Response getConceptByArk(
-            @Parameter(name = "naan", description = "getConceptByArk.naan.description", required = true, example = "66666") @PathParam("naan") String naan,
-            @Parameter(name = "ark", description = "getConceptByArk.idArk.description", required = true, example = "lkp6ure1g7b6") @PathParam("ark") String idArk,
+            @Parameter(name = "naan", description = "${getConceptByArk.naan.description}$", required = true, example = "66666") @PathParam("naan") String naan,
+            @Parameter(name = "ark", description = "${getConceptByArk.idArk.description}$", required = true, example = "lkp6ure1g7b6") @PathParam("ark") String idArk,
             @Context HttpHeaders headers
     ) {
         String format = HeaderHelper.getContentTypeFromHeader(headers);
@@ -56,19 +56,19 @@ public class ConceptArkController {
     @Path("/childs")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getIdArkOfConceptNT.summary",
-            description = "getIdArkOfConceptNT.description",
+    @Operation(summary = "${getIdArkOfConceptNT.summary}$",
+            description = "${getIdArkOfConceptNT.description}$",
             tags = {"Concept", "Ark"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getIdArkOfConceptNT.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getIdArkOfConceptNT.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "getIdArkOfConceptNT.400.description"),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description")
+                    @ApiResponse(responseCode = "400", description = "${getIdArkOfConceptNT.400.description}$"),
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
     public Response getIdArkOfConceptNT(
-            @Parameter(name = "naan", description = "getIdArkOfConceptNT.naan.description", example = "66666") @PathParam("naan") String naan,
-            @Parameter(name = "ark", description = "getIdArkOfConceptNT.arkId.description", example = "lkhsq27fw3z6") @PathParam("ark") String arkLocalId
+            @Parameter(name = "naan", description = "${getIdArkOfConceptNT.naan.description}$", example = "66666") @PathParam("naan") String naan,
+            @Parameter(name = "ark", description = "${getIdArkOfConceptNT.arkId.description}$", example = "lkhsq27fw3z6") @PathParam("ark") String arkLocalId
     ) {
         String arkId = naan + "/" + arkLocalId;
 
@@ -93,22 +93,22 @@ public class ConceptArkController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(
-            summary = "getPrefLabelFromArk.summary",
-            description = "getPrefLabelFromArk.description",
+            summary = "${getPrefLabelFromArk.summary}$",
+            description = "${getPrefLabelFromArk.description}$",
             tags = {"Concept", "Ark"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getPrefLabelFromArk.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getPrefLabelFromArk.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                    @ApiResponse(responseCode = "404", description = "responses.concept.404.description"),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             }
     )
     public Response getPrefLabelFromArk(
-            @Parameter(name = "naan", description = "getPrefLabelFromArk.naan.description", required = true, example = "66666") @PathParam("naan") String naan,
-            @Parameter(name = "ark", description = "getPrefLabelFromArk.idArk.description", required = true, example = "lkp6ure1g7b6") @PathParam("ark") String idArk,
-            @Parameter(name = "lang", description = "getPrefLabelFromArk.lang.description", required = true, example = "fr") @PathParam("lang") String lang
+            @Parameter(name = "naan", description = "${getPrefLabelFromArk.naan.description}$", required = true, example = "66666") @PathParam("naan") String naan,
+            @Parameter(name = "ark", description = "${getPrefLabelFromArk.idArk.description}$", required = true, example = "lkp6ure1g7b6") @PathParam("ark") String idArk,
+            @Parameter(name = "lang", description = "${getPrefLabelFromArk.lang.description}$", required = true, example = "fr") @PathParam("lang") String lang
     ) {
         HikariDataSource ds = connect();
         if (ds == null) {

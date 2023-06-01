@@ -34,19 +34,19 @@ public class ThesaurusIdController {
     @Path("/")
     @GET
     @Produces({APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
-    @Operation(summary = "getThesoFromId.summary",
-            description = "getThesoFromId.description",
+    @Operation(summary = "${getThesoFromId.summary}$",
+            description = "${getThesoFromId.description}$",
             tags = {"Thesaurus"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getThesoFromId.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getThesoFromId.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description"),
-                    @ApiResponse(responseCode = "404", description = "responses.theso.404.description")
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             })
-    public Response getThesoFromId(@Parameter(name = "thesaurusId", description = "getThesoFromId.thesaurusId.description", required = true) @PathParam("thesaurusId") String thesaurusId,
+    public Response getThesoFromId(@Parameter(name = "thesaurusId", description = "${getThesoFromId.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId,
                                    @Context HttpHeaders headers) {
         String format = HeaderHelper.getContentTypeFromHeader(headers);
         String datas;
@@ -71,16 +71,16 @@ public class ThesaurusIdController {
     @Path("/topterms")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getThesoGroupsFromId.summary",
-            description = "getThesoGroupsFromId.description",
+    @Operation(summary = "${getThesoGroupsFromId.summary}$",
+            description = "${getThesoGroupsFromId.description}$",
             tags = {"Thesaurus"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getThesoGroupsFromId.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getThesoGroupsFromId.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description")
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
-    public Response getThesoGroupsFromId(@Parameter(name = "thesaurusId", description = "getThesoGroupsFromId.thesaurusId.description", required = true) @PathParam("thesaurusId") String thesaurusId) {
+    public Response getThesoGroupsFromId(@Parameter(name = "thesaurusId", description = "${getThesoGroupsFromId.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId) {
         ConceptHelper conceptHelper = new ConceptHelper();
         TermHelper termHelper = new TermHelper();
         String datasJson;
@@ -128,20 +128,20 @@ public class ThesaurusIdController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(
-            summary = "getTopterms.summary",
-            description = "getTopterms.description",
+            summary = "${getTopterms.summary}$",
+            description = "${getTopterms.description}$",
             tags = {"Thesaurus"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "404", description = "responses.theso.404.description"),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description")
+                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$"),
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             }
     )
     public Response getTopterms (
-            @Parameter(name = "thesaurusId", description = "getTopterms.thesaurusId.description", required = true) @PathParam("thesaurusId") String thesaurusId,
-            @Parameter(name = "lang", description = "getTopterms.lang.description", required = true) @PathParam("lang") String lang
+            @Parameter(name = "thesaurusId", description = "${getTopterms.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId,
+            @Parameter(name = "lang", description = "${getTopterms.lang.description}$", required = true) @PathParam("lang") String lang
     ) {
         String datas;
         RestRDFHelper restRDFHelper = new RestRDFHelper();
@@ -158,17 +158,17 @@ public class ThesaurusIdController {
     @Path("/lastupdate")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getInfoLastUpdate.summary",
-    description = "getInfoLastUpdate.description",
+    @Operation(summary = "${getInfoLastUpdate.summary}$",
+    description = "${getInfoLastUpdate.description}$",
     tags = {"Thesaurus"},
     responses = {
-            @ApiResponse(responseCode = "200", description = "getInfoLastUpdate.200.description", content = {
+            @ApiResponse(responseCode = "200", description = "${getInfoLastUpdate.200.description}$", content = {
                     @Content(mediaType = APPLICATION_JSON_UTF_8)
             }),
-            @ApiResponse(responseCode = "503", description = "responses.503.description"),
-            @ApiResponse(responseCode = "404", description = "responses.theso.404.description")
+            @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+            @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
     })
-    public Response getInfoLastUpdate(@Parameter(name = "thesaurusId", description = "getInfoLastUpdate.thesaurusId.description", required = true) @PathParam("thesaurusId") String thesaurusId) {
+    public Response getInfoLastUpdate(@Parameter(name = "thesaurusId", description = "${getInfoLastUpdate.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId) {
         HikariDataSource ds = connect();
         if (ds == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(MessageHelper.errorMessage("Service unavailable", APPLICATION_JSON_UTF_8)).type(APPLICATION_JSON_UTF_8).build();
@@ -189,18 +189,18 @@ public class ThesaurusIdController {
     @Path("/flatlist")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getThesoFromIdFlat.summary",
-            description = "getThesoFromIdFlat.description",
+    @Operation(summary = "${getThesoFromIdFlat.summary}$",
+            description = "${getThesoFromIdFlat.description}$",
             tags = {"Thesaurus"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getThesoFromIdFlat.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getThesoFromIdFlat.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "503", description = "responses.503.description"),
-                    @ApiResponse(responseCode = "404", description = "responses.theso.404.description")
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             })
-    public Response getThesoFromIdFlat(@Parameter(name = "thesaurusId", description = "getThesoFromIdFlat.thesaurusId.description", required = true) @PathParam("thesaurusId") String thesaurusId,
-                                   @Parameter(name = "lang", description = "getThesoFromIdFlat.lang.description", required = true) @QueryParam("lang") String lang,
+    public Response getThesoFromIdFlat(@Parameter(name = "thesaurusId", description = "${getThesoFromIdFlat.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId,
+                                   @Parameter(name = "lang", description = "${getThesoFromIdFlat.lang.description}$", required = true) @QueryParam("lang") String lang,
                                    @Context HttpHeaders headers) {
         String datas;
         if (lang == null) {
