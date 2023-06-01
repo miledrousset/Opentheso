@@ -191,9 +191,9 @@ public class ConceptSearchController {
                     @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
     public Response searchJsonForWidget(
-            @Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathParam("idTheso") String idTheso,
-            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidget.q.description}$") @QueryParam("q") String q,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.lang.description}$") @QueryParam("lang") String lang,
+            @Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true, example = "th3") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidget.q.description}$", example = "Lyon") @QueryParam("q") String q,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.lang.description}$", example = "fr") @QueryParam("lang") String lang,
             @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.group.description}$") @QueryParam("group") String groupStrings,
             @Parameter(name = "arkgroup", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.arkgroup.description}$") @QueryParam("arkgroup") String arkgroupStrings,
             @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.full.description}$") @QueryParam("full") String fullString,
