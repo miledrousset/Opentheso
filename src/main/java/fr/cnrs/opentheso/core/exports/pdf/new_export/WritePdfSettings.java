@@ -120,6 +120,12 @@ public class WritePdfSettings {
 
         return new StringPlus().normalizeStringForIdentifier(uri);
     }
+    
+    
+    
+    
+    
+    
 
     public Rectangle resiseImage(Image image){
         float width = image.getWidth();

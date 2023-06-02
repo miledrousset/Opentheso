@@ -1041,7 +1041,7 @@ public class RestRDFHelper {
         String idConcept;
         NodePreference nodePreference;
         PathHelper pathHelper = new PathHelper();
-        ArrayList<Path> paths;        
+        List<Path> paths;        
         
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         for (String idArk : idArks) {
@@ -1057,7 +1057,7 @@ public class RestRDFHelper {
             // construire le tableau JSON avec le chemin vers la racine pour chaque Id
 
 
-            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
+            paths = pathHelper.getPathOfConcept2(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
                 pathHelper.getPathWithLabelAsJson(ds,
                         paths,
@@ -1138,12 +1138,12 @@ public class RestRDFHelper {
 
         // construire le tableau JSON avec le chemin vers la racine pour chaque Id
         PathHelper pathHelper = new PathHelper();
-        ArrayList<Path> paths;
+        List<Path> paths;
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
         for (String idConcept : nodeIds) {
-            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
+            paths = pathHelper.getPathOfConcept2(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
                 pathHelper.getPathWithLabelAsJson(ds,
                         paths,

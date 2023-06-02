@@ -505,7 +505,8 @@ public class SelectedTheso implements Serializable {
             if (isValidTheso(idThesoFromUri)) {
                 /// chargement du thésaurus
                 selectedIdTheso = idThesoFromUri;
-                startNewTheso(currentLang);
+                roleOnThesoBean.initNodePref(selectedIdTheso);
+                startNewTheso(roleOnThesoBean.getNodePreference().getSourceLang());//currentLang);
                 indexSetting.setIsSelectedTheso(true);
                 indexSetting.setIsThesoActive(true);
                 rightBodySetting.setIndex("0");  

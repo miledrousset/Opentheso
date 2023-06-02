@@ -12,6 +12,11 @@ import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.ArrayDeque;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
@@ -23,7 +28,7 @@ import javax.json.JsonObjectBuilder;
 public class PathHelper {
     private String message;
     
-    public ArrayList<NodePath> getPathWithLabel(HikariDataSource ds, ArrayList<Path> paths,
+    public ArrayList<NodePath> getPathWithLabel(HikariDataSource ds, List<Path> paths,
             String idTheso, String idLang, String selectedIdConcept) {
         
         ArrayList<NodePath> pathLabel1 = new ArrayList<>();
@@ -50,7 +55,7 @@ public class PathHelper {
     }  
     
     public void getPathWithLabelAsJson(HikariDataSource ds,
-            ArrayList<Path> paths, JsonArrayBuilder jsonArrayBuilder,
+            List<Path> paths, JsonArrayBuilder jsonArrayBuilder,
             String idTheso, String idLang, String selectedIdConcept, String format) {
         String label;
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -271,13 +276,14 @@ public class PathHelper {
         ArrayList<String> idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
         if(idBTs == null) return null;
         if (idBTs.size() > 1) {
-            Collections.reverse(path);
+          //  Collections.reverse(path);
             if(path.equals(firstPath)){
                 message = "!! Attention, erreur de boucle détectée :" + firstPath.toString();
                 return allPaths;
             }
             for (String idBT1 : path) {
-                firstPath.add(idBT1);
+                if(!firstPath.contains(idBT1))
+                    firstPath.add(idBT1);
             }
         }
         if (idBTs.isEmpty()) {
@@ -287,13 +293,15 @@ public class PathHelper {
             }
             for (String id1 : path) {
                 if (pathTemp.indexOf(id1) == -1) {
-                    pathTemp.add(0,id1);
+                    pathTemp.add(id1);//(0,id1);
                 }
             }
             
             Path path1 = new Path();
+            Collections.reverse(pathTemp);
             path1.setPath(pathTemp);
             allPaths.add(path1);
+    //        System.out.println("chemin = "  + path.toString());
             path.clear();
         }
 
@@ -305,6 +313,120 @@ public class PathHelper {
         return allPaths;
 
     }
+    
+  public List<Path> getPathOfConcept2(HikariDataSource ds, String idConcept, String idTheso) {
+        List<ArrayList<String>> allPaths = new ArrayList<>();
+        Map<String, List<Link>> links = new HashMap<>();
+        List<String> tails = new ArrayList<>();
+        depthSearch(ds, idConcept, idTheso, links, tails);
+        Queue<String> toProcess = new ArrayDeque<>();
+
+        for (String tail : tails) {
+            ArrayList<String> current = new ArrayList<>();
+            current.add(tail);
+            allPaths.add(current);
+            if (!toProcess.contains(tail)) {
+                toProcess.add(tail);
+            }
+        }
+
+        while (!toProcess.isEmpty()) {
+            String current = toProcess.poll();
+            List<String> pattern = new ArrayList<>();
+            for (Link link : links.get(current)) {
+                pattern.add(link.destination);
+                toProcess.add(link.destination);
+            }
+
+            if (!pattern.isEmpty()) {
+                int currentIndex = 0;
+                for (List<String> path : allPaths) {
+                    if (path.get(path.size() - 1).equals(current)) {
+                        path.add(pattern.get(currentIndex % pattern.size()));
+                        currentIndex++;
+                    }
+                }
+            }
+        }
+
+        List<Path> paths = new ArrayList<>();
+        for (ArrayList<String> currentPath : allPaths) {
+            Path current = new Path();
+            current.setPath(currentPath);
+            paths.add(current);
+        }
+
+        return paths;
+    }    
+      private void addLink(String origin, String destination, Map<String, List<Link>> links) {
+        if (!links.containsKey(origin)) {
+            links.put(origin, new ArrayList<>());
+            
+        }
+        boolean found = false;
+            for (Link link : links.get(origin)) {
+                if (link.getDestination().equals(destination)) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) links.get(origin).add(new Link(origin, destination));
+    }
+
+    private void depthSearch(HikariDataSource ds, String idConcept, String idTheso, Map<String, List<Link>> links, List<String> tails) {
+
+        Queue<String> queue = new ArrayDeque<>();
+
+        RelationsHelper relationsHelper = new RelationsHelper();
+        queue.add(idConcept);
+        links.put(idConcept, new ArrayList<>());
+
+        while (!queue.isEmpty()) {
+            String elt = queue.poll();
+
+            List<String> neighbors = relationsHelper.getListIdBT(ds, elt, idTheso);
+
+            if (neighbors.isEmpty()) {
+                tails.add(elt);
+            } else {
+                for (String neighbor : neighbors) {
+                    queue.add(neighbor);
+                    addLink(neighbor, elt, links);
+                }
+            }
+        }
+
+    }
+    
+    private class Link {
+
+        public Link(String origin, String destination) {
+            this.destination = destination;
+            this.origin = origin;
+        }
+        
+        private final String origin;
+        private final String destination;
+
+        public String getOrigin() {
+            return origin;
+        }
+
+        public String getDestination() {
+            return destination;
+        }
+
+        @Override
+        public String toString() {
+            return origin + " --> " + destination;
+        }
+        
+    }
+  
+  
+  
+  
     
     public ArrayList<Path> getPathOfFacet(HikariDataSource ds,
             String idFacet, String idThesaurus) {

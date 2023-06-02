@@ -697,8 +697,16 @@ public class ExportRdf4jHelperNew {
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////// 
     public String getUriFromId(String id) {
-
-        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty() 
+        if(nodePreference.isOriginalUriIsArk()){
+            if(!StringUtils.isEmpty((nodePreference.getOriginalUri()))){
+                return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
+            } else {
+                return getPath() + "/?idt=" + id;
+            }
+        } else {
+            return getPath() + "/?idt=" + id;
+        }
+      /*  if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty() 
             && !"null".equals(nodePreference.getOriginalUri())) {
             if(nodePreference.isOriginalUriIsArk()) {
                 return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
@@ -706,7 +714,7 @@ public class ExportRdf4jHelperNew {
             return nodePreference.getOriginalUri() + "/" + nodePreference.getIdNaan() + "/" + id;
         } else {            
             return getPath() + "/?idt=" + id;
-        }
+        }*/
     }
 
     /**

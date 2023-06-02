@@ -10,6 +10,9 @@
 
 - correction de l'import des dates pour les collections
 - correction de la boite de dialogue de création d'utilisateur
+- amélioration de l'affichage du fil d'ariane
+- correction du fil d'ariane pour la poly-hiérarchie imbriquée
 
+- amélioration de l'export PDF
 
 - Passage de l'API REST vers la norme OpenAPI 

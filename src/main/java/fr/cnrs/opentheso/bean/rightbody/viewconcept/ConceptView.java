@@ -817,7 +817,7 @@ public class ConceptView implements Serializable {
     
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
-        ArrayList<Path> paths = pathHelper.getPathOfConcept(
+        List<Path> paths = pathHelper.getPathOfConcept2(
                 connect.getPoolConnexion(), idConcept, idTheso);
         if(pathHelper.getMessage() != null){
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());
