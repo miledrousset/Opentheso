@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.menu.theso;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -33,22 +32,18 @@ import javax.inject.Named;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Arrays;
 import javax.faces.application.FacesMessage;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.cnrs.opentheso.entites.Thesaurus;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.UnselectEvent;
 
 
-@Data
 @SessionScoped
 @Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
@@ -347,6 +342,19 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsThesoActive(true);
     }
 
+    public List<ResultatAlignement> getResultAlignementList() {
+        return resultAlignementList;
+    }
+
+    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
+        this.resultAlignementList = resultAlignementList;
+    }
+
+    public void onUnselect(UnselectEvent<ResultatAlignement> event) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));
+    }
+
     /**
      * permet de recharger l'arbre des collections 
      */
@@ -450,6 +458,12 @@ public class SelectedTheso implements Serializable {
         listIndex.reset();
         conceptBean.clear();
         conceptBean.init();
+    }
+
+    private void setThesoName() {
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        thesoName = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(),
+                selectedIdTheso, selectedLang);
     }
 
     private void startNewLang() {
@@ -567,4 +581,105 @@ public class SelectedTheso implements Serializable {
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         return !thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso);
     }
+
+    public String getIdConceptFromUri() {
+        return idConceptFromUri;
+    }
+
+    public void setIdConceptFromUri(String idConceptFromUri) {
+        this.idConceptFromUri = idConceptFromUri;
+    }
+
+    public String getIdGroupFromUri() {
+        return idGroupFromUri;
+    }
+
+    public void setIdGroupFromUri(String idGroupFromUri) {
+        this.idGroupFromUri = idGroupFromUri;
+    }
+
+    public String getIdThesoFromUri() {
+        return idThesoFromUri;
+    }
+
+    public void setIdThesoFromUri(String idThesoFromUri) {
+        this.idThesoFromUri = idThesoFromUri;
+    }
+
+    public ArrayList<NodeLangTheso> getNodeLangs() {
+        return nodeLangs;
+    }
+
+    public void setNodeLangs(ArrayList<NodeLangTheso> nodeLangs) {
+        this.nodeLangs = nodeLangs;
+    }
+
+    public String getSelectedLang() {
+        return selectedLang;
+    }
+
+    public void setSelectedLang(String selectedLang) {
+        this.selectedLang = selectedLang;
+    }
+
+    public String getCurrentLang() {
+        return currentLang;
+    }
+
+    public void setCurrentLang(String currentLang) {
+        this.currentLang = currentLang;
+    }
+
+    public String getCurrentIdTheso() {
+        return currentIdTheso;
+    }
+
+    public void setCurrentIdTheso(String currentIdTheso) {
+        this.currentIdTheso = currentIdTheso;
+    }
+
+    public String getThesoName() {
+        return thesoName;
+    }
+
+    public void setThesoName(String thesoName) {
+        this.thesoName = thesoName;
+    }
+
+    public String getSelectedIdTheso() {
+        return selectedIdTheso;
+    }
+
+    public void setSelectedIdTheso(String selectedIdTheso) {
+        this.selectedIdTheso = selectedIdTheso;
+    }
+
+    public boolean isSortByNotation() {
+        return sortByNotation;
+    }
+
+    public void setSortByNotation(boolean sortByNotation) {
+        this.sortByNotation = sortByNotation;
+    }
+
+    public String getLocalUri() {
+        return localUri;
+    }
+
+    public void setLocalUri(String localUri) {
+        this.localUri = localUri;
+    }
+
+    public String getOptionThesoSelected() {
+        return optionThesoSelected;
+    }
+
+    public void setOptionThesoSelected(String optionThesoSelected) {
+        this.optionThesoSelected = optionThesoSelected;
+    }
+
+    public boolean isIsNetworkAvailable() {
+        return isNetworkAvailable;
+    }
+
 }
