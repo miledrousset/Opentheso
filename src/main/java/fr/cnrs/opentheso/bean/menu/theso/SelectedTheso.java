@@ -19,9 +19,10 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
+
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -34,6 +35,9 @@ import java.util.Arrays;
 import javax.faces.application.FacesMessage;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
+
+import liquibase.exception.LiquibaseException;
+
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 
@@ -41,6 +45,7 @@ import org.primefaces.event.UnselectEvent;
 @Named(value = "selectedTheso")
 @SessionScoped
 public class SelectedTheso implements Serializable {
+
     @Inject private LanguageBean LanguageBean;
     @Inject private Connect connect;
     @Inject private IndexSetting indexSetting;
@@ -82,14 +87,13 @@ public class SelectedTheso implements Serializable {
     
     private String localUri;
 
-    private List<AlignementElement> listAlignementElement;
     private List<ResultatAlignement> resultAlignementList;
 
     @PreDestroy
     public void destroy(){
-        /// c'est le premier composant qui se détruit
         clear();
-    }  
+    }
+
     public void clear(){
         if(nodeLangs!= null){
             nodeLangs.clear();
@@ -102,44 +106,19 @@ public class SelectedTheso implements Serializable {
         idThesoFromUri = null;      
         thesoName = null;   
         localUri = null;
-    //    System.gc();
-    //    System.runFinalization();        
     }      
     
     @PostConstruct
     public void initializing() {
+
         if (!connect.isConnected()) {
             System.err.println("Erreur de connexion BDD");
             return;
         }
         
-        isNetworkAvailable = true;  
-//#MR désactivé temporairement pour tester pourquoi le serveur ne répond pas rapidement au démarrage // hostAvailabilityCheck();
-
-
-
-
-        ///////#MR désactivé, ce n'est plus utile
-        ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire
-/*        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        HttpServletRequest req = (HttpServletRequest) externalContext.getRequest();
-        if(!req.getSession().isNew()){
-            System.gc();
-      //      System.runFinalization();
-        }     */   
-        ///////
-        ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire        
-        
+        isNetworkAvailable = true;
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
-    }
-    
-    public boolean hostAvailabilityCheck() { 
-        try (Socket s = new Socket("countryflagsapi.com", 80)) {
-            return true;
-        } catch (IOException ex) {
-            return false;
-        }
     }
 
     public void init() {
@@ -178,25 +157,25 @@ public class SelectedTheso implements Serializable {
                 break;
         }
     }
-    
+
     public String getUriOfTheso(NodePreference nodePreference){
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
         String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
     //    HttpServletRequest request = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
         String baseUrl = protocole + "://" + serverAdress + contextPath;
-        
-        
+
+
    /*     String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         String uri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  */
         if(nodePreference == null) {
-            return baseUrl + "/?idt=" + currentIdTheso; 
+            return baseUrl + "/?idt=" + currentIdTheso;
         }
         else {
             String idArk = new ThesaurusHelper().getIdArkOfThesaurus(connect.getPoolConnexion(), currentIdTheso);
             if(StringUtils.isEmpty(idArk)){
                 return baseUrl + "/?idt=" + currentIdTheso;
-            } else 
+            } else
             return baseUrl + "/api/ark:/" + idArk;
         }
         /*
@@ -319,10 +298,6 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsValueSelected(true);
         indexSetting.setIsHomeSelected(false);
         indexSetting.setIsThesoActive(true);
-    }    
-
-    public List<AlignementElement> getListAlignementElement() {
-        return listAlignementElement;
     }
 
     public List<ResultatAlignement> getResultAlignementList() {
@@ -333,11 +308,6 @@ public class SelectedTheso implements Serializable {
         this.resultAlignementList = resultAlignementList;
     }
 
-/*    public void onSelect(SelectEvent<ResultatAlignement> event) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().getTitle()));
-    }
-*/
     public void onUnselect(UnselectEvent<ResultatAlignement> event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));
