@@ -69,12 +69,6 @@ public class SessionControl implements Serializable {
         PrimeFaces.current().executeScript("PF('treeWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('groupWidget').clearCache();");
         PrimeFaces.current().executeScript("PF('conceptTreeWidget').clearCache();");
-
-        //externalContext.redirect(((HttpServletRequest) externalContext.getRequest()).getRequestURI()); 
-
-    //    System.gc();
-//        System.gc();
-  //      System.runFinalization ();
         
         menuBean.redirectToThesaurus();
     }
