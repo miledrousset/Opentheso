@@ -19,7 +19,7 @@ public class SessionFactoryMaker {
                     .addAnnotatedClass(Release.class)
                     .configure()
                     .buildSessionFactory();
-        } catch (HibernateException ex) {
+        } catch (Exception ex) {
             System.err.println("Failed to create sessionFactory object." + ex);
             throw new ExceptionInInitializerError(ex);
         }
