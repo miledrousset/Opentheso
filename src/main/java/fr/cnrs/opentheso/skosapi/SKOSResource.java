@@ -42,7 +42,8 @@ public class SKOSResource {
     private ArrayList<SKOSRelation> relationsList;
     private ArrayList<SKOSDocumentation> documentationsList;
     private ArrayList<SKOSDate> dateList;
-    private ArrayList<SKOSCreator> creatorList;
+    private ArrayList<SKOSAgent> agentList;
+
     private SKOSGPSCoordinates GPSCoordinates;
     private ArrayList<SKOSNotation> notationList;
     private ArrayList<SKOSMatch> matchList;
@@ -71,7 +72,7 @@ public class SKOSResource {
         relationsList = new ArrayList<>();
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
-        creatorList = new ArrayList<>();
+        agentList = new ArrayList<>();
         GPSCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
@@ -94,7 +95,7 @@ public class SKOSResource {
         relationsList = new ArrayList<>();
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
-        creatorList = new ArrayList<>();
+        agentList = new ArrayList<>();
         GPSCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
@@ -120,8 +121,8 @@ public class SKOSResource {
             documentationsList.clear();
         if(dateList != null)
             dateList.clear();
-        if(creatorList != null)
-            creatorList.clear();
+        if(agentList != null)
+            agentList.clear();
         GPSCoordinates = null;
         if(notationList != null)
             notationList.clear();
@@ -189,9 +190,20 @@ public class SKOSResource {
         return matchList;
     }
 
-    public ArrayList<SKOSCreator> getCreatorList() {
-        return creatorList;
+    public ArrayList<SKOSAgent> getAgentList() {
+        return agentList;
     }
+
+
+    
+    /**
+     *
+     * @param agent le nom
+     * @param prop le type
+     */
+    public void addAgent(String agent, int prop) {
+        agentList.add(new SKOSAgent(agent, prop));
+    }    
 
     public SKOSGPSCoordinates getGPSCoordinates() {
         return GPSCoordinates;
@@ -264,15 +276,6 @@ public class SKOSResource {
      */
     public void addMatch(String v, int prop) {
         matchList.add(new SKOSMatch(v, prop));
-    }
-
-    /**
-     *
-     * @param creator le nom
-     * @param prop le type
-     */
-    public void addCreator(String creator, int prop) {
-        creatorList.add(new SKOSCreator(creator, prop));
     }
 
     /**
@@ -372,10 +375,6 @@ public class SKOSResource {
 
     public void setDateList(ArrayList<SKOSDate> dateList) {
         this.dateList = dateList;
-    }
-
-    public void setCreatorList(ArrayList<SKOSCreator> creatorList) {
-        this.creatorList = creatorList;
     }
 
     public void setNotationList(ArrayList<SKOSNotation> notationList) {

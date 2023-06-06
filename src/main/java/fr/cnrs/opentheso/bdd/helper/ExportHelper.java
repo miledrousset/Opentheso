@@ -154,10 +154,10 @@ public class ExportHelper {
                         }
                         
                         if (resultSet.getString("creator") != null) {
-                            sKOSResource.addCreator(resultSet.getString("creator"), SKOSProperty.creator);
+                            sKOSResource.addAgent(resultSet.getString("creator"), SKOSProperty.creator);
                         }
                         if (resultSet.getString("contributor") != null) {
-                            sKOSResource.addCreator(resultSet.getString("contributor"), SKOSProperty.contributor);
+                            sKOSResource.addAgent(resultSet.getString("contributor"), SKOSProperty.contributor);
                         }
 
                         String created = resultSet.getString("created");

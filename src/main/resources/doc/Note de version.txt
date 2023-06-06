@@ -1,18 +1,1 @@
-- Correction d'un bug pour l'import CSV quand il n'y a pas d'Id pour l'URI
-- ajout de la précision de la langue source pour l'imprt SKOS
-
-- Ajout d'une action pour comparer une liste de concepts au thésaurus (avec des
-    options préciser le type de recherche à effectuer)
-
-- Affichage des titres des images et des copyriht avec un lien cliquable
-- correction de l'affichage erronné des candidats dans la vue concept (relation RT)
--correction d'un bug pour l'import des dates pour les concepts
-
-- correction de l'import des dates pour les collections
-- correction de la boite de dialogue de création d'utilisateur
-- amélioration de l'affichage du fil d'ariane
-- correction du fil d'ariane pour la poly-hiérarchie imbriquée
-
-- amélioration de l'export PDF
-
-- Passage de l'API REST vers la norme OpenAPI 
+- Correction de l'import de candidats en SKOS

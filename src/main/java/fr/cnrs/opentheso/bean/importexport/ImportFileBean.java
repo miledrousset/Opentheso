@@ -2872,7 +2872,7 @@ public class ImportFileBean implements Serializable {
 
             ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
             importRdf4jHelper.setInfos(connect.getPoolConnexion(), formatDate,
-                    currentUser.getNodeUser().getIdUser(), idGroup, connect.getWorkLanguage());
+                    currentUser.getNodeUser().getIdUser(), idGroup, roleOnThesoBean.getNodePreference().getSourceLang());//connect.getWorkLanguage());
 
             importRdf4jHelper.setNodePreference(roleOnThesoBean.getNodePreference());
             importRdf4jHelper.setRdf4jThesaurus(sKOSXmlDocument);

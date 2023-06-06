@@ -202,10 +202,10 @@ public class ExportRdf4jHelperNew {
         for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
             
             if (thesaurus.getCreator() != null && !thesaurus.getCreator().equalsIgnoreCase("null")) {
-                conceptScheme.addCreator(thesaurus.getCreator(), SKOSProperty.creator);
+                conceptScheme.addAgent(thesaurus.getCreator(), SKOSProperty.creator);
             }
             if (thesaurus.getContributor() != null && !thesaurus.getContributor().equalsIgnoreCase("null")) {
-                conceptScheme.addCreator(thesaurus.getContributor(), SKOSProperty.contributor);
+                conceptScheme.addAgent(thesaurus.getContributor(), SKOSProperty.contributor);
             }
             if (thesaurus.getTitle() != null && thesaurus.getLanguage() != null) {
                 conceptScheme.addLabel(thesaurus.getTitle(), 
@@ -460,10 +460,10 @@ public class ExportRdf4jHelperNew {
 
         // createur et contributeur
         if (nodeConcept.getConcept().getCreatorName()!= null && !nodeConcept.getConcept().getCreatorName().isEmpty()) {
-            sKOSResource.addCreator(nodeConcept.getConcept().getCreatorName(), SKOSProperty.creator);
+            sKOSResource.addAgent(nodeConcept.getConcept().getCreatorName(), SKOSProperty.creator);
         }
         if (nodeConcept.getConcept().getContributorName()!= null && !nodeConcept.getConcept().getContributorName().isEmpty()) {
-            sKOSResource.addCreator(nodeConcept.getConcept().getContributorName(), SKOSProperty.contributor);
+            sKOSResource.addAgent(nodeConcept.getConcept().getContributorName(), SKOSProperty.contributor);
         }
 
         // dates

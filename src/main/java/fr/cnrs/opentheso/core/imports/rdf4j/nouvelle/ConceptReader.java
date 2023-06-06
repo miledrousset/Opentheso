@@ -93,7 +93,14 @@ public class ConceptReader {
                 break;
             case "modified":
                 skosConcept.addDate(literal.getLabel(), SKOSProperty.modified);
-                break;                
+                break;   
+                
+            case "creator":
+                skosConcept.addAgent(literal.getLabel(), SKOSProperty.creator);
+                break;
+            case "contributor":
+                skosConcept.addAgent(literal.getLabel(), SKOSProperty.contributor);
+                break;                 
         }
     }
 
@@ -184,11 +191,11 @@ public class ConceptReader {
             case "creator":
                 // Attention au Null 
                 if(literal != null)
-                    skosConcept.addCreator(literal.getLabel(), SKOSProperty.creator);
+                    skosConcept.addAgent(literal.getLabel(), SKOSProperty.creator);
                 break;
             case "contributor":
                 if(literal != null)
-                    skosConcept.addCreator(literal.getLabel(), SKOSProperty.contributor);
+                    skosConcept.addAgent(literal.getLabel(), SKOSProperty.contributor);
                 break;
 
             //Notation

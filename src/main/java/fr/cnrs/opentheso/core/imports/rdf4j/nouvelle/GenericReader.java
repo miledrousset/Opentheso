@@ -60,6 +60,10 @@ public class GenericReader {
             case "modified":
                 skosConcept.getThesaurus().setModified(new FileUtilities().getDateFromString(literal.getLabel()));
                 break;
+                
+            /// ajout des créativecommons
+            /// ajout des dcterms
+                
         }
     }
 

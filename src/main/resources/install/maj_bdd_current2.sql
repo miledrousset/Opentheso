@@ -544,6 +544,24 @@ end
 $$language plpgsql;
 
 
+CREATE TABLE IF NOT EXISTS public.concept_dcterms
+(
+    id_concept character varying COLLATE pg_catalog."default" NOT NULL,
+    id_thesaurus character varying COLLATE pg_catalog."default" NOT NULL,
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    value character varying COLLATE pg_catalog."default" NOT NULL,
+    language character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT concept_dc_terms_pkey PRIMARY KEY (id_concept, id_thesaurus, name, value, language)
+);
+CREATE TABLE IF NOT EXISTS public.thesaurus_dcterms
+(
+    id_thesaurus character varying COLLATE pg_catalog."default" NOT NULL,
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    value character varying COLLATE pg_catalog."default" NOT NULL,
+    language character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT thesaurus_dcterms_pkey PRIMARY KEY (id_thesaurus, name, value, language)
+);
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -1737,6 +1755,29 @@ END;
 $BODY$;
 
 
+CREATE OR REPLACE procedure opentheso_add_concept_dcterms(
+	id_concept character varying,
+	id_thesaurus character varying,
+	dcterms text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@@';
+	dcterms_rec record;
+	array_string   text[];
+BEGIN
+	--label.getLabel() + SOUS_SEPERATEUR + label.getLanguage()
+	FOR dcterms_rec IN SELECT unnest(string_to_array(dcterms, seperateur)) AS term_value
+    LOOP
+	SELECT string_to_array(dcterms_rec.term_value, sous_seperateur) INTO array_string;
+            
+      	Insert into concept_dcterms (id_concept, id_thesaurus, name, value, language) 
+			values (id_concept, id_thesaurus, array_string[1], array_string[2], array_string[3]) ON CONFLICT DO NOTHING;
+    END LOOP;
+END;
+$BODY$;
+
 
 
 
@@ -1927,7 +1968,8 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	altitude double precision,
 	longitude double precision,
         created Date,
-        modified Date)
+        modified Date,
+        concept_dcterms text)
     LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
@@ -1959,6 +2001,12 @@ BEGIN
 			-- 'id_concept1@role@id_concept2'
 			CALL opentheso_add_custom_relations(id_thesaurus, custom_relation);
 		END IF;
+
+		IF (concept_dcterms IS NOT NULL AND concept_dcterms != 'null') THEN
+			-- 'creator@@miled@@fr##contributor@@zozo@@fr'
+			CALL opentheso_add_concept_dcterms(id_new_concet, id_thesaurus, concept_dcterms);
+		END IF;
+
 
 
 		IF (notes IS NOT NULL AND notes != 'null') THEN

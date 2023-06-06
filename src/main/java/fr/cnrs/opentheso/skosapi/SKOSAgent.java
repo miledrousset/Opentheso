@@ -10,22 +10,22 @@ package fr.cnrs.opentheso.skosapi;
  * @author Quincy
  * 
  */
-public class SKOSCreator {
+public class SKOSAgent {
     
-    String creator;
+    String agent;
     int property;
 
-    public SKOSCreator(String creator, int property) {
-        this.creator = creator;
+    public SKOSAgent(String agent, int property) {
+        this.agent = agent;
         this.property = property;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getAgent() {
+        return agent;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setAgent(String agent) {
+        this.agent = agent;
     }
 
     public int getProperty() {

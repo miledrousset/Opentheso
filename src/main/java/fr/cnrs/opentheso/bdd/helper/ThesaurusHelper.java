@@ -938,6 +938,11 @@ public class ThesaurusHelper {
                         + "delete from external_resources where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from external_images where id_thesaurus = '" + idThesaurus + "';"          
                         + "delete from corpus_link where id_theso = '" + idThesaurus + "';"   
+                        
+                        // métadonnées Concepts + thésaurus 
+                        + "delete from concept_dcterms where id_thesaurus = '" + idThesaurus + "';" 
+                        + "delete from thesaurus_dcterms where id_thesaurus = '" + idThesaurus + "';"   
+        
                         + "delete from preferences where id_thesaurus = '" + idThesaurus + "';");
                 state = true;
             }
