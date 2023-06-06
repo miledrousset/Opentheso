@@ -62,7 +62,7 @@ public class ApiKeyHelper {
         String msg = null;
         switch (state) {
             case EMPTY:
-                code = Response.Status.FORBIDDEN;
+                code = Response.Status.UNAUTHORIZED;
                 msg = "No API key given";
                 break;
             case DATABASE_UNAVAILABLE:

@@ -31,14 +31,14 @@ public class ThesaurusController {
     @Path("/")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "getListAllPublicTheso.summary",
-            description = "getListAllPublicTheso.description",
+    @Operation(summary = "${getListAllPublicTheso.summary}$",
+            description = "${getListAllPublicTheso.description}$",
             tags = {"Thesaurus"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "getListAllPublicTheso.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${getListAllPublicTheso.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "203", description = "responses.theso.404.description")
+                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             }
     )
     public Response getListAllPublicTheso() {

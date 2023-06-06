@@ -30,22 +30,22 @@ public class ConceptController {
     @Path("/handle/{handle}/{idHandle}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
-    @Operation(summary = "getConceptByHandle.summary",
-            description = "getConceptByHandle.description",
+    @Operation(summary = "${getConceptByHandle.summary}$",
+            description = "${getConceptByHandle.description}$",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "getConceptByHandle.200.responses", content = {
+                @ApiResponse(responseCode = "200", description = "${getConceptByHandle.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_TURTLE_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8)
         }),
-                @ApiResponse(responseCode = "404", description = "responses.concept.404.description"),
-                @ApiResponse(responseCode = "503", description = "responses.503.description")
+                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
     public Response getConceptByHandle(
-            @Parameter(name = "handle", description = "getConceptByHandle.handle.description", required = true) @PathParam("handle") String handle,
-            @Parameter(name = "idHandle", description = "getConceptByHandle.idHandle.description", required = true) @PathParam("idHandle") String idHandle,
+            @Parameter(name = "handle", description = "${getConceptByHandle.handle.description}$", required = true) @PathParam("handle") String handle,
+            @Parameter(name = "idHandle", description = "${getConceptByHandle.idHandle.description}$", required = true) @PathParam("idHandle") String idHandle,
             @Context HttpHeaders headers
     ) {
         String format = HeaderHelper.getContentTypeFromHeader(headers);
@@ -55,20 +55,20 @@ public class ConceptController {
     @Path("/ark/fullpath/search")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "searchJsonForWidgetArk.summary",
-            description = "searchJsonForWidgetArk.description",
+    @Operation(summary = "${searchJsonForWidgetArk.summary}$",
+            description = "${searchJsonForWidgetArk.description}$",
             tags = {"Concept", "Ark"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "searchJsonForWidgetArk.200.description", content = {
+                @ApiResponse(responseCode = "200", description = "${searchJsonForWidgetArk.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "400", description = "responses.400.description"),
-                @ApiResponse(responseCode = "500", description = "responses.500.description")
+                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
     public Response searchJsonForWidgetArk(
-            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "searchJsonForWidgetArk.q.description", example = "66666/lkp6ure1g7b6,66666/lkubqlukv7i5") @QueryParam("q") String q,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "searchJsonForWidgetArk.lang.description", example = "fr") @QueryParam("lang") String lang,
-            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), description = "searchJsonForWidgetArk.full.description") @QueryParam("full") String fullString
+            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidgetArk.q.description}$", example = "66666/lkp6ure1g7b6,66666/lkubqlukv7i5") @QueryParam("q") String q,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidgetArk.lang.description}$", example = "fr") @QueryParam("lang") String lang,
+            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), description = "${searchJsonForWidgetArk.full.description}$") @QueryParam("full") String fullString
     ) {
         String[] idArks = q.split(",");
         if (idArks.length == 0) {
