@@ -133,6 +133,9 @@ public class WriteAlphaPDF {
                     Paragraph paragraph = new Paragraph();
                     Anchor anchor = new Anchor(labelValue, writePdfSettings.termFont);
                     anchor.setReference(uriHelper.getUriForConcept(idFromUri, idArk, idArk));//uri + "&idc=" + idFromUri);
+                    
+                    anchor.setName(idFromUri);
+                    
                     paragraph.add(anchor);
                     paragraphs.add(paragraph);
                 } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {

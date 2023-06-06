@@ -1,1 +1,4 @@
+Note de version
 - Correction de l'import de candidats en SKOS
+- intégration des rebonds dans le même document PDF au foramt alphabétique
+
