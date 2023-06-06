@@ -22,20 +22,20 @@ public class ConceptAutocompleteController {
     @Path("/{input}")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "searchAutocomplete.summary",
-            description = "searchAutocomplete.description",
+    @Operation(summary = "${searchAutocomplete.summary}$",
+            description = "${searchAutocomplete.description}$",
             tags = {"Concept"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "searchAutocomplete.200.description", content = {
+                    @ApiResponse(responseCode = "200", description = "${searchAutocomplete.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "responses.400.description")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$")
             })
-    public Response searchAutocomplete(@Parameter(name = "idThesaurus", required = true, description = "searchAutocomplete.idThesaurus.description") @PathParam("idTheso") String idTheso,
-                                       @Parameter(name = "input", required = true, description = "searchAutocomplete.input.description") @PathParam("input") String input,
-                                       @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "searchAutocomplete.lang.description") @QueryParam("lang") String lang,
-                                       @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "searchAutocomplete.group.description") @QueryParam("group") String groupsString,
-                                       @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "searchAutocomplete.full.description") @QueryParam("full") String fullString) {
+    public Response searchAutocomplete(@Parameter(name = "idThesaurus", required = true, description = "${searchAutocomplete.idThesaurus.description}$") @PathParam("idTheso") String idTheso,
+                                       @Parameter(name = "input", required = true, description = "${searchAutocomplete.input.description}$") @PathParam("input") String input,
+                                       @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchAutocomplete.lang.description}$") @QueryParam("lang") String lang,
+                                       @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchAutocomplete.group.description}$") @QueryParam("group") String groupsString,
+                                       @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchAutocomplete.full.description}$") @QueryParam("full") String fullString) {
         if (lang == null) {
             lang = "";
         }
