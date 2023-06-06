@@ -63,7 +63,7 @@ const addVersionSelectorListener = () => {
             versionSelector.addEventListener("change", () => {
                 VERSION = versionSelector.value;
                 // displayServerDoc("Opentheso2 - API ", VERSION, LANG);
-                location.href = `http://localhost:8080/opentheso2/openapi/doc/?lang=${LANG}&version=${VERSION}`;
+                location.href = BASE_URL + `doc/?lang=${LANG}&version=${VERSION}`;
             })
             clearTimeout(id);
         }
@@ -80,7 +80,7 @@ const addLangSelectorListener = () => {
     selector.addEventListener("change", () => {
         LANG = selector.value;
         // displayServerDoc("Opentheso2 - API",  VERSION, LANG);
-        location.href = `http://localhost:8080/opentheso2/openapi/doc/?lang=${LANG}&version=${VERSION}`;
+        location.href = BASE_URL + `doc/?lang=${LANG}&version=${VERSION}`;
     });
 };
 
