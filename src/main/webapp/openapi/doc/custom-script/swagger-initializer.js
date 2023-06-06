@@ -153,7 +153,7 @@ const loadQueryVersion = () => {
         const parameters = new URLSearchParams(queryString);
         if (parameters.has("version") && (AVAILABLE_VERSION.indexOf(parameters.get("version").toLowerCase()) !== -1)) { 
             VERSION = parameters.get("version").toLowerCase();
-            changeVersionSelectorDefault(VERSION);
+            // changeVersionSelectorDefault(VERSION);
         }
     } 
 };
@@ -192,7 +192,7 @@ const displayServerDoc = (title, version, lang) => {
     changeTitle(title);
     window.ui = uiBundle(generateURL(version, lang));
     hideSearchBar();
-    addVersionSelectorListener();
+    // addVersionSelectorListener();
     addLangSelectorListener();
 };
 
@@ -202,13 +202,13 @@ let VERSION = "v1";
 let LANG = "fr";
 const BASE_URL = window.location.href.split("/doc")[0]  + "/";
 const AVAILABLE_LANG = [];
-const AVAILABLE_VERSION = getAvailableVersions();
+const AVAILABLE_VERSION = ["v1"];
 
 window.onload = function() {
     fetchAvailableLanguages()
             .then(() => {
                 loadQueryLang();
-                loadQueryVersion();
+                // loadQueryVersion();
                 displayServerDoc("Opentheso2 - API" ,VERSION, LANG);
             });
 };
