@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
@@ -25,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,11 +58,15 @@ public class OpenApiController extends BaseOpenApiResource {
             @PathParam("type") String type,
             @PathParam("lang") String lang) throws Exception {
         
+       Map<String, String> types = new HashMap<>();
+       types.put("json", CustomMediaType.APPLICATION_JSON_UTF_8);
+       types.put("yaml", "application/yaml;charset=utf-8");
+        
         LangHelper helper = new LangHelper();
          List<String> languages = helper.availableLang();
          
          if (!languages.contains(lang.toLowerCase())) {
-             return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "The lang " + lang + " is not available", CustomMediaType.APPLICATION_JSON_UTF_8);
+             return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "The lang " + lang + " is not available", types.get(type));
          }
         
          ResourceBundle bundle = ResourceBundle.getBundle("language.openapi", new Locale(lang));
@@ -72,8 +78,9 @@ public class OpenApiController extends BaseOpenApiResource {
             jsonOAS = helper.translate(jsonOAS, bundle);
 
             jsonOAS = jsonOAS.replace("${BASE_SERVER}$", uriInfo.getBaseUri().toString());
+            Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, uriInfo.getBaseUri().toString());
             
-            return ResponseHelper.response(Response.Status.OK, jsonOAS, CustomMediaType.APPLICATION_JSON_UTF_8);
+            return ResponseHelper.response(Response.Status.OK, jsonOAS, types.get(type));
         } catch (Exception e) {
             Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, e.getMessage());
         }

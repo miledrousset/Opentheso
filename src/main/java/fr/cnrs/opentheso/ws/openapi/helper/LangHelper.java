@@ -45,7 +45,7 @@ public class LangHelper {
             String bracketLessKey = s.replace("${","").replace("}$","");
             if (!bracketLessKey.equals("BASE_SERVER")) {
                 String resource = bundle.getString(bracketLessKey);
-                resource = resource.replace("\n", "");
+                resource = resource.replace("\n", "<br>");
                 resource = resource.replace("\"", "\\\"");
                 jsonOAS = jsonOAS.replace(s, resource);
             }

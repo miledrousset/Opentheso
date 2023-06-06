@@ -49,10 +49,6 @@ public class ConceptThesoController {
 
         String format = getContentTypeFromHeader(headers);
 
-        if (idConcept == null || idConcept.isEmpty()) {
-            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "Missing concept ID", format);
-        }
-
         String datas;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
@@ -153,8 +149,10 @@ public class ConceptThesoController {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8),
-            @Content(mediaType = APPLICATION_TURTLE_UTF_8)
-        })
+            @Content(mediaType = APPLICATION_TURTLE_UTF_8)}),
+                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             },
             tags = {"Concept"}
     )
@@ -167,7 +165,11 @@ public class ConceptThesoController {
     ) {
         String datas;
         String format = HeaderHelper.getContentTypeFromHeader(headers);
-
+        
+        if (idTheso == null || idConcept == null || (!way.equalsIgnoreCase("top") && !way.equalsIgnoreCase("down"))) {
+            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "Missing parameter", format);
+        }
+        
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
                 return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", format);

@@ -38,7 +38,7 @@ public class ThesaurusController {
                     @ApiResponse(responseCode = "200", description = "${getListAllPublicTheso.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "203", description = "${responses.theso.404.description}$")
+                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             }
     )
     public Response getListAllPublicTheso() {

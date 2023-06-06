@@ -68,7 +68,7 @@ public class ThesaurusIdController {
         }
     }
 
-    @Path("/topterms")
+    @Path("/topconcept")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "${getThesoGroupsFromId.summary}$",
@@ -80,10 +80,17 @@ public class ThesaurusIdController {
                     }),
                     @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
-    public Response getThesoGroupsFromId(@Parameter(name = "thesaurusId", description = "${getThesoGroupsFromId.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId) {
+    public Response getThesoGroupsFromId(
+            @Parameter(name = "thesaurusId", description = "${getThesoGroupsFromId.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId,
+            @Parameter(name = "lang", description = "${getThesoGroupsFromId.lang.description}$", required = false, example = "fr") @QueryParam("lang") String lang
+    ) {
         ConceptHelper conceptHelper = new ConceptHelper();
         TermHelper termHelper = new TermHelper();
         String datasJson;
+        
+        if (lang != null) {
+            return getToptermsWithlangFilter(thesaurusId, lang);
+        }
 
         try (HikariDataSource ds = connect()) {
 
@@ -124,25 +131,7 @@ public class ThesaurusIdController {
     }
 
 
-    @Path("/topterms/{lang}")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(
-            summary = "${getTopterms.summary}$",
-            description = "${getTopterms.description}$",
-            tags = {"Thesaurus"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8)
-                    }),
-                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
-            }
-    )
-    public Response getTopterms (
-            @Parameter(name = "thesaurusId", description = "${getTopterms.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId,
-            @Parameter(name = "lang", description = "${getTopterms.lang.description}$", required = true) @PathParam("lang") String lang
-    ) {
+    private Response getToptermsWithlangFilter (String thesaurusId, String lang) {
         String datas;
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         try (HikariDataSource ds = connect()) {
@@ -185,7 +174,7 @@ public class ThesaurusIdController {
 
         return Response.status(Response.Status.OK).entity(datas).type(APPLICATION_JSON_UTF_8).build();
     }
-
+    
     @Path("/flatlist")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
@@ -220,5 +209,5 @@ public class ThesaurusIdController {
             return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
         }
     }
-
+  
 }

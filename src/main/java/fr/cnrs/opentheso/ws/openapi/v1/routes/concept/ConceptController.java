@@ -34,7 +34,7 @@ public class ConceptController {
             description = "${getConceptByHandle.description}$",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getConceptByHandle.200.responses}$", content = {
+                @ApiResponse(responseCode = "200", description = "${getConceptByHandle.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_TURTLE_UTF_8),

@@ -161,7 +161,7 @@ const loadQueryVersion = () => {
 
 const fetchAvailableLanguages = () => {
     return fetch(BASE_URL + "doc/config/lang", {
-        method: "GET",
+        method: "GET"
     }).then(response => {
         return response.json();
     }).then(data => {
