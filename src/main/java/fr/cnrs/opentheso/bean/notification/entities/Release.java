@@ -33,7 +33,4 @@ public class Release {
     private LocalDate date;
 
     private String description;
-
-    private String test;
-
 }
