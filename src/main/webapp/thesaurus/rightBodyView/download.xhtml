@@ -12,12 +12,11 @@
                                       title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"
                                       style="font-size: 14px; font-weight: bold; margin-right: 10px; margin-right: 37px; color: #8f8f8f"/>
                     </div>
-
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7">
                         <h:form>
                             <i class="pi pi-download" size="sm" style="color: #f47b2a; margin-right: 10px"/>          
-                            
-                            <p:commandButton value="RDF/XML" ajax="true" process="@form"
+
+                            <p:commandButton value="RDF/XML" ajax="true" process="@this" 
                                              style="font-size: 13px; color: #164A78; background: none; border: none; box-shadow: none">
                                 <p:fileDownload  value="#{exportFileBean.conceptToFile(
                                                           conceptView.nodeConcept.concept.idConcept,
@@ -45,9 +44,11 @@
                                                           conceptView.nodeConcept.concept.idThesaurus,'turtle')}" />
                             </p:commandButton>
                         </h:form>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </ui:fragment>

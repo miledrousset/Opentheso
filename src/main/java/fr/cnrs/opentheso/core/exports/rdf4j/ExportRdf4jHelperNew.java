@@ -992,6 +992,8 @@ public class ExportRdf4jHelperNew {
             return nodePreference.getOriginalUri();
         }
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        if(path == null)
+            return nodePreference.getOriginalUri();
         return path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
     }
 

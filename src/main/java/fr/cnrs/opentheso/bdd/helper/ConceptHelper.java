@@ -5758,7 +5758,12 @@ public class ConceptHelper {
         // les concepts dépécés que ce concept remplace
         nodeConcept.setReplaces(deprecatedHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
 
-
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();
+                
+        /// récupération des Méta-données DC_terms
+        nodeConcept.setDcElements(dcElmentHelper.getDcElement(ds, idThesaurus, idConcept));
+        
+        
         return nodeConcept;
     }
 

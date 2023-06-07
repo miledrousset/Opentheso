@@ -837,11 +837,16 @@ public class ExportFileBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
         }
+        if (StringUtils.isEmpty(roleOnThesoBean.getNodePreference().getCheminSite())) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
+            FacesContext.getCurrentInstance().addMessage(null, message);
+            return null;
+        }        
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());
         exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
-
+        
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

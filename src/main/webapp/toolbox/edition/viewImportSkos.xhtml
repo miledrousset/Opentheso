@@ -220,12 +220,6 @@
                                                  disabled="#{!importFileBean.loadDone}"
                                                  title="Import rapide" style="margin-left: 20px"/>
 
-                                <p:commandButton rendered="ee" value="#{langueBean.getMsg('toolbox.oldMethod')}" ajax="false" update="containerIndex"
-                                                 onclick="PrimeFaces.monitorDownload(start, stop);"
-                                                 actionListener="#{importFileBean.addSkosThesoToBDD()}"
-                                                 styleClass="ui-button-success" icon="fa fa-download"
-                                                 disabled="#{!importFileBean.loadDone}"
-                                                 title="Import classique plus long" style="margin-left: 20px" />
                             </div>
                         </div>
                     </h:panelGroup>

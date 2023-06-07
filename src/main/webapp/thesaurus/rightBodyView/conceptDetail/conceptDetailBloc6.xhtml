@@ -43,6 +43,15 @@
                                      title="#{langueBean.getMsg('rightbody.concept.view_change_history')}" /> 
                 </div>
             </div>
+            <div class="row" style="margin-left: 0px;"> 
+                <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
+                    <h:outputText value=" Dublin Core : "/>
+                    <ui:repeat value="#{conceptView.nodeConcept.dcElements}" var='dcElement'>
+                        <h:outputText value="#{dcElement.name}: #{dcElement.value} ; "  style="color: #43B572"/>
+                    </ui:repeat>
+                 
+                </div>
+            </div>            
         </div>
     </div>
 
