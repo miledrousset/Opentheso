@@ -42,7 +42,6 @@ public class GroupThesoController {
             responses = {
                 @ApiResponse(responseCode = "200", description = "${getAllGroupsFromTheso.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)}),
-                @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$"),
                 @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
     public Response getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "${getAllGroupsFromTheso.idTheso.description}$", schema = @Schema(type = "string")) @PathParam("idTheso") String idTheso) {
@@ -54,10 +53,6 @@ public class GroupThesoController {
         try (HikariDataSource ds = connect()) {
 
             List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(ds, idTheso);
-            
-            if (listIdGroupOfTheso.isEmpty()) {
-                return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Thesaurus not found", APPLICATION_JSON_UTF_8);
-            }
             
             for (String idGroup : listIdGroupOfTheso) {
                 JsonObjectBuilder job = Json.createObjectBuilder();
