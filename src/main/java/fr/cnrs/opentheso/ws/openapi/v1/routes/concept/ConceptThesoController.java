@@ -93,7 +93,7 @@ public class ConceptThesoController {
         }
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
-                return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(MessageHelper.errorMessage("Service unavailable", format)).type(format).build();
+                return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", format);
             }
             RestRDFHelper restRDFHelper = new RestRDFHelper();
             datas = restRDFHelper.getInfosOfConcept(ds,

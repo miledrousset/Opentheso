@@ -77,11 +77,7 @@ public class ThesaurusController {
         } 
 
         if (datasJson != null) {
-            return Response
-                    .status(Response.Status.OK)
-                    .entity(datasJson)
-                    .type(APPLICATION_JSON_UTF_8)
-                    .build();
+            return ResponseHelper.response(Response.Status.OK, datasJson,  APPLICATION_JSON_UTF_8);
         } else {
             return null;
         }

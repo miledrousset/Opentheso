@@ -84,7 +84,7 @@ public class OpenApiController extends BaseOpenApiResource {
             Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, e.getMessage());
         }
 
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", CustomMediaType.APPLICATION_JSON_UTF_8);
     }
    
     @Path("/ping")

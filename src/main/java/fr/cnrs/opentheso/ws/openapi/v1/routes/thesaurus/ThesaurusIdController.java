@@ -121,10 +121,7 @@ public class ThesaurusIdController {
         }
 
         if (datasJson != null) {
-            return Response.status(Response.Status.OK)
-                    .entity(datasJson)
-                    .type(APPLICATION_JSON_UTF_8)
-                    .build();
+            return ResponseHelper.response(Response.Status.OK, datasJson,  APPLICATION_JSON_UTF_8);
         } else {
             return null;
         }
@@ -160,7 +157,7 @@ public class ThesaurusIdController {
     public Response getInfoLastUpdate(@Parameter(name = "thesaurusId", description = "${getInfoLastUpdate.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId) {
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(MessageHelper.errorMessage("Service unavailable", APPLICATION_JSON_UTF_8)).type(APPLICATION_JSON_UTF_8).build();
+            return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", APPLICATION_JSON_UTF_8);
         }
         ConceptHelper conceptHelper = new ConceptHelper();
         Date date = conceptHelper.getLastModification(ds, thesaurusId);
@@ -172,7 +169,7 @@ public class ThesaurusIdController {
 
         ds.close();
 
-        return Response.status(Response.Status.OK).entity(datas).type(APPLICATION_JSON_UTF_8).build();
+        return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
     }
     
     @Path("/flatlist")
