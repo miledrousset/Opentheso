@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.ws.RestRDFHelper;
+import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;

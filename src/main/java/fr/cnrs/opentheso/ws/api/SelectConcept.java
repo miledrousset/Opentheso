@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cnrs.opentheso.ws;
+package fr.cnrs.opentheso.ws.api;
 
 import com.zaxxer.hikari.HikariDataSource;
 import java.net.URI;

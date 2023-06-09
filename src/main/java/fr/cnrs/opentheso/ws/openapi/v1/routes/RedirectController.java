@@ -5,7 +5,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.ws.RestRDFHelper;
+import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;

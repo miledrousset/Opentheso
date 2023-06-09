@@ -1,4 +1,4 @@
-package fr.cnrs.opentheso.ws;
+package fr.cnrs.opentheso.ws.api;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

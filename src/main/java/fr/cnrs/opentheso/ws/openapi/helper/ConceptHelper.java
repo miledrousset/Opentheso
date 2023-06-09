@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.ws.RestRDFHelper;
+import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 
 import javax.ws.rs.core.Response;
 

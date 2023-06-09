@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.ws.RestRDFHelper;
+import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.MessageHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
