@@ -44,7 +44,7 @@ import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
-import fr.cnrs.opentheso.ws.NodeDatas;
+import fr.cnrs.opentheso.ws.api.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.io.StringReader;

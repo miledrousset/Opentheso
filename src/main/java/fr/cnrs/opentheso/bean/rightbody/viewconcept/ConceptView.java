@@ -37,7 +37,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
-import fr.cnrs.opentheso.ws.RestRDFHelper;
+import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
