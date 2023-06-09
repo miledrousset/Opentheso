@@ -1746,11 +1746,11 @@ BEGIN
 		SELECT string_to_array(term_rec.term_value, sous_seperateur) INTO array_string;
             
       	Insert into term (id_term, lexical_value, lang, id_thesaurus, created, modified, source, status, contributor) 
-			values (id_term, array_string[1], array_string[2], id_thesaurus, CURRENT_DATE, CURRENT_DATE, '', '', id_user) ON CONFLICT DO NOTHING;
+			values (id_term, array_string[1], array_string[2], id_thesaurus, CURRENT_DATE, CURRENT_DATE, '', '', id_user) ;
 	END LOOP;
 	
 	-- Insert link term
-	Insert into preferred_term (id_concept, id_term, id_thesaurus) values (id_concept, id_term, id_thesaurus) ON CONFLICT DO NOTHING;
+	Insert into preferred_term (id_concept, id_term, id_thesaurus) values (id_concept, id_term, id_thesaurus) ;
 END;
 $BODY$;
 
@@ -1890,7 +1890,7 @@ BEGIN
 			values (array_string[1], array_string[2], array_string[3], array_string[4], array_string[5], array_string[6], CAST(array_string[7] AS BOOLEAN)) ON CONFLICT DO NOTHING;
 			
 		Insert into non_preferred_term_historique (id_term, lexical_value, lang, id_thesaurus, source, status, id_user, action)
-			values (array_string[1], array_string[2], array_string[3], id_thesaurus, array_string[4], array_string[5], id_user, 'ADD');	
+			values (array_string[1], array_string[2], array_string[3], id_thesaurus, array_string[4], array_string[5], id_user, 'ADD') ON CONFLICT DO NOTHING;	
 	END LOOP;
 END;
 $BODY$;
@@ -1981,7 +1981,7 @@ DECLARE
 BEGIN
 
 	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, concept_type, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
-		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, conceptType, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent) ON CONFLICT DO NOTHING;
+		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, conceptType, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent) ;
 		
 	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
 		

@@ -29,6 +29,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.skosapi.SKOSAgent;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -748,6 +749,26 @@ public class CsvImportHelper {
             notes = notes.substring(SEPERATEUR.length(), notes.length());
         }
 
+        String dcterms = null;
+     /*   for (SKOSAgent agent : conceptObject.getAgentList()) {
+            switch (agent.getProperty()) {
+                case SKOSProperty.creator:
+                    if(StringUtils.isEmpty(dcterms)) {
+                        dcterms= "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;
+                    } else
+                        dcterms= dcterms + "##" + "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    break;
+                case SKOSProperty.contributor:
+                    if(StringUtils.isEmpty(dcterms)) {
+                        dcterms= "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;
+                    } else
+                        dcterms= dcterms + "##" + "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    break;                    
+                default:
+                    break;
+            }
+        }        */
+        
         String sql = "";
         try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
             sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
@@ -773,13 +794,17 @@ public class CsvImportHelper {
                     + (conceptObject.getLatitude() == null ? null : "'" + conceptObject.getLatitude() + "'") + ", "
                     + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ", "
                     + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
-                    + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ")";
+                    + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ", "
+                    + (dcterms == null ? null : "'" + dcterms + "'") 
+                    + ")";
 
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);
             System.out.println(e.getMessage());
             System.out.println("--------------------------------");
+            message = message + "Erreur concept : " + prefTerm + "(" + conceptObject.getIdConcept() +"(\n";
+            return false;
         }
 
         return true;

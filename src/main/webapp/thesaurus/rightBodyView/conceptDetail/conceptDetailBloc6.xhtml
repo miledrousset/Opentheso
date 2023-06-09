@@ -43,15 +43,18 @@
                                      title="#{langueBean.getMsg('rightbody.concept.view_change_history')}" /> 
                 </div>
             </div>
-            <div class="row" style="margin-left: 0px;"> 
-                <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
-                    <h:outputText value=" Dublin Core : "/>
-                    <ui:repeat value="#{conceptView.nodeConcept.dcElements}" var='dcElement'>
-                        <h:outputText value="#{dcElement.name}: #{dcElement.value} ; "  style="color: #43B572"/>
-                    </ui:repeat>
-                 
-                </div>
-            </div>            
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null)}">
+                <div class="row" style="margin-left: 0px;"> 
+                    <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
+                        <ui:repeat value="#{conceptView.nodeConcept.dcElements}" var='dcElement' varStatus="status">
+                            <h:outputText value="#{dcElement.name}: "  />
+                            <h:outputText value="#{dcElement.value}"  style="color: #43B572"/>
+                            <h:outputText rendered="#{!status.last}" value=" ; "  />
+                        </ui:repeat>
+
+                    </div>
+                </div>                  
+            </h:panelGroup>
         </div>
     </div>
 

@@ -1,4 +1,9 @@
 Note de version
 - Correction de l'import de candidats en SKOS
 - intégration des rebonds dans le même document PDF au foramt alphabétique
+- correction d'une erreur lors du téléchargement d'un concept en SKOS
+- correction mineur dans l'import CSV
+- ajout des méta-données Dublin-Core pour les auteurs des concepts
+- finalisation de l'intégration de l'OPEN API
+
 

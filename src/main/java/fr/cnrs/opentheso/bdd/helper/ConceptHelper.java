@@ -110,6 +110,53 @@ public class ConceptHelper {
     }
     
     /**
+     * permet de déplacer le concept vers un autre thésaurus
+     * @param ds
+     * @param idConceptToMove
+     * @param idThesoTarget
+     * @param idUser
+     * @return 
+     */
+    public boolean moveConceptToAnotherTheso(HikariDataSource ds,
+            String idConceptToMove, String idThesoFrom, String idThesoTarget, int idUser){
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate(
+                        " update concept set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"
+                        + " update thesaurus_array set id_thesaurus = '" + idThesoTarget + "' where id_concept_parent = '" + idConceptToMove + "';"
+                        + " update thesaurus_array set id_thesaurus = '" + idThesoTarget + "' where id_concept_parent = '" + idConceptToMove + "';"                               
+                        + " update concept_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';" 
+                        + " update preferred_term set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"                                 
+                        + " update concept_group_concept set idthesaurus = '" + idThesoTarget + "' where idconcept = '" + idConceptToMove + "';" 
+                        + " update note set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"    
+                        + " update note_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"     
+                        + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "';"
+                        + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "';"      
+                        + " update hierarchical_relationship_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "';"
+                        + " update hierarchical_relationship_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "';"                                  
+                        + " update concept_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"     
+                        + " update concept_term_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"                                 
+                        + " update alignement set internal_id_thesaurus = '" + idThesoTarget + "' where internal_id_concept = '" + idConceptToMove + "';"                                 
+                        + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"     
+                        + " update concept_replacedby set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "';"
+                        + " update concept_replacedby set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "';"                                  
+                        + " update gps set id_theso = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"                                 
+                        + " update concept_facet set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';" 
+                        + " update external_resources set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"                                     
+                        + " update external_images set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"                                     
+                        + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"                                     
+                        + " update concept_dcterms set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "';"
+                );
+                updateDateOfConcept(ds, idThesoTarget, idConceptToMove, idUser);
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while moving concept : " + idThesoTarget, sqle);
+        }
+        return false;        
+    }    
+    
+    /**
      * permet de supprimer un type de concept
      * @param ds
      * @param idThesaurus

@@ -822,7 +822,7 @@ public class ImportRdf4jHelper {
 
                     //+ "'" + modified + "'"
                     + (modified== null ? null : "'" + modified + "'") + ", "
-                    + "'" + dcterms + "'" +
+                    + (dcterms == null ? null : "'" + dcterms + "'") +
                     ")";
             stmt.executeUpdate(sql);
         } catch (SQLException e) {

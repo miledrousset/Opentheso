@@ -1255,15 +1255,17 @@ public class ImportFileBean implements Serializable {
             nodePreference.setSourceLang(selectedLang);
             preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }
-        csvImportHelper.setNodePreference(nodePreference);
+        csvImportHelper.setNodePreference(preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idNewTheso));
         csvImportHelper.setFormatDate(formatDate);
         // ajout des concepts et collections
+        total = 0;
         for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
             switch (conceptObject.getType().trim().toLowerCase()) {
                 case "skos:concept":
                     // ajout de concept
-                    csvImportHelper.addConceptV2(connect.getPoolConnexion(),
-                            idNewTheso, conceptObject, currentUser.getNodeUser().getIdUser());
+                    if(csvImportHelper.addConceptV2(connect.getPoolConnexion(),
+                            idNewTheso, conceptObject, currentUser.getNodeUser().getIdUser()))
+                        total++;
                     break;
                 case "skos:collection":
                     // ajout de groupe
@@ -1277,8 +1279,14 @@ public class ImportFileBean implements Serializable {
         roleOnThesoBean.showListTheso();
         viewEditionBean.init();
 
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
-                "Le thesaurus " + idNewTheso + " est correctement ajouté !", "import réussi"));
+        
+        if(!StringUtils.isEmpty(csvImportHelper.getMessage())){
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    csvImportHelper.getMessage(), "Total importé : " + total ));            
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    "Total importé : " + total + "; Le thesaurus " + idNewTheso + " est correctement ajouté !", "import réussi"));
+        }
         PrimeFaces.current().ajax().update("messageIndex");
 
         //    System.gc();

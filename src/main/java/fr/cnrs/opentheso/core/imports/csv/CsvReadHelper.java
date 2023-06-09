@@ -1066,7 +1066,7 @@ public class CsvReadHelper {
             values = value.split("##");
             for (String value1 : values) {
                 if (!value1.isEmpty()) {
-                    conceptObject.members.add(getId(value.trim()));
+                    conceptObject.members.add(getId(value1.trim()));
                 }
             }
         } catch (Exception e) {

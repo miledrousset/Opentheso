@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @OpenAPIDefinition(
         info = @Info(
-                title = "Opentheso2",
+                title = "Opentheso",
                 description = "${definition.description}$",
                 version = "v1"
         ),
