@@ -32,7 +32,6 @@ import javax.inject.Named;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.faces.application.FacesMessage;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.cnrs.opentheso.entites.Thesaurus;
@@ -41,7 +40,6 @@ import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.UnselectEvent;
 
 
 @SessionScoped
@@ -342,19 +340,6 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsThesoActive(true);
     }
 
-    public List<ResultatAlignement> getResultAlignementList() {
-        return resultAlignementList;
-    }
-
-    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
-        this.resultAlignementList = resultAlignementList;
-    }
-
-    public void onUnselect(UnselectEvent<ResultatAlignement> event) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));
-    }
-
     /**
      * permet de recharger l'arbre des collections 
      */
@@ -461,8 +446,7 @@ public class SelectedTheso implements Serializable {
     }
 
     private void setThesoName() {
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        thesoName = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(),
+        thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(),
                 selectedIdTheso, selectedLang);
     }
 
