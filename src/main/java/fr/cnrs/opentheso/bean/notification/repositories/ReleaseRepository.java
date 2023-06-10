@@ -58,8 +58,7 @@ public class ReleaseRepository {
 
     public List<Release> getAllReleases() {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            String sql = "SELECT res FROM Release res";
-            Query rleaseQuery = session.createQuery(sql, Release.class);
+            Query rleaseQuery = session.createQuery("SELECT res FROM Release res", Release.class);
             return rleaseQuery.getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
