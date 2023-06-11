@@ -13,7 +13,11 @@
         <property name="hibernate.hbm2ddl.auto">validate</property>
         <property name="hibernate.show_sql">true</property>
 
-        <mapping class="fr.cnrs.opentheso.bean.notification.entities.Release"/>
+        <mapping class="fr.cnrs.opentheso.entites.Release"/>
+        <mapping class="fr.cnrs.opentheso.entites.Thesaurus"/>
+        <mapping class="fr.cnrs.opentheso.entites.UserGroupLabel"/>
+        <mapping class="fr.cnrs.opentheso.entites.UserGroupThesaurus"/>
+        <mapping class="fr.cnrs.opentheso.entites.UserRoleGroup"/>
     </session-factory>
 
 </hibernate-configuration>

@@ -1,8 +1,8 @@
-package fr.cnrs.opentheso.bean.notification.repositories;
+package fr.cnrs.opentheso.repositories;
 
 import fr.cnrs.opentheso.SessionFactoryMaker;
 import fr.cnrs.opentheso.bean.notification.dto.ReleaseDto;
-import fr.cnrs.opentheso.bean.notification.entities.Release;
+import fr.cnrs.opentheso.entites.Release;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.ObjectUtils;
@@ -68,13 +68,11 @@ public class ReleaseRepository {
 
     public Release getReleaseByVersion(String version) {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            session.beginTransaction();
             String query = "SELECT res FROM Release res WHERE res.version = :value";
             TypedQuery<Release> typedQuery = session.createQuery(query, Release.class)
                     .setParameter("value", version)
                     .setMaxResults(1);
             Release release = typedQuery.getSingleResult();
-            session.getTransaction().commit();
             return release;
         } catch (Exception ex) {
             ex.printStackTrace();

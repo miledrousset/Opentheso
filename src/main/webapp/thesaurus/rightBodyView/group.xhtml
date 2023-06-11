@@ -23,7 +23,7 @@
 
                         </div>
                         <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}">                            
+                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
                                 <p:menuButton
                                     icon="pi pi-cog"
                                     style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
@@ -80,7 +80,7 @@
                                               title="#{langueBean.getMsg('rightbody.concept.traduction')}" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" icon="fas fa-plus"

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
@@ -14,6 +9,8 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import lombok.Data;
+
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -25,6 +22,7 @@ import javax.inject.Inject;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "superAdminBean")
 @SessionScoped
 public class SuperAdminBean implements Serializable {
@@ -98,7 +96,7 @@ public class SuperAdminBean implements Serializable {
         if(selectedTheso.getCurrentLang() != null)
             idLang = selectedTheso.getCurrentLang();
         
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);
             nodeUserGroupUsers.addAll(userHelper.getAllGroupUserWithoutGroup(connect.getPoolConnexion(), idLang));
             nodeUserGroupUsers.addAll(userHelper.getAllUsersSuperadmin(connect.getPoolConnexion()));
@@ -109,9 +107,7 @@ public class SuperAdminBean implements Serializable {
      * permet de retourner la liste de tous les projets
      */
     private void listAllProjects(){
-        UserHelper userHelper = new UserHelper();
-        allProjects = userHelper.getAllProject(
-                connect.getPoolConnexion());    
+        allProjects = new UserHelper().getAllProject(connect.getPoolConnexion());
     }
     
     private void listAllThesaurus(){
@@ -124,39 +120,6 @@ public class SuperAdminBean implements Serializable {
         ArrayList<NodeUserGroupThesaurus> allThesoWithoutProject = userHelper.getAllThesoWithoutGroup(connect.getPoolConnexion(), idLang);
         allThesoProject.addAll(allThesoWithProject);
         allThesoProject.addAll(allThesoWithoutProject);
-    }
-    
-
-    public ArrayList<NodeUser> getAllUsers() {
-        return allUsers;
-    }
-
-    public void setAllUsers(ArrayList<NodeUser> allUsers) {
-        this.allUsers = allUsers;
-    }
-
-    public ArrayList<NodeUserGroup> getAllProjects() {
-        return allProjects;
-    }
-
-    public void setAllProjects(ArrayList<NodeUserGroup> allProjects) {
-        this.allProjects = allProjects;
-    }
-
-    public ArrayList<NodeUserGroupThesaurus> getAllThesoProject() {
-        return allThesoProject;
-    }
-
-    public void setAllThesoProject(ArrayList<NodeUserGroupThesaurus> allThesoProject) {
-        this.allThesoProject = allThesoProject;
-    }
-
-    public ArrayList<NodeUserGroupUser> getNodeUserGroupUsers() {
-        return nodeUserGroupUsers;
-    }
-
-    public void setNodeUserGroupUsers(ArrayList<NodeUserGroupUser> nodeUserGroupUsers) {
-        this.nodeUserGroupUsers = nodeUserGroupUsers;
     }
 
 }

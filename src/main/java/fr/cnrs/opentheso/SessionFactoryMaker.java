@@ -1,6 +1,9 @@
 package fr.cnrs.opentheso;
 
-import fr.cnrs.opentheso.bean.notification.entities.Release;
+import fr.cnrs.opentheso.entites.Release;
+import fr.cnrs.opentheso.entites.Thesaurus;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.annotations.Cache;
@@ -18,7 +21,7 @@ public class SessionFactoryMaker {
                     .addAnnotatedClass(Release.class)
                     .configure()
                     .buildSessionFactory();
-        } catch (Throwable ex) {
+        } catch (HibernateException ex) {
             System.err.println("Failed to create sessionFactory object." + ex);
             throw new ExceptionInInitializerError(ex);
         }

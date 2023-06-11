@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import javax.inject.Named;
@@ -20,20 +19,22 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import lombok.Data;
 import org.primefaces.PrimeFaces;
 
 /**
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "myAccountBean")
 @SessionScoped
 public class MyAccountBean implements Serializable {
 
     @Inject
     private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
+
     @Inject
     private CurrentUser currentUser;
 
@@ -111,7 +112,7 @@ public class MyAccountBean implements Serializable {
         if (!userHelper.setAlertMailForUser(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
-                nodeUser.isIsAlertMail())) {
+                nodeUser.isAlertMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant le changement d'alertes !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -186,38 +187,6 @@ public class MyAccountBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");
         }
-    }
-
-    public NodeUser getNodeUser() {
-        return nodeUser;
-    }
-
-    public void setNodeUser(NodeUser nodeUser) {
-        this.nodeUser = nodeUser;
-    }
-
-    public String getPassWord1() {
-        return passWord1;
-    }
-
-    public void setPassWord1(String passWord1) {
-        this.passWord1 = passWord1;
-    }
-
-    public String getPassWord2() {
-        return passWord2;
-    }
-
-    public void setPassWord2(String passWord2) {
-        this.passWord2 = passWord2;
-    }
-
-    public ArrayList<NodeUserRoleGroup> getAllMyRoleProject() {
-        return allMyRoleProject;
-    }
-
-    public void setAllMyRoleProject(ArrayList<NodeUserRoleGroup> allMyRoleProject) {
-        this.allMyRoleProject = allMyRoleProject;
     }
 
 }

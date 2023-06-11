@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -31,17 +32,21 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Arrays;
 import javax.faces.application.FacesMessage;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.Data;
+import fr.cnrs.opentheso.entites.Thesaurus;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.UnselectEvent;
 
 
-@Data
 @SessionScoped
 @Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
@@ -61,8 +66,13 @@ public class SelectedTheso implements Serializable {
     @Inject private RightBodySetting rightBodySetting;
     @Inject private MenuBean menuBean;
     @Inject private PropositionBean propositionBean;
+    @Inject private UserGroupLabelRepository userGroupLabelRepository;
+    @Inject private ThesaurusRepository thesaurusRepository;
+    @Inject private CurrentUser currentUser;
 
     private static final long serialVersionUID = 1L;
+
+    private List<UserGroupLabel> projects;
 
     private boolean isFromUrl;
 
@@ -89,6 +99,8 @@ public class SelectedTheso implements Serializable {
 
     private String localUri;
 
+    private String projectIdSelected;
+    private List<UserGroupLabel> projectsList;
     private List<ResultatAlignement> resultAlignementList;
 
     @PreDestroy
@@ -121,6 +133,20 @@ public class SelectedTheso implements Serializable {
         isNetworkAvailable = true;
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
+
+        loadProejct();
+    }
+
+    public void loadProejct() {
+        if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
+        } else {
+            if (currentUser.getNodeUser().isSuperAdmin()) {
+                projectsList = userGroupLabelRepository.getAllProjects();
+            } else {
+                projectsList = userGroupLabelRepository.getProjectsByUserId(currentUser.getNodeUser().getIdUser());
+            }
+        }
     }
 
     public void init() {
@@ -210,7 +236,7 @@ public class SelectedTheso implements Serializable {
             return;
         }
 
-        if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
+        if (StringUtils.isEmpty(selectedIdTheso)) {
             
             roleOnThesoBean.showListTheso();
             treeGroups.reset();
@@ -276,7 +302,25 @@ public class SelectedTheso implements Serializable {
         
         menuBean.redirectToThesaurus();
     }
-    
+
+    public void setSelectedProject() {
+        selectedIdTheso = null;
+        if ("-1".equals(projectIdSelected)) {
+            roleOnThesoBean.showListTheso();
+        } else {
+            List<Thesaurus> thesaurusList;
+            if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+                thesaurusList = thesaurusRepository.getThesaurusByProjectAndStatus(Integer.parseInt(projectIdSelected), false);
+            } else {
+                thesaurusList = thesaurusRepository.getThesaurusByProject(Integer.parseInt(projectIdSelected));
+            }
+            roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
+            roleOnThesoBean.addAuthorizedThesoToHM();
+            roleOnThesoBean.setUserRoleOnThisTheso();
+        }
+        indexSetting.setIsSelectedTheso(false);
+    }
+
     
     public void setSelectedThesoForSearch() throws IOException {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
@@ -525,5 +569,309 @@ public class SelectedTheso implements Serializable {
     private boolean isValidTheso(String idTheso) {
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         return !thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso);
+    }
+
+    public fr.cnrs.opentheso.bean.language.LanguageBean getLanguageBean() {
+        return LanguageBean;
+    }
+
+    public void setLanguageBean(fr.cnrs.opentheso.bean.language.LanguageBean languageBean) {
+        LanguageBean = languageBean;
+    }
+
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public IndexSetting getIndexSetting() {
+        return indexSetting;
+    }
+
+    public void setIndexSetting(IndexSetting indexSetting) {
+        this.indexSetting = indexSetting;
+    }
+
+    public TreeGroups getTreeGroups() {
+        return treeGroups;
+    }
+
+    public void setTreeGroups(TreeGroups treeGroups) {
+        this.treeGroups = treeGroups;
+    }
+
+    public TreeConcepts getTreeConcepts() {
+        return treeConcepts;
+    }
+
+    public void setTreeConcepts(TreeConcepts treeConcepts) {
+        this.treeConcepts = treeConcepts;
+    }
+
+    public Tree getTree() {
+        return tree;
+    }
+
+    public void setTree(Tree tree) {
+        this.tree = tree;
+    }
+
+    public ListIndex getListIndex() {
+        return listIndex;
+    }
+
+    public void setListIndex(ListIndex listIndex) {
+        this.listIndex = listIndex;
+    }
+
+    public ConceptView getConceptBean() {
+        return conceptBean;
+    }
+
+    public void setConceptBean(ConceptView conceptBean) {
+        this.conceptBean = conceptBean;
+    }
+
+    public SearchBean getSearchBean() {
+        return searchBean;
+    }
+
+    public void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
+    }
+
+    public RoleOnThesoBean getRoleOnThesoBean() {
+        return roleOnThesoBean;
+    }
+
+    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
+        this.roleOnThesoBean = roleOnThesoBean;
+    }
+
+    public ViewEditorThesoHomeBean getViewEditorThesoHomeBean() {
+        return viewEditorThesoHomeBean;
+    }
+
+    public void setViewEditorThesoHomeBean(ViewEditorThesoHomeBean viewEditorThesoHomeBean) {
+        this.viewEditorThesoHomeBean = viewEditorThesoHomeBean;
+    }
+
+    public ViewEditorHomeBean getViewEditorHomeBean() {
+        return viewEditorHomeBean;
+    }
+
+    public void setViewEditorHomeBean(ViewEditorHomeBean viewEditorHomeBean) {
+        this.viewEditorHomeBean = viewEditorHomeBean;
+    }
+
+    public RightBodySetting getRightBodySetting() {
+        return rightBodySetting;
+    }
+
+    public void setRightBodySetting(RightBodySetting rightBodySetting) {
+        this.rightBodySetting = rightBodySetting;
+    }
+
+    public MenuBean getMenuBean() {
+        return menuBean;
+    }
+
+    public void setMenuBean(MenuBean menuBean) {
+        this.menuBean = menuBean;
+    }
+
+    public PropositionBean getPropositionBean() {
+        return propositionBean;
+    }
+
+    public void setPropositionBean(PropositionBean propositionBean) {
+        this.propositionBean = propositionBean;
+    }
+
+    public UserGroupLabelRepository getUserGroupLabelRepository() {
+        return userGroupLabelRepository;
+    }
+
+    public void setUserGroupLabelRepository(UserGroupLabelRepository userGroupLabelRepository) {
+        this.userGroupLabelRepository = userGroupLabelRepository;
+    }
+
+    public ThesaurusRepository getThesaurusRepository() {
+        return thesaurusRepository;
+    }
+
+    public void setThesaurusRepository(ThesaurusRepository thesaurusRepository) {
+        this.thesaurusRepository = thesaurusRepository;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public List<UserGroupLabel> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<UserGroupLabel> projects) {
+        this.projects = projects;
+    }
+
+    public boolean isFromUrl() {
+        return isFromUrl;
+    }
+
+    public void setFromUrl(boolean fromUrl) {
+        isFromUrl = fromUrl;
+    }
+
+    public String getSelectedIdTheso() {
+        return selectedIdTheso;
+    }
+
+    public void setSelectedIdTheso(String selectedIdTheso) {
+        this.selectedIdTheso = selectedIdTheso;
+    }
+
+    public String getCurrentIdTheso() {
+        return currentIdTheso;
+    }
+
+    public void setCurrentIdTheso(String currentIdTheso) {
+        this.currentIdTheso = currentIdTheso;
+    }
+
+    public String getOptionThesoSelected() {
+        return optionThesoSelected;
+    }
+
+    public void setOptionThesoSelected(String optionThesoSelected) {
+        this.optionThesoSelected = optionThesoSelected;
+    }
+
+    public ArrayList<NodeLangTheso> getNodeLangs() {
+        return nodeLangs;
+    }
+
+    public void setNodeLangs(ArrayList<NodeLangTheso> nodeLangs) {
+        this.nodeLangs = nodeLangs;
+    }
+
+    public String getSelectedLang() {
+        return selectedLang;
+    }
+
+    public void setSelectedLang(String selectedLang) {
+        this.selectedLang = selectedLang;
+    }
+
+    public String getCurrentLang() {
+        return currentLang;
+    }
+
+    public void setCurrentLang(String currentLang) {
+        this.currentLang = currentLang;
+    }
+
+    public boolean isActionFromConcept() {
+        return isActionFromConcept;
+    }
+
+    public void setActionFromConcept(boolean actionFromConcept) {
+        isActionFromConcept = actionFromConcept;
+    }
+
+    public String getIdConceptFromUri() {
+        return idConceptFromUri;
+    }
+
+    public void setIdConceptFromUri(String idConceptFromUri) {
+        this.idConceptFromUri = idConceptFromUri;
+    }
+
+    public String getIdThesoFromUri() {
+        return idThesoFromUri;
+    }
+
+    public void setIdThesoFromUri(String idThesoFromUri) {
+        this.idThesoFromUri = idThesoFromUri;
+    }
+
+    public String getIdGroupFromUri() {
+        return idGroupFromUri;
+    }
+
+    public void setIdGroupFromUri(String idGroupFromUri) {
+        this.idGroupFromUri = idGroupFromUri;
+    }
+
+    public boolean isUriRequest() {
+        return isUriRequest;
+    }
+
+    public void setUriRequest(boolean uriRequest) {
+        isUriRequest = uriRequest;
+    }
+
+    public String getThesoName() {
+        return thesoName;
+    }
+
+    public void setThesoName(String thesoName) {
+        this.thesoName = thesoName;
+    }
+
+    public boolean isSortByNotation() {
+        return sortByNotation;
+    }
+
+    public void setSortByNotation(boolean sortByNotation) {
+        this.sortByNotation = sortByNotation;
+    }
+
+    public boolean isNetworkAvailable() {
+        return isNetworkAvailable;
+    }
+
+    public void setNetworkAvailable(boolean networkAvailable) {
+        isNetworkAvailable = networkAvailable;
+    }
+
+    public String getLocalUri() {
+        return localUri;
+    }
+
+    public void setLocalUri(String localUri) {
+        this.localUri = localUri;
+    }
+
+    public String getProjectIdSelected() {
+        return projectIdSelected;
+    }
+
+    public void setProjectIdSelected(String projectIdSelected) {
+        this.projectIdSelected = projectIdSelected;
+    }
+
+    public List<UserGroupLabel> getProjectsList() {
+        return projectsList;
+    }
+
+    public void setProjectsList(List<UserGroupLabel> projectsList) {
+        this.projectsList = projectsList;
+    }
+
+    public List<ResultatAlignement> getResultAlignementList() {
+        return resultAlignementList;
+    }
+
+    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
+        this.resultAlignementList = resultAlignementList;
     }
 }
