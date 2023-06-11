@@ -445,11 +445,6 @@ public class SelectedTheso implements Serializable {
         conceptBean.init();
     }
 
-    private void setThesoName() {
-        thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(),
-                selectedIdTheso, selectedLang);
-    }
-
     private void startNewLang() {
         currentLang = selectedLang;
         
