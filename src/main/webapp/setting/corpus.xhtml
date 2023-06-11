@@ -67,7 +67,7 @@
                                     <p:toolbar>
                                         <p:toolbarGroup align="left" />
                                         <p:toolbarGroup align="right">
-                                            <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}"
+                                            <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso()}"
                                                              actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
                                                              title="Nouveau Corpus" update="idNewCorpus" oncomplete="PF('newCorpus').show();" class="btn btn-primary">
                                                 <p:tooltip value="Ajouter un nouveau corpus" showDelay="1000" />

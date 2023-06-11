@@ -42,7 +42,7 @@ public class NewUSerBean implements Serializable {
     private ArrayList<NodeUserRoleGroup> nodeAllRoles; 
     
     private String name;
-    
+
     @PreDestroy
     public void destroy(){
         clear();
@@ -130,7 +130,7 @@ public class NewUSerBean implements Serializable {
         } catch (Exception e) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;             
+            return;
         }
 
 
@@ -231,7 +231,7 @@ public class NewUSerBean implements Serializable {
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
                 false,
-                nodeUser.isIsAlertMail())){
+                nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -336,7 +336,7 @@ public class NewUSerBean implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     
     
     

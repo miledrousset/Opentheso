@@ -1,8 +1,9 @@
-package fr.cnrs.opentheso.bean.notification.services;
+package fr.cnrs.opentheso.bean.notification;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import fr.cnrs.opentheso.entites.Release;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,8 +23,7 @@ import java.util.stream.Collectors;
 import fr.cnrs.opentheso.bean.notification.client.GitHubClient;
 import fr.cnrs.opentheso.bean.notification.dto.ReleaseDto;
 import fr.cnrs.opentheso.bean.notification.dto.TagDto;
-import fr.cnrs.opentheso.bean.notification.entities.Release;
-import fr.cnrs.opentheso.bean.notification.repositories.ReleaseRepository;
+import fr.cnrs.opentheso.repositories.ReleaseRepository;
 
 
 @Slf4j

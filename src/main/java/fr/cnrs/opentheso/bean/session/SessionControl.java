@@ -47,7 +47,7 @@ public class SessionControl implements Serializable {
         if(FacesContext.getCurrentInstance()== null) return;
 
         if (currentUser.getNodeUser() != null) {
-            currentUser.disconnect(false);
+            currentUser.disconnect();
         } else {
             tree.reset();
             listIndex.reset();

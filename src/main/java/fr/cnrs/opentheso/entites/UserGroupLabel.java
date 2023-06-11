@@ -1,5 +1,6 @@
-package fr.cnrs.opentheso.bean.notification.entities;
+package fr.cnrs.opentheso.entites;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
 
 @Setter
@@ -19,18 +20,15 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "releases")
-public class Release {
+@Table(name = "user_group_label")
+public class UserGroupLabel implements Serializable {
 
     @Id
+    @Column(name = "id_group")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String version;
+    @Column(name = "label_group")
+    private String label;
 
-    private String url;
-
-    private LocalDate date;
-
-    private String description;
 }
