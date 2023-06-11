@@ -38,10 +38,12 @@ import fr.cnrs.opentheso.entites.Thesaurus;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
 
+@Data
 @SessionScoped
 @Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
