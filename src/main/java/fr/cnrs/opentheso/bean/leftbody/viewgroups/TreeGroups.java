@@ -364,7 +364,7 @@ public class TreeGroups implements Serializable {
 
     public void onNodeSelect(NodeSelectEvent event) {
 
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         rightBodySetting.setIndex("0");
 
         if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {

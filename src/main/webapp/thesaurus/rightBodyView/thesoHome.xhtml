@@ -6,7 +6,7 @@
     <div style="margin: 20px; color: #000">
         
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso()
-                                  or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing)}">
+                                  or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing())}">
             <div class="row">
                 <div class="col-2 offset-10" style="text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('candidat.edit')}" 
@@ -19,8 +19,8 @@
             <p:separator />            
         </h:panelGroup>
 
-        <!-- vue pulique non connectée -->
-        <h:panelGroup rendered="#{!(viewEditorThesoHomeBean.isInEditing)}" style="border: none; margin-top: 20px">
+        <!-- vue pulic non connectée -->
+        <h:panelGroup rendered="#{!(viewEditorThesoHomeBean.isInEditing())}" style="border: none; margin-top: 20px">
             <div class="row" style="background-color: #F5F2F2">
                 <div class="col-1"  style="margin-top: 3px">
                     <i class="fas fa-info-circle fa-2x" style="color: #43B572" />
@@ -46,17 +46,17 @@
                                     value="#{request.serverName}#{request.contextPath}/openapi/doc/"
                                     target="_blank" style="font-size: 13px; color: #F47B2A;" >
                                 <i class="pi pi-link" style="color: #43B572;" />
-                            </p:link>   
+                            </p:link>
                         </div>
-                    </div>   
+                    </div>
                     <div class="row">
                         <div class="col-10" style="margin-top: 3px">
-                            <h:outputText value="#{langueBean.getMsg('home.permalink')}: " style="font-size: 13px; color: #858796"/>                            
-                            
+                            <h:outputText value="#{langueBean.getMsg('home.permalink')}: " style="font-size: 13px; color: #858796"/>
+
                             <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
                                 <p:link href="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}"
-                                        value="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}" 
+                                        value="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}"
                                         style="color: #164A78; font-size: 13px;color: #F47B2A;" target="_blank">
                                 </p:link>
                             </h:panelGroup>
@@ -65,10 +65,10 @@
                                         value="#{request.serverName}#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
                                         target="_blank" style="font-size: 13px; color: #F47B2A;" >
                                     <i class="pi pi-link" style="color: #43B572;" />
-                                </p:link>                                 
+                                </p:link>
                             </h:panelGroup>
                         </div>
-                    </div>                       
+                    </div>
 
                     <div class="row">
                         <div class="col-12">
@@ -100,7 +100,7 @@
         <!-- vue connectée pour édition -->
 
 
-        <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing)}" >
+        <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing())}" >
 
             <div class="row">
                 <div class="col-3" >
