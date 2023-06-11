@@ -206,8 +206,7 @@ public class SelectedTheso implements Serializable {
         }
 
         if (StringUtils.isEmpty(selectedIdTheso)) {
-            
-            roleOnThesoBean.showListTheso();
+
             treeGroups.reset();
             tree.reset();
             treeConcepts.reset();
@@ -388,13 +387,13 @@ public class SelectedTheso implements Serializable {
         currentIdTheso = selectedIdTheso;
         // setting des préférences du thésaurus sélectionné
         roleOnThesoBean.initNodePref();
-        roleOnThesoBean.showListTheso();
-        if (idLang == null) {
+        if (StringUtils.isEmpty(idLang)) {
             idLang = getIdLang();
-            if (idLang == null || idLang.isEmpty()) {
-                return;
-            }
         }
+        if (StringUtils.isEmpty(idLang)) {
+            return;
+        }
+
         nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(),
                 selectedIdTheso,
@@ -402,7 +401,8 @@ public class SelectedTheso implements Serializable {
 
         currentLang = idLang;
         selectedLang = idLang;
-        setThesoName();
+        thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(),
+                selectedIdTheso, selectedLang);
 
         // initialisation de l'arbre des groupes
         treeGroups.reset();
@@ -417,11 +417,6 @@ public class SelectedTheso implements Serializable {
         listIndex.reset();
         conceptBean.clear();
         conceptBean.init();
-    }
-
-    private void setThesoName() {
-        thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(),
-                selectedIdTheso, selectedLang);
     }
 
     private void startNewLang() {
@@ -498,7 +493,7 @@ public class SelectedTheso implements Serializable {
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang);
             actionFromConceptToOn();
             initIdsFromUri();
-            setThesoName();
+            thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), selectedIdTheso, selectedLang);
             return;
         }
 
