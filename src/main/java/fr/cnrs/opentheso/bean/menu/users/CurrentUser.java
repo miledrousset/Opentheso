@@ -155,7 +155,7 @@ public class CurrentUser implements Serializable {
 
         UserHelper userHelper = new UserHelper();
 
-        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             showErrorMessage("champ vide non autorisé");
             return;
         }
@@ -168,8 +168,7 @@ public class CurrentUser implements Serializable {
             }
             idUser = userHelper.getIdUserFromPseudo(connect.getPoolConnexion(), username);
         } else {
-            idUser = userHelper.getIdUser(connect.getPoolConnexion(),
-                    username, MD5Password.getEncodedPassword(password));
+            idUser = userHelper.getIdUser(connect.getPoolConnexion(), username, MD5Password.getEncodedPassword(password));
         }
 
         if (idUser == -1) {
@@ -183,6 +182,7 @@ public class CurrentUser implements Serializable {
             showErrorMessage("Incohérence base de données ou utilisateur n'existe pas");
             return;
         }
+
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.welcome"), username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
@@ -200,6 +200,8 @@ public class CurrentUser implements Serializable {
         propositionBean.setIsRubriqueVisible(false);
 
         selectedTheso.loadProejct();
+        selectedTheso.setProjectIdSelected("-1");
+        selectedTheso.setSelectedProject();
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
