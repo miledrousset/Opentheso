@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
@@ -31,6 +32,7 @@ import javax.inject.Named;
  *
  * @author Miled Rousset
  */
+@Data
 @SessionScoped
 @Named(value = "roleOnTheso")
 public class RoleOnThesoBean implements Serializable {
@@ -576,157 +578,5 @@ public class RoleOnThesoBean implements Serializable {
     public void changeVisibility() {
         boolean changeVisibility = this.thesoInfos.isPrivateTheso();
         this.thesoInfos.setPrivateTheso(!(changeVisibility));
-    }
-
-    public Connect getConnect() {
-        return connect;
-    }
-
-    public void setConnect(Connect connect) {
-        this.connect = connect;
-    }
-
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(CurrentUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public LanguageBean getLanguageBean() {
-        return languageBean;
-    }
-
-    public void setLanguageBean(LanguageBean languageBean) {
-        this.languageBean = languageBean;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public void setSelectedTheso(SelectedTheso selectedTheso) {
-        this.selectedTheso = selectedTheso;
-    }
-
-    public List<ThesoModel> getListTheso() {
-        return listTheso;
-    }
-
-    public void setListTheso(List<ThesoModel> listTheso) {
-        this.listTheso = listTheso;
-    }
-
-    public Map<String, String> getListThesoAsAdmin() {
-        return listThesoAsAdmin;
-    }
-
-    public void setListThesoAsAdmin(Map<String, String> listThesoAsAdmin) {
-        this.listThesoAsAdmin = listThesoAsAdmin;
-    }
-
-    public ArrayList<NodeIdValue> getNodeListTheso() {
-        return nodeListTheso;
-    }
-
-    public void setNodeListTheso(ArrayList<NodeIdValue> nodeListTheso) {
-        this.nodeListTheso = nodeListTheso;
-    }
-
-    public ArrayList<NodeIdValue> getNodeListThesoAsAdmin() {
-        return nodeListThesoAsAdmin;
-    }
-
-    public void setNodeListThesoAsAdmin(ArrayList<NodeIdValue> nodeListThesoAsAdmin) {
-        this.nodeListThesoAsAdmin = nodeListThesoAsAdmin;
-    }
-
-    public ArrayList<NodeIdValue> getNodeListThesoAsAdminFiltered() {
-        return nodeListThesoAsAdminFiltered;
-    }
-
-    public void setNodeListThesoAsAdminFiltered(ArrayList<NodeIdValue> nodeListThesoAsAdminFiltered) {
-        this.nodeListThesoAsAdminFiltered = nodeListThesoAsAdminFiltered;
-    }
-
-    public List<String> getSelectedThesoForSearch() {
-        return selectedThesoForSearch;
-    }
-
-    public void setSelectedThesoForSearch(List<String> selectedThesoForSearch) {
-        this.selectedThesoForSearch = selectedThesoForSearch;
-    }
-
-    public Thesaurus getThesoInfos() {
-        return thesoInfos;
-    }
-
-    public void setThesoInfos(Thesaurus thesoInfos) {
-        this.thesoInfos = thesoInfos;
-    }
-
-    public boolean isSuperAdmin() {
-        return isSuperAdmin;
-    }
-
-    public void setSuperAdmin(boolean superAdmin) {
-        isSuperAdmin = superAdmin;
-    }
-
-    public boolean isAdminOnThisTheso() {
-        return isAdminOnThisTheso;
-    }
-
-    public void setAdminOnThisTheso(boolean adminOnThisTheso) {
-        isAdminOnThisTheso = adminOnThisTheso;
-    }
-
-    public boolean isManagerOnThisTheso() {
-        return isManagerOnThisTheso;
-    }
-
-    public void setManagerOnThisTheso(boolean managerOnThisTheso) {
-        isManagerOnThisTheso = managerOnThisTheso;
-    }
-
-    public boolean isContributorOnThisTheso() {
-        return isContributorOnThisTheso;
-    }
-
-    public void setContributorOnThisTheso(boolean contributorOnThisTheso) {
-        isContributorOnThisTheso = contributorOnThisTheso;
-    }
-
-    public List<String> getAuthorizedTheso() {
-        return authorizedTheso;
-    }
-
-    public void setAuthorizedTheso(List<String> authorizedTheso) {
-        this.authorizedTheso = authorizedTheso;
-    }
-
-    public List<String> getAuthorizedThesoAsAdmin() {
-        return authorizedThesoAsAdmin;
-    }
-
-    public void setAuthorizedThesoAsAdmin(List<String> authorizedThesoAsAdmin) {
-        this.authorizedThesoAsAdmin = authorizedThesoAsAdmin;
-    }
-
-    public NodePreference getNodePreference() {
-        return nodePreference;
-    }
-
-    public void setNodePreference(NodePreference nodePreference) {
-        this.nodePreference = nodePreference;
-    }
-
-    public NodeUserRoleGroup getNodeUserRoleGroup() {
-        return nodeUserRoleGroup;
-    }
-
-    public void setNodeUserRoleGroup(NodeUserRoleGroup nodeUserRoleGroup) {
-        this.nodeUserRoleGroup = nodeUserRoleGroup;
     }
 }
