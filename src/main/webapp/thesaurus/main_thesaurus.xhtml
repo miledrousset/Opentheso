@@ -7,7 +7,7 @@
 
     <div class="container-fluid col-xl-12 col-lg-12">
         <div class="card shadow mb-4">
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}">
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin())}">
                 <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
                     <div style="width: 90%; text-align: right;">
                         <p:column style="text-align: right">

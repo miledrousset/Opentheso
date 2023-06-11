@@ -72,7 +72,7 @@ public class ProcessCandidateBean implements Serializable {
         // envoie de mail au créateur du candidat si l'option mail est activée
         UserHelper userHelper = new UserHelper();
         NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
-        if(nodeUser.isIsAlertMail())
+        if(nodeUser.isAlertMail())
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
         
         generateArk(nodePreference, selectedCandidate);
@@ -145,7 +145,7 @@ public class ProcessCandidateBean implements Serializable {
         
         UserHelper userHelper = new UserHelper();
         NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
-        if(nodeUser.isIsAlertMail())
+        if(nodeUser.isAlertMail())
             sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate);
 
         
@@ -185,7 +185,7 @@ public class ProcessCandidateBean implements Serializable {
             }
             generateArk(nodePreference, selectedCandidate1);
             nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
-            if(nodeUser.isIsAlertMail())
+            if(nodeUser.isAlertMail())
                 sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate1);
         }
 
@@ -218,7 +218,7 @@ public class ProcessCandidateBean implements Serializable {
                 return;
             }
             nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
-            if(nodeUser.isIsAlertMail())
+            if(nodeUser.isAlertMail())
                 sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);               
         }
 

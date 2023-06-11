@@ -55,7 +55,7 @@
 
                                 <div class="row" style="margin-top: -15px; margin-bottom: 5px;">
                                     <div class="col-1 offset-11">
-                                        <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin}" 
+                                        <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin()}"
                                                          action="#{newUSerBean.initForSuperAdmin()}"
                                                          oncomplete="PF('addNewUser').show();" 
                                                          ajax="true" 

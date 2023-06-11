@@ -137,7 +137,7 @@ public class Tree implements Serializable {
         if (roleOnThesoBean == null) {
             return false;
         }
-        if (roleOnThesoBean.isIsSuperAdmin() || roleOnThesoBean.isIsAdminOnThisTheso() || roleOnThesoBean.isIsManagerOnThisTheso()) {
+        if (roleOnThesoBean.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso() || roleOnThesoBean.isManagerOnThisTheso()) {
             return true;
         } else {
             return false;

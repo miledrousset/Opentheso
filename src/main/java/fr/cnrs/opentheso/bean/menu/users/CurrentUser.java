@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
@@ -52,6 +53,8 @@ public class CurrentUser implements Serializable {
     private PropositionBean propositionBean;
     @Inject
     private SearchBean searchBean;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private NodeUser nodeUser;
     private String username;
@@ -92,8 +95,10 @@ public class CurrentUser implements Serializable {
         this.password = password;
     }
 
-    public void disconnect(boolean redirectionEnable) throws IOException {
+    public void disconnect() throws IOException {
+
         if(nodeUser == null) return;
+
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
@@ -106,6 +111,8 @@ public class CurrentUser implements Serializable {
         rightBodySetting.setIndex("0");
 
         initHtmlPages();
+
+        selectedTheso.loadProejct();
         
         if (propositionBean.isPropositionVisibleControle()) {
             PrimeFaces.current().executeScript("disparaitre();");
@@ -188,6 +195,8 @@ public class CurrentUser implements Serializable {
             rightBodySetting.setIndex("0");
         }
         propositionBean.setIsRubriqueVisible(false);
+
+        selectedTheso.loadProejct();
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
@@ -272,7 +281,7 @@ public class CurrentUser implements Serializable {
     }
 
     public boolean isAlertVisible() {
-        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isIsSuperAdmin() || roleOnThesoBean.isIsAdminOnThisTheso()) && nodeUser.isIsActive();
+        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
     }
 
     public NodeUser getNodeUser() {

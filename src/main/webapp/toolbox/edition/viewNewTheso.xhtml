@@ -47,7 +47,7 @@
                               style="margin-right: -6px"/>
             </div>
             <div class="col-5">
-                <p:selectOneMenu rendered="#{currentUser.nodeUser.isSuperAdmin}" styleClass="selectOneMenu_custom" 
+                <p:selectOneMenu rendered="#{currentUser.nodeUser.isSuperAdmin()}" styleClass="selectOneMenu_custom"
                                  panelStyleClass="selectOneMenu_panelStyle_custom"
                                  style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;"
@@ -57,7 +57,7 @@
                                    itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
                 </p:selectOneMenu>
 
-                <p:selectOneMenu rendered="#{!currentUser.nodeUser.isSuperAdmin}" styleClass="selectOneMenu_custom" 
+                <p:selectOneMenu rendered="#{!currentUser.nodeUser.isSuperAdmin()}" styleClass="selectOneMenu_custom"
                                  panelStyleClass="selectOneMenu_panelStyle_custom"
                                  style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                  panelStyle="font-size: 12px;  border: none; box-shadow: none;"

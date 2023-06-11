@@ -5,8 +5,8 @@
     
     <div style="margin: 20px; color: #000">
         
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso 
-                                  or roleOnTheso.isSuperAdmin) and !(viewEditorThesoHomeBean.isInEditing)}">
+        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso()
+                                  or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing)}">
             <div class="row">
                 <div class="col-2 offset-10" style="text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('candidat.edit')}" 
