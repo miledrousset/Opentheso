@@ -26,13 +26,16 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
-@Named(value = "propositionBean")
+@Data
 @SessionScoped
+@Named(value = "propositionBean")
 public class PropositionBean implements Serializable {
 
     @Inject
@@ -519,190 +522,6 @@ public class PropositionBean implements Serializable {
         FacesMessage msg = new FacesMessage(type, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().ajax().update("messageIndex");
-    }
-
-    public boolean isIsRubriqueVisible() {
-        return isRubriqueVisible;
-    }
-
-    public void setIsRubriqueVisible(boolean isRubriqueVisible) {
-        this.isRubriqueVisible = isRubriqueVisible;
-    }
-
-    public Proposition getProposition() {
-        return proposition;
-    }
-
-    public void setProposition(Proposition proposition) {
-        this.proposition = proposition;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCommentaire() {
-        return commentaire;
-    }
-
-    public void setCommentaire(String commentaire) {
-        this.commentaire = commentaire;
-    }
-
-    public List<PropositionDao> getPropositions() {
-        return propositions;
-    }
-
-    public void setPropositions(List<PropositionDao> propositions) {
-        this.propositions = propositions;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getActionNom() {
-        return actionNom;
-    }
-
-    public void setActionNom(String actionNom) {
-        this.actionNom = actionNom;
-    }
-
-    public int getNbrNewPropositions() {
-        return nbrNewPropositions;
-    }
-
-    public void setNbrNewPropositions(int nbrNewPropositions) {
-        this.nbrNewPropositions = nbrNewPropositions;
-    }
-
-    public String getShowAllPropositions() {
-        return showAllPropositions;
-    }
-
-    public void setShowAllPropositions(String showAllPropositions) {
-        this.showAllPropositions = showAllPropositions;
-    }
-
-    public int getFilter2() {
-        return filter2;
-    }
-
-    public void setFilter2(int filter2) {
-        this.filter2 = filter2;
-    }
-
-    public String getCommentaireAdmin() {
-        return commentaireAdmin;
-    }
-
-    public void setCommentaireAdmin(String commentaireAdmin) {
-        this.commentaireAdmin = commentaireAdmin;
-    }
-
-    public boolean isPrefTermeAccepted() {
-        return prefTermeAccepted;
-    }
-
-    public void setPrefTermeAccepted(boolean prefTermeAccepted) {
-        this.prefTermeAccepted = prefTermeAccepted;
-    }
-
-    public boolean isVarianteAccepted() {
-        return varianteAccepted;
-    }
-
-    public void setVarianteAccepted(boolean varianteAccepted) {
-        this.varianteAccepted = varianteAccepted;
-    }
-
-    public boolean isTraductionAccepted() {
-        return traductionAccepted;
-    }
-
-    public void setTraductionAccepted(boolean traductionAccepted) {
-        this.traductionAccepted = traductionAccepted;
-    }
-
-    public boolean isNoteAccepted() {
-        return noteAccepted;
-    }
-
-    public void setNoteAccepted(boolean noteAccepted) {
-        this.noteAccepted = noteAccepted;
-    }
-
-    public boolean isDefinitionAccepted() {
-        return definitionAccepted;
-    }
-
-    public void setDefinitionAccepted(boolean definitionAccepted) {
-        this.definitionAccepted = definitionAccepted;
-    }
-
-    public boolean isChangeNoteAccepted() {
-        return changeNoteAccepted;
-    }
-
-    public void setChangeNoteAccepted(boolean changeNoteAccepted) {
-        this.changeNoteAccepted = changeNoteAccepted;
-    }
-
-    public boolean isScopeAccepted() {
-        return scopeAccepted;
-    }
-
-    public void setScopeAccepted(boolean scopeAccepted) {
-        this.scopeAccepted = scopeAccepted;
-    }
-
-    public boolean isEditorialNotesAccepted() {
-        return editorialNotesAccepted;
-    }
-
-    public void setEditorialNotesAccepted(boolean editorialNotesAccepted) {
-        this.editorialNotesAccepted = editorialNotesAccepted;
-    }
-
-    public boolean isExamplesAccepted() {
-        return examplesAccepted;
-    }
-
-    public void setExamplesAccepted(boolean examplesAccepted) {
-        this.examplesAccepted = examplesAccepted;
-    }
-
-    public boolean isHistoryAccepted() {
-        return historyAccepted;
-    }
-
-    public void setHistoryAccepted(boolean historyAccepted) {
-        this.historyAccepted = historyAccepted;
-    }
-
-    public boolean isPropositionVisibleControle() {
-        return propositionVisibleControle;
-    }
-
-    public void setPropositionVisibleControle(boolean propositionVisibleControle) {
-        this.propositionVisibleControle = propositionVisibleControle;
     }
 
 }

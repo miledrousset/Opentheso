@@ -96,7 +96,7 @@ public class ListIndex implements Serializable {
                 ((NodeIdValue) event.getObject()).getId(), selectedTheso.getCurrentLang());
 
         rightBodySetting.setIndex("0");
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         leftBodySetting.setIndex("1");
         if (PrimeFaces.current().isAjaxRequest()) {
                     PrimeFaces.current().executeScript("srollToSelected();");

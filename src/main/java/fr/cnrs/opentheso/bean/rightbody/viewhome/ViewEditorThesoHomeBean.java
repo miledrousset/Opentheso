@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
@@ -12,6 +7,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -26,8 +23,9 @@ import javax.inject.Inject;
  *
  * @author miledrousset
  */
-@Named(value = "viewEditorThesoHomeBean")
+@Data
 @SessionScoped
+@Named(value = "viewEditorThesoHomeBean")
 public class ViewEditorThesoHomeBean implements Serializable {
     @Inject private Connect connect;
     @Inject private SelectedTheso selectedTheso;
@@ -137,47 +135,5 @@ public class ViewEditorThesoHomeBean implements Serializable {
         } 
         isViewPlainText = status;
     }
-
-    public boolean isIsViewPlainText() {
-        return isViewPlainText;
-    }
-
-    public void setIsViewPlainText(boolean isViewPlainText) {
-        this.isViewPlainText = isViewPlainText;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public boolean isIsInEditing() {
-        return isInEditing;
-    }
-
-    public void setIsInEditing(boolean isInEditing) {
-        this.isInEditing = isInEditing;
-    }
-
-    public String getColorOfHtmlButton() {
-        return colorOfHtmlButton;
-    }
-
-    public void setColorOfHtmlButton(String colorOfHtmlButton) {
-        this.colorOfHtmlButton = colorOfHtmlButton;
-    }
-
-    public String getColorOfTextButton() {
-        return colorOfTextButton;
-    }
-
-    public void setColorOfTextButton(String colorOfTextButton) {
-        this.colorOfTextButton = colorOfTextButton;
-    }
-
-
     
 }

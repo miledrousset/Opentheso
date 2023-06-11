@@ -539,7 +539,7 @@ public class Tree implements Serializable {
     public void onNodeSelectByNode(DefaultTreeNode node) {
         
         alignmentManualBean.reset();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
 

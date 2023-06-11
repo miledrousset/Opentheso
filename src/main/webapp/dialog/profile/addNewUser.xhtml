@@ -58,7 +58,7 @@
                     <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : " title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
                 </div>
                 <div class="col-7">
-                    <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.isAlertMail}" /> 
+                    <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.isAlertMail()}" />
                 </div>
                 <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="isAlertMail" />
             </div>
