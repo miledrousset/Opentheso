@@ -91,7 +91,7 @@ public class MenuBean implements Serializable {
         activePageName = "index";
         notificationPannelVisible = true;
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/index.xhtml");
     }
@@ -103,7 +103,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         candidatBean.initCandidatModule();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/candidat/candidat.xhtml");
     }
@@ -115,7 +115,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/users.xhtml");
     }
@@ -126,7 +126,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/projects.xhtml");
     }
@@ -137,7 +137,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         superAdminBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/thesaurus.xhtml");
     }
@@ -148,7 +148,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         myAccountBean.reset();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/myAccount.xhtml");
     }
@@ -160,7 +160,7 @@ public class MenuBean implements Serializable {
         myProjectBean.init();
         newUSerBean.clear();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/profile/myProject.xhtml");
     }
@@ -172,7 +172,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         preferenceBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/identifier.xhtml");
     }
@@ -183,7 +183,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         preferenceBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/preference.xhtml");
     }
@@ -194,7 +194,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         corpusBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/setting/corpus.xhtml");
     }
@@ -206,7 +206,7 @@ public class MenuBean implements Serializable {
         notificationPannelVisible = false;
         viewEditionBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/edition.xhtml");
     }
@@ -216,7 +216,7 @@ public class MenuBean implements Serializable {
         activePageName = "atelier";
         atelierThesBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/atelier.xhtml");
     }
@@ -234,7 +234,7 @@ public class MenuBean implements Serializable {
         }
         atelierThesBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/service.xhtml");
     }
@@ -252,7 +252,7 @@ public class MenuBean implements Serializable {
         }
         statistiqueBean.init();
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/toolbox/statistic.xhtml");
     }
@@ -263,7 +263,7 @@ public class MenuBean implements Serializable {
         activePageName = "login";
         notificationPannelVisible = false;
         propositionBean.searchNewPropositions();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/login.xhtml");
     }

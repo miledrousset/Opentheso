@@ -19,14 +19,17 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import lombok.Data;
 import org.primefaces.PrimeFaces;
 
 /**
  *
  * @author miledrousset
  */
-@Named(value = "viewEditorHomeBean")
+@Data
 @SessionScoped
+@Named(value = "viewEditorHomeBean")
 public class ViewEditorHomeBean implements Serializable {
 
     @Inject
@@ -194,72 +197,8 @@ public class ViewEditorHomeBean implements Serializable {
         }
     }
 
-    public boolean isIsViewPlainText() {
-        return isViewPlainText;
-    }
-
-    public void setIsViewPlainText(boolean isViewPlainText) {
-        this.isViewPlainText = isViewPlainText;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public boolean isIsInEditing() {
-        return isInEditing;
-    }
-
-    public void setIsInEditing(boolean isInEditing) {
-        this.isInEditing = isInEditing;
-    }
-
-    public String getColorOfHtmlButton() {
-        return colorOfHtmlButton;
-    }
-
-    public void setColorOfHtmlButton(String colorOfHtmlButton) {
-        this.colorOfHtmlButton = colorOfHtmlButton;
-    }
-
-    public String getColorOfTextButton() {
-        return colorOfTextButton;
-    }
-
-    public void setColorOfTextButton(String colorOfTextButton) {
-        this.colorOfTextButton = colorOfTextButton;
-    }
-
-    public boolean isIsInEditingGoogleAnalytics() {
-        return isInEditingGoogleAnalytics;
-    }
-
-    public void setIsInEditingGoogleAnalytics(boolean isInEditingGoogleAnalytics) {
-        this.isInEditingGoogleAnalytics = isInEditingGoogleAnalytics;
-    }
-
-    public boolean isTextVisisble() {
+    public boolean isTextVisible() {
         return !isInEditingGoogleAnalytics && !isInEditingHomePage;
-    }
-
-    public String getCodeGoogleAnalitics() {
-        return codeGoogleAnalitics;
-    }
-
-    public void setCodeGoogleAnalitics(String codeGoogleAnalitics) {
-        this.codeGoogleAnalitics = codeGoogleAnalitics;
-    }
-
-    public boolean isIsInEditingHomePage() {
-        return isInEditingHomePage;
-    }
-
-    public void setIsInEditingHomePage(boolean isInEditingHomePage) {
-        this.isInEditingHomePage = isInEditingHomePage;
     }
 
 }

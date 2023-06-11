@@ -299,7 +299,7 @@
                 </ui:repeat>
             </h:panelGroup>
         </h:panelGroup>
-        <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin() and candidatBean.isShowCandidatActivate()}">
+        <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin() and candidatBean.isShowCandidatActivate())}">
             <div class="row" style="margin-bottom: 20px">
                 <div class="col-12" style="align-content: center; margin-top: 10px;">
                     <p:commandButton value="#{langueBean.getMsg('candidat.submit')}"

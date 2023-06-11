@@ -6,7 +6,7 @@
     <div style="margin: 20px; color: #000">
         
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso()
-                                  or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing)}">
+                                  or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing())}">
             <div class="row">
                 <div class="col-2 offset-10" style="text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('candidat.edit')}" 
@@ -20,7 +20,7 @@
         </h:panelGroup>
 
         <!-- vue pulic non connectée -->
-        <h:panelGroup rendered="#{!(viewEditorThesoHomeBean.isInEditing)}" style="border: none; margin-top: 20px">
+        <h:panelGroup rendered="#{!(viewEditorThesoHomeBean.isInEditing())}" style="border: none; margin-top: 20px">
             <div class="row" style="background-color: #F5F2F2">
                 <div class="col-1"  style="margin-top: 3px">
                     <i class="fas fa-info-circle fa-2x" style="color: #43B572" />
@@ -80,7 +80,7 @@
         <!-- vue connectée pour édition -->
 
 
-        <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing)}" >
+        <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing())}" >
 
             <div class="row">
                 <div class="col-3" >
