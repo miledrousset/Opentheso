@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.annotation.PreDestroy;
 
 import fr.cnrs.opentheso.utils.LDAPUtils;
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -34,8 +35,9 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
-@Named(value = "currentUser")
+@Data
 @SessionScoped
+@Named(value = "currentUser")
 public class CurrentUser implements Serializable {
 
     @Inject
@@ -80,22 +82,6 @@ public class CurrentUser implements Serializable {
         nodeUser = null;
         username = null;
         password = null;
-    }
-
-    public void setUsername(String name) {
-        this.username = name;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public void disconnect() throws IOException {
@@ -197,7 +183,7 @@ public class CurrentUser implements Serializable {
         if ("2".equals(rightBodySetting.getIndex())) {
             rightBodySetting.setIndex("0");
         }
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
 
         selectedTheso.loadProejct();
         selectedTheso.setProjectIdSelected("-1");
@@ -287,29 +273,5 @@ public class CurrentUser implements Serializable {
 
     public boolean isAlertVisible() {
         return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
-    }
-
-    public NodeUser getNodeUser() {
-        return nodeUser;
-    }
-
-    public void setNodeUser(NodeUser nodeUser) {
-        this.nodeUser = nodeUser;
-    }
-
-    public ArrayList<NodeUserRoleGroup> getAllAuthorizedProjectAsAdmin() {
-        return allAuthorizedProjectAsAdmin;
-    }
-
-    public void setAllAuthorizedProjectAsAdmin(ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin) {
-        this.allAuthorizedProjectAsAdmin = allAuthorizedProjectAsAdmin;
-    }
-
-    public boolean isLdapEnable() {
-        return ldapEnable;
-    }
-
-    public void setLdapEnable(boolean ldapEnable) {
-        this.ldapEnable = ldapEnable;
     }
 }
