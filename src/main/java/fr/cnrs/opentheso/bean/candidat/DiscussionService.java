@@ -107,7 +107,7 @@ public class DiscussionService implements Serializable {
         getParticipantsInConversation();
         if(nodeUsers != null) {
             for (NodeUser nodeUser : nodeUsers) {
-                if(nodeUser.isIsAlertMail()) {
+                if(nodeUser.isAlertMail()) {
                     if (!mailBean.sendMail(nodeUser.getMail(), subject,  message)) {
                   //     candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("Erreur d'envoie de mail pour " + nodeUser.getName() + ", veuillez contacter l'administrateur"));
                     }

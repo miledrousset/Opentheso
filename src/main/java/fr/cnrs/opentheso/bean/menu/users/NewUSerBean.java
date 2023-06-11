@@ -128,7 +128,7 @@ public class NewUSerBean implements Serializable {
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
                 false,
-                nodeUser.isIsAlertMail())){
+                nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -219,7 +219,7 @@ public class NewUSerBean implements Serializable {
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
                 false,
-                nodeUser.isIsAlertMail())){
+                nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             

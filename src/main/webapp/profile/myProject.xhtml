@@ -73,14 +73,14 @@
                                     </p:selectOneMenu>
                                 </div>
                                 <div class="col-2" style="height: 35px">
-                                    <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin }" 
+                                    <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin() }"
                                                      actionListener="#{newProjectBean.init()}" oncomplete="PF('newProject').show();" 
                                                      class="btn btn-primary" icon="fas fa-plus" update="idNewProject" 
                                                      style="color: #FFF; background-color: #f47b2a; border-color: #f47b2a; height: 100%; margin-left: -5px"
                                                      title="#{langueBean.getMsg('profile.create_new_project')}">
                                     </p:commandButton>
 
-                                    <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin or currentUser.allAuthorizedProjectAsAdmin.size() > 0}" 
+                                    <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin() or currentUser.allAuthorizedProjectAsAdmin.size() > 0}"
                                                      actionListener="#{newProjectBean.init()}" oncomplete="PF('modifyProject').show();" 
                                                      class="btn btn-primary" update="idModifyProject" icon="fas fa-pen" process="@this"
                                                      title="#{langueBean.getMsg('profile.change_label_projects')}"

@@ -81,7 +81,7 @@
                             <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
                         </p:tab>
 
-                        <p:tab rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                        <p:tab rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                                id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />

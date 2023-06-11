@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.menu.theso;
 
 import java.io.IOException;
@@ -24,6 +19,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,9 +32,10 @@ import javax.inject.Named;
  *
  * @author Miled Rousset
  */
-@Named(value = "roleOnTheso")
 @SessionScoped
+@Named(value = "roleOnTheso")
 public class RoleOnThesoBean implements Serializable {
+
     @Inject private Connect connect;
     @Inject private CurrentUser currentUser;
     @Inject private LanguageBean languageBean;
@@ -74,10 +72,6 @@ public class RoleOnThesoBean implements Serializable {
     private NodePreference nodePreference;
 
     private NodeUserRoleGroup nodeUserRoleGroup;
-    
-    public RoleOnThesoBean() {
-
-    }
 
     @PreDestroy
     public void destroy(){
@@ -200,18 +194,15 @@ public class RoleOnThesoBean implements Serializable {
             setUserRoleOnThisTheso();
             return;
         }
-        if(authorizedTheso == null)
-            authorizedTheso = new ArrayList<>();
-        authorizedTheso.clear();
-        
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        UserHelper currentUserHelper = new UserHelper();
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {
+        authorizedTheso = new ArrayList<>();
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             boolean withPrivateTheso = true;
+            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
             authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), withPrivateTheso);
             authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), withPrivateTheso);
 
         } else {
+            UserHelper currentUserHelper = new UserHelper();
             authorizedTheso = currentUserHelper.getThesaurusOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
             authorizedThesoAsAdmin = currentUserHelper.getThesaurusOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());         
         }
@@ -279,7 +270,6 @@ public class RoleOnThesoBean implements Serializable {
             nodeIdValue.setValue(title);
             nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso1));
             nodeListThesoAsAdmin.add(nodeIdValue);
-            
         }
                
         this.listThesoAsAdmin = authorizedThesoAsAdminHM;
@@ -287,44 +277,39 @@ public class RoleOnThesoBean implements Serializable {
             
             
     // on ajoute les titres + id, sinon l'identifiant du thésauurus
-    private void addAuthorizedThesoToHM() {
+    public void addAuthorizedThesoToHM() {
         if (authorizedTheso == null) {
             return;
         }
-        if(nodeListTheso == null) 
-            nodeListTheso = new ArrayList<>();
-        else
-            nodeListTheso.clear();
+
+        nodeListTheso = new ArrayList<>();
         HashMap<String, String> authorizedThesoHM = new LinkedHashMap();
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        String title;
-        String lang = connect.getWorkLanguage().toLowerCase();
 
         // ajout de code qui permet de charger une liste de thésaurus avec le nom en utilisant la langue préférée dans les préférences du thésaurus.
         // pour éviter d'afficher des Id quand on a un mélange des thésaurus avec des langues sources différentes.
-        String preferredIdLangOfTheso;
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         
         listTheso = new ArrayList<>();
         
         for (String idTheso1 : authorizedTheso) {
-            preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1);
-            if (preferredIdLangOfTheso == null) {
-                preferredIdLangOfTheso = lang;
+            String preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1);
+            if (StringUtils.isEmpty(preferredIdLangOfTheso)) {
+                preferredIdLangOfTheso = connect.getWorkLanguage().toLowerCase();
             }
-
-            title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso1, preferredIdLangOfTheso);
             
             ThesoModel thesoModel = new ThesoModel();
             thesoModel.setId(idTheso1);
-            
-            if (title == null) {
+
+            String title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso1, preferredIdLangOfTheso);
+            if (StringUtils.isEmpty(title)) {
                 thesoModel.setNom("(" + idTheso1 + ")");
                 authorizedThesoHM.put(thesoModel.nom, idTheso1);
             } else {
                 thesoModel.setNom(title + " (" + idTheso1 + ")");
                 authorizedThesoHM.put(thesoModel.nom, idTheso1);
             }
+
             thesoModel.setDefaultLang(preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1));
             
             listTheso.add(thesoModel);
@@ -335,7 +320,6 @@ public class RoleOnThesoBean implements Serializable {
             nodeIdValue.setValue(title);
             nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso1));
             nodeListTheso.add(nodeIdValue);
-            
         }
         
         selectedThesoForSearch = new ArrayList<>();
@@ -382,11 +366,7 @@ public class RoleOnThesoBean implements Serializable {
      *
      */
     private void setPublicThesos() {
-        boolean withPrivateTheso = false;
-        /*    AccessThesaurusHelper ath = new AccessThesaurusHelper();
-        this.listTheso = ath.getListThesaurus(connect.getPoolConnexion(),connect.getWorkLanguage());*/
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), withPrivateTheso);
+        authorizedTheso = new ThesaurusHelper().getAllIdOfThesaurus(connect.getPoolConnexion(), false);
         addAuthorizedThesoToHM();
         setUserRoleOnThisTheso();
     }
@@ -403,7 +383,7 @@ public class RoleOnThesoBean implements Serializable {
         if (selectedTheso.getCurrentIdTheso() == null) {
             return false;
         }
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             return true;
         }
         return authorizedTheso.contains(selectedTheso.getCurrentIdTheso());
@@ -416,7 +396,7 @@ public class RoleOnThesoBean implements Serializable {
      *
      * #MR
      */
-    private void setUserRoleOnThisTheso() {
+    public void setUserRoleOnThisTheso() {
         initRoles();
         if (currentUser.getNodeUser() == null) {
             nodeUserRoleGroup = null;
@@ -424,13 +404,13 @@ public class RoleOnThesoBean implements Serializable {
         }
         if (selectedTheso.getSelectedIdTheso() == null || selectedTheso.getSelectedIdTheso().isEmpty()) {
             nodeUserRoleGroup = null;
-            setIsAdminOnThisTheso(false);
+            isAdminOnThisTheso = false;
             return;
         }
 
         UserHelper currentUserHelper = new UserHelper();
 
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserRoleGroup = getUserRoleOnThisGroup(-1); // cas de superadmin, on a accès à tous les groupes
         } else {
             int idGroup = currentUserHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
@@ -441,16 +421,16 @@ public class RoleOnThesoBean implements Serializable {
         }
 
         if (nodeUserRoleGroup.getIdRole() == 1) {
-            setIsSuperAdmin(true);
+            isSuperAdmin = true;
         }
         if (nodeUserRoleGroup.getIdRole() == 2) {
-            setIsAdminOnThisTheso(true);
+            isAdminOnThisTheso = true;
         }
         if (nodeUserRoleGroup.getIdRole() == 3) {
-            setIsManagerOnThisTheso(true);
+            isManagerOnThisTheso = true;
         }
         if (nodeUserRoleGroup.getIdRole() == 4) {
-            setIsContributorOnThisTheso(true);
+            isContributorOnThisTheso = true;
         }
     }
 
@@ -464,7 +444,7 @@ public class RoleOnThesoBean implements Serializable {
      */
     private NodeUserRoleGroup getUserRoleOnThisGroup(int idGroup) {
         UserHelper userHelper = new UserHelper();
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             return userHelper.getUserRoleForSuperAdmin(
                     connect.getPoolConnexion());
         }
@@ -484,16 +464,16 @@ public class RoleOnThesoBean implements Serializable {
         ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = currentUserHelper.getUserRoleGroup(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
         for (NodeUserRoleGroup nodeUserRoleGroup1 : nodeUserRoleGroups) {
             if (nodeUserRoleGroup1.isIsAdmin()) {
-                setIsAdminOnThisTheso(true);
+                isAdminOnThisTheso = true;
             }
         }
     }
 
     private void initRoles() {
-        setIsSuperAdmin(false);
-        setIsAdminOnThisTheso(false);
-        setIsManagerOnThisTheso(false);
-        setIsContributorOnThisTheso(false);
+        isSuperAdmin = false;
+        isAdminOnThisTheso = false;
+        isManagerOnThisTheso = false;
+        isContributorOnThisTheso = false;
     }
 
     /**
@@ -597,40 +577,38 @@ public class RoleOnThesoBean implements Serializable {
     public void changeVisibility() {
         boolean changeVisibility = this.thesoInfos.isPrivateTheso();
         this.thesoInfos.setPrivateTheso(!(changeVisibility));
-        //       this.addVisibility();
-     //   System.out.println("visbility change " + this.thesoInfos.isPrivateTheso());
     }
 
-    public boolean isIsAdminOnThisTheso() {
-        return isAdminOnThisTheso;
+    public Connect getConnect() {
+        return connect;
     }
 
-    public void setIsAdminOnThisTheso(boolean isAdminOnThisTheso) {
-        this.isAdminOnThisTheso = isAdminOnThisTheso;
+    public void setConnect(Connect connect) {
+        this.connect = connect;
     }
 
-    public boolean isIsManagerOnThisTheso() {
-        return isManagerOnThisTheso;
+    public CurrentUser getCurrentUser() {
+        return currentUser;
     }
 
-    public void setIsManagerOnThisTheso(boolean isManagerOnThisTheso) {
-        this.isManagerOnThisTheso = isManagerOnThisTheso;
+    public void setCurrentUser(CurrentUser currentUser) {
+        this.currentUser = currentUser;
     }
 
-    public boolean isIsContributorOnThisTheso() {
-        return isContributorOnThisTheso;
+    public LanguageBean getLanguageBean() {
+        return languageBean;
     }
 
-    public void setIsContributorOnThisTheso(boolean isContributorOnThisTheso) {
-        this.isContributorOnThisTheso = isContributorOnThisTheso;
+    public void setLanguageBean(LanguageBean languageBean) {
+        this.languageBean = languageBean;
     }
 
-    public boolean isIsSuperAdmin() {
-        return isSuperAdmin;
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
     }
 
-    public void setIsSuperAdmin(boolean isSuperAdmin) {
-        this.isSuperAdmin = isSuperAdmin;
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
     }
 
     public List<ThesoModel> getListTheso() {
@@ -639,7 +617,7 @@ public class RoleOnThesoBean implements Serializable {
 
     public void setListTheso(List<ThesoModel> listTheso) {
         this.listTheso = listTheso;
-    }    
+    }
 
     public Map<String, String> getListThesoAsAdmin() {
         return listThesoAsAdmin;
@@ -647,46 +625,6 @@ public class RoleOnThesoBean implements Serializable {
 
     public void setListThesoAsAdmin(Map<String, String> listThesoAsAdmin) {
         this.listThesoAsAdmin = listThesoAsAdmin;
-    }
-
-/*    public List<String> getAuthorizedTheso() {
-        return authorizedTheso;
-    }
-
-    public void setAuthorizedTheso(List<String> authorizedTheso) {
-        this.authorizedTheso = authorizedTheso;
-    }
-*/
-    public List<String> getAuthorizedThesoAsAdmin() {
-        return authorizedThesoAsAdmin;
-    }
-
-    public void setAuthorizedThesoAsAdmin(List<String> authorizedThesoAsAdmin) {
-        this.authorizedThesoAsAdmin = authorizedThesoAsAdmin;
-    }
-
-    public NodePreference getNodePreference() {
-        return nodePreference;
-    }
-
-    public void setNodePreference(NodePreference nodePreference) {
-        this.nodePreference = nodePreference;
-    }
-
-    public NodeUserRoleGroup getNodeUserRoleGroup() {
-        return nodeUserRoleGroup;
-    }
-
-    public void setNodeUserRoleGroup(NodeUserRoleGroup nodeUserRoleGroup) {
-        this.nodeUserRoleGroup = nodeUserRoleGroup;
-    }
-
-    public LanguageBean getLangueBean() {
-        return languageBean;
-    }
-
-    public void setLangueBean(LanguageBean languageBean) {
-        this.languageBean = languageBean;
     }
 
     public ArrayList<NodeIdValue> getNodeListTheso() {
@@ -720,5 +658,76 @@ public class RoleOnThesoBean implements Serializable {
     public void setSelectedThesoForSearch(List<String> selectedThesoForSearch) {
         this.selectedThesoForSearch = selectedThesoForSearch;
     }
-    
+
+    public Thesaurus getThesoInfos() {
+        return thesoInfos;
+    }
+
+    public void setThesoInfos(Thesaurus thesoInfos) {
+        this.thesoInfos = thesoInfos;
+    }
+
+    public boolean isSuperAdmin() {
+        return isSuperAdmin;
+    }
+
+    public void setSuperAdmin(boolean superAdmin) {
+        isSuperAdmin = superAdmin;
+    }
+
+    public boolean isAdminOnThisTheso() {
+        return isAdminOnThisTheso;
+    }
+
+    public void setAdminOnThisTheso(boolean adminOnThisTheso) {
+        isAdminOnThisTheso = adminOnThisTheso;
+    }
+
+    public boolean isManagerOnThisTheso() {
+        return isManagerOnThisTheso;
+    }
+
+    public void setManagerOnThisTheso(boolean managerOnThisTheso) {
+        isManagerOnThisTheso = managerOnThisTheso;
+    }
+
+    public boolean isContributorOnThisTheso() {
+        return isContributorOnThisTheso;
+    }
+
+    public void setContributorOnThisTheso(boolean contributorOnThisTheso) {
+        isContributorOnThisTheso = contributorOnThisTheso;
+    }
+
+    public List<String> getAuthorizedTheso() {
+        return authorizedTheso;
+    }
+
+    public void setAuthorizedTheso(List<String> authorizedTheso) {
+        this.authorizedTheso = authorizedTheso;
+    }
+
+    public List<String> getAuthorizedThesoAsAdmin() {
+        return authorizedThesoAsAdmin;
+    }
+
+    public void setAuthorizedThesoAsAdmin(List<String> authorizedThesoAsAdmin) {
+        this.authorizedThesoAsAdmin = authorizedThesoAsAdmin;
+    }
+
+    public NodePreference getNodePreference() {
+        return nodePreference;
+    }
+
+    public void setNodePreference(NodePreference nodePreference) {
+        this.nodePreference = nodePreference;
+    }
+
+    public NodeUserRoleGroup getNodeUserRoleGroup() {
+        return nodeUserRoleGroup;
+    }
+
+    public void setNodeUserRoleGroup(NodeUserRoleGroup nodeUserRoleGroup) {
+        this.nodeUserRoleGroup = nodeUserRoleGroup;
+    }
 }
