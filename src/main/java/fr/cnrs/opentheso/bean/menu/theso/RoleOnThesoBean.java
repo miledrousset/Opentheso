@@ -19,9 +19,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -33,7 +31,6 @@ import javax.inject.Named;
  *
  * @author Miled Rousset
  */
-@Data
 @SessionScoped
 @Named(value = "roleOnTheso")
 public class RoleOnThesoBean implements Serializable {
