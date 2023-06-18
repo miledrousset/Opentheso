@@ -19,7 +19,7 @@
         <!-- liste des projets -->
         <p:selectOneMenu rendered="#{!selectedTheso.isFromUrl()}" value="#{selectedTheso.projectIdSelected}"
                          style="height: 28px; max-width: 400px; border-radius: 50px 0px 0px 50px; margin-top: 1px !important;
-                         background-color: #43B572; color: #FFF !important; margin-top: 0px;">
+                         background-color: #ECF8F1; color: #FFF !important; margin-top: 0px;">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedProject()}" update="thesoSelect containerIndex" />
             <f:selectItem itemLabel="#{langueBean.getMsg('menu.all_project')}" itemValue="-1"/>
             <f:selectItems value="#{selectedTheso.projectsList}" var="project" itemLabel="#{project.getLabel()}" itemValue="#{project.getId()}" />
@@ -27,7 +27,7 @@
 
         <!-- liste des thésaurus -->
         <p:selectOneMenu id="thesoSelect" rendered="#{!selectedTheso.isFromUrl()}" value="#{selectedTheso.selectedIdTheso}"
-                         style="height: 28px; max-width: 400px; border-radius: 0px 50px 50px 0px; background-color: #43B572;
+                         style="height: 28px; max-width: 400px; border-radius: 0px 50px 50px 0px; background-color: #ECF8F1;
                          color: #FFF !important;"
                          filter="true" filterMatchMode="contains">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />

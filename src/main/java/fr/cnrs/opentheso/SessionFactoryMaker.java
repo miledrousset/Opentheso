@@ -1,8 +1,6 @@
 package fr.cnrs.opentheso;
 
 import fr.cnrs.opentheso.entites.Release;
-import fr.cnrs.opentheso.entites.Thesaurus;
-import fr.cnrs.opentheso.entites.UserGroupLabel;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
