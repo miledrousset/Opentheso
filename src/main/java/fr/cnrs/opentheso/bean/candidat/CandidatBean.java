@@ -26,6 +26,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.enterprise.context.SessionScoped;
@@ -559,9 +560,9 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
     }
 
-    public ArrayList<NodeIdValue> searchCollection(String enteredValue) {
+    public List<NodeIdValue> searchCollection(String enteredValue) {
 
-        ArrayList<NodeIdValue> nodeIdValues = null;
+        List<NodeIdValue> nodeIdValues = Collections.emptyList();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
             nodeIdValues = new GroupHelper().searchGroup(
                     connect.getPoolConnexion(),
