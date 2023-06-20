@@ -67,8 +67,8 @@
             <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; border-color: #43B572">
 
                 <p:dataTable id="listCandidats" value="#{candidatBean.candidatList}" 
-                             var="listCandidats" size="small" stripedRows="true"
-                             selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
+                             var="candidat" size="small" stripedRows="true"
+                             selection="#{candidatBean.selectedCandidates}" rowKey="#{candidat.idConcepte}"
                              widgetVar="listCandidatsTable" styleClass="products-table"
                              resizableColumns="true" scrollHeight="450" reflow="true"
                              paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
@@ -89,40 +89,40 @@
                                           (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                               selectionMode="multiple" style="width:16px;text-align:center;"/>
 
-                    <p:column  width="20" headerText="id" sortBy="#{listCandidats.idConcepte}">
-                        <h:outputText value="#{listCandidats.idConcepte}" style="font-size: 13px;"/>
+                    <p:column width="20" headerText="id" sortBy="#{candidat.idConcepte}">
+                        <h:outputText value="#{candidat.idConcepte}" style="font-size: 13px;"/>
                     </p:column>                    
 
-                    <p:column rendered="#{listCandidats.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
-                        <p:commandLink value="(#{listCandidats.idConcepte})" ajax="true" update="tabViewCandidat" style="font-size: 13px; color: #43B572; "
-                                       actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
+                    <p:column rendered="#{candidat.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
+                        <p:commandLink value="(#{candidat.idConcepte})" ajax="true" update="tabViewCandidat" style="font-size: 13px; color: #43B572; "
+                                       actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
                     </p:column>
 
-                    <p:column rendered="#{listCandidats.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}" sortBy="#{listCandidats.nomPref}">
-                        <p:commandLink value="#{listCandidats.nomPref}" ajax="true" update="tabViewCandidat" style="color: #43B572; font-size: 13px;"
-                                       process="@this" actionListener="#{candidatBean.showCandidatSelected(listCandidats)}" />
+                    <p:column rendered="#{candidat.nomPref != ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}" sortBy="#{candidat.nomPref}">
+                        <p:commandLink value="#{candidat.nomPref}" ajax="true" update="tabViewCandidat" style="color: #43B572; font-size: 13px;"
+                                       process="@this" actionListener="#{candidatBean.showCandidatSelected(candidat)}" />
                     </p:column>
 
                     <p:column width="30" headerText="#{langueBean.getMsg('rightbody.concept.createdBy')}">
-                        <h:outputText value="#{listCandidats.createdBy}" style="font-size: 13px;"/>
+                        <h:outputText value="#{candidat.createdBy}" style="font-size: 13px;"/>
                     </p:column>
 
-                    <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}" sortBy="#{listCandidats.creationDate}">
-                        <h:outputText value="#{listCandidats.creationDate}" style="font-size: 13px;" />
+                    <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}" sortBy="#{candidat.creationDate}">
+                        <h:outputText value="#{candidat.creationDate}" style="font-size: 13px;" />
                     </p:column>  
-                    <p:column width="20" headerText="Votes" sortBy="#{listCandidats.nbrVote}">
-                        <p:badge rendered="#{listCandidats.nbrVote > 0}" severity="danger" value="#{listCandidats.nbrVote}" styleClass="p-mr-2"></p:badge>
+                    <p:column width="20" headerText="Votes" sortBy="#{candidat.nbrVote}">
+                        <p:badge rendered="#{candidat.nbrVote > 0}" severity="danger" value="#{listCandidats.nbrVote}" styleClass="p-mr-2"></p:badge>
                     </p:column>   
                     <p:column width="20" headerText="Votes Note">
-                        <p:badge rendered="#{listCandidats.nbrNoteVote > 0}" value="#{listCandidats.nbrNoteVote}" severity="danger" styleClass="p-mr-2">
+                        <p:badge rendered="#{candidat.nbrNoteVote > 0}" value="#{candidat.nbrNoteVote}" severity="danger" styleClass="p-mr-2">
                             <p:commandButton icon="pi pi-bell" styleClass="rounded-button ui-button-warning" update="idShowVoteNote"
-                                             actionListener="#{showVoteNote.prepareVoteNote(listCandidats)}" 
+                                             actionListener="#{showVoteNote.prepareVoteNote(candidat)}"
                                              oncomplete="PF('showVoteNote').show();"
                                              process="@this" ajax="true"/>
                         </p:badge>
                     </p:column>      
-                    <p:column width="20" headerText="Messages" sortBy="#{listCandidats.nbrParticipant}">
-                        <h:outputText value="#{listCandidats.nbrParticipant}" style="font-size: 13px;"/>
+                    <p:column width="20" headerText="Messages" sortBy="#{candidat.nbrParticipant}">
+                        <h:outputText value="#{candidat.nbrParticipant}" style="font-size: 13px;"/>
                     </p:column>  
 
                     <f:facet name="footer">
