@@ -1693,7 +1693,7 @@ public class CsvReadHelper {
             for (String value1 : values) {
                 if (!value1.isEmpty()) {
                     NodeImage nodeImage = new NodeImage();
-                    nodeImage.setUri(value1);
+                    nodeImage.setUri(value1.trim());
                     nodeImage.setCopyRight("");
                     nodeImages.add(nodeImage);
                 }

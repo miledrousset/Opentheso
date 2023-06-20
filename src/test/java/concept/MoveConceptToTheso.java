@@ -44,8 +44,8 @@ public class MoveConceptToTheso {
     //
     @Test
     public void hello() {
-        String idConceptToMove = "83666";
-        String idThesoFrom = "";
+        String idConceptToMove = "1029";//andiore / flute
+        String idThesoFrom = "th345";
         String idThesoTarget = "th302";
         
         ConnexionTest connexionTest = new ConnexionTest();

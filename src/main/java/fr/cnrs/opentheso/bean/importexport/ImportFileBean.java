@@ -62,6 +62,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -2201,6 +2202,7 @@ public class ImportFileBean implements Serializable {
                     if (nodeImage == null) {
                         continue;
                     }
+                 //   nodeImage.setUri(URLEncoder.encode(nodeImage.getUri(), "UTF-8"));
                     if (!stringPlus.urlValidator(nodeImage.getUri())) {
                         error.append("URL non valide : ");
                         error.append(uri);
@@ -2222,7 +2224,7 @@ public class ImportFileBean implements Serializable {
             importInProgress = false;
             uri = null;
             info = "import réussi, images importées = " + (int) total;
-            total = 0;
+ //           total = 0;
         } catch (Exception e) {
             error.append(System.getProperty("line.separator"));
             error.append(e.toString());

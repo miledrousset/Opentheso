@@ -63,19 +63,34 @@ public class RestRDFHelper {
         if (idArk == null || idArk.isEmpty()) {
             return null;
         }
+        
         ConceptHelper conceptHelper = new ConceptHelper();
         
         String idTheso = conceptHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);
-        String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk, idTheso);
-
-        if (idTheso == null || idConcept == null) {
-            return null;
+       
+        if(StringUtils.isEmpty(idTheso)){
+            // cas où c'est l'identifiant d'un thésaurus
+            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+            idTheso = thesaurusHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);  
+            if(StringUtils.isEmpty(idTheso)){    
+                return null;
+            }
+            NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+            if (nodePreference == null) {
+                return null;
+            }
+            return nodePreference.getCheminSite() + "?idt=" + idTheso;
+        } else {
+            String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk, idTheso);    
+            if(StringUtils.isEmpty(idConcept)){    
+                return null;
+            }     
+            NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+            if (nodePreference == null) {
+                return null;
+            }
+            return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;            
         }
-        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
-        if (nodePreference == null) {
-            return null;
-        }
-        return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;
     }
     
     public String getAllLinkedConceptsWithOntome__(HikariDataSource ds, String idTheso) {

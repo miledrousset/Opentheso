@@ -44,6 +44,31 @@ public class ThesaurusHelper {
     }
 
     /**
+     * Cette fonction permet de récupérer l'identifiant du thésaurus d'après
+     * l'idArk
+    * 
+    * @param ds
+    * @param arkId
+    * @return 
+    */
+    public String getIdThesaurusFromArkId(HikariDataSource ds, String arkId) {
+        String idThesaurus = null;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_thesaurus from thesaurus where id_ark = '" + arkId + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        idThesaurus = resultSet.getString("id_thesaurus");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting idThesaurus by idArk : " + arkId, sqle);
+        }
+        return idThesaurus;
+    }  
+    
+    /**
      * Retourne la liste de tous les thésaurus dans la langue sélectionnée
      * @param ds
      * @param idLang

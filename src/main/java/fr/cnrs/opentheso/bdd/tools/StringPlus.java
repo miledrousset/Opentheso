@@ -18,8 +18,13 @@ public StringPlus() {
      */
     public boolean urlValidator(String url)
     {
-        UrlValidator defaultValidator = new UrlValidator();
-        return defaultValidator.isValid(url);
+        try {
+            UrlValidator defaultValidator = new UrlValidator();
+            return defaultValidator.isValid(url);
+        } catch (Exception e) {
+            System.out.println("erruer : " + e.getMessage());
+        }
+        return false;
     }
     
     

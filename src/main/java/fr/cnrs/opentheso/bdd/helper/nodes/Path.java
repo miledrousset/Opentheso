@@ -25,4 +25,5 @@ public class Path {
     public void setPath(ArrayList<String> path) {
         this.path = path;
     }
+    
 }

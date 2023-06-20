@@ -20,6 +20,7 @@ import java.util.ArrayDeque;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -324,7 +325,10 @@ public class PathHelper {
         for (String tail : tails) {
             ArrayList<String> current = new ArrayList<>();
             current.add(tail);
-            allPaths.add(current);
+           // if(!allPaths.contains(current)){
+                allPaths.add(current);
+           // }
+            
             if (!toProcess.contains(tail)) {
                 toProcess.add(tail);
             }
@@ -353,11 +357,36 @@ public class PathHelper {
         for (ArrayList<String> currentPath : allPaths) {
             Path current = new Path();
             current.setPath(currentPath);
-            paths.add(current);
+            if(paths.isEmpty())
+                paths.add(current);
+            else {
+                if(!containThisPath(paths, current)){
+                    paths.add(current);
+                }
+                /*for (Path path : paths) {
+                    if(!current.getPath().equals(path.getPath())){
+                        paths.add(current);
+                    }
+                }*/
+            }
+          /*  if(!paths.contains(current.getPath())){
+                paths.add(current);
+            }*/
+            
         }
 
         return paths;
     }    
+  
+    private boolean containThisPath(List<Path> paths, Path currentPath){
+        for (Path pathTemp : paths) {
+            if(currentPath.getPath().equals(pathTemp.getPath())){
+                return true;
+            }
+        }        
+        return false;
+    }
+    
       private void addLink(String origin, String destination, Map<String, List<Link>> links) {
         if (!links.containsKey(origin)) {
             links.put(origin, new ArrayList<>());

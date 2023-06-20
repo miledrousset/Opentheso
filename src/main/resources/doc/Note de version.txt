@@ -7,3 +7,4 @@ Note de version
 - finalisation de l'intégration de l'OPEN API
 
 
+- ajout de l'identifiant Ark pour le thésaurus
