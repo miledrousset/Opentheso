@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +23,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRole;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.apache.commons.lang3.StringUtils;
 
 public class UserHelper {
 
@@ -581,6 +583,7 @@ public class UserHelper {
         return nodeUserGroups;
     }
 
+
     /**
      * permet de retourner la liste des thésaurus pour un projet
      *
@@ -594,33 +597,51 @@ public class UserHelper {
             int idProject,
             String idLang) {
         
-        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        ArrayList<String> listIdTheso = getIdThesaurusOfProject(ds, idProject);
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();        
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        String idLangTemp;
+        String title;
+        for (String idTheso : listIdTheso) {
+            idLangTemp = preferencesHelper.getWorkLanguageOfTheso(ds, idTheso);
+            if(StringUtils.isEmpty(idLangTemp))
+                idLangTemp = idLang;
+            title = thesaurusHelper.getTitleOfThesaurus(ds, idTheso, idLangTemp);
+
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setId(idTheso);
+            nodeIdValue.setValue(title);
+            nodeIdValues.add(nodeIdValue);
+        }
+        return nodeIdValues;
+    }
+    /**
+     * 
+     * @param ds
+     * @param idProject
+     * @return 
+     */
+    private ArrayList<String> getIdThesaurusOfProject(HikariDataSource ds, int idProject){
+        ArrayList<String> nodeIdTheso = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT"
-                            + "  thesaurus_label.title,"
-                            + "  thesaurus_label.id_thesaurus"
-                            + " FROM "
-                            + "  user_group_thesaurus,"
-                            + "  thesaurus_label"
-                            + " WHERE "
-                            + "  user_group_thesaurus.id_thesaurus = thesaurus_label.id_thesaurus AND"
-                            + "  user_group_thesaurus.id_group = " + idProject
-                            + " and thesaurus_label.lang = '" + idLang + "' order by title");
+                stmt.executeQuery("SELECT user_group_thesaurus.id_thesaurus" +
+                            " FROM user_group_thesaurus" +
+                            " WHERE " +
+                            " user_group_thesaurus.id_group = '" + idProject + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {       
                     while (resultSet.next()) {
-                        NodeIdValue nodeIdValue = new NodeIdValue();
-                        nodeIdValue.setId(resultSet.getString("id_thesaurus"));
-                        nodeIdValue.setValue(resultSet.getString("title"));
-                        nodeIdValues.add(nodeIdValue);
+                        nodeIdTheso.add(resultSet.getString("id_thesaurus"));
                     }
                 }
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return nodeIdValues;
+        return nodeIdTheso;        
     }
+    
 
     /**
      * permet de retourner la liste des thésaurus pour un groupe pour un

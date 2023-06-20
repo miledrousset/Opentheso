@@ -229,17 +229,6 @@ end
 $$language plpgsql;
 
 
--- Ajout d'une nouvelle langue à la liste ISO
---
-create or replace function update_table_languages() returns void as $$
-begin
-    IF NOT EXISTS(SELECT *  FROM languages_iso639 where iso639_1='fro') THEN
-        execute 'INSERT INTO languages_iso639 (iso639_1, iso639_2, english_name, french_name, id) VALUES (''fro'', ''fro'', ''Old French (842—ca. 1400)'', ''ancien français (842-environ 1400)'', 190);';
-    END IF;
-end
-$$language plpgsql;
-
-
 -- Ajout d'une nouvelle source à la table sources d'alignements
 --
 create or replace function update_table_alignement_source() returns void as $$
@@ -532,6 +521,46 @@ begin
 end
 $$language plpgsql;
 
+-- Préférences : ajout une option pour choisir si l'id ARK est majuscule ou non 
+--
+create or replace function update_table_preferences_uppercase_ark() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='preferences' AND column_name='uppercase_for_ark') THEN
+        execute 'ALTER TABLE preferences ADD COLUMN uppercase_for_ark boolean DEFAULT false;';
+END IF;
+end
+$$language plpgsql;
+
+-- Collections : ajout des dates (created et modified )
+--
+create or replace function update_table_group() returns void as $$
+begin
+    IF NOT EXISTS(SELECT *  FROM information_schema.columns where table_name='concept_group' AND column_name='created') THEN
+        execute 'ALTER TABLE concept_group ADD COLUMN created timestamp without time zone;
+                 ALTER TABLE concept_group ADD COLUMN modified timestamp without time zone;
+                ';
+END IF;
+end
+$$language plpgsql;
+
+
+CREATE TABLE IF NOT EXISTS public.concept_dcterms
+(
+    id_concept character varying COLLATE pg_catalog."default" NOT NULL,
+    id_thesaurus character varying COLLATE pg_catalog."default" NOT NULL,
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    value character varying COLLATE pg_catalog."default" NOT NULL,
+    language character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT concept_dc_terms_pkey PRIMARY KEY (id_concept, id_thesaurus, name, value, language)
+);
+CREATE TABLE IF NOT EXISTS public.thesaurus_dcterms
+(
+    id_thesaurus character varying COLLATE pg_catalog."default" NOT NULL,
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    value character varying COLLATE pg_catalog."default" NOT NULL,
+    language character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT thesaurus_dcterms_pkey PRIMARY KEY (id_thesaurus, name, value, language)
+);
 
 ----------------------------------------------------------------------------
 -- exécution des fonctions
@@ -547,11 +576,9 @@ SELECT update_table_corpus_link();
 SELECT delete_table_thesaurus_array();
 SELECT update_table_concept_doi();
 SELECT update_table_concept_group_doi();
-SELECT update_table_languages();
 SELECT update_table_alignement_source();
 SELECT update_table_note_constraint();
 SELECT update_table_corpus_link();
-SELECT update_table_languages();
 SELECT update_table_concept_role();
 SELECT update_table_preferences_ark_local();
 SELECT update_table_preferences_breadcrumb();
@@ -564,8 +591,8 @@ SELECT update_table_gps_constraint();
 SELECT update_table_proposition_modification();
 SELECT update_table_preferences_custom_relation();
 SELECT update_table_concept_type2();
-
-
+SELECT update_table_preferences_uppercase_ark();
+SELECT update_table_group();
 
 
 
@@ -583,11 +610,9 @@ SELECT delete_fonction('update_table_corpus_link','');
 SELECT delete_fonction('delete_table_thesaurus_array','');
 SELECT delete_fonction('update_table_concept_doi','');
 SELECT delete_fonction('update_table_concept_group_doi','');
-SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_alignement_source','');
 SELECT delete_fonction('update_table_note_constraint','');
 SELECT delete_fonction('update_table_corpus_link','');
-SELECT delete_fonction('update_table_languages','');
 SELECT delete_fonction('update_table_concept_role','');
 SELECT delete_fonction('update_table_preferences_ark_local','');
 SELECT delete_fonction('update_table_preferences_breadcrumb','');
@@ -600,6 +625,9 @@ SELECT delete_fonction('update_table_gps_constraint', '');
 SELECT delete_fonction('update_table_proposition_modification', '');
 SELECT delete_fonction('update_table_preferences_custom_relation', '');
 SELECT delete_fonction('update_table_concept_type2', '');
+SELECT delete_fonction('update_table_preferences_uppercase_ark', '');
+SELECT delete_fonction('update_table_group', '');
+
 
 -- auto_suppression de nettoyage
 SELECT delete_fonction ('delete_fonction','TEXT','TEXT');
@@ -1718,14 +1746,37 @@ BEGIN
 		SELECT string_to_array(term_rec.term_value, sous_seperateur) INTO array_string;
             
       	Insert into term (id_term, lexical_value, lang, id_thesaurus, created, modified, source, status, contributor) 
-			values (id_term, array_string[1], array_string[2], id_thesaurus, CURRENT_DATE, CURRENT_DATE, '', '', id_user);
+			values (id_term, array_string[1], array_string[2], id_thesaurus, CURRENT_DATE, CURRENT_DATE, '', '', id_user) ;
 	END LOOP;
 	
 	-- Insert link term
-	Insert into preferred_term (id_concept, id_term, id_thesaurus) values (id_concept, id_term, id_thesaurus);
+	Insert into preferred_term (id_concept, id_term, id_thesaurus) values (id_concept, id_term, id_thesaurus) ;
 END;
 $BODY$;
 
+
+CREATE OR REPLACE procedure opentheso_add_concept_dcterms(
+	id_concept character varying,
+	id_thesaurus character varying,
+	dcterms text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	seperateur constant varchar := '##';
+	sous_seperateur constant varchar := '@@';
+	dcterms_rec record;
+	array_string   text[];
+BEGIN
+	--label.getLabel() + SOUS_SEPERATEUR + label.getLanguage()
+	FOR dcterms_rec IN SELECT unnest(string_to_array(dcterms, seperateur)) AS term_value
+    LOOP
+	SELECT string_to_array(dcterms_rec.term_value, sous_seperateur) INTO array_string;
+            
+      	Insert into concept_dcterms (id_concept, id_thesaurus, name, value, language) 
+			values (id_concept, id_thesaurus, array_string[1], array_string[2], array_string[3]) ON CONFLICT DO NOTHING;
+    END LOOP;
+END;
+$BODY$;
 
 
 
@@ -1836,10 +1887,10 @@ BEGIN
 		SELECT string_to_array(non_pref_rec.non_pref_value, sous_seperateur) INTO array_string;
 		-- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
 		Insert into non_preferred_term (id_term, lexical_value, lang, id_thesaurus, source, status, hiden)
-			values (array_string[1], array_string[2], array_string[3], array_string[4], array_string[5], array_string[6], CAST(array_string[7] AS BOOLEAN));
+			values (array_string[1], array_string[2], array_string[3], array_string[4], array_string[5], array_string[6], CAST(array_string[7] AS BOOLEAN)) ON CONFLICT DO NOTHING;
 			
 		Insert into non_preferred_term_historique (id_term, lexical_value, lang, id_thesaurus, source, status, id_user, action)
-			values (array_string[1], array_string[2], array_string[3], id_thesaurus, array_string[4], array_string[5], id_user, 'ADD');	
+			values (array_string[1], array_string[2], array_string[3], id_thesaurus, array_string[4], array_string[5], id_user, 'ADD') ON CONFLICT DO NOTHING;	
 	END LOOP;
 END;
 $BODY$;
@@ -1887,7 +1938,7 @@ BEGIN
         LOOP
 		SELECT string_to_array(alignements_rec.alignement_value, sous_seperateur) INTO array_string;
 		Insert into alignement (author, concept_target, thesaurus_target, uri_target, alignement_id_type, internal_id_thesaurus, internal_id_concept) 
-			values (CAST(array_string[1] AS int), array_string[2], array_string[3], array_string[4], CAST(array_string[5] AS int), array_string[6], array_string[7]);
+			values (CAST(array_string[1] AS int), array_string[2], array_string[3], array_string[4], CAST(array_string[5] AS int), array_string[6], array_string[7]) ON CONFLICT DO NOTHING;
 	END LOOP;
 END;
 $BODY$;
@@ -1917,7 +1968,8 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
 	altitude double precision,
 	longitude double precision,
         created Date,
-        modified Date)
+        modified Date,
+        concept_dcterms text)
     LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
@@ -1929,7 +1981,7 @@ DECLARE
 BEGIN
 
 	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, concept_type, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
-		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, conceptType, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent);
+		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, conceptType, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent) ;
 		
 	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
 		
@@ -1949,6 +2001,12 @@ BEGIN
 			-- 'id_concept1@role@id_concept2'
 			CALL opentheso_add_custom_relations(id_thesaurus, custom_relation);
 		END IF;
+
+		IF (concept_dcterms IS NOT NULL AND concept_dcterms != 'null') THEN
+			-- 'creator@@miled@@fr##contributor@@zozo@@fr'
+			CALL opentheso_add_concept_dcterms(id_new_concet, id_thesaurus, concept_dcterms);
+		END IF;
+
 
 
 		IF (notes IS NOT NULL AND notes != 'null') THEN

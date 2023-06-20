@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
+import fr.cnrs.opentheso.core.exports.UriHelper;
 import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.core.exports.csv.WriteCSV;
 import fr.cnrs.opentheso.core.exports.pdf.new_export.PdfExportType;
@@ -213,7 +214,19 @@ public class ExportFileBean implements Serializable {
         return concepts;
     }
 
+    /**
+     * Fonction dépréciée 
+     * @return 
+     */
     public StreamedContent exportThesorus() {
+        // permet d'initialiser les paramètres pour contruire les Uris
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(),
+                viewExportBean.getNodeIdValueOfTheso().getId());
+        if (nodePreference == null) {
+            return null;
+        }
+        UriHelper uriHelper = new UriHelper(connect.getPoolConnexion(), nodePreference, viewExportBean.getNodeIdValueOfTheso().getId()); 
+
         
         /// export des concepts dépréciés
         if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) { 
@@ -336,7 +349,7 @@ public class ExportFileBean implements Serializable {
                     skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
                     viewExportBean.getSelectedLang2_PDF(),
-                    pdfExportType))) {
+                    pdfExportType, uriHelper))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
                 return DefaultStreamedContent
                         .builder()
@@ -419,6 +432,15 @@ public class ExportFileBean implements Serializable {
     }
 
     public StreamedContent exportNewGen() throws Exception {
+        // permet d'initialiser les paramètres pour contruire les Uris
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(),
+                viewExportBean.getNodeIdValueOfTheso().getId());
+        if (nodePreference == null) {
+            return null;
+        }
+        UriHelper uriHelper = new UriHelper(connect.getPoolConnexion(), nodePreference, viewExportBean.getNodeIdValueOfTheso().getId()); 
+
+        
         if ("deprecated".equalsIgnoreCase(viewExportBean.getFormat())) {
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
             byte[] datas;
@@ -523,7 +545,6 @@ public class ExportFileBean implements Serializable {
         }
 
         if ("PDF".equalsIgnoreCase(viewExportBean.getFormat())) {
-
             PdfExportType pdfExportType = PdfExportType.ALPHABETIQUE;
             if (viewExportBean.getTypes().indexOf(viewExportBean.getTypeSelected()) == 0) {
                 pdfExportType = PdfExportType.HIERARCHIQUE;
@@ -534,7 +555,7 @@ public class ExportFileBean implements Serializable {
                     skosxd,
                     viewExportBean.getSelectedLang1_PDF(),
                     viewExportBean.getSelectedLang2_PDF(),
-                    pdfExportType))) {
+                    pdfExportType, uriHelper))) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
 
                 return DefaultStreamedContent
@@ -816,11 +837,16 @@ public class ExportFileBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
         }
+        if (StringUtils.isEmpty(roleOnThesoBean.getNodePreference().getCheminSite())) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
+            FacesContext.getCurrentInstance().addMessage(null, message);
+            return null;
+        }        
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());
         exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
-
+        
         WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

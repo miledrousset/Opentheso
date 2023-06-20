@@ -6,6 +6,7 @@ import com.itextpdf.text.Anchor;
 import com.itextpdf.text.Paragraph;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.core.exports.UriHelper;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSLabel;
@@ -45,9 +46,9 @@ public class WriteAlphaPDF {
 
     private ArrayList<SKOSResource> concepts;
     private ArrayList<String> resourceChecked;
+    private UriHelper uriHelper;
 
-
-    public WriteAlphaPDF(WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument) {
+    public WriteAlphaPDF(WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument, UriHelper uriHelper) {
 
         this.writePdfSettings = writePdfSettings;
 
@@ -57,6 +58,7 @@ public class WriteAlphaPDF {
         resourceChecked = new ArrayList<>();
         labels = new HashMap<>();
         traductions = new HashMap<>();
+        this.uriHelper = uriHelper;
     }
 
     public void writeAlphabetiquePDF(ArrayList<Paragraph> paragraphs, ArrayList<Paragraph> paragraphTradList,
@@ -83,9 +85,9 @@ public class WriteAlphaPDF {
 
     private void writeTerm(SKOSResource concept, ArrayList<Paragraph> paragraphs, String codeLanguage1, String codeLanguage2) {
 
-        String idFromUri = writePdfSettings.getIdFromUri(concept.getUri());
+        String idFromUri = concept.getIdentifier();//writePdfSettings.getIdFromUri(concept.getUri());
 
-        addLabels(paragraphs, concept.getLabelsList(), codeLanguage1, codeLanguage2, idFromUri);
+        addLabels(paragraphs, concept.getLabelsList(), codeLanguage1, codeLanguage2, idFromUri, concept.getArkId());
         paragraphs.add(new Paragraph(ID + idFromUri, writePdfSettings.textFont));
         addRelations(paragraphs, concept.getRelationsList());
         addDocuments(paragraphs, concept.getDocumentationsList(), traductions.get(idFromUri), codeLanguage1, codeLanguage2);
@@ -96,7 +98,7 @@ public class WriteAlphaPDF {
     }
 
     private void addLabels(List<Paragraph> paragraphs, ArrayList<SKOSLabel> labels, String codeLanguage1,
-                                String codeLanguage2, String idFromUri) {
+                                String codeLanguage2, String idFromUri, String idArk) {
 
         int altLabelCount = 0;
         if (CollectionUtils.isNotEmpty(traductions.get(idFromUri))) {
@@ -130,7 +132,10 @@ public class WriteAlphaPDF {
                 if (label.getProperty() == SKOSProperty.prefLabel && !prefIsTrad) {
                     Paragraph paragraph = new Paragraph();
                     Anchor anchor = new Anchor(labelValue, writePdfSettings.termFont);
-                    anchor.setReference(uri + "&idc=" + idFromUri);
+                    anchor.setReference(uriHelper.getUriForConcept(idFromUri, idArk, idArk));//uri + "&idc=" + idFromUri);
+                    
+                    anchor.setName(idFromUri);
+                    
                     paragraph.add(anchor);
                     paragraphs.add(paragraph);
                 } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {
@@ -145,14 +150,14 @@ public class WriteAlphaPDF {
         if (CollectionUtils.isNotEmpty(relations)) {
             relations.stream()
                     .forEach(relation -> {
-                        String targetName = labels.get(writePdfSettings.getIdFromUri(relation.getTargetUri()));
+                        String targetName = labels.get(relation.getLocalIdentifier());//writePdfSettings.getIdFromUri(relation.getTargetUri()));
                         if (ObjectUtils.isEmpty(targetName)) {
-                            targetName = writePdfSettings.getIdFromUri(relation.getTargetUri());
+                            targetName = relation.getLocalIdentifier();
                         }
                         if (StringUtils.isNotEmpty(writePdfSettings.getCodeRelation(relation.getProperty()))) {
                             Chunk chunk = new Chunk(TAB_NIVEAU + writePdfSettings.getCodeRelation(relation.getProperty())
                                     + ": " + targetName, writePdfSettings.relationFont);
-                            chunk.setLocalGoto(writePdfSettings.getIdFromUri(relation.getTargetUri()));
+                            chunk.setLocalGoto(relation.getLocalIdentifier());//writePdfSettings.getIdFromUri(relation.getTargetUri()));
                             paragraphs.add(new Paragraph(chunk));
                         }
                     });

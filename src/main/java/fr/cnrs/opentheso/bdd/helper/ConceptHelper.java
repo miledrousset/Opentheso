@@ -44,7 +44,7 @@ import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
-import fr.cnrs.opentheso.ws.NodeDatas;
+import fr.cnrs.opentheso.ws.api.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import java.io.StringReader;
@@ -108,6 +108,54 @@ public class ConceptHelper {
         }
         return false;        
     }
+    
+    /**
+     * permet de déplacer le concept vers un autre thésaurus
+     * @param ds
+     * @param idConceptToMove
+     * @param idThesoFrom
+     * @param idThesoTarget
+     * @param idUser
+     * @return 
+     */
+    public boolean moveConceptToAnotherTheso(HikariDataSource ds,
+            String idConceptToMove, String idThesoFrom, String idThesoTarget, int idUser){
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate(
+                        " update concept set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update thesaurus_array set id_thesaurus = '" + idThesoTarget + "' where id_concept_parent = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update thesaurus_array set id_thesaurus = '" + idThesoTarget + "' where id_concept_parent = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                               
+                        + " update concept_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';" 
+                        + " update preferred_term set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                 
+                        + " update concept_group_concept set idthesaurus = '" + idThesoTarget + "' where idconcept = '" + idConceptToMove + "' and idthesaurus = '" + idThesoFrom + "';" 
+                        + " update note set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"    
+                        + " update note_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"     
+                        + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"      
+                        + " update hierarchical_relationship_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update hierarchical_relationship_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                  
+                        + " update concept_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"     
+                        + " update concept_term_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                 
+                        + " update alignement set internal_id_thesaurus = '" + idThesoTarget + "' where internal_id_concept = '" + idConceptToMove + "' and internal_id_thesaurus = '" + idThesoFrom + "';"                                 
+                        + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"     
+                        + " update concept_replacedby set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update concept_replacedby set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                  
+                        + " update gps set id_theso = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_theso = '" + idThesoFrom + "';"                                 
+                        + " update concept_facet set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';" 
+                        + " update external_resources set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                     
+                        + " update external_images set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                     
+                        + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                     
+                        + " update concept_dcterms set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                );
+                updateDateOfConcept(ds, idThesoTarget, idConceptToMove, idUser);
+                return true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while moving concept : " + idThesoTarget, sqle);
+        }
+        return false;        
+    }    
     
     /**
      * permet de supprimer un type de concept
@@ -1103,6 +1151,7 @@ public class ConceptHelper {
                         + " and "
                         + " term.lang = '" + idLang + "'"
                         + " and concept.status != 'DEP'"
+                        + " and concept.status != 'CA'"                                
                         + " and"
                         + " lower(term.lexical_value) = lower('" + label + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -2063,18 +2112,18 @@ public class ConceptHelper {
 
     private String getAlphaNumericId(Connection conn) {
         ToolsHelper toolsHelper = new ToolsHelper();
-        String id = toolsHelper.getNewId(15);
+        String id = toolsHelper.getNewId(15, false, false);
         while (isIdExiste(conn, id)) {
-            id = toolsHelper.getNewId(15);
+            id = toolsHelper.getNewId(15, false, false);
         }
         return id;
     }
 
     private String getAlphaNumericId(HikariDataSource ds) {
         ToolsHelper toolsHelper = new ToolsHelper();
-        String id = toolsHelper.getNewId(15);
+        String id = toolsHelper.getNewId(15, false, false);
         while (isIdExiste(ds, id)) {
-            id = toolsHelper.getNewId(15);
+            id = toolsHelper.getNewId(15, false, false);
         }
         return id;
     }
@@ -2561,7 +2610,7 @@ public class ConceptHelper {
         ToolsHelper toolsHelper = new ToolsHelper();
         String idArk;
         for (String idConcept : idConcepts) {
-            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());
+            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
             idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
             if (!updateArkIdOfConcept(ds, idConcept, idTheso, idArk)) {
                 return false;
@@ -2686,9 +2735,9 @@ public class ConceptHelper {
                 if (idConcept == null) {
                     if (nodePreference.getIdentifierType() == 1) { // identifiants types alphanumérique
                         ToolsHelper toolsHelper = new ToolsHelper();
-                        idConcept = toolsHelper.getNewId(10);
+                        idConcept = toolsHelper.getNewId(10, false, false);
                         while (isIdExiste(ds, idConcept)) {
-                            idConcept = toolsHelper.getNewId(10);
+                            idConcept = toolsHelper.getNewId(10, false, false);
                         }
                     } else {
                         idConcept = getNumericConceptId(ds);
@@ -5757,7 +5806,12 @@ public class ConceptHelper {
         // les concepts dépécés que ce concept remplace
         nodeConcept.setReplaces(deprecatedHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
 
-
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();
+                
+        /// récupération des Méta-données DC_terms
+        nodeConcept.setDcElements(dcElmentHelper.getDcElement(ds, idThesaurus, idConcept));
+        
+        
         return nodeConcept;
     }
 

@@ -28,6 +28,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.skosapi.SKOSAgent;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -374,8 +376,25 @@ public class CsvImportHelper {
                 groupHelper.addSubGroup(ds, idFatherGroup, idGroup, idTheso);
             }
         }
+        
+        if (StringUtils.isEmpty(formatDate)) {
+            formatDate = "dd-mm-yyyy";
+        }
+        Date created = null;
+        Date modified = null;
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);        
+        try {
+            if(conceptObject.getCreated() != null && !conceptObject.getCreated().isEmpty())
+                created = simpleDateFormat.parse(conceptObject.getCreated());
+            if(conceptObject.getModified() != null && !conceptObject.getModified().isEmpty())
+                modified = simpleDateFormat.parse(conceptObject.getModified());            
+        } catch (ParseException ex) {
+            Logger.getLogger(CsvImportHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        
         groupHelper.insertGroup(ds, idGroup, idTheso, "", "C", conceptObject.getNotation(),
-                "", false, idUser);
+                "", false, created, modified, idUser);
 
         ConceptGroupLabel conceptGroupLabel = new ConceptGroupLabel();
         for (CsvReadHelper.Label label : conceptObject.getPrefLabels()) {
@@ -730,6 +749,26 @@ public class CsvImportHelper {
             notes = notes.substring(SEPERATEUR.length(), notes.length());
         }
 
+        String dcterms = null;
+     /*   for (SKOSAgent agent : conceptObject.getAgentList()) {
+            switch (agent.getProperty()) {
+                case SKOSProperty.creator:
+                    if(StringUtils.isEmpty(dcterms)) {
+                        dcterms= "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;
+                    } else
+                        dcterms= dcterms + "##" + "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    break;
+                case SKOSProperty.contributor:
+                    if(StringUtils.isEmpty(dcterms)) {
+                        dcterms= "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;
+                    } else
+                        dcterms= dcterms + "##" + "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    break;                    
+                default:
+                    break;
+            }
+        }        */
+        
         String sql = "";
         try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
             sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
@@ -755,13 +794,17 @@ public class CsvImportHelper {
                     + (conceptObject.getLatitude() == null ? null : "'" + conceptObject.getLatitude() + "'") + ", "
                     + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ", "
                     + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
-                    + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ")";
+                    + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ", "
+                    + (dcterms == null ? null : "'" + dcterms + "'") 
+                    + ")";
 
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);
             System.out.println(e.getMessage());
             System.out.println("--------------------------------");
+            message = message + "Erreur concept : " + prefTerm + "(" + conceptObject.getIdConcept() +"(\n";
+            return false;
         }
 
         return true;
@@ -1089,17 +1132,33 @@ public class CsvImportHelper {
         message = "";
         switch (nodeReplaceValueByValue.getSKOSProperty()) {
             case SKOSProperty.prefLabel:
-                if (!updatePrefLabel(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
-                    addMessage("Erreur : ", nodeReplaceValueByValue);
+                if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
+                    if (!updatePrefLabel(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
+                        addMessage("Erreur : ", nodeReplaceValueByValue);
+                    }
                 }
                 break;
+            case SKOSProperty.altLabel:
+                if (!updateAltLabel(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
+                    addMessage("Erreur : ", nodeReplaceValueByValue);
+                }
+                break;    
+            case SKOSProperty.definition:
+                if (!updateDefinition(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
+                    addMessage("Erreur : ", nodeReplaceValueByValue);
+                }
+                break;                  
+                
+                
+            /*    Action dangereuse, à activer plus tard 
             case SKOSProperty.broader:
                 if (!updateBroader(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
                     addMessage("Erreur : ", nodeReplaceValueByValue);
                 }
                 break;                
+                */
             default:
-                throw new AssertionError();
+                break;
         }
 
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -1122,6 +1181,98 @@ public class CsvImportHelper {
         }
         return true;
     }
+    private boolean updateAltLabel(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
+        if (nodeReplaceValueByValue.getIdConcept() == null || nodeReplaceValueByValue.getIdConcept().isEmpty()) {
+            addMessage("concept sans identifiant :", nodeReplaceValueByValue);
+            return false;
+        }
+        TermHelper termHelper = new TermHelper();
+        String idTerm = termHelper.getIdTermOfConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
+        if (idTerm == null || idTerm.isEmpty()) {
+            return false;
+        }
+        
+        // si l'ancienne valeur et la nouvelle valeur sont présente
+        if(!StringUtils.isEmpty(nodeReplaceValueByValue.getOldValue())) {
+            if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
+                // on met remplace la valeur du altLabel par la nouvelle valeur
+                if(!termHelper.updateTermSynonyme(ds, nodeReplaceValueByValue.getOldValue(),
+                        nodeReplaceValueByValue.getNewValue(), idTerm, nodeReplaceValueByValue.getIdLang(),
+                        idTheso, false, idUser1)) {
+                    addMessage("Rename AltLabel error :", nodeReplaceValueByValue);
+                }                
+            }
+        } else {
+            if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
+                // on ajoute un nouvel altLabel 
+                if(!termHelper.addNonPreferredTerm(ds, idTerm, nodeReplaceValueByValue.getNewValue(),
+                        nodeReplaceValueByValue.getIdLang(), idTheso, "", "", false, idUser1)) {
+                    addMessage("Insert AltLabel error :", nodeReplaceValueByValue);
+                }                 
+            }
+        }
+        return true;
+    }   
+    private boolean updateDefinition(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
+        if (nodeReplaceValueByValue.getIdConcept() == null || nodeReplaceValueByValue.getIdConcept().isEmpty()) {
+            addMessage("concept sans identifiant :", nodeReplaceValueByValue);
+            return false;
+        }
+        TermHelper termHelper = new TermHelper();
+        NoteHelper noteHelper = new NoteHelper();
+        
+        String idTerm = termHelper.getIdTermOfConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
+
+        if (idTerm == null || idTerm.isEmpty()) {
+            return false;
+        }
+        
+        // si l'ancienne valeur et la nouvelle valeur sont présente
+        if(!StringUtils.isEmpty(nodeReplaceValueByValue.getOldValue())) {
+            if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
+                // on supprime d'abord l'ancienne note
+                int idNote = noteHelper.getNoteByValueAndThesaurus(ds, nodeReplaceValueByValue.getOldValue(),
+                        "definition", nodeReplaceValueByValue.getIdLang(), idTheso); 
+                if(idNote != -1){
+                    // on remplace la valeur du altLabel par la nouvelle valeur
+                    if(!noteHelper.updateTermNote(ds, idNote, idTerm, nodeReplaceValueByValue.getIdLang(), idTheso, 
+                            nodeReplaceValueByValue.getNewValue(), "definition", idUser1)) {
+                        addMessage("Rename definition error :", nodeReplaceValueByValue);
+                    }                      
+                } else {
+                    if (!noteHelper.isNoteExistOfTerm(
+                            ds,
+                            idTerm,
+                            idTheso,
+                            nodeReplaceValueByValue.getIdLang(),
+                            nodeReplaceValueByValue.getNewValue(),
+                            "definition")) {                    
+                        if(!noteHelper.addTermNote(ds, idTerm, nodeReplaceValueByValue.getIdLang(), idTheso, 
+                                nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
+                            addMessage("add definition error :", nodeReplaceValueByValue);
+                        }
+                    }                    
+                }
+            }
+        } else {
+            if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
+                // on ajoute une nouvelle définition
+                if (!noteHelper.isNoteExistOfTerm(
+                        ds,
+                        idTerm,
+                        idTheso,
+                        nodeReplaceValueByValue.getIdLang(),
+                        nodeReplaceValueByValue.getNewValue(),
+                        "definition")) {                 
+                    if(!noteHelper.addTermNote(ds, idTerm, nodeReplaceValueByValue.getIdLang(), idTheso, 
+                            nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
+                        addMessage("add definition error :", nodeReplaceValueByValue);
+                    }     
+                }
+            }
+        }
+        return true;
+    }      
     private boolean updateBroader(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
         if (nodeReplaceValueByValue.getIdConcept() == null || nodeReplaceValueByValue.getIdConcept().isEmpty()) {
             addMessage("concept sans identifiant :", nodeReplaceValueByValue);
@@ -1220,25 +1371,35 @@ public class CsvImportHelper {
         String oldLabel;
 
         for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
-            // on supprime les preflabels dans cette langue
-            oldLabel = termHelper.getLexicalValue(ds, idTerm, idTheso, prefLabel.getLang());
-
-            // on test si c'est identique, on ne fait rien.
-            if (oldLabel.trim().equals(prefLabel.getLabel().trim())) {
-                continue;
-            }
-
-            if (!oldLabel.isEmpty()) {
-                if (!termHelper.deleteTraductionOfTerm(ds, idTerm, oldLabel, prefLabel.getLang(), idTheso, idUser1)) {
-                    return false;
-                }
-            }
-            // on ajoute les nouveaux prefLabels dans cette langue
-            if (!prefLabel.getLabel().isEmpty()) {
+            // si le label n'existe pas dans cette langue, on l'ajoute
+            if (!termHelper.isTermExistInThisLang(ds, idTerm, prefLabel.getLang(), idTheso)) {
                 if (!termHelper.addTraduction(ds, prefLabel.getLabel(), idTerm, prefLabel.getLang(), "import", "", idTheso, idUser1)) {
                     return false;
-                }
-            }
+                }                  
+            } else {
+                oldLabel = termHelper.getLexicalValue(ds, idTerm, idTheso, prefLabel.getLang());
+                
+                // si le label est fourni vide, il faut alors supprimer cette traduction
+                if (prefLabel.getLabel().isEmpty()) {
+                    return termHelper.deleteTraductionOfTerm(ds, idTerm, oldLabel, prefLabel.getLang(), idTheso, idUser1);
+                } 
+                
+                // si le label d'origine est vide (cas rare et normalement impossible)
+                if (oldLabel.isEmpty()) {
+                    //le terme est alors à mettre à jour
+                    return termHelper.updateTraduction(ds, prefLabel.getLabel(), idTerm, prefLabel.getLang(), idTheso, idUser1);
+                }        
+                
+                // on vérifie si le terme est identique, on ne fait rien
+                if (oldLabel.trim().equals(prefLabel.getLabel().trim())) {
+                    continue;
+                }  
+                
+                // le terme est alors à mettre à jour
+                if (!termHelper.updateTraduction(ds, prefLabel.getLabel(), idTerm, prefLabel.getLang(), idTheso, idUser1)) {
+                    return false;
+                }                   
+            }            
         }
         return true;
     }

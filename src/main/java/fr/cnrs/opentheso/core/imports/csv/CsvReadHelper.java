@@ -7,6 +7,7 @@ package fr.cnrs.opentheso.core.imports.csv;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
@@ -49,6 +50,8 @@ public class CsvReadHelper {
     private ArrayList<NodeAlignmentImport> nodeAlignmentImports;
     private ArrayList<NodeNote> nodeNotes;
     private ArrayList<NodeIdValue> nodeIdValues;
+    private ArrayList<NodeCompareTheso> nodeCompareThesos;    
+    
     
     private ArrayList<NodeDeprecated> nodeDeprecateds;
 
@@ -172,20 +175,20 @@ public class CsvReadHelper {
 
             CSVParser cSVParser = cSVFormat.parse(in);
             String value;
-            nodeIdValues = new ArrayList<>();
+            nodeCompareThesos = new ArrayList<>();
             for (CSVRecord record : cSVParser) {
-                NodeIdValue nodeIdValue = new NodeIdValue();
+                NodeCompareTheso nodeCompareTheso = new NodeCompareTheso();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     value = record.get("skos:prefLabel@" + idLang);
                     if (value == null) {
                         continue;
                     }
-                    nodeIdValue.setValue(value);
+                    nodeCompareTheso.setOriginalPrefLabel(value);
                 } catch (Exception e) {
                     continue;
                 }
-                nodeIdValues.add(nodeIdValue);
+                nodeCompareThesos.add(nodeCompareTheso);
             }
             return true;
         } catch (IOException ex) {
@@ -561,7 +564,22 @@ public class CsvReadHelper {
                     if (nodeReplaceValueByValue != null) {
                         nodeReplaceValueByValue.setIdConcept(idConcept);
                         nodeReplaceValueByValues.add(nodeReplaceValueByValue);
-                    }                  
+                    }
+                    NodeReplaceValueByValue nodeReplaceValueByValue2 = new NodeReplaceValueByValue();
+                    // on récupère les altLabels 
+                    nodeReplaceValueByValue2 = getValueAndPropertyAltLabel(nodeReplaceValueByValue2, record, idLang1);     
+                    if (nodeReplaceValueByValue2 != null) {
+                        nodeReplaceValueByValue2.setIdConcept(idConcept);
+                        nodeReplaceValueByValues.add(nodeReplaceValueByValue2);
+                    }   
+                    NodeReplaceValueByValue nodeReplaceValueByValue3 = new NodeReplaceValueByValue();
+                    // on récupère les définitions
+                    nodeReplaceValueByValue3 = getValueAndPropertyDefinition(nodeReplaceValueByValue3, record, idLang1);     
+                    if (nodeReplaceValueByValue3 != null) {
+                        nodeReplaceValueByValue3.setIdConcept(idConcept);
+                        nodeReplaceValueByValues.add(nodeReplaceValueByValue3);
+                    }                     
+                    
                 }
                  // on récupère les BTs 
                 NodeReplaceValueByValue nodeReplaceValueByValue = new NodeReplaceValueByValue();
@@ -583,6 +601,7 @@ public class CsvReadHelper {
             String idLang) {
         String value;
         try {
+            //récupère les prefLabels
             value = record.get("new_skos:preflabel@"+ idLang);
             if(value != null && !value.isEmpty()) {
                 nodeReplaceValueByValue.setIdLang(idLang);
@@ -603,6 +622,59 @@ public class CsvReadHelper {
         }      
         return null;
     }
+    private NodeReplaceValueByValue getValueAndPropertyAltLabel(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record,
+            String idLang) {
+        String value;
+        try {
+            //récupère les altLabels
+            value = record.get("new_skos:altLabel@"+ idLang);
+            if(value != null && !value.isEmpty()) {
+                nodeReplaceValueByValue.setIdLang(idLang);
+                nodeReplaceValueByValue.setNewValue(value);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.altLabel);
+            } else {
+                return null;
+            }
+            try {
+                value = record.get("skos:altlabel@"+ idLang);
+                if(value != null && !value.isEmpty()) {
+                    nodeReplaceValueByValue.setOldValue(value);
+                }                 
+            } catch (Exception e) {
+            }
+            return nodeReplaceValueByValue;
+        } catch (Exception e) {
+            //System.err.println("");
+        }      
+        return null;
+    }   
+    private NodeReplaceValueByValue getValueAndPropertyDefinition(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record,
+            String idLang) {
+        String value;
+        try {
+            //récupère les définitons
+            value = record.get("new_skos:definition@"+ idLang);
+            if(value != null && !value.isEmpty()) {
+                nodeReplaceValueByValue.setIdLang(idLang);
+                nodeReplaceValueByValue.setNewValue(value);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.definition);
+            } else {
+                return null;
+            }
+            try { 
+                value = record.get("skos:definition@"+ idLang);
+                if(value != null && !value.isEmpty()) {
+                    nodeReplaceValueByValue.setOldValue(value);
+                }                 
+            } catch (Exception e) {
+            }                
+            return nodeReplaceValueByValue;
+        } catch (Exception e) {
+            //System.err.println("");
+        }      
+        return null;
+    }     
+    
     private NodeReplaceValueByValue getValueAndPropertyBT(NodeReplaceValueByValue nodeReplaceValueByValue, CSVRecord record) {
         String value;
         try {
@@ -666,7 +738,7 @@ public class CsvReadHelper {
     }
 
     /**
-     * permet de lire un fichier CSV complet pour changer un thésaurus
+     * permet de lire un fichier CSV complet pour charger un thésaurus
      *
      * @param in
      * @param readEmptyData
@@ -994,7 +1066,7 @@ public class CsvReadHelper {
             values = value.split("##");
             for (String value1 : values) {
                 if (!value1.isEmpty()) {
-                    conceptObject.members.add(getId(value.trim()));
+                    conceptObject.members.add(getId(value1.trim()));
                 }
             }
         } catch (Exception e) {
@@ -1621,7 +1693,7 @@ public class CsvReadHelper {
             for (String value1 : values) {
                 if (!value1.isEmpty()) {
                     NodeImage nodeImage = new NodeImage();
-                    nodeImage.setUri(value1);
+                    nodeImage.setUri(value1.trim());
                     nodeImage.setCopyRight("");
                     nodeImages.add(nodeImage);
                 }
@@ -1724,6 +1796,14 @@ public class CsvReadHelper {
 
     public void setNodeDeprecateds(ArrayList<NodeDeprecated> nodeDeprecateds) {
         this.nodeDeprecateds = nodeDeprecateds;
+    }
+
+    public ArrayList<NodeCompareTheso> getNodeCompareThesos() {
+        return nodeCompareThesos;
+    }
+
+    public void setNodeCompareThesos(ArrayList<NodeCompareTheso> nodeCompareThesos) {
+        this.nodeCompareThesos = nodeCompareThesos;
     }
 
     public class ConceptObject {

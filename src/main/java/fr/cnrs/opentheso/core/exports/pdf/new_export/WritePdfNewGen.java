@@ -6,6 +6,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.core.exports.UriHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class WritePdfNewGen {
 
 
     public byte[] createPdfFile(HikariDataSource hikariDataSource, SKOSXmlDocument xmlDocument, String codeLanguage1,
-                                String codeLanguage2, PdfExportType pdfExportType) throws DocumentException, IOException {
+                                String codeLanguage2, PdfExportType pdfExportType, UriHelper uriHelper) throws DocumentException, IOException {
 
         Document document = new Document();
 
@@ -44,10 +45,10 @@ public class WritePdfNewGen {
 
             // Préparation des données
             if (pdfExportType == PdfExportType.ALPHABETIQUE) {
-                WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF(writePdfSettings, xmlDocument);
+                WriteAlphaPDF writeAlphaPDF = new WriteAlphaPDF(writePdfSettings, xmlDocument, uriHelper);
                 writeAlphaPDF.writeAlphabetiquePDF(paragraphList, paragraphTradList, codeLanguage1, codeLanguage2);
             } else {
-                WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings, xmlDocument);
+                WriteHierachiquePDF writeHierachiquePDF = new WriteHierachiquePDF(writePdfSettings, xmlDocument, uriHelper);
                 writeHierachiquePDF.writeHierachiquePDF(hikariDataSource, paragraphList, paragraphTradList,
                         codeLanguage1, codeLanguage2);
             }

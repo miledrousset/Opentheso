@@ -9,6 +9,7 @@ import com.itextpdf.text.Paragraph;
 import com.zaxxer.hikari.HikariDataSource;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.core.exports.UriHelper;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
@@ -46,8 +47,9 @@ public class WriteHierachiquePDF {
     private HashMap<String, ArrayList<NodeImage>> images;
     private ArrayList<String> resourceChecked;
 
+    private UriHelper uriHelper;
 
-    public WriteHierachiquePDF(WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument) {
+    public WriteHierachiquePDF(WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument, UriHelper uriHelper) {
 
         this.writePdfSettings = writePdfSettings;
 
@@ -64,6 +66,7 @@ public class WriteHierachiquePDF {
         uri = xmlDocument.getConceptScheme().getUri();
 
         concepts = xmlDocument.getConceptList();
+        this.uriHelper = uriHelper;
     }
 
     public void writeHierachiquePDF(HikariDataSource hikariDataSource, ArrayList<Paragraph> paragraphs,
@@ -86,7 +89,7 @@ public class WriteHierachiquePDF {
         for (SKOSResource concept : concepts) {
 
             boolean isAtRoot = true;
-            String conceptID = writePdfSettings.getIdFromUri(concept.getUri());
+            String conceptID = concept.getIdentifier();//uriHelper.getUriForConcept(concept.getIdentifier(), concept.getArkId(), concept.getArkId());//writePdfSettings.getIdFromUri(concept.getUri());
             Iterator i = idToChildId.keySet().iterator();
             while (i.hasNext()) {
                 ArrayList<String> valeur = (ArrayList<String>) idToChildId.get((String) i.next());
@@ -105,7 +108,7 @@ public class WriteHierachiquePDF {
 
                 Paragraph paragraph = new Paragraph();
                 Anchor anchor = new Anchor(name + " (" + conceptID + ")", writePdfSettings.termFont);
-                anchor.setReference(uri + "&idc=" + conceptID);
+                anchor.setReference(uriHelper.getUriForConcept(concept.getIdentifier(), concept.getArkId(), concept.getArkId()));  //uri + "&idc=" + conceptID);
                 paragraph.add(anchor);
                 paragraphs.add(paragraph);
 
@@ -125,7 +128,7 @@ public class WriteHierachiquePDF {
         if (childList == null) {
             return;
         }
-
+        String idArk;
         for (String idFils : childList) {
             String name = labels.get(idFils);
             if (name == null) {
@@ -134,7 +137,8 @@ public class WriteHierachiquePDF {
 
             Paragraph paragraph = new Paragraph();
             Anchor anchor = new Anchor(indentation + name + " (" + idFils + ")", writePdfSettings.textFont);
-            anchor.setReference(uri + "&idc=" + idFils);
+            idArk = uriHelper.getIdArk(idFils);
+            anchor.setReference(uriHelper.getUriForConcept(idFils, idArk, idArk));//uri + "&idc=" + idFils);//uriHelper.getUriForConcept(concept.getIdentifier(), concept.getArkId(), concept.getArkId())//uri + "&idc=" + idFils);
             paragraph.add(anchor);
             paragraphs.add(paragraph);
 
@@ -211,4 +215,5 @@ public class WriteHierachiquePDF {
                     });
         }
     }
+   
 }

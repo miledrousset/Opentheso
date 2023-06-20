@@ -42,7 +42,8 @@ public class SKOSResource {
     private ArrayList<SKOSRelation> relationsList;
     private ArrayList<SKOSDocumentation> documentationsList;
     private ArrayList<SKOSDate> dateList;
-    private ArrayList<SKOSCreator> creatorList;
+    private ArrayList<SKOSAgent> agentList;
+
     private SKOSGPSCoordinates GPSCoordinates;
     private ArrayList<SKOSNotation> notationList;
     private ArrayList<SKOSMatch> matchList;
@@ -71,7 +72,7 @@ public class SKOSResource {
         relationsList = new ArrayList<>();
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
-        creatorList = new ArrayList<>();
+        agentList = new ArrayList<>();
         GPSCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
@@ -94,7 +95,7 @@ public class SKOSResource {
         relationsList = new ArrayList<>();
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
-        creatorList = new ArrayList<>();
+        agentList = new ArrayList<>();
         GPSCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
@@ -120,8 +121,8 @@ public class SKOSResource {
             documentationsList.clear();
         if(dateList != null)
             dateList.clear();
-        if(creatorList != null)
-            creatorList.clear();
+        if(agentList != null)
+            agentList.clear();
         GPSCoordinates = null;
         if(notationList != null)
             notationList.clear();
@@ -189,9 +190,20 @@ public class SKOSResource {
         return matchList;
     }
 
-    public ArrayList<SKOSCreator> getCreatorList() {
-        return creatorList;
+    public ArrayList<SKOSAgent> getAgentList() {
+        return agentList;
     }
+
+
+    
+    /**
+     *
+     * @param agent le nom
+     * @param prop le type
+     */
+    public void addAgent(String agent, int prop) {
+        agentList.add(new SKOSAgent(agent, prop));
+    }    
 
     public SKOSGPSCoordinates getGPSCoordinates() {
         return GPSCoordinates;
@@ -264,15 +276,6 @@ public class SKOSResource {
      */
     public void addMatch(String v, int prop) {
         matchList.add(new SKOSMatch(v, prop));
-    }
-
-    /**
-     *
-     * @param creator le nom
-     * @param prop le type
-     */
-    public void addCreator(String creator, int prop) {
-        creatorList.add(new SKOSCreator(creator, prop));
     }
 
     /**
@@ -372,10 +375,6 @@ public class SKOSResource {
 
     public void setDateList(ArrayList<SKOSDate> dateList) {
         this.dateList = dateList;
-    }
-
-    public void setCreatorList(ArrayList<SKOSCreator> creatorList) {
-        this.creatorList = creatorList;
     }
 
     public void setNotationList(ArrayList<SKOSNotation> notationList) {
@@ -594,8 +593,8 @@ public class SKOSResource {
             String r1_name = null;
             String r2_name = null;
 
-            String id1 = getIdFromUri(r1.getUri());
-            String id2 = getIdFromUri(r2.getUri());
+            String id1 = r1.getIdentifier();//getIdFromUri(r1.getUri());
+            String id2 = r2.getIdentifier();//getIdFromUri(r2.getUri());
 
             if (!resourceChecked.contains(id1)) {
 
@@ -663,7 +662,7 @@ public class SKOSResource {
         }
 
         private void writeIdToGPS(SKOSResource resource) {
-            String key = getIdFromUri(resource.getUri());
+            String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
             SKOSGPSCoordinates gps = resource.getGPSCoordinates();
             String lat = gps.getLat();
             String lon = gps.getLon();
@@ -674,7 +673,7 @@ public class SKOSResource {
         }
 
         private void writeIdToImg(SKOSResource resource) {
-            String key = getIdFromUri(resource.getUri());
+            String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
 
             if (resource.getNodeImage() != null) {
                 idToImg.put(key, resource.getNodeImage());
@@ -683,7 +682,7 @@ public class SKOSResource {
 
         private void writeIdToMatch(SKOSResource resource) {
             for (SKOSMatch match : resource.getMatchList()) {
-                String key = getIdFromUri(resource.getUri());
+                String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
                 String matchTypeName = null;
                 int prop = match.getProperty();
                 switch (prop) {
@@ -731,7 +730,7 @@ public class SKOSResource {
                     continue;
                 }
 
-                String key = getIdFromUri(resource.getUri());
+                String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
                 String docTypeName = null;
                 int prop = documentation.getProperty();
 
@@ -780,11 +779,12 @@ public class SKOSResource {
 
             public String term;
             public String idConcept;
+            public String idArk;
         }
 
         private void writeIdToChild(SKOSResource resource) {
 
-            String key = getIdFromUri(resource.getUri());
+            String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
             for (SKOSRelation relation : resource.getRelationsList()) {
                 if (relation.getProperty() == SKOSProperty.narrower
                         || relation.getProperty() == SKOSProperty.narrowerGeneric
@@ -793,10 +793,10 @@ public class SKOSResource {
 
                     if (idToChildId.get(key) == null) {
                         ArrayList<String> temp = new ArrayList<>();
-                        temp.add(getIdFromUri(relation.getTargetUri()));
+                        temp.add(relation.getLocalIdentifier());//getIdFromUri(relation.getTargetUri()));
                         idToChildId.put(key, temp);
                     } else {
-                        String childId = getIdFromUri(relation.getTargetUri());
+                        String childId = relation.getLocalIdentifier();//getIdFromUri(relation.getTargetUri());
                         if (!idToChildId.get(key).contains(childId)) {
                             idToChildId.get(key).add(childId);
                         }
@@ -809,7 +809,7 @@ public class SKOSResource {
             if (childs != null) {
                 ArrayList<TermTemp> conceptIdsTemps = new ArrayList<>();
                 for (String child : childs) {
-                    String idTheso = resource.getUri().substring(resource.getUri().indexOf("idt=") + 4); 
+                    String idTheso = resource.getLocalUri().substring(resource.getLocalUri().indexOf("idt=") + 4); 
                     Term term = new TermHelper().getThisTerm(hikariDataSource, child, idTheso, langCode);
                     if (term != null) {
                         TermTemp termTemp = new TermTemp();
@@ -850,7 +850,7 @@ public class SKOSResource {
 
         private void checkTrad(SKOSResource resource) {
 
-            String key = getIdFromUri(resource.getUri());
+            String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
 
             int lang1Doc = 0;
             int lang2Doc = 0;
@@ -902,8 +902,8 @@ public class SKOSResource {
             String r1_name = null;
             String r2_name = null;
 
-            String id1 = getIdFromUri(r1.getUri());
-            String id2 = getIdFromUri(r2.getUri());
+            String id1 = r1.getIdentifier();//getIdFromUri(r1.getUri());
+            String id2 = r2.getIdentifier();//getIdFromUri(r2.getUri());
 
             if (!resourceChecked.contains(id1)) {
                 checkTrad(r1);

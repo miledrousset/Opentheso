@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bdd.helper.nodes.concept;
 
 import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
@@ -15,6 +16,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import java.util.List;
 
 public class NodeConcept {
 
@@ -70,6 +72,9 @@ public class NodeConcept {
     // liste des Qualificatifs
     private ArrayList <NodeCustomRelation> nodeCustomRelations;
 
+    // Dublin Core
+    private ArrayList<DcElement> dcElements;
+    
     public NodeConcept() {
         nodeNotesTerm = new ArrayList<>();
         nodeNotesConcept = new ArrayList<>();
@@ -211,6 +216,14 @@ public class NodeConcept {
         this.nodeCustomRelations = nodeCustomRelations;
     }
 
+    public ArrayList<DcElement> getDcElements() {
+        return dcElements;
+    }
+
+    public void setDcElements(ArrayList<DcElement> dcElements) {
+        this.dcElements = dcElements;
+    }
+
     public void clear(){
         if(nodeBT != null) nodeBT.clear();
         concept = null;
@@ -229,6 +242,7 @@ public class NodeConcept {
         if(replaces != null) replaces.clear();    
         if(nodeExternalResources != null) nodeExternalResources.clear(); 
         if(nodeCustomRelations != null) nodeCustomRelations.clear(); 
+        if(dcElements != null) dcElements.clear();
     }
     
 }

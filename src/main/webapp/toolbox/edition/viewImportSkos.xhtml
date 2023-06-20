@@ -3,11 +3,11 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:panelGroup id="viewImportSkosForm" style="margin-left: 20px; margin-right: 20px; color: #000">
 
-    <div class="col-12" style="height: 100%">
-        <div class="card shadow mb-4" style="height: 100%;">
-            <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin: 30px;">
-                <h:panelGroup id="viewImportSkosForm" style="margin-left: 20px; margin-right: 20px; color: #000">
+        <div class="col-12" style="height: 100%">
+            <div class="card shadow mb-4" style="height: 100%;">
+                <div class="card mb-4 py-3 border-left-success" style="vertical-align: central; margin: 30px;">
 
                     <div class="row" >
                         <div class="col-12" style="padding-left: 30px; margin-bottom: 30px">
@@ -82,6 +82,21 @@
                         </div>
                     </div>
 
+                    <!-- Langue par defaut -->
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-3" style="text-align: right;">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{importFileBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none;  box-shadow: none; "
+                                             panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                                <f:selectItems  value="#{importFileBean.allLangs}" var="lang" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" itemValue="#{lang.id_iso639_1}"/> 
+                                <p:ajax event="change" listener="#{importFileBean.actionChoiceLang(lang.id_iso639_1)}"  />
+                            </p:selectOneMenu>  
+                        </div>
+                    </div>                    
+
                     <!-- choix du format de sortie Skos, Json, JsonLd, Turtle -->
                     <div class="row" style="margin-top: 5px">
                         <div class="col-3" style="text-align: right;">
@@ -101,7 +116,7 @@
                         </div>
                     </div>
 
-                    <!-- choix du format de sortie Skos, Json, JsonLd, Turtle -->
+                    <!-- à quel projet ajouter le thésaurus -->
                     <div class="row" style="margin-top: 5px">
                         <div class="col-3" style="text-align: right;">
                             <h:outputText value="Projet:" title="A quel projet ajouter le thésaurus à importer"/>
@@ -130,93 +145,88 @@
                     <p:spacer height="10px"/>
 
                     <!-- Choix du fichier -->   
-                    <div class="row" style="margin-top: 5px">
-                        <div class="col-12" > 
-                            <p:fileUpload listener="#{importFileBean.loadFileSkos}" 
-                                          label="#{langueBean.getMsg('candidat.parcourir')}" style="padding-left: 10px; padding-right: 10px"
-                                          mode="advanced" auto="true"
-                                          styleClass="browserbutton"
-                                          allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
-                                          update="viewImportSkosForm" disabled="#{importFileBean.loadDone}" />
-                        </div>
-                    </div>
-
-                    <h:panelGroup id="result" rendered="#{importFileBean.loadDone}">
+                    <h:panelGroup id="panelFormImportSkos">
                         <div class="row" style="margin-top: 5px">
-                            <div class="col-5">
-                                <h:outputText value="URI: " />
-                                <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                            <div class="col-12" > 
+                                <p:fileUpload listener="#{importFileBean.loadFileSkos}" 
+                                              label="#{langueBean.getMsg('candidat.parcourir')}" style="padding-left: 10px; padding-right: 10px"
+                                              mode="advanced" auto="true"
+                                              styleClass="browserbutton"
+                                              allowTypes="/(\.|\/)(skos|rdf|xml|json|ttl)$/"
+                                              update="panelFormImportSkos" disabled="#{importFileBean.loadDone}" />
                             </div>
                         </div>
 
-                        <div class="row" style="margin-top: 5px">
-                            <div class="col-5">
-                                <h:outputText value="Total des concepts: " />
-                                <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                        <h:panelGroup id="result" rendered="#{importFileBean.loadDone}">
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-5">
+                                    <h:outputText value="URI: " />
+                                    <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-5">
+                                    <h:outputText value="Total des concepts: " />
+                                    <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
+
+                        <!-- infos -->
+                        <h:panelGroup rendered="#{importFileBean.loadDone or importFileBean.importDone}" style="margin-left: 30px; margin-right: 30px;">
+                            <div class="row" style="margin-top: 5px">             
+                                <div class="col-12" >
+                                    <p:accordionPanel activeIndex="-1">
+                                        <p:tab title="Info" titleStyleClass="infoAcordionPanel" >
+                                            <p:scrollPanel mode="native" style="height:200px">
+                                                <pre><h:outputText value="#{importFileBean.info}" styleClass="infoAcordionPanel" /></pre>
+                                                <hr/>
+                                                <pre><h:outputText rendered="#{!importFileBean.warningIsEmpty()}" value="Warning : #{importFileBean.warning}" styleClass="warningAcordionPanel" /></pre>
+                                            </p:scrollPanel>
+                                        </p:tab>
+                                        <p:tab title="Error" titleStyleClass="errorAcordionPanel">
+                                            <p:scrollPanel mode="native" style="height:200px">
+                                                <pre><h:outputText value="#{importFileBean.error}" styleClass="errorAcordionPanel" /></pre>
+                                            </p:scrollPanel>
+                                        </p:tab>
+                                    </p:accordionPanel> 
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
+
+                        <div class="row" style="margin-top: 20px; padding: 20px">
+                            <div class="col-12">
+                                <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" 
+                                               labelTemplate="{value}%" styleClass="animated" global="false" style="height: 20px;" />
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin: 20px">
+                            <div class="col-12" style="text-align: center">
+
+                                <p:commandButton value="#{langueBean.getMsg('btnBack')}"
+                                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                                 actionListener="#{viewEditionBean.init()}"
+                                                 action="#{importFileBean.init()}"
+                                                 update="containerIndex"/>
+
+                                <p:commandButton value="#{langueBean.getMsg('candidat.import')}" ajax="false"
+                                                 onclick="PrimeFaces.monitorDownload(start, stop);"
+                                                 actionListener="#{importFileBean.addSkosThesoToBDDV2()}"
+                                                 styleClass="ui-button-success" icon="fa fa-download"
+                                                 disabled="#{!importFileBean.loadDone}"
+                                                 title="Import rapide" style="margin-left: 20px"/>
+
                             </div>
                         </div>
                     </h:panelGroup>
-
-
-                    <!-- infos -->
-                    <h:panelGroup rendered="#{importFileBean.loadDone or importFileBean.importDone}" style="margin-left: 30px; margin-right: 30px;">
-                        <div class="row" style="margin-top: 5px">             
-                            <div class="col-12" >
-                                <p:accordionPanel activeIndex="-1">
-                                    <p:tab title="Info" titleStyleClass="infoAcordionPanel" >
-                                        <p:scrollPanel mode="native" style="height:200px">
-                                            <pre><h:outputText value="#{importFileBean.info}" styleClass="infoAcordionPanel" /></pre>
-                                            <hr/>
-                                            <pre><h:outputText rendered="#{!importFileBean.warningIsEmpty()}" value="Warning : #{importFileBean.warning}" styleClass="warningAcordionPanel" /></pre>
-                                        </p:scrollPanel>
-                                    </p:tab>
-                                    <p:tab title="Error" titleStyleClass="errorAcordionPanel">
-                                        <p:scrollPanel mode="native" style="height:200px">
-                                            <pre><h:outputText value="#{importFileBean.error}" styleClass="errorAcordionPanel" /></pre>
-                                        </p:scrollPanel>
-                                    </p:tab>
-                                </p:accordionPanel> 
-                            </div>
-                        </div>
-                    </h:panelGroup>
-
-
-                    <div class="row" style="margin-top: 20px; padding: 20px">
-                        <div class="col-12">
-                            <p:progressBar widgetVar="pbAjax" ajax="true" value="#{importFileBean.progress}" 
-                                           labelTemplate="{value}%" styleClass="animated" global="false" style="height: 20px;" />
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin: 20px">
-                        <div class="col-12" style="text-align: center">
-
-                            <p:commandButton value="#{langueBean.getMsg('btnBack')}"
-                                             icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
-                                             actionListener="#{viewEditionBean.init()}"
-                                             action="#{importFileBean.init()}"
-                                             update="containerIndex"/>
-
-                            <p:commandButton value="#{langueBean.getMsg('candidat.import')}" ajax="false"
-                                             onclick="PrimeFaces.monitorDownload(start, stop);"
-                                             actionListener="#{importFileBean.addSkosThesoToBDDV2()}"
-                                             styleClass="ui-button-success" icon="fa fa-download"
-                                             disabled="#{!importFileBean.loadDone}"
-                                             title="Import rapide" style="margin-left: 20px"/>
-
-                            <p:commandButton rendered="ee" value="#{langueBean.getMsg('toolbox.oldMethod')}" ajax="false" update="containerIndex"
-                                             onclick="PrimeFaces.monitorDownload(start, stop);"
-                                             actionListener="#{importFileBean.addSkosThesoToBDD()}"
-                                             styleClass="ui-button-success" icon="fa fa-download"
-                                             disabled="#{!importFileBean.loadDone}"
-                                             title="Import classique plus long" style="margin-left: 20px" />
-                        </div>
-                    </div>
-                </h:panelGroup>
+                </div>
             </div>
         </div>
-    </div>
-
+    </h:panelGroup>
     <script type="text/javascript">
         function start() {
             PF('statusDialog').show();

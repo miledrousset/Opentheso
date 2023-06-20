@@ -124,7 +124,13 @@
         body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item {
             font-size: 12px;
         }
-
+        body .ui-selectcheckboxmenu .ui-selectcheckboxmenu-trigger .ui-icon {
+            font-size: 0.8rem;
+        }
+        body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item .ui-chkbox {
+            margin-right: 0.1rem;
+        }
+        
     </style>
 
     <div class="container" style="margin-top: -25px; z-index: 9;">
@@ -248,7 +254,7 @@
     <div class="row test222" id="test3333" style="width: 100%; margin-top: -30px; z-index: 1">
         <div class="col-2"/>
 
-        <div id="choixPanelDiv" class="col-8 researchAdvanceClass" style="display:flex; flex-direction: row; justify-content: center; align-items: center; visibility: hidden">
+        <div id="choixPanelDiv" class="col-8 researchAdvanceClass" style="display:flex; flex-direction: row; justify-content: center; align-items: center; visibility: visible">
             <h:panelGroup id="choixPanel" style="background-color: #ECF8F1; padding-left: 20px; padding-right: 20px; z-index: 1;
                           padding-bottom: 5px; padding-top: 3px; border-radius: 0px 0px 7px 7px;">
                 <p:selectBooleanCheckbox id="select1" itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}"
@@ -277,8 +283,8 @@
 
                 <p:selectCheckboxMenu rendered="#{selectedTheso.currentIdTheso == null}" id="select5"
                                       value="#{roleOnTheso.selectedThesoForSearch}" label="#{langueBean.getMsg('search.filterTheso')}"
-                                      style="color: #143a1e; font-size: 12px;"
-                                      panelStyle="width: 15rem; font-size: 1rem" scrollHeight="250" >
+                                      style="color: #143a1e; font-size: 0.8rem;"
+                                      panelStyle="width: 15rem; font-size: 0.5rem" scrollHeight="250" >
                     <f:selectItems value="#{roleOnTheso.listTheso}" var="theso" itemLabel="#{theso.getNom()}" itemValue="#{theso.getId()}" />
                 </p:selectCheckboxMenu>
 

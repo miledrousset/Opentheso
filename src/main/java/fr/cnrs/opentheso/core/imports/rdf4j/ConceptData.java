@@ -101,10 +101,10 @@ public class ConceptData {
 
             //Creator
             case "creator":
-                readStruct.resource.addCreator(readStruct.literal.getLabel(), SKOSProperty.creator);
+                readStruct.resource.addAgent(readStruct.literal.getLabel(), SKOSProperty.creator);
                 break;
             case "contributor":
-                readStruct.resource.addCreator(readStruct.literal.getLabel(), SKOSProperty.contributor);
+                readStruct.resource.addAgent(readStruct.literal.getLabel(), SKOSProperty.contributor);
                 break;
 
             //GPSCoordinates

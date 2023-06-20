@@ -625,7 +625,7 @@ public class Tree implements Serializable {
      */
     public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
 
-        ArrayList<Path> paths = new PathHelper().getPathOfConcept(
+        List<Path> paths = new PathHelper().getPathOfConcept2(
                 connect.getPoolConnexion(), idConcept, idTheso);
 
         if (root == null) {
@@ -683,7 +683,7 @@ public class Tree implements Serializable {
 
     public void expandTreeToPath2(String idConcept, String idTheso, String idLang, String idFacette) {
 
-        ArrayList<Path> paths = new PathHelper().getPathOfConcept(
+        List<Path> paths = new PathHelper().getPathOfConcept2(
                 connect.getPoolConnexion(), idConcept, idTheso);
         paths.get(0).getPath().add(idFacette);
 
@@ -754,7 +754,7 @@ public class Tree implements Serializable {
             String idTheso,
             String idLang) {
 
-        ArrayList<Path> paths = new PathHelper().getPathOfConcept(
+        List<Path> paths = new PathHelper().getPathOfConcept2(
                 connect.getPoolConnexion(), idConcept, idTheso);
 
         initialise(idTheso, idLang);

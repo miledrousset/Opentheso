@@ -145,6 +145,7 @@ public class PreferencesHelper {
                         np.setSuggestion(resultSet.getBoolean("suggestion"));
                         
                         np.setUseCustomRelation(resultSet.getBoolean("use_custom_relation"));
+                        np.setUppercase_for_ark(resultSet.getBoolean("uppercase_for_ark"));
                         
                         
                         np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
@@ -335,6 +336,7 @@ public class PreferencesHelper {
                         + ", suggestion=" + np.isSuggestion()
                         
                         + ", use_custom_relation=" + np.isUseCustomRelation()
+                        + ", uppercase_for_ark=" + np.isUppercase_for_ark()
                         
                         + ", display_user_name=" + np.isDisplayUserName()
                         
@@ -377,7 +379,7 @@ public class PreferencesHelper {
                         + " url_api_handle, prefix_handle, private_prefix_handle, preferredname, auto_expand_tree, original_uri,"
                         + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
                         + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb,"
-                        + " suggestion, use_custom_relation,"
+                        + " suggestion, use_custom_relation, uppercase_for_ark,"
                         + " useConceptTree, display_user_name)"
 
                         + " values('" + idThesaurus + "'"
@@ -433,6 +435,8 @@ public class PreferencesHelper {
                         + "," + np.isSuggestion()
                         
                         + "," + np.isUseCustomRelation()
+                        
+                        + "," + np.isUppercase_for_ark()
                         
                         + "," + np.isUseConceptTree()
                         + "," + np.isDisplayUserName()

@@ -32,6 +32,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
 
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
@@ -129,11 +130,11 @@ public class ImportRdf4jHelper {
         String creator = "";
         String contributor = "";
 
-        for (SKOSCreator c : conceptScheme.getCreatorList()) {
-            if (c.getProperty() == SKOSProperty.creator) {
-                creator = c.getCreator();
-            } else if (c.getProperty() == SKOSProperty.contributor) {
-                contributor = c.getCreator();
+        for (SKOSAgent agent : conceptScheme.getAgentList()) {
+            if (agent.getProperty() == SKOSProperty.creator) {
+                creator = agent.getAgent();
+            } else if (agent.getProperty() == SKOSProperty.contributor) {
+                contributor = agent.getAgent();
             }
         }
 
@@ -365,8 +366,31 @@ public class ImportRdf4jHelper {
             if (idArkHandle == null) {
                 idArkHandle = "";
             }
+            
+            if (StringUtils.isEmpty(formatDate)) {
+                formatDate = "dd-mm-yyyy";
+            }
+            Date created = null;
+            Date modified = null;
 
-            groupHelper.insertGroup(ds, idGroup, idTheso, idArkHandle, type, notationValue, "", false, idUser);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);
+            for (SKOSDate sKOSDate : group.getDateList()) {
+                try {
+                    if(!StringUtils.isEmpty(sKOSDate.getDate())) {
+                        if(sKOSDate.getProperty() == SKOSProperty.created){
+                            created = simpleDateFormat.parse(sKOSDate.getDate());
+                        }
+                        if(sKOSDate.getProperty() == SKOSProperty.modified){
+                            modified = simpleDateFormat.parse(sKOSDate.getDate());
+                        }                        
+                    }
+                } catch (ParseException ex) {
+                    Logger.getLogger(ImportRdf4jHelper.class.getName()).log(Level.SEVERE, null, ex);
+                }                  
+            }
+            
+
+            groupHelper.insertGroup(ds, idGroup, idTheso, idArkHandle, type, notationValue, "", false, created, modified, idUser);
 
             // group/sous_group
             for (SKOSRelation relation : group.getRelationsList()) {
@@ -421,7 +445,7 @@ public class ImportRdf4jHelper {
 
     public void addConcept(SKOSResource conceptResource, String idTheso, boolean isCandidatImport) {
         if (isCandidatImport) {
-            if (new ConceptHelper().isIdExiste(ds, conceptResource.getIdentifier())) {
+            if (new ConceptHelper().isIdExiste(ds, conceptResource.getIdentifier(), idTheso)) {
                 return;
             }
         }
@@ -748,6 +772,27 @@ public class ImportRdf4jHelper {
             Logger.getLogger(ImportRdf4jHelper.class.getName()).log(Level.SEVERE, null, ex);
         }        
 
+        String dcterms = null;
+        for (SKOSAgent agent : conceptResource.getAgentList()) {
+            switch (agent.getProperty()) {
+                case SKOSProperty.creator:
+                    if(StringUtils.isEmpty(dcterms)) {
+                        dcterms= "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;
+                    } else
+                        dcterms= dcterms + "##" + "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    break;
+                case SKOSProperty.contributor:
+                    if(StringUtils.isEmpty(dcterms)) {
+                        dcterms= "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;
+                    } else
+                        dcterms= dcterms + "##" + "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    break;                    
+                default:
+                    break;
+            }
+        }
+        
+        
         String sql = "";
         try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
             sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
@@ -776,8 +821,9 @@ public class ImportRdf4jHelper {
                     + (created == null ? null : "'" + created + "'") + ", "
 
                     //+ "'" + modified + "'"
-                     + (modified== null ? null : "'" + modified + "'")                    
-                    + ")";
+                    + (modified== null ? null : "'" + modified + "'") + ", "
+                    + (dcterms == null ? null : "'" + dcterms + "'") +
+                    ")";
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);
@@ -928,13 +974,13 @@ public class ImportRdf4jHelper {
         addDate(acs);
         addReplaces(acs);
 
-        for (SKOSCreator c : conceptResource.getCreatorList()) {
-            if (c.getProperty() == SKOSProperty.creator) {
-                acs.concept.setCreatorName(c.getCreator());
+        for (SKOSAgent agent : conceptResource.getAgentList()) {
+            if (agent.getProperty() == SKOSProperty.creator) {
+                acs.concept.setCreatorName(agent.getAgent());
             }
 
-            if (c.getProperty() == SKOSProperty.contributor) {
-                acs.concept.setContributorName(c.getCreator());
+            if (agent.getProperty() == SKOSProperty.contributor) {
+                acs.concept.setContributorName(agent.getAgent());
             }
         }
 
@@ -1218,6 +1264,9 @@ public class ImportRdf4jHelper {
         for (NodeIdValue nodeIdValue : acs.replacedBy) {
             deprecateHelper.addReplacedBy(ds, acs.concept.getIdConcept(), idTheso, nodeIdValue.getId(), idUser);
         }
+        if(isCandidatImport) {
+            new CandidatDao().setStatutForCandidat(ds, 1, acs.concept.getIdConcept(), idTheso, ""+ idUser);
+        }
 
         // initialisation des variables
         acs.concept = null;
@@ -1429,6 +1478,7 @@ public class ImportRdf4jHelper {
     private void addDocumentation(AddConceptsStruct acs) {
         NodeNote nodeNote;
         for (SKOSDocumentation documentation : acs.conceptResource.getDocumentationsList()) {
+            if("status".equalsIgnoreCase(documentation.getLanguage()) || "vote".equalsIgnoreCase(documentation.getLanguage()) || "message".equalsIgnoreCase(documentation.getLanguage())) continue;
             String noteTypeCode = "";
             int prop = documentation.getProperty();
             nodeNote = new NodeNote();

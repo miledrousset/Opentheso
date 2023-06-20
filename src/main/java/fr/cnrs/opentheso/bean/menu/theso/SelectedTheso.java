@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
@@ -31,6 +32,8 @@ import javax.inject.Named;
 import java.util.List;
 import java.util.Arrays;
 import javax.faces.application.FacesMessage;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 
@@ -174,6 +177,31 @@ public class SelectedTheso implements Serializable {
                 viewEditorHomeBean.initGoogleAnalytics();
                 break;
         }
+    }
+    
+    public String getUriOfTheso(NodePreference nodePreference){
+        String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
+        String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
+        String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
+    //    HttpServletRequest request = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+        String baseUrl = protocole + "://" + serverAdress + contextPath;
+        
+        
+   /*     String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        String uri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  */
+        if(nodePreference == null) {
+            return baseUrl + "/?idt=" + currentIdTheso; 
+        }
+        else {
+            String idArk = new ThesaurusHelper().getIdArkOfThesaurus(connect.getPoolConnexion(), currentIdTheso);
+            if(StringUtils.isEmpty(idArk)){
+                return baseUrl + "/?idt=" + currentIdTheso;
+            } else 
+            return baseUrl + "/api/ark:/" + idArk;
+        }
+        /*
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        thesaurusHelper.get*/
     }
 
     /**
@@ -505,7 +533,8 @@ public class SelectedTheso implements Serializable {
             if (isValidTheso(idThesoFromUri)) {
                 /// chargement du thésaurus
                 selectedIdTheso = idThesoFromUri;
-                startNewTheso(currentLang);
+                roleOnThesoBean.initNodePref(selectedIdTheso);
+                startNewTheso(roleOnThesoBean.getNodePreference().getSourceLang());//currentLang);
                 indexSetting.setIsSelectedTheso(true);
                 indexSetting.setIsThesoActive(true);
                 rightBodySetting.setIndex("0");  

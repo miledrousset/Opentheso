@@ -77,7 +77,7 @@ public class WriteRdf4j {
             writeDate(sResource);
             writeIdentifier(sResource);
             writePath(sResource);
-            writeCreator(sResource);
+            writeAgent(sResource);
             writeDocumentation(sResource);
             writeGPS(sResource);
             writeExternalResources(sResource);
@@ -150,7 +150,7 @@ public class WriteRdf4j {
             writeNotation(group);
             writeDate(group);
             writeIdentifier(group);
-            writeCreator(group);
+            writeAgent(group);
             writeDocumentation(group);
             writeGPS(group);
 
@@ -172,7 +172,7 @@ public class WriteRdf4j {
         writeNotation(conceptScheme);
         writeDate(conceptScheme);
         writeIdentifier(conceptScheme);
-        writeCreator(conceptScheme);
+        writeAgent(conceptScheme);
         writeDocumentation(conceptScheme);
         writeGPS(conceptScheme);
         writeDcTerms(conceptScheme);
@@ -220,13 +220,22 @@ public class WriteRdf4j {
         }
     }
 
-    private void writeCreator(SKOSResource resource) {
-        for (SKOSCreator creator : resource.getCreatorList()) {
-            if (ObjectUtils.isNotEmpty(creator) && StringUtils.isNotEmpty(creator.getCreator())) {
-                if (SKOSProperty.creator == creator.getProperty()) {
-                    builder.add(DCTERMS.CREATOR, creator.getCreator());
-                } else if (SKOSProperty.contributor == creator.getProperty()) {
-                    builder.add(DCTERMS.CONTRIBUTOR, creator.getCreator());
+    private void writeAgent(SKOSResource resource) {
+        for (SKOSAgent agent : resource.getAgentList()) {
+            if (ObjectUtils.isNotEmpty(agent)) {
+                switch (agent.getProperty()) {
+                    case SKOSProperty.creator:
+                        if(!StringUtils.isEmpty(agent.getAgent())){
+                            builder.add(DCTERMS.CREATOR, agent.getAgent());
+                        }
+                        break;
+                    case SKOSProperty.contributor:
+                        if(!StringUtils.isEmpty(agent.getAgent())){
+                            builder.add(DCTERMS.CONTRIBUTOR, agent.getAgent());
+                        }
+                        break;                        
+                    default:
+                        throw new AssertionError();
                 }
             }
         }

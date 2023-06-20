@@ -24,6 +24,13 @@ import fr.cnrs.opentheso.core.exports.tabulate.Alignment;
 import fr.cnrs.opentheso.core.exports.tabulate.Label;
 import fr.cnrs.opentheso.core.exports.tabulate.Note;
 import fr.cnrs.opentheso.core.exports.tabulate.TabulateDocument;
+import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
+import fr.cnrs.opentheso.skosapi.SKOSDate;
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 
 public class ImportTabuleIntoBDD {
 
@@ -72,14 +79,14 @@ public class ImportTabuleIntoBDD {
             String idThesaurus, int idUser) {
         
         GroupHelper conceptGroupHelper = new GroupHelper();
-
+        
         if(!conceptGroupHelper.insertGroup(ds, 
                 tabulateDocument.getId(),
                 idThesaurus,
                 "",
                 tabulateDocument.getType(),
                 "", 
-                "", false, idUser)){
+                "", false, tabulateDocument.getCreated(), tabulateDocument.getModified(), idUser)){
             return false;
         }
 

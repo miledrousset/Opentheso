@@ -10,34 +10,56 @@
         <h:panelGroup id="compareListToThesoForm">              
 
             <p:outputPanel deferred="true"  style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px; overflow-y: auto; max-height: 300px;">
-                
-                
+
+
                 <fieldset>
-                <p:scrollPanel mode="native" >
-                    <p:panelGrid style="font-size: 12px;">
-                        <f:facet name="header">
+                    <p:scrollPanel mode="native" >
+                        <p:panelGrid style="font-size: 12px;">
+                            <f:facet name="header">
+                                <p:row style="font-size: 12px;">
+                                    <p:column colspan="1">skos:prefLabel@fr</p:column>
+                                    <p:column colspan="1"><h:outputText value="conceptId (+)" style="color: red"/></p:column>
+                                    <p:column colspan="1"><h:outputText value="prefLabel (+)" style="color: red"/></p:column>
+                                    <p:column colspan="1"><h:outputText value="variantes (+)" style="color: red"/></p:column>                                    
+                                </p:row>
+                            </f:facet>
                             <p:row style="font-size: 12px;">
-                                <p:column colspan="1">skos:prefLabel@fr</p:column>
-                                <p:column colspan="1"><h:outputText value="URI (cette colonne sera ajoutée)" style="color: red"/></p:column>
-                                <p:column colspan="1"><h:outputText value="variantes" style="color: red"/></p:column>
+                                <p:column colspan="1">Espagne</p:column>
                             </p:row>
-                        </f:facet>
-                        <p:row style="font-size: 12px;">
-                            <p:column colspan="1">Espagne</p:column>
-                        </p:row>
-                    </p:panelGrid>    
-                    <p:spacer/>
-                </p:scrollPanel>    
-                
-                <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px;">
-                    <p style="color: #000;">
-                        Permet de récupérer les Id d'après le prefLabel, une colonne URI et une colonne des variantes seront ajoutées au tableau pour les identifiants trouvés<br/>
-                        L'Id est vide si : pas de resultata ni en lable ni en variantes 
-                    </p>
-                </p:panel>                
+                        </p:panelGrid>    
+                        <p:spacer/>
+                    </p:scrollPanel>    
+
+                    <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px;">
+                        <p style="color: #000;">
+                            Permet de récupérer les Id d'après le prefLabel et altLabel avec plusieurs mode de recherche.<br/>
+                            Si un label identique est trouvé, on récupère uniquement cette valeur<br/>
+                            Si on trouve plusieurs valeurs, on les ajoute en lignes supplémentaires<br/>
+                            Les colonnes conceptId et variantes seront ajoutées au tableau<br/>
+                            L'Id est vide si : pas de résultat ni en label ni en variantes 
+                        </p>
+                    </p:panel>                
                 </fieldset>
-               
+
             </p:outputPanel>
+
+            <!-- Choix de la comparaison (exacte, approximative) -->
+            <div class="row" style="padding-top: 10px;">
+                <div class="col-3" style="text-align: right;">
+                    <h:outputText value="Type de comparaison: " 
+                                  title="On ignore les accents et le minuscule/majuscule" 
+                                  style="font-size: 14px;"/>
+                </div>
+                <div class="col9">
+                    <p:selectOneRadio id="console" value="#{importFileBean.selectedSearchType}">
+                        <f:selectItem itemLabel="#{langueBean.getMsg('search.exactSentence')}" itemValue="exactWord" itemDescription="#{langueBean.getMsg('search.tooltip_excatSentence')}"/>                        
+                        <f:selectItem itemLabel="#{langueBean.getMsg('search.exact')}" itemValue="containsExactWord" itemDescription="#{langueBean.getMsg('search.tooltip_excat')}"/>
+                        <f:selectItem itemLabel="#{langueBean.getMsg('search.startWith')}" itemValue="startWith" />                        
+                        <f:selectItem itemLabel="#{langueBean.getMsg('search.elastic')}" itemValue="elastic" />
+                    </p:selectOneRadio>
+                </div>
+            </div>
+
 
             <h:panelGroup id="panelCompareListToTheso">
                 <!-- Choix du fichier -->   
@@ -56,17 +78,18 @@
                 <h:panelGroup rendered="#{importFileBean.loadDone}" style="margin-top: 10px" >
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-5">
-                            <h:outputText value="URI: " />
-                            <h:outputText value="#{importFileBean.uri}" style="color: #C63632"/>
+                            <h:outputText value="Nome du fichier: " />
+                            <h:outputText value="#{importFileBean.fileName}" style="color: #C63632"/>
                         </div>
                     </div>
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-5">
                             <h:outputText value="Total des actions " />
-                            <h:outputText value="#{importFileBean.total}" style="color: #C63632"/>
+                            <h:outputText value="#{importFileBean.totalInt}" style="color: #C63632"/>
                         </div>
                     </div> 
                 </h:panelGroup>
+                <p:spacer />
 
                 <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
                     <p:commandButton value="#{langueBean.getMsg('candidat.close')}" icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
@@ -75,26 +98,32 @@
                                      oncomplete="PF('compareListToTheso').hide();"
                                      update="compareListToThesoForm"/>
 
-                    <p:commandButton value="#{langueBean.getMsg('candidat.export')}" ajax="true"
+                    <p:commandButton value="#{langueBean.getMsg('actions.compare')}"
                                      onclick="PrimeFaces.monitorDownload(start, stop);"
-                                     disabled="#{!importFileBean.loadDone}"
+                                     disabled="#{!importFileBean.loadDone}" ajax="false"
                                      styleClass="ui-button-success" icon="fa fa-upload" 
+                                     update="compareListToThesoForm"
                                      title="#{langueBean.getMsg('actions.compareListToTheso')}" style="margin-left: 20px">
                         <p:fileDownload value="#{importFileBean.compareListToTheso(selectedTheso.selectedIdTheso, currentUser.nodeUser.idUser)}" />
                     </p:commandButton>                     
-                    
+
                 </div> 
+                
+                <p:dialog widgetVar="waitDialogListToTheso" modal="true" draggable="false"  closable="false" resizable="false" showHeader="false" position="top" 
+                          style="margin-top: 250px; border: none;">
+                    <i class="pi pi-spinner pi-spin" style="font-size:2rem; color: #43B572; margin-top: 15px"></i>
+                </p:dialog>  
                 <script type="text/javascript">
                     function start() {
-                        PF('statusDialog').show();
+                        PF('waitDialogListToTheso').show();
                     }
 
                     function stop() {
-                        PF('statusDialog').hide();
+                        PF('waitDialogListToTheso').hide();
+                        PF('compareListToTheso').hide();
                     }
                 </script>                
             </h:panelGroup>
         </h:panelGroup>
- 
     </p:dialog> 
 </ui:fragment>

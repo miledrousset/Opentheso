@@ -11,8 +11,7 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -458,14 +457,25 @@ public class ToolsHelper {
         return true;
     }
 
-    public String getNewId(int length) {
-        String chars = "abcdefghijklmnopqrstuvwxyz1234567890";
+    public String getNewId(int length, boolean isUpperCase, boolean isUseNoidCheck) {
+        String chars = "0123456789bcdfghjklmnpqrstvwxz";
         StringBuilder pass = new StringBuilder();
+        String idArk;
         for (int x = 0; x < length; x++) {
             int i = (int) Math.floor(Math.random() * (chars.length() - 1));
             pass.append(chars.charAt(i));
         }
-        return pass.toString();
+        idArk = pass.toString();
+        if(isUseNoidCheck) {
+            NoIdCheckDigit noIdCheckDigit = new NoIdCheckDigit();
+            String checkCode = noIdCheckDigit.getControlCharacter(idArk);
+            idArk = idArk + "-" + checkCode;             
+        }
+        
+        if(isUpperCase)
+            return idArk.toUpperCase();
+        else
+            return idArk;
     }
 
     public Date getDate() {

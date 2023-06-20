@@ -44,7 +44,7 @@
     }
 }
  */
-package fr.cnrs.opentheso.ws;
+package fr.cnrs.opentheso.ws.api;
 
 
 /**

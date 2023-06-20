@@ -1134,6 +1134,8 @@ public class SearchHelper {
                         // pour les parenthèses pour trouver monstre exp: (monstre)                                
                         + "     or"
                         + "     unaccent(lower(lexical_value)) like unaccent(lower('%(" + value + ")%'))"
+                        + "     or"
+                        + "     unaccent(lower(lexical_value)) like unaccent(lower('" + value + "(%'))"        
                         + "	)"
                         + " order by lexical_value");
 

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cnrs.opentheso.ws;
+package fr.cnrs.opentheso.ws.api;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
@@ -63,19 +63,34 @@ public class RestRDFHelper {
         if (idArk == null || idArk.isEmpty()) {
             return null;
         }
+        
         ConceptHelper conceptHelper = new ConceptHelper();
         
         String idTheso = conceptHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);
-        String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk, idTheso);
-
-        if (idTheso == null || idConcept == null) {
-            return null;
+       
+        if(StringUtils.isEmpty(idTheso)){
+            // cas où c'est l'identifiant d'un thésaurus
+            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+            idTheso = thesaurusHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);  
+            if(StringUtils.isEmpty(idTheso)){    
+                return null;
+            }
+            NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+            if (nodePreference == null) {
+                return null;
+            }
+            return nodePreference.getCheminSite() + "?idt=" + idTheso;
+        } else {
+            String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk, idTheso);    
+            if(StringUtils.isEmpty(idConcept)){    
+                return null;
+            }     
+            NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+            if (nodePreference == null) {
+                return null;
+            }
+            return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;            
         }
-        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
-        if (nodePreference == null) {
-            return null;
-        }
-        return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;
     }
     
     public String getAllLinkedConceptsWithOntome__(HikariDataSource ds, String idTheso) {
@@ -1041,7 +1056,7 @@ public class RestRDFHelper {
         String idConcept;
         NodePreference nodePreference;
         PathHelper pathHelper = new PathHelper();
-        ArrayList<Path> paths;        
+        List<Path> paths;        
         
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         for (String idArk : idArks) {
@@ -1057,7 +1072,7 @@ public class RestRDFHelper {
             // construire le tableau JSON avec le chemin vers la racine pour chaque Id
 
 
-            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
+            paths = pathHelper.getPathOfConcept2(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
                 pathHelper.getPathWithLabelAsJson(ds,
                         paths,
@@ -1138,12 +1153,12 @@ public class RestRDFHelper {
 
         // construire le tableau JSON avec le chemin vers la racine pour chaque Id
         PathHelper pathHelper = new PathHelper();
-        ArrayList<Path> paths;
+        List<Path> paths;
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
         for (String idConcept : nodeIds) {
-            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
+            paths = pathHelper.getPathOfConcept2(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
                 pathHelper.getPathWithLabelAsJson(ds,
                         paths,

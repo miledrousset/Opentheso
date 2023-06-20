@@ -239,6 +239,11 @@ public class RelationsHelper {
 
     /**
      * Cette fonction permet de récupérer les termes associés d'un concept
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return 
      */
     public ArrayList<NodeRT> getListRT(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
@@ -249,10 +254,11 @@ public class RelationsHelper {
 
                 stmt.executeQuery("select id_concept2,role, status from hierarchical_relationship, concept"
                         + " where hierarchical_relationship.id_thesaurus = '" + idThesaurus + "'"
-                        + " and hierarchical_relationship.id_concept1 = concept.id_concept"
+                        + " and hierarchical_relationship.id_concept2 = concept.id_concept"
                         + " and hierarchical_relationship.id_thesaurus = concept.id_thesaurus"
                         + " and id_concept1 = '" + idConcept + "'"
-                        + " and role = 'RT'");
+                        + " and role = 'RT'"
+                        + " and concept.status != 'CA'");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -725,6 +731,7 @@ public class RelationsHelper {
                     for (NodeBT nodeBT : nodeListBT) {
                         query = "SELECT term.lexical_value, term.status FROM term, preferred_term"
                                 + " WHERE preferred_term.id_term = term.id_term"
+                                + " and preferred_term.id_thesaurus = term.id_thesaurus "
                                 + " and preferred_term.id_concept ='" + nodeBT.getIdConcept() + "'"
                                 + " and term.lang = '" + idLang + "'"
                                 + " and term.id_thesaurus = '" + idThesaurus + "'"

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>23.04.08</version>
+    <version>23.06.3</version>
     <packaging>war</packaging>
     <name>opentheso2</name>
 
@@ -262,7 +262,19 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson-annotations.version}</version>
         </dependency>
-
+        
+         <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>${swagger.parser.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        
     </dependencies>
 
     <build>
@@ -314,6 +326,25 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+                <execution>
+                    <phase>initialize</phase>
+                    <configuration>
+                        <target>
+                            <mkdir dir="${project.build.directory}/openapi" />
+                        </target>
+                    </configuration>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                </execution>
+                </executions>
+            </plugin>
+            
         </plugins>
     </build>
 
@@ -379,6 +410,8 @@
         <jackson-core.version>2.15.0-rc2</jackson-core.version>
         <commons-compress.version>1.21</commons-compress.version>
         <jackson-annotations.version>2.13.3</jackson-annotations.version>
+        <swagger.version>2.2.10</swagger.version>
+        <swagger.parser.version>2.1.14</swagger.parser.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <weld-servlet-shaded.version>3.1.2.Final</weld-servlet-shaded.version>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>

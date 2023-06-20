@@ -2,7 +2,8 @@
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
-             xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf">
+             xmlns:leaf="http://java.sun.com/jsf/composite/jsf2leaf"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <style type="text/css">
         .ui-state-highlight, .ui-widget-content .ui-state-highlight {
@@ -126,16 +127,26 @@
                                                 value="#{conceptView.nodeConcept.nodeimages}" var="photo" numVisible="5"
                                                 circular="true"
                                                 fullScreen="true"
+                                                showCaption="true"
                                                 showItemNavigators="true"
                                                 activeIndex="#{galleriaView.activeIndex}"
                                                 responsiveOptions="#{galleriaView.responsiveOptions1}"
                                                 style="max-width: 600px;">    
                                         <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}"  style="width: 100%; display: block;" />
+                                            <f:facet name="caption">
+                                                <h4 class="mb-2"><a href="#{photo.uri}" target="_blank" style="color:#F7A269;">#{photo.imageName}</a></h4>
+                                                <i>#{photo.uri} (#{photo.copyRight})</i>
+                                            </f:facet>
                                     </p:galleria>
                                 <div class="grid">
                                     <ui:repeat value="#{conceptView.nodeConcept.nodeimages}" var="photo" varStatus="status">
                                         <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}" style="cursor: pointer; max-height: 200px; max-width: 500px; margin-left: 10px;"
-                                                        onclick="rc([{'name': 'index', 'value': #{status.index}}])" />
+                                                        onclick="rc([{'name': 'index', 'value': #{status.index}}])" title="#{photo.uri} (#{photo.copyRight})"/>
+                                                <f:facet name="caption">
+                                                    <h4 class="mb-2">#{photo.imageName}</h4>
+                                                    <i>#{photo.copyRight}</i>
+                                                </f:facet>                                        
+                                        
                                     </ui:repeat>
                                 </div>   
                             </h:panelGroup>

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cnrs.opentheso.ws;
+package fr.cnrs.opentheso.ws.api;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
@@ -1916,16 +1916,25 @@ public class Rest_new {
             }
         }
         if (idTheso == null || idTheso.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();            
         }
         
         if(idConcept == null || idConcept.isEmpty()) {
             if(idArk == null || idArk.isEmpty()) {
-                return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             } else {
                 idConcept = getIdConceptFromArk(idArk, idTheso);
                 if(idConcept == null)
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();                
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                
             }
         }
 
@@ -1939,33 +1948,60 @@ public class Rest_new {
                 format = "application/rdf+xml";
                 datas = getBranchOfConcepts(idConcept, idTheso, way, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             }
             case "jsonld":
                 format = "application/ld+json";
                 datas = getBranchOfConcepts(idConcept, idTheso, way, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             case "turtle":
                 format = "text/turtle";
                 datas = getBranchOfConcepts(idConcept, idTheso, way, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.TEXT_PLAIN)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             case "json":
                 format = "application/json";
                 datas = getBranchOfConcepts(idConcept, idTheso, way, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
         }
-        return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        return Response
+                .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();         
     }
     
     private String getIdConceptFromArk(String idArk, String idtheso){
@@ -2148,33 +2184,60 @@ public class Rest_new {
                 format = "application/rdf+xml";
                 datas = getAllTheso__(idTheso, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                        
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             }
             case "jsonld":
                 format = "application/ld+json";
                 datas = getAllTheso__(idTheso, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                  
             case "turtle":
                 format = "text/turtle";
                 datas = getAllTheso__(idTheso, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             case "json":
                 format = "application/json";
                 datas = getAllTheso__(idTheso, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                      
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
         }
-        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        return Response
+                .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();          
     }
 
     private String getAllTheso__(String idtheso, String format) {
@@ -2220,7 +2283,10 @@ public class Rest_new {
         }
 
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();              
         }
       /*  if (lang == null || lang.isEmpty()) {
             return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
@@ -2228,9 +2294,15 @@ public class Rest_new {
         
         datas = getAllIdValueTheso__(idTheso, lang);
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();              
         }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();          
     }    
 
     private String getAllIdValueTheso__(String idtheso, String lang) {
@@ -2294,17 +2366,26 @@ public class Rest_new {
         }
 
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
 
         String datas = null;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
-                return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             }
             if (group == null && topconcept == null) {
                 if (!idTheso.equalsIgnoreCase("all")) {
-                    return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
                 datas = getlistAllPublicTheso__(ds);
             } else {
@@ -2318,9 +2399,15 @@ public class Rest_new {
         }
 
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();        
     }
 
     private String getlistAllPublicTheso__(HikariDataSource ds) {
@@ -2447,27 +2534,41 @@ public class Rest_new {
                 }
 
             }
-
         }
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();            
         }
         if (idTheso.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();              
         }
 
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();              
         }
 
         String datas = getlistLangOfTheso__(ds, idTheso);
         ds.close();
 
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();          
     }
 
     private String getlistLangOfTheso__(HikariDataSource ds, String idTheso) {
@@ -2511,20 +2612,32 @@ public class Rest_new {
             }
         }
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
         HikariDataSource ds = connect();
         if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();              
         }
 
         String datas = getInfoLastUpdate__(ds, idTheso);
         ds.close();
 
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();              
         }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return Response
+                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();          
     }
 
     private String getInfoLastUpdate__(HikariDataSource ds, String idTheso) {
@@ -2565,10 +2678,16 @@ public class Rest_new {
             }
         }
         if (fromDate == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
         if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
         if (format == null) {
             format = "rdf";
@@ -2580,33 +2699,60 @@ public class Rest_new {
                 format = "application/rdf+xml";
                 datas = getLastConcepts__(idTheso, fromDate, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                  
             }
             case "jsonld":
                 format = "application/ld+json";
                 datas = getLastConcepts__(idTheso, fromDate, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                     
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             case "turtle":
                 format = "text/turtle";
                 datas = getLastConcepts__(idTheso, fromDate, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                       
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                
             case "json":
                 format = "application/json";
                 datas = getLastConcepts__(idTheso, fromDate, format);
                 if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                    return Response
+                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                            .header("Access-Control-Allow-Origin", "*")
+                            .build();                    
                 }
-                return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
         }
-        return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();        
+        return Response
+                .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();          
     }
 
     private String getLastConcepts__(String idTheso, String fromDate, String format) {
@@ -2729,13 +2875,19 @@ public class Rest_new {
             }
         }
         if (idTheso == null || idLang == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();              
         }
 
         String datas = getTopterms__(idTheso, idLang);
 
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();            
         }
 
         return Response
@@ -2781,13 +2933,19 @@ public class Rest_new {
             }
         }
         if (idTheso == null || idConcept == null || idLang == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();            
         }
 
         String datas = getNarrower__(idTheso, idConcept, idLang);
 
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
 
         return Response
@@ -2822,21 +2980,33 @@ public class Rest_new {
             @PathParam("idConcept") String idConcept) {
 
         if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
         if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
         String datas;
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
-                return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+                return Response
+                        .status(Response.Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();                 
             }   RestRDFHelper restRDFHelper = new RestRDFHelper();
             datas = restRDFHelper.getInfosOfConcept(ds,
                     idTheso, idConcept, "fr");
         }
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
         return Response
                 .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
@@ -2957,14 +3127,19 @@ public class Rest_new {
             }
         }
         if (idTheso == null || idTheso.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return Response
+                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();             
         }
 
         String datas = getDatasForGraph__(idTheso, idConcept, idLang, idGroup);
 
         if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
+            return Response
+                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();         }
 
         return Response
                 .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)

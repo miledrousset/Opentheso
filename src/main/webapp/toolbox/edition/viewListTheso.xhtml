@@ -97,9 +97,9 @@
 
                     <p:column width="10" headerText="#{langueBean.getMsg('candidat.edit')}" style="margin-top: 5px" >
                         <p:commandButton icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
-                                         update="containerIndex" process="@this" style="color: #43B572"
-                                         actionListener="#{editThesoBean.init(listTheso)}"
-                                         action="#{viewEditionBean.setIsViewModifyTheso(true)}"/>
+                                         update="containerIndex" ajax="true" process="@this" style="color: #43B572"
+                                         action="#{editThesoBean.init(listTheso)}"
+                                         actionListener="#{viewEditionBean.setIsViewModifyTheso(true)}"/>
                     </p:column>
 
                     <p:column width="10" headerText="#{langueBean.getMsg('candidat.remove')}" style="margin-top: 5px">

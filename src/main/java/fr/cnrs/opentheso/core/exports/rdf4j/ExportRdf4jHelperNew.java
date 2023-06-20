@@ -202,10 +202,10 @@ public class ExportRdf4jHelperNew {
         for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
             
             if (thesaurus.getCreator() != null && !thesaurus.getCreator().equalsIgnoreCase("null")) {
-                conceptScheme.addCreator(thesaurus.getCreator(), SKOSProperty.creator);
+                conceptScheme.addAgent(thesaurus.getCreator(), SKOSProperty.creator);
             }
             if (thesaurus.getContributor() != null && !thesaurus.getContributor().equalsIgnoreCase("null")) {
-                conceptScheme.addCreator(thesaurus.getContributor(), SKOSProperty.contributor);
+                conceptScheme.addAgent(thesaurus.getContributor(), SKOSProperty.contributor);
             }
             if (thesaurus.getTitle() != null && thesaurus.getLanguage() != null) {
                 conceptScheme.addLabel(thesaurus.getTitle(), 
@@ -303,20 +303,22 @@ public class ExportRdf4jHelperNew {
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.ConceptGroup);
 
+        //dates
+        String created = null;
+        String modified = null;
+        if(nodeGroupLabel.getCreated()!=null)
+            created = nodeGroupLabel.getCreated().toString();
+        if(nodeGroupLabel.getModified()!=null)
+            modified = nodeGroupLabel.getModified().toString();
+        if (created != null) {
+            sKOSResource.addDate(created, SKOSProperty.created);
+        }
+        if (modified != null) {
+            sKOSResource.addDate(modified, SKOSProperty.modified);
+        }
+        
         for (NodeGroupTraductions traduction : nodeGroupLabel.getNodeGroupTraductionses()) {
             sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.prefLabel);
-
-            //dates
-            String created;
-            String modified;
-            created = traduction.getCreated().toString();
-            modified = traduction.getModified().toString();
-            if (created != null) {
-                sKOSResource.addDate(created, SKOSProperty.created);
-            }
-            if (modified != null) {
-                sKOSResource.addDate(modified, SKOSProperty.modified);
-            }
         }
 
         ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idOfGroupChild, idTheso);
@@ -458,10 +460,10 @@ public class ExportRdf4jHelperNew {
 
         // createur et contributeur
         if (nodeConcept.getConcept().getCreatorName()!= null && !nodeConcept.getConcept().getCreatorName().isEmpty()) {
-            sKOSResource.addCreator(nodeConcept.getConcept().getCreatorName(), SKOSProperty.creator);
+            sKOSResource.addAgent(nodeConcept.getConcept().getCreatorName(), SKOSProperty.creator);
         }
         if (nodeConcept.getConcept().getContributorName()!= null && !nodeConcept.getConcept().getContributorName().isEmpty()) {
-            sKOSResource.addCreator(nodeConcept.getConcept().getContributorName(), SKOSProperty.contributor);
+            sKOSResource.addAgent(nodeConcept.getConcept().getContributorName(), SKOSProperty.contributor);
         }
 
         // dates
@@ -695,8 +697,16 @@ public class ExportRdf4jHelperNew {
     ////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////// 
     public String getUriFromId(String id) {
-
-        if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty() 
+        if(nodePreference.isOriginalUriIsArk()){
+            if(!StringUtils.isEmpty((nodePreference.getOriginalUri()))){
+                return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
+            } else {
+                return getPath() + "/?idt=" + id;
+            }
+        } else {
+            return getPath() + "/?idt=" + id;
+        }
+      /*  if(nodePreference.getOriginalUri() != null && !nodePreference.getOriginalUri().isEmpty() 
             && !"null".equals(nodePreference.getOriginalUri())) {
             if(nodePreference.isOriginalUriIsArk()) {
                 return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
@@ -704,7 +714,7 @@ public class ExportRdf4jHelperNew {
             return nodePreference.getOriginalUri() + "/" + nodePreference.getIdNaan() + "/" + id;
         } else {            
             return getPath() + "/?idt=" + id;
-        }
+        }*/
     }
 
     /**
@@ -982,6 +992,8 @@ public class ExportRdf4jHelperNew {
             return nodePreference.getOriginalUri();
         }
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
+        if(path == null)
+            return nodePreference.getOriginalUri();
         return path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
     }
 

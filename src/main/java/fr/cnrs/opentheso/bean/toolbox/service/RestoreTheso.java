@@ -373,14 +373,14 @@ public class RestoreTheso implements Serializable {
         for (String conceptId : allConcepts) {
             if(!overwriteLocalArk) {
                 if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), idTheso, conceptId)) {
-                    idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());              
+                    idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);              
                     conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
                             nodePreference.getNaanArkLocal() + "/" +
                             nodePreference.getPrefixArkLocal() + idArk);
                     count++;
                 }
             } else {
-                idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal());              
+                idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);              
                 conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
                         nodePreference.getNaanArkLocal() + "/" +
                         nodePreference.getPrefixArkLocal() + idArk);

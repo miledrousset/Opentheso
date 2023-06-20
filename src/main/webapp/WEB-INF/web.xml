@@ -8,7 +8,7 @@
 
     <context-param>
         <param-name>version</param-name>
-        <param-value>23.04.08</param-value>
+        <param-value>23.06.3</param-value>
     </context-param>
 
     <!-- thème de Primefaces omega (n'est plus supporté dans la version 10 de primefaces) -->
@@ -46,15 +46,52 @@
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>fr.cnrs.opentheso.ws</param-value>
+            <param-value>fr.cnrs.opentheso.ws.api</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
      <servlet-mapping>
         <servlet-name>Jersey REST Service</servlet-name>
         <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
     
+        
+     <servlet>
+        <servlet-name>Jersey REST Service Openapi v1</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>
+                io.swagger.v3.jaxrs2.integration.resources,
+                fr.cnrs.opentheso.ws.openapi.v1
+            </param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey REST Service Openapi v1</servlet-name>
+        <url-pattern>/openapi/v1/*</url-pattern>
+    </servlet-mapping>
+    
+        <servlet>
+        <servlet-name>Jersey REST Service Openapi doc config</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>
+                fr.cnrs.opentheso.ws.openapi.doc
+            </param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey REST Service Openapi doc config</servlet-name>
+        <url-pattern>/openapi/doc/config/*</url-pattern>
+    </servlet-mapping>      
+    
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 
     <!-- Attention !!! la gestion du timeout de la session se trouve dans le fichier de conf preferences.properties (timeout_nbr_minute=30)
     il faut veuillez à ce que le chiffre en dessous soit plus grand que celui dans le fichier de conf (preferences.properties)
