@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.candidat;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -86,15 +87,13 @@ public class CandidatService implements Serializable {
      * @return 
      */
     public List<CandidatDto> getCandidatsByStatus(Connect connect, String idThesaurus, String lang, int etat, String statut) {
-        List<CandidatDto> temps = new ArrayList<>();
+        List<CandidatDto> candidatList = new ArrayList<>();
         HikariDataSource connection = connect.getPoolConnexion();
         try {
             CandidatDao condidatDao = new CandidatDao();
-            temps = condidatDao.getCandidatsByStatus(connection, idThesaurus, lang, etat, statut);
-            temps.forEach(candidatDto -> {
+            candidatList = condidatDao.getCandidatsByStatus(connection, idThesaurus, lang, etat, statut);
+            candidatList.forEach(candidatDto -> {
                 try {
-              //    candidatDto.setStatut(condidatDao.searchCondidatStatus(connection, candidatDto.getIdConcepte(),
-              //              candidatDto.getIdThesaurus()));
                     candidatDto.setNbrParticipant(condidatDao.searchParticipantCount(connection, candidatDto.getIdConcepte(),
                             idThesaurus));
                     candidatDto.setNbrDemande(condidatDao.searchDemandeCount(connection, candidatDto.getIdConcepte(),
@@ -103,6 +102,7 @@ public class CandidatService implements Serializable {
                             idThesaurus, VoteType.CANDIDAT.getLabel()));
                     candidatDto.setNbrNoteVote(condidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
                             idThesaurus, VoteType.NOTE.getLabel()));
+                    candidatDto.setAlignments(new AlignmentHelper().getAllAlignmentOfConcept(connection, candidatDto.getIdConcepte(), idThesaurus));
                 } catch (SQLException ex) {
                     Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -115,7 +115,7 @@ public class CandidatService implements Serializable {
                 connection.close();
             }
         }
-        return temps;
+        return candidatList;
     }    
     
     /**

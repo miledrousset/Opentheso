@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
@@ -10,6 +11,7 @@ import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
@@ -320,22 +322,39 @@ public class CandidatBean implements Serializable {
 
     public void searchByTermeAndAuteur() {
         if (!StringUtils.isEmpty(searchValue1)) {
-
             candidatList = candidatService.searchCandidats(connect, searchValue1,
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(),
                     1, "CA");
-            /// désactivé par Miled pour permettre de rechercher un candidat sur le serveur et non pas dans le vecteur
-            /*
-            candidatList = candidatList.stream()
-                    .filter(candidat -> candidat.getNomPref().contains(searchValue1) || candidat.getUser().contains(searchValue1))
-                    .collect(Collectors.toList());*/
         } else {
             getAllCandidatsByThesoAndLangue();
         }
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
-   //     PrimeFaces.current().ajax().update("messageIndex");
+    }
+
+    public void deleteAlignment(NodeAlignment nodeAlignment) {
+
+        if(!new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
+                nodeAlignment.getId_alignement(),
+                selectedTheso.getCurrentIdTheso())) {
+
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+        candidatSelected.setAlignments(new AlignmentHelper().getAllAlignmentOfConcept(connect.getPoolConnexion(),
+                candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
+
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement supprimé avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+        }
     }
 
     public void showRejectCandidatSelected(CandidatDto candidatDto) throws IOException {
