@@ -1,6 +1,5 @@
-Docker install : https://github.com/viaacode/opentheso2-docker
-
-https://github.com/miledrousset/Opentheso2/tree/master/docker
+[Docker install](https://github.com/miledrousset/Opentheso2/tree/master/docker)
+[another docker install](https://github.com/viaacode/opentheso2-docker)
 
 # Opentheso2
 Nouvelle version du logiciel Opentheso avec un nouveau design
