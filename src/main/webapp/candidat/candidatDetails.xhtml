@@ -1,6 +1,7 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:p="http://primefaces.org/ui">
 
     <div class="row">
@@ -70,7 +71,7 @@
                     <div class="ui-inputgroup">
 
                     </div>
-                    <p:autoComplete value="#{candidatBean.candidatSelected.collections}" multiple="true" style="width=100%"
+                    <p:autoComplete value="#{candidatBean.candidatSelected.collections}" multiple="true" style="width: 100%"
                                     var="values" forceSelection="true" completeMethod="#{candidatBean.searchCollection}"
                                     minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}"
                                     converter="searchConverterIdValue"
@@ -285,7 +286,8 @@
                         <div class="row" style="background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.traductions.indexOf(traduction))};
                      padding-top: 5px" >
                             <div class="col-4" style="margin-top: -2px;">
-                                <h:outputText value="#{traduction.langue}" style="font-size: 14px;"/>
+                                <img src="#{conceptView.getDrapeauImgLocal(traduction.langue)}" width="25" height="20"/>
+                                <h:outputLabel value=" (#{traduction.langue})" style="font-size: 14px; margin-left: 10px;" />
                             </div>
                             <div class="col-4" style="margin-top: -2px;">
                                 <h:outputText value="#{traduction.traduction}" style="font-size: 14px;"/>
@@ -311,5 +313,170 @@
                 </h:panelGroup>
             </div>
         </div>
+
+        <div class="card mb-4 py-3 border-left-success" style="margin-top: 20px;">
+            <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                <!-- gestion des traductions -->
+                <div class="row">
+                    <div class="col-12">
+                        <b>
+                            <p:commandLink value="Ajouter un alignement" update="idAddManualAlignment"
+                                           oncomplete="PF('addManualAlignment').show();" actionListener="#{alignmentManualBean.reset()}">
+                                <a class="fas fa-plus-circle" style="color: #f47b2a" />
+                            </p:commandLink>
+                        </b>
+                    </div>
+                </div>
+
+                <h:panelGroup rendered="#{candidatBean.candidatSelected.alignments.size() == 0}" style="margin-top: 10px">
+                    <div class="row">
+                        <div class="col-12">
+                            <h:outputText  value="Aucun alignement pour le moment ..." style="color: grey; font-style: italic " />
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup id="alignemnts" rendered="#{candidatBean.candidatSelected.alignments.size() > 0}" style="margin-top: 10px">
+                    <div class="row" style="font-size: 12px; color: #601e18; margin-bottom: 5px">
+                        <div class="col-3" style="margin-top: -2px;">
+                            <b><h:outputText value="Type"/></b>
+                        </div>
+                        <div class="col-5">
+                            <b><h:outputText value="URL"/></b>
+                        </div>
+                        <div class="col-2">
+                            <b><h:outputText value="Modifier"/></b>
+                        </div>
+                        <div class="col-2">
+                            <b><h:outputText value="Supprimer"/></b>
+                        </div>
+                    </div>
+
+                    <ui:repeat id="listAlignement" var="alignment" value="#{candidatBean.candidatSelected.alignments}">
+                        <div class="row" style="background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.alignments.indexOf(alignment))}; padding-top: 5px" >
+                            <div class="col-3" style="margin-top: -2px;">
+                                <h:outputText value="#{alignment.alignmentLabelType}" style="font-size: 14px;"/>
+                            </div>
+                            <div class="col-5" style="margin-top: -2px;">
+                                <h:outputText value="#{alignment.uri_target} (#{alignment.thesaurus_target})" style="font-size: 14px;"/>
+                            </div>
+                            <div class="col-2" style="margin-top: -5px">
+                                <p:commandButton icon="fas fa-pen"
+                                                 style="color: #43B572"
+                                                 action="#{alignmentManualBean.reset()}"
+                                                 oncomplete="PF('updateAlignment').show();"
+                                                 process="@this"
+                                                 styleClass="rounded-button ui-button-outlined">
+                                    <p:resetInput target=":manage-traduction-content"/>
+                                </p:commandButton>
+                            </div>
+
+                            <div class="col-2" style="margin-top: -5px">
+                                <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
+                                                 actionListener="#{candidatDto.setAlignementSelected(alignment)}"
+                                                 update="tabViewCandidat"
+                                                 oncomplete="PF('confirmDeleteTraduction').show();" />
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </h:panelGroup>
+            </div>
+        </div>
     </h:panelGroup>
+
+
+
+    <p:dialog id="idConfirmDeleteAlignement" header="Confirmer la suppression" widgetVar="confirmDeleteAlignement"
+              width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <h:form id="confirmDeleteAlignementForm">
+
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="Voulez-vous supprimer l'alignement : " style="font-weight: bold;"/>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12">
+                    <h:outputText value="#{candidatDto.alignementSelected.alignmentLabelType} : #{candidatDto.alignementSelected.thesaurus_target}"
+                                  style="font-size: 13px; color: #C63632;"/>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12">
+                    <h:outputText value="La suppression est définitive !!" style="font-size: 13px; color: black;"/>
+                </div>
+            </div>
+
+            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
+                                 actionListener="PF('confirmDeleteAlignement').hide();" update="confirmDeleteAlignementForm"/>
+
+                <p:commandButton class="btn btn-danger" title="Supprimer" ajax="true"
+                                 oncomplete="PF('confirmDeleteAlignement').hide();"
+                                 update="tabViewCandidat messageIndex"
+                                 actionListener="#{traductionService.deleteAlignment(candidatDto.alignementSelected)}" />
+            </div>
+        </h:form>
+    </p:dialog>
+
+    <p:dialog id="idAddManualAlignment" header="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}"
+              widgetVar="addManualAlignment" width="450" showEffect="fade"
+              modal="true" resizable="false" position="top" style="margin-top: 30px" >
+        <h:form>
+            <p:defaultCommand target="addAlignementManuelBtn" />
+
+            <div class="row">
+                <div class="col-12">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5">
+                    <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')} : " />
+                </div>
+                <div class="col-7">
+                    <p:selectOneMenu value="#{alignmentManualBean.manualAlignmentType}"
+                                     style="font-size: 12px; background: white; border-color: #43B572; width: 100%">
+                        <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
+                                       itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
+                    </p:selectOneMenu>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5">
+                    <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')} : " />
+                </div>
+                <div class="col-7">
+                    <p:inputText value="#{alignmentManualBean.manualAlignmentUri}" style="width: 100%" />
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5">
+                    <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.source_name')} : " />
+                </div>
+                <div class="col-7">
+                    <p:inputText value="#{alignmentManualBean.manualAlignmentSource}" style="width: 100%" />
+                </div>
+            </div>
+
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                 actionListener="PF('addManualAlignment').hide();" update="tabViewCandidat"/>
+
+                <p:commandButton id="addAlignementManuelBtn" value="#{langueBean.getMsg('btnValidate')}"
+                                 update="tabViewCandidat messageIndex"
+                                 oncomplete="PF('addManualAlignment').hide();"
+                                 icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
+                                 actionListener="#{alignmentManualBean.addManualAlignement(candidatBean.candidatSelected.idConcepte, false)}" />
+            </div>
+        </h:form>
+    </p:dialog>
 </ui:fragment>
