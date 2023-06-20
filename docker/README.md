@@ -44,7 +44,7 @@ docker run --name opentheso2 --link opentheso2-db --publish 8080:8080 -it miledr
 
 ## Accessing Opentheso2
 
-Once the Docker Containers are running, you can access Opentheso2 in a web-browser by visiting: http://localhost:8080/opentheso2
+Once the Docker Containers are running, you can access Opentheso2 in a web-browser by visiting: http://localhost:80/opentheso2
 
 
 # Docker Volumes
