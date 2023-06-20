@@ -188,6 +188,7 @@ public class CurrentUser implements Serializable {
 
         selectedTheso.loadProejct();
         selectedTheso.setSelectedProject();
+        selectedTheso.setCurrentIdTheso(null);
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
