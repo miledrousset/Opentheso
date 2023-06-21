@@ -44,9 +44,9 @@ public class MoveConceptToTheso {
     //
     @Test
     public void hello() {
-        String idConceptToMove = "1029";//andiore / flute
-        String idThesoFrom = "th345";
-        String idThesoTarget = "th302";
+        String idConceptToMove = "197409";//andiore / flute
+        String idThesoFrom = "th201";
+        String idThesoTarget = "th267";
         
         ConnexionTest connexionTest = new ConnexionTest();
         HikariDataSource ds = connexionTest.getConnexionPool();

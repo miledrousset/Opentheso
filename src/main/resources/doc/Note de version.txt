@@ -8,3 +8,5 @@ Note de version
 
 
 - ajout de l'identifiant Ark pour le thésaurus
+- amélioration de l'OpenApi
+- ajout de la possibilité de cliquer sur l'URL de l'image pour aller vers la source

@@ -137,19 +137,21 @@
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin) 
                                       and (candidatBean.isListSelected())}">
                 <div class="row" style="margin-top: 10px; margin-bottom: 30px">
-                    <div class="col-2 offset-1" style="text-align: left;">
+                    <div class="col-sm-4 offset-sm-0 col-xl-2  offset-xl-1" style="text-align: left;">
                         <p:commandButton ajax="true" process="@this"
                                          value="#{langueBean.getMsg('candidat.remove')}" styleClass="ui-button-danger-private" icon="fas fa-trash" 
                                          update="idDeleteCandidate"
                                          oncomplete="PF('deleteCandidate').show();" style="width: 100%"/> 
                     </div>
 
-                    <div class="col-4 offset-3" style="text-align: right;">
+                    <div class="col-sm-6 offset-sm-0 col-xl-4 offset-xl-2 " style="text-align: right;">
                         <p:commandButton ajax="true" process="@this"
                                          value="#{langueBean.getMsg('candidat.submitList')}" styleClass="ui-button-success" icon="pi pi-check"
                                          update="idProcessCandidateList processCandidateListForm"
                                          oncomplete="PF('processCandidateList').show();" style="width: 100%"/> 
                     </div>
+                    
+                 
                 </div>
             </h:panelGroup>  
         </h:form>        

@@ -135,7 +135,7 @@
                                         <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}"  style="width: 100%; display: block;" />
                                             <f:facet name="caption">
                                                 <h4 class="mb-2"><a href="#{photo.uri}" target="_blank" style="color:#F7A269;">#{photo.imageName}</a></h4>
-                                                <i>#{photo.uri} (#{photo.copyRight})</i>
+                                                <i><p:link href="#{photo.uri}" value="#{photo.uri} (#{photo.copyRight})" target="_blank" style="color: white"/></i>
                                             </f:facet>
                                     </p:galleria>
                                 <div class="grid">

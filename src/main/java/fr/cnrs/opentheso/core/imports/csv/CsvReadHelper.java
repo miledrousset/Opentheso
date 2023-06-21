@@ -309,7 +309,7 @@ public class CsvReadHelper {
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     value = record.get("localId");
-                    if (value == null) {
+                    if (StringUtils.isEmpty(value)) {
                         continue;
                     }
                     conceptObject.setLocalId(value);

@@ -78,6 +78,7 @@ public class OpenApiController extends BaseOpenApiResource {
             jsonOAS = helper.translate(jsonOAS, bundle);
 
             jsonOAS = jsonOAS.replace("${BASE_SERVER}$", uriInfo.getBaseUri().toString());
+            Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, uriInfo.getBaseUri().toString());
             
             return ResponseHelper.response(Response.Status.OK, jsonOAS, types.get(type));
         } catch (Exception e) {

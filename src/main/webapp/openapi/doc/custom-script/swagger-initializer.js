@@ -51,26 +51,6 @@ const getAvailableVersions = () => {
     return versions;
 };
 
-/**
- * Ajoute un listener sur le selecteur de serveur pour recharger la page avec la selection de la bonne version.<br>
- * La fonction est appelée toutes les 100ms jusqu'à ce que le selecteur soit trouvé, le selecteur du serveur n'étant pas toujours présent au chargement de la page.
- */
-const addVersionSelectorListener = () => {
-    const id = setTimeout(() => {
-        const versionSelector = document.getElementById("version-selector");
-
-        if (versionSelector !== undefined) {
-            versionSelector.addEventListener("change", () => {
-                VERSION = versionSelector.value;
-                // displayServerDoc("Opentheso2 - API ", VERSION, LANG);
-                location.href = `http://localhost:8080/opentheso2/openapi/doc/?lang=${LANG}&version=${VERSION}`;
-            })
-            clearTimeout(id);
-        }
-
-
-    }, 100);
-};
 
 /**
  * Ajoute un listener sur le selecteur de langue pour recharger la page avec la selection de la bonne langue
@@ -80,7 +60,7 @@ const addLangSelectorListener = () => {
     selector.addEventListener("change", () => {
         LANG = selector.value;
         // displayServerDoc("Opentheso2 - API",  VERSION, LANG);
-        location.href = `http://localhost:8080/opentheso2/openapi/doc/?lang=${LANG}&version=${VERSION}`;
+        location.href = `${BASE_URL}doc/?lang=${LANG}&version=${VERSION}`;
     });
 };
 
