@@ -8,10 +8,15 @@ const changeTitle = (title) => document.title = title;
  * Génère l'URL du fichier openapi.json en fonction de la version passée en paramètre
  * @param {string} version Version de l'API
  * @param {string} lang Langue souhaité pour la doc
+ * @param {string} scheme HTTP ou HTTPS selon le protocole utilisé 
  * @return {string} URL du fichier openapi.json
  */
-const generateURL = (version, lang) => {
-    return BASE_URL + version + "/" + lang  + "/openapi.json";
+const generateURL = (version, lang, scheme) => {
+    let parameters = "";
+    if (scheme !== null && scheme !== "") {
+        parameters = "?scheme=" + scheme;
+    }
+    return BASE_URL + version + "/" + lang  + "/openapi.json" + parameters;
 };
 
 
@@ -37,22 +42,6 @@ const getAvailableLangages = () => {
 };
 
 /**
- * 
- * @returns { Array<string> } Liste des versions disponibles
- */
-const getAvailableVersions = () => {
-    let selector = document.getElementById("version-selector");
-    const versions = [];
-    selector.childNodes.forEach((elt) => {
-        if (elt.localName === "option") {
-          versions.push(elt.value);
-        }
-    });
-    return versions;
-};
-
-
-/**
  * Ajoute un listener sur le selecteur de langue pour recharger la page avec la selection de la bonne langue
  */
 const addLangSelectorListener = () => {
@@ -72,13 +61,6 @@ const changeLangSelectorDefault = (langCode) => {
     if (AVAILABLE_LANG.indexOf(langCode.toLowerCase()) !== -1) {
         let selector = document.getElementById("lang-selector");
         selector.value = langCode.toLowerCase();
-    }
-};
-
-const changeVersionSelectorDefault = (version) => {
-    if (AVAILABLE_VERSION.indexOf(version.toLowerCase()) !== -1) {
-        let selector = document.getElementById("version-selector");
-        selector.value = version.toLowerCase();
     }
 };
 
@@ -170,11 +152,15 @@ const fetchAvailableLanguages = () => {
  */
 const displayServerDoc = (title, version, lang) => {
     changeTitle(title);
-    window.ui = uiBundle(generateURL(version, lang));
+    window.ui = uiBundle(generateURL(version, lang, getURLScheme()));
     hideSearchBar();
     // addVersionSelectorListener();
     addLangSelectorListener();
 };
+
+const getURLScheme = () => {
+    return window.location.href.split("://")[0];
+}
 
 
 /* ========================== Programme principal ========================== */

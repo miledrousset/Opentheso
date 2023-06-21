@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.QueryParam;
 
 /**
  * REST Web Service
@@ -56,7 +57,8 @@ public class OpenApiController extends BaseOpenApiResource {
     public Response getOpenApi(@Context HttpHeaders headers,
             @Context UriInfo uriInfo,
             @PathParam("type") String type,
-            @PathParam("lang") String lang) throws Exception {
+            @PathParam("lang") String lang,
+            @QueryParam("scheme") String scheme) throws Exception {
         
        Map<String, String> types = new HashMap<>();
        types.put("json", CustomMediaType.APPLICATION_JSON_UTF_8);
@@ -77,8 +79,8 @@ public class OpenApiController extends BaseOpenApiResource {
             String jsonOAS = (String) openapi.getEntity();
             jsonOAS = helper.translate(jsonOAS, bundle);
 
-            jsonOAS = jsonOAS.replace("${BASE_SERVER}$", uriInfo.getBaseUri().toString());
-            Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, uriInfo.getBaseUri().toString());
+            jsonOAS = jsonOAS.replace("${BASE_SERVER}$", changeURL(uriInfo, scheme));
+            Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, changeURL(uriInfo, scheme));
             
             return ResponseHelper.response(Response.Status.OK, jsonOAS, types.get(type));
         } catch (Exception e) {
@@ -143,5 +145,11 @@ public class OpenApiController extends BaseOpenApiResource {
         Response myResponse = ResponseHelper.response(Response.Status.OK, builder.build().toString(), CustomMediaType.APPLICATION_JSON_UTF_8);
         
         return myResponse;
+    }
+    
+    private String changeURL(UriInfo uriInfo, String scheme) {
+        if (scheme == null) return uriInfo.getBaseUri().toString();
+        String urlWithoutScheme = uriInfo.getBaseUri().toString().split("://")[1];
+        return scheme + "://" + urlWithoutScheme;
     }
 }
