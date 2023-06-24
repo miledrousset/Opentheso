@@ -14,6 +14,12 @@
         </div>
     </div>
 
+    <style>
+        .ui-dataview-header.ui-widget-header.ui-helper-clearfix.ui-corner-top {
+            display: none;
+        }
+    </style>
+
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px;">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
             <!-- prefLabel -->
@@ -64,22 +70,70 @@
 
             <!-- collection -->
             <div class="row" style="margin-top: 10px">
-                <div class="col-12 md:col-4">
+                <div class="col-6">
                     <b><h:outputText value="#{langueBean.getMsg('candidat.domaine')}" style="font-size: 14px;"/></b>
                 </div>
-                <div class="col-12 md:col-4">
-                    <div class="ui-inputgroup">
-
-                    </div>
-                    <p:autoComplete value="#{candidatBean.candidatSelected.collections}" multiple="true" style="width: 100%"
+                <div class="col-6">
+                    <b><h:outputText value="#{langueBean.getMsg('candidat.used_for')}" style="margin-top: 14px;"/></b>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px">
+                <div class="col-6">
+                    <p:autoComplete value="#{candidatBean.collectionTemps}" multiple="true" style="width: 100%"
                                     var="values" forceSelection="true" completeMethod="#{candidatBean.searchCollection}"
                                     minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}"
                                     converter="searchConverterIdValue"
                                     scrollHeight="300">
+
+                        <p:ajax event="itemSelect" listener="#{candidatBean.onItemSelect}" update="messageIndex"/>
                         <p:column>
-                            <h:outputText title="#{values.id}" value="#{values.value}"/>
+                            <h:outputText title="#{values.value}" value="#{values.value}"/>
                         </p:column>
                     </p:autoComplete>
+
+                    <div class="card mb-4 py-3 border-left-success">
+                        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                            <p:dataView id="collectionList" var="collection" value="#{candidatBean.candidatSelected.collections}"  >
+                                <p:dataViewListItem>
+                                    <div class="product-list-item" style="display: flex; justify-content: space-between;">
+                                        <div class="product-list-detail">
+                                            <h:outputText value="#{collection.value}" style="font-weight: bold"/>
+                                        </div>
+                                        <div class="product-list-detail">
+                                            <p:commandLink title="Supprimer la collection : #{collection.value}" action="#{candidatBean.removeCollection(collection)}" update="tabViewCandidat">
+                                                <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
+                                            </p:commandLink>
+                                        </div>
+                                    </div>
+                                </p:dataViewListItem>
+                            </p:dataView>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <!-- pour les synonymes -->
+                    <p:inputText value="#{candidatBean.candidatSelected.employePour}"
+                                 placeholder="Entrer ou virgule pour un autre label" style="width: 100%; height: 35px;"/>
+
+                    <div class="card mb-4 py-3 border-left-success">
+                        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                            <p:dataView var="collection" value="#{candidatBean.candidatSelected.employePourList}"  >
+                                <p:dataViewListItem>
+                                    <div class="product-list-item" style="display: flex; justify-content: space-between;">
+                                        <div class="product-list-detail">
+                                            <h:outputText value="#{collection.value}" style="font-weight: bold"/>
+                                        </div>
+                                        <div class="product-list-detail">
+                                            <p:commandLink title="Supprimer la collection : #{collection}" action="#{candidatBean.removeCollection(collection)}" update="tabViewCandidat">
+                                                <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
+                                            </p:commandLink>
+                                        </div>
+                                    </div>
+                                </p:dataViewListItem>
+                            </p:dataView>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -94,36 +148,65 @@
             <div class="row">
                 <div class="col-6">
                     <!-- pour les relations BT -->
-                    <p:autoComplete id="autoBroaderLink" value="#{candidatBean.candidatSelected.termesGenerique}"
+                    <p:autoComplete id="autoBroaderLink" value="#{candidatBean.termesGeneriqueTmp}"
                                     multiple="true" var="values" forceSelection="true" style="width: 100%;"
-                                    completeMethod="#{candidatBean.searchTerme2}" minQueryLength="1" scrollHeight="300"
+                                    completeMethod="#{candidatBean.searchTermeGenerique}" minQueryLength="1" scrollHeight="300"
                                     itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue">
+                        <p:ajax event="itemSelect" listener="#{candidatBean.onTraductionGenericSelect}" update="messageIndex"/>
                         <p:column style="font-size: 12px;">
                             <h:outputText style="vertical-align: middle; margin-left: .5rem" title="#{values.id}" value="#{values.value}"/>
                         </p:column>
                     </p:autoComplete>
+
+                    <div class="card mb-4 py-3 border-left-success">
+                        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                            <p:dataView var="collection" value="#{candidatBean.candidatSelected.termesGenerique}"  >
+                                <p:dataViewListItem>
+                                    <div class="product-list-item" style="display: flex; justify-content: space-between;">
+                                        <div class="product-list-detail">
+                                            <h:outputText value="#{collection.value}" style="font-weight: bold"/>
+                                        </div>
+                                        <div class="product-list-detail">
+                                            <p:commandLink title="Supprimer la collection : #{collection.value}" action="#{candidatBean.removeCollection(collection)}" update="tabViewCandidat">
+                                                <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
+                                            </p:commandLink>
+                                        </div>
+                                    </div>
+                                </p:dataViewListItem>
+                            </p:dataView>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-6">
                     <!-- pour les relations RT -->
-                    <p:autoComplete id="autoRelatedLink" value="#{candidatBean.candidatSelected.termesAssocies}"
+                    <p:autoComplete id="autoRelatedLink" value="#{candidatBean.termesAssociesTmp}"
                                     multiple="true" var="values" forceSelection="true" style="width: 100%"
-                                    completeMethod="#{candidatBean.searchTerme2}" minQueryLength="1" scrollHeight="300"
+                                    completeMethod="#{candidatBean.searchTermeAssocie}" minQueryLength="1" scrollHeight="300"
                                     itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue" >
+                        <p:ajax event="itemSelect" listener="#{candidatBean.onTraductionAssocieSelect}" update="messageIndex"/>
                         <p:column  style="font-size: 12px;">
                             <h:outputText title="#{values.id}" value="#{values.value}" />
                         </p:column>
                     </p:autoComplete>
-                </div>
-            </div>
 
-            <!-- pour les synonymes -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-12 md:col-4">
-                    <b><h:outputText value="#{langueBean.getMsg('candidat.used_for')}" style="margin-top: 14px;"/></b>
-                </div>
-                <div class="col-12 md:col-4">
-                    <p:inputText value="#{candidatBean.candidatSelected.employePour}"
-                                 placeholder="Entrer ou virgule pour un autre label" style="width: 100%; height: 35px;"/>
+                    <div class="card mb-4 py-3 border-left-success">
+                        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                            <p:dataView var="collection" value="#{candidatBean.candidatSelected.termesAssocies}"  >
+                                <p:dataViewListItem>
+                                    <div class="product-list-item" style="display: flex; justify-content: space-between;">
+                                        <div class="product-list-detail">
+                                            <h:outputText value="#{collection.value}" style="font-weight: bold"/>
+                                        </div>
+                                        <div class="product-list-detail">
+                                            <p:commandLink title="Supprimer la collection : #{collection.value}" action="#{candidatBean.removeCollection(collection)}" update="tabViewCandidat">
+                                                <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
+                                            </p:commandLink>
+                                        </div>
+                                    </div>
+                                </p:dataViewListItem>
+                            </p:dataView>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -132,7 +215,6 @@
                 <div class="col-12" style="text-align: right" >
                     <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
                                      icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
-
                                      actionListener="#{candidatBean.setIsListCandidatsActivate(true)}"
                                      action="#{candidatBean.getAllCandidatsByThesoAndLangue()}"
                                      update="tabViewCandidat"/>
