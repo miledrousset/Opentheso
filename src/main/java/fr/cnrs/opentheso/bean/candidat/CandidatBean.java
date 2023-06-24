@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -45,8 +46,12 @@ import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
 import javax.faces.context.ExternalContext;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
+
 
 @Named(value = "candidatBean")
 @SessionScoped
@@ -81,10 +86,13 @@ public class CandidatBean implements Serializable {
     private List<CandidatDto> candidatList, rejetCadidat, acceptedCadidat, allTermes;
     private List<DomaineDto> domaines;
     private List<NodeLangTheso> selectedLanguages;
+    private List<NodeIdValue> allCollections, allTermesGenerique, AllTermesAssocies;
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private List<CandidatDto> selectedCandidates;
     private boolean listSelected;
     private boolean traductionVisible;
+
+    private List<NodeIdValue> collectionTemps, termesGeneriqueTmp, termesAssociesTmp;
 
     @PreDestroy
     public void destroy() {
@@ -121,42 +129,15 @@ public class CandidatBean implements Serializable {
         isExportViewActivate = false;
         listSelected = false;
 
-        if (candidatList == null) {
-            candidatList = new ArrayList<>();
-        } else {
-            candidatList.clear();
-        }
-        if (allTermes == null) {
-            allTermes = new ArrayList<>();
-        } else {
-            allTermes.clear();
-        }
-        if (domaines == null) {
-            domaines = new ArrayList<>();
-        } else {
-            domaines.clear();
-        }
-        if (selectedLanguages == null) {
-            selectedLanguages = new ArrayList<>();
-        } else {
-            selectedLanguages.clear();
-        }
-        if (rejetCadidat == null) {
-            rejetCadidat = new ArrayList<>();
-        } else {
-            rejetCadidat.clear();
-        }
-        if (acceptedCadidat == null) {
-            acceptedCadidat = new ArrayList<>();
-        } else {
-            acceptedCadidat.clear();
-        }
+        collectionTemps = new ArrayList<>();
 
-        if (selectedCandidates == null) {
-            selectedCandidates = new ArrayList<>();
-        } else {
-            selectedCandidates.clear();
-        }
+        candidatList = new ArrayList<>();
+        allTermes = new ArrayList<>();
+        domaines = new ArrayList<>();
+        selectedLanguages = new ArrayList<>();
+        rejetCadidat = new ArrayList<>();
+        acceptedCadidat = new ArrayList<>();
+        selectedCandidates = new ArrayList<>();
 
         getAllCandidatsByThesoAndLangue();
         getRejectCandidatByThesoAndLangue();
@@ -165,6 +146,15 @@ public class CandidatBean implements Serializable {
 
         exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
         selectedExportFormat = "skos";
+
+        allCollections = new GroupHelper().searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang(), "%");
+
+        allTermesGenerique = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
+                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+
+        AllTermesAssocies = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
+                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
 
         try {
             languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
@@ -569,8 +559,6 @@ public class CandidatBean implements Serializable {
 
             }
         }
-
-
         
         candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat, allTermes, domaines, currentUser.getNodeUser().getIdUser());
 
@@ -581,15 +569,17 @@ public class CandidatBean implements Serializable {
 
     public List<NodeIdValue> searchCollection(String enteredValue) {
 
-        List<NodeIdValue> nodeIdValues = Collections.emptyList();
-        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            nodeIdValues = new GroupHelper().searchGroup(
-                    connect.getPoolConnexion(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang(),
-                    enteredValue);
+        if (CollectionUtils.isNotEmpty(allCollections)) {
+            if ("%".equals(enteredValue)) {
+                return allCollections;
+            } else {
+                return allCollections.stream()
+                        .filter(element -> element.getValue().contains(enteredValue))
+                        .collect(Collectors.toList());
+            }
+        } else {
+            return Collections.emptyList();
         }
-        return nodeIdValues;
     }
 
     //// ajouté par Miled
@@ -669,14 +659,33 @@ public class CandidatBean implements Serializable {
      * @param value
      * @return
      */
-    public ArrayList<NodeIdValue> searchTerme2(String value) {
-        ArrayList<NodeIdValue> liste = new ArrayList<>();
-        SearchHelper searchHelper = new SearchHelper();
-        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = searchHelper.searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
-                    selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+    public List<NodeIdValue> searchTermeGenerique(String value) {
+        if (CollectionUtils.isNotEmpty(allTermesGenerique)) {
+            if ("%".equals(value)) {
+                return allTermesGenerique;
+            } else {
+                return allTermesGenerique.stream()
+                        .filter(element -> element.getValue().contains(value))
+                        .collect(Collectors.toList());
+            }
+        } else {
+            return Collections.emptyList();
         }
-        return liste;
+    }
+
+
+    public List<NodeIdValue> searchTermeAssocie(String value) {
+        if (CollectionUtils.isNotEmpty(AllTermesAssocies)) {
+            if ("%".equals(value)) {
+                return AllTermesAssocies;
+            } else {
+                return AllTermesAssocies.stream()
+                        .filter(element -> element.getValue().contains(value))
+                        .collect(Collectors.toList());
+            }
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     public void initialNewCandidat() throws IOException {
@@ -728,13 +737,56 @@ public class CandidatBean implements Serializable {
                 initCandidatModule();
                 getAllCandidatsByThesoAndLangue();                
                 setIsListCandidatsActivate(true);
-                //menuBean.redirectToCandidatPage();
             } catch (IOException ex) {
                 Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
         }
-        
+    }
+
+    public void onItemSelect(SelectEvent<NodeIdValue> event) {
+        Optional<NodeIdValue> elementAdded = allCollections.stream()
+                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
+                .findFirst();
+        if (elementAdded.isPresent()) {
+            candidatSelected.getCollections().add(elementAdded.get());
+            collectionTemps = Collections.emptyList();
+            PrimeFaces.current().ajax().update("tabViewCandidat");
+        }
+    }
+
+    public void onTraductionGenericSelect(SelectEvent<NodeIdValue> event) {
+
+        Optional<NodeIdValue> elementAdded = allTermesGenerique.stream()
+                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
+                .findFirst();
+        if (elementAdded.isPresent()) {
+            candidatSelected.getTermesGenerique().add(elementAdded.get());
+            termesGeneriqueTmp = Collections.emptyList();
+            PrimeFaces.current().ajax().update("tabViewCandidat");
+        }
+    }
+
+    public void onTraductionAssocieSelect(SelectEvent<NodeIdValue> event) {
+
+        Optional<NodeIdValue> elementAdded = AllTermesAssocies.stream()
+                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
+                .findFirst();
+        if (elementAdded.isPresent()) {
+            candidatSelected.getTermesAssocies().add(elementAdded.get());
+            termesAssociesTmp = Collections.emptyList();
+            PrimeFaces.current().ajax().update("tabViewCandidat");
+        }
+    }
+
+    public void onRelationBTAdded(SelectEvent<NodeIdValue> event) {
+        Optional<NodeIdValue> elementAdded = allCollections.stream()
+                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
+                .findFirst();
+        if (elementAdded.isPresent()) {
+            candidatSelected.getCollections().add(elementAdded.get());
+            collectionTemps = new ArrayList<>();
+            PrimeFaces.current().ajax().update("tabViewCandidat");
+        }
     }
 
     /**
@@ -750,8 +802,7 @@ public class CandidatBean implements Serializable {
 
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
-        PrimeFaces pf = PrimeFaces.current();
-        pf.ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("messageIndex");
     }
 
     public String getMessage() {
@@ -1025,4 +1076,75 @@ public class CandidatBean implements Serializable {
         this.traductionVisible = traductionVisible;
     }
 
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public RoleOnThesoBean getRoleOnThesoBean() {
+        return roleOnThesoBean;
+    }
+
+    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
+        this.roleOnThesoBean = roleOnThesoBean;
+    }
+
+    public CandidatService getCandidatService() {
+        return candidatService;
+    }
+
+    public void setNewCandidatActivate(boolean newCandidatActivate) {
+        isNewCandidatActivate = newCandidatActivate;
+    }
+
+    public void setRejectCandidatsActivate(boolean rejectCandidatsActivate) {
+        isRejectCandidatsActivate = rejectCandidatsActivate;
+    }
+
+    public void setInitialCandidat(CandidatDto initialCandidat) {
+        this.initialCandidat = initialCandidat;
+    }
+
+    public void setExportFormat(List<String> exportFormat) {
+        this.exportFormat = exportFormat;
+    }
+
+    public void setRejetCadidat(List<CandidatDto> rejetCadidat) {
+        this.rejetCadidat = rejetCadidat;
+    }
+
+    public void setDomaines(List<DomaineDto> domaines) {
+        this.domaines = domaines;
+    }
+
+    public void setLanguagesOfTheso(ArrayList<NodeLangTheso> languagesOfTheso) {
+        this.languagesOfTheso = languagesOfTheso;
+    }
+
+    public List<NodeIdValue> getCollectionTemps() {
+        return collectionTemps;
+    }
+
+    public void setCollectionTemps(List<NodeIdValue> collectionTemps) {
+        this.collectionTemps = collectionTemps;
+    }
+
+    public List<NodeIdValue> getTermesGeneriqueTmp() {
+        return termesGeneriqueTmp;
+    }
+
+    public void setTermesGeneriqueTmp(List<NodeIdValue> termesGeneriqueTmp) {
+        this.termesGeneriqueTmp = termesGeneriqueTmp;
+    }
+
+    public List<NodeIdValue> getTermesAssociesTmp() {
+        return termesAssociesTmp;
+    }
+
+    public void setTermesAssociesTmp(List<NodeIdValue> termesAssociesTmp) {
+        this.termesAssociesTmp = termesAssociesTmp;
+    }
 }
