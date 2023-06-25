@@ -445,7 +445,7 @@ body .ui-datatable thead th {
     color: #43B572;
     padding: 7px 7px;
     border: 1px solid #43B572;
-    border-width: 0 0 1px 0;
+    border-width: 0 0 0 0;
     text-align: left;
     font-size: 13px;
     box-sizing: content-box;
