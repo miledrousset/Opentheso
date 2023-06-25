@@ -16,10 +16,11 @@ import javax.json.JsonValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.core.alignment.SelectedResource;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
+import lombok.Data;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import javax.json.Json;
@@ -30,13 +31,14 @@ import javax.net.ssl.HttpsURLConnection;
  *
  * @author miled.rousset
  */
+@Data
 public class WikidataHelper {
 
     private StringBuffer messages;
     // les informations récupérées de Wikidata
-    private ArrayList<SelectedResource> resourceWikidataTraductions;
-    private ArrayList<SelectedResource> resourceWikidataDefinitions;
-    private ArrayList<SelectedResource> resourceWikidataImages;
+    private List<SelectedResource> resourceWikidataTraductions;
+    private List<SelectedResource> resourceWikidataDefinitions;
+    private List<SelectedResource> resourceWikidataImages;
 
     public WikidataHelper() {
         messages = new StringBuffer();
@@ -156,10 +158,10 @@ public class WikidataHelper {
      * @param source
      * @return
      */
-    public ArrayList<NodeAlignment> queryWikidata_sparql(String idC, String idTheso,
-            String lexicalValue, String lang,
+    public List<NodeAlignment> queryWikidata_sparql(String idC, String idTheso, String lexicalValue, String lang,
             String requete, String source) {
-        ArrayList<NodeAlignment> listAlignValues = new ArrayList<>();
+
+        List<NodeAlignment> listAlignValues = new ArrayList<>();
         
         try {
             Endpoint sp = new Endpoint("https://query.wikidata.org/sparql", false);
@@ -171,7 +173,7 @@ public class WikidataHelper {
                 return null;
             }
 
-            ArrayList<HashMap<String, Object>> rows_queryWikidata = (ArrayList) rs.get("result").get("rows");
+            List<HashMap<String, Object>> rows_queryWikidata = (ArrayList) rs.get("result").get("rows");
 
             for (HashMap<String, Object> hashMap : rows_queryWikidata) {
                 NodeAlignment na = new NodeAlignment();
@@ -225,11 +227,8 @@ public class WikidataHelper {
      * @param thesaurusUsedLanguageWithoutCurrentLang
      * @param thesaurusUsedLanguage
      */
-    public void setOptionsFromWikidata(
-            NodeAlignment selectedNodeAlignment,
-            List<String> selectedOptions,
-            ArrayList<String> thesaurusUsedLanguageWithoutCurrentLang,
-            ArrayList<String> thesaurusUsedLanguage) {
+    public void setOptionsFromWikidata(NodeAlignment selectedNodeAlignment, List<String> selectedOptions,
+            List<String> thesaurusUsedLanguageWithoutCurrentLang, List<String> thesaurusUsedLanguage) {
         if (selectedNodeAlignment == null) {
             return;
         }
@@ -266,7 +265,7 @@ public class WikidataHelper {
      */
     private ArrayList<SelectedResource> getTraductions(
             String jsonDatas, String entity,
-            ArrayList<String> languages) {
+            List<String> languages) {
         ArrayList<SelectedResource> traductions = new ArrayList<>();
 
         JsonHelper jsonHelper = new JsonHelper();
@@ -306,39 +305,24 @@ public class WikidataHelper {
      * @param languages
      * @return
      */
-    private ArrayList<SelectedResource> getDescriptions(
-            String jsonDatas, String entity,
-            ArrayList<String> languages) {
+    private List<SelectedResource> getDescriptions(String jsonDatas, String entity, List<String> languages) {
+
         ArrayList<SelectedResource> descriptions = new ArrayList<>();
-        JsonHelper jsonHelper = new JsonHelper();
-        JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);
+        JsonObject jsonObject = new JsonHelper().getJsonObject(jsonDatas);
 
-        //    JsonObject test = jsonObject.getJsonObject("entities");
-        JsonObject jsonObject1;
-        JsonValue jsonValue;
-
-        String lang;
-        String value;
-
-        try {
-            jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("descriptions");
-        } catch (Exception e) {
-            return null;
-        }
-
+        JsonObject jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("descriptions");
         for (String language : languages) {
             try {
                 SelectedResource selectedResource = new SelectedResource();
-                jsonValue = jsonObject1.getJsonObject(language).get("language");
-                lang = jsonValue.toString().replace("\"", "");
-                selectedResource.setIdLang(lang);
+                JsonValue jsonValue = jsonObject1.getJsonObject(language).get("language");
+                selectedResource.setIdLang(jsonValue.toString().replace("\"", ""));
                 jsonValue = jsonObject1.getJsonObject(language).get("value");
-                value = jsonValue.toString().replace("\"", "");
-                selectedResource.setGettedValue(value);
+                selectedResource.setGettedValue(jsonValue.toString().replace("\"", ""));
                 descriptions.add(selectedResource);
             } catch (Exception e) {
             }
         }
+
         return descriptions;
     }
 
@@ -383,117 +367,6 @@ public class WikidataHelper {
         } catch (Exception e) {
         }
         return imagesUrls;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-//#####################
-//    test
-//#####################    
-  
- /*   public ArrayList<NodeAlignment> queryWikidata(String idC, String idTheso,
-            String lexicalValue, String lang,
-            String requete, String source) {
-        requete = requete.replaceAll("##value##", lexicalValue);
-        requete = requete.replaceAll("##lang##", lang);        
-        
-        try {
-      
-            
-            
-            URI endpoint = new URI("https://query.wikidata.org/sparql");
-            String querySelect = "SELECT ?item ?itemLabel ?itemDescription WHERE { ?item rdfs:label \"Grenoble\"@fr. SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],fr\". } }";
-            SparqlClient sc = new SparqlClient(false);
-            sc.setEndpointRead(endpoint);
-            sc.setMethodHTTPRead(Method.GET);
-            sc.query(querySelect,MimeType.json);
-            System.out.println(sc.getLastResult().resultRaw);            
-/*            
-            sc.setMethodHTTPRead(Method.GET);
-            SparqlResult sr = sc.query(querySelect,MimeType.json);
-            sc.printLastQueryAndResult();    
-            SparqlResult sr2 = sc.getLastResult();
-            System.out.println(sr2.resultRaw);*/
-/*        } catch (Exception e) {
-        }
-        return null;
-    }*/
-   /* 
-    private ArrayList<NodeAlignment> getDatasFromJson(String datas){
-            ArrayList<HashMap<String, Object>> rows_queryWikidata = (ArrayList) rs.get("result").get("rows");
-
-            System.err.println("Je suis après rs.get()");
-
-            for (HashMap<String, Object> hashMap : rows_queryWikidata) {
-                System.err.println("Je suis dans la boucle");
-                NodeAlignment na = new NodeAlignment();
-                na.setInternal_id_concept(idC);
-                na.setInternal_id_thesaurus(idTheso);
-
-                // label ou Nom
-                if (hashMap.get("itemLabel") != null) {
-                    na.setConcept_target(hashMap.get("itemLabel").toString());
-                } else {
-                    continue;
-                }
-
-                // description
-                if (hashMap.get("itemDescription") != null) {
-                    na.setDef_target(hashMap.get("itemDescription").toString());
-                } else {
-                    na.setDef_target("");
-                }
-
-                na.setThesaurus_target(source);
-
-                // URI
-                if (hashMap.get("item") != null) {
-                    na.setUri_target(hashMap.get("item").toString());
-                } else {
-                    continue;
-                }
-
-                listAlignValues.add(na);
-                System.err.println("Je suis à la fin de la boucle");
-            }
-        } catch (EndpointException eex) {
-            messages.append(eex.toString());
-            return null;
-        } catch (Exception e) {
-            messages.append(requete);
-            messages.append(e.toString());
-            messages.append(" ou pas de connexion internet !! ");
-            return null;
-        }
-        return listAlignValues;
-    }*/
-//#####################
-//    test
-//#####################      
-    
-    
-    
-    
-
-    public String getMessages() {
-        return messages.toString();
-    }
-
-    public ArrayList<SelectedResource> getResourceWikidataTraductions() {
-        return resourceWikidataTraductions;
-    }
-
-    public ArrayList<SelectedResource> getResourceWikidataDefinitions() {
-        return resourceWikidataDefinitions;
-    }
-
-    public ArrayList<SelectedResource> getResourceWikidataImages() {
-        return resourceWikidataImages;
     }
 
 }
