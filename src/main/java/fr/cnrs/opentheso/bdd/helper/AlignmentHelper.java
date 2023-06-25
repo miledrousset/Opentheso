@@ -210,7 +210,7 @@ public class AlignmentHelper {
             int idAlignment,
             String conceptTarget, String thesaurusTarget,
             String uriTarget, int idTypeAlignment,
-            String idConcept, String idThesaurus, int id_alignement_source) {
+            String idConcept, String idThesaurus) {
 
         boolean status = false;
         uriTarget = new StringPlus().convertString(uriTarget);
@@ -301,7 +301,7 @@ public class AlignmentHelper {
         } else {
             // message = "Cette alignement exits, updating en cours";
             return updateAlignment(ds, idTypeAlignment, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
-                    idConcept, idThesaurus, id_alignement_source);
+                    idConcept, idThesaurus);
         }
     }
 

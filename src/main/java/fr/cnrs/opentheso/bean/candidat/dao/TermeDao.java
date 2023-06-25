@@ -1,14 +1,19 @@
 package fr.cnrs.opentheso.bean.candidat.dao;
 
+import com.sun.faces.util.CollectionsUtils;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import org.apache.commons.collections.CollectionUtils;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TermeDao extends BasicDao {
 
@@ -188,24 +193,13 @@ public class TermeDao extends BasicDao {
      * @param idLang
      * @return 
      */
-    public String getEmployePour(HikariDataSource ds, String idTerm, String idTheso, String idLang){
-        TermHelper termHelper = new TermHelper();
-        StringBuilder listEM = new StringBuilder();
-        boolean first = true;
-        
-        ArrayList<NodeEM> nodeEMs = termHelper.getNonPreferredTerms(ds, idTerm, idTheso, idLang);
-        if(nodeEMs != null) {
-            for (NodeEM nodeEM : nodeEMs) {
-                if(first) {
-                    listEM.append(nodeEM.getLexical_value());
-                    first = false;
-                } else {
-                    listEM.append(",");
-                    listEM.append(nodeEM.getLexical_value());                    
-                }
-            }
+    public List<String> getEmployePour(HikariDataSource ds, String idTerm, String idTheso, String idLang){
+        List<NodeEM> nodeEMs = new TermHelper().getNonPreferredTerms(ds, idTerm, idTheso, idLang);
+        if(CollectionUtils.isNotEmpty(nodeEMs)) {
+            return nodeEMs.stream().map(NodeEM::getLexical_value).collect(Collectors.toList());
+        } else {
+            return Collections.EMPTY_LIST;
         }
-        return listEM.toString();
     }   
     
     /**

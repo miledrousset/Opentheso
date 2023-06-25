@@ -52,6 +52,7 @@ public class AlignmentManualBean implements Serializable {
     @PreDestroy
     public void destroy(){
         clear();
+        nodeAlignmentTypes = new AlignmentHelper().getAlignmentsType(connect.getPoolConnexion());
     }  
     public void clear(){
         if(nodeAlignmentTypes!= null){
@@ -120,8 +121,7 @@ public class AlignmentManualBean implements Serializable {
                 alignmentBean.getAlignementElementSelected().getTargetUri(),
                 alignmentBean.getAlignementElementSelected().getAlignement_id_type(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                alignmentBean.getAlignementElementSelected().getIdSource())) {
+                selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
@@ -155,8 +155,7 @@ public class AlignmentManualBean implements Serializable {
                 nodeAlignment.getUri_target(),
                 nodeAlignment.getAlignement_id_type(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeAlignment.getId_source())) {
+                selectedTheso.getCurrentIdTheso())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
