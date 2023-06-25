@@ -247,18 +247,12 @@ public class SetAlignmentSourceBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         alignmentBean.setViewSetting(false);
-        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                conceptView.getSelectedLang());
+        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang());
     }
 
     public void cancel() {
         alignmentBean.setViewSetting(false);
         alignmentBean.setViewAddNewSource(false);
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-//            pf.ajax().update("addAlignmentForm");
-        }
     }
 
     public ArrayList<AlignementSource> getAllAlignementSources() {

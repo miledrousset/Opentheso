@@ -574,7 +574,10 @@ public class Tree implements Serializable {
     public void onTabConceptChange(TabChangeEvent event) {
         if (event.getTab().getId().equals("viewTabAlignement")) {
             rightBodySetting.setIndex("2");
-            indexSetting.setIsValueSelected(true);            
+            indexSetting.setIsValueSelected(true);
+
+            alignmentBean.setAllAlignementVisible(true);
+            alignmentBean.setPropositionAlignementVisible(false);
             
             alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),

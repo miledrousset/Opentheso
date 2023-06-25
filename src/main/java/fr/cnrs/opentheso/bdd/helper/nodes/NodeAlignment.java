@@ -1,9 +1,11 @@
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
+import fr.cnrs.opentheso.core.alignment.SelectedResource;
 import lombok.Data;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -46,6 +48,8 @@ public class NodeAlignment {
     private ArrayList<NodeLangTheso> alltraductions;
     
     private String uri_target_url;
+
+    private List<SelectedResource> selectedTraductionsList, selectedDefinitionsList, selectedImagesList;
 
     public String getDef_target() {
         if(def_target== null)

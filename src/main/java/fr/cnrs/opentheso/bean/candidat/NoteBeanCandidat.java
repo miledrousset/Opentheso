@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import java.io.IOException;
 import java.io.Serializable;

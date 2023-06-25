@@ -631,7 +631,7 @@ public class ThesaurusHelper {
      * @param idThesaurus
      * @return 
      */
-    public ArrayList<String> getIsoLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    public List<String> getIsoLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
 
         ArrayList<String> idLang = new ArrayList<>();
         try ( Connection conn = ds.getConnection()) {
