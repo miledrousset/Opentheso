@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.candidat;
 
+import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
@@ -78,6 +79,9 @@ public class CandidatBean implements Serializable {
 
     private int tabViewIndexSelected, progressBarStep, progressBarValue;
 
+    private NodeAlignment alignementSelected;
+
+    private String employePour;
     private String message, definition, selectedExportFormat;
     private String searchValue1, searchValue2, searchValue3;
 
@@ -144,6 +148,8 @@ public class CandidatBean implements Serializable {
         getAcceptedCandidatByThesoAndLangue();
         tabViewIndexSelected = 0;
 
+        alignementSelected = new NodeAlignment();
+
         exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
         selectedExportFormat = "skos";
 
@@ -163,6 +169,47 @@ public class CandidatBean implements Serializable {
                 selectedLanguages.add(nodeLang);
             });
         } catch (Exception e) {
+        }
+    }
+
+    public void addSynonyme() {
+
+        if (StringUtils.isNotEmpty(employePour)) {
+            if (candidatSelected.getEmployePourList().contains(employePour)) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Le mot '" + employePour + "' existe déjà !");
+            } else {
+                candidatSelected.getEmployePourList().add(employePour);
+                employePour = "";
+                PrimeFaces.current().ajax().update("tabViewCandidat");
+            }
+        }
+    }
+
+    public void removeSynonyme(String synonyme) {
+        if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
+            candidatSelected.getEmployePourList().remove(synonyme);
+            PrimeFaces.current().ajax().update("tabViewCandidat");
+        }
+    }
+
+    public void removeCollection(NodeIdValue collection) {
+        if (CollectionUtils.isNotEmpty(candidatSelected.getCollections())) {
+            candidatSelected.getCollections().remove(collection);
+            PrimeFaces.current().ajax().update("tabViewCandidat");
+        }
+    }
+
+    public void removeGenericTerm(NodeIdValue genericTerm) {
+        if (CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
+            candidatSelected.getTermesGenerique().remove(genericTerm);
+            PrimeFaces.current().ajax().update("tabViewCandidat");
+        }
+    }
+
+    public void removeAssociesTerm(NodeIdValue associeTerm) {
+        if (CollectionUtils.isNotEmpty(candidatSelected.getTermesAssocies())) {
+            candidatSelected.getTermesAssocies().remove(associeTerm);
+            PrimeFaces.current().ajax().update("tabViewCandidat");
         }
     }
 
@@ -505,9 +552,7 @@ public class CandidatBean implements Serializable {
             concept.setIdConcept(candidatSelected.getIdConcepte());
             concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
             concept.setTopConcept(false);
-
             concept.setLang(getIdLang());
-
             concept.setIdUser(currentUser.getNodeUser().getIdUser());
             concept.setUserName(currentUser.getUsername());
             concept.setStatus("CA");
@@ -560,7 +605,7 @@ public class CandidatBean implements Serializable {
             }
         }
         
-        candidatService.updateDetailsCondidat(connect, candidatSelected, initialCandidat, allTermes, domaines, currentUser.getNodeUser().getIdUser());
+        candidatService.updateDetailsCondidat(connect, candidatSelected, currentUser.getNodeUser().getIdUser());
 
         getAllCandidatsByThesoAndLangue();
         definition = "";
@@ -571,15 +616,32 @@ public class CandidatBean implements Serializable {
 
         if (CollectionUtils.isNotEmpty(allCollections)) {
             if ("%".equals(enteredValue)) {
-                return allCollections;
+                return createCollectionsFiltred(allCollections, candidatSelected.getCollections());
             } else {
-                return allCollections.stream()
+                return createCollectionsFiltred(allCollections.stream()
                         .filter(element -> element.getValue().contains(enteredValue))
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList()), candidatSelected.getCollections());
             }
         } else {
             return Collections.emptyList();
         }
+    }
+
+    private List<NodeIdValue> createCollectionsFiltred(List<NodeIdValue> collections, List<NodeIdValue> collectionsSelected) {
+        List<NodeIdValue> resultat = new ArrayList<>();
+        for (NodeIdValue element : collections) {
+            if (!isExist(collectionsSelected, element)) {
+                resultat.add(element);
+            }
+        }
+        return resultat;
+    }
+
+    private boolean isExist(List<NodeIdValue> collections, NodeIdValue nodeIdValue) {
+        return collections.stream()
+                .filter(element -> element.getValue().equals(nodeIdValue.getValue()))
+                .findFirst()
+                .isPresent();
     }
 
     //// ajouté par Miled
@@ -1138,5 +1200,52 @@ public class CandidatBean implements Serializable {
 
     public void setTermesAssociesTmp(List<NodeIdValue> termesAssociesTmp) {
         this.termesAssociesTmp = termesAssociesTmp;
+    }
+
+    public String getEmployePour() {
+        return employePour;
+    }
+
+    public void setEmployePour(String employePour) {
+        this.employePour = employePour;
+    }
+
+    public NodeAlignment getAlignementSelected() {
+        return alignementSelected;
+    }
+
+    public void setAlignementSelected(NodeAlignment alignementSelected) {
+        this.alignementSelected = alignementSelected;
+    }
+
+    public void deleteAlignement() {
+        new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
+                alignementSelected.getId_alignement(),
+                selectedTheso.getCurrentIdTheso());
+
+        candidatSelected.setAlignments(new AlignmentHelper().getAllAlignmentOfConcept(connect.getPoolConnexion(),
+                candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Alignement supprimé avec succès !");
+
+        PrimeFaces.current().ajax().update("tabViewCandidat");
+    }
+
+    public void updateAlignement() {
+        new AlignmentHelper().updateAlignment(connect.getPoolConnexion(),
+                alignementSelected.getId_alignement(),
+                alignementSelected.getConcept_target(),
+                alignementSelected.getThesaurus_target(),
+                alignementSelected.getUri_target(),
+                alignementSelected.getAlignement_id_type(),
+                candidatSelected.getIdConcepte(),
+                selectedTheso.getCurrentIdTheso());
+
+        candidatSelected.setAlignments(new AlignmentHelper().getAllAlignmentOfConcept(connect.getPoolConnexion(),
+                candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Alignement mise à jour avec succès !");
+
+        PrimeFaces.current().ajax().update("tabViewCandidat");
     }
 }
