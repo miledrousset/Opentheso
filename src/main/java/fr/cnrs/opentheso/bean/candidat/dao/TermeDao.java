@@ -198,7 +198,7 @@ public class TermeDao extends BasicDao {
         if(CollectionUtils.isNotEmpty(nodeEMs)) {
             return nodeEMs.stream().map(NodeEM::getLexical_value).collect(Collectors.toList());
         } else {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }   
     
