@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -193,13 +192,10 @@ public class AgrovocHelper {
      * @param selectedNodeAlignment
      * @param selectedOptions
      * @param thesaurusUsedLanguageWithoutCurrentLang
-     * @param thesaurusUsedLanguage
      */
-    public void setOptions(
-            NodeAlignment selectedNodeAlignment,
-            List<String> selectedOptions,
-            ArrayList<String> thesaurusUsedLanguageWithoutCurrentLang,
-            ArrayList<String> thesaurusUsedLanguage, String currentLang) {
+    public void setOptions(NodeAlignment selectedNodeAlignment, List<String> selectedOptions,
+                           List<String> thesaurusUsedLanguageWithoutCurrentLang, String currentLang) {
+
         if (selectedNodeAlignment == null) {
             return;
         }
@@ -240,23 +236,17 @@ public class AgrovocHelper {
      * @param languages
      * @return
      */
-    private ArrayList<SelectedResource> getTraductions(
-            String xmlDatas,
-            ArrayList<String> languages,
-            String currentLang) {
+    private ArrayList<SelectedResource> getTraductions(String xmlDatas, List<String> languages, String currentLang) {
+
         ArrayList<SelectedResource> traductions = new ArrayList<>();
         ArrayList<SelectedResource> descriptions = new ArrayList<>();        
 
         String lang;
         String value;
-        
-        InputStream inputStream;
-        SKOSXmlDocument sxd;
+
         try {
-            inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
-            //ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, currentLang); /// read XML SKOS
-            //sxd = readRdf4j.getsKOSXmlDocument();
-            sxd = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFXML, currentLang);
+            InputStream inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
+            SKOSXmlDocument sxd = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFXML, currentLang);
 
             for (SKOSResource resource : sxd.getConceptList()) {
                 for(SKOSLabel label : resource.getLabelsList()) {
