@@ -29,7 +29,8 @@ public class ConceptAutocompleteController {
                     @ApiResponse(responseCode = "200", description = "${searchAutocomplete.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$")
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "404", description = "${searchAutocomplete.404.description}$")
             })
     public Response searchAutocomplete(@Parameter(name = "idThesaurus", required = true, description = "${searchAutocomplete.idThesaurus.description}$") @PathParam("idTheso") String idTheso,
                                        @Parameter(name = "input", required = true, description = "${searchAutocomplete.input.description}$") @PathParam("input") String input,
@@ -47,7 +48,7 @@ public class ConceptAutocompleteController {
         datas = getAutocompleteDatas(idTheso, lang, groups, input, full);
 
         if (StringUtils.isEmpty(datas)) {
-            return ResponseHelper.response(Response.Status.OK, emptyMessage(format), format);
+            return ResponseHelper.response(Response.Status.NOT_FOUND, emptyMessage(format), format);
         } else {
             return ResponseHelper.response(Response.Status.OK, datas, format);
         }
