@@ -976,6 +976,14 @@ public class CandidatBean implements Serializable {
     public List<CandidatDto> getSelectedCandidates() {
         return selectedCandidates;
     }
+    
+    public List<String> getSelectedCandidatesAsId() {
+        List<String> listIdOfConcept = new ArrayList<>();
+        for (CandidatDto selectedCandidate : selectedCandidates) {
+            listIdOfConcept.add(selectedCandidate.getIdConcepte());
+        }
+        return listIdOfConcept;
+    }    
 
     public void setSelectedCandidates(List<CandidatDto> selectedCandidates) {
         this.selectedCandidates = selectedCandidates;

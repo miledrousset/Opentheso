@@ -151,7 +151,15 @@
                                          oncomplete="PF('processCandidateList').show();" style="width: 100%"/> 
                     </div>
                     
-                 
+                    <div class="col-sm-2 offset-sm-0 col-xl-2 offset-xl-1 " style="text-align: right;">
+                        <p:commandButton ajax="true" process="@this"
+                                         value="#{langueBean.getMsg('concept.moveToAnotherTheso')}" 
+                                         styleClass="ui-button-secondary button" icon="fa-solid fa-paper-plane"
+                                         update="idMoveToAnotherThesoCA moveToAnotherThesoCAForm"
+                                         title="#{langueBean.getMsg('concept.moveToAnotherThesoTooltip')}"
+                                         action="#{moveConcept.initForCandidate(candidatBean.selectedCandidatesAsId, selectedTheso.currentIdTheso)}"
+                                         oncomplete="PF('moveToAnotherThesoCA').show();" style="width: 100%"/> 
+                    </div>
                 </div>
             </h:panelGroup>  
         </h:form>        

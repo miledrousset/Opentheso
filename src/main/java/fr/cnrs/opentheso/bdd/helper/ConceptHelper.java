@@ -134,6 +134,11 @@ public class ConceptHelper {
                         + " update non_preferred_term set id_thesaurus = '" + idThesoTarget + "' from preferred_term where non_preferred_term.id_term = preferred_term.id_term"
                         + " and non_preferred_term.id_thesaurus = preferred_term.id_thesaurus and preferred_term.id_concept = '" + idConceptToMove + "' and non_preferred_term.id_thesaurus = '" + idThesoFrom + "';"
                                 
+                        + " update note set id_thesaurus = '" + idThesoTarget + "' from preferred_term where note.id_term = preferred_term.id_term"
+                        + " and note.id_thesaurus = preferred_term.id_thesaurus and preferred_term.id_concept = '" + idConceptToMove + "' and note.id_thesaurus = '" + idThesoFrom + "';"                                 
+                        + " update note set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"    
+                        + " update note_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                 
+                                
                         + " update preferred_term set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';" 
                                 
                         + " update concept_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"     
@@ -143,8 +148,7 @@ public class ConceptHelper {
 
                                 
                         + " update concept_group_concept set idthesaurus = '" + idThesoTarget + "' where idconcept = '" + idConceptToMove + "' and idthesaurus = '" + idThesoFrom + "';" 
-                        + " update note set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"    
-                        + " update note_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"     
+    
                         + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
                         + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"      
                         + " update hierarchical_relationship_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"

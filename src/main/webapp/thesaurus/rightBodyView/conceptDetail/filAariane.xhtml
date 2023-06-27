@@ -73,7 +73,7 @@
                 <p:menuitem disabled="false" rendered="#{!copyAndPasteBetweenTheso.isCopyOn}"
                             value="#{langueBean.getMsg('rightbody.concept.copy_to_another_thesaurus')}"
                             actionListener="#{copyAndPasteBetweenTheso.onStartCopy()}"
-                            icon="fas fa-truck-moving" update="containerIndex:rightTab:idConceptViewActions messageIndex" />
+                            icon="fas fa-regular fa-copy" update="containerIndex:rightTab:idConceptViewActions messageIndex" />
 
                 <p:menuitem rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.here')} !!" 
@@ -85,8 +85,28 @@
                 <p:menuitem  rendered="#{copyAndPasteBetweenTheso.isCopyOn}"
                              value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}"
                              action="#{copyAndPasteBetweenTheso.reset()}" icon="fas fa-ban"
-                             update="containerIndex:rightTab:idConceptViewActions messageIndex" />                       
+                             update="containerIndex:rightTab:idConceptViewActions messageIndex" />       
 
+                
+                
+                
+                
+                
+                
+                <p:separator rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
+                <p:menuitem  rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                             value="#{langueBean.getMsg('concept.moveToAnotherThesoTooltip')}"
+                             action="#{moveConcept.initForConcept(conceptView.nodeConcept.concept.idConcept, selectedTheso.currentIdTheso)}"
+                             icon="fas fa-truck-moving"
+                             oncomplete="PF('moveToAnotherTheso').show();"                             
+                             update="containerIndex:idMoveToAnotherTheso containerIndex:moveToAnotherThesoForm"/>                
+
+                
+                
+                
+                
+                
+                
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso)}"

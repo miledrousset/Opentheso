@@ -44,7 +44,7 @@ public class MoveConceptToTheso {
     //
     @Test
     public void hello() {
-        String idConceptToMove = "197409";//andiore / flute
+        String idConceptToMove = "197419";//andiore / flute
         String idThesoFrom = "th201";
         String idThesoTarget = "th267";
         

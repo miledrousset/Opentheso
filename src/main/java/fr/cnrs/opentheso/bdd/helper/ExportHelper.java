@@ -380,7 +380,9 @@ public class ExportHelper {
     }
 
     private void getLabels(String labelBrut, SKOSResource sKOSResource, int type) throws SQLException {
-
+        if("16238".equalsIgnoreCase(sKOSResource.getIdentifier())){
+            System.out.println("concept : " + sKOSResource.getIdentifier() + "  " + labelBrut);
+        }
         if (StringUtils.isNotEmpty(labelBrut)) {
             String[] tabs = labelBrut.split(SEPERATEUR);
 
