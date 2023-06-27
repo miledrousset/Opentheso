@@ -152,19 +152,19 @@
 
                 <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
 
-                <p:column headerText="#{langueBean.getMsg('search.identifier')}">
+                <p:column headerText="#{langueBean.getMsg('search.identifier')}" width="10">
                     <h:outputText value="#{alignement.internal_id_concept}" />
                 </p:column>
 
-                <p:column headerText="#{langueBean.getMsg('statistique.label')}">
+                <p:column headerText="#{langueBean.getMsg('statistique.label')}" width="40">
                     <h:outputText value="#{alignement.concept_target}" />
                 </p:column>
 
-                <p:column headerText="#{langueBean.getMsg('alignment.source')}">
+                <p:column headerText="#{langueBean.getMsg('alignment.source')}" width="20">
                     <h:outputText value="#{alignement.thesaurus_target}" />
                 </p:column>
 
-                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}">
+                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}" width="30">
                     <p:selectOneMenu value="#{alignement.alignement_id_type}"
                                      style="font-size: 12px; background: white; border-color: #43B572; width: 100%">
                         <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
@@ -172,9 +172,10 @@
                     </p:selectOneMenu>
                 </p:column>
 
-                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uriTarget')}">
-                    <p:commandButton value="Link" icon="fa fa-google"
-                                     actionListener="#{alignmentBean.openExternalLink(alignement.uri_target)}" />
+                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uriTarget')}" width="40">
+                    <h:outputLink value="#{alignement.uri_target}" target="_blank" >
+                        <h:outputText rendered="#{alignement.uri_target != null}" value="#{alignement.uri_target}" />
+                    </h:outputLink>
                 </p:column>
 
                 <f:facet name="footer">
@@ -182,15 +183,26 @@
                         <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
                         <h:outputText value="#{alignmentBean.allAlignementFound.size()}" style="font-size: 16px; color: #f47b2a"/>
                     </span>
-                    <p:commandButton value="Ajouter"
-                                     icon="fas fa-sort-numeric-down" styleClass="ui-button-success"
-                                     update="containerIndex"
-                                     actionListener="#{alignmentBean.saveAlignements()}"
-                                     style="margin-left: 10px" />
                 </f:facet>
             </p:dataTable>
         </div>
+
+        <p:toolbar style="margin: 20px; margin-top: 10px">
+            <p:toolbarGroup align="right">
+                <p:commandButton title="Annuler" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
+                                 actionListener="#{alignmentBean.annulerAlignementAutomatique()}" update="containerIndex"/>
+
+                <p:commandButton value="Ajouter" action="#{alignmentBean.saveAlignements()}" update="containerIndex" styleClass="ui-button-success" icon="pi pi-check">
+                    <p:confirm header="Confirmation" message="Est ce que vous voulez vraiment enregistrer ces alignements ?" icon="pi pi-exclamation-triangle"/>
+                </p:commandButton>
+            </p:toolbarGroup>
+        </p:toolbar>
     </h:panelGroup>
+
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+        <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+        <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" />
+    </p:confirmDialog>
 
     <p:dialog id="sourceManagementID" header="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" 
               widgetVar="sourceManagement" modal="true" resizable="true" position="top" 
