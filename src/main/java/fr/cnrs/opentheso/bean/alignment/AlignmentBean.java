@@ -407,11 +407,6 @@ public class AlignmentBean implements Serializable {
                     allignementsList.add(element);
                 }
             }
-
-            AlignementElement element = new AlignementElement();
-            element.setIdConceptOrig(idsAndValue.getId());
-            element.setLabelConceptOrig(idsAndValue.getValue());
-            allignementsList.add(element);
         }
 
         sortDatatableAlignementByColor();
@@ -450,11 +445,6 @@ public class AlignmentBean implements Serializable {
                     allignementsList.add(element);
                 }
             }
-
-            AlignementElement element = new AlignementElement();
-            element.setIdConceptOrig(idsAndValue.getId());
-            element.setLabelConceptOrig(idsAndValue.getValue());
-            allignementsList.add(element);
         }
 
         sortDatatableAlignementByColor();
@@ -1980,6 +1970,14 @@ public class AlignmentBean implements Serializable {
         alignmentInProgress = false;
         listAlignValues = null;
         resetVariables();
+    }
+    
+    public long getTotalCount(String internalIdConcept) {
+        return allAlignementFound.stream().filter(alignement -> internalIdConcept.equals(alignement.getInternal_id_concept())).count();
+    }
+
+    public long getTotalAlignement(String idConceptOrig) {
+        return allignementsList.stream().filter(alignement -> idConceptOrig.equals(alignement.getIdConceptOrig())).count();
     }
 
     public void validManualAlignment(String idTheso, String idConcept, int idUser) {

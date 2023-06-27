@@ -81,7 +81,7 @@
                             <ui:include rendered="#{rightBodySetting.showGroup}" src="rightBodyView/group.xhtml"/>
                         </p:tab>
 
-                        <p:tab rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                        <p:tab rendered="#{roleOnTheso.alignementVisible()}"
                                id="viewTabAlignement" title="#{langueBean.getMsg('rightbody.alignement')}" >
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
@@ -89,7 +89,7 @@
                             <ui:include src="rightBodyView/alignement.xhtml" />
                         </p:tab>
 
-                        <p:tab rendered="#{roleOnTheso.nodePreference.suggestion}" disabled="#{!propositionBean.isRubriqueVisible}" title="#{langueBean.getMsg('rightbody.newSuggest')}" >
+                        <p:tab rendered="#{roleOnTheso.getNodePreference().isSuggestion()}" disabled="#{!propositionBean.isRubriqueVisible}" title="#{langueBean.getMsg('rightbody.newSuggest')}" >
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                             </f:facet>

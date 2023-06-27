@@ -68,6 +68,12 @@
                     </div>
                 </f:facet>
 
+                <p:headerRow field="idConceptOrig" expandable="true" expanded="true">
+                    <p:column colspan="6" style="background-color: #ecf8f1; border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText styleClass="ml-2" value="#{alignement.labelConceptOrig}"/>
+                    </p:column>
+                </p:headerRow>
+
                 <p:column headerText="#{langueBean.getMsg('search.identifier')}" filterBy="#{alignement.idConceptOrig}" sortBy="#{alignement.idConceptOrig}">
                     <h:outputText value="#{alignement.idConceptOrig}" />
                 </p:column>
@@ -120,6 +126,22 @@
                     </div>
                 </p:column>
 
+                <p:summaryRow>
+                    <p:column colspan="4" style="background-color: #ecf8f1; border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <p:commandButton process="@this" value="Ajouter un nouveau alignement pour #{alignement.getLabelConceptOrig()}"
+                                         update=":containerIndex:searchAlignementForm"
+                                         actionListener="#{alignmentBean.openEditAlignementWindow(alignement)}"
+                                         styleClass="rounded-button ui-button-outlined"
+                                         style="color: #f47b2a" >
+                            <p:resetInput target=":containerIndex:searchAlignementForm"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:column colspan="2" style="text-align:right; text-align:right; background-color: #ecf8f1;
+                            border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText value="Total alignement pour (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignement(alignement.idConceptOrig)}"/>
+                    </p:column>
+                </p:summaryRow>
+
                 <f:facet name="footer">
                     <span class="p-text-bold">
                         <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
@@ -143,10 +165,8 @@
                 </f:facet>
 
                 <p:headerRow field="internal_id_concept" expandable="true" expanded="true">
-                    <p:column colspan="5"  >
-                        <div class="inline-flex align-items-center" style="vertical-align: middle">
-                            <h:outputText styleClass="ml-2" value="#{alignement.concept_target}"/>
-                        </div>
+                    <p:column colspan="6" style="background-color: #ecf8f1; border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText styleClass="ml-2" value="#{alignement.concept_target}"/>
                     </p:column>
                 </p:headerRow>
 
@@ -177,6 +197,16 @@
                         <h:outputText rendered="#{alignement.uri_target != null}" value="#{alignement.uri_target}" />
                     </h:outputLink>
                 </p:column>
+
+                <p:summaryRow>
+                    <p:column colspan="5" style="text-align:right; text-align:right; background-color: #ecf8f1;
+                            border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText value="Total alignement trouvé pour (#{alignement.concept_target}) :"/>
+                    </p:column>
+                    <p:column  style="background-color: #ecf8f1; border-top: 1px solid #43B572;border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText value="#{alignmentBean.getTotalCount(alignement.internal_id_concept)}"/>
+                    </p:column>
+                </p:summaryRow>
 
                 <f:facet name="footer">
                     <span class="p-text-bold">
