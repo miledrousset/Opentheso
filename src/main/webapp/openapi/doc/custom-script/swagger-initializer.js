@@ -28,20 +28,6 @@ function getCurrentURL () {
 }
 
 /**
- * @returns { Array<string> } Liste des codes de langues disponibles
- */
-const getAvailableLangages = () => {
-    let selector = document.getElementById("lang-selector");
-    const languages = [];
-    selector.childNodes.forEach((elt) => {
-        if (elt.localName === "option") {
-          languages.push(elt.value);
-        }
-    });
-    return languages;
-};
-
-/**
  * Ajoute un listener sur le selecteur de langue pour recharger la page avec la selection de la bonne langue
  */
 const addLangSelectorListener = () => {
@@ -109,17 +95,6 @@ const loadQueryLang = () => {
     changeLangSelectorDefault(LANG);
 };
 
-const loadQueryVersion = () => {
-    if (getCurrentURL().indexOf("?") !== -1) {
-        const queryString = getCurrentURL().split("?")[1];
-        const parameters = new URLSearchParams(queryString);
-        if (parameters.has("version") && (AVAILABLE_VERSION.indexOf(parameters.get("version").toLowerCase()) !== -1)) { 
-            VERSION = parameters.get("version").toLowerCase();
-            // changeVersionSelectorDefault(VERSION);
-        }
-    } 
-};
-
 
 const fetchAvailableLanguages = () => {
     return fetch(BASE_URL + "doc/config/lang", {
@@ -128,7 +103,7 @@ const fetchAvailableLanguages = () => {
         return response.json();
     }).then(data => {
         const selector = document.getElementById("lang-selector");
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
             const option = document.createElement("option");
             option.value = data[i].code;
             option.text = data[i].display;
@@ -168,7 +143,6 @@ let VERSION = "v1";
 let LANG = "fr";
 const BASE_URL = window.location.href.split("/doc")[0]  + "/";
 const AVAILABLE_LANG = [];
-const AVAILABLE_VERSION = ["v1"];
 
 window.onload = function() {
     fetchAvailableLanguages()
