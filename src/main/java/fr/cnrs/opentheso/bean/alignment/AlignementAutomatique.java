@@ -24,7 +24,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AlignementAutomatique {
 
@@ -39,7 +41,9 @@ public class AlignementAutomatique {
         thesaurusLangs.remove(idCurrentLang);
         List<String> allLangsTheso = new ThesaurusHelper().getIsoLanguagesOfThesaurus(connection, idTheso);
 
-        for (AlignementElement alignementElement : allignementsList) {
+        Set<AlignementElement> listConcepts = new HashSet<>(allignementsList);
+
+        for (AlignementElement alignementElement : listConcepts) {
 
             if (StringUtils.isEmpty(alignementElement.getTargetUri())) {
 
@@ -66,7 +70,12 @@ public class AlignementAutomatique {
                                 case "GEMET":
                                     loadGemeDatas(connection, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
                                     break;
-                                default :
+                                case "AGROVOC":
+                                    loadAgrovocDatas(connection, nodeAlignment, thesaurusLangs, idTheso, idConcept, idCurrentLang);
+                                    break;
+                                case "GEONAMES" :
+                                    loadGeoNameDatas(connection, nodeAlignment, thesaurusLangs, idTheso, idConcept);
+                                    break;
                             }
                         }
 
@@ -81,6 +90,48 @@ public class AlignementAutomatique {
         }
 
         return allAlignementFound;
+    }
+
+    private void loadGeoNameDatas(HikariDataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
+                             String idTheso, String idConcept) {
+
+        GeoNamesHelper geoNamesHelper = new GeoNamesHelper();
+        geoNamesHelper.setOptions(nodeAlignment, List.of("langues", "notes", "images"), thesaurusLangs);
+
+        if (CollectionUtils.isNotEmpty(geoNamesHelper.getResourceTraductions())) {
+            nodeAlignment.setSelectedTraductionsList(searchTraductions(geoNamesHelper.getResourceTraductions(),
+                    connection, idConcept, idTheso));
+        }
+
+        if (CollectionUtils.isNotEmpty(geoNamesHelper.getResourceDefinitions())) {
+            nodeAlignment.setSelectedDefinitionsList(searchDefinitions(geoNamesHelper.getResourceDefinitions(),
+                    connection, idConcept, idTheso));
+        }
+
+        if (CollectionUtils.isNotEmpty(geoNamesHelper.getResourceImages())) {
+            nodeAlignment.setSelectedImagesList(searchImages(geoNamesHelper.getResourceImages(), connection, idConcept, idTheso));
+        }
+    }
+
+    private void loadAgrovocDatas(HikariDataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
+                                  String idTheso, String idConcept, String idLang) {
+
+        AgrovocHelper agrovocHelper = new AgrovocHelper();
+        agrovocHelper.setOptions(nodeAlignment, List.of("langues", "notes", "images"), thesaurusLangs, idLang);
+
+        if (CollectionUtils.isNotEmpty(agrovocHelper.getResourceTraductions())) {
+            nodeAlignment.setSelectedTraductionsList(searchTraductions(agrovocHelper.getResourceTraductions(),
+                    connection, idConcept, idTheso));
+        }
+
+        if (CollectionUtils.isNotEmpty(agrovocHelper.getResourceDefinitions())) {
+            nodeAlignment.setSelectedDefinitionsList(searchDefinitions(agrovocHelper.getResourceDefinitions(),
+                    connection, idConcept, idTheso));
+        }
+
+        if (CollectionUtils.isNotEmpty(agrovocHelper.getResourceImages())) {
+            nodeAlignment.setSelectedImagesList(searchImages(agrovocHelper.getResourceImages(), connection, idConcept, idTheso));
+        }
     }
 
     private void loadGemeDatas(HikariDataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
