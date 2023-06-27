@@ -38,6 +38,7 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -517,6 +518,12 @@ public class AlignmentBean implements Serializable {
         }
     }
 
+    public void annulerAlignementAutomatique() {
+        allAlignementFound = Collections.emptyList();
+        allAlignementVisible = true;
+        propositionAlignementVisible = false;
+    }
+
     public void saveAlignements() {
 
         if (CollectionUtils.isNotEmpty(selectAlignementForAdd)) {
@@ -532,6 +539,10 @@ public class AlignmentBean implements Serializable {
                     conceptBean.getSelectedLang());
 
             getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "", "Aucun alignement selectionné !"));
+            PrimeFaces.current().ajax().update("messageIndex");
         }
     }
 

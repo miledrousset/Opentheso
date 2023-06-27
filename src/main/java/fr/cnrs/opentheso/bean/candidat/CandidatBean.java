@@ -158,9 +158,19 @@ public class CandidatBean implements Serializable {
 
         allTermesGenerique = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
                 selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+        if (candidatSelected != null && CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
+            for (NodeIdValue nodeIdValue : candidatSelected.getTermesGenerique()) {
+                allTermesGenerique.remove(nodeIdValue);
+            }
+        }
 
         AllTermesAssocies = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
                 selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+        if (candidatSelected != null && CollectionUtils.isNotEmpty(candidatSelected.getTermesAssocies())) {
+            for (NodeIdValue nodeIdValue : candidatSelected.getTermesGenerique()) {
+                AllTermesAssocies.remove(nodeIdValue);
+            }
+        }
 
         try {
             languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
@@ -822,7 +832,14 @@ public class CandidatBean implements Serializable {
                 .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
                 .findFirst();
         if (elementAdded.isPresent()) {
-            candidatSelected.getTermesGenerique().add(elementAdded.get());
+            if (candidatSelected.getTermesGenerique().stream()
+                    .filter(element -> element.getValue().equalsIgnoreCase(elementAdded.get().getValue()))
+                    .findFirst().isPresent()) {
+                showMessage(FacesMessage.SEVERITY_WARN, "Le terme generique existe déjà !");
+            } else {
+                candidatSelected.getTermesGenerique().add(elementAdded.get());
+                allTermesGenerique.remove(elementAdded.get());
+            }
             termesGeneriqueTmp = Collections.emptyList();
             PrimeFaces.current().ajax().update("tabViewCandidat");
         }
@@ -834,7 +851,14 @@ public class CandidatBean implements Serializable {
                 .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
                 .findFirst();
         if (elementAdded.isPresent()) {
-            candidatSelected.getTermesAssocies().add(elementAdded.get());
+            if (candidatSelected.getTermesAssocies().stream()
+                    .filter(element -> element.getValue().equalsIgnoreCase(elementAdded.get().getValue()))
+                    .findFirst().isPresent()) {
+                showMessage(FacesMessage.SEVERITY_WARN, "Le terme associé existe déjà !");
+            } else {
+                candidatSelected.getTermesAssocies().add(elementAdded.get());
+                AllTermesAssocies.remove(elementAdded.get());
+            }
             termesAssociesTmp = Collections.emptyList();
             PrimeFaces.current().ajax().update("tabViewCandidat");
         }
