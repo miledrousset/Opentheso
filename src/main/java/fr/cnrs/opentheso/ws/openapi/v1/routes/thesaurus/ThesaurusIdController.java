@@ -58,7 +58,7 @@ public class ThesaurusIdController {
             }
 
             RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.getTheso(ds, thesaurusId, format);
+            datas = restRDFHelper.getTheso(ds, thesaurusId, HeaderHelper.removeCharset(format));
         }
 
         if (StringUtils.isEmpty(datas)) {

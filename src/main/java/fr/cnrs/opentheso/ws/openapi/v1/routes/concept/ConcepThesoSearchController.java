@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.*;
+import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getContentTypeFromHeader;
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
@@ -163,7 +164,7 @@ public class ConcepThesoSearchController {
                 return null;
             }
             RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.findDatasForWidget(ds, idTheso, idLang, groups, value, format, match);
+            datas = restRDFHelper.findDatasForWidget(ds, idTheso, idLang, groups, value, HeaderHelper.removeCharset(format), match);
 
             return datas;
         }
