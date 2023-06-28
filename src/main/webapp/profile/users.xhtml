@@ -55,14 +55,13 @@
 
                                 <div class="row" style="margin-top: -15px; margin-bottom: 5px;">
                                     <div class="col-1 offset-11">
-                                        <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin()}"
+                                        <p:commandButton rendered="#{currentUser.getNodeUser().isSuperAdmin()}"
                                                          action="#{newUSerBean.initForSuperAdmin()}"
                                                          oncomplete="PF('addNewUser').show();" 
                                                          ajax="true" 
                                                          icon="fa fa-user-plus" update="idAddNewUser" 
                                                          styleClass="rounded-button"
-                                                         title="#{langueBean.getMsg('profile.new_user')}"
-                                                         disabled="true">
+                                                         title="#{langueBean.getMsg('profile.new_user')}">
                                         </p:commandButton>
                                     </div>                          
                                 </div>                                

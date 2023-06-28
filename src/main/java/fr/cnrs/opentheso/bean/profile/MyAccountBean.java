@@ -19,15 +19,12 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-
-import lombok.Data;
 import org.primefaces.PrimeFaces;
 
 /**
  *
  * @author miledrousset
  */
-@Data
 @Named(value = "myAccountBean")
 @SessionScoped
 public class MyAccountBean implements Serializable {
@@ -189,4 +186,51 @@ public class MyAccountBean implements Serializable {
         }
     }
 
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public NodeUser getNodeUser() {
+        return nodeUser;
+    }
+
+    public void setNodeUser(NodeUser nodeUser) {
+        this.nodeUser = nodeUser;
+    }
+
+    public String getPassWord1() {
+        return passWord1;
+    }
+
+    public void setPassWord1(String passWord1) {
+        this.passWord1 = passWord1;
+    }
+
+    public String getPassWord2() {
+        return passWord2;
+    }
+
+    public void setPassWord2(String passWord2) {
+        this.passWord2 = passWord2;
+    }
+
+    public ArrayList<NodeUserRoleGroup> getAllMyRoleProject() {
+        return allMyRoleProject;
+    }
+
+    public void setAllMyRoleProject(ArrayList<NodeUserRoleGroup> allMyRoleProject) {
+        this.allMyRoleProject = allMyRoleProject;
+    }
 }

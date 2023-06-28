@@ -55,12 +55,12 @@
                          resizableColumns="true" 
                          showGridlines="true" 
                          currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{langueBean.getMsg('rightbody.concept.alignment')}"
-                         rowsPerPageTemplate="5,10,{ShowAll|'All'}" 
-                         rowStyleClass="#{alignement.targetUri == null ? 'alignementVide' : null}"  
+                         rowsPerPageTemplate="5,10,{ShowAll|'All'}"
                          scrollHeight="69%" 
                          allowUnsorting="true" 
                          sortMode="single" 
-                         style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false">
+                         style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false"
+                         rowStyleClass="#{alignement.thesaurus_target == null ? 'alignementVide' : null}">
 
                 <f:facet name="header">
                     <div class="products-table-header">
@@ -93,14 +93,6 @@
                 <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uriTarget')}" sortBy="#{alignement.targetUri}" style="text-align: center">
                     <h:outputLink value="#{alignement.targetUri}" target="_blank" >
                         <h:outputText rendered="#{alignement.targetUri != null}" value="#{alignement.targetUri}" />
-
-                        <p:commandButton process="@this" rendered="#{alignement.targetUri == null}"
-                                         update=":containerIndex:searchAlignementForm"
-                                         actionListener="#{alignmentBean.openEditAlignementWindow(alignement)}"
-                                         icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
-                                         style="height: 30px; width: 30px; color: #f47b2a" >
-                            <p:resetInput target=":containerIndex:searchAlignementForm"/>
-                        </p:commandButton>
                     </h:outputLink>
                 </p:column>
 
@@ -117,12 +109,12 @@
                         </div>
                         <div class="col-5">
                             <p:commandButton process="@this" ajax="true"
-                                     icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined" 
+                                     icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
                                      oncomplete="PF('confirmDeleteAlignement').show()"
                                      actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
-                                     rendered="#{alignement.targetUri != null}" 
+                                     rendered="#{alignement.targetUri != null}"
                                      style="height: 30px; width: 30px;" />
-                        </div>                    
+                        </div>
                     </div>
                 </p:column>
 
@@ -138,14 +130,14 @@
                     </p:column>
                     <p:column colspan="2" style="text-align:right; text-align:right; background-color: #ecf8f1;
                             border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
-                        <h:outputText value="Total alignement pour (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignement(alignement.idConceptOrig)}"/>
+                        <h:outputText value="Total alignement pour (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignementParConcept(alignement.idConceptOrig)}"/>
                     </p:column>
                 </p:summaryRow>
 
                 <f:facet name="footer">
                     <span class="p-text-bold">
                         <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
-                        <h:outputText value="#{alignmentBean.allignementsList.size()}" style="font-size: 16px; color: #f47b2a"/>
+                        <h:outputText value="#{alignmentBean.getTotalAlignements()}" style="font-size: 16px; color: #f47b2a"/>
                     </span>
                 </f:facet>
             </p:dataTable>

@@ -27,7 +27,6 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
-@Data
 @SessionScoped
 @Named(value = "viewEditorHomeBean")
 public class ViewEditorHomeBean implements Serializable {
@@ -38,13 +37,6 @@ public class ViewEditorHomeBean implements Serializable {
     private LanguageBean languageBean;
     @Inject
     private SelectedTheso selectedTheso;
-    
-    @PostConstruct
-    public void postInit() {
-    }
-
-    public ViewEditorHomeBean() {
-    }
 
     private boolean isViewPlainText = false;
     private String text;
@@ -201,4 +193,91 @@ public class ViewEditorHomeBean implements Serializable {
         return !isInEditingGoogleAnalytics && !isInEditingHomePage;
     }
 
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public LanguageBean getLanguageBean() {
+        return languageBean;
+    }
+
+    public void setLanguageBean(LanguageBean languageBean) {
+        this.languageBean = languageBean;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public boolean isViewPlainText() {
+        return isViewPlainText;
+    }
+
+    public void setViewPlainText(boolean viewPlainText) {
+        isViewPlainText = viewPlainText;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public boolean isInEditing() {
+        return isInEditing;
+    }
+
+    public void setInEditing(boolean inEditing) {
+        isInEditing = inEditing;
+    }
+
+    public String getColorOfHtmlButton() {
+        return colorOfHtmlButton;
+    }
+
+    public void setColorOfHtmlButton(String colorOfHtmlButton) {
+        this.colorOfHtmlButton = colorOfHtmlButton;
+    }
+
+    public String getColorOfTextButton() {
+        return colorOfTextButton;
+    }
+
+    public void setColorOfTextButton(String colorOfTextButton) {
+        this.colorOfTextButton = colorOfTextButton;
+    }
+
+    public boolean isInEditingHomePage() {
+        return isInEditingHomePage;
+    }
+
+    public void setInEditingHomePage(boolean inEditingHomePage) {
+        isInEditingHomePage = inEditingHomePage;
+    }
+
+    public String getCodeGoogleAnalitics() {
+        return codeGoogleAnalitics;
+    }
+
+    public void setCodeGoogleAnalitics(String codeGoogleAnalitics) {
+        this.codeGoogleAnalitics = codeGoogleAnalitics;
+    }
+
+    public boolean isInEditingGoogleAnalytics() {
+        return isInEditingGoogleAnalytics;
+    }
+
+    public void setInEditingGoogleAnalytics(boolean inEditingGoogleAnalytics) {
+        isInEditingGoogleAnalytics = inEditingGoogleAnalytics;
+    }
 }

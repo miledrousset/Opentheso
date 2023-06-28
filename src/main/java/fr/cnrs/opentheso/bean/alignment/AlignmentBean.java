@@ -40,8 +40,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -407,6 +409,11 @@ public class AlignmentBean implements Serializable {
                     allignementsList.add(element);
                 }
             }
+
+            AlignementElement element = new AlignementElement();
+            element.setIdConceptOrig(idsAndValue.getId());
+            element.setLabelConceptOrig(idsAndValue.getValue());
+            allignementsList.add(element);
         }
 
         sortDatatableAlignementByColor();
@@ -445,6 +452,11 @@ public class AlignmentBean implements Serializable {
                     allignementsList.add(element);
                 }
             }
+
+            AlignementElement element = new AlignementElement();
+            element.setIdConceptOrig(idsAndValue.getId());
+            element.setLabelConceptOrig(idsAndValue.getValue());
+            allignementsList.add(element);
         }
 
         sortDatatableAlignementByColor();
@@ -505,6 +517,10 @@ public class AlignmentBean implements Serializable {
         if (CollectionUtils.isNotEmpty(allAlignementFound)) {
             allAlignementVisible = false;
             propositionAlignementVisible = true;
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "", "Aucun alignement trouvé !"));
+            PrimeFaces.current().ajax().update("messageIndex");
         }
     }
 
@@ -1976,8 +1992,12 @@ public class AlignmentBean implements Serializable {
         return allAlignementFound.stream().filter(alignement -> internalIdConcept.equals(alignement.getInternal_id_concept())).count();
     }
 
-    public long getTotalAlignement(String idConceptOrig) {
-        return allignementsList.stream().filter(alignement -> idConceptOrig.equals(alignement.getIdConceptOrig())).count();
+    public long getTotalAlignementParConcept(String idConceptOrig) {
+        return allignementsList.stream().filter(alignement -> idConceptOrig.equals(alignement.getIdConceptOrig())).count() - 1;
+    }
+
+    public long getTotalAlignements() {
+        return allignementsList.size() - new HashSet<>(allignementsList).size();
     }
 
     public void validManualAlignment(String idTheso, String idConcept, int idUser) {
