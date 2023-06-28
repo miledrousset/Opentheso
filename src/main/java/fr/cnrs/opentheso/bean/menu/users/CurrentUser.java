@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -52,6 +53,8 @@ public class CurrentUser implements Serializable {
     private PropositionBean propositionBean;
     @Inject
     private SearchBean searchBean;
+    @Inject
+    private LanguageBean languageBean;
 
     private NodeUser nodeUser;
     private String username;
@@ -94,7 +97,7 @@ public class CurrentUser implements Serializable {
 
     public void disconnect(boolean redirectionEnable) throws IOException {
         if(nodeUser == null) return;
-        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Goodbye", nodeUser.getName());
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.goodbye"), nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
         nodeUser = null;
@@ -173,7 +176,7 @@ public class CurrentUser implements Serializable {
             showErrorMessage("Incohérence base de données ou utilisateur n'existe pas");
             return;
         }
-        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.welcome"), username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
         if ("index".equals(menuBean.getActivePageName())) {
