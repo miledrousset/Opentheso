@@ -5,11 +5,9 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupThesaurus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import lombok.Data;
 
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -22,7 +20,6 @@ import javax.inject.Inject;
  *
  * @author miledrousset
  */
-@Data
 @Named(value = "superAdminBean")
 @SessionScoped
 public class SuperAdminBean implements Serializable {
@@ -122,4 +119,59 @@ public class SuperAdminBean implements Serializable {
         allThesoProject.addAll(allThesoWithoutProject);
     }
 
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public ArrayList<NodeUser> getAllUsers() {
+        return allUsers;
+    }
+
+    public void setAllUsers(ArrayList<NodeUser> allUsers) {
+        this.allUsers = allUsers;
+    }
+
+    public ArrayList<NodeUserGroupUser> getNodeUserGroupUsers() {
+        return nodeUserGroupUsers;
+    }
+
+    public void setNodeUserGroupUsers(ArrayList<NodeUserGroupUser> nodeUserGroupUsers) {
+        this.nodeUserGroupUsers = nodeUserGroupUsers;
+    }
+
+    public ArrayList<NodeUserGroup> getAllProjects() {
+        return allProjects;
+    }
+
+    public void setAllProjects(ArrayList<NodeUserGroup> allProjects) {
+        this.allProjects = allProjects;
+    }
+
+    public ArrayList<NodeUserGroupThesaurus> getAllThesoProject() {
+        return allThesoProject;
+    }
+
+    public void setAllThesoProject(ArrayList<NodeUserGroupThesaurus> allThesoProject) {
+        this.allThesoProject = allThesoProject;
+    }
 }

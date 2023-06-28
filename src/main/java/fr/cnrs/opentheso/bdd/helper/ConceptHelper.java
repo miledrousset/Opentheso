@@ -5822,7 +5822,7 @@ public class ConceptHelper {
         DcElmentHelper dcElmentHelper = new DcElmentHelper();
                 
         /// récupération des Méta-données DC_terms
-        nodeConcept.setDcElements(dcElmentHelper.getDcElement(ds, idThesaurus, idConcept));
+        //nodeConcept.setDcElements(dcElmentHelper.getDcElement(ds, idThesaurus, idConcept));
         
         
         return nodeConcept;
