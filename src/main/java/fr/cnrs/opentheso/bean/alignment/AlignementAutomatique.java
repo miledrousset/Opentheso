@@ -45,47 +45,44 @@ public class AlignementAutomatique {
 
         for (AlignementElement alignementElement : listConcepts) {
 
-            if (StringUtils.isNotEmpty(alignementElement.getTargetUri())) {
+            List<NodeAlignment> alignmentFound = new ArrayList<>();
+            for (AlignementSource alignementSource : alignementSources) {
 
-                List<NodeAlignment> alignmentFound = new ArrayList<>();
-                for (AlignementSource alignementSource : alignementSources) {
+                List<NodeAlignment> tmp = searchAlignmentsV2(alignementSource, idTheso, alignementElement.getIdConceptOrig(),
+                        alignementElement.getLabelConceptOrig(), idCurrentLang, nom, prenom);
 
-                    List<NodeAlignment> tmp = searchAlignmentsV2(alignementSource, idTheso, alignementElement.getIdConceptOrig(),
-                            alignementElement.getLabelConceptOrig(), idCurrentLang, nom, prenom);
-
-                    if (CollectionUtils.isNotEmpty(tmp)) {
-                        for (NodeAlignment nodeAlignment : tmp) {
-                            switch(alignementSource.getSource_filter().toUpperCase()) {
-                                case "WIKIDATA_SPARQL":
-                                case "WIKIDATA_REST":
-                                    loadWikiDatas(connection, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
-                                    break;
-                                case "IDREFSUJETS":
-                                case "IDREFPERSONNES":
-                                case "IDREFAUTEURS":
-                                case "IDREFLIEUX":
-                                case "IDREFTITREUNIFORME":
-                                case "GETTY_AAT":
-                                case "OPENTHESO":
-                                case "GEMET":
-                                    loadGemeDatas(connection, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
-                                    break;
-                                case "AGROVOC":
-                                    loadAgrovocDatas(connection, nodeAlignment, thesaurusLangs, idTheso, idConcept, idCurrentLang);
-                                    break;
-                                case "GEONAMES" :
-                                    loadGeoNameDatas(connection, nodeAlignment, thesaurusLangs, idTheso, idConcept);
-                                    break;
-                            }
+                if (CollectionUtils.isNotEmpty(tmp)) {
+                    for (NodeAlignment nodeAlignment : tmp) {
+                        switch(alignementSource.getSource_filter().toUpperCase()) {
+                            case "WIKIDATA_SPARQL":
+                            case "WIKIDATA_REST":
+                                loadWikiDatas(connection, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
+                                break;
+                            case "IDREFSUJETS":
+                            case "IDREFPERSONNES":
+                            case "IDREFAUTEURS":
+                            case "IDREFLIEUX":
+                            case "IDREFTITREUNIFORME":
+                            case "GETTY_AAT":
+                            case "OPENTHESO":
+                            case "GEMET":
+                                loadGemeDatas(connection, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
+                                break;
+                            case "AGROVOC":
+                                loadAgrovocDatas(connection, nodeAlignment, thesaurusLangs, idTheso, idConcept, idCurrentLang);
+                                break;
+                            case "GEONAMES" :
+                                loadGeoNameDatas(connection, nodeAlignment, thesaurusLangs, idTheso, idConcept);
+                                break;
                         }
-
-                        alignmentFound.addAll(tmp);
                     }
-                }
 
-                if (CollectionUtils.isNotEmpty(alignmentFound)) {
-                    allAlignementFound.addAll(alignmentFound);
+                    alignmentFound.addAll(tmp);
                 }
+            }
+
+            if (CollectionUtils.isNotEmpty(alignmentFound)) {
+                allAlignementFound.addAll(alignmentFound);
             }
         }
 

@@ -214,17 +214,11 @@
                 <p:commandButton title="Annuler" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
                                  actionListener="#{alignmentBean.annulerAlignementAutomatique()}" update="containerIndex"/>
 
-                <p:commandButton value="Ajouter" action="#{alignmentBean.saveAlignements()}" update="containerIndex" styleClass="ui-button-success" icon="pi pi-check">
-                    <p:confirm header="Confirmation" message="Est ce que vous voulez vraiment enregistrer ces alignements ?" icon="pi pi-exclamation-triangle"/>
-                </p:commandButton>
+                <p:commandButton value="Ajouter" action="#{alignmentBean.saveAlignements()}" update="containerIndex"
+                                 styleClass="ui-button-success" icon="pi pi-check"/>
             </p:toolbarGroup>
         </p:toolbar>
     </h:panelGroup>
-
-    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-        <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-        <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" />
-    </p:confirmDialog>
 
     <p:dialog id="sourceManagementID" header="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" 
               widgetVar="sourceManagement" modal="true" resizable="true" position="top" 
