@@ -33,6 +33,7 @@ import fr.cnrs.opentheso.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 /**
@@ -160,12 +161,10 @@ public class OpenthesoHelper {
                             break;
                         case SKOSProperty.altLabel:
                             if(label.getLanguage().equals(idLang)) {
-                                if(na.getConcept_target_alt().isEmpty()) {
+                                if(StringUtils.isEmpty(na.getConcept_target_alt())) {
                                     na.setConcept_target_alt(label.getLabel());
-                                } 
-                                else {
-                                    na.setConcept_target_alt(
-                                            na.getConcept_target_alt() + ";" + label.getLabel());                                        
+                                } else {
+                                    na.setConcept_target_alt(na.getConcept_target_alt() + ";" + label.getLabel());
                                 }
                             }
                             break;                                
