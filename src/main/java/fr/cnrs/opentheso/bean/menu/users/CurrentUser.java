@@ -26,16 +26,15 @@ import javax.inject.Inject;
 import javax.annotation.PreDestroy;
 
 import fr.cnrs.opentheso.utils.LDAPUtils;
-import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+
 
 /**
  *
  * @author miledrousset
  */
-@Data
 @SessionScoped
 @Named(value = "currentUser")
 public class CurrentUser implements Serializable {
@@ -241,7 +240,7 @@ public class CurrentUser implements Serializable {
         if (StringUtils.isEmpty(userName)) {
             return "";
         }
-        return StringUtils.upperCase(userName.charAt(0) + "") + userName.substring(1, userName.length());
+        return StringUtils.upperCase(userName.charAt(0) + "") + userName.substring(1);
     }
 
     /**
@@ -274,5 +273,117 @@ public class CurrentUser implements Serializable {
 
     public boolean isAlertVisible() {
         return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
+    }
+
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public RoleOnThesoBean getRoleOnThesoBean() {
+        return roleOnThesoBean;
+    }
+
+    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
+        this.roleOnThesoBean = roleOnThesoBean;
+    }
+
+    public ViewEditorHomeBean getViewEditorHomeBean() {
+        return viewEditorHomeBean;
+    }
+
+    public void setViewEditorHomeBean(ViewEditorHomeBean viewEditorHomeBean) {
+        this.viewEditorHomeBean = viewEditorHomeBean;
+    }
+
+    public IndexSetting getIndexSetting() {
+        return indexSetting;
+    }
+
+    public void setIndexSetting(IndexSetting indexSetting) {
+        this.indexSetting = indexSetting;
+    }
+
+    public MenuBean getMenuBean() {
+        return menuBean;
+    }
+
+    public void setMenuBean(MenuBean menuBean) {
+        this.menuBean = menuBean;
+    }
+
+    public RightBodySetting getRightBodySetting() {
+        return rightBodySetting;
+    }
+
+    public void setRightBodySetting(RightBodySetting rightBodySetting) {
+        this.rightBodySetting = rightBodySetting;
+    }
+
+    public PropositionBean getPropositionBean() {
+        return propositionBean;
+    }
+
+    public void setPropositionBean(PropositionBean propositionBean) {
+        this.propositionBean = propositionBean;
+    }
+
+    public SearchBean getSearchBean() {
+        return searchBean;
+    }
+
+    public void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public NodeUser getNodeUser() {
+        return nodeUser;
+    }
+
+    public void setNodeUser(NodeUser nodeUser) {
+        this.nodeUser = nodeUser;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isLdapEnable() {
+        return ldapEnable;
+    }
+
+    public void setLdapEnable(boolean ldapEnable) {
+        this.ldapEnable = ldapEnable;
+    }
+
+    public ArrayList<NodeUserRoleGroup> getAllAuthorizedProjectAsAdmin() {
+        return allAuthorizedProjectAsAdmin;
+    }
+
+    public void setAllAuthorizedProjectAsAdmin(ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin) {
+        this.allAuthorizedProjectAsAdmin = allAuthorizedProjectAsAdmin;
     }
 }

@@ -55,11 +55,11 @@
 
                                 <div class="row" style="margin-top: -15px; margin-bottom: 5px;">
                                     <div class="col-1 offset-11">
-                                        <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin()}"
+                                        <p:commandButton rendered="#{currentUser.getNodeUser().isSuperAdmin()}"
                                                          action="#{newUSerBean.initForSuperAdmin()}"
-                                                         oncomplete="PF('addNewUser2').show();" 
-                                                          
-                                                         icon="fa fa-user-plus" update="idAddNewUser2 addNewUser2Form" 
+                                                         oncomplete="PF('addNewUser2').show();"
+
+                                                         icon="fa fa-user-plus" update="idAddNewUser2 addNewUser2Form"
                                                          styleClass="rounded-button"
                                                          title="#{langueBean.getMsg('profile.new_user')}"
                                                          disabled="false">
@@ -114,7 +114,7 @@
             </div>
         </h:panelGroup>
 
-        <p:dialog id="idAddNewUser2" header="#{langueBean.getMsg('profile.new_user')}" widgetVar="addNewUser2" 
+        <p:dialog id="idAddNewUser2" header="#{langueBean.getMsg('profile.new_user')}" widgetVar="addNewUser2"
                   width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
             <h:form id="addNewUser2Form">
@@ -212,7 +212,6 @@
                     <p:commandButton id="addUserBtn" value="#{langueBean.getMsg('btnValidate')}"
                                      icon="pi pi-check" oncomplete="PF('addNewUser2').hide();"
                                      styleClass="ui-button-success"
-                                     
                                      update="messageIndex containerIndex" 
                                      action="#{newUSerBean.addNewUserBySuperAdmin()}" />
                 </div>

@@ -45,7 +45,7 @@ public class AlignementAutomatique {
 
         for (AlignementElement alignementElement : listConcepts) {
 
-            if (StringUtils.isEmpty(alignementElement.getTargetUri())) {
+            if (StringUtils.isNotEmpty(alignementElement.getTargetUri())) {
 
                 List<NodeAlignment> alignmentFound = new ArrayList<>();
                 for (AlignementSource alignementSource : alignementSources) {
@@ -286,7 +286,7 @@ public class AlignementAutomatique {
                                                      HikariDataSource connection, String idConcept, String idTheso) {
 
         List<NodeImage> images = new ExternalImagesHelper().getExternalImages(connection, idConcept, idTheso);
-        List<SelectedResource> selectedImages = new ArrayList();
+        List<SelectedResource> selectedImages = new ArrayList<>();
 
         for (SelectedResource selectedResource : imagesOfAlignmentTemp) {
             boolean added = false;
