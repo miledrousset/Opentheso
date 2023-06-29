@@ -44,7 +44,7 @@ public class CandidatDto implements Serializable {
     private List<CorpusDto> corpus;
     private List<MessageDto> messages;
 
-    private List<NodeAlignment> alignments = new ArrayList<>();
+    private List<NodeAlignment> alignments;
     
     // ajoutés par Miled 
     private ArrayList<NodeIdValue> collections;

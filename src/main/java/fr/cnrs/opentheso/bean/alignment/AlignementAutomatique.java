@@ -66,7 +66,7 @@ public class AlignementAutomatique {
                             case "GETTY_AAT":
                             case "OPENTHESO":
                             case "GEMET":
-                                loadGemeDatas(connection, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
+                                loadGemeDatas(connection, alignementSource, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
                                 break;
                             case "AGROVOC":
                                 loadAgrovocDatas(connection, nodeAlignment, thesaurusLangs, idTheso, idConcept, idCurrentLang);
@@ -131,15 +131,17 @@ public class AlignementAutomatique {
         }
     }
 
-    private void loadGemeDatas(HikariDataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
-                               List<String> allLangTheso, String idTheso, String idConcept) {
+    private void loadGemeDatas(HikariDataSource connection, AlignementSource alignementSource, NodeAlignment nodeAlignment,
+                               List<String> thesaurusLangs, List<String> allLangTheso, String idTheso, String idConcept) {
 
         GemetHelper gemetHelper = new GemetHelper();
         gemetHelper.setOptions(nodeAlignment, List.of("langues", "notes", "images"), thesaurusLangs, allLangTheso);
 
-        if (CollectionUtils.isNotEmpty(gemetHelper.getResourceTraductions())) {
-            nodeAlignment.setSelectedTraductionsList(
-                    searchTraductions(gemetHelper.getResourceTraductions(), connection, idConcept, idTheso));
+        if (!"Pactols".equalsIgnoreCase(alignementSource.getSource())) {
+            if (CollectionUtils.isNotEmpty(gemetHelper.getResourceTraductions())) {
+                nodeAlignment.setSelectedTraductionsList(
+                        searchTraductions(gemetHelper.getResourceTraductions(), connection, idConcept, idTheso));
+            }
         }
 
         if (CollectionUtils.isNotEmpty(gemetHelper.getResourceDefinitions())) {
