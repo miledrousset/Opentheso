@@ -41,7 +41,7 @@ public class UserGroupLabelRepository {
 
     public List<UserGroupLabel> getProjectsByUserId(int userId) {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            TypedQuery<UserGroupLabel> typedQuery = session.createQuery("SELECT distinct the "
+            TypedQuery<UserGroupLabel> typedQuery = session.createQuery("SELECT distinct lab "
                             + "FROM UserGroupThesaurus the, UserRoleGroup grp, UserGroupLabel lab "
                             + "WHERE grp.idGroup = the.idGroup "
                             + "AND lab.id = the.idGroup "
