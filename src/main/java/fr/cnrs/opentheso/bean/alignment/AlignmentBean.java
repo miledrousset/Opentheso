@@ -597,9 +597,11 @@ public class AlignmentBean implements Serializable {
         }
 
         //addImages__(idTheso, idConcept, idUser);
-        for (SelectedResource selectedResource : alignment.getSelectedImagesList()) {
-            new ExternalImagesHelper().addExternalImage(connect.getPoolConnexion(), idConcept, idTheso, "",
-                    selectedAlignement, selectedResource.getGettedValue(), idUser);
+        if (CollectionUtils.isNotEmpty(alignment.getSelectedImagesList())) {
+            for (SelectedResource selectedResource : alignment.getSelectedImagesList()) {
+                new ExternalImagesHelper().addExternalImage(connect.getPoolConnexion(), idConcept, idTheso, "",
+                        selectedAlignement, selectedResource.getGettedValue(), idUser);
+            }
         }
 
         if (alignment.getThesaurus_target().equalsIgnoreCase("GeoNames")) {
