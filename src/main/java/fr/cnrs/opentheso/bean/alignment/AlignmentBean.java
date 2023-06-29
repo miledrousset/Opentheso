@@ -562,36 +562,38 @@ public class AlignmentBean implements Serializable {
         TermHelper termHelper = new TermHelper();
         String idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
         if (StringUtils.isNotEmpty(idTerm)) {
-            for (SelectedResource selectedResource : alignment.getSelectedTraductionsList()) {
-                Term term = new Term();
-                term.setId_thesaurus(idTheso);
-                term.setLang(selectedResource.getIdLang());
-                term.setLexical_value(selectedResource.getGettedValue());
-                term.setId_term(idTerm);
-                term.setContributor(idUser);
-                term.setCreator(idUser);
-                term.setSource("");
-                term.setStatus("");
-                if (termHelper.isTraductionExistOfConcept(connect.getPoolConnexion(), idConcept, idTheso, selectedResource.getIdLang())) {
-                    termHelper.updateTermTraduction(connect.getPoolConnexion(), term, idUser);
-                } else {
-                    // insert
-                    termHelper.addTraduction(connect.getPoolConnexion(), selectedResource.getGettedValue(), idTerm,
-                            selectedResource.getIdLang(), "", "", idTheso, idUser);
+            if (CollectionUtils.isNotEmpty(alignment.getSelectedTraductionsList())) {
+                for (SelectedResource selectedResource : alignment.getSelectedTraductionsList()) {
+                    Term term = new Term();
+                    term.setId_thesaurus(idTheso);
+                    term.setLang(selectedResource.getIdLang());
+                    term.setLexical_value(selectedResource.getGettedValue());
+                    term.setId_term(idTerm);
+                    term.setContributor(idUser);
+                    term.setCreator(idUser);
+                    term.setSource("");
+                    term.setStatus("");
+                    if (termHelper.isTraductionExistOfConcept(connect.getPoolConnexion(), idConcept, idTheso, selectedResource.getIdLang())) {
+                        termHelper.updateTermTraduction(connect.getPoolConnexion(), term, idUser);
+                    } else {
+                        // insert
+                        termHelper.addTraduction(connect.getPoolConnexion(), selectedResource.getGettedValue(), idTerm,
+                                selectedResource.getIdLang(), "", "", idTheso, idUser);
+                    }
                 }
             }
-        }
 
-        //addDefinitions__(idTheso, idConcept, idUser);
-        if (StringUtils.isNotEmpty(idTerm)) {
-            NoteHelper noteHelper = new NoteHelper();
-            // ajout de la note avec prefix de la source (wikidata)
-            for (SelectedResource selectedResource : alignment.getSelectedDefinitionsList()) {
-                if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(),
-                        idTerm, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
+            //addDefinitions__(idTheso, idConcept, idUser);
+            if (CollectionUtils.isNotEmpty(alignment.getSelectedDefinitionsList())) {
+                NoteHelper noteHelper = new NoteHelper();
+                // ajout de la note avec prefix de la source (wikidata)
+                for (SelectedResource selectedResource : alignment.getSelectedDefinitionsList()) {
+                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(),
+                            idTerm, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
 
-                    noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, selectedResource.getIdLang(), idTheso,
-                            selectedResource.getGettedValue(), "definition", selectedAlignement, idUser);
+                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, selectedResource.getIdLang(), idTheso,
+                                selectedResource.getGettedValue(), "definition", selectedAlignement, idUser);
+                    }
                 }
             }
         }
