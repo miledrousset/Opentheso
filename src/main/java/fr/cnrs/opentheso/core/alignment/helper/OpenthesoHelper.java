@@ -118,8 +118,6 @@ public class OpenthesoHelper {
             while ((output = br.readLine()) != null) {
                 xmlRecord += output;
             }
-//            byte[] bytes = xmlRecord.getBytes();
-//            xmlRecord = new String(bytes, Charset.forName("UTF-8"));
             if(cons != null)
                 cons.disconnect();
             if(con != null)
