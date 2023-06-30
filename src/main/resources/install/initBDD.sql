@@ -52,7 +52,6 @@ delete from copyright;
 delete from info;
 delete from thesaurus_alignement_source;
 delete from preferences_sparql;
-delete from user_role_only_on;
 delete from user_role_group;
 delete from user_group_thesaurus;
 delete from user_group_label;
