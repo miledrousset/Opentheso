@@ -22,7 +22,7 @@
                          background-color: #ECF8F1; color: #FFF !important; margin-top: 0px;">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedProject()}" update="thesoSelect containerIndex" />
             <f:selectItem itemLabel="#{langueBean.getMsg('menu.all_project')}" itemValue="-1"/>
-            <f:selectItems value="#{selectedTheso.projectsList}" var="project" itemLabel="#{project.getLabel()}" itemValue="#{project.getId()}" />
+            <f:selectItems value="#{selectedTheso.projectsList}" var="project" itemLabel="#{project.label}" itemValue="#{project.id}" />
         </p:selectOneMenu>
 
         <!-- liste des thésaurus -->
