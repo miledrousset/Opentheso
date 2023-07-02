@@ -20,7 +20,6 @@ import fr.cnrs.opentheso.core.alignment.helper.OntomeHelper;
 import fr.cnrs.opentheso.core.alignment.helper.OpenthesoHelper;
 import fr.cnrs.opentheso.core.alignment.helper.WikidataHelper;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,13 +57,7 @@ public class AlignementAutomatique {
                             case "WIKIDATA_REST":
                                 loadWikiDatas(connection, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
                                 break;
-                            case "IDREFSUJETS":
-                            case "IDREFPERSONNES":
-                            case "IDREFAUTEURS":
-                            case "IDREFLIEUX":
-                            case "IDREFTITREUNIFORME":
                             case "GETTY_AAT":
-                            case "OPENTHESO":
                             case "GEMET":
                                 loadGemeDatas(connection, alignementSource, nodeAlignment, thesaurusLangs, allLangsTheso, idTheso, idConcept);
                                 break;
@@ -134,14 +127,20 @@ public class AlignementAutomatique {
     private void loadGemeDatas(HikariDataSource connection, AlignementSource alignementSource, NodeAlignment nodeAlignment,
                                List<String> thesaurusLangs, List<String> allLangTheso, String idTheso, String idConcept) {
 
-        GemetHelper gemetHelper = new GemetHelper();
-        gemetHelper.setOptions(nodeAlignment, List.of("langues", "notes", "images"), thesaurusLangs, allLangTheso);
+        List<String> sourceToDisableTraduction = List.of("IdRefPersonnes", "Pactols");
+        List<String> options;
+        if (sourceToDisableTraduction.contains(alignementSource.getSource())) {
+            options = List.of("notes", "images");
+        } else {
+            options = List.of("langues", "notes", "images");
+        }
 
-        if (!"Pactols".equalsIgnoreCase(alignementSource.getSource())) {
-            if (CollectionUtils.isNotEmpty(gemetHelper.getResourceTraductions())) {
-                nodeAlignment.setSelectedTraductionsList(
-                        searchTraductions(gemetHelper.getResourceTraductions(), connection, idConcept, idTheso));
-            }
+        GemetHelper gemetHelper = new GemetHelper();
+        gemetHelper.setOptions(nodeAlignment, options, thesaurusLangs, allLangTheso);
+
+        if (CollectionUtils.isNotEmpty(gemetHelper.getResourceTraductions())) {
+            nodeAlignment.setSelectedTraductionsList(
+                    searchTraductions(gemetHelper.getResourceTraductions(), connection, idConcept, idTheso));
         }
 
         if (CollectionUtils.isNotEmpty(gemetHelper.getResourceDefinitions())) {
@@ -188,19 +187,19 @@ public class AlignementAutomatique {
                         alignementSource.getRequete(), alignementSource.getSource());
             case "IDREFSUJETS":
                 return new IdRefHelper().queryIdRefSubject(idConcept, idTheso, lexicalValue.trim(),
-                        idLang, alignementSource.getRequete(), alignementSource.getSource());
+                        alignementSource.getRequete(), alignementSource.getSource());
             case "IDREFPERSONNES":
-                return new IdRefHelper().queryIdRefPerson(idConcept, idTheso, lexicalValue.trim(), idLang,
+                return new IdRefHelper().queryIdRefPerson(idConcept, idTheso, lexicalValue.trim(),
                         alignementSource.getRequete(), alignementSource.getSource());
             case "IDREFAUTEURS":
-                return new IdRefHelper().queryIdRefNames(idConcept, idTheso, nom, prenom, idLang, alignementSource.getRequete(),
+                return new IdRefHelper().queryIdRefNames(idConcept, idTheso, nom, prenom, alignementSource.getRequete(),
                         alignementSource.getSource());
             case "IDREFLIEUX":
-                return new IdRefHelper().queryIdRefLieux(idConcept, idTheso, lexicalValue.trim(), idLang,
+                return new IdRefHelper().queryIdRefLieux(idConcept, idTheso, lexicalValue.trim(),
                         alignementSource.getRequete(), alignementSource.getSource());
             case "IDREFTITREUNIFORME":
                 return new IdRefHelper().queryIdRefUniformtitle(idConcept, idTheso, lexicalValue.trim(),
-                        idLang, alignementSource.getRequete(), alignementSource.getSource());
+                        alignementSource.getRequete(), alignementSource.getSource());
             case "GETTY_AAT":
                 return new GettyAATHelper().queryAAT(idConcept, idTheso, lexicalValue.trim(), idLang,
                         alignementSource.getRequete(), alignementSource.getSource());

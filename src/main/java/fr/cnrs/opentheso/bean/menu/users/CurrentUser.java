@@ -135,12 +135,12 @@ public class CurrentUser implements Serializable {
      */
     public void login() throws Exception {
 
-        UserHelper userHelper = new UserHelper();
-
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             showErrorMessage("champ vide non autorisé");
             return;
         }
+
+        UserHelper userHelper = new UserHelper();
 
         int idUser = -1;
         if (ldapEnable) {
@@ -182,9 +182,9 @@ public class CurrentUser implements Serializable {
         propositionBean.setRubriqueVisible(false);
 
         selectedTheso.loadProejct();
-        selectedTheso.setProjectIdSelected("-1");
-        selectedTheso.setSelectedProject();
-        selectedTheso.setCurrentIdTheso(null);
+        //selectedTheso.setProjectIdSelected("-1");
+        //selectedTheso.setSelectedProject();
+        //selectedTheso.setCurrentIdTheso(null);
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
@@ -270,6 +270,11 @@ public class CurrentUser implements Serializable {
 
     public boolean isAlertVisible() {
         return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
+    }
+
+    public boolean isCanModify() {
+        return ObjectUtils.isNotEmpty(nodeUser) && (roleOnThesoBean.isManagerOnThisTheso() || nodeUser.isSuperAdmin()
+                || roleOnThesoBean.isAdminOnThisTheso());
     }
 
     public Connect getConnect() {
