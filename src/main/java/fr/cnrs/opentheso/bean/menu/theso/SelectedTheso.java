@@ -282,7 +282,9 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsThesoActive(true);
         
         propositionBean.searchNewPropositions();
-        
+
+        roleOnThesoBean.setUserRoleOnThisTheso();
+
         for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
             if (selectedIdTheso.equals(thesoModel.getId())) {
                 roleOnThesoBean.setSelectedThesoForSearch(Collections.singletonList(selectedIdTheso));

@@ -76,12 +76,6 @@
 
                                             <ui:include src="../candidat/candidatDetails.xhtml" />
 
-                                            <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px;">
-                                                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
-                                                    <ui:include src="../candidat/candidatDiscussion.xhtml" />
-                                                </div>
-                                            </div>
-
                                             <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin() and candidatBean.isShowCandidatActivate())}">
                                                 <div class="row" style="margin-bottom: 20px">
                                                     <div class="col-12" style="align-content: center; margin-top: 10px;">

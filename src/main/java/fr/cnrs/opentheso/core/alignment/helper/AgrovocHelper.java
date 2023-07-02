@@ -239,10 +239,7 @@ public class AgrovocHelper {
     private ArrayList<SelectedResource> getTraductions(String xmlDatas, List<String> languages, String currentLang) {
 
         ArrayList<SelectedResource> traductions = new ArrayList<>();
-        ArrayList<SelectedResource> descriptions = new ArrayList<>();        
-
-        String lang;
-        String value;
+        ArrayList<SelectedResource> descriptions = new ArrayList<>();
 
         try {
             InputStream inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
@@ -250,43 +247,33 @@ public class AgrovocHelper {
 
             for (SKOSResource resource : sxd.getConceptList()) {
                 for(SKOSLabel label : resource.getLabelsList()) {
-                    switch (label.getProperty()) {
-                        case SKOSProperty.prefLabel:
-                            lang = label.getLanguage();
-                            value = label.getLabel();
+                    if (SKOSProperty.prefLabel == label.getProperty()) {
+                        if(label.getLanguage() == null || label.getLabel() == null
+                                || label.getLanguage().isEmpty() || label.getLabel().isEmpty())  continue;
 
-                            if(lang == null || value == null || lang.isEmpty() || value.isEmpty())  continue;
-
-                            if(languages.contains(lang)) {
-                                SelectedResource selectedResource = new SelectedResource();
-                                selectedResource.setIdLang(lang);
-                                selectedResource.setGettedValue(value);
-                                traductions.add(selectedResource);
-                            }
-                            break;
-                        default:
-                            break;
+                        if(languages.contains(label.getLanguage())) {
+                            SelectedResource selectedResource = new SelectedResource();
+                            selectedResource.setIdLang(label.getLanguage());
+                            selectedResource.setGettedValue(label.getLabel());
+                            traductions.add(selectedResource);
+                        }
                     }
                 }
                 for(SKOSDocumentation sd : resource.getDocumentationsList()) {
                     if(sd.getProperty() == SKOSProperty.definition) {
-                        value = sd.getText();
-                        lang = sd.getLanguage();
-                        if(lang == null || value == null || lang.isEmpty() || value.isEmpty())  continue;
+                        if(sd.getLanguage() == null || sd.getText() == null || sd.getLanguage().isEmpty()
+                                || sd.getText().isEmpty())  continue;
 
-                        if(languages.contains(lang)) {
+                        if(languages.contains(sd.getLanguage())) {
                             SelectedResource selectedResource = new SelectedResource();
-                            selectedResource.setIdLang(lang);
-                            selectedResource.setGettedValue(value);
+                            selectedResource.setIdLang(sd.getLanguage());
+                            selectedResource.setGettedValue(sd.getText());
                             descriptions.add(selectedResource);
                         }
                     }
                 }                
             }
-
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(AgrovocHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {            
+        } catch (Exception ex) {
             Logger.getLogger(AgrovocHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         resourceDefinitions = descriptions;

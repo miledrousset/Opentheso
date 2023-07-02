@@ -54,8 +54,8 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
 
-@Named(value = "candidatBean")
 @SessionScoped
+@Named(value = "candidatBean")
 public class CandidatBean implements Serializable {
 
     @Inject

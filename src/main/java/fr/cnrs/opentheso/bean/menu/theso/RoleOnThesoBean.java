@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
@@ -19,12 +20,12 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -397,40 +398,48 @@ public class RoleOnThesoBean implements Serializable {
      * #MR
      */
     public void setUserRoleOnThisTheso() {
-        initRoles();
-        if (currentUser.getNodeUser() == null) {
+
+        isSuperAdmin = false;
+        isAdminOnThisTheso = false;
+        isManagerOnThisTheso = false;
+        isContributorOnThisTheso = false;
+
+        if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
             nodeUserRoleGroup = null;
             return;
         }
-        if (selectedTheso.getSelectedIdTheso() == null || selectedTheso.getSelectedIdTheso().isEmpty()) {
+
+        if (ObjectUtils.isEmpty(selectedTheso.getCurrentIdTheso())) {
             nodeUserRoleGroup = null;
             isAdminOnThisTheso = false;
             return;
         }
 
-        UserHelper currentUserHelper = new UserHelper();
-
         if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserRoleGroup = getUserRoleOnThisGroup(-1); // cas de superadmin, on a accès à tous les groupes
+            setRole();
         } else {
-            int idGroup = currentUserHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            int idGroup = new UserHelper().getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
             nodeUserRoleGroup = getUserRoleOnThisGroup(idGroup);
+            setRole();
         }
-        if (nodeUserRoleGroup == null) {
-            return;
-        }
+    }
 
-        if (nodeUserRoleGroup.getIdRole() == 1) {
-            isSuperAdmin = true;
-        }
-        if (nodeUserRoleGroup.getIdRole() == 2) {
-            isAdminOnThisTheso = true;
-        }
-        if (nodeUserRoleGroup.getIdRole() == 3) {
-            isManagerOnThisTheso = true;
-        }
-        if (nodeUserRoleGroup.getIdRole() == 4) {
-            isContributorOnThisTheso = true;
+    private void setRole() {
+
+        switch(nodeUserRoleGroup.getIdRole()) {
+            case 1:
+                isSuperAdmin = true;
+                break;
+            case 2:
+                isAdminOnThisTheso = true;
+                break;
+            case 3:
+                isManagerOnThisTheso = true;
+                break;
+            case 4:
+                isContributorOnThisTheso = true;
+                break;
         }
     }
 
@@ -467,13 +476,6 @@ public class RoleOnThesoBean implements Serializable {
                 isAdminOnThisTheso = true;
             }
         }
-    }
-
-    private void initRoles() {
-        isSuperAdmin = false;
-        isAdminOnThisTheso = false;
-        isManagerOnThisTheso = false;
-        isContributorOnThisTheso = false;
     }
 
     /**
