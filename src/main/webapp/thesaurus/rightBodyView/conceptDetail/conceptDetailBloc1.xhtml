@@ -14,7 +14,7 @@
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f !important;"/>
                     </div> 
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                        <h:panelGroup rendered="#{currentUser.isCanModify()}">
                             <p:menuButton 
                                 icon="fas fa-cog" style="margin-top: -4px; font-size: 10px !important; color: #f47b2a">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.rename_concept')}"

@@ -553,12 +553,16 @@ public class Tree implements Serializable {
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             if(rightBodySetting.getIndex().equalsIgnoreCase("2")){
-                indexSetting.setIsValueSelected(true);            
+                indexSetting.setIsValueSelected(true);
 
                 alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                         conceptBean.getNodeConcept().getConcept().getIdConcept(),
                         conceptBean.getSelectedLang());
-                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());        
+                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+
+                alignmentBean.setAllAlignementFound(new ArrayList<>());
+                alignmentBean.setAllAlignementVisible(true);
+                alignmentBean.setPropositionAlignementVisible(false);
             } else
                 rightBodySetting.setIndex("0");
         } else {

@@ -31,22 +31,20 @@ public class MailBean implements Serializable {
     }
 
     private Properties getPrefMail() {
-        Properties props;
-        FacesContext context = FacesContext.getCurrentInstance();
         try {
+            FacesContext context = FacesContext.getCurrentInstance();
             ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
-            props = new Properties();
+            Properties props = new Properties();
             props.setProperty("mail.transport.protocol", bundlePref.getString("protocolMail"));
             props.setProperty("mail.smtp.host", bundlePref.getString("hostMail"));
             props.setProperty("mail.smtp.port", bundlePref.getString("portMail"));
             props.setProperty("mail.smtp.auth", bundlePref.getString("authMail"));
             props.setProperty("mailFrom", bundlePref.getString("mailFrom"));  
-            props.setProperty("transportMail", bundlePref.getString("transportMail"));             
-            
+            props.setProperty("transportMail", bundlePref.getString("transportMail"));
             return props;
         } catch (Exception e) {
+            return null;
         }
-        return null;
     }
 
     private void printMessage(String message) {
@@ -66,7 +64,7 @@ public class MailBean implements Serializable {
             Message msg = new MimeMessage(session);
            
             msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
-	    msg.addHeader("format", "flowed");
+	        msg.addHeader("format", "flowed");
             
             msg.setFrom(new InternetAddress(props.getProperty("mailFrom")));
             msg.setRecipient(Message.RecipientType.TO, new InternetAddress(sendTo));
