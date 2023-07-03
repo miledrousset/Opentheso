@@ -509,6 +509,8 @@ public class AlignmentBean implements Serializable {
 
     public void searchAlignementsForAllConcepts() {
 
+        selectAlignementForAdd = new ArrayList<>();
+
         allAlignementFound = new AlignementAutomatique().searchAlignementsAutomatique(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), allignementsList, alignementSources, nom, prenom);
@@ -524,7 +526,8 @@ public class AlignmentBean implements Serializable {
     }
 
     public void annulerAlignementAutomatique() {
-        allAlignementFound = Collections.emptyList();
+        selectAlignementForAdd = new ArrayList<>();
+        allAlignementFound = new ArrayList<>();
         allAlignementVisible = true;
         propositionAlignementVisible = false;
     }

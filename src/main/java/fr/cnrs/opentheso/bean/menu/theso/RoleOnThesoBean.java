@@ -421,7 +421,12 @@ public class RoleOnThesoBean implements Serializable {
         } else {
             int idGroup = new UserHelper().getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
             nodeUserRoleGroup = getUserRoleOnThisGroup(idGroup);
+        }
+
+        if (ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
             setRole();
+        } else {
+            isAdminOnThisTheso = false;
         }
     }
 
