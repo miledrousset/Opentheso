@@ -760,7 +760,6 @@ public class AlignmentBean implements Serializable {
         reset();
         resetAlignmentResult();
         manualAlignmentUri = null;
-
     }
 
     private void reset() {
@@ -777,7 +776,6 @@ public class AlignmentBean implements Serializable {
         isViewResult = true;
         isViewSelection = false;
         manualAlignmentUri = null;
-
     }
 
     private void resetVariables() {
