@@ -109,7 +109,7 @@
                 
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark')}" 
                             disabled="false"                                      
                             actionListener="#{editConcept.infosArk()}"
@@ -118,7 +118,7 @@
                             oncomplete="PF('generateArk').show();"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_handle')}" 
                             disabled="false"                                      
                             actionListener="#{editConcept.infosHandle()}"
@@ -127,7 +127,7 @@
                             oncomplete="PF('generateHandle').show();"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.delete_handle')}" 
                             disabled="false"                                      
                             actionListener="#{editConcept.infosDeleteHandle()}"
@@ -136,21 +136,21 @@
                             oncomplete="PF('deleteHandle').show();"
                             style="font-size: 12px;"/>
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_ark')}"
                             disabled="false"
                             action="#{editConcept.generateArkForConceptWithoutArk()}"
                             update="messageIndex"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark_for_branch')}"
                             disabled="false" 
                             oncomplete="PF('generateArkForThisBranch').show();"
                             actionListener="#{editConcept.clear()}"
                             update="idGenerateArkForThisBranch generateArkForThisBranchForm" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_ark')}"
                             oncomplete="PF('generateAllArk').show();"
                             disabled="false"
