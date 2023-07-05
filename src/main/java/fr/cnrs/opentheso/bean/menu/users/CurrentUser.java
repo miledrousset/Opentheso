@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
+import com.sun.faces.util.CollectionsUtils;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
@@ -16,6 +17,8 @@ import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -24,7 +27,9 @@ import javax.inject.Inject;
 
 import javax.annotation.PreDestroy;
 
+import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.utils.LDAPUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -98,6 +103,7 @@ public class CurrentUser implements Serializable {
         initHtmlPages();
 
         selectedTheso.loadProejct();
+        selectedTheso.setSelectedProject();
         
         if (propositionBean.isPropositionVisibleControle()) {
             PrimeFaces.current().executeScript("disparaitre();");
@@ -182,6 +188,7 @@ public class CurrentUser implements Serializable {
         propositionBean.setRubriqueVisible(false);
 
         selectedTheso.loadProejct();
+        selectedTheso.setSelectedProject();
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();

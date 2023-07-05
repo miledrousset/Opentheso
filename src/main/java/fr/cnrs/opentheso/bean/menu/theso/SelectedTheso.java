@@ -303,7 +303,11 @@ public class SelectedTheso implements Serializable {
     public void setSelectedProject() {
         selectedIdTheso = null;
         if ("-1".equals(projectIdSelected)) {
-            roleOnThesoBean.showListTheso();
+            if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+                roleOnThesoBean.setPublicThesos();
+            } else {
+                roleOnThesoBean.setOwnerThesos();
+            }
         } else {
             List<Thesaurus> thesaurusList;
             if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
@@ -311,9 +315,13 @@ public class SelectedTheso implements Serializable {
             } else {
                 thesaurusList = thesaurusRepository.getThesaurusByProject(Integer.parseInt(projectIdSelected));
             }
-            roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
-            roleOnThesoBean.addAuthorizedThesoToHM();
-            roleOnThesoBean.setUserRoleOnThisTheso();
+            if (thesaurusList.isEmpty()) {
+                roleOnThesoBean.setPublicThesos();
+            } else {
+                roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
+                roleOnThesoBean.addAuthorizedThesoToHM();
+                roleOnThesoBean.setUserRoleOnThisTheso();
+            }
         }
         indexSetting.setIsSelectedTheso(false);
     }
