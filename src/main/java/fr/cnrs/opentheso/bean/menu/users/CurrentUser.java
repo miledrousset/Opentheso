@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
+import com.sun.faces.util.CollectionsUtils;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
@@ -101,6 +102,7 @@ public class CurrentUser implements Serializable {
         initHtmlPages();
 
         selectedTheso.loadProejct();
+        selectedTheso.setSelectedProject();
 
         if (propositionBean.isPropositionVisibleControle()) {
             PrimeFaces.current().executeScript("disparaitre();");
@@ -185,6 +187,7 @@ public class CurrentUser implements Serializable {
         propositionBean.setRubriqueVisible(false);
 
         selectedTheso.loadProejct();
+        selectedTheso.setSelectedProject();
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();

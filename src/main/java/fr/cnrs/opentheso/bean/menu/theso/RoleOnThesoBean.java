@@ -188,7 +188,7 @@ public class RoleOnThesoBean implements Serializable {
      * autorisés pour l'utilisateur en cours on récupère les id puis les
      * tradcutions (ceci permet de récupérer les thésaurus non traduits) #MR
      */
-    private void setOwnerThesos() {
+    public void setOwnerThesos() {
         if (currentUser.getNodeUser() == null) {
             this.listTheso = new ArrayList();
             setUserRoleOnThisTheso();
@@ -365,7 +365,7 @@ public class RoleOnThesoBean implements Serializable {
      * tous les thésaurus sauf privés #MR
      *
      */
-    private void setPublicThesos() {
+    public void setPublicThesos() {
         authorizedTheso = new ThesaurusHelper().getAllIdOfThesaurus(connect.getPoolConnexion(), false);
         addAuthorizedThesoToHM();
         setUserRoleOnThisTheso();
