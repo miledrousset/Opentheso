@@ -157,7 +157,7 @@ public class MoveConcept implements Serializable {
         UserHelper userHelper = new UserHelper();
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         List<String> authorizedThesoAsAdmin;
-        if(currentUser.getNodeUser().isIsSuperAdmin()) {
+        if(currentUser.getNodeUser().isSuperAdmin()) {
             authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), true);
         } else {
             authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser()); 

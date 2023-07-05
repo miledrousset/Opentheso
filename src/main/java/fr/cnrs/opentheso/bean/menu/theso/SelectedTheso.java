@@ -32,15 +32,17 @@ import javax.inject.Named;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.cnrs.opentheso.entites.Thesaurus;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
-import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
+
 
 
 @Data
@@ -68,8 +70,6 @@ public class SelectedTheso implements Serializable {
     @Inject private CurrentUser currentUser;
 
     private static final long serialVersionUID = 1L;
-
-    private List<UserGroupLabel> projects;
 
     private boolean isFromUrl;
 
@@ -673,4 +673,11 @@ public class SelectedTheso implements Serializable {
         return isNetworkAvailable;
     }
 
+    public List<ResultatAlignement> getResultAlignementList() {
+        return resultAlignementList;
+    }
+
+    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
+        this.resultAlignementList = resultAlignementList;
+    }
 }

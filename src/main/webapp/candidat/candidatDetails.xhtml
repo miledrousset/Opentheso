@@ -35,22 +35,24 @@
                     </div>
                     <div class="col-12 md:col-4">
                         <div class="ui-inputgroup">
-                            <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate() }"
-                                         value="#{candidatBean.candidatSelected.nomPref}" />
-
-                            <p:inputText id="candidateLabel2" rendered="#{candidatBean.isNewCandidatActivate()}"
-                                         value="#{candidatBean.candidatSelected.nomPref}" />
+                            <h:panelGroup id="candidateLabel" rendered="#{!candidatBean.isNewCandidatActivate()}">
+                                <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate() }"
+                                             value="#{candidatBean.candidatSelected.nomPref}"/>
+                                <p:tooltip for="inputTextCandidate" value="Ne peut être modifié que par le créateur"
+                                           showDelay="1000" position="top"/>                                
+                            </h:panelGroup>
+                            <h:panelGroup id="candidateLabel2" rendered="#{candidatBean.isNewCandidatActivate()}">
+                                <p:inputText rendered="#{candidatBean.isNewCandidatActivate()}"
+                                             value="#{candidatBean.candidatSelected.nomPref}" />
+                            </h:panelGroup> 
 
                             <p:commandButton rendered="#{candidatBean.candidatSelected.voted}"
                                              actionListener="#{candidatBean.addVote()}" update="vote"
-                                             icon="fas fa-thumbs-up" style="color : #FFF;"/>
+                                             icon="fas fa-thumbs-up" style="color : #FFF; height: 27px"/>
 
                             <p:commandButton rendered="#{!candidatBean.candidatSelected.voted}"
                                              actionListener="#{candidatBean.addVote()}" update="vote"
-                                             icon="fas fa-thumbs-down" style="color: #FFF"/>
-
-                            <p:tooltip for="inputTextCandidate" value="Ne peut être modifié que par le créateur"
-                                       showDelay="1000" position="top"/>
+                                             icon="fas fa-thumbs-down" style="color: #FFF; height: 27px"/>
                         </div>
                     </div>
                 </div>
@@ -495,6 +497,9 @@
                 </h:panelGroup>
             </div>
         </div>
+        
+        <ui:include src="../candidat/candidatDiscussion.xhtml" />
+
     </h:panelGroup>
 
 
@@ -653,4 +658,3 @@
         </h:form>
     </p:dialog>
 </ui:fragment>
-

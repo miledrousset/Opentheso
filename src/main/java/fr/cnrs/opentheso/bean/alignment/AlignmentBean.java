@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.core.alignment.AlignementSource;
 import fr.cnrs.opentheso.core.alignment.SelectedResource;
@@ -66,6 +67,7 @@ public class AlignmentBean implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private AlignmentManualBean alignmentManualBean;
     @Inject private LanguageBean languageBean;
+    @Inject private CurrentUser currentUser;
 
     private boolean withLang;
     private boolean withNote;
@@ -537,7 +539,7 @@ public class AlignmentBean implements Serializable {
         if (CollectionUtils.isNotEmpty(selectAlignementForAdd)) {
             for (NodeAlignment alignment : selectAlignementForAdd) {
                 addSingleAlignment(alignment, selectedTheso.getCurrentIdTheso(), alignment.getInternal_id_concept(),
-                        selectedTheso.getCurrentUser().getNodeUser().getIdUser());
+                        currentUser.getNodeUser().getIdUser());
             }
 
             allAlignementVisible = true;

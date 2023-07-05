@@ -6,8 +6,7 @@
 
     <div style="width: 100%; display: flex; background-color: #ecf8f1; padding-top: 3px; padding-bottom: 3px;">
         <h:panelGroup id="idConceptViewActions" 
-                      rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                  or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" >
+                      rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" >
             
             <p:menuButton icon="pi pi-align-justify" >
                 
@@ -93,8 +92,8 @@
                 
                 
                 
-                <p:separator rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
-                <p:menuitem  rendered="#{(roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                <p:separator rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
+                <p:menuitem  rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                              value="#{langueBean.getMsg('concept.moveToAnotherThesoTooltip')}"
                              action="#{moveConcept.initForConcept(conceptView.nodeConcept.concept.idConcept, selectedTheso.currentIdTheso)}"
                              icon="fas fa-truck-moving"
