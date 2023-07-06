@@ -302,7 +302,8 @@ public class SelectedTheso implements Serializable {
     }
 
     public void setSelectedProject() {
-        selectedIdTheso = null;
+        setSelectedIdTheso(null);
+        setCurrentIdTheso(null);//electedIdTheso = null;
         if ("-1".equals(projectIdSelected)) {
             if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
                 roleOnThesoBean.setPublicThesos();
