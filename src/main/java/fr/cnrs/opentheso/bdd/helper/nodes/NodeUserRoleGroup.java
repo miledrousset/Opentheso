@@ -12,7 +12,8 @@ package fr.cnrs.opentheso.bdd.helper.nodes;
  * Pour un utilisateur donnée, cette classe permet de regrouper un role par groupe 
  * et un noeud de thésaurus par groupe
  */
-public class NodeUserRoleGroup { 
+public class NodeUserRoleGroup {
+
     private int idRole;
     private String roleName;
     private int idGroup;
@@ -21,9 +22,6 @@ public class NodeUserRoleGroup {
     private boolean isAdmin = false;
     private boolean isManager = false;
     private boolean isContributor = false;
-    
-    public NodeUserRoleGroup() {
-    }
 
     public int getIdRole() {
         return idRole;

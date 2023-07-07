@@ -20,7 +20,7 @@
                                          actionListener="#{newProjectBean.updateProject(projectList)}"
                                          update="containerIndex idModifyProjectForm" />
 
-                        <p:commandButton rendered="#{(roleOnTheso.isSuperAdmin)}"
+                        <p:commandButton rendered="#{(roleOnTheso.isSuperAdmin())}"
                                          icon="pi pi-trash" styleClass="rounded-button ui-button-danger"
                                          actionListener="#{newProjectBean.deleteProject(projectList)}" 
                                          update="containerIndex idModifyProjectForm" style="margin-left: 40px"/>

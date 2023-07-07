@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.core.alignment.helper;
 
 import java.io.BufferedReader;
@@ -19,47 +14,33 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.JsonValue;
 import javax.net.ssl.HttpsURLConnection;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.core.alignment.SelectedResource;
-import fr.cnrs.opentheso.core.json.helper.JsonHelper;
+import lombok.Data;
 
 
 /**
  *
  * @author miled.rousset
  */
+@Data
 public class GemetHelper {
 
-    private StringBuffer messages;
-    // private ArrayList<NodeAlignment> listAlignValues;
+    private StringBuffer messages = new StringBuffer();
 
     // les informations récupérées de Wikidata
-    private ArrayList<SelectedResource> resourceTraductions;
-    private ArrayList<SelectedResource> resourceDefinitions;
-    private ArrayList<SelectedResource> resourceImages;
+    private List<SelectedResource> resourceTraductions;
+    private List<SelectedResource> resourceDefinitions;
+    private List<SelectedResource> resourceImages;
 
-    public GemetHelper() {
-        messages = new StringBuffer();
-    }
 
     /**
-     * Alignement du thésaurus vers la source Wikidata en Sparql et en retour du
-     * Json
-     *
-     * @param idC
-     * @param idTheso
-     * @param value
-     * @param lang
-     * @param query
-     * @param source
-     * @return
+     * Alignement du thésaurus vers la source Wikidata en Sparql et en retour du Json
      */
-    public ArrayList<NodeAlignment> queryGemet(String idC, String idTheso,
-            String value, String lang,
-            String query, String source) {
-        ArrayList<NodeAlignment> listeAlign;
+    public List<NodeAlignment> queryGemet(String idC, String idTheso, String value, String lang, String query, String source) {
+
+        List<NodeAlignment> listeAlign;
 
         if (query.trim().equals("")) {
             return null;
@@ -105,26 +86,18 @@ public class GemetHelper {
         return listeAlign;
     }
 
-    private ArrayList<NodeAlignment> getValues(
-            String value,
-            String jsonDatas,
-            String idC, String idTheso, String source) {
-        ArrayList<NodeAlignment> listAlignValues = new ArrayList<>();
+    private List<NodeAlignment> getValues(String value, String jsonDatas, String idC, String idTheso, String source) {
 
-        JsonArray jsonArray;
-        JsonObject jb;
+        List<NodeAlignment> listAlignValues = new ArrayList<>();
+
         try (JsonReader jsonReader = Json.createReader(new StringReader(jsonDatas))) {
-            String title;
-            String uri;
-            
-            jsonArray = jsonReader.readArray();
+
+            JsonArray jsonArray = jsonReader.readArray();
 
             for (int i = 0; i < jsonArray.size(); ++i) {
-                jb = jsonArray.getJsonObject(i);
-                title = jb.getJsonObject("preferredLabel").getString("string");
-                uri = jb.getString("uri");
-                
-                uri = uri.replaceAll("http://", "https://");
+
+                String title = jsonArray.getJsonObject(i).getJsonObject("preferredLabel").getString("string");
+                String uri = jsonArray.getJsonObject(i).getString("uri").replaceAll("http://", "https://");
 
                 NodeAlignment na = new NodeAlignment();
                 //si le titre est équivalent, on le place en premier
@@ -154,30 +127,20 @@ public class GemetHelper {
     }
 
     /**
-     * Cette fonction permet de récupérer les options de Wikidata Images,
-     * alignements, traductions....ource
-     *
-     * @param selectedNodeAlignment
-     * @param selectedOptions
-     * @param thesaurusUsedLanguageWithoutCurrentLang
-     * @param thesaurusUsedLanguage
+     * Cette fonction permet de récupérer les options de Wikidata Images, alignements, traductions....ource
      */
-    public void setOptions(
-            NodeAlignment selectedNodeAlignment,
-            List<String> selectedOptions,
-            ArrayList<String> thesaurusUsedLanguageWithoutCurrentLang,
-            ArrayList<String> thesaurusUsedLanguage) {
+    public void setOptions(NodeAlignment selectedNodeAlignment, List<String> selectedOptions,
+            List<String> thesaurusUsedLanguageWithoutCurrentLang, List<String> thesaurusUsedLanguage) {
+
         if (selectedNodeAlignment == null) {
             return;
         }
 
         // uri traductions
-        // https://www.eionet.europa.eu/gemet/getAllTranslationsForConcept?concept_uri=http://www.eionet.europa.eu/gemet/concept/7769&property_uri=http://www.w3.org/2004/02/skos/core%23prefLabel
         String uriLang = "https://www.eionet.europa.eu/gemet/getAllTranslationsForConcept?concept_uri="
                 + selectedNodeAlignment.getUri_target().replaceAll("https://", "http://")
                 + "&property_uri=http://www.w3.org/2004/02/skos/core%23prefLabel";
         // uri défintions
-        // https://www.eionet.europa.eu/gemet/getAllTranslationsForConcept?concept_uri=http://www.eionet.europa.eu/gemet/concept/7769&property_uri=http://www.w3.org/2004/02/skos/core%23definition
         String uriDefinition = "https://www.eionet.europa.eu/gemet/getAllTranslationsForConcept?concept_uri="
                 + selectedNodeAlignment.getUri_target().replaceAll("https://", "http://")
                 + "&property_uri=http://www.w3.org/2004/02/skos/core%23definition";
@@ -187,52 +150,33 @@ public class GemetHelper {
         curlHelper.setHeader1("Accept");
         curlHelper.setHeader2("application/json");
 
-        //   String uri = selectedNodeAlignment.getUri_target();//."https://www.wikidata.org/entity/Q178401";//"https://www.wikidata.org/entity/Q178401";//Q7748";Q324926
-        String datasLang = curlHelper.getDatasFromUriHttps(uriLang);
-        String datasDefinition = curlHelper.getDatasFromUriHttps(uriDefinition);
-        String datas = "";
-
         for (String selectedOption : selectedOptions) {
             switch (selectedOption) {
                 case "langues":
-                    resourceTraductions = getTraductions(datasLang, thesaurusUsedLanguageWithoutCurrentLang);
+                    resourceTraductions = getTraductions(curlHelper.getDatasFromUriHttps(uriLang),
+                            thesaurusUsedLanguageWithoutCurrentLang);
                     break;
                 case "notes":
-                    resourceDefinitions = getDescriptions(datasDefinition, thesaurusUsedLanguage);
-                    break;
-                case "images":
-                    resourceImages = getImages(datas);
-                    break;
+                    resourceDefinitions = getDescriptions(curlHelper.getDatasFromUriHttps(uriDefinition),
+                            thesaurusUsedLanguage);
             }
         }
     }
 
     /**
      * récupération des traductions
-     *
-     * @param jsonDatas
-     * @param entity
-     * @param languages
-     * @return
      */
-    private ArrayList<SelectedResource> getTraductions(
-            String jsonDatas,
-            ArrayList<String> languages) {
-        ArrayList<SelectedResource> traductions = new ArrayList<>();
+    private List<SelectedResource> getTraductions(String jsonDatas, List<String> languages) {
 
-        String lang;
-        String value;        
+        List<SelectedResource> traductions = new ArrayList<>();
         
         // lecture du fichier Json des langues
-        JsonArray dataArray;
-        JsonObject dataObject;
         try (JsonReader reader = Json.createReader(new StringReader(jsonDatas))) {
-            dataArray = reader.readArray();
+            JsonArray dataArray = reader.readArray();
             for (int i = 0; i < dataArray.size(); ++i) {
-                dataObject = dataArray.getJsonObject(i);
-
-                lang = dataObject.getString("language");
-                value = dataObject.getString("string");
+                JsonObject dataObject = dataArray.getJsonObject(i);
+                String lang = dataObject.getString("language");
+                String value = dataObject.getString("string");
 
                 if(lang == null || value == null || lang.isEmpty() || value.isEmpty())  continue;
 
@@ -249,30 +193,19 @@ public class GemetHelper {
 
     /**
      * permet de récupérer les descriptions de wikidata
-     *
-     * @param jsonDatas
-     * @param entity
-     * @param languages
-     * @return
      */
-    private ArrayList<SelectedResource> getDescriptions(
-            String jsonDatas,
-            ArrayList<String> languages) {
-        ArrayList<SelectedResource> descriptions = new ArrayList<>();
-        String lang;
-        String value;        
+    private List<SelectedResource> getDescriptions(String jsonDatas, List<String> languages) {
+
+        List<SelectedResource> descriptions = new ArrayList<>();
         
         // lecture du fichier Json des langues
-        JsonArray dataArray;
-        JsonObject dataObject;
         try (JsonReader reader = Json.createReader(new StringReader(jsonDatas))) {
-            dataArray = reader.readArray();
+            JsonArray dataArray = reader.readArray();
             for (int i = 0; i < dataArray.size(); ++i) {
-                dataObject = dataArray.getJsonObject(i);
-                
+                JsonObject dataObject = dataArray.getJsonObject(i);
                 SelectedResource selectedResource = new SelectedResource();
-                lang = dataObject.getString("language");
-                value = dataObject.getString("string");
+                String lang = dataObject.getString("language");
+                String value = dataObject.getString("string");
 
                 if(lang == null || value == null || lang.isEmpty() || value.isEmpty())  continue;
 
@@ -284,69 +217,6 @@ public class GemetHelper {
             }
         }
         return descriptions;
-    }
-
-    /**
-     * permet de récupérer les images de Wikidata
-     *
-     * @param jsonDatas
-     * @param entity
-     * @return
-     */
-    private ArrayList<SelectedResource> getImages(String jsonDatas) {
-        // pour construire l'URL de Wikimedia, il faut ajouter 
-        // http://commons.wikimedia.org/wiki/Special:FilePath/
-        // puis le nom de l'image
-
-        String fixedUrl = "https://commons.wikimedia.org/wiki/Special:FilePath/";
-
-        JsonHelper jsonHelper = new JsonHelper();
-  //      JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);
-
-        //    JsonObject test = jsonObject.getJsonObject("entities");
-        JsonObject jsonObject1;
-
-        JsonObject jsonObject2;
-        JsonValue jsonValue;
-
-        ArrayList<SelectedResource> imagesUrls = new ArrayList<>();
-/*
-        try {
-            jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("claims");//.getJsonObject("P18");
-        } catch (Exception e) {
-            //System.err.println(e.toString());
-            return null;
-        }
-
-        try {
-            JsonArray jsonArray = jsonObject1.getJsonArray("P18");
-            for (int i = 0; i < jsonArray.size(); i++) {
-                SelectedResource selectedResource = new SelectedResource();
-                jsonObject2 = jsonArray.getJsonObject(i);
-                jsonValue = jsonObject2.getJsonObject("mainsnak").getJsonObject("datavalue").get("value");
-                selectedResource.setGettedValue(fixedUrl + jsonValue.toString().replace("\"", ""));
-                imagesUrls.add(selectedResource);
-            }
-
-        } catch (Exception e) {
-        }*/
-        return imagesUrls;
-    }
-
-    public String getMessages() {
-        return messages.toString();
-    }
-
-    public ArrayList<SelectedResource> getResourceTraductions() {
-        return resourceTraductions;
-    }
-
-    public ArrayList<SelectedResource> getResourceDefinitions() {
-        return resourceDefinitions;
-    }
-
-    public ArrayList<SelectedResource> getResourceImages() {
-        return resourceImages;
     }
 
 }

@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
+import com.sun.faces.util.CollectionsUtils;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
@@ -9,6 +10,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
@@ -29,12 +31,13 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
+
 /**
  *
  * @author miledrousset
  */
-@Named(value = "currentUser")
 @SessionScoped
+@Named(value = "currentUser")
 public class CurrentUser implements Serializable {
 
     @Inject
@@ -55,6 +58,8 @@ public class CurrentUser implements Serializable {
     private SearchBean searchBean;
     @Inject
     private LanguageBean languageBean;
+    @Inject
+    private SelectedTheso selectedTheso;
 
     private NodeUser nodeUser;
     private String username;
@@ -79,24 +84,10 @@ public class CurrentUser implements Serializable {
         password = null;
     }
 
-    public void setUsername(String name) {
-        this.username = name;
-    }
+    public void disconnect() throws IOException {
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void disconnect(boolean redirectionEnable) throws IOException {
         if(nodeUser == null) return;
+
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.goodbye"), nodeUser.getName());
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
@@ -109,7 +100,10 @@ public class CurrentUser implements Serializable {
         rightBodySetting.setIndex("0");
 
         initHtmlPages();
-        
+
+        selectedTheso.loadProejct();
+        selectedTheso.setSelectedProject();
+
         if (propositionBean.isPropositionVisibleControle()) {
             PrimeFaces.current().executeScript("disparaitre();");
             propositionBean.setPropositionVisibleControle(false);
@@ -146,12 +140,12 @@ public class CurrentUser implements Serializable {
      */
     public void login() throws Exception {
 
-        UserHelper userHelper = new UserHelper();
-
-        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             showErrorMessage("champ vide non autorisé");
             return;
         }
+
+        UserHelper userHelper = new UserHelper();
 
         int idUser = -1;
         if (ldapEnable) {
@@ -161,8 +155,7 @@ public class CurrentUser implements Serializable {
             }
             idUser = userHelper.getIdUserFromPseudo(connect.getPoolConnexion(), username);
         } else {
-            idUser = userHelper.getIdUser(connect.getPoolConnexion(),
-                    username, MD5Password.getEncodedPassword(password));
+            idUser = userHelper.getIdUser(connect.getPoolConnexion(), username, MD5Password.getEncodedPassword(password));
         }
 
         if (idUser == -1) {
@@ -176,6 +169,7 @@ public class CurrentUser implements Serializable {
             showErrorMessage("Incohérence base de données ou utilisateur n'existe pas");
             return;
         }
+
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("connect.welcome"), username);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
@@ -190,7 +184,11 @@ public class CurrentUser implements Serializable {
         if ("2".equals(rightBodySetting.getIndex())) {
             rightBodySetting.setIndex("0");
         }
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
+
+        selectedTheso.loadProejct();
+        selectedTheso.setSelectedProject();
+        selectedTheso.setCurrentIdTheso(null);
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
@@ -243,7 +241,7 @@ public class CurrentUser implements Serializable {
         if (StringUtils.isEmpty(userName)) {
             return "";
         }
-        return StringUtils.upperCase(userName.charAt(0) + "") + userName.substring(1, userName.length());
+        return StringUtils.upperCase(userName.charAt(0) + "") + userName.substring(1);
     }
 
     /**
@@ -275,7 +273,84 @@ public class CurrentUser implements Serializable {
     }
 
     public boolean isAlertVisible() {
-        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isIsSuperAdmin() || roleOnThesoBean.isIsAdminOnThisTheso()) && nodeUser.isIsActive();
+        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
+    }
+
+    public boolean isCanModify() {
+        return ObjectUtils.isNotEmpty(nodeUser) && (roleOnThesoBean.isManagerOnThisTheso() || nodeUser.isSuperAdmin()
+                || roleOnThesoBean.isAdminOnThisTheso());
+    }
+
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public RoleOnThesoBean getRoleOnThesoBean() {
+        return roleOnThesoBean;
+    }
+
+    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
+        this.roleOnThesoBean = roleOnThesoBean;
+    }
+
+    public ViewEditorHomeBean getViewEditorHomeBean() {
+        return viewEditorHomeBean;
+    }
+
+    public void setViewEditorHomeBean(ViewEditorHomeBean viewEditorHomeBean) {
+        this.viewEditorHomeBean = viewEditorHomeBean;
+    }
+
+    public IndexSetting getIndexSetting() {
+        return indexSetting;
+    }
+
+    public void setIndexSetting(IndexSetting indexSetting) {
+        this.indexSetting = indexSetting;
+    }
+
+    public MenuBean getMenuBean() {
+        return menuBean;
+    }
+
+    public void setMenuBean(MenuBean menuBean) {
+        this.menuBean = menuBean;
+    }
+
+    public RightBodySetting getRightBodySetting() {
+        return rightBodySetting;
+    }
+
+    public void setRightBodySetting(RightBodySetting rightBodySetting) {
+        this.rightBodySetting = rightBodySetting;
+    }
+
+    public PropositionBean getPropositionBean() {
+        return propositionBean;
+    }
+
+    public void setPropositionBean(PropositionBean propositionBean) {
+        this.propositionBean = propositionBean;
+    }
+
+    public SearchBean getSearchBean() {
+        return searchBean;
+    }
+
+    public void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
     }
 
     public NodeUser getNodeUser() {
@@ -286,12 +361,20 @@ public class CurrentUser implements Serializable {
         this.nodeUser = nodeUser;
     }
 
-    public ArrayList<NodeUserRoleGroup> getAllAuthorizedProjectAsAdmin() {
-        return allAuthorizedProjectAsAdmin;
+    public String getUsername() {
+        return username;
     }
 
-    public void setAllAuthorizedProjectAsAdmin(ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin) {
-        this.allAuthorizedProjectAsAdmin = allAuthorizedProjectAsAdmin;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public boolean isLdapEnable() {
@@ -300,5 +383,13 @@ public class CurrentUser implements Serializable {
 
     public void setLdapEnable(boolean ldapEnable) {
         this.ldapEnable = ldapEnable;
+    }
+
+    public ArrayList<NodeUserRoleGroup> getAllAuthorizedProjectAsAdmin() {
+        return allAuthorizedProjectAsAdmin;
+    }
+
+    public void setAllAuthorizedProjectAsAdmin(ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin) {
+        this.allAuthorizedProjectAsAdmin = allAuthorizedProjectAsAdmin;
     }
 }

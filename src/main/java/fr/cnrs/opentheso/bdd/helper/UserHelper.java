@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -336,11 +335,11 @@ public class UserHelper {
                         nodeUser = new NodeUser();
                         nodeUser.setIdUser(idUser);
                         nodeUser.setName(resultSet.getString("username"));
-                        nodeUser.setIsActive(resultSet.getBoolean("active"));
+                        nodeUser.setActive(resultSet.getBoolean("active"));
                         nodeUser.setMail(resultSet.getString("mail"));
-                        nodeUser.setIsAlertMail(resultSet.getBoolean("alertmail"));
+                        nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
                         nodeUser.setPasstomodify(resultSet.getBoolean("passtomodify"));
-                        nodeUser.setIsSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
                     }
                 }
             }
@@ -490,7 +489,7 @@ public class UserHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT  user_group_label.id_group,  user_group_label.label_group FROM user_group_label order by label_group");
+                stmt.executeQuery("SELECT user_group_label.id_group, user_group_label.label_group FROM user_group_label order by label_group");
                 try (ResultSet resultSet = stmt.getResultSet()) {          
                     while (resultSet.next()) {
                         NodeUserGroup nodeUserGroup = new NodeUserGroup();
@@ -697,8 +696,8 @@ public class UserHelper {
                         NodeUser nodeUser = new NodeUser();
                         nodeUser.setIdUser(resultSet.getInt("id_user"));
                         nodeUser.setName(resultSet.getString("username"));
-                        nodeUser.setIsActive(resultSet.getBoolean("active"));
-                        nodeUser.setIsSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setActive(resultSet.getBoolean("active"));
+                        nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
                         nodeUsers.add(nodeUser);
                     }
                 }
@@ -708,33 +707,6 @@ public class UserHelper {
         }
         return nodeUsers;
     }
-
-    /**
-     * permet de retourner la liste de tous les utilisateurs qui ne sont pas
-     * SuperAdmin
-     *
-     * @param ds
-     * @return
-     */
-    public Map<String, String> getAllUsersNotSuperadmin(HikariDataSource ds) {
-        Map<String, String> listUsers = null;
-
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user, username FROM users where issuperadmin != true order by username");
-                try (ResultSet resultSet = stmt.getResultSet()) { 
-                    listUsers = new HashMap<>();
-                    while (resultSet.next()) {
-                        listUsers.put(resultSet.getString("id_user"), resultSet.getString("username"));
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listUsers;
-    }
-    
   
 
     /**

@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -193,13 +192,10 @@ public class AgrovocHelper {
      * @param selectedNodeAlignment
      * @param selectedOptions
      * @param thesaurusUsedLanguageWithoutCurrentLang
-     * @param thesaurusUsedLanguage
      */
-    public void setOptions(
-            NodeAlignment selectedNodeAlignment,
-            List<String> selectedOptions,
-            ArrayList<String> thesaurusUsedLanguageWithoutCurrentLang,
-            ArrayList<String> thesaurusUsedLanguage, String currentLang) {
+    public void setOptions(NodeAlignment selectedNodeAlignment, List<String> selectedOptions,
+                           List<String> thesaurusUsedLanguageWithoutCurrentLang, String currentLang) {
+
         if (selectedNodeAlignment == null) {
             return;
         }
@@ -240,63 +236,44 @@ public class AgrovocHelper {
      * @param languages
      * @return
      */
-    private ArrayList<SelectedResource> getTraductions(
-            String xmlDatas,
-            ArrayList<String> languages,
-            String currentLang) {
-        ArrayList<SelectedResource> traductions = new ArrayList<>();
-        ArrayList<SelectedResource> descriptions = new ArrayList<>();        
+    private ArrayList<SelectedResource> getTraductions(String xmlDatas, List<String> languages, String currentLang) {
 
-        String lang;
-        String value;
-        
-        InputStream inputStream;
-        SKOSXmlDocument sxd;
+        ArrayList<SelectedResource> traductions = new ArrayList<>();
+        ArrayList<SelectedResource> descriptions = new ArrayList<>();
+
         try {
-            inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
-            //ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, currentLang); /// read XML SKOS
-            //sxd = readRdf4j.getsKOSXmlDocument();
-            sxd = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFXML, currentLang);
+            InputStream inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
+            SKOSXmlDocument sxd = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFXML, currentLang);
 
             for (SKOSResource resource : sxd.getConceptList()) {
                 for(SKOSLabel label : resource.getLabelsList()) {
-                    switch (label.getProperty()) {
-                        case SKOSProperty.prefLabel:
-                            lang = label.getLanguage();
-                            value = label.getLabel();
+                    if (SKOSProperty.prefLabel == label.getProperty()) {
+                        if(label.getLanguage() == null || label.getLabel() == null
+                                || label.getLanguage().isEmpty() || label.getLabel().isEmpty())  continue;
 
-                            if(lang == null || value == null || lang.isEmpty() || value.isEmpty())  continue;
-
-                            if(languages.contains(lang)) {
-                                SelectedResource selectedResource = new SelectedResource();
-                                selectedResource.setIdLang(lang);
-                                selectedResource.setGettedValue(value);
-                                traductions.add(selectedResource);
-                            }
-                            break;
-                        default:
-                            break;
+                        if(languages.contains(label.getLanguage())) {
+                            SelectedResource selectedResource = new SelectedResource();
+                            selectedResource.setIdLang(label.getLanguage());
+                            selectedResource.setGettedValue(label.getLabel());
+                            traductions.add(selectedResource);
+                        }
                     }
                 }
                 for(SKOSDocumentation sd : resource.getDocumentationsList()) {
                     if(sd.getProperty() == SKOSProperty.definition) {
-                        value = sd.getText();
-                        lang = sd.getLanguage();
-                        if(lang == null || value == null || lang.isEmpty() || value.isEmpty())  continue;
+                        if(sd.getLanguage() == null || sd.getText() == null || sd.getLanguage().isEmpty()
+                                || sd.getText().isEmpty())  continue;
 
-                        if(languages.contains(lang)) {
+                        if(languages.contains(sd.getLanguage())) {
                             SelectedResource selectedResource = new SelectedResource();
-                            selectedResource.setIdLang(lang);
-                            selectedResource.setGettedValue(value);
+                            selectedResource.setIdLang(sd.getLanguage());
+                            selectedResource.setGettedValue(sd.getText());
                             descriptions.add(selectedResource);
                         }
                     }
                 }                
             }
-
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(AgrovocHelper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {            
+        } catch (Exception ex) {
             Logger.getLogger(AgrovocHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         resourceDefinitions = descriptions;

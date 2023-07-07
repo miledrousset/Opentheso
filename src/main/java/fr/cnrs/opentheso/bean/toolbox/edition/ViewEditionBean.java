@@ -153,6 +153,21 @@ public class ViewEditionBean implements Serializable {
         isViewImportCSVStructure = false;
     }
 
+    public void setViewModifyTheso(boolean isViewModifyTheso) {
+        this.isViewModifyTheso = isViewModifyTheso;
+        isViewListTheso = false;
+        isViewExportSkos = false;
+        isViewNewTheso = false;
+        isViewImportSkos = false;
+        isViewImportCsv = false;
+        isViewExportPDF = false;
+        isViewExportCSV = false;
+        isViewExportCSV_id = false;
+        isViewImportVirtuoso = false;
+        isViewExportCSVStructure = false;
+        isViewImportCSVStructure = false;
+    }
+
     public boolean isIsImportStarted() {
         return isImportStarted;
     }

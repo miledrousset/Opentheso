@@ -18,10 +18,8 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.JsonValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.core.alignment.SelectedResource;
-import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import java.net.HttpURLConnection;
 
 
@@ -181,13 +179,9 @@ public class GeoNamesHelper {
      * @param selectedNodeAlignment
      * @param selectedOptions
      * @param thesaurusUsedLanguageWithoutCurrentLang
-     * @param thesaurusUsedLanguage
      */
-    public void setOptions(
-            NodeAlignment selectedNodeAlignment,
-            List<String> selectedOptions,
-            ArrayList<String> thesaurusUsedLanguageWithoutCurrentLang,
-            ArrayList<String> thesaurusUsedLanguage) {
+    public void setOptions(NodeAlignment selectedNodeAlignment, List<String> selectedOptions, List<String> thesaurusUsedLanguageWithoutCurrentLang) {
+
         if (selectedNodeAlignment == null) {
             return;
         }
@@ -223,13 +217,11 @@ public class GeoNamesHelper {
      * récupération des traductions
      *
      * @param jsonDatas
-     * @param entity
      * @param languages
      * @return
      */
-    private ArrayList<SelectedResource> getTraductions(
-            String jsonDatas,
-            ArrayList<String> languages) {
+    private ArrayList<SelectedResource> getTraductions(String jsonDatas, List<String> languages) {
+
         ArrayList<SelectedResource> traductions = new ArrayList<>();
 
         String lang;
@@ -308,53 +300,6 @@ public class GeoNamesHelper {
             }
         }
         return descriptions;
-    }
-
-    /**
-     * permet de récupérer les images de Wikidata
-     *
-     * @param jsonDatas
-     * @param entity
-     * @return
-     */
-    private ArrayList<SelectedResource> getImages(String jsonDatas) {
-        // pour construire l'URL de Wikimedia, il faut ajouter 
-        // http://commons.wikimedia.org/wiki/Special:FilePath/
-        // puis le nom de l'image
-
-        String fixedUrl = "https://commons.wikimedia.org/wiki/Special:FilePath/";
-
-        JsonHelper jsonHelper = new JsonHelper();
-  //      JsonObject jsonObject = jsonHelper.getJsonObject(jsonDatas);
-
-        //    JsonObject test = jsonObject.getJsonObject("entities");
-        JsonObject jsonObject1;
-
-        JsonObject jsonObject2;
-        JsonValue jsonValue;
-
-        ArrayList<SelectedResource> imagesUrls = new ArrayList<>();
-/*
-        try {
-            jsonObject1 = jsonObject.getJsonObject("entities").getJsonObject(entity).getJsonObject("claims");//.getJsonObject("P18");
-        } catch (Exception e) {
-            //System.err.println(e.toString());
-            return null;
-        }
-
-        try {
-            JsonArray jsonArray = jsonObject1.getJsonArray("P18");
-            for (int i = 0; i < jsonArray.size(); i++) {
-                SelectedResource selectedResource = new SelectedResource();
-                jsonObject2 = jsonArray.getJsonObject(i);
-                jsonValue = jsonObject2.getJsonObject("mainsnak").getJsonObject("datavalue").get("value");
-                selectedResource.setGettedValue(fixedUrl + jsonValue.toString().replace("\"", ""));
-                imagesUrls.add(selectedResource);
-            }
-
-        } catch (Exception e) {
-        }*/
-        return imagesUrls;
     }
 
     public String getMessages() {

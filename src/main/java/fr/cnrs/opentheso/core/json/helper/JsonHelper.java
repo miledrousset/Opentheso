@@ -67,15 +67,10 @@ public class JsonHelper {
     
     /**
      * Permet de lire un texte en Json
-     * @param jsonText
-     * @return 
      */
     public JsonObject getJsonObject(String jsonText) {
-        //String total = " {\"content\":[{\"nb_notices\":\"7\"}],\"debug\":\"\",\"error\":0}\" ";
         JsonReader reader = Json.createReader(new StringReader(jsonText));
-
         JsonObject jsonObject = reader.readObject();
-
         reader.close();
         return jsonObject;
     }    

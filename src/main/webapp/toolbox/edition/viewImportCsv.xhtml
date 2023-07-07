@@ -85,7 +85,7 @@
                         <div class="col-3" style="text-align: right;">
                             <h:outputText value="#{langueBean.getMsg('profile.project')}" />
                         </div>
-                        <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin}" >
+                        <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin()}" >
                             <div class="col-5">
                                 <p:selectOneMenu id="idGroupSelected1" 
                                                  style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
@@ -98,7 +98,7 @@
                             </div>
                         </h:panelGroup> 
 
-                        <h:panelGroup rendered="#{!currentUser.nodeUser.isSuperAdmin}" >
+                        <h:panelGroup rendered="#{!currentUser.nodeUser.isSuperAdmin()}" >
                             <div class="col-5">
                                 <p:selectOneMenu id="idGroupSelected2"
                                                  style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
