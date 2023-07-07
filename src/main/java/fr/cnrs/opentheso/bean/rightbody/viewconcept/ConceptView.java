@@ -596,12 +596,12 @@ public class ConceptView implements Serializable {
             if (nodeCorpus == null) {
                 return;
             }
-            if (nodeCorpus.getUriCount().contains("https://")) {
+        /*    if (nodeCorpus.getUriCount().contains("https://")) {
                 nodeCorpus.setCount(getCountOfResourcesFromHttps(nodeCorpus.getUriCount()));
             }
-            if (nodeCorpus.getUriCount().contains("http://")) {
+            if (nodeCorpus.getUriCount().contains("http://")) {*/
                 nodeCorpus.setCount(getCountOfResourcesFromHttp(nodeCorpus.getUriCount()));
-            }
+       //     }
         }
     }
 
@@ -675,84 +675,6 @@ public class ConceptView implements Serializable {
         }
         return -1;
     }
-
-    
-    //////////////////////////////////////
-    //////////////////////////////////////
-    ////// test //////////////////////////
-    //////////////////////////////////////
-    //////////////////////////////////////
-  /*  private int getCountOfResourcesFromHttps2(String uri) {
-          try {
-            // Créer l'URL de la requête
-            URL url = new URL(uri);//"https://sculpturo.huma-num.fr/base/pactols-search/notices/total/14128");
-
-            // Ouvrir la connexion HTTP
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            // Ignorer la vérification du certificat SSL (option -k dans curl)
-            connection.setSSLSocketFactory(new NoOpSSLSocketFactory());
-            connection.setHostnameVerifier((hostname, session) -> true);
-
-            // Lire la réponse de la requête
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            reader.close();
-
-            // Afficher la réponse
-            System.out.println("Réponse de la requête : " + response.toString());
-
-            // Fermer la connexion HTTP
-            connection.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Classe utilitaire pour ignorer la vérification du certificat SSL
-    static class NoOpSSLSocketFactory extends javax.net.ssl.SSLSocketFactory {
-        @Override
-        public java.net.Socket createSocket(java.net.Socket socket, String string, int i, boolean bln) {
-            return null;
-        }
-
-        @Override
-        public java.net.Socket createSocket(java.net.InetAddress ia, int i, java.net.InetAddress ia1, int i1) {
-            return null;
-        }
-
-        @Override
-        public java.net.Socket createSocket(String string, int i, java.net.InetAddress ia, int i1) {
-            return null;
-        }
-
-        @Override
-        public java.net.Socket createSocket(java.net.InetAddress ia, int i) {
-            return null;
-        }
-
-        @Override
-        public java.net.Socket createSocket(String string, int i) {
-            return null;
-        }
-
-        @Override
-        public java.net.Socket createSocket() {
-            return null;
-        }
-    }*/
-    
-    //////////////////////////////////////
-    //////////////////////////////////////
-    ////// fin test //////////////////////
-    //////////////////////////////////////
-    //////////////////////////////////////
-    
     
     private int getCountOfResourcesFromHttp(String uri) {
         String output;
