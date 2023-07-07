@@ -126,7 +126,7 @@ public class NewUSerBean implements Serializable {
         try {
             int role = Integer.parseInt(selectedRole);
             if(role == 1)
-                nodeUser.setIsSuperAdmin(true);
+                nodeUser.setSuperAdmin(true);
         } catch (Exception e) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -139,8 +139,8 @@ public class NewUSerBean implements Serializable {
                 nodeUser.getName(),
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
-                nodeUser.isIsSuperAdmin(),
-                nodeUser.isIsAlertMail())){
+                nodeUser.isSuperAdmin(),
+                nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
