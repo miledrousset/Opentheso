@@ -19,9 +19,11 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
+import fr.cnrs.opentheso.ws.openapi.helper.DataHelper;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Connection;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -32,6 +34,11 @@ import javax.inject.Named;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import liquibase.Liquibase;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.cnrs.opentheso.entites.Thesaurus;
@@ -500,6 +507,9 @@ public class SelectedTheso implements Serializable {
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      */
     public void preRenderView() throws IOException {
+
+        updateDatabase();
+
         if (idThesoFromUri == null) {
             isFromUrl = false;
             return;
@@ -566,6 +576,28 @@ public class SelectedTheso implements Serializable {
             }
         }
         initIdsFromUri();
+    }
+
+    private void updateDatabase() {
+        try {
+            // Chargement du pilote JDBC
+            Connection connection = DataHelper.connect().getConnection();
+
+            // Création de l'objet Liquibase
+            Liquibase liquibase = new Liquibase(
+                    "changelog/db.changelog.xml",
+                    new ClassLoaderResourceAccessor(),
+                    DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection))
+            );
+
+            // Exécution des changements de schéma
+            liquibase.update("");
+
+            // Fermeture de la connexion à la base de données
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isValidTheso(String idTheso) {
