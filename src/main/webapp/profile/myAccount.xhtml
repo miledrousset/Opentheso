@@ -142,7 +142,7 @@
                                                 </div>
 
                                                 <div class="col-8" style="margin-top: 4px;">
-                                                    <p:toggleSwitch value="#{myAccountBean.nodeUser.isAlertMail}" />
+                                                    <p:toggleSwitch value="#{myAccountBean.nodeUser.isAlertMail()}" />
                                                 </div>
 
                                                 <div class="col-1" style="vertical-align: central; margin-top: 3px">
@@ -165,7 +165,7 @@
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-left: 20px; margin-right: 20px"> 
-                                                <h:panelGroup rendered="#{!myAccountBean.nodeUser.isSuperAdmin}">
+                                                <h:panelGroup rendered="#{!myAccountBean.nodeUser.isSuperAdmin()}">
                                                     <div class="col-12">
                                                         <p:dataTable id="tabUser" value="#{myAccountBean.allMyRoleProject}" var="allRoleProject" 
                                                                      scrollable="true" resizableColumns="true" scrollHeight="450" lazy="false">
@@ -178,7 +178,7 @@
                                                         </p:dataTable>  
                                                     </div>                          
                                                 </h:panelGroup>
-                                                <h:panelGroup rendered="#{myAccountBean.nodeUser.isSuperAdmin}">
+                                                <h:panelGroup rendered="#{myAccountBean.nodeUser.isSuperAdmin()}">
                                                     <div class="col-12">
                                                         <h:outputText value="SuperAdmin" style="font-size: 12px; color: #C63632" />
                                                     </div>    

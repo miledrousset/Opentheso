@@ -12,37 +12,61 @@
             <i class="fa fa-bars"></i>
         </button>
 
+        <!-- Nom du thésaurus -->
+        <h:outputLabel rendered="#{selectedTheso.isFromUrl()}" value="#{selectedTheso.getThesoName()}"
+                       style="margin-bottom: 0rem; color: #226b40; font-weight: bold;"/>
+
+        <!-- liste des projets -->
+        <p:selectOneMenu rendered="#{!selectedTheso.isFromUrl()}" value="#{selectedTheso.projectIdSelected}"
+                         style="height: 28px; max-width: 400px; border-radius: 50px 0px 0px 50px; margin-top: 1px !important;
+                         background-color: #ECF8F1; color: #FFF !important; margin-top: 0px;">
+            <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedProject()}" update="thesoSelect containerIndex" />
+            <f:selectItem itemLabel="#{langueBean.getMsg('menu.all_project')}" itemValue="-1"/>
+            <f:selectItems value="#{selectedTheso.projectsList}" var="project" itemLabel="#{project.label}" itemValue="#{project.id}" />
+        </p:selectOneMenu>
+
         <!-- liste des thésaurus -->
-        <p:selectOneMenu id="thesoSelect" value="#{selectedTheso.selectedIdTheso}" 
-                         style="color: #000; height: 28px; max-width: 400px" filter="true" filterMatchMode="contains">
+        <p:selectOneMenu id="thesoSelect" rendered="#{!selectedTheso.isFromUrl()}" value="#{selectedTheso.selectedIdTheso}"
+                         style="height: 28px; max-width: 400px; border-radius: 0px 50px 50px 0px; background-color: #ECF8F1;
+                         color: #FFF !important;"
+                         filter="true" filterMatchMode="contains">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
             <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
         </p:selectOneMenu>
 
-        <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" style="margin-left: 15px;">
+        <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" rendered="#{!selectedTheso.isFromUrl()}" style="margin-left: 15px;">
             <i class="fas fa-refresh" style="color: #d1d3e2; font-size: 1.1rem" title="#{langueBean.getMsg('menu.reload_thesaurus')}"  />
         </p:commandLink>
 
-        <p:commandLink rendered="#{(selectedTheso.selectedIdTheso != null) and (currentUser.nodeUser != null) and
-                                   (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+        <p:commandLink rendered="#{selectedTheso.selectedIdTheso != null and currentUser.nodeUser != null
+                                   and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                        update="containerIndex"  style="margin-left: 15px;"
                        actionListener="#{editThesoBean.init(selectedTheso.currentIdTheso)}"
-                       action="#{viewEditionBean.setIsViewModifyTheso(true)}">
+                       action="#{viewEditionBean.setViewModifyTheso(true)}">
             <i class="fa fa-pencil" style="color: #818183;" title="#{langueBean.getMsg('edition.editTheso')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
-        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; ">
+        <p:commandLink update="idClearSession" oncomplete="PF('clearSession').show();" style="margin-left: 25px; " rendered="#{!selectedTheso.isFromUrl()}">
             <i class="fa fa-eraser" style="color: #78261f; font-size: 1rem;" title="#{langueBean.getMsg('menu.cleanSession')}"/>
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
-            <h:panelGroup rendered="#{currentUser.isAlertVisible() and menuBean.notificationPannelVisible}"
+            <h:panelGroup style="margin-top: 30px; margin-right: 10px" id="notificationNewVersion"  >
+                <p:commandLink onclick="PF('newVersionNotificationPanel').show()" rendered="#{newVersionBean.isNewVersionExist()}"
+                               update="newVersionNotificationId">
+                    <p:avatar icon="pi pi-star" shape="circle" styleClass="mr-2"
+                              style="background-color:#9c27b0; color:#fff; width: 25px; height: 25px; margin-top: -6px;" />
+                </p:commandLink>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{currentUser.isAlertVisible() and menuBean.isNotificationPannelVisible()}"
                           style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
-                <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}" rendered="#{propositionBean.nbrNewPropositions > 0}" >
+                <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}"
+                               rendered="#{propositionBean.getNbrNewPropositions() > 0}" >
                     <p:badge value="#{propositionBean.nbrNewPropositions}"
                              style="background: #ff0000; color: #ffffff; font-size: 0.6rem;
                              font-weight: 700; min-width: 1rem; height: 1rem; line-height: 1rem;">
@@ -51,7 +75,7 @@
                 </p:commandLink>
 
                 <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}" 
-                               rendered="#{propositionBean.nbrNewPropositions == 0}" process="@this">
+                               rendered="#{propositionBean.getNbrNewPropositions() == 0}" process="@this">
                     <i class="pi pi-bell" styleClass="p-mr-2" style="color: #d1d3e2; font-size: 1.1rem" />
                 </p:commandLink>
             </h:panelGroup>
@@ -137,7 +161,7 @@
         </ul>
     </nav>
 
-
     <ui:include src="../dialog/session/clearSession.xhtml" />
 
 </ui:composition>
+

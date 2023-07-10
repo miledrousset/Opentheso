@@ -7,7 +7,7 @@
 
     <div class="row">
         <div class="col-12">
-            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                           value="#{langueBean.getMsg('actions.actionsOnThisTheso')}"  
                           style="font-size: 14px;"/>             
         </div>
@@ -15,7 +15,7 @@
 
     <div class="row">
         <div class="col-12">
-            <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
+            <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" >
                 <!--Pour importer des alignements -->
                 
                 <p:menuButton value="#{langueBean.getMsg('actions')}"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;

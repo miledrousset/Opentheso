@@ -19,14 +19,16 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import lombok.Data;
 import org.primefaces.PrimeFaces;
 
 /**
  *
  * @author miledrousset
  */
-@Named(value = "viewEditorHomeBean")
 @SessionScoped
+@Named(value = "viewEditorHomeBean")
 public class ViewEditorHomeBean implements Serializable {
 
     @Inject
@@ -35,13 +37,6 @@ public class ViewEditorHomeBean implements Serializable {
     private LanguageBean languageBean;
     @Inject
     private SelectedTheso selectedTheso;
-    
-    @PostConstruct
-    public void postInit() {
-    }
-
-    public ViewEditorHomeBean() {
-    }
 
     private boolean isViewPlainText = false;
     private String text;
@@ -194,12 +189,40 @@ public class ViewEditorHomeBean implements Serializable {
         }
     }
 
-    public boolean isIsViewPlainText() {
+    public boolean isTextVisible() {
+        return !isInEditingGoogleAnalytics && !isInEditingHomePage;
+    }
+
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public LanguageBean getLanguageBean() {
+        return languageBean;
+    }
+
+    public void setLanguageBean(LanguageBean languageBean) {
+        this.languageBean = languageBean;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public boolean isViewPlainText() {
         return isViewPlainText;
     }
 
-    public void setIsViewPlainText(boolean isViewPlainText) {
-        this.isViewPlainText = isViewPlainText;
+    public void setViewPlainText(boolean viewPlainText) {
+        isViewPlainText = viewPlainText;
     }
 
     public String getText() {
@@ -210,12 +233,12 @@ public class ViewEditorHomeBean implements Serializable {
         this.text = text;
     }
 
-    public boolean isIsInEditing() {
+    public boolean isInEditing() {
         return isInEditing;
     }
 
-    public void setIsInEditing(boolean isInEditing) {
-        this.isInEditing = isInEditing;
+    public void setInEditing(boolean inEditing) {
+        isInEditing = inEditing;
     }
 
     public String getColorOfHtmlButton() {
@@ -234,16 +257,12 @@ public class ViewEditorHomeBean implements Serializable {
         this.colorOfTextButton = colorOfTextButton;
     }
 
-    public boolean isIsInEditingGoogleAnalytics() {
-        return isInEditingGoogleAnalytics;
+    public boolean isInEditingHomePage() {
+        return isInEditingHomePage;
     }
 
-    public void setIsInEditingGoogleAnalytics(boolean isInEditingGoogleAnalytics) {
-        this.isInEditingGoogleAnalytics = isInEditingGoogleAnalytics;
-    }
-
-    public boolean isTextVisisble() {
-        return !isInEditingGoogleAnalytics && !isInEditingHomePage;
+    public void setInEditingHomePage(boolean inEditingHomePage) {
+        isInEditingHomePage = inEditingHomePage;
     }
 
     public String getCodeGoogleAnalitics() {
@@ -254,12 +273,11 @@ public class ViewEditorHomeBean implements Serializable {
         this.codeGoogleAnalitics = codeGoogleAnalitics;
     }
 
-    public boolean isIsInEditingHomePage() {
-        return isInEditingHomePage;
+    public boolean isInEditingGoogleAnalytics() {
+        return isInEditingGoogleAnalytics;
     }
 
-    public void setIsInEditingHomePage(boolean isInEditingHomePage) {
-        this.isInEditingHomePage = isInEditingHomePage;
+    public void setInEditingGoogleAnalytics(boolean inEditingGoogleAnalytics) {
+        isInEditingGoogleAnalytics = inEditingGoogleAnalytics;
     }
-
 }

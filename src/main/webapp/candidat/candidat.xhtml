@@ -66,30 +66,27 @@
                                         <h:form id="containerIndexCandidat">
                                             <div class="row">
                                                 <div class="col-12">
+                                                    <i class="pi pi-arrow-left" style="color: #F47B2A; margin-right: 5px; margin-left: 15px"></i>
                                                     <p:commandLink value="#{langueBean.getMsg('candidat.return')}"
                                                                    update="tabViewCandidat" style="color: #F47B2A" ajax="true" process="@this"
                                                                    action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
                                                                    actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
                                                 </div>
                                             </div>
-                                            <div class="row" style="margin-top: 20px">
-                                                <div class="col-6">
-                                                    <div class="card mb-4 py-3 border-left-success">
-                                                        <div class="list-group" style="padding-left: 10px; margin-right: 10px">
-                                                            <ui:include src="../candidat/candidatDetails.xhtml" />
-                                                        </div>
+
+                                            <ui:include src="../candidat/candidatDetails.xhtml" />
+
+                                            <h:panelGroup rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin() and candidatBean.isShowCandidatActivate())}">
+                                                <div class="row" style="margin-bottom: 20px">
+                                                    <div class="col-12" style="align-content: center; margin-top: 10px;">
+                                                        <p:commandButton value="#{langueBean.getMsg('candidat.submit')}"
+                                                                         icon="pi pi-check" styleClass="ui-button-success"
+                                                                         ajax="true" process="@this"
+                                                                         actionListener="#{processCandidateBean.reset(candidatBean.candidatSelected)}"
+                                                                         update="idProcessCandidate processCandidateForm" oncomplete="PF('processCandidate').show();"/>
                                                     </div>
                                                 </div>
-                                                <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
-                                                    <div class="col-6" style="vertical-align: top;" >
-                                                        <div class="card mb-4 py-3 border-left-success">
-                                                            <div class="list-group" style="padding-left: 10px; margin-right: 10px">
-                                                                <ui:include src="../candidat/candidatDiscussion.xhtml" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </h:panelGroup>
-                                            </div>
+                                            </h:panelGroup>
                                         </h:form>
                                     </h:panelGroup>
                                 </p:tab>
@@ -138,7 +135,7 @@
                                 
 
                 <ui:include src="../candidat/dialog/deleteCandidate.xhtml" />       
-                
+
                 <ui:include src="../dialog/login/logout.xhtml" />                
             </div>
         </h:panelGroup> 

@@ -84,10 +84,6 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    public void initInfo() {
-
-    }
-
     /**
      * permet de préparer le concept ou la branche pour le déplacement vers un autre endroit #MR
      *
@@ -178,11 +174,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                 nodeConceptDrag.getTerm().getLexical_value()
                         + " -> "
                         + conceptBean.getNodeConcept().getTerm().getLexical_value());
-
-  //      reloadTree();                
-   //     reloadConcept();        
-        FacesContext.getCurrentInstance().addMessage(null, msg);        
-    //    PrimeFaces.current().executeScript("PF('copyAndPasteBetweenTheso').hide();");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
     }    
     

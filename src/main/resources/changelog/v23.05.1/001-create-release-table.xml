@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="1" author="firas">
+        <preConditions>
+            <not>
+                <tableExists tableName="releases"/>
+            </not>
+        </preConditions>
+        <createTable tableName="releases">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="varchar(256)"/>
+            <column name="url" type="text"/>
+            <column name="date" type="date"/>
+            <column name="description" type="text"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

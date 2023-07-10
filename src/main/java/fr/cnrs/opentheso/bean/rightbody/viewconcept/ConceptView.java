@@ -198,10 +198,6 @@ public class ConceptView implements Serializable {
     }
 
     public void init() {
-        /*  if(isUriRequest) {
-            isUriRequest = false;
-            return;
-        }*/
         toggleSwitchAltLabelLang = false;
         toggleSwitchNotesLang = false;
         if (nodeConcept != null) {

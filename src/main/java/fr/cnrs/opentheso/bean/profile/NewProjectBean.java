@@ -57,7 +57,7 @@ public class NewProjectBean implements Serializable {
         projectName = null;
         
         UserHelper userHelper = new UserHelper();
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             listeProjectOfUser = userHelper.getAllProject(connect.getPoolConnexion());
             return;
         }
@@ -97,7 +97,7 @@ public class NewProjectBean implements Serializable {
         }
         
         // on vérifie si l'utilisateur en cours est un Admin 
-        if(!currentUser.getNodeUser().isIsSuperAdmin()){
+        if(!currentUser.getNodeUser().isSuperAdmin()){
             if(currentUser.getAllAuthorizedProjectAsAdmin() != null && currentUser.getAllAuthorizedProjectAsAdmin().size() > 0) {
                 // on donne le droit admin pour l'utilisateur courant sur ce groupe
                 int projectId = userHelper.getThisProjectId(connect.getPoolConnexion(), projectName);

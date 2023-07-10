@@ -26,13 +26,15 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
-@Named(value = "propositionBean")
+
 @SessionScoped
+@Named(value = "propositionBean")
 public class PropositionBean implements Serializable {
 
     @Inject
@@ -521,12 +523,92 @@ public class PropositionBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
     }
 
-    public boolean isIsRubriqueVisible() {
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public ConceptView getConceptView() {
+        return conceptView;
+    }
+
+    public void setConceptView(ConceptView conceptView) {
+        this.conceptView = conceptView;
+    }
+
+    public IndexSetting getIndexSetting() {
+        return indexSetting;
+    }
+
+    public void setIndexSetting(IndexSetting indexSetting) {
+        this.indexSetting = indexSetting;
+    }
+
+    public RoleOnThesoBean getRoleOnThesoBean() {
+        return roleOnThesoBean;
+    }
+
+    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
+        this.roleOnThesoBean = roleOnThesoBean;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public RightBodySetting getRightBodySetting() {
+        return rightBodySetting;
+    }
+
+    public void setRightBodySetting(RightBodySetting rightBodySetting) {
+        this.rightBodySetting = rightBodySetting;
+    }
+
+    public PropositionService getPropositionService() {
+        return propositionService;
+    }
+
+    public void setPropositionService(PropositionService propositionService) {
+        this.propositionService = propositionService;
+    }
+
+    public SearchBean getSearchBean() {
+        return searchBean;
+    }
+
+    public void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
+    }
+
+    public LanguageBean getLanguageBean() {
+        return languageBean;
+    }
+
+    public void setLanguageBean(LanguageBean languageBean) {
+        this.languageBean = languageBean;
+    }
+
+    public boolean isRubriqueVisible() {
         return isRubriqueVisible;
     }
 
-    public void setIsRubriqueVisible(boolean isRubriqueVisible) {
-        this.isRubriqueVisible = isRubriqueVisible;
+    public void setRubriqueVisible(boolean rubriqueVisible) {
+        isRubriqueVisible = rubriqueVisible;
     }
 
     public Proposition getProposition() {
@@ -561,12 +643,12 @@ public class PropositionBean implements Serializable {
         this.commentaire = commentaire;
     }
 
-    public List<PropositionDao> getPropositions() {
-        return propositions;
+    public String getCommentaireAdmin() {
+        return commentaireAdmin;
     }
 
-    public void setPropositions(List<PropositionDao> propositions) {
-        this.propositions = propositions;
+    public void setCommentaireAdmin(String commentaireAdmin) {
+        this.commentaireAdmin = commentaireAdmin;
     }
 
     public String getMessage() {
@@ -585,20 +667,20 @@ public class PropositionBean implements Serializable {
         this.actionNom = actionNom;
     }
 
-    public int getNbrNewPropositions() {
-        return nbrNewPropositions;
-    }
-
-    public void setNbrNewPropositions(int nbrNewPropositions) {
-        this.nbrNewPropositions = nbrNewPropositions;
-    }
-
     public String getShowAllPropositions() {
         return showAllPropositions;
     }
 
     public void setShowAllPropositions(String showAllPropositions) {
         this.showAllPropositions = showAllPropositions;
+    }
+
+    public int getNbrNewPropositions() {
+        return nbrNewPropositions;
+    }
+
+    public void setNbrNewPropositions(int nbrNewPropositions) {
+        this.nbrNewPropositions = nbrNewPropositions;
     }
 
     public int getFilter2() {
@@ -609,12 +691,28 @@ public class PropositionBean implements Serializable {
         this.filter2 = filter2;
     }
 
-    public String getCommentaireAdmin() {
-        return commentaireAdmin;
+    public PropositionDao getPropositionSelected() {
+        return propositionSelected;
     }
 
-    public void setCommentaireAdmin(String commentaireAdmin) {
-        this.commentaireAdmin = commentaireAdmin;
+    public void setPropositionSelected(PropositionDao propositionSelected) {
+        this.propositionSelected = propositionSelected;
+    }
+
+    public List<PropositionDao> getPropositions() {
+        return propositions;
+    }
+
+    public void setPropositions(List<PropositionDao> propositions) {
+        this.propositions = propositions;
+    }
+
+    public boolean isPropositionVisibleControle() {
+        return propositionVisibleControle;
+    }
+
+    public void setPropositionVisibleControle(boolean propositionVisibleControle) {
+        this.propositionVisibleControle = propositionVisibleControle;
     }
 
     public boolean isPrefTermeAccepted() {
@@ -696,13 +794,4 @@ public class PropositionBean implements Serializable {
     public void setHistoryAccepted(boolean historyAccepted) {
         this.historyAccepted = historyAccepted;
     }
-
-    public boolean isPropositionVisibleControle() {
-        return propositionVisibleControle;
-    }
-
-    public void setPropositionVisibleControle(boolean propositionVisibleControle) {
-        this.propositionVisibleControle = propositionVisibleControle;
-    }
-
 }

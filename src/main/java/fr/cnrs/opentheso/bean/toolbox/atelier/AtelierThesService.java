@@ -138,7 +138,7 @@ public class AtelierThesService implements Serializable {
             return new ArrayList<>();
 
         List<String> authorizedTheso;
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             authorizedTheso = new ThesaurusHelper().getAllIdOfThesaurus(connect.getPoolConnexion(), true);
         } else {
             authorizedTheso = new UserHelper().getThesaurusOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());

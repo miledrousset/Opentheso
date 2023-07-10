@@ -210,7 +210,7 @@ public class AlignmentHelper {
             int idAlignment,
             String conceptTarget, String thesaurusTarget,
             String uriTarget, int idTypeAlignment,
-            String idConcept, String idThesaurus, int id_alignement_source) {
+            String idConcept, String idThesaurus) {
 
         boolean status = false;
         uriTarget = new StringPlus().convertString(uriTarget);
@@ -293,28 +293,16 @@ public class AlignmentHelper {
             String conceptTarget, String thesaurusTarget,
             String uriTarget, int idTypeAlignment,
             String idConcept, String idThesaurus, int id_alignement_source) {
-        boolean status = false;
-        if (!isExistsAlignement(ds, id_alignement_source, idThesaurus,
-                idConcept, idTypeAlignment,
-                uriTarget)) {
+
+        if (!isExistsAlignement(ds, id_alignement_source, idThesaurus, idConcept, idTypeAlignment, uriTarget)) {
             message = "";//"Cet alignement n'exite pas, création en cours <br>";
-            status = addNewAlignement2(ds, author, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
+            return addNewAlignement2(ds, author, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
                     idConcept, idThesaurus, id_alignement_source);
-            if (!status) {
-                return false;
-            }
-            message += " New alignment created ... ok";
         } else {
             // message = "Cette alignement exits, updating en cours";
-            status = updateAlignment(ds, idTypeAlignment, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
-                    idConcept, idThesaurus, id_alignement_source);
-            if (!status) {
-                return false;
-            }
-            message += " Alignment updated ... Ok";
+            return updateAlignment(ds, idTypeAlignment, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
+                    idConcept, idThesaurus);
         }
-
-        return status;
     }
 
     /**
@@ -550,21 +538,14 @@ public class AlignmentHelper {
 
         try {
             // Get connection from pool
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "delete from alignement "
-                            + " where internal_id_concept = '" + idConcept + "'"
-                            + " and internal_id_thesaurus = '" + idThesaurus + "'";
+            stmt = conn.createStatement();
+            String query = "delete from alignement "
+                    + " where internal_id_concept = '" + idConcept + "'"
+                    + " and internal_id_thesaurus = '" + idThesaurus + "'";
 
-                    stmt.executeUpdate(query);
-                    status = true;
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-            }
+            stmt.executeUpdate(query);
+            status = true;
+            stmt.close();
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while deleting alignment from thesaurus with idConcept : " + idConcept, sqle);

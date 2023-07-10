@@ -151,7 +151,6 @@ body .ui-selectonemenu .ui-selectonemenu-label {
     min-height: 0px;
     margin-top: -1px;
     font-size: 0.8rem;
-/*    color: #8A3B05;*/
     color: #601e18;
 }
 
@@ -446,7 +445,7 @@ body .ui-datatable thead th {
     color: #43B572;
     padding: 7px 7px;
     border: 1px solid #43B572;
-    border-width: 0 0 1px 0;
+    border-width: 0 0 0 0;
     text-align: left;
     font-size: 13px;
     box-sizing: content-box;
@@ -851,4 +850,40 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     width: 2rem;
     height: 2rem;
     margin: 0 0.3rem 0 0;
+}
+
+
+.ui-autocomplete-multiple-container {
+    clear: left;
+    cursor: text;
+    list-style-type: none;
+    margin: 0;
+    min-height: 1px;
+    overflow: hidden;
+    width: 100% !important;
+    padding: 0.05rem 0.05rem;
+}
+
+body .ui-autocomplete .ui-autocomplete-multiple-container {
+    padding: 0.05rem 0.05rem;
+    width: 100% !important;
+}
+
+body .ui-autocomplete .ui-autocomplete-multiple-container .ui-autocomplete-token .ui-autocomplete-token-icon {
+    margin-top: -0.75rem;
+    position: absolute;
+    font-family: "primeicons" !important;
+    font-style: normal;
+    font-weight: normal;
+    display: inline-block;
+    color: brown;
+    background: #ECF8F1 !important;
+}
+
+body .ui-autocomplete .ui-autocomplete-multiple-container .ui-autocomplete-token {
+    background: #ECF8F1 !important;
+}
+
+.ui-autocomplete {
+    width: 100%;
 }

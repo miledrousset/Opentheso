@@ -30,101 +30,195 @@
                              process="@this" ajax="true" update="addSourceID"
                              actionListener="#{setAlignmentSourceBean.initAddSource()}" 
                              oncomplete="PF('addSource').show();" style="margin-left: 10px" />
+
+            <p:commandButton value="Recherche Automatique"
+                             icon="fas fa-sort-numeric-down" styleClass="ui-button-success"
+                             process="@this" ajax="true" update="containerIndex"
+                             actionListener="#{alignmentBean.searchAlignementsForAllConcepts()}"
+                             style="margin-left: 10px" />
         </p:toolbarGroup>
     </p:toolbar>
 
-    <div class="card mb-4 py-3 border-left-success" style="margin: 20px; border-color: #43B572">
+    <h:panelGroup rendered="#{alignmentBean.isAllAlignementVisible()}">
+        <div class="card mb-4 py-3 border-left-success" style="margin: 20px; border-color: #43B572">
 
-        <p:dataTable var="alignement" value="#{alignmentBean.allignementsList}"
-                     filteredValue="#{alignmentBean.filteredAlignement}" size="small"
-                     widgetVar="datatable" styleClass="products-table .ui-datatable-hor-scroll"
-                     editable="true" 
-                     paginator="true"
-                     paginatorPosition="bottom"
-                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                     selectionMode="single"
-                     rowKey="#{alignement.idConceptOrig}"
-                     rows="10" 
-                     resizableColumns="true" 
-                     showGridlines="true" 
-                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{langueBean.getMsg('rightbody.concept.alignment')}"
-                     rowsPerPageTemplate="5,10,{ShowAll|'All'}" 
-                     rowStyleClass="#{alignement.targetUri == null ? 'alignementVide' : null}"  
-                     scrollHeight="69%" 
-                     allowUnsorting="true" 
-                     sortMode="single" 
-                     style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false">
+            <p:dataTable var="alignement" value="#{alignmentBean.allignementsList}"
+                         filteredValue="#{alignmentBean.filteredAlignement}" size="small"
+                         widgetVar="datatable" styleClass="products-table .ui-datatable-hor-scroll"
+                         editable="true" 
+                         paginator="true"
+                         paginatorPosition="bottom"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         selectionMode="single"
+                         rowKey="#{alignement.idConceptOrig}"
+                         rows="10" 
+                         resizableColumns="true" 
+                         showGridlines="true" 
+                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{langueBean.getMsg('rightbody.concept.alignment')}"
+                         rowsPerPageTemplate="5,10,{ShowAll|'All'}"
+                         scrollHeight="69%" 
+                         allowUnsorting="true" 
+                         sortMode="single" 
+                         style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false"
+                         rowStyleClass="#{alignement.thesaurus_target == null ? 'alignementVide' : null}">
 
-            <f:facet name="header">
-                <div class="products-table-header">
-                    <span style="font-weight: bold">#{langueBean.getMsg('rightbody.alignmentList')}</span>
-                </div>
-            </f:facet>
-
-            <p:column headerText="#{langueBean.getMsg('search.identifier')}" filterBy="#{alignement.idConceptOrig}" sortBy="#{alignement.idConceptOrig}">
-                <h:outputText value="#{alignement.idConceptOrig}" />
-            </p:column>
-
-            <p:column headerText="#{langueBean.getMsg('statistique.label')}" filterBy="#{alignement.labelConceptOrig}" sortBy="#{alignement.labelConceptOrig}">
-                <h:outputText value="#{alignement.labelConceptOrig}" />
-            </p:column>
-
-            <p:column headerText="#{langueBean.getMsg('alignment.source')}">
-                <h:outputText value="#{alignement.thesaurus_target}" />
-            </p:column>
-
-            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}" sortBy="#{alignement.labelConceptCible}">
-                <h:outputText value="#{alignement.typeAlignement}" />
-            </p:column>
-
-            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uriTarget')}" sortBy="#{alignement.targetUri}" style="text-align: center">
-                <h:outputLink value="#{alignement.targetUri}" target="_blank" >
-                    <h:outputText rendered="#{alignement.targetUri != null}" value="#{alignement.targetUri}" />
-
-                    <p:commandButton process="@this" rendered="#{alignement.targetUri == null}"
-                                     update=":containerIndex:searchAlignementForm"
-                                     actionListener="#{alignmentBean.openEditAlignementWindow(alignement)}"
-                                     icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
-                                     style="height: 30px; width: 30px; color: #f47b2a" >
-                        <p:resetInput target=":containerIndex:searchAlignementForm"/>
-                    </p:commandButton>
-                </h:outputLink>
-            </p:column>
-
-            <p:column headerText="Actions" style="text-align: center">
-                <div class="row">
-                    <div class="col-5 offset-1">
-                                        <p:commandButton process="@this" rendered="#{alignement.targetUri != null}" 
-                                 action="#{alignmentManualBean.reset()}"
-                                 actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
-                                 update=":containerIndex:idUpdateSingleAlignment"
-                                 oncomplete="PF('updateSingleAlignment').show();"
-                                 icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
-                                 style="height: 30px; width: 30px; color: #43B572" />
+                <f:facet name="header">
+                    <div class="products-table-header">
+                        <span style="font-weight: bold">#{langueBean.getMsg('rightbody.alignmentList')}</span>
                     </div>
-                    <div class="col-5">
-                                        <p:commandButton process="@this" ajax="true"
-                                 icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined" 
-                                 oncomplete="PF('confirmDeleteAlignement').show()"
-                                 actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
-                                 rendered="#{alignement.targetUri != null}" 
-                                 style="height: 30px; width: 30px;" />
-                    </div>                    
-                </div>
+                </f:facet>
 
+                <p:headerRow field="idConceptOrig" expandable="true" expanded="true">
+                    <p:column colspan="6" style="background-color: #ecf8f1; border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText styleClass="ml-2" value="#{alignement.labelConceptOrig}"/>
+                    </p:column>
+                </p:headerRow>
 
+                <p:column headerText="#{langueBean.getMsg('search.identifier')}" filterBy="#{alignement.idConceptOrig}" sortBy="#{alignement.idConceptOrig}">
+                    <h:outputText value="#{alignement.idConceptOrig}" />
+                </p:column>
 
-            </p:column>
+                <p:column headerText="#{langueBean.getMsg('statistique.label')}" filterBy="#{alignement.labelConceptOrig}" sortBy="#{alignement.labelConceptOrig}">
+                    <h:outputText value="#{alignement.labelConceptOrig}" />
+                </p:column>
 
-            <f:facet name="footer">
-                <span class="p-text-bold">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
-                    <h:outputText value="#{alignmentBean.allignementsList.size()}" style="font-size: 16px; color: #f47b2a"/>
-                </span>
-            </f:facet>
+                <p:column headerText="#{langueBean.getMsg('alignment.source')}">
+                    <h:outputText value="#{alignement.thesaurus_target}" />
+                </p:column>
 
-        </p:dataTable>
-    </div>
+                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}" sortBy="#{alignement.labelConceptCible}">
+                    <h:outputText value="#{alignement.typeAlignement}" />
+                </p:column>
+
+                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uriTarget')}" sortBy="#{alignement.targetUri}" style="text-align: center">
+                    <h:outputLink value="#{alignement.targetUri}" target="_blank" >
+                        <h:outputText rendered="#{alignement.targetUri != null}" value="#{alignement.targetUri}" />
+                    </h:outputLink>
+                </p:column>
+
+                <p:column headerText="Actions" style="text-align: center">
+                    <div class="row">
+                        <div class="col-5 offset-1">
+                            <p:commandButton process="@this" rendered="#{alignement.targetUri != null}"
+                                     action="#{alignmentManualBean.reset()}"
+                                     actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
+                                     update=":containerIndex:idUpdateSingleAlignment"
+                                     oncomplete="PF('updateSingleAlignment').show();"
+                                     icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
+                                     style="height: 30px; width: 30px; color: #43B572" />
+                        </div>
+                        <div class="col-5">
+                            <p:commandButton process="@this" ajax="true"
+                                     icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
+                                     oncomplete="PF('confirmDeleteAlignement').show()"
+                                     actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
+                                     rendered="#{alignement.targetUri != null}"
+                                     style="height: 30px; width: 30px;" />
+                        </div>
+                    </div>
+                </p:column>
+
+                <p:summaryRow>
+                    <p:column colspan="4" style="background-color: #ecf8f1; border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <p:commandButton process="@this" value="Ajouter un nouveau alignement pour #{alignement.getLabelConceptOrig()}"
+                                         update=":containerIndex:searchAlignementForm"
+                                         actionListener="#{alignmentBean.openEditAlignementWindow(alignement)}"
+                                         styleClass="rounded-button ui-button-outlined"
+                                         style="color: #f47b2a" >
+                            <p:resetInput target=":containerIndex:searchAlignementForm"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:column colspan="2" style="text-align:right; text-align:right; background-color: #ecf8f1;
+                            border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText value="Total alignement pour (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignementParConcept(alignement.idConceptOrig)}"/>
+                    </p:column>
+                </p:summaryRow>
+
+                <f:facet name="footer">
+                    <span class="p-text-bold">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
+                        <h:outputText value="#{alignmentBean.getTotalAlignements()}" style="font-size: 16px; color: #f47b2a"/>
+                    </span>
+                </f:facet>
+            </p:dataTable>
+        </div>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{alignmentBean.isPropositionAlignementVisible()}">
+        <div class="card mb-4 py-3 border-left-success" style="margin: 20px; border-color: #43B572">
+            <p:dataTable id="checkboxDT" var="alignement" value="#{alignmentBean.allAlignementFound}"
+                         selection="#{alignmentBean.selectAlignementForAdd}" rowKey="#{alignement.uri_target}"
+                         style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;">
+
+                <f:facet name="header">
+                    <div class="products-table-header">
+                        <span style="font-weight: bold">#{langueBean.getMsg('rightbody.alignmentList')}</span>
+                    </div>
+                </f:facet>
+
+                <p:headerRow field="internal_id_concept" expandable="true" expanded="true">
+                    <p:column colspan="6" style="background-color: #ecf8f1; border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText styleClass="ml-2" value="#{alignement.concept_target}"/>
+                    </p:column>
+                </p:headerRow>
+
+                <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+
+                <p:column headerText="#{langueBean.getMsg('search.identifier')}" width="10">
+                    <h:outputText value="#{alignement.internal_id_concept}" />
+                </p:column>
+
+                <p:column headerText="#{langueBean.getMsg('statistique.label')}" width="40">
+                    <h:outputText value="#{alignement.concept_target}" />
+                </p:column>
+
+                <p:column headerText="#{langueBean.getMsg('alignment.source')}" width="20">
+                    <h:outputText value="#{alignement.thesaurus_target}" />
+                </p:column>
+
+                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}" width="30">
+                    <p:selectOneMenu value="#{alignement.alignement_id_type}"
+                                     style="font-size: 12px; background: white; border-color: #43B572; width: 100%">
+                        <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
+                                       itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
+                    </p:selectOneMenu>
+                </p:column>
+
+                <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uriTarget')}" width="40">
+                    <h:outputLink value="#{alignement.uri_target}" target="_blank" >
+                        <h:outputText rendered="#{alignement.uri_target != null}" value="#{alignement.uri_target}" />
+                    </h:outputLink>
+                </p:column>
+
+                <p:summaryRow>
+                    <p:column colspan="5" style="text-align:right; text-align:right; background-color: #ecf8f1;
+                            border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText value="Total alignement trouvé pour (#{alignement.concept_target}) :"/>
+                    </p:column>
+                    <p:column  style="background-color: #ecf8f1; border-top: 1px solid #43B572;border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText value="#{alignmentBean.getTotalCount(alignement.internal_id_concept)}"/>
+                    </p:column>
+                </p:summaryRow>
+
+                <f:facet name="footer">
+                    <span class="p-text-bold">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
+                        <h:outputText value="#{alignmentBean.allAlignementFound.size()}" style="font-size: 16px; color: #f47b2a"/>
+                    </span>
+                </f:facet>
+            </p:dataTable>
+        </div>
+
+        <p:toolbar style="margin: 20px; margin-top: 10px">
+            <p:toolbarGroup align="right">
+                <p:commandButton title="Annuler" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
+                                 actionListener="#{alignmentBean.annulerAlignementAutomatique()}" update="containerIndex"/>
+
+                <p:commandButton value="Ajouter" action="#{alignmentBean.saveAlignements()}" update="containerIndex"
+                                 styleClass="ui-button-success" icon="pi pi-check"/>
+            </p:toolbarGroup>
+        </p:toolbar>
+    </h:panelGroup>
 
     <p:dialog id="sourceManagementID" header="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" 
               widgetVar="sourceManagement" modal="true" resizable="true" position="top" 

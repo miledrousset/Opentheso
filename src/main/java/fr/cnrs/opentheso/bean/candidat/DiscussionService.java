@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.candidat;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
@@ -27,6 +26,7 @@ import javax.inject.Named;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+
 
 @Named(value = "discussionService")
 @SessionScoped
@@ -67,9 +67,9 @@ public class DiscussionService implements Serializable {
 
         if (CollectionUtils.isEmpty(nodeUsers)) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg8"));
+        } else {
+            PrimeFaces.current().executeScript("PF('participantsList').show();");
         }
-//        PrimeFaces.current().ajax().update("candidatForm");
-//        PrimeFaces.current().executeScript("PF('participantsList').show();");
     }
 
     public void sendMessage() {
@@ -97,22 +97,16 @@ public class DiscussionService implements Serializable {
 
         
         //// envoie de mail aux participants à la discussion
-        
         String subject = "Nouveau message module candidat";
         String message = "Vous avez participé à la discussion pour ce candidat "
                 + candidatBean.getCandidatSelected().getNomPref() + ", " 
                 + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
                 + ". Sachez qu’un nouveau message a été posté.";
 
-        getParticipantsInConversation();
-        if(nodeUsers != null) {
-            for (NodeUser nodeUser : nodeUsers) {
-                if(nodeUser.isIsAlertMail()) {
-                    if (!mailBean.sendMail(nodeUser.getMail(), subject,  message)) {
-                  //     candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("Erreur d'envoie de mail pour " + nodeUser.getName() + ", veuillez contacter l'administrateur"));
-                    }
-                }
-            }
+        if(CollectionUtils.isNotEmpty(nodeUsers)) {
+            nodeUsers.stream()
+                    .filter(NodeUser::isAlertMail)
+                    .forEach(user -> mailBean.sendMail(user.getMail(), subject,  message));
         }
 
         reloadMessage();
@@ -159,10 +153,6 @@ public class DiscussionService implements Serializable {
         } else if (!EmailUtils.isValidEmailAddress(email)) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg4"));
         } else {
-
-//            String from = "opentheso@mom.fr";
-//            String host = "smtp.mom.fr";
-
             Properties properties = System.getProperties();
             properties.setProperty("mail.smtp.host", props.getProperty("hostMail"));
 
@@ -198,7 +188,5 @@ public class DiscussionService implements Serializable {
     public void setNodeUsers(List<NodeUser> nodeUsers) {
         this.nodeUsers = nodeUsers;
     }
-
-
 
 }

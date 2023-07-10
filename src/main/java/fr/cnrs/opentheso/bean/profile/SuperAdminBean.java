@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
@@ -10,10 +5,10 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupThesaurus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -98,7 +93,7 @@ public class SuperAdminBean implements Serializable {
         if(selectedTheso.getCurrentLang() != null)
             idLang = selectedTheso.getCurrentLang();
         
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);
             nodeUserGroupUsers.addAll(userHelper.getAllGroupUserWithoutGroup(connect.getPoolConnexion(), idLang));
             nodeUserGroupUsers.addAll(userHelper.getAllUsersSuperadmin(connect.getPoolConnexion()));
@@ -109,9 +104,7 @@ public class SuperAdminBean implements Serializable {
      * permet de retourner la liste de tous les projets
      */
     private void listAllProjects(){
-        UserHelper userHelper = new UserHelper();
-        allProjects = userHelper.getAllProject(
-                connect.getPoolConnexion());    
+        allProjects = new UserHelper().getAllProject(connect.getPoolConnexion());
     }
     
     private void listAllThesaurus(){
@@ -125,7 +118,30 @@ public class SuperAdminBean implements Serializable {
         allThesoProject.addAll(allThesoWithProject);
         allThesoProject.addAll(allThesoWithoutProject);
     }
-    
+
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
 
     public ArrayList<NodeUser> getAllUsers() {
         return allUsers;
@@ -133,6 +149,14 @@ public class SuperAdminBean implements Serializable {
 
     public void setAllUsers(ArrayList<NodeUser> allUsers) {
         this.allUsers = allUsers;
+    }
+
+    public ArrayList<NodeUserGroupUser> getNodeUserGroupUsers() {
+        return nodeUserGroupUsers;
+    }
+
+    public void setNodeUserGroupUsers(ArrayList<NodeUserGroupUser> nodeUserGroupUsers) {
+        this.nodeUserGroupUsers = nodeUserGroupUsers;
     }
 
     public ArrayList<NodeUserGroup> getAllProjects() {
@@ -150,13 +174,4 @@ public class SuperAdminBean implements Serializable {
     public void setAllThesoProject(ArrayList<NodeUserGroupThesaurus> allThesoProject) {
         this.allThesoProject = allThesoProject;
     }
-
-    public ArrayList<NodeUserGroupUser> getNodeUserGroupUsers() {
-        return nodeUserGroupUsers;
-    }
-
-    public void setNodeUserGroupUsers(ArrayList<NodeUserGroupUser> nodeUserGroupUsers) {
-        this.nodeUserGroupUsers = nodeUserGroupUsers;
-    }
-
 }

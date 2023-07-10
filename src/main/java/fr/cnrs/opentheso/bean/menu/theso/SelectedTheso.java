@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.menu.theso;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -13,15 +12,18 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
+import fr.cnrs.opentheso.ws.openapi.helper.DataHelper;
+
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.Socket;
+import java.sql.Connection;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,18 +31,30 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collections;
 import java.util.List;
-import java.util.Arrays;
-import javax.faces.application.FacesMessage;
-import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
+
+import liquibase.Liquibase;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.apache.commons.lang3.StringUtils;
+
+import fr.cnrs.opentheso.entites.Thesaurus;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+import lombok.Data;
+import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.UnselectEvent;
 
 
-@Named(value = "selectedTheso")
+@Data
 @SessionScoped
+@Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
+
     @Inject private LanguageBean LanguageBean;
     @Inject private Connect connect;
     @Inject private IndexSetting indexSetting;
@@ -56,8 +70,15 @@ public class SelectedTheso implements Serializable {
     @Inject private RightBodySetting rightBodySetting;
     @Inject private MenuBean menuBean;
     @Inject private PropositionBean propositionBean;
+    @Inject private UserGroupLabelRepository userGroupLabelRepository;
+    @Inject private ThesaurusRepository thesaurusRepository;
+    @Inject private CurrentUser currentUser;
 
     private static final long serialVersionUID = 1L;
+
+    private List<UserGroupLabel> projects;
+
+    private boolean isFromUrl;
 
     private String selectedIdTheso;
     private String currentIdTheso;
@@ -79,17 +100,18 @@ public class SelectedTheso implements Serializable {
     private boolean sortByNotation;
     
     private boolean isNetworkAvailable;
-    
+
     private String localUri;
 
-    private List<AlignementElement> listAlignementElement;
+    private String projectIdSelected;
+    private List<UserGroupLabel> projectsList;
     private List<ResultatAlignement> resultAlignementList;
 
     @PreDestroy
     public void destroy(){
-        /// c'est le premier composant qui se détruit
         clear();
-    }  
+    }
+
     public void clear(){
         if(nodeLangs!= null){
             nodeLangs.clear();
@@ -102,43 +124,32 @@ public class SelectedTheso implements Serializable {
         idThesoFromUri = null;      
         thesoName = null;   
         localUri = null;
-    //    System.gc();
-    //    System.runFinalization();        
     }      
     
     @PostConstruct
     public void initializing() {
+
         if (!connect.isConnected()) {
             System.err.println("Erreur de connexion BDD");
             return;
         }
         
-        isNetworkAvailable = true;  
-//#MR désactivé temporairement pour tester pourquoi le serveur ne répond pas rapidement au démarrage // hostAvailabilityCheck();
-
-
-
-
-        ///////#MR désactivé, ce n'est plus utile
-        ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire
-/*        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        HttpServletRequest req = (HttpServletRequest) externalContext.getRequest();
-        if(!req.getSession().isNew()){
-            System.gc();
-      //      System.runFinalization();
-        }     */   
-        ///////
-        ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire        
-        
+        isNetworkAvailable = true;
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
+
+        loadProejct();
     }
-    
-    public boolean hostAvailabilityCheck() { 
-        try (Socket s = new Socket("countryflagsapi.com", 80)) {
-            return true;
-        } catch (IOException ex) {
-            return false;
+
+    public void loadProejct() {
+        if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
+        } else {
+            if (currentUser.getNodeUser().isSuperAdmin()) {
+                projectsList = userGroupLabelRepository.getAllProjects();
+            } else {
+                projectsList = userGroupLabelRepository.getProjectsByUserId(currentUser.getNodeUser().getIdUser());
+            }
         }
     }
 
@@ -178,25 +189,25 @@ public class SelectedTheso implements Serializable {
                 break;
         }
     }
-    
+
     public String getUriOfTheso(NodePreference nodePreference){
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
         String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
     //    HttpServletRequest request = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
         String baseUrl = protocole + "://" + serverAdress + contextPath;
-        
-        
+
+
    /*     String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         String uri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  */
         if(nodePreference == null) {
-            return baseUrl + "/?idt=" + currentIdTheso; 
+            return baseUrl + "/?idt=" + currentIdTheso;
         }
         else {
             String idArk = new ThesaurusHelper().getIdArkOfThesaurus(connect.getPoolConnexion(), currentIdTheso);
             if(StringUtils.isEmpty(idArk)){
                 return baseUrl + "/?idt=" + currentIdTheso;
-            } else 
+            } else
             return baseUrl + "/api/ark:/" + idArk;
         }
         /*
@@ -229,9 +240,8 @@ public class SelectedTheso implements Serializable {
             return;
         }
 
-        if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
-            
-            roleOnThesoBean.showListTheso();
+        if (StringUtils.isEmpty(selectedIdTheso)) {
+
             treeGroups.reset();
             tree.reset();
             treeConcepts.reset();
@@ -280,10 +290,12 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsThesoActive(true);
         
         propositionBean.searchNewPropositions();
-        
+
+        roleOnThesoBean.setUserRoleOnThisTheso();
+
         for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
             if (selectedIdTheso.equals(thesoModel.getId())) {
-                roleOnThesoBean.setSelectedThesoForSearch(Arrays.asList(selectedIdTheso));
+                roleOnThesoBean.setSelectedThesoForSearch(Collections.singletonList(selectedIdTheso));
             }
         }
         
@@ -295,7 +307,33 @@ public class SelectedTheso implements Serializable {
         
         menuBean.redirectToThesaurus();
     }
-    
+
+    public void setSelectedProject() {
+        selectedIdTheso = null;
+        if ("-1".equals(projectIdSelected)) {
+            if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+                roleOnThesoBean.setPublicThesos();
+            } else {
+                roleOnThesoBean.setOwnerThesos();
+            }
+        } else {
+            List<Thesaurus> thesaurusList;
+            if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+                thesaurusList = thesaurusRepository.getThesaurusByProjectAndStatus(Integer.parseInt(projectIdSelected), false);
+            } else {
+                thesaurusList = thesaurusRepository.getThesaurusByProject(Integer.parseInt(projectIdSelected));
+            }
+            if (thesaurusList.isEmpty()) {
+                roleOnThesoBean.setPublicThesos();
+            } else {
+                roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
+                roleOnThesoBean.addAuthorizedThesoToHM();
+                roleOnThesoBean.setUserRoleOnThisTheso();
+            }
+        }
+        indexSetting.setIsSelectedTheso(false);
+    }
+
     
     public void setSelectedThesoForSearch() throws IOException {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
@@ -319,28 +357,6 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsValueSelected(true);
         indexSetting.setIsHomeSelected(false);
         indexSetting.setIsThesoActive(true);
-    }    
-
-    public List<AlignementElement> getListAlignementElement() {
-        return listAlignementElement;
-    }
-
-    public List<ResultatAlignement> getResultAlignementList() {
-        return resultAlignementList;
-    }
-
-    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
-        this.resultAlignementList = resultAlignementList;
-    }
-
-/*    public void onSelect(SelectEvent<ResultatAlignement> event) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().getTitle()));
-    }
-*/
-    public void onUnselect(UnselectEvent<ResultatAlignement> event) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));
     }
 
     /**
@@ -416,13 +432,13 @@ public class SelectedTheso implements Serializable {
         currentIdTheso = selectedIdTheso;
         // setting des préférences du thésaurus sélectionné
         roleOnThesoBean.initNodePref();
-        roleOnThesoBean.showListTheso();
-        if (idLang == null) {
+        if (StringUtils.isEmpty(idLang)) {
             idLang = getIdLang();
-            if (idLang == null || idLang.isEmpty()) {
-                return;
-            }
         }
+        if (StringUtils.isEmpty(idLang)) {
+            return;
+        }
+
         nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(),
                 selectedIdTheso,
@@ -430,7 +446,8 @@ public class SelectedTheso implements Serializable {
 
         currentLang = idLang;
         selectedLang = idLang;
-        setThesoName();
+        thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(),
+                selectedIdTheso, selectedLang);
 
         // initialisation de l'arbre des groupes
         treeGroups.reset();
@@ -445,12 +462,6 @@ public class SelectedTheso implements Serializable {
         listIndex.reset();
         conceptBean.clear();
         conceptBean.init();
-    }
-
-    private void setThesoName() {
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        thesoName = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(),
-                selectedIdTheso, selectedLang);
     }
 
     private void startNewLang() {
@@ -493,13 +504,18 @@ public class SelectedTheso implements Serializable {
     }
 
     /**
-     * Pour sélectionner un thésaurus ou un concept en passant par l'URL 
-     * @throws java.io.IOException 
+     * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      */
     public void preRenderView() throws IOException {
+
+        updateDatabase();
+
         if (idThesoFromUri == null) {
+            isFromUrl = false;
             return;
         }
+
+        isFromUrl = true;
         if (idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (idConceptFromUri == null || idConceptFromUri.isEmpty()) {
                 //test si c'est une collection 
@@ -525,6 +541,7 @@ public class SelectedTheso implements Serializable {
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang);
             actionFromConceptToOn();
             initIdsFromUri();
+            thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), selectedIdTheso, selectedLang);
             return;
         }
 
@@ -559,6 +576,28 @@ public class SelectedTheso implements Serializable {
             }
         }
         initIdsFromUri();
+    }
+
+    private void updateDatabase() {
+        try {
+            // Chargement du pilote JDBC
+            Connection connection = DataHelper.connect().getConnection();
+
+            // Création de l'objet Liquibase
+            Liquibase liquibase = new Liquibase(
+                    "changelog/db.changelog.xml",
+                    new ClassLoaderResourceAccessor(),
+                    DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection))
+            );
+
+            // Exécution des changements de schéma
+            liquibase.update("");
+
+            // Fermeture de la connexion à la base de données
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isValidTheso(String idTheso) {

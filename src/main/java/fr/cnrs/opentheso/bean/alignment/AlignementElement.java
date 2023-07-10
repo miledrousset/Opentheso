@@ -1,7 +1,11 @@
 package fr.cnrs.opentheso.bean.alignment;
 
+import lombok.Data;
 import java.io.Serializable;
+import java.util.Objects;
 
+
+@Data
 public class AlignementElement implements Serializable {
 
     private int codeColor;
@@ -16,92 +20,18 @@ public class AlignementElement implements Serializable {
     private int alignement_id_type;
     private int idSource;
 
-    public int getCodeColor() {
-        return codeColor;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AlignementElement myObject = (AlignementElement) o;
+        return Objects.equals(idConceptOrig, myObject.idConceptOrig) &&
+                Objects.equals(labelConceptOrig, myObject.labelConceptOrig);
     }
 
-    public void setCodeColor(int codeColor) {
-        this.codeColor = codeColor;
-    }
-    
-    public String getConceptTarget() {
-        return conceptTarget;
-    }
-
-    public void setConceptTarget(String conceptTarget) {
-        this.conceptTarget = conceptTarget;
-    }
-
-    public String getThesaurus_target() {
-        return thesaurus_target;
-    }
-
-    public void setThesaurus_target(String thesaurus_target) {
-        this.thesaurus_target = thesaurus_target;
-    }
-
-    public int getAlignement_id_type() {
-        return alignement_id_type;
-    }
-
-    public void setAlignement_id_type(int alignement_id_type) {
-        this.alignement_id_type = alignement_id_type;
-    }
-
-    public int getIdSource() {
-        return idSource;
-    }
-
-    public void setIdSource(int idSource) {
-        this.idSource = idSource;
-    }
-
-    public int getIdAlignment() {
-        return idAlignment;
-    }
-
-    public void setIdAlignment(int idAlignment) {
-        this.idAlignment = idAlignment;
-    }
-
-    public String getIdConceptOrig() {
-        return idConceptOrig;
-    }
-
-    public void setIdConceptOrig(String idConceptOrig) {
-        this.idConceptOrig = idConceptOrig;
-    }
-
-    public String getLabelConceptOrig() {
-        return labelConceptOrig;
-    }
-
-    public void setLabelConceptOrig(String labelConceptOrig) {
-        this.labelConceptOrig = labelConceptOrig;
-    }
-
-    public String getTypeAlignement() {
-        return typeAlignement;
-    }
-
-    public void setTypeAlignement(String typeAlignement) {
-        this.typeAlignement = typeAlignement;
-    }
-
-    public String getLabelConceptCible() {
-        return labelConceptCible;
-    }
-
-    public void setLabelConceptCible(String labelConceptCible) {
-        this.labelConceptCible = labelConceptCible;
-    }
-
-    public String getTargetUri() {
-        return targetUri;
-    }
-
-    public void setTargetUri(String targetUri) {
-        this.targetUri = targetUri;
+    @Override
+    public int hashCode() {
+        return Objects.hash(idConceptOrig, labelConceptOrig);
     }
         
 }

@@ -137,7 +137,7 @@ public class Tree implements Serializable {
         if (roleOnThesoBean == null) {
             return false;
         }
-        if (roleOnThesoBean.isIsSuperAdmin() || roleOnThesoBean.isIsAdminOnThisTheso() || roleOnThesoBean.isIsManagerOnThisTheso()) {
+        if (roleOnThesoBean.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso() || roleOnThesoBean.isManagerOnThisTheso()) {
             return true;
         } else {
             return false;
@@ -539,7 +539,7 @@ public class Tree implements Serializable {
     public void onNodeSelectByNode(DefaultTreeNode node) {
         
         alignmentManualBean.reset();
-        propositionBean.setIsRubriqueVisible(false);
+        propositionBean.setRubriqueVisible(false);
         
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
 
@@ -553,12 +553,16 @@ public class Tree implements Serializable {
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             if(rightBodySetting.getIndex().equalsIgnoreCase("2")){
-                indexSetting.setIsValueSelected(true);            
+                indexSetting.setIsValueSelected(true);
 
                 alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                         conceptBean.getNodeConcept().getConcept().getIdConcept(),
                         conceptBean.getSelectedLang());
-                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());        
+                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+
+                alignmentBean.setAllAlignementFound(new ArrayList<>());
+                alignmentBean.setAllAlignementVisible(true);
+                alignmentBean.setPropositionAlignementVisible(false);
             } else
                 rightBodySetting.setIndex("0");
         } else {
@@ -574,7 +578,10 @@ public class Tree implements Serializable {
     public void onTabConceptChange(TabChangeEvent event) {
         if (event.getTab().getId().equals("viewTabAlignement")) {
             rightBodySetting.setIndex("2");
-            indexSetting.setIsValueSelected(true);            
+            indexSetting.setIsValueSelected(true);
+
+            alignmentBean.setAllAlignementVisible(true);
+            alignmentBean.setPropositionAlignementVisible(false);
             
             alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),

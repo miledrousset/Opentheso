@@ -268,7 +268,7 @@ public class ImportFileBean implements Serializable {
 
         UserHelper userHelper = new UserHelper();
         selectedUserProject = "";
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserProjects = userHelper.getAllProject(connect.getPoolConnexion());
         } else {
             nodeUserProjects = userHelper.getProjectsOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
