@@ -367,23 +367,28 @@ public class WriteRdf4j {
 
     private void writeMatch(SKOSResource resource) {
         for (SKOSMatch match : resource.getMatchList()) {
-            switch (match.getProperty()) {
-                case SKOSProperty.exactMatch:
-                    builder.add(SKOS.EXACT_MATCH, vf.createIRI(match.getValue()));
-                    break;
-                case SKOSProperty.closeMatch:
-                    builder.add(SKOS.CLOSE_MATCH, vf.createIRI(match.getValue()));
-                    break;
-                case SKOSProperty.broadMatch:
-                    builder.add(SKOS.BROAD_MATCH, vf.createIRI(match.getValue()));
-                    break;
-                case SKOSProperty.relatedMatch:
-                    builder.add(SKOS.RELATED_MATCH, vf.createIRI(match.getValue()));
-                    break;
-                case SKOSProperty.narrowMatch:
-                    builder.add(SKOS.NARROW_MATCH, vf.createIRI(match.getValue()));
-                    break;
+            try {
+                switch (match.getProperty()) {
+                    case SKOSProperty.exactMatch:
+                        builder.add(SKOS.EXACT_MATCH, vf.createIRI(match.getValue()));
+                        break;
+                    case SKOSProperty.closeMatch:
+                        builder.add(SKOS.CLOSE_MATCH, vf.createIRI(match.getValue()));
+                        break;
+                    case SKOSProperty.broadMatch:
+                        builder.add(SKOS.BROAD_MATCH, vf.createIRI(match.getValue()));
+                        break;
+                    case SKOSProperty.relatedMatch:
+                        builder.add(SKOS.RELATED_MATCH, vf.createIRI(match.getValue()));
+                        break;
+                    case SKOSProperty.narrowMatch:
+                        builder.add(SKOS.NARROW_MATCH, vf.createIRI(match.getValue()));
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Uri non valide = " + resource.getIdentifier() + "  " + match.getValue());
             }
+
         }
     }
 

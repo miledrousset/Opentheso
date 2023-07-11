@@ -6039,6 +6039,7 @@ public class ConceptHelper {
             String idConcept, String idThesaurus, ArrayList<String> path, ArrayList<ArrayList<String>> tabId) {
 
         ArrayList<String> firstPath = new ArrayList<>();
+     
         ArrayList<ArrayList<String>> tabIdInvert = getInvertPathOfConceptWithoutGroup(ds, idConcept,
                 idThesaurus, firstPath, path, tabId);
         for (int i = 0; i < tabIdInvert.size(); i++) {

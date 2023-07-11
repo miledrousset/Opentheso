@@ -1667,6 +1667,7 @@ public class SearchHelper {
                         nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
                         nodeSearchMini.setIsAltLabel(false);
+                        nodeSearchMini.setIsConcept(true);
                         nodeSearchMinis.add(nodeSearchMini);
                     }
 

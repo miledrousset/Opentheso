@@ -101,7 +101,7 @@ public class CurrentUser implements Serializable {
 
         initHtmlPages();
 
-        selectedTheso.loadProejct();
+        selectedTheso.loadProject();
         selectedTheso.setSelectedProject();
 
         if (propositionBean.isPropositionVisibleControle()) {
@@ -186,9 +186,9 @@ public class CurrentUser implements Serializable {
         }
         propositionBean.setRubriqueVisible(false);
 
-        selectedTheso.loadProejct();
+        selectedTheso.loadProject();
         selectedTheso.setSelectedProject();
-        selectedTheso.setCurrentIdTheso(null);
+    //    selectedTheso.setCurrentIdTheso(null);
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();

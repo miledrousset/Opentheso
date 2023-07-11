@@ -138,19 +138,7 @@ public class SelectedTheso implements Serializable {
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
 
-        loadProejct();
-    }
-
-    public void loadProejct() {
-        if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
-            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
-        } else {
-            if (currentUser.getNodeUser().isSuperAdmin()) {
-                projectsList = userGroupLabelRepository.getAllProjects();
-            } else {
-                projectsList = userGroupLabelRepository.getProjectsByUserId(currentUser.getNodeUser().getIdUser());
-            }
-        }
+        loadProject();
     }
 
     public void init() {
@@ -308,14 +296,36 @@ public class SelectedTheso implements Serializable {
         menuBean.redirectToThesaurus();
     }
 
+    
+    /**
+     * Récupération de tous les projets en fonction de l'utilisateur :
+     * - mode non connecté = on charge tous les projets
+     * - mode connecté = on charge uniquement les projets de l'utilisateur
+     */
+    public void loadProject() {
+        if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
+        } else {
+            if (currentUser.getNodeUser().isSuperAdmin()) {
+                projectsList = userGroupLabelRepository.getAllProjects();
+            } else {
+                projectsList = userGroupLabelRepository.getProjectsByUserId(currentUser.getNodeUser().getIdUser());
+            }
+        }
+        if(projectsList == null || projectsList.isEmpty()) {
+            projectIdSelected = null;
+        }
+    }    
+    
     public void setSelectedProject() {
-        selectedIdTheso = null;
+    //    selectedIdTheso = null;
         if ("-1".equals(projectIdSelected)) {
             if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
                 roleOnThesoBean.setPublicThesos();
             } else {
                 roleOnThesoBean.setOwnerThesos();
             }
+            return;
         } else {
             List<Thesaurus> thesaurusList;
             if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
@@ -329,6 +339,11 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
                 roleOnThesoBean.addAuthorizedThesoToHM();
                 roleOnThesoBean.setUserRoleOnThisTheso();
+                for (Thesaurus thesaurus : thesaurusList) {
+                   if(StringUtils.equalsIgnoreCase(thesaurus.getThesaurusId(),currentIdTheso)){
+                        return;
+                    }
+                }                
             }
         }
         indexSetting.setIsSelectedTheso(false);
@@ -701,8 +716,6 @@ public class SelectedTheso implements Serializable {
         this.optionThesoSelected = optionThesoSelected;
     }
 
-    public boolean isIsNetworkAvailable() {
-        return isNetworkAvailable;
-    }
+
 
 }

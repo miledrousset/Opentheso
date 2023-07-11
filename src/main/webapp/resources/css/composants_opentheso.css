@@ -31,6 +31,9 @@ body .ui-button.ui-button-text-icon-left .ui-button-text {
     padding: 0.3rem !important; 
 }
 
+body .ui-selectonemenu .ui-selectonemenu-trigger .ui-icon {
+  font-size: 0.8rem;
+}
 
 
 .ui-orderlist .ui-orderlist-list {
