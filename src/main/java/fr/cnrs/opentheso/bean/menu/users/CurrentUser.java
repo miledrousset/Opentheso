@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
-import com.sun.faces.util.CollectionsUtils;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
@@ -188,7 +187,6 @@ public class CurrentUser implements Serializable {
 
         selectedTheso.loadProject();
         selectedTheso.setSelectedProject();
-    //    selectedTheso.setCurrentIdTheso(null);
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
