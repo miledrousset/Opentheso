@@ -46,6 +46,13 @@
         </resource-bundle>
         <message-bundle>language/site_es</message-bundle>
     </application>
+    <application>
+        <resource-bundle>
+            <base-name>language/site_de</base-name>
+            <var>langue_de</var>
+        </resource-bundle>
+        <message-bundle>language/site_de</message-bundle>
+    </application>    
 
     <filter>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>

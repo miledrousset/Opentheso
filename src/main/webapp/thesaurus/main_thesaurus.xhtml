@@ -69,12 +69,12 @@
                         </div>
                     </div>
 
-                    <h:panelGroup id="viewEditor" rendered="#{!viewEditorHomeBean.isViewPlainText}">                               
+                    <h:panelGroup id="viewEditor" rendered="#{!viewEditorHomeBean.isViewPlainText()}">                               
                         <p:textEditor widgetVar="editor1" value="#{viewEditorHomeBean.text}" secure="false" height="600" 
                                       style="margin-bottom:5px; margin-right: 5px"/>
                     </h:panelGroup>
 
-                    <h:panelGroup id="viewPlainText" rendered="#{viewEditorHomeBean.isViewPlainText}">
+                    <h:panelGroup id="viewPlainText" rendered="#{viewEditorHomeBean.isViewPlainText()}">
                         <p:inputTextarea value="#{viewEditorHomeBean.text}" style="width: 100%; min-height: 600px;"/>
                     </h:panelGroup>
 

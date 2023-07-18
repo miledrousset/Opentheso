@@ -16,8 +16,8 @@ public class UserGroupLabelRepository {
 
     public List<UserGroupLabel> getAllProjects() {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            Query rleaseQuery = session.createQuery("SELECT label FROM UserGroupLabel label", UserGroupLabel.class);
-            return rleaseQuery.getResultList();
+            Query releaseQuery = session.createQuery("SELECT label FROM UserGroupLabel label", UserGroupLabel.class);
+            return releaseQuery.getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
             return Collections.emptyList();
@@ -26,13 +26,13 @@ public class UserGroupLabelRepository {
 
     public List<UserGroupLabel> getProjectsByThesoStatus(boolean status) {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            Query rleaseQuery = session.createQuery("SELECT labele "
+            Query releaseQuery = session.createQuery("SELECT labele "
                     + "FROM Thesaurus the, UserGroupThesaurus grp, UserGroupLabel labele "
                     + "WHERE the.privateTheso = :status "
                     + "AND grp.idThesaurus = the.thesaurusId "
                     + "AND labele.id = grp.idGroup", UserGroupLabel.class)
                     .setParameter("status", status);
-            return rleaseQuery.getResultList();
+            return releaseQuery.getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
             return Collections.emptyList();

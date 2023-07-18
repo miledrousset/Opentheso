@@ -521,6 +521,8 @@ begin
 end
 $$language plpgsql;
 
+
+
 -- Préférences : ajout une option pour choisir si l'id ARK est majuscule ou non 
 --
 create or replace function update_table_preferences_uppercase_ark() returns void as $$
@@ -562,6 +564,17 @@ CREATE TABLE IF NOT EXISTS public.thesaurus_dcterms
     CONSTRAINT thesaurus_dcterms_pkey PRIMARY KEY (id_thesaurus, name, value, language)
 );
 
+-- Users : suppression de la table inutile User2
+--
+create or replace function delete_table_user2() returns void as $$
+begin
+    IF EXISTS(SELECT *  FROM information_schema.columns where table_name='users2') THEN
+        execute 'Drop TABLE users2;';
+END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -593,7 +606,7 @@ SELECT update_table_preferences_custom_relation();
 SELECT update_table_concept_type2();
 SELECT update_table_preferences_uppercase_ark();
 SELECT update_table_group();
-
+SELECT delete_table_user2();
 
 
 ----------------------------------------------------------------------------
@@ -627,6 +640,7 @@ SELECT delete_fonction('update_table_preferences_custom_relation', '');
 SELECT delete_fonction('update_table_concept_type2', '');
 SELECT delete_fonction('update_table_preferences_uppercase_ark', '');
 SELECT delete_fonction('update_table_group', '');
+SELECT delete_fonction('delete_table_user2', '');
 
 
 -- auto_suppression de nettoyage

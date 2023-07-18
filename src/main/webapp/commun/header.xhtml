@@ -118,7 +118,16 @@
                         <div>
                             <span class="font-weight-bold" style="font-size: 12px;">#{langueBean.getMsg('menu.spanish')}</span>
                         </div>
-                    </p:commandLink>                    
+                    </p:commandLink>   
+                    <p:commandLink class="dropdown-item d-flex align-items-center" actionListener="#{langueBean.changeLangue('de')}" 
+                                   update="menuBar">
+                        <div class="mr-3">
+                            <img src="#{request.contextPath}/resources/img/de.png" width="25px" />
+                        </div>
+                        <div>
+                            <span class="font-weight-bold" style="font-size: 12px;">#{langueBean.getMsg('menu.german')}</span>
+                        </div>
+                    </p:commandLink>                      
                 </div>
             </li>
 

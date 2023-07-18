@@ -1187,7 +1187,7 @@ public class GroupHelper {
                 try {
                     String query = "select idgroup, notation from concept_group where idthesaurus = '"
                             + idThesaurus
-                            + "' and  idgroup NOT IN ( SELECT id_group2 FROM relation_group WHERE relation = 'sub')"
+                            + "' and  idgroup NOT IN ( SELECT id_group2 FROM relation_group WHERE relation = 'sub' and id_thesaurus = '" + idThesaurus + "')"
                             + " order by notation ASC";
 
                     stmt.executeQuery(query);

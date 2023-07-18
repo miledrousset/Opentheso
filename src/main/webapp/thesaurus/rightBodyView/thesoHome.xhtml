@@ -117,14 +117,14 @@
                 </div>
             </div>
 
-            <h:panelGroup rendered="#{!viewEditorThesoHomeBean.isViewPlainText}">
+            <h:panelGroup rendered="#{!viewEditorThesoHomeBean.isViewPlainText()}">
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12">
                         <p:textEditor widgetVar="editor1" value="#{viewEditorThesoHomeBean.text}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
                     </div>
                 </div>
             </h:panelGroup>                    
-            <h:panelGroup rendered="#{viewEditorThesoHomeBean.isViewPlainText}">                    
+            <h:panelGroup rendered="#{viewEditorThesoHomeBean.isViewPlainText()}">                    
                 <div class="row">
                     <div class="col-12">
                         <p:inputTextarea value="#{viewEditorThesoHomeBean.text}" style="width: 100%; margin-bottom:5px; margin-right: 5px"/>

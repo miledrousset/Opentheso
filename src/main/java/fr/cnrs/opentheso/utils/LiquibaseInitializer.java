@@ -23,7 +23,9 @@ public class LiquibaseInitializer implements Serializable {
     @PostConstruct
     public void initialize() {
         try {
-            System.out.println("Début de l'initialisation de la base de donnée avec liquibase !");
+            System.out.println("– *********************************************************************");
+            System.out.println("– Update Database Script Liquibase");
+            System.out.println("– *********************************************************************");
             // Création de l'objet Liquibase
             try (Connection connection = DataHelper.connect().getConnection()) {
                 // Création de l'objet Liquibase
@@ -35,9 +37,13 @@ public class LiquibaseInitializer implements Serializable {
                 liquibase.update("");
                 // Fermeture de la connexion à la base de données
             }
-            System.out.println("Fin de l'initialisation de la base de donnée avec liquibase !");
+            System.out.println("– *********************************************************************");
+            System.out.println("– End Database Script Liquibase");
+            System.out.println("– *********************************************************************");
         } catch (SQLException | LiquibaseException ex) {
-            System.out.println("Erreur : " + ex.getMessage());
+            System.out.println("– *********************************************************************");
+            System.out.println("Erreur Liquibase : " + ex.getMessage());
+            System.out.println("– *********************************************************************");            
         }
     }
 }

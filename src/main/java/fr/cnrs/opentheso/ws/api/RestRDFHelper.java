@@ -1364,6 +1364,73 @@ public class RestRDFHelper {
     }
 
     /**
+     * Fonction qui permet de récupérer toute la branche d'un groupe en partant
+     * d'un identifiant d'un group/domaine
+     *
+     * @param ds
+     * @param groups
+     * @param idTheso
+     * @param lang
+     * @return skos
+     */
+    public String brancheOfGroupAsTree(HikariDataSource ds,
+            String[] groups, String idTheso, String lang) {
+
+        String datas = brancheOfGroupAsTree__(ds,
+                groups, idTheso, lang);
+        if (datas == null) {
+            return null;
+        }
+        return datas;
+    }
+
+    /**
+     * Fonction qui permet de récupérer une branche complète en partant d'un
+     * concept et en allant jusqu'à la racine (vers le haut)
+     *
+     * @param ds
+     * @param idTheso
+     * @return skos
+     */
+    private String brancheOfGroupAsTree__(
+            HikariDataSource ds,
+            String[] groups, String idTheso, String lang) {
+
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        if (nodePreference == null) {
+            return null;
+        }
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(ds, idTheso, groups);
+        
+        // construire le tableau JSON avec le chemin vers la racine pour chaque Id
+        PathHelper pathHelper = new PathHelper();
+        List<Path> paths;
+
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+        for (String idConcept : branchs) {
+            paths = pathHelper.getPathOfConcept2(ds, idConcept, idTheso);
+            if (paths != null && !paths.isEmpty()) {
+                pathHelper.getPathWithLabelAsJson(ds,
+                        paths,
+                        jsonArrayBuilder,
+                        idTheso, lang, idConcept, null);
+            }
+        }
+        //    datasJson = jsonArrayBuilder.build().toString();
+        if (jsonArrayBuilder != null) {
+            return jsonArrayBuilder.build().toString();
+        } else {
+            return null;
+        }        
+    }    
+    
+    
+    
+    
+    /**
      * Fonction qui permet de récupérer un thésaurus entier uniquement Id et
      * Value en Json
      *

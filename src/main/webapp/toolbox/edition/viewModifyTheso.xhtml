@@ -4,19 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <style type="text/css">
-        body .ui-toggleswitch.ui-toggleswitch-checked .ui-toggleswitch-slider {
-            background: #C63632;
-            border-color: #C63632;
-        }
-        .ui-button-success {
-            background-color: #F47B2A !important;
-            border-color: #F47B2A !important;
-            font-size: 12px !important; 
-            /* padding: 0.5rem 1rem 0.5rem 2rem; */
-        }  
-      
-    </style>
+
 
 
     <div class="col-12" style="height: 100%; padding-bottom: 60px">
@@ -80,6 +68,7 @@
                 <!-- Liste des langues à modifier -->
                 <div class="row" style="margin: 20px">
                     <div class="col-12">
+                        
                         <p:dataTable id="listLangThes" value="#{editThesoBean.languagesOfTheso}" var="langOfTheso" scrollable="true"
                                      resizableColumns="true" scrollHeight="450" reflow="true" lazy="false">
 
@@ -93,10 +82,10 @@
                             </p:column>
 
                             <p:column width="15" headerText="#{langueBean.getMsg('candidat.edit')}">
-                                <p:commandButton icon="pi pi-pencil" update="containerIndex:manage-theso-content"
-                                                 oncomplete="PF('editLangToTheso').show()" process="@this"
+                                <p:commandButton icon="fa-solid fa-pencil" update="containerIndex:manage-theso-content"
+                                                 oncomplete="PF('editLangToTheso').show()" process="@this" style="color: #f47b2a"
                                                  actionListener="#{editThesoBean.setLangSelected(langOfTheso)}"
-                                                 styleClass="rounded-button" >
+                                                 styleClass="rounded-button ui-button-outlined" >
                                     <p:resetInput target="containerIndex:manage-theso-content"/>
                                 </p:commandButton>
                             </p:column>

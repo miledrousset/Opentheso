@@ -28,3 +28,14 @@ header > * {
 .swagger-ui {
     margin-bottom: 50px;
 }
+
+.swagger-ui .opblock .opblock-summary-operation-id, .swagger-ui .opblock .opblock-summary-path, .swagger-ui .opblock .opblock-summary-path__deprecated {
+    font-size: 14px;
+}
+
+.swagger-ui table tbody tr td:first-of-type {
+  padding: 25px 0;
+}
+.swagger-ui .response-col_links {
+  padding-top: 25px;
+}
