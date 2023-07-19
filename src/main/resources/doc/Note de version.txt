@@ -11,4 +11,6 @@ Note de version
 - amélioration de l'OpenApi
 - ajout de la possibilité de cliquer sur l'URL de l'image pour aller vers la source
 - déplacement d'un candidat vers un autre thésaurus
- 
+- Intégration des DcTerms pour les contributeurs
+et créateurs pour chaque modification :
+fonctionne en (import, export, toutes modifications dans le thésuaurus)
