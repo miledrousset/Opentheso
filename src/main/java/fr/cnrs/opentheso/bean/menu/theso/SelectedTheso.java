@@ -325,15 +325,20 @@ public class SelectedTheso implements Serializable {
             } else {
                 thesaurusList = thesaurusRepository.getThesaurusByProject(Integer.parseInt(projectIdSelected));
             }
+
             if (!thesaurusList.isEmpty()) {
                 roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
-                roleOnThesoBean.addAuthorizedThesoToHM();
-                roleOnThesoBean.setUserRoleOnThisTheso();
+            } else {
+                roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+            }
+            roleOnThesoBean.addAuthorizedThesoToHM();
+            roleOnThesoBean.setUserRoleOnThisTheso();
+            if (!thesaurusList.isEmpty()) {
                 for (Thesaurus thesaurus : thesaurusList) {
                    if(StringUtils.equalsIgnoreCase(thesaurus.getThesaurusId(),currentIdTheso)){
                         return;
                     }
-                }                
+                }
             }
         }
         indexSetting.setIsSelectedTheso(false);
