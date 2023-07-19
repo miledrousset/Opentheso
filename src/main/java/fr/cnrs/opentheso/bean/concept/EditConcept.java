@@ -5,7 +5,9 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
@@ -20,6 +22,7 @@ import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
@@ -57,6 +60,7 @@ public class EditConcept implements Serializable {
     @Inject private SelectedTheso selectedTheso;
     @Inject private Tree tree;
     @Inject private ConceptView conceptBean;
+    @Inject private CurrentUser currentUser;    
     
     private String prefLabel;
     private String notation;
@@ -280,6 +284,12 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 idUser);
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////          
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
@@ -419,7 +429,12 @@ public class EditConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idTheso,
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
-
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////
         conceptView.getConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idLang);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été modifié");
@@ -584,6 +599,12 @@ public class EditConcept implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 idConcept, idUser);
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                idConcept, selectedTheso.getCurrentIdTheso());
+        ///////////////        
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
         
         
@@ -632,6 +653,12 @@ public class EditConcept implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 idConcept, idUser);
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                idConcept, selectedTheso.getCurrentIdTheso());
+        ///////////////        
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
         
         if (tree.getSelectedNode() != null) {
@@ -674,6 +701,12 @@ public class EditConcept implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
                 idConceptDeprecated, idUser);
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                idConceptDeprecated, selectedTheso.getCurrentIdTheso());
+        ///////////////        
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
@@ -716,6 +749,12 @@ public class EditConcept implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
                 idConceptDeprecated, idUser);
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                idConceptDeprecated, selectedTheso.getCurrentIdTheso());
+        ///////////////        
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation supprimée avec succès");

@@ -5,9 +5,11 @@
  */
 package fr.cnrs.opentheso.bean.alignment;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.GpsHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
@@ -22,6 +24,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.core.alignment.AlignementSource;
 import fr.cnrs.opentheso.core.alignment.SelectedResource;
@@ -38,7 +41,6 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +68,7 @@ public class AlignmentBean implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private AlignmentManualBean alignmentManualBean;
     @Inject private LanguageBean languageBean;
+    @Inject private CurrentUser currentUser;     
 
     private boolean withLang;
     private boolean withNote;
@@ -1679,6 +1682,12 @@ public class AlignmentBean implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 idTheso,
                 idConcept, idUser);
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                idConcept, idTheso);
+        ///////////////        
     }
 
     /**

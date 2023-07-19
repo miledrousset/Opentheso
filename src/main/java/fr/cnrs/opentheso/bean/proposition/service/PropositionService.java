@@ -677,9 +677,6 @@ public class PropositionService implements Serializable {
                 propositionSelected.getIdTheso(),
                 propositionSelected.getLang(),
                 currentUser.getNodeUser().getIdUser());
-        
-    
-        
         ///// insert DcTermsData to add contributor
         DcElmentHelper dcElmentHelper = new DcElmentHelper();
         dcElmentHelper.addDcElement(connect.getPoolConnexion(),

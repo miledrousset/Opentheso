@@ -1,11 +1,14 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -39,6 +42,7 @@ public class NoteBean implements Serializable {
     private ConceptView conceptBean;
     @Inject
     private SelectedTheso selectedTheso;
+    @Inject private CurrentUser currentUser;    
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
@@ -169,7 +173,13 @@ public class NoteBean implements Serializable {
         new ConceptHelper().updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////  
+        
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -350,7 +360,12 @@ public class NoteBean implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////        
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),

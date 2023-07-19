@@ -5,8 +5,10 @@
  */
 package fr.cnrs.opentheso.bean.alignment;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentType;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
@@ -244,7 +246,13 @@ public class AlignmentManualBean implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 idTheso,
-                idConcept, idUser);        
+                idConcept, idUser);      
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                idConcept, idTheso);
+        ///////////////        
     }
     
 

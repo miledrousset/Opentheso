@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
@@ -1155,7 +1157,13 @@ public class DragAndDrop implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());  
-
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        /////////////// 
+        
         // si le concept n'est pas déployé à doite, alors on ne fait rien
         if(conceptBean.getNodeConcept() != null){
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),

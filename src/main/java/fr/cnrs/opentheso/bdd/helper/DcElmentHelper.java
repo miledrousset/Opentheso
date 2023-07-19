@@ -51,12 +51,12 @@ public class DcElmentHelper {
                 stmt.executeUpdate("insert into concept_dcterms "
                     + " (id_concept, id_thesaurus, name, value, language) "
                     + " values (" 
-                    + "'" + idConcept + "'"
-                    + "'" + idTheso + "'"
-                    + "'" + dcElement.getName() + "'"
-                    + "'" + dcElement.getValue() + "'"
+                    + "'" + idConcept + "',"
+                    + "'" + idTheso + "',"
+                    + "'" + dcElement.getName() + "',"
+                    + "'" + dcElement.getValue() + "',"
                     + (dcElement.getLanguage() != null ?  "'" + dcElement.getLanguage() + "'" : null)      
-                    + ")"
+                    + ") ON CONFLICT DO NOTHING"
                 );
                 return true;
             }

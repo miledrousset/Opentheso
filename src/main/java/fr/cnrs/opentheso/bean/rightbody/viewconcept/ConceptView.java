@@ -11,6 +11,7 @@ import com.jsf2leaf.model.Map;
 import com.jsf2leaf.model.Marker;
 import com.jsf2leaf.model.Polyline;
 import com.jsf2leaf.model.Pulse;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
@@ -18,7 +19,6 @@ import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
@@ -81,23 +81,14 @@ import org.primefaces.model.ResponsiveOption;
 @Named(value = "conceptView")
 @SessionScoped
 public class ConceptView implements Serializable {
-
-    @Inject
-    private Connect connect;
-    @Inject
-    private IndexSetting indexSetting;
-    @Inject
-    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject
-    private ViewEditorHomeBean viewEditorHomeBean;
-    @Inject
-    private Tree tree;
-    @Inject
-    private RoleOnThesoBean roleOnThesoBean;
-    @Inject
-    private SelectedTheso selectedTheso;
-    @Inject
-    private LanguageBean languageBean;
+    @Inject private Connect connect;
+    @Inject private IndexSetting indexSetting;
+    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject private ViewEditorHomeBean viewEditorHomeBean;
+    @Inject private Tree tree;
+    @Inject private RoleOnThesoBean roleOnThesoBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private LanguageBean languageBean;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -133,7 +124,10 @@ public class ConceptView implements Serializable {
     private List<ResponsiveOption> responsiveOptions;
     
     private boolean toggleSwitchAltLabelLang;
-    private boolean toggleSwitchNotesLang;    
+    private boolean toggleSwitchNotesLang;
+
+    private String creator;
+    private String contributors;
 
     @PreDestroy
     public void destroy() {
@@ -349,6 +343,7 @@ public class ConceptView implements Serializable {
         if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
+        setRoles();
         
         setFacetsOfConcept(idConcept, idTheso, idLang);
 
@@ -417,6 +412,7 @@ public class ConceptView implements Serializable {
         if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
             setCorpus();
         }
+        setRoles();
         if (nodeConcept.getNodeGps() != null) {
             initMap();
         }
@@ -830,21 +826,48 @@ public class ConceptView implements Serializable {
         pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
     }
 
-    public String getCreator() {
-        if (nodeConcept == null || nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
-            return "";
+    private void setRoles(){
+        if (nodeConcept == null || nodeConcept.getDcElements() == null) {
+            creator = null;
+            contributors = null;
         }
-        UserHelper userHelper = new UserHelper();
-        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getConcept().getCreator());
+        contributors = null;
+        creator = null;
+        boolean firstElement = true;
+        for (DcElement dcElement : nodeConcept.getDcElements()) {
+            switch (dcElement.getName()) {
+                case DcElement.CONTRIBUTOR :
+                    if(firstElement) {
+                        contributors = dcElement.getValue();
+                        firstElement = false;
+                    } else {
+                        contributors = contributors + "; " + dcElement.getValue();
+                    }
+                    break;
+                case DcElement.CREATOR :
+                    creator = dcElement.getValue();                    
+                default:
+                    break;
+            }
+        }
     }
 
-    public String getContributor() {
-        if (nodeConcept == null || nodeConcept.getConcept() == null || nodeConcept.getTerm() == null) {
-            return "";
-        }
-        UserHelper userHelper = new UserHelper();;
-        return userHelper.getNameUser(connect.getPoolConnexion(), nodeConcept.getConcept().getContributor());
+    public String getCreator() {
+        return creator;
     }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public String getContributors() {
+        return contributors;
+    }
+
+    public void setContributors(String contributors) {
+        this.contributors = contributors;
+    }
+
     
     public String getNoteSource(String noteSource){
         if(StringUtils.isEmpty(noteSource))
@@ -1087,4 +1110,6 @@ public class ConceptView implements Serializable {
             idLang = "en";
         return idLang;  
     }
+    
+    
 }

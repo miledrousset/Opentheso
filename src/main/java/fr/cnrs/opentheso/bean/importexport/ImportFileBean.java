@@ -1859,7 +1859,7 @@ public class ImportFileBean implements Serializable {
                     ///// insert DcTermsData to add contributor
                     dcElmentHelper.addDcElement(connect.getPoolConnexion(),
                             new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
-                            idConcept, selectedTheso.getCurrentIdTheso());
+                            idConcept, idTheso);
                     ///////////////                    
                 }
             }

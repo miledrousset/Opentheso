@@ -245,9 +245,9 @@ public class AddConcept implements Serializable {
         ///// insert DcTermsData
         DcElmentHelper dcElmentHelper = new DcElmentHelper();
         DcElement dcElement = new DcElement();
-        dcElement.setName("created");
-        dcElement.setValue(currentUser.getUsername());
-        dcElement.setLanguage(idLang);
+        dcElement.setName(DcElement.CREATOR);
+        dcElement.setValue(currentUser.getNodeUser().getName());
+        dcElement.setLanguage(null);
         dcElmentHelper.addDcElement(connect.getPoolConnexion(), dcElement, idNewConcept, idTheso);        
         ///////////////
         
