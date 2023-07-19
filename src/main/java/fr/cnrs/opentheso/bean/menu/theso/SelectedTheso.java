@@ -19,11 +19,13 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
-import fr.cnrs.opentheso.ws.openapi.helper.DataHelper;
+import fr.cnrs.opentheso.entites.Thesaurus;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.Connection;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -35,17 +37,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import liquibase.Liquibase;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import org.apache.commons.lang3.StringUtils;
-
-import fr.cnrs.opentheso.entites.Thesaurus;
-import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.ThesaurusRepository;
-import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
@@ -318,7 +311,6 @@ public class SelectedTheso implements Serializable {
     }    
     
     public void setSelectedProject() {
-    //    selectedIdTheso = null;
         if ("-1".equals(projectIdSelected)) {
             if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
                 roleOnThesoBean.setPublicThesos();
@@ -333,9 +325,7 @@ public class SelectedTheso implements Serializable {
             } else {
                 thesaurusList = thesaurusRepository.getThesaurusByProject(Integer.parseInt(projectIdSelected));
             }
-            if (thesaurusList.isEmpty()) {
-                roleOnThesoBean.setPublicThesos();
-            } else {
+            if (!thesaurusList.isEmpty()) {
                 roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
                 roleOnThesoBean.addAuthorizedThesoToHM();
                 roleOnThesoBean.setUserRoleOnThisTheso();
