@@ -4,7 +4,9 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
@@ -90,6 +92,15 @@ public class MoveConcept implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);  
                 return;
             }
+            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idThesoTo, idConcept,
+                    currentUser.getNodeUser().getIdUser());  
+            
+            ///// insert DcTermsData to add contributor
+            DcElmentHelper dcElmentHelper = new DcElmentHelper();
+            dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                    new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                    idConcept, idThesoTo);
+            /////////////// 
         }
         PrimeFaces pf = PrimeFaces.current();
         candidatBean.initCandidatModule();
@@ -120,6 +131,17 @@ public class MoveConcept implements Serializable {
                 FacesContext.getCurrentInstance().addMessage(null, msg);  
                 return;
             }
+            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idThesoTo, idConcept,
+                    currentUser.getNodeUser().getIdUser());
+            
+            ///// insert DcTermsData to add contributor
+            DcElmentHelper dcElmentHelper = new DcElmentHelper();
+            dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                    new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                    idConcept, idThesoTo);
+            ///////////////            
+            
+            
             lisIdGroup = groupHelper.getListIdGroupOfConcept(connect.getPoolConnexion(), idThesoTo, idConcept);
             for (String idGroup : lisIdGroup) {
                 groupHelper.deleteRelationConceptGroupConcept(connect.getPoolConnexion(), idGroup, idConcept, idThesoTo, currentUser.getNodeUser().getIdUser());                

@@ -1,8 +1,10 @@
 package fr.cnrs.opentheso.bean.proposition.service;
 
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
@@ -675,6 +677,16 @@ public class PropositionService implements Serializable {
                 propositionSelected.getIdTheso(),
                 propositionSelected.getLang(),
                 currentUser.getNodeUser().getIdUser());
+        
+    
+        
+        ///// insert DcTermsData to add contributor
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                propositionSelected.getIdConcept(), propositionSelected.getIdTheso());
+        ///////////////  
+  
 
         new PropositionHelper().updateStatusProposition(connect.getPoolConnexion(),
                 PropositionStatusEnum.APPROUVER.name(),

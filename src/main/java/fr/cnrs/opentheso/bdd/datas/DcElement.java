@@ -11,12 +11,23 @@ package fr.cnrs.opentheso.bdd.datas;
  */
 
 public class DcElement {
+    public static final String TITLE = "title";
+    public static final String CREATOR = "creator";
+    public static final String CONTRIBUTOR = "contributor";    
+    public static final String SUBJECT = "subject";    
 
-    protected String language;
     protected String name;
     protected String value;
+    protected String language;
 
     public DcElement() {
+    }
+
+    
+    public DcElement(String name, String value, String language) {
+        this.language = language;
+        this.name = name;
+        this.value = value;
     }
 
     public String getLanguage() {

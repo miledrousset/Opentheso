@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
@@ -44,6 +45,8 @@ import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
+import fr.cnrs.opentheso.skosapi.SKOSAgent;
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
@@ -165,7 +168,6 @@ public class ConceptHelper {
                         + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                     
                         + " update concept_dcterms set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
                 );
-                updateDateOfConcept(ds, idThesoTarget, idConceptToMove, idUser);
                 return true;
             }
         } catch (SQLException sqle) {
@@ -2996,6 +2998,7 @@ public class ConceptHelper {
                     }
                 }
             }
+
             return idConcept;
 
         } catch (SQLException ex) {
@@ -3003,7 +3006,7 @@ public class ConceptHelper {
         }
         return null;
     }
-
+    
     /**
      * Cette fonction permet de supprimer un Concept avec ses relations et
      * traductions
@@ -5826,7 +5829,7 @@ public class ConceptHelper {
         DcElmentHelper dcElmentHelper = new DcElmentHelper();
                 
         /// récupération des Méta-données DC_terms
-        //nodeConcept.setDcElements(dcElmentHelper.getDcElement(ds, idThesaurus, idConcept));
+        nodeConcept.setDcElements(dcElmentHelper.getDcElement(ds, idThesaurus, idConcept));
         
         
         return nodeConcept;

@@ -1,8 +1,10 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
@@ -17,6 +19,7 @@ import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
 import java.io.Serializable;
@@ -48,6 +51,8 @@ public class AddConcept implements Serializable {
     private Tree tree;
     @Inject
     private EditFacet editFacet;
+    @Inject
+    private CurrentUser currentUser;    
 
     private String prefLabel;
     private String notation;
@@ -235,6 +240,20 @@ public class AddConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        
+        /////////////////////////
+        ///// insert DcTermsData
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();
+        DcElement dcElement = new DcElement();
+        dcElement.setName("created");
+        dcElement.setValue(currentUser.getUsername());
+        dcElement.setLanguage(idLang);
+        dcElmentHelper.addDcElement(connect.getPoolConnexion(), dcElement, idNewConcept, idTheso);        
+        ///////////////
+        
+        
+        
+        
         if (isConceptUnderFacet) {
             FacetHelper facetHelper = new FacetHelper();
             if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(), idFacet, idTheso, idNewConcept)) {

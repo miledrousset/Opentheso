@@ -7,7 +7,7 @@ package fr.cnrs.opentheso.skosapi;
 
 /**
  *
- * @author Quincy
+ * @author Miled
  * 
  */
 public class SKOSAgent {

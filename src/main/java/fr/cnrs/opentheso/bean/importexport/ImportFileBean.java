@@ -6,10 +6,12 @@
 package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
@@ -1317,12 +1319,21 @@ public class ImportFileBean implements Serializable {
         initError();
 
         CsvImportHelper csvImportHelper = new CsvImportHelper();
-
+        ConceptHelper conceptHelper = new ConceptHelper();
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();
         // mise à jouor des concepts
         try {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
                 if (csvImportHelper.updateConcept(connect.getPoolConnexion(), idTheso, conceptObject, idUser1)) {
                     total++;
+                    conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                            idTheso, conceptObject.getIdConcept(), idUser1);
+                    
+                    ///// insert DcTermsData to add contributor
+                    dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                            new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                            conceptObject.getIdConcept(), idTheso);
+                    ///////////////                     
                 }
             }
 
@@ -1682,6 +1693,7 @@ public class ImportFileBean implements Serializable {
         String idConcept;
         String idConceptReplacedBy;        
         ConceptHelper conceptHelper = new ConceptHelper();
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();
         try {
             for (NodeDeprecated nodeDeprecated : nodeDeprecateds) {
                 if (nodeDeprecated == null) {
@@ -1737,6 +1749,12 @@ public class ImportFileBean implements Serializable {
                 conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                         selectedTheso.getCurrentIdTheso(),
                         idConcept, idUser1);
+
+                ///// insert DcTermsData to add contributor
+                dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                        new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                        idConcept, selectedTheso.getCurrentIdTheso());
+                ///////////////                  
                 total++;
             }
             log.error(csvImportHelper.getMessage());
@@ -1802,6 +1820,7 @@ public class ImportFileBean implements Serializable {
         CsvImportHelper csvImportHelper = new CsvImportHelper();
         String idConcept;
         ConceptHelper conceptHelper = new ConceptHelper();
+        DcElmentHelper dcElmentHelper = new DcElmentHelper();        
         // mise à jouor des concepts
         try {
             for (NodeReplaceValueByValue nodeReplaceValueByValue : nodeReplaceValueByValues) {
@@ -1835,6 +1854,13 @@ public class ImportFileBean implements Serializable {
                 }*/
                 if (csvImportHelper.updateConceptValueByNewValue(connect.getPoolConnexion(), idTheso, nodeReplaceValueByValue, idUser1)) {
                     total++;
+                    conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idTheso, idConcept,
+                            currentUser.getNodeUser().getIdUser());
+                    ///// insert DcTermsData to add contributor
+                    dcElmentHelper.addDcElement(connect.getPoolConnexion(),
+                            new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                            idConcept, selectedTheso.getCurrentIdTheso());
+                    ///////////////                    
                 }
             }
             log.error(csvImportHelper.getMessage());

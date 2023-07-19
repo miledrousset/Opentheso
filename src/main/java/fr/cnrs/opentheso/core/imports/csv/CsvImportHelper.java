@@ -1160,9 +1160,6 @@ public class CsvImportHelper {
             default:
                 break;
         }
-
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(ds, idTheso, nodeReplaceValueByValue.getIdConcept(), idUser1);
         return true;
     }    
     private boolean updatePrefLabel(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
@@ -1353,8 +1350,6 @@ public class CsvImportHelper {
             return false;
         }
          */
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(ds, idTheso, conceptObject.getIdConcept(), idUser1);
         return true;
     }
 

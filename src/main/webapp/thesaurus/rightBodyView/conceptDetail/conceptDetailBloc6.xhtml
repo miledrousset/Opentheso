@@ -10,33 +10,36 @@
 
             <div class="row" style="margin-left: 0px;"> 
                 <div class="col-10" style="font-size: 12px; color: grey; font-style: italic ">
-                    <div class="row"> 
-                        <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: " />
-                            <h:outputText value="#{conceptView.nodeConcept.concept.created} " style="color: #43B572"/>
+                    <h:panelGroup rendered="#{conceptView.nodeConcept.concept.created != null}">
+                        <div class="row"> 
+                            <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: " />
+                                <h:outputText value="#{conceptView.nodeConcept.concept.created} " style="color: #43B572"/>
 
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (currentUser.nodeUser == null and roleOnTheso.nodePreference.displayUserName)}" >
-                                <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
-                                <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value="#{conceptView.creator}" style="color: #43B572"/>                         
-                            </h:panelGroup>
+                                <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (currentUser.nodeUser == null and roleOnTheso.nodePreference.displayUserName)}" >
+                                    <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
+                                    <h:outputText rendered="#{conceptView.contributor != null and conceptView.creator != ''}" value="#{conceptView.creator}" style="color: #43B572"/>                         
+                                </h:panelGroup>
+                            </div>
                         </div>
-                    </div>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{conceptView.nodeConcept.concept.modified != null}">
+                        <div class="row"> 
+                            <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
+                                <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')}: "/>
+                                <h:outputText value="#{conceptView.nodeConcept.concept.modified} " style="color: #43B572"/>                
 
-                    <div class="row"> 
-                        <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
-                            <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')}: "/>
-                            <h:outputText value="#{conceptView.nodeConcept.concept.modified} " style="color: #43B572"/>                
-
-                            <h:panelGroup  rendered="#{(currentUser.nodeUser != null) or (currentUser.nodeUser == null and roleOnTheso.nodePreference.displayUserName)}">
-                                <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
-                                <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value="#{conceptView.contributor}" style="color: #43B572"/>
-                            </h:panelGroup>                     
+                                <h:panelGroup  rendered="#{(currentUser.nodeUser != null) or (currentUser.nodeUser == null and roleOnTheso.nodePreference.displayUserName)}">
+                                    <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value=" #{langueBean.getMsg('rightbody.concept.by')}: " style="color: #666666"/>
+                                    <h:outputText rendered="#{conceptView.contributor != null and conceptView.contributor != ''}" value="#{conceptView.contributor}" style="color: #43B572"/>
+                                </h:panelGroup>                     
+                            </div>
                         </div>
-                    </div>
+                    </h:panelGroup>
                 </div>
                 <div class="col-2" style="text-align: right;">
                     <p:commandButton rendered="#{(currentUser.nodeUser != null) 
-                                                 and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                                 and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                                      icon="fa fa-history" styleClass="rounded-button ui-button-outlined"
                                      actionListener="#{historyBean.reset()}" update="idHistoricalView"
                                      oncomplete="PF('historicalView').show();" style="margin-right: 10px; height: 2rem; width: 2rem; color: #43B572" 

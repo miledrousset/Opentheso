@@ -44,4 +44,25 @@ public class DcElmentHelper {
         }
         return dcElements;
     }
+    
+    public boolean addDcElement(HikariDataSource ds, DcElement dcElement, String idConcept, String idTheso) {
+        try(Connection conn = ds.getConnection()){
+            try(Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("insert into concept_dcterms "
+                    + " (id_concept, id_thesaurus, name, value, language) "
+                    + " values (" 
+                    + "'" + idConcept + "'"
+                    + "'" + idTheso + "'"
+                    + "'" + dcElement.getName() + "'"
+                    + "'" + dcElement.getValue() + "'"
+                    + (dcElement.getLanguage() != null ?  "'" + dcElement.getLanguage() + "'" : null)      
+                    + ")"
+                );
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DcElmentHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        return false;
+    }
 }
