@@ -80,7 +80,7 @@ public class ExportHelper {
             String baseUrl, String idGroup, String originalUri, NodePreference nodePreference) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
-
+        String [] contributors;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
@@ -156,8 +156,12 @@ public class ExportHelper {
                         if (resultSet.getString("creator") != null) {
                             sKOSResource.addAgent(resultSet.getString("creator"), SKOSProperty.creator);
                         }
-                        if (resultSet.getString("contributor") != null) {
-                            sKOSResource.addAgent(resultSet.getString("contributor"), SKOSProperty.contributor);
+                        
+                        if(!StringUtils.isEmpty(resultSet.getString("contributor"))){
+                            contributors = resultSet.getString("contributor").split(SEPERATEUR);
+                            for (String contributor : contributors) {
+                                sKOSResource.addAgent(contributor, SKOSProperty.contributor);
+                            }
                         }
 
                         String created = resultSet.getString("created");
