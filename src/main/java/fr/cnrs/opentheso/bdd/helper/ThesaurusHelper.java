@@ -128,43 +128,6 @@ public class ThesaurusHelper {
     /**
      * Permet de créer un nouveau Thésaurus. Retourne l'identifiant du thésaurus
      * ou null
-     * @param ds
-     * @param thesaurus
-     * @param urlSite
-     * @param isArkActive
-     * @return 
-     */
-    public String addThesaurus(HikariDataSource ds, Thesaurus thesaurus,
-            String urlSite, boolean isArkActive) {
-
-        String idThesaurus = null;//"TH";//"ark:/66666/srvq9a5Ll41sk";
-
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select max(id) from thesaurus");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    resultSet.next();
-                    int idNumeriqueThesaurus = resultSet.getInt(1);
-                    idThesaurus = "" + ++idNumeriqueThesaurus;
-
-                    //récupération du code Ark via WebServices
-                    String idArk = "";
-                    stmt.executeUpdate("Insert into thesaurus (id_thesaurus, id_ark, created, modified)"
-                            + " values ('" + idThesaurus + "','" + idArk + "'"
-                            + "," + "current_date, current_date)");
-                    thesaurus.setId_thesaurus(idThesaurus);
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while adding Thesaurus : " + idThesaurus, sqle);
-            idThesaurus = null;
-        }
-        return idThesaurus;
-    }
-
-    /**
-     * Permet de créer un nouveau Thésaurus. Retourne l'identifiant du thésaurus
-     * ou null
      *
      * @param conn
      * @param urlSite
@@ -204,6 +167,7 @@ public class ThesaurusHelper {
         }
         return idThesaurus;
     }
+    
 
     /**
      * Permet de rajouter une traduction à un Thésaurus existant suivant un l'id

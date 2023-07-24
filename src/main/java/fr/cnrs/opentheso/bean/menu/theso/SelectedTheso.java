@@ -330,6 +330,8 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
             } else {
                 roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+                selectedIdTheso = null;
+                currentIdTheso = null;
             }
             roleOnThesoBean.addAuthorizedThesoToHM();
             roleOnThesoBean.setUserRoleOnThisTheso();

@@ -11,6 +11,7 @@ import com.jsf2leaf.model.Map;
 import com.jsf2leaf.model.Marker;
 import com.jsf2leaf.model.Polyline;
 import com.jsf2leaf.model.Pulse;
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
@@ -836,7 +837,7 @@ public class ConceptView implements Serializable {
         boolean firstElement = true;
         for (DcElement dcElement : nodeConcept.getDcElements()) {
             switch (dcElement.getName()) {
-                case DcElement.CONTRIBUTOR :
+                case DCMIResource.CONTRIBUTOR :
                     if(firstElement) {
                         contributors = dcElement.getValue();
                         firstElement = false;
@@ -844,7 +845,7 @@ public class ConceptView implements Serializable {
                         contributors = contributors + "; " + dcElement.getValue();
                     }
                     break;
-                case DcElement.CREATOR :
+                case DCMIResource.CREATOR :
                     creator = dcElement.getValue();                    
                 default:
                     break;

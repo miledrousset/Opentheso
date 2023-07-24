@@ -5,9 +5,10 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
@@ -279,9 +280,9 @@ public class SynonymBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////
         
@@ -406,9 +407,9 @@ public class SynonymBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
 
@@ -621,9 +622,9 @@ public class SynonymBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
 
@@ -678,9 +679,9 @@ public class SynonymBean implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
 

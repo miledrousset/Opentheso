@@ -1,10 +1,11 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
@@ -30,7 +31,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.collections.CollectionUtils;
 
 import org.primefaces.PrimeFaces;
 
@@ -243,12 +243,12 @@ public class AddConcept implements Serializable {
         
         /////////////////////////
         ///// insert DcTermsData
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();
+        DcElementHelper dcElmentHelper = new DcElementHelper();
         DcElement dcElement = new DcElement();
-        dcElement.setName(DcElement.CREATOR);
+        dcElement.setName(DCMIResource.CREATOR);
         dcElement.setValue(currentUser.getNodeUser().getName());
         dcElement.setLanguage(null);
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(), dcElement, idNewConcept, idTheso);        
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(), dcElement, idNewConcept, idTheso);        
         ///////////////
         
         

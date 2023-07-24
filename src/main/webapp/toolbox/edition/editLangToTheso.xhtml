@@ -30,11 +30,11 @@
                 <p:spacer height="30px;"/>
                 <div class="row" >
                     <div class="col-4 offset-2">
-                        <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button"
+                        <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
                                          actionListener="PF('editLangToTheso').hide();" update="containerIndex:idEditLangToTheso"/>                        
                     </div>
                     <div class="col-4 offset-1">
-                        <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" 
+                        <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check" 
                                          update="containerIndex:listLangThes messageIndex"
                                          oncomplete="PF('editLangToTheso').hide();"
                                          actionListener="#{editThesoBean.updateLang(editThesoBean.langSelected)}" />                        

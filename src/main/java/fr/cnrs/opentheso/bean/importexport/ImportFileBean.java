@@ -6,12 +6,13 @@
 package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
@@ -1320,7 +1321,7 @@ public class ImportFileBean implements Serializable {
 
         CsvImportHelper csvImportHelper = new CsvImportHelper();
         ConceptHelper conceptHelper = new ConceptHelper();
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();
+        DcElementHelper dcElmentHelper = new DcElementHelper();
         // mise à jouor des concepts
         try {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
@@ -1330,8 +1331,8 @@ public class ImportFileBean implements Serializable {
                             idTheso, conceptObject.getIdConcept(), idUser1);
                     
                     ///// insert DcTermsData to add contributor
-                    dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                            new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                    dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                            new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                             conceptObject.getIdConcept(), idTheso);
                     ///////////////                     
                 }
@@ -1693,7 +1694,7 @@ public class ImportFileBean implements Serializable {
         String idConcept;
         String idConceptReplacedBy;        
         ConceptHelper conceptHelper = new ConceptHelper();
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();
+        DcElementHelper dcElmentHelper = new DcElementHelper();
         try {
             for (NodeDeprecated nodeDeprecated : nodeDeprecateds) {
                 if (nodeDeprecated == null) {
@@ -1751,8 +1752,8 @@ public class ImportFileBean implements Serializable {
                         idConcept, idUser1);
 
                 ///// insert DcTermsData to add contributor
-                dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                        new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                        new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                         idConcept, selectedTheso.getCurrentIdTheso());
                 ///////////////                  
                 total++;
@@ -1820,7 +1821,7 @@ public class ImportFileBean implements Serializable {
         CsvImportHelper csvImportHelper = new CsvImportHelper();
         String idConcept;
         ConceptHelper conceptHelper = new ConceptHelper();
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();        
+        DcElementHelper dcElmentHelper = new DcElementHelper();        
         // mise à jouor des concepts
         try {
             for (NodeReplaceValueByValue nodeReplaceValueByValue : nodeReplaceValueByValues) {
@@ -1857,8 +1858,8 @@ public class ImportFileBean implements Serializable {
                     conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idTheso, idConcept,
                             currentUser.getNodeUser().getIdUser());
                     ///// insert DcTermsData to add contributor
-                    dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                            new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                    dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                            new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                             idConcept, idTheso);
                     ///////////////                    
                 }

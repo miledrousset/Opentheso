@@ -20,6 +20,7 @@ public class ReadRDF4JNewGen {
         if (RDFFormat.RDFJSON.equals(rdfFormat)) {
             parser.setRDFHandler(new ReadJsonFlux(skosXmlDocument, defaultLang));
         } else {
+            /// lecture RDF XML
             parser.setRDFHandler(new ReadCommunFlux(skosXmlDocument, defaultLang));
         }
         parser.parse(inputStream, "");

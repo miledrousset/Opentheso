@@ -297,8 +297,9 @@ public class ExportRdf4jHelperNew {
 
     private void writeGroupInfo(HikariDataSource ds, SKOSResource sKOSResource, String idTheso, String idOfGroupChild) {
 
+        GroupHelper groupHelper = new GroupHelper();
         NodeGroupLabel nodeGroupLabel;
-        nodeGroupLabel = new GroupHelper().getNodeGroupLabel(ds, idOfGroupChild, idTheso);
+        nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idOfGroupChild, idTheso);
 
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.ConceptGroup);
@@ -321,22 +322,25 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.prefLabel);
         }
 
-        ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idOfGroupChild, idTheso);
+        ArrayList<NodeUri> childURIs = groupHelper.getListGroupChildOfGroup(ds, idTheso, idOfGroupChild);
         ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
         }
 
-        for (String id : childURI) {
-            sKOSResource.addRelation(id, getUriFromId(id), SKOSProperty.subGroup);
-            superGroupHashMap.put(id, idOfGroupChild);
+        for (NodeUri nodeUri : childURIs) {
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.subGroup);
+            superGroupHashMap.put(nodeUri.getIdConcept(), idOfGroupChild);
         }
 
         String idSuperGroup = superGroupHashMap.get(idOfGroupChild);
         if (idSuperGroup != null) {
-            sKOSResource.addRelation(idSuperGroup, getUriFromId(idSuperGroup), SKOSProperty.superGroup);
-            superGroupHashMap.remove(idOfGroupChild);
+            NodeUri nodeUri1 = groupHelper.getThisGroupIds(ds, idSuperGroup, idTheso);
+            if(nodeUri1 != null){
+                sKOSResource.addRelation(idSuperGroup, getUriGroupFromNodeUri(nodeUri1, idTheso), SKOSProperty.superGroup);
+                superGroupHashMap.remove(idOfGroupChild);
+            }
         }
 
         // ajout de la notation

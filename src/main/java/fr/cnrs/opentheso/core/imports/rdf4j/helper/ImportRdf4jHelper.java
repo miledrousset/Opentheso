@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.ConceptGroupLabel;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
@@ -143,7 +145,8 @@ public class ImportRdf4jHelper {
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         thesaurusHelper.setIdentifierType("2");
-
+        DcElementHelper dcElementHelper = new DcElementHelper();
+        
         String idTheso1;
         try ( Connection conn = ds.getConnection()) {
 
@@ -165,9 +168,13 @@ public class ImportRdf4jHelper {
                     thesaurus.setTitle("theso_" + idTheso1);
                 }
             }
-
             thesaurus.setId_thesaurus(idTheso1);
-
+            
+            // intégration des métadonnées DC
+            for (DcElement dcElement : skosXmlDocument.getConceptScheme().getThesaurus().getDcElement()) {
+                dcElementHelper.addDcElementThesaurus(ds, dcElement, idTheso1);
+            }
+            
             // boucler pour les traductions
             for (SKOSLabel label : skosXmlDocument.getConceptScheme().getLabelsList()) {
                 thesaurus.setTitle(label.getLabel());

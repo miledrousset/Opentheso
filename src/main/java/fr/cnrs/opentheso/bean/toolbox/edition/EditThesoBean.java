@@ -44,6 +44,7 @@ public class EditThesoBean implements Serializable {
     @Inject private CurrentUser currentUser;
     @Inject private RoleOnThesoBean roleOnThesoBean;
     @Inject private MenuBean menuBean;
+    @Inject private ThesaurusMetadataAdd thesaurusMetadataAdd;
 
     private NodeLangTheso langSelected;
     private ArrayList<Languages_iso639> allLangs;
@@ -115,6 +116,7 @@ public class EditThesoBean implements Serializable {
         } catch (IOException ex) {
             Logger.getLogger(EditThesoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+       
     }    
     
     public void init(NodeIdValue nodeIdValueOfTheso) {
@@ -144,6 +146,8 @@ public class EditThesoBean implements Serializable {
         langSelected = null;
         langSelected = new NodeLangTheso();
         title = "";
+        /// initialisation des métadonnées pour le thésaurus 
+        thesaurusMetadataAdd.init(nodeIdValueOfTheso.getId());        
     }
 
     private void reset() {

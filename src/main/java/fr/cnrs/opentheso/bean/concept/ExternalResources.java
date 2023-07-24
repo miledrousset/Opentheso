@@ -1,8 +1,9 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
@@ -123,9 +124,9 @@ public class ExternalResources implements Serializable {
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image ajoutée avec succès");
@@ -183,9 +184,9 @@ public class ExternalResources implements Serializable {
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser); 
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image_URI modifiée avec succès");
@@ -234,9 +235,9 @@ public class ExternalResources implements Serializable {
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);  
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image supprimée avec succès");

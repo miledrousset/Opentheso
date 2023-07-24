@@ -5,9 +5,10 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElmentHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
@@ -285,9 +286,9 @@ public class EditConcept implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////          
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
@@ -430,9 +431,9 @@ public class EditConcept implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idTheso,
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////
         conceptView.getConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idLang);
@@ -600,9 +601,9 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 idConcept, idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 idConcept, selectedTheso.getCurrentIdTheso());
         ///////////////        
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
@@ -654,9 +655,9 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 idConcept, idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 idConcept, selectedTheso.getCurrentIdTheso());
         ///////////////        
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
@@ -702,9 +703,9 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(), 
                 idConceptDeprecated, idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 idConceptDeprecated, selectedTheso.getCurrentIdTheso());
         ///////////////        
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
@@ -750,9 +751,9 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(), 
                 idConceptDeprecated, idUser);
         ///// insert DcTermsData to add contributor
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();                
-        dcElmentHelper.addDcElement(connect.getPoolConnexion(),
-                new DcElement(DcElement.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
                 idConceptDeprecated, selectedTheso.getCurrentIdTheso());
         ///////////////        
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());

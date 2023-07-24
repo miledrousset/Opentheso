@@ -1300,6 +1300,46 @@ public class GroupHelper {
         return nodeConceptGroup;
     }
     
+    /**
+     * Permet de retourner un NodeConceptGroup par identifiant, par thésaurus et
+     * par langue / ou null si rien cette fonction ne retourne pas les détails
+     * et les traductions
+     *
+     * @param ds le pool de connexion
+     * @param idGroup
+     * @param idThesaurus
+     * @return Objet Class NodeConceptGroup
+     */
+    public NodeUri getThisGroupIds(HikariDataSource ds,
+            String idGroup, String idThesaurus) {
+
+        NodeUri nodeUri = null;
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select idgroup, id_ark, id_handle, id_doi from concept_group"
+                        + " where idgroup = '" + idGroup + "'"
+                        + " and idthesaurus = '" + idThesaurus + "'"
+                );
+                
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        nodeUri = new NodeUri();
+                        nodeUri.setIdConcept(resultSet.getString("idgroup"));
+                        nodeUri.setIdArk(resultSet.getString("id_ark"));
+                        nodeUri.setIdHandle(resultSet.getString("id_handle"));
+                        nodeUri.setIdDoi(resultSet.getString("id_doi"));
+                    }
+                    return nodeUri;
+                }
+            } 
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting idsOfGroup : " + idGroup, sqle);
+        }
+        return null;
+    }    
+    
 
     /**
      * Permet de retourner la liste des sous_groupes d'un Group (type G/C/MT/T)
@@ -1402,6 +1442,71 @@ public class GroupHelper {
         }
         return idGroupParentt;
     }
+    
+    
+    /**
+     * Permet de retourner la liste des sous Groupes pour un Groupe et un thésaurus
+     * donné
+     *
+     * @param ds le pool de connexion
+     * @param idThesaurus
+     * @param idGroupParent
+     * @return Objet Class ArrayList NodeUri #MR
+     */
+    public ArrayList<NodeUri> getListGroupChildOfGroup(HikariDataSource ds, String idThesaurus, String idGroupParent) {
+
+        ArrayList<NodeUri> nodeUris = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+
+                stmt.executeQuery(
+                        "SELECT" +
+                        " relation_group.id_group2, concept_group.id_ark, concept_group.id_handle, concept_group.id_doi" +
+                        " FROM relation_group, concept_group " +
+                        " WHERE" +
+                        " concept_group.idthesaurus = relation_group.id_thesaurus " +
+                        " AND" +
+                        " concept_group.idgroup = relation_group.id_group2 " +
+                        " AND" +
+                        " concept_group.idthesaurus = '" + idThesaurus + "'" +
+                        " AND" +
+                        " relation_group.id_group1 = '" + idGroupParent + "'" +
+                        " AND" +
+                        " relation_group.relation = 'sub'" +
+                        " order by id_group2 ASC;"
+                );
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+
+                    while (resultSet.next()) {
+                        NodeUri nodeUri = new NodeUri();
+                        nodeUri.setIdConcept(resultSet.getString("id_group2"));
+                        if (resultSet.getString("id_ark") == null) {
+                            nodeUri.setIdArk("");
+                        } else {
+                            nodeUri.setIdArk(resultSet.getString("id_ark"));
+                        }
+                        if (resultSet.getString("id_handle") == null) {
+                            nodeUri.setIdHandle("");
+                        } else {
+                            nodeUri.setIdHandle(resultSet.getString("id_handle"));
+                        }
+                        if (resultSet.getString("id_doi") == null) {
+                            nodeUri.setIdDoi("");
+                        } else {
+                            nodeUri.setIdDoi(resultSet.getString("id_doi"));
+                        }
+                        nodeUris.add(nodeUri);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting List or SubGroups : " + idGroupParent, sqle);
+        }
+        return nodeUris;
+    }    
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////
     //////// fin des nouvelles fonctions ////////////////////////////////

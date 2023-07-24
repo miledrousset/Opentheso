@@ -15,4 +15,5 @@
         <sqlFile path="../install/liquibaseupdate/script0001.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>    
     <include file="/changelog/v23.07.3/001-update_concept_dcterms.xml"/>
+    <include file="/changelog/v23.07.3/001-update_thesaurus_dcterms.xml"/>
 </databaseChangeLog>
