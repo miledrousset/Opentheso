@@ -124,8 +124,8 @@
 
                     <h:panelGroup id="alignementChoiceConfStep" rendered="#{alignmentBean.alignementSources == null || alignmentBean.alignementSources.size() == 0}">
                         <div class="row">
-                            <div class="col-12">
-                                <p:outputLabel value="#{langueBean.getMsg('alig.NeedToParameter')}"/>
+                            <div class="col-12" style="text-align: center">
+                                <p:outputLabel value="!! #{langueBean.getMsg('alig.NeedToParameter')}" style="color: #D32F2F; font-size: 16px; font-weight: bold"/>
                             </div>
                         </div>
                     </h:panelGroup>

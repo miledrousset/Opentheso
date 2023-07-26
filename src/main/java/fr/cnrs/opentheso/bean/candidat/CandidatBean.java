@@ -2,10 +2,13 @@ package fr.cnrs.opentheso.bean.candidat;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
@@ -614,6 +617,16 @@ public class CandidatBean implements Serializable {
 
             }
         }
+        /////////////////////////
+        ///// insert DcTermsData
+        DcElementHelper dcElmentHelper = new DcElementHelper();
+        DcElement dcElement = new DcElement();
+        dcElement.setName(DCMIResource.CREATOR);
+        dcElement.setValue(currentUser.getNodeUser().getName());
+        dcElement.setLanguage(null);
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(), dcElement, candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());        
+        ///////////////        
+        
         
         candidatService.updateDetailsCondidat(connect, candidatSelected, currentUser.getNodeUser().getIdUser());
 

@@ -555,6 +555,7 @@ public class CsvReadHelper {
                         continue;
                     }
                 } catch (Exception e) {
+                    System.out.println(e.getMessage());
                     continue;
                 }                
                 for (String idLang1 : usedLangs) {
@@ -690,7 +691,8 @@ public class CsvReadHelper {
                 nodeReplaceValueByValue.setOldValue(value);
                 return nodeReplaceValueByValue;
             } else {
-                return null;
+                nodeReplaceValueByValue.setOldValue(null);
+                return nodeReplaceValueByValue;
             }
         } catch (Exception e) {
             //System.err.println("");

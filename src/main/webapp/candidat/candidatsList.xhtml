@@ -38,6 +38,7 @@
 
                         <p:menuitem value="#{langueBean.getMsg('candidat.import_in_SKOS_format')}"
                                     icon="fas fa-download" update="tabViewCandidat messageIndex" process="@this"
+                                    actionListener="#{importFileBean.init()}"
                                     action="#{candidatBean.setImportViewActivate(true)}" />
                     </p:menuButton>
                 </p:toolbarGroup>
@@ -245,6 +246,21 @@
                 </div>
             </div>  
 
+            <!-- Langue par defaut -->
+            <div class="row" style="margin-top: 10px">
+                <div class="col-6" style="text-align: right; color: #000; margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" />
+                </div>
+                <div class="col-3">
+                    <p:selectOneMenu value="#{importFileBean.selectedLang}" styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                     style="width: 100%; background: none;  box-shadow: none; "
+                                     panelStyle="border: none; box-shadow: none; max-width: 300px" >
+                        <f:selectItems  value="#{importFileBean.allLangs}" var="lang" itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})" itemValue="#{lang.id_iso639_1}"/> 
+                        <p:ajax event="change" listener="#{importFileBean.actionChoiceLang(lang.id_iso639_1)}"  />
+                    </p:selectOneMenu>  
+                </div>
+            </div>              
+            
             <!-- Choix du fichier -->   
             <div class="row" style="margin-top: 10px">
                 <div class="col-12"> 

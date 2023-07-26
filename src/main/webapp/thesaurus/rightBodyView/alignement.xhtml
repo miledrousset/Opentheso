@@ -32,7 +32,7 @@
                              oncomplete="PF('addSource').show();" style="margin-left: 10px" />
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:commandButton value="#{langueBean.getMsg('alignment.automaticSearch')}"
+            <p:commandButton disabled="true" value="#{langueBean.getMsg('alignment.automaticSearch')}"
                              icon="fa-solid fa-magnifying-glass" styleClass="ui-button-success"
                              process="@this" ajax="true" update="containerIndex"
                              actionListener="#{alignmentBean.searchAlignementsForAllConcepts()}"

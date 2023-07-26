@@ -378,7 +378,7 @@ public class CsvImportHelper {
         }
         
         if (StringUtils.isEmpty(formatDate)) {
-            formatDate = "dd-mm-yyyy";
+            formatDate = "yyyy-mm-dd";
         }
         Date created = null;
         Date modified = null;
@@ -1150,13 +1150,13 @@ public class CsvImportHelper {
                 break;                  
                 
                 
-            /*    Action dangereuse, à activer plus tard 
+            /*    Action dangereuse, à activer plus tard */
             case SKOSProperty.broader:
                 if (!updateBroader(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
                     addMessage("Erreur : ", nodeReplaceValueByValue);
                 }
                 break;                
-                */
+                
             default:
                 break;
         }
@@ -1277,12 +1277,15 @@ public class CsvImportHelper {
         }
         
         RelationsHelper relationsHelper = new RelationsHelper();
-        if(!relationsHelper.deleteRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getOldValue(), idUser1)) {
-            addMessage("Rename error :", nodeReplaceValueByValue);
-        }        
+        if(!StringUtils.isEmpty( nodeReplaceValueByValue.getOldValue())){
+            if(!relationsHelper.deleteRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getOldValue(), idUser1)) {
+                addMessage("Rename error :", nodeReplaceValueByValue);
+            }      
+        }
         if(!relationsHelper.addRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1)) {
             addMessage("Rename error :", nodeReplaceValueByValue);
         }
+        new ConceptHelper().setNotTopConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
         /*
         if(!relationsHelper.deleteRelationNT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1)) {
             addMessage("Rename error :", nodeReplaceValueByValue);

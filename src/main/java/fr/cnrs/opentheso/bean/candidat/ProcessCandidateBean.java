@@ -1,6 +1,9 @@
 package fr.cnrs.opentheso.bean.candidat;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
@@ -8,10 +11,9 @@ import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +37,7 @@ public class ProcessCandidateBean implements Serializable {
     @Inject private CandidatBean candidatBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private MailBean mailBean;  
+    @Inject private CurrentUser currentUser;
     
     private CandidatDto selectedCandidate;
     private String adminMessage;
@@ -76,6 +79,16 @@ public class ProcessCandidateBean implements Serializable {
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
         
         generateArk(nodePreference, selectedCandidate);
+        
+        new ConceptHelper().updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate.getIdThesaurus(),
+                selectedCandidate.getIdConcepte(), idUser);
+
+        ///// insert DcTermsData to add contributor
+        new DcElementHelper().addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                selectedCandidate.getIdConcepte(), selectedCandidate.getIdThesaurus());
+        ///////////////             
+        
         
         printMessage("Canditat inséré avec succès");
         reset(null);
@@ -171,7 +184,9 @@ public class ProcessCandidateBean implements Serializable {
             return;
         }
         CandidatService candidatService = new CandidatService();
-
+        ConceptHelper conceptHelper = new ConceptHelper();
+        DcElementHelper dcElmentHelper = new DcElementHelper();        
+        
         // envoie de mail au créateur du candidat si l'option mail est activée
         UserHelper userHelper = new UserHelper();
         NodeUser nodeUser;
@@ -183,11 +198,21 @@ public class ProcessCandidateBean implements Serializable {
                 printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
+            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate1.getIdThesaurus(),
+                    selectedCandidate1.getIdConcepte(), idUser);
+            
+            ///// insert DcTermsData to add contributor
+            dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                    selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
+            ///////////////              
+            
             generateArk(nodePreference, selectedCandidate1);
             nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
                 sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate1);
         }
+
 
         printMessage("Candidats insérés avec succès");
         reset(null);

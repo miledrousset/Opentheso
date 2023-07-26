@@ -231,6 +231,7 @@ public class ImportRdf4jHelper {
    
         } else {
             nodePreference.setCheminSite(uri);
+            nodePreference.setSourceLang(langueSource);
             nodePreference.setPreferredName(idTheso);
             nodePreference.setOriginalUri(uri);
             if (selectedIdentifier.equalsIgnoreCase("ark")) {
@@ -243,7 +244,7 @@ public class ImportRdf4jHelper {
                 nodePreference.setOriginalUriIsDoi(true);
             }
         }
-        preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
+        preferencesHelper.addPreference(ds, nodePreference, idTheso);
     }
 
     private void setOriginalUri(String idTheso, String uri) {

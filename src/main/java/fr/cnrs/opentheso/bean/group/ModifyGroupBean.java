@@ -159,12 +159,14 @@ public class ModifyGroupBean implements Serializable {
                     groupView.getNodeGroup().getConceptGroup().getIdgroup())) {
                 ((TreeNodeData) treeGroups.getSelectedNode().getData()).setName(titleGroup);
             }
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("containerIndex:formLeftTab:tabTree:treeGroups");
+            }
         }
 
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
-            pf.ajax().update("containerIndex:formLeftTab:treeGroups");
         }
     }
 

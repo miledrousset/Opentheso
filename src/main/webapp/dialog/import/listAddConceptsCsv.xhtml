@@ -17,7 +17,7 @@
                         <p:panelGrid style="font-size: 12px;" >
                             <f:facet name="header">
                                 <p:row style="font-size: 12px;">
-                                    <p:column>URI</p:column>
+                                    <p:column><p:outputLabel value="URI *" style="color: #C63632"/></p:column>
                                     <p:column >skos:prefLabel@fr</p:column>
                                     <p:column >skos:prefLabel@en</p:column>
                                     <p:column >skos:definition@fr</p:column>
@@ -45,7 +45,12 @@
                     <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px; width: 100%">
                         <p >
                             #{langueBean.getMsg('import.listCsv.help')} <br/>
-                            pour détecter les identifiants ARK, il faut une URI de ce type : (ark:/77777/PCRqdc8ms9kjk3xz5mptyj1)
+                            pour détecter les identifiants ARK, il faut une URI de ce type : (ark:/77777/PCRqdc8ms9kjk3xz5mptyj1)<br/>
+                            <p:outputLabel value="(*) URI obligatoire"
+                                           style="color: #C63632; font-weight: bold"  />
+                            
+                            <p:outputLabel value="- Champs pris en compte : labels, notes, notation, relations, alignements, gps, ajout à des collections, images."
+                                           style="color: #F47B2A" />
                         </p>
                     </p:panel>                
                 </fieldset>

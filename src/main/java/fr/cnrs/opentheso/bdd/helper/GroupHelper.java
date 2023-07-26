@@ -78,7 +78,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "UPDATE concept_group SET idtypecode='" + type + "'"
-                            + " WHERE idgroup='" + idGroup + "'"
+                            + " WHERE LOWER(idgroup)='" + idGroup.toLowerCase() + "'"
                             + " AND idthesaurus='" + idTheso + "'";
 
                     stmt.executeUpdate(query);
@@ -125,7 +125,7 @@ public class GroupHelper {
                             + " modified = current_date"
                             + " WHERE lang ='" + idLang + "'"
                             + " AND idthesaurus='" + idTheso + "'"
-                            + " AND idgroup ='" + idGroup + "'");
+                            + " AND LOWER(idgroup) ='" + idGroup.toLowerCase() + "'");
                 status = true;
                 addGroupTraductionHistoriqueRollBack(conn, idGroup, idTheso, idLang, label, idUser);
                 updateModifiedDate(ds, idGroup, idTheso);
@@ -151,7 +151,7 @@ public class GroupHelper {
                 stmt.executeUpdate("UPDATE concept_group "
                             + "set created = current_date"
                             + " WHERE idthesaurus='" + idTheso + "'"
-                            + " AND idgroup ='" + idGroup + "'");
+                            + " AND LOWER(idgroup) ='" + idGroup.toLowerCase() + "'");
             }
         } catch (SQLException sqle) {
             Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, sqle);
@@ -173,7 +173,7 @@ public class GroupHelper {
                 stmt.executeUpdate("UPDATE concept_group "
                             + "set modified = current_date"
                             + " WHERE idthesaurus='" + idTheso + "'"
-                            + " AND idgroup ='" + idGroup + "'");
+                            + " AND LOWER(idgroup) ='" + idGroup.toLowerCase() + "'");
             }
         } catch (SQLException sqle) {
             Logger.getLogger(GroupHelper.class.getName()).log(Level.SEVERE, null, sqle);
@@ -249,10 +249,10 @@ public class GroupHelper {
                     nodeMetaData.setTitle(labelGroup);
                     nodeMetaData.setDcElementsList(new ArrayList<>());
                     
-                    String privateUri = "?idg=" + idGroup + "&idt=" + idTheso;
+                    String privateUri = "?idg=" + idGroup.toLowerCase() + "&idt=" + idTheso;
                     if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
                         message = arkHelper2.getMessage();
-                        message = arkHelper2.getMessage() + "  idGroup = " + idGroup;
+                        message = arkHelper2.getMessage() + "  idGroup = " + idGroup.toLowerCase();
                         conn.rollback();
                         conn.close();
                         return false;
@@ -465,7 +465,7 @@ public class GroupHelper {
                         + ",current_date"
                         + ",'" + idLang + "'"
                         + ",'" + idTheso + "'"
-                        + ",'" + idGroup + "'" + ")";
+                        + ",'" + idGroup.toLowerCase() + "'" + ")";
 
                 stmt.executeUpdate(query);
                 status = true;
@@ -505,7 +505,7 @@ public class GroupHelper {
                         + ",current_date"
                         + ",'" + idLang + "'"
                         + ",'" + idTheso + "'"
-                        + ",'" + idGroup + "'" + ")");
+                        + ",'" + idGroup.toLowerCase() + "'" + ")");
                 status = true;  
             }
         } catch (SQLException sqle) {
@@ -545,7 +545,7 @@ public class GroupHelper {
                         + "'" + value + "'"
                         + ",'" + idLang + "'"
                         + ",'" + idThesaurus + "'"
-                        + ",'" + idGroup + "'"
+                        + ",'" + idGroup.toLowerCase() + "'"
                         + ",'" + idUser + "'" + ")";
 
                 stmt.executeUpdate(query);
@@ -589,7 +589,7 @@ public class GroupHelper {
                 String query = "Insert into concept_group "
                         + "(idgroup,id_ark,idthesaurus,idtypecode,notation,id_handle)"
                         + " values("
-                        + "'" + idGroup + "'"
+                        + "'" + idGroup.toLowerCase() + "'"
                         + ",'" + idArk + "'"
                         + ",'" + idTheso + "'"
                         + ",'" + idTypeCode + "'"
@@ -631,7 +631,7 @@ public class GroupHelper {
             return false;
         }
 
-        String privateUri = "?idg=" + idGroup + "&idt=" + idThesaurus;
+        String privateUri = "?idg=" + idGroup.toLowerCase() + "&idt=" + idThesaurus;
         if (!arkHelper2.addArk(privateUri, nodeMetaData)) {
             message = arkHelper2.getMessage();
             return false;
@@ -646,7 +646,7 @@ public class GroupHelper {
             return false;
         }
         if (nodePreference.isGenerateHandle()) {
-            return updateHandleIdOfGroup(conn, idGroup, idThesaurus, idHandle);
+            return updateHandleIdOfGroup(conn, idGroup.toLowerCase(), idThesaurus, idHandle);
         } else
             return true;
     }
@@ -660,7 +660,7 @@ public class GroupHelper {
         if (!nodePreference.isUseHandle()) {
             return false;
         }
-        String privateUri = "?idg=" + idGroup + "&idt=" + idThesaurus;
+        String privateUri = "?idg=" + idGroup.toLowerCase() + "&idt=" + idThesaurus;
         HandleHelper handleHelper = new HandleHelper(nodePreference);
 
         String idHandle = handleHelper.addIdHandle(privateUri);
@@ -691,10 +691,10 @@ public class GroupHelper {
                 resultSet = stmt.getResultSet();
                 if (resultSet.next()) {
                     int idNumeriqueGroup = resultSet.getInt(1);
-                    idgroup = "G" + ++idNumeriqueGroup;
+                    idgroup = "g" + ++idNumeriqueGroup;
                     // si le nouveau Id existe, on l'incrémente
                     while (isIdGroupExiste(conn, idgroup)) {
-                        idgroup = "G" + (++idNumeriqueGroup);
+                        idgroup = "g" + (++idNumeriqueGroup);
                     }
                 }
             } finally {
@@ -709,6 +709,35 @@ public class GroupHelper {
         return idgroup;
     }
 
+    /**
+     * Cette fonction permet de savoir si l'ID du group existe ou non
+     *
+     * @param ds
+     * @param idGroup
+     * @param idTheso
+     * @return boolean
+     */
+    public boolean isIdGroupExiste(HikariDataSource ds,
+            String idGroup, String idTheso) {
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select idgroup from concept_group where "
+                            + " LOWER(idgroup) = '" + idGroup.toLowerCase() + "'" 
+                            + " and idthesaurus = '" + idTheso + "'");
+                try(ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        if(resultSet.getRow() != 0) return true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while asking if id exist : " + idGroup, sqle);
+        }
+        return false;
+    }    
+    
     /**
      * Cette fonction permet de savoir si l'ID du group existe ou non
      *
@@ -728,7 +757,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select idgroup from concept_group where "
-                            + "idgroup = '" + idGroup + "'";
+                            + "LOWER(idgroup) = '" + idGroup.toLowerCase() + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
@@ -815,7 +844,7 @@ public class GroupHelper {
                 try {
                     String query = "UPDATE concept_group "
                             + "set id_ark='" + idArk + "'"
-                            + " WHERE idgroup ='" + idGroup + "'"
+                            + " WHERE LOWER(idgroup) ='" + idGroup.toLowerCase() + "'"
                             + " AND idthesaurus='" + idTheso + "'";
 
                     stmt.executeUpdate(query);
@@ -855,7 +884,7 @@ public class GroupHelper {
                 try {
                     String query = "UPDATE concept_group "
                             + "set id_handle='" + idHandle + "'"
-                            + " WHERE idgroup ='" + idGroup + "'"
+                            + " WHERE LOWER(idgroup) ='" + idGroup.toLowerCase() + "'"
                             + " AND idthesaurus='" + idTheso + "'";
 
                     stmt.executeUpdate(query);
@@ -897,7 +926,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "delete from concept_group_concept where "
-                            + "idgroup = '" + idGroup + "'"
+                            + "LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                             + " and idthesaurus = '" + idThesaurus + "'"
                             + " and idconcept = '" + idConcept + "'";
                     stmt.executeUpdate(query);
@@ -935,7 +964,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "delete from concept_group_concept where "
-                            + "idgroup = '" + idGroup + "'"
+                            + "LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                             + " and idthesaurus = '" + idTheso + "'";
                     stmt.executeUpdate(query);
                     status = true;
@@ -972,7 +1001,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "delete from concept_group_concept where "
-                            + " idgroup = '" + idGroup + "'"
+                            + " LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                             + " and idconcept = '" + idConcept + "'"
                             + " and idthesaurus = '" + idTheso + "'";
                     stmt.executeUpdate(query);
@@ -1100,19 +1129,19 @@ public class GroupHelper {
                 // Suppression des traductions
                 String query = "delete from concept_group_label where"
                         + " idthesaurus = '" + idThesaurus + "'"
-                        + " and idgroup  = '" + idGroup + "'";
+                        + " and LOWER(idgroup)  = '" + idGroup.toLowerCase() + "'";
                 stmt.executeUpdate(query);
 
                 // Suppression du groupe
                 query = "delete from concept_group where"
                         + " idthesaurus = '" + idThesaurus + "'"
-                        + " and idgroup  = '" + idGroup + "'";
+                        + " and LOWER(idgroup)  = '" + idGroup.toLowerCase() + "'";
                 stmt.executeUpdate(query);
 
                 // Suppression du sous groupe
                 query = "delete from relation_group where"
                         + " id_thesaurus = '" + idThesaurus + "'"
-                        + " and id_group2  = '" + idGroup + "'";
+                        + " and LOWER(id_group2)  = '" + idGroup.toLowerCase() + "'";
                 stmt.executeUpdate(query);
                 status = true;
 
@@ -1232,7 +1261,6 @@ public class GroupHelper {
         ResultSet resultSet = null;
         NodeGroup nodeConceptGroup = null;
         ConceptGroup conceptGroup = null;
-
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -1240,7 +1268,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "SELECT * from concept_group where "
-                            + " idgroup = '" + idConceptGroup + "'"
+                            + " LOWER(idgroup) = '" + idConceptGroup.toLowerCase() + "'"
                             + " and idthesaurus = '" + idThesaurus + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -1260,7 +1288,7 @@ public class GroupHelper {
                     }
                     if (conceptGroup != null) {
                         query = "SELECT * FROM concept_group_label WHERE"
-                                + " idgroup = '" + conceptGroup.getIdgroup() + "'"
+                                + " LOWER(idgroup) = '" + conceptGroup.getIdgroup().toLowerCase() + "'"
                                 + " AND idthesaurus = '" + idThesaurus + "'"
                                 + " AND lang = '" + idLang + "'";
 
@@ -1318,7 +1346,7 @@ public class GroupHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select idgroup, id_ark, id_handle, id_doi from concept_group"
-                        + " where idgroup = '" + idGroup + "'"
+                        + " where LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                         + " and idthesaurus = '" + idThesaurus + "'"
                 );
                 
@@ -1414,9 +1442,9 @@ public class GroupHelper {
                             + "  concept_group"
                             + " WHERE "
                             + "  concept_group.idthesaurus = relation_group.id_thesaurus AND"
-                            + "  concept_group.idgroup = relation_group.id_group2 AND"
+                            + "  LOWER(concept_group.idgroup) = LOWER(relation_group.id_group2) AND"
                             + "  concept_group.idthesaurus = '" + idThesaurus + "' AND "
-                            + "  relation_group.id_group1 = '" + idGRoup + "' AND "
+                            + "  LOWER(relation_group.id_group1) = '" + idGRoup.toLowerCase() + "' AND "
                             + "  relation_group.relation = 'sub'"
                             + "  order by notation ASC;";
                     stmt.executeQuery(query);
@@ -1467,11 +1495,11 @@ public class GroupHelper {
                         " WHERE" +
                         " concept_group.idthesaurus = relation_group.id_thesaurus " +
                         " AND" +
-                        " concept_group.idgroup = relation_group.id_group2 " +
+                        " LOWER(concept_group.idgroup) = LOWER(relation_group.id_group2) " +
                         " AND" +
                         " concept_group.idthesaurus = '" + idThesaurus + "'" +
                         " AND" +
-                        " relation_group.id_group1 = '" + idGroupParent + "'" +
+                        " LOWER(relation_group.id_group1) = '" + idGroupParent.toLowerCase() + "'" +
                         " AND" +
                         " relation_group.relation = 'sub'" +
                         " order by id_group2 ASC;"
@@ -1566,7 +1594,7 @@ public class GroupHelper {
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("Insert into relation_group (id_group1, id_thesaurus, relation, id_group2) values ('"
-                        + fatherNodeID + "','" + idThesaurus + "','sub','" + childNodeID + "')");
+                        + fatherNodeID.toLowerCase() + "','" + idThesaurus + "','sub','" + childNodeID.toLowerCase() + "')");
                 return true;
             }
         } catch (SQLException sqle) {
@@ -1591,7 +1619,7 @@ public class GroupHelper {
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("Insert into concept_group_concept (idgroup, idthesaurus, idconcept) values ('"
-                        + groupID + "','" + idThesaurus + "','" + conceptID + "')");
+                        + groupID.toLowerCase() + "','" + idThesaurus + "','" + conceptID + "')");
                 return true;
             }
         } catch (SQLException sqle) {
@@ -1626,7 +1654,7 @@ public class GroupHelper {
                     String query = "Insert into concept_group_concept "
                             + "(idgroup, idthesaurus, idconcept)"
                             + "values ("
-                            + "'" + groupID + "'"
+                            + "'" + groupID.toLowerCase() + "'"
                             + ",'" + idThesaurus + "'"
                             + ",'" + conceptID + "'"
                             + ")";
@@ -1747,11 +1775,11 @@ public class GroupHelper {
                     String query = "Insert into concept_group_historique "
                             + "(idgroup, id_ark, idthesaurus, idtypecode, idparentgroup, notation, idconcept, id_user)"
                             + "values ("
-                            + "'" + idConceptGroup + "'"
+                            + "'" + idConceptGroup.toLowerCase() + "'"
                             + ",'" + idArk + "'"
                             + ",'" + nodeConceptGroup.getConceptGroup().getIdthesaurus() + "'"
                             + ",'" + nodeConceptGroup.getConceptGroup().getIdtypecode() + "'"
-                            + ",'" + nodeConceptGroup.getConceptGroup().getIdparentgroup() + "'"
+                            + ",'" + nodeConceptGroup.getConceptGroup().getIdparentgroup().toLowerCase() + "'"
                             + ",'" + nodeConceptGroup.getConceptGroup().getNotation() + "'"
                             + ",'" + nodeConceptGroup.getConceptGroup().getIdconcept() + "'"
                             + ",'" + idUser + "'" + ")";
@@ -1947,7 +1975,8 @@ public class GroupHelper {
         // à faire
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate("Insert into concept_group(idgroup, id_ark, idthesaurus, idtypecode, notation, id_handle, created, modified) values ('" + idGroup + "','" + idArk + "','"
+                stmt.executeUpdate("Insert into concept_group(idgroup, id_ark, idthesaurus, idtypecode, notation, id_handle, created, modified) values ('" 
+                        + idGroup.toLowerCase() + "','" + idArk + "','"
                         + idThesaurus + "','" + typeCode + "','" + notation + "','" + idHandle + "'," + createdTemp + "," + modifiedTemp + ")");
                 return true;
             }
@@ -1986,7 +2015,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select lang, lexicalvalue from concept_group_label "
-                            + "where idgroup = '" + idGroup + "'"
+                            + "where LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                             + " and idthesaurus = '" + idThesaurus + "'"
                             + " and lang != '" + idLang + "'";
 
@@ -2090,7 +2119,7 @@ public class GroupHelper {
                 try {
 
                     String query = "select lang, lexicalvalue, created, modified from concept_group_label "
-                            + "where idgroup = '" + idGroup + "'"
+                            + "where LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                             + " and idthesaurus = '" + idThesaurus + "'";
 
                     resultSet = stmt.executeQuery(query);
@@ -2139,7 +2168,7 @@ public class GroupHelper {
                 stmt.executeUpdate("Insert into concept_group_label (lexicalvalue, created, modified,lang, idthesaurus, idgroup)"
                         + "values ('" + conceptGroupLabel.getLexicalvalue() + "',current_date,current_date,'"
                         + conceptGroupLabel.getLang() + "','" + conceptGroupLabel.getIdthesaurus() + "','"
-                        + conceptGroupLabel.getIdgroup() + "'" + ")");
+                        + conceptGroupLabel.getIdgroup().toLowerCase() + "'" + ")");
                 addGroupTraductionHistorique(ds, conceptGroupLabel, idUser);
 
                 return true;
@@ -2183,7 +2212,7 @@ public class GroupHelper {
                             + "'" + conceptGroupLabel.getLexicalvalue() + "'"
                             + ",'" + conceptGroupLabel.getLang() + "'"
                             + ",'" + conceptGroupLabel.getIdthesaurus() + "'"
-                            + ",'" + conceptGroupLabel.getIdgroup() + "'"
+                            + ",'" + conceptGroupLabel.getIdgroup().toLowerCase() + "'"
                             + ",'" + idUser + "'" + ")";
 
                     stmt.executeUpdate(query);
@@ -2228,7 +2257,7 @@ public class GroupHelper {
                 try {
 
                     String query = "select lexicalvalue, modified, idgroup, username from concept_group_label_historique, users "
-                            + "where id = '" + idGroup + "'"
+                            + "where LOWER(id) = '" + idGroup.toLowerCase() + "'"
                             + " and lang = '" + lang + "'"
                             + " and idthesaurus = '" + idThesaurus + "'"
                             + " and concept_group_label_historique.id_user=users.id_user"
@@ -2293,7 +2322,7 @@ public class GroupHelper {
                 try {
 
                     String query = "select lexicalvalue, modified, idgroup, username from concept_group_label_historique, users "
-                            + "where id = '" + idGroup + "'"
+                            + "where LOWER(id) = '" + idGroup.toLowerCase() + "'"
                             + " and lang = '" + lang + "'"
                             + " and idthesaurus = '" + idThesaurus + "'"
                             + " and concept_group_label_historique.id_user=users.id_user"
@@ -2346,7 +2375,7 @@ public class GroupHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_group1 from relation_group where id_thesaurus = '"
                             + idThesaurus + "'"
-                            + " and id_group2 = '" + idGRoup + "'"
+                            + " and LOWER(id_group2) = '" + idGRoup.toLowerCase() + "'"
                             + " and relation='sub'");
                 
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -2411,7 +2440,7 @@ public class GroupHelper {
                 try {
                     String query = "SELECT lexicalvalue FROM concept_group_label"
                             + " WHERE idthesaurus = '" + idThesaurus + "'"
-                            + " and idgroup = '" + idConceptGroup + "'"
+                            + " and LOWER(idgroup) = '" + idConceptGroup.toLowerCase() + "'"
                             + " and lang  = '" + idLang + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -2459,7 +2488,7 @@ public class GroupHelper {
                 try {
                     String query = "delete from concept_group_label where"
                             + " idthesaurus = '" + idThesaurus + "'"
-                            + " and idgroup = '" + idGroup + "'"
+                            + " and LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                             + " and lang = '" + idLang + "'";
                     stmt.executeUpdate(query);
                     status = true;
@@ -2666,7 +2695,7 @@ public class GroupHelper {
                             + " WHERE "
                             + " concept_group_label.idthesaurus = '" + idThesaurus + "'"
                             + " AND concept_group_label.lang = '" + idLang + "'"
-                            + " AND concept_group_label.idgroup != '" + idGroup + "'"
+                            + " AND LOWER(concept_group_label.idgroup) != '" + idGroup.toLowerCase() + "'"
                             + " AND unaccent_string(concept_group_label.lexicalvalue) ILIKE unaccent_string('" + text + "%')"
                             + " ORDER BY concept_group_label.lexicalvalue ASC LIMIT 20";
 
@@ -2877,7 +2906,7 @@ public class GroupHelper {
 
                 stmt.executeQuery("SELECT concept_group.idgroup, concept_group.id_ark, concept_group.id_handle, concept_group.id_doi "
                         + " FROM concept_group_concept, concept_group"
-                        + " WHERE concept_group.idgroup = concept_group_concept.idgroup"
+                        + " WHERE LOWER(concept_group.idgroup) = LOWER(concept_group_concept.idgroup)"
                         + " AND concept_group.idthesaurus = concept_group_concept.idthesaurus"
                         + " AND concept_group_concept.idconcept = '" + idConcept
                         + "' AND concept_group_concept.idthesaurus = '" + idThesaurus + "'");
@@ -2985,7 +3014,7 @@ public class GroupHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()){
                 stmt.executeQuery("select id_ark from concept_group where idthesaurus = '" + idThesaurus
-                        + "' and idgroup = '" + idGroup + "'");
+                        + "' and LOWER(idgroup) = '" + idGroup.toLowerCase() + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         ark = resultSet.getString("id_ark");
@@ -3012,7 +3041,7 @@ public class GroupHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()){
                 stmt.executeQuery("select modified from concept_group where idthesaurus = '" + idThesaurus
-                        + "' and idgroup = '" + idGroup + "'");
+                        + "' and LOWER(idgroup) = '" + idGroup.toLowerCase() + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         date = resultSet.getDate("modified");
@@ -3039,7 +3068,7 @@ public class GroupHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()){
                 stmt.executeQuery("select created from concept_group where idthesaurus = '" + idThesaurus
-                        + "' and idgroup = '" + idGroup + "'");
+                        + "' and LOWER(idgroup) = '" + idGroup.toLowerCase() + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         date = resultSet.getDate("created");
@@ -3075,7 +3104,7 @@ public class GroupHelper {
                 try {
                     String query = "select id_handle from concept_group where"
                             + " idthesaurus = '" + idThesaurus + "'"
-                            + " and idgroup = '" + idGroup + "'";
+                            + " and LOWER(idgroup) = '" + idGroup.toLowerCase() + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
@@ -3120,7 +3149,7 @@ public class GroupHelper {
                 try {
                     String query = "select notation from concept_group where"
                             + " idthesaurus = '" + idThesaurus + "'"
-                            + " and idgroup = '" + idGroup + "'";
+                            + " and LOWER(idgroup) = '" + idGroup.toLowerCase() + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 
@@ -3169,7 +3198,7 @@ public class GroupHelper {
                 try {
                     String query = "update concept_group set notation = '" + notation + "'"
                             + " where idthesaurus = '" + idThesaurus + "'"
-                            + " and idgroup = '" + idGroup + "'";
+                            + " and LOWER(idgroup) = '" + idGroup.toLowerCase() + "'";
                     stmt.executeUpdate(query);
                     status = true;
                     updateModifiedDate(ds, idGroup, idThesaurus);  
@@ -3349,7 +3378,7 @@ public class GroupHelper {
                             + " modified = current_date"
                             + " WHERE lang ='" + conceptGroupLabel.getLang() + "'"
                             + " AND idthesaurus='" + conceptGroupLabel.getIdthesaurus() + "'"
-                            + " AND idgroup ='" + conceptGroupLabel.getIdgroup() + "'";
+                            + " AND LOWER(idgroup) ='" + conceptGroupLabel.getIdgroup().toLowerCase() + "'";
 
                     stmt.executeUpdate(query);
                     status = true;
@@ -3392,7 +3421,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select idgroup from concept_group where "
-                            + " idgroup = '" + idGroup + "'"
+                            + " LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                             + " and idthesaurus = '" + idThesaurus + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -3483,7 +3512,7 @@ public class GroupHelper {
                 try {
                     String query = "SELECT idconcept FROM concept_group_concept"
                             + " WHERE idthesaurus='" + idThesaurus + "'"
-                            + " AND idgroup='" + idGroup + "'";
+                            + " AND LOWER(idgroup)='" + idGroup.toLowerCase() + "'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -3527,7 +3556,7 @@ public class GroupHelper {
                 try {
                     String query = "SELECT idgroup FROM concept_group_concept"
                             + " WHERE idthesaurus='" + idThesaurus + "'"
-                            + " AND idgroup='" + idGroup + "'";
+                            + " AND LOWER(idgroup)='" + idGroup.toLowerCase() + "'";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -3625,7 +3654,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select idgroup from concept_group_label where "
-                            + " idgroup ='" + idGroup + "'"
+                            + " LOWER(idgroup) ='" + idGroup.toLowerCase() + "'"
                             + " and lang = '" + idLang + "'"
                             + " and idthesaurus = '" + idThesaurus + "'";
                     stmt.executeQuery(query);
@@ -3713,7 +3742,7 @@ public class GroupHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "Select idtypecode from concept_group where idgroup = '" + idPere + "' AND idthesaurus = '" + idTheso + "'";
+                    String query = "Select idtypecode from concept_group where LOWER(idgroup) = '" + idPere.toLowerCase() + "' AND idthesaurus = '" + idTheso + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet.next()) {
@@ -3763,7 +3792,7 @@ public class GroupHelper {
                 try {
                     String query = "select count(*)  from relation_group"
                             + " where id_thesaurus ='" + idThesaurus + "'"
-                            + " and id_group1 ='" + idGroup + "'"
+                            + " and LOWER(id_group1) ='" + idGroup.toLowerCase() + "'"
                             + " and relation ='sub'";
 
                     stmt.executeQuery(query);
@@ -3804,8 +3833,8 @@ public class GroupHelper {
         stmt = conn.createStatement();
         try {
             String query = "UPDATE concept_group"
-                    + " SET idgroup = '" + newIdGroup + "'"
-                    + " WHERE idgroup = '" + idGroup + "'"
+                    + " SET idgroup = '" + newIdGroup.toLowerCase() + "'"
+                    + " WHERE LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                     + " AND idthesaurus = '" + idTheso + "'";
             stmt.execute(query);
 
@@ -3828,8 +3857,8 @@ public class GroupHelper {
         stmt = conn.createStatement();
         try {
             String query = "UPDATE concept_group_concept"
-                    + " SET idgroup = '" + newIdGroup + "'"
-                    + " WHERE idgroup = '" + idGroup + "'"
+                    + " SET idgroup = '" + newIdGroup.toLowerCase() + "'"
+                    + " WHERE LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                     + " AND idthesaurus = '" + idTheso + "'";
             stmt.execute(query);
 
@@ -3852,8 +3881,8 @@ public class GroupHelper {
         stmt = conn.createStatement();
         try {
             String query = "UPDATE concept_group_historique"
-                    + " SET idgroup = '" + newIdGroup + "'"
-                    + " WHERE idgroup = '" + idGroup + "'"
+                    + " SET idgroup = '" + newIdGroup.toLowerCase() + "'"
+                    + " WHERE LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                     + " AND idthesaurus = '" + idTheso + "'";
             stmt.execute(query);
 
@@ -3876,8 +3905,8 @@ public class GroupHelper {
         stmt = conn.createStatement();
         try {
             String query = "UPDATE concept_group_label"
-                    + " SET idgroup = '" + newIdGroup + "'"
-                    + " WHERE idgroup = '" + idGroup + "'"
+                    + " SET idgroup = '" + newIdGroup.toLowerCase() + "'"
+                    + " WHERE LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                     + " AND idthesaurus = '" + idTheso + "'";
             stmt.execute(query);
 
@@ -3900,8 +3929,8 @@ public class GroupHelper {
         stmt = conn.createStatement();
         try {
             String query = "UPDATE concept_group_label_historique"
-                    + " SET idgroup = '" + newIdGroup + "'"
-                    + " WHERE idgroup = '" + idGroup + "'"
+                    + " SET idgroup = '" + newIdGroup.toLowerCase() + "'"
+                    + " WHERE LOWER(idgroup) = '" + idGroup.toLowerCase() + "'"
                     + " AND idthesaurus = '" + idTheso + "'";
             stmt.execute(query);
 
@@ -3924,13 +3953,13 @@ public class GroupHelper {
         stmt = conn.createStatement();
         try {
             String query = "UPDATE relation_group"
-                    + " SET id_group1 = '" + newIdGroup + "'"
-                    + " WHERE id_group1 = '" + idGroup + "'"
+                    + " SET id_group1 = '" + newIdGroup.toLowerCase() + "'"
+                    + " WHERE LOWER(id_group1) = '" + idGroup.toLowerCase() + "'"
                     + " AND id_thesaurus = '" + idTheso + "'";
             query += ";";
             query += "UPDATE relation_group"
-                    + " SET id_group2 = '" + newIdGroup + "'"
-                    + " WHERE id_group2 = '" + idGroup + "'"
+                    + " SET id_group2 = '" + newIdGroup.toLowerCase() + "'"
+                    + " WHERE LOWER(id_group2) = '" + idGroup.toLowerCase() + "'"
                     + " AND id_thesaurus = '" + idTheso + "'";
             stmt.execute(query);
 
@@ -3939,123 +3968,7 @@ public class GroupHelper {
         }
     }
 
-    /**
-     * moveSubGroupToSubGroup
-     *
-     * méthode pour supprimer l'enregistrement de la bdd de donnée de la
-     * précédente liaison ancien groupe -> sous groupe de la table relation
-     * group pour ajouter la nouvelle relation nouveau groupe-> sous groupe de
-     * la table relation group
-     *
-     * pour forcer le type passer en paramètre à être enreggistré dans la table
-     * concept_group
-     *
-     * @param conn
-     * @param originNodeIdConcept
-     * @param targetNodeIdConcept
-     * @param BTOrigin
-     * @param type
-     * @param idThesaurus
-     * @param idUser
-     * @return
-     */
-    public boolean moveSubGroupToSubGroup(Connection conn, String originNodeIdConcept, String targetNodeIdConcept, String BTOrigin, String type, String idThesaurus, int idUser) {
-        //on supprime la branche du BT d'origine
-        String sql = "DELETE FROM relation_group WHERE id_group1=? AND id_thesaurus=? AND relation=? AND id_group2=?";
-        try ( PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, BTOrigin);
-            stmt.setString(2, idThesaurus);
-            stmt.setString(3, "sub");
-            stmt.setString(4, originNodeIdConcept);
-            try {
-                stmt.execute();
-            } finally {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            log.error("error while deleting in table relation_group for group1 :" + BTOrigin + " group 2" + originNodeIdConcept, e);
-            return false;
 
-        }
-        try ( PreparedStatement stmt = conn.prepareCall("INSERT INTO relation_group(id_group1,id_thesaurus,relation,id_group2) VALUES (?,?,?,?)")) {
-            stmt.setString(1, targetNodeIdConcept);
-            stmt.setString(2, idThesaurus);
-            stmt.setString(3, "sub");
-            stmt.setString(4, originNodeIdConcept);
-            try {
-                stmt.execute();
-            } finally {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            log.error("error while insert into table relation group for id_group 1 :" + targetNodeIdConcept + " id_group2" + originNodeIdConcept, e);
-            return false;
-        }
-
-        //finalement on force le type dans la table concept_group
-        String typeCode = "G";
-        switch (type) {
-            case ("collection"):
-            case ("subCollection"):
-                typeCode = "C";
-                break;
-            case ("group"):
-            case ("subGroup"):
-                typeCode = "G";
-                break;
-            case ("theme"):
-            case ("subTheme"):
-                typeCode = "T";
-                break;
-            case ("microTheso"):
-            case ("subMicroTheso"):
-                typeCode = "MT";
-                break;
-        }
-        try ( PreparedStatement stmt = conn.prepareCall("UPDATE concept_group SET idtypecode=? WHERE idgroup=? AND idthesaurus=?")) {
-            stmt.setString(1, typeCode);
-            stmt.setString(2, originNodeIdConcept);
-            stmt.setString(3, idThesaurus);
-        } catch (SQLException e) {
-            log.error("error while update concept_group for id group" + originNodeIdConcept, e);
-            return false;
-        }
-        return true;
-    }
-
-    public String getSuffixFromNode(HikariDataSource poolConnexion, String idThesaurus, String idGroup) {
-
-        String ret = "";
-        try ( Connection conn = poolConnexion.getConnection()) {
-            try ( PreparedStatement stmt = conn.prepareStatement("SELECT numerotation FROM concept_group WHERE idthesaurus=? and idgroup=? ")) {
-                stmt.setString(1, idThesaurus);
-                stmt.setString(2, idGroup);
-                try ( ResultSet rs = stmt.executeQuery()) {
-                    rs.next();
-                    int tmp = rs.getInt("numerotation");
-                    ret = "" + tmp;
-                }
-            }
-        } catch (SQLException e) {
-            log.error("error while getting stuff from " + idGroup + " theso " + idThesaurus, e);
-        }
-        return ret;
-    }
-
-    public void saveSuffixFromNode(HikariDataSource poolConnexion, String idThesaurus, String idConcept, String suffix) {
-
-        try ( Connection conn = poolConnexion.getConnection()) {
-            try ( PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE concept_group SET numerotation=? WHERE idthesaurus=? AND idgroup=? ")) {
-                stmt.setInt(1, Integer.parseInt(suffix));
-                stmt.setString(2, idThesaurus);
-                stmt.setString(3, idConcept);
-                stmt.execute();
-            }
-        } catch (SQLException e) {
-            log.error("error while updating table concept group for thsaurus " + idThesaurus + " idconcept " + idConcept, e);
-        }
-    }
 
     public NodePreference getNodePreference() {
         return nodePreference;
