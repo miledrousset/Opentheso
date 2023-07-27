@@ -1170,8 +1170,7 @@ public class GroupHelper {
         ArrayList<String> tabIdConceptGroup = getListIdOfRootGroup(ds, idTheso);
 
         for (String idGroup : tabIdConceptGroup) {
-            NodeGroup nodeConceptGroup;
-            nodeConceptGroup = getThisConceptGroup(ds, idGroup, idTheso, idLang);
+            NodeGroup nodeConceptGroup = getThisConceptGroup(ds, idGroup, idTheso, idLang);
             if (nodeConceptGroup == null) {
                 return null;
             }
@@ -1588,6 +1587,8 @@ public class GroupHelper {
      * @param childNodeID
      * @param idThesaurus
      * @return
+     * Insert into relation_group (id_group1, id_thesaurus, relation, id_group2) values ('domain1','th42','sub','mt1.05')
+     * Insert into concept_group_concept (idgroup, idthesaurus, idconcept) values ('mt1.10','th42','concept10')
      */
     public boolean addSubGroup(HikariDataSource ds, String fatherNodeID, String childNodeID, String idThesaurus) {
 

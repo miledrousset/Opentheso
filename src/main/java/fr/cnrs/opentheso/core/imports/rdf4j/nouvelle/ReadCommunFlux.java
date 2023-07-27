@@ -18,7 +18,7 @@ public class ReadCommunFlux extends AbstractRDFHandler {
     private final static String IMAGE_TAG = "http://xmlns.com/foaf/0.1/Image";
 
     private SKOSXmlDocument skosXmlDocument;
-    private Resource subject;
+    private Resource subject, subjectTmp;
     private IRI predicate;
     private Value value;
     private boolean isConceptScheme;
@@ -45,8 +45,8 @@ public class ReadCommunFlux extends AbstractRDFHandler {
         subject = st.getSubject();
 
         // On teste si on est au niveau du début/fin d'une balise de type "rdf:Description"
-        if (RESOURCE_TAG.equalsIgnoreCase(predicate.stringValue())) {
-
+        if ((subjectTmp == null || (subjectTmp != null && !subject.stringValue().equals(subjectTmp.stringValue()))) && RESOURCE_TAG.equalsIgnoreCase(predicate.stringValue())) {
+        //if (RESOURCE_TAG.equalsIgnoreCase(predicate.stringValue())) {
             // Ajouter l'objet SKOSResource dans SKOSXmlDocument
             // Ce code est executé à la fin de chaque balise "rdf:Description"
             addNewResources();
@@ -56,16 +56,21 @@ public class ReadCommunFlux extends AbstractRDFHandler {
             if (!isConceptScheme && !isFacet && !isConcept && !isCollection && !isImage) {
                 skosResource = new SKOSResource();
                 skosResource.setUri(subject.stringValue());
-                if (CONCEPT_SCHEME_TAG.equals(value.stringValue())) {
-                    isConceptScheme = true;
-                } else if (COLLECTION_TAG.equals(value.stringValue())) {
-                    isCollection = true;
-                } else if (FACET_TAG.equals(value.stringValue())) {
-                    isFacet = true;
-                } else if (CONCEPT_TAG.equals(value.stringValue())) {
-                    isConcept = true;
-                } else if (IMAGE_TAG.equals(value.stringValue())) {
-                    isImage = true;
+                switch(value.stringValue()) {
+                    case CONCEPT_SCHEME_TAG:
+                        isConceptScheme = true;
+                        break;
+                    case COLLECTION_TAG:
+                        isCollection = true;
+                        break;
+                    case FACET_TAG:
+                        isFacet = true;
+                        break;
+                    case CONCEPT_TAG:
+                        isConcept = true;
+                        break;
+                    case IMAGE_TAG:
+                        isImage = true;
                 }
             }
         }
@@ -93,6 +98,7 @@ public class ReadCommunFlux extends AbstractRDFHandler {
             // Pour traiter les lignes d'un bloc qui ne contiennent pas une langue, le bloc peut être de plusieurs type
             conceptReader.readConcept(skosXmlDocument, skosResource, predicate, value, literal);
         }
+        subjectTmp = subject;
     }
 
     @Override
