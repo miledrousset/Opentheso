@@ -56,7 +56,7 @@
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
             <h:panelGroup style="margin-top: 30px; margin-right: 10px" id="notificationNewVersion"  >
-                <p:commandLink onclick="PF('newVersionNotificationPanel').show()" rendered="#{newVersionBean.isNewVersionExist()}"
+                <p:commandLink onclick="PF('newVersionNotificationPanel').show()" rendered="#{newVersionBean.newVersionFound()}"
                                update="newVersionNotificationId">
                     <p:avatar icon="pi pi-star" shape="circle" styleClass="mr-2"
                               style="background-color:#9c27b0; color:#fff; width: 25px; height: 25px; margin-top: -6px;" />

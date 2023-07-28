@@ -282,7 +282,7 @@ public class SynonymBean implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////
         
@@ -409,7 +409,7 @@ public class SynonymBean implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
 
@@ -624,7 +624,7 @@ public class SynonymBean implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
 
@@ -681,7 +681,7 @@ public class SynonymBean implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
 

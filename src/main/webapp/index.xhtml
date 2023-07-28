@@ -35,7 +35,7 @@
 
     <h:body id="page-top" onload="initMenu();" style="overflow-x: hidden;">
         
-        <p:sidebar widgetVar="newVersionNotificationPanel" position="top">
+        <p:sidebar widgetVar="newVersionNotificationPanel" position="top" rendered="#{newVersionBean.newVersionFound()}">
             <h:form id="newVersionNotificationId">
                 <table style="width: 100%">
                     <tr style="width: 100%">

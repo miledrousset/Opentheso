@@ -1,4 +1,4 @@
-SET ROLE = opentheso;
+--SET ROLE = opentheso;
 SET schema 'public';
 
 

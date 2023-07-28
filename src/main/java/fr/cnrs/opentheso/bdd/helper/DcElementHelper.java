@@ -27,7 +27,7 @@ public class DcElementHelper {
         ArrayList<DcElement> dcElements = null;
         try(Connection conn = ds.getConnection()){
             try(Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select name, value, language from concept_dcterms "
+                stmt.executeQuery("select name, value, language, data_type from concept_dcterms "
                     + " where id_concept = '" + idConcept + "'"
                     + " and id_thesaurus = '" + idTheso + "'");
                 try(ResultSet resultSet = stmt.getResultSet()){
@@ -37,6 +37,7 @@ public class DcElementHelper {
                         dcElement.setName(resultSet.getString("name"));
                         dcElement.setValue(resultSet.getString("value"));
                         dcElement.setLanguage(resultSet.getString("language"));
+                        dcElement.setType(resultSet.getString("data_type"));
                         dcElements.add(dcElement);
                     }
                 }
@@ -52,13 +53,14 @@ public class DcElementHelper {
         try(Connection conn = ds.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("insert into concept_dcterms "
-                    + " (id_concept, id_thesaurus, name, value, language) "
+                    + " (id_concept, id_thesaurus, name, value, language, data_type) "
                     + " values (" 
                     + "'" + idConcept + "',"
                     + "'" + idTheso + "',"
                     + "'" + dcElement.getName() + "',"
                     + "'" + dcElement.getValue() + "',"
-                    + (dcElement.getLanguage() != null ?  "'" + dcElement.getLanguage() + "'" : null)      
+                    + (dcElement.getLanguage() != null ?  "'" + dcElement.getLanguage() + "'" : null)  + "," 
+                    + (dcElement.getType()!= null ?  "'" + dcElement.getType() + "'" : null)  
                     + ") ON CONFLICT DO NOTHING"
                 );
                 return true;
@@ -74,12 +76,13 @@ public class DcElementHelper {
         try(Connection conn = ds.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeQuery("insert into thesaurus_dcterms "
-                    + " (id_thesaurus, name, value, language) "
+                    + " (id_thesaurus, name, value, language, data_type) "
                     + " values (" 
                     + "'" + idTheso + "',"
                     + "'" + dcElement.getName() + "',"
                     + "'" + dcElement.getValue() + "',"
-                    + (dcElement.getLanguage() != null ?  "'" + dcElement.getLanguage() + "'" : null)      
+                    + (dcElement.getLanguage() != null ?  "'" + dcElement.getLanguage() + "'" : null) + ","
+                    + (dcElement.getType()!= null ?  "'" + dcElement.getType()+ "'" : null)                            
                     + ") ON CONFLICT DO NOTHING RETURNING id"
                 );
                 try(ResultSet resultSet = stmt.getResultSet()){
@@ -102,7 +105,8 @@ public class DcElementHelper {
                     + " set "
                     + " name = '" + dcElement.getName() + "'"
                     + ", value = '" + dcElement.getValue() + "'"
-                    + ", language= " + (dcElement.getLanguage() != null ?  "'" + dcElement.getLanguage() + "'" : null)  
+                    + ", language= " + (dcElement.getLanguage() != null ?  "'" + dcElement.getLanguage() + "'" : null) 
+                    + ", data_type= " + (dcElement.getType()!= null ?  "'" + dcElement.getType()+ "'" : null) 
                     + " where " 
                     + " id= " + dcElement.getId()
                     + " and id_thesaurus = '" + idTheso + "'"
@@ -135,7 +139,7 @@ public class DcElementHelper {
         List<DcElement> dcElements = null;
         try(Connection conn = ds.getConnection()){
             try(Statement stmt = conn.createStatement()){
-                stmt.executeQuery("select id, name, value, language from thesaurus_dcterms "
+                stmt.executeQuery("select id, name, value, language, data_type from thesaurus_dcterms "
                     + " where "
                     + " id_thesaurus = '" + idTheso + "'");
                 try(ResultSet resultSet = stmt.getResultSet()){
@@ -146,6 +150,7 @@ public class DcElementHelper {
                         dcElement.setName(resultSet.getString("name"));
                         dcElement.setValue(resultSet.getString("value"));
                         dcElement.setLanguage(resultSet.getString("language"));
+                        dcElement.setType(resultSet.getString("data_type"));
                         dcElements.add(dcElement);
                     }
                 }

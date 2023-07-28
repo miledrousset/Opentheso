@@ -178,7 +178,7 @@ public class RelatedBean implements Serializable {
                 ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
@@ -230,7 +230,7 @@ public class RelatedBean implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
@@ -324,7 +324,7 @@ public class RelatedBean implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////       
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
@@ -397,7 +397,7 @@ public class RelatedBean implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////          
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");

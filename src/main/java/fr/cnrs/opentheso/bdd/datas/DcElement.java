@@ -17,15 +17,17 @@ public class DcElement {
     protected String name;
     protected String value;
     protected String language;
+    private String type;
 
     public DcElement() {
     }
 
     
-    public DcElement(String name, String value, String language) {
+    public DcElement(String name, String value, String language, String type) {
         this.id = -1;
         this.language = language;
         this.name = name;
         this.value = value;
+        this.type = type;
     }
 }

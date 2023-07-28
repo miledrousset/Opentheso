@@ -145,5 +145,7 @@ public class NewVersionService implements Serializable {
             return "";
         }
     }
-
+    public boolean newVersionFound(){
+        return newVersionExist;
+    }
 }

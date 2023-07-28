@@ -288,7 +288,7 @@ public class EditConcept implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////          
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
@@ -433,7 +433,7 @@ public class EditConcept implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////
         conceptView.getConcept(idTheso, conceptView.getNodeConcept().getConcept().getIdConcept(), idLang);
@@ -603,7 +603,7 @@ public class EditConcept implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConcept, selectedTheso.getCurrentIdTheso());
         ///////////////        
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
@@ -657,7 +657,7 @@ public class EditConcept implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConcept, selectedTheso.getCurrentIdTheso());
         ///////////////        
         conceptView.getConceptForTree(idTheso, idConcept, conceptView.getSelectedLang());
@@ -705,7 +705,7 @@ public class EditConcept implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConceptDeprecated, selectedTheso.getCurrentIdTheso());
         ///////////////        
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());
@@ -753,7 +753,7 @@ public class EditConcept implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConceptDeprecated, selectedTheso.getCurrentIdTheso());
         ///////////////        
         conceptView.getConceptForTree(idTheso, idConceptDeprecated, conceptView.getSelectedLang());

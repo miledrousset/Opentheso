@@ -122,7 +122,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////          
 

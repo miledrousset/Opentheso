@@ -25,6 +25,7 @@ import org.primefaces.event.RowEditEvent;
 public class ThesaurusMetadataAdd implements Serializable{
     private List<DcElement> dcElements;
     private List<String> dcmiResource; 
+    private List<String> dcmiTypes;     
     private String idTheso;
     
     @Inject private Connect connect;
@@ -35,8 +36,18 @@ public class ThesaurusMetadataAdd implements Serializable{
         if(dcElements == null || dcElements.isEmpty())
             dcElements = new ArrayList<>();
         dcmiResource = new DCMIResource().getAllResources();
+        dcmiTypes = new DCMIResource().getAllTypes();        
         this.idTheso = idTheso1;
     }
+    
+    public void initlanguage(DcElement dcElement){
+        if(!StringUtils.isEmpty(dcElement.getType()))
+            dcElement.setLanguage("");
+    }
+    public void initType(DcElement dcElement){
+        if(!StringUtils.isEmpty(dcElement.getLanguage()))
+            dcElement.setType("");
+    }    
 
     public List<DcElement> getDcElements() {
         return dcElements;
@@ -51,6 +62,14 @@ public class ThesaurusMetadataAdd implements Serializable{
 
     public void setDcmiResource(List<String> dcmiResource) {
         this.dcmiResource = dcmiResource;
+    }
+
+    public List<String> getDcmiTypes() {
+        return dcmiTypes;
+    }
+
+    public void setDcmiTypes(List<String> dcmiTypes) {
+        this.dcmiTypes = dcmiTypes;
     }
 
     public void deleteThesoMetadata(DcElement dcElement){
@@ -88,7 +107,7 @@ public class ThesaurusMetadataAdd implements Serializable{
     }
 
     public void onAddNew() {
-        DcElement dcElement = new DcElement("", "", "");
+        DcElement dcElement = new DcElement("", "", "","");
         dcElements.add(dcElement);
     }    
 

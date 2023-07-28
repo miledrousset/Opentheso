@@ -24,10 +24,21 @@ public class DCMIResource {
     private String relation;
     private String coverage;
     private String rights;
+    private String rightsHolder;
+    
+    private String conformsTo;
+    private String created;  
+    private String modified;    
+    private String isRequiredBy ;
+    private String license;
+    private String replaces;
+    private String alternative;    
 
     // Constructeur par défaut
     public DCMIResource() {
     }
+    
+    /// quelques éléments du Dcterms  
     public static final String TITLE = "title";
     public static final String CREATOR = "creator";
     public static final String CONTRIBUTOR = "contributor";    
@@ -44,7 +55,21 @@ public class DCMIResource {
     public static final String RELATION = "relation";
     public static final String COVERAGE = "coverage";
     public static final String RIGHTS = "rights";     
+    public static final String RIGHTS_HOLDER = "rightsHolder";      
     
+    public static final String CONFORMS_TO = "conformsTo";    
+    public static final String CREATED = "created";     
+    public static final String MODIFIED = "modified";      
+    public static final String IS_REQUIRED_BY = "isRequiredBy";    
+    public static final String LICENSE = "license";      
+    public static final String REPLACES = "replaces";     
+    public static final String ALTERNATIVE = "alternative";      
+    
+    /// Les types de données
+    public static final String TYPE_DATE = "date";
+    public static final String TYPE_LANGUE = "langString";
+    public static final String TYPE_STRING = "string";    
+    public static final String TYPE_RESOURCE = "resource";     
     
     public List<String> getAllResources(){
         List allResources = new ArrayList();
@@ -61,8 +86,26 @@ public class DCMIResource {
         allResources.add("language");
         allResources.add("relation");      
         allResources.add("coverage");
-        allResources.add("rights");         
+        allResources.add("rights");  
+        allResources.add("rightsHolder");        
+        
+        allResources.add("conformsTo");     
+        allResources.add("created");    
+        allResources.add("modified");         
+        allResources.add("isRequiredBy");    
+        allResources.add("license"); 
+        allResources.add("replaces");  
+        allResources.add("alternative");        
         return allResources;
     }
+    
+    public List<String> getAllTypes(){
+        List allTypes = new ArrayList();
+        allTypes.add("date");   
+//        allTypes.add("langString"); 
+        allTypes.add("string"); 
+        allTypes.add("resource");     
+        return allTypes;
+    }    
     
 }

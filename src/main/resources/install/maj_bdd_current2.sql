@@ -17,7 +17,7 @@
 
 
 --- fonctions à appliquer en premier et à part depuis la version 4.4.1
-SET ROLE = opentheso;
+--SET ROLE = opentheso;
 SET schema 'public';
 ----------------------------------------------------------------------------
 -- ne pas modifier, ces sont les fonctions de base

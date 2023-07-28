@@ -99,7 +99,7 @@ public class MoveConcept implements Serializable {
             ///// insert DcTermsData to add contributor
             DcElementHelper dcElmentHelper = new DcElementHelper();
             dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     idConcept, idThesoTo);
             /////////////// 
         }
@@ -138,7 +138,7 @@ public class MoveConcept implements Serializable {
             ///// insert DcTermsData to add contributor
             DcElementHelper dcElmentHelper = new DcElementHelper();
             dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     idConcept, idThesoTo);
             ///////////////            
             

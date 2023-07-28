@@ -126,7 +126,7 @@ public class ExternalResources implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image ajoutée avec succès");
@@ -186,7 +186,7 @@ public class ExternalResources implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image_URI modifiée avec succès");
@@ -237,7 +237,7 @@ public class ExternalResources implements Serializable {
         ///// insert DcTermsData to add contributor
         DcElementHelper dcElmentHelper = new DcElementHelper();                
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image supprimée avec succès");

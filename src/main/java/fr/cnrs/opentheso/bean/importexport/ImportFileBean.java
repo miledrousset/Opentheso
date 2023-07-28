@@ -1332,7 +1332,7 @@ public class ImportFileBean implements Serializable {
 
                     ///// insert DcTermsData to add contributor
                     dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                            new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                            new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                             conceptObject.getIdConcept(), idTheso);
                     ///////////////                     
                 }
@@ -1749,7 +1749,7 @@ public class ImportFileBean implements Serializable {
 
                 ///// insert DcTermsData to add contributor
                 dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                        new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                        new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                         idConcept, selectedTheso.getCurrentIdTheso());
                 ///////////////                  
                 total++;
@@ -1857,7 +1857,7 @@ public class ImportFileBean implements Serializable {
                             currentUser.getNodeUser().getIdUser());
                     ///// insert DcTermsData to add contributor
                     dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                            new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                            new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                             idConcept, idTheso);
                     ///////////////                    
                 }

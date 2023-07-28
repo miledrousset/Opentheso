@@ -85,7 +85,7 @@ public class ProcessCandidateBean implements Serializable {
 
         ///// insert DcTermsData to add contributor
         new DcElementHelper().addDcElementConcept(connect.getPoolConnexion(),
-                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 selectedCandidate.getIdConcepte(), selectedCandidate.getIdThesaurus());
         ///////////////             
         
@@ -203,7 +203,7 @@ public class ProcessCandidateBean implements Serializable {
             
             ///// insert DcTermsData to add contributor
             dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
-                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null),
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
             ///////////////              
             
