@@ -6,26 +6,33 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.io.Serializable;
+import lombok.Setter;
 
 
-@Data
+@Setter
+@Getter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_group_label")
-public class UserGroupLabel implements Serializable {
+@Table(name = "project_description")
+public class ProjectDescription {
 
     @Id
-    @Column(name = "id_group")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
-    @Column(name = "label_group")
-    private String label;
+    @Column(name = "id_group")
+    private String idGroup;
+
+    @Column(name = "lang")
+    private String lang;
+
+    @Column(name = "description")
+    private String description;
 
 }

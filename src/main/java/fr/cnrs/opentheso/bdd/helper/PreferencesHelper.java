@@ -51,19 +51,15 @@ public class PreferencesHelper {
      */
     public boolean setCodeGoogleAnalytics(HikariDataSource ds, String codeJavaScript) {
 
-        boolean status = false;
-        StringPlus stringPlus = new StringPlus();
-        codeJavaScript = stringPlus.addQuotes(codeJavaScript);
-
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("update info set googleanalytics = '" + codeJavaScript + "'");
-                status = true;
+                stmt.executeUpdate("update info set googleanalytics = '" + new StringPlus().addQuotes(codeJavaScript) + "'");
+                return true;
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return status;
+        return false;
     }
 
     /**

@@ -8,7 +8,7 @@
               widgetVar="setGps" width="450" showEffect="fade" modal="true" resizable="false" 
               position="top" style="margin-top: 30px" >
         <h:form>
-            
+
             <p:defaultCommand target="addGpsBtn" />
             
             <div class="row">
@@ -23,7 +23,7 @@
                     <h:outputText value="Latitude : " /> 
                 </div>
                 <div class="col-7">
-                    <p:inputText value="#{gpsBean.nodeGps.latitude}" style="width: 100%;"/>
+                    <p:inputText value="#{gpsBean.gpsSelected.latitude}" style="width: 100%;"/>
                 </div>
             </div>
 
@@ -32,7 +32,7 @@
                     <h:outputText value="Longitude : " /> 
                 </div>
                 <div class="col-7">
-                    <p:inputText value="#{gpsBean.nodeGps.longitude}" style="width: 100%;"/>
+                    <p:inputText value="#{gpsBean.gpsSelected.longitude}" style="width: 100%;"/>
                 </div>
             </div>
 
@@ -46,7 +46,7 @@
                                  update="containerIndex:formRightTab messageIndex"
                                  ajax="true" process="@form" icon="pi pi-check" 
                                  styleClass="ui-button-success" oncomplete="PF('setGps').hide();"
-                                 actionListener="#{gpsBean.updateCoordinateGps()}" />
+                                 actionListener="#{gpsBean.addNewCoordinateGps()}" />
             </div>
         </h:form>
     </p:dialog>     

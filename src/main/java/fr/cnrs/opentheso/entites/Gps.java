@@ -6,26 +6,33 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.io.Serializable;
+import lombok.Setter;
 
 
-@Data
+@Setter
+@Getter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_group_label")
-public class UserGroupLabel implements Serializable {
+@Table(name = "gps")
+public class Gps {
 
     @Id
-    @Column(name = "id_group")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "label_group")
-    private String label;
+    @Column(name = "id_concept")
+    private String idConcept;
 
+    @Column(name = "id_theso")
+    private String idTheso;
+
+    private Double latitude;
+
+    private Double longitude;
 }

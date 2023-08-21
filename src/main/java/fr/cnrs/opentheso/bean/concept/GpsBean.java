@@ -5,159 +5,108 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.GpsHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.entites.Gps;
+import fr.cnrs.opentheso.repositories.GpsRepository;
+
 import java.io.Serializable;
-import javax.annotation.PreDestroy;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import lombok.Data;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
+@SessionScoped
 @Named(value = "gpsBean")
-//@javax.enterprise.context.RequestScoped
-//// on ne peut pas relancer plusieurs actions avec cette déclaration
-
-@javax.enterprise.context.SessionScoped
 public class GpsBean implements Serializable {
+
     @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
     @Inject private ConceptView conceptView;
-    @Inject private SelectedTheso selectedTheso;    
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private GpsRepository gpsRepository;
 
-    private NodeGps nodeGps;
+    private Gps gpsSelected;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
-    public void clear(){
-        nodeGps = null;
-    }   
-    
-    public GpsBean() {
-    }
 
-    public void reset() {
-        nodeGps = conceptView.getNodeConcept().getNodeGps();
-        if(nodeGps == null) {
-            nodeGps = new NodeGps();
-        }
-    }
+    public void addNewCoordinateGps() {
 
-    public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour modifier Concept !");
+        gpsRepository.saveNewGps(gpsSelected);
+
+        conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso()));
+
+        conceptView.createMap(conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Coordonnée GPS ajoutée avec succèe");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     /**
      * permet de mettre à jour les coordonnées GPS
      */
-    public void updateCoordinateGps() {
+    public void updateCoordinateGps(Gps gps) {
 
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();;
+        gpsRepository.saveNewGps(Gps.builder()
+                .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
+                .idTheso(selectedTheso.getCurrentIdTheso())
+                .latitude(gps.getLatitude())
+                .longitude(gps.getLongitude())
+                .build());
 
-        GpsHelper gpsHelper = new GpsHelper();
-        
-        if(nodeGps == null) return;
-        
-        if(!gpsHelper.insertCoordonees(
-                connect.getPoolConnexion(),
+        conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeGps.getLatitude(),
-                nodeGps.getLongitude())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", " l'insertion des coordonnées GPS a échouée!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-            return;
-        }
-       
-        conceptView.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                conceptView.getSelectedLang());
+                selectedTheso.getCurrentIdTheso()));
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Coordonnées GPS modifiés avec succès");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Coordonnée GPS supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formLeftTab");
-            pf.ajax().update("containerIndex:formRightTab");
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         }
-        reset();
     }
-
 
 
     /**
      * permet de supprimer les coordonnées GPS d'un concept
      */
-    public void deleteCoordinateGps() {
+    public void deleteCoordinateGps(Gps gps) {
 
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
+        if(gps == null) return;
 
-        GpsHelper gpsHelper = new GpsHelper();
-        
-        if(nodeGps == null) return;
-        
-        if(!gpsHelper.deleteGpsCoordinate(
-                connect.getPoolConnexion(),
+        gpsRepository.removeGps(gps);
+
+        conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", " la suppression des coordonnées GPS a échouée!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-            return;
-        }
-       
-        conceptView.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                conceptView.getSelectedLang());
+                selectedTheso.getCurrentIdTheso()));
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "suppression des coordonnées GPS réussie");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Suppression des coordonnées GPS réussie");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formLeftTab");
-            pf.ajax().update("containerIndex:formRightTab");
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab");
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         }
-        reset();
-    }
-    
-    
-    
-    public NodeGps getNodeGps() {
-        if(nodeGps == null) {
-            nodeGps = new NodeGps();
-        }
-        return nodeGps;
     }
 
-    public void setNodeGps(NodeGps nodeGps) {
-        this.nodeGps = nodeGps;
+    public void init() {
+        gpsSelected = new Gps();
+        gpsSelected.setIdConcept(conceptView.getNodeConcept().getConcept().getIdConcept());
+        gpsSelected.setIdTheso(selectedTheso.getCurrentIdTheso());
     }
 
-
-    
-    
 }
