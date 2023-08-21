@@ -820,6 +820,8 @@ public class SearchBean implements Serializable {
     }
 
     public void onSelectConcept(String idTheso, String idConcept, String idLang) {
+
+        propositionBean.setNewProposition(false);
         roleOnThesoBean.initNodePref(idTheso);
         selectedTheso.setSelectedIdTheso(idTheso);
         selectedTheso.setSelectedLang(idLang);

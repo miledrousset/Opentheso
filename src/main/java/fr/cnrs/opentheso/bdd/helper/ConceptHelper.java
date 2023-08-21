@@ -5812,9 +5812,6 @@ public class ConceptHelper {
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         nodeConcept.setNodeAlignments(alignmentHelper.getAllAlignmentOfConcept(ds, idConcept, idThesaurus));
 
-        GpsHelper gpsHelper = new GpsHelper();
-        nodeConcept.setNodeGps(gpsHelper.getCoordinate(ds, idConcept, idThesaurus));
-
         ImagesHelper imagesHelper = new ImagesHelper();
         nodeConcept.setNodeimages(imagesHelper.getExternalImages(ds, idConcept, idThesaurus));
 

@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -28,7 +27,6 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
-@Data
 @SessionScoped
 @Named(value = "viewEditorThesoHomeBean")
 public class ViewEditorThesoHomeBean implements Serializable {
@@ -161,5 +159,70 @@ public class ViewEditorThesoHomeBean implements Serializable {
         } 
         isViewPlainText = status;
     }
+
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public LanguageBean getLanguageBean() {
+        return languageBean;
+    }
+
+    public void setLanguageBean(LanguageBean languageBean) {
+        this.languageBean = languageBean;
+    }
+
+    public boolean isViewPlainText() {
+        return isViewPlainText;
+    }
+
+    public void setIsViewPlainText(boolean isViewPlainText) {
+        this.isViewPlainText = isViewPlainText;
+    }
+
+    public boolean isInEditing() {
+        return isInEditing;
+    }
+
+    public void setIsInEditing(boolean isInEditing) {
+        this.isInEditing = isInEditing;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getColorOfHtmlButton() {
+        return colorOfHtmlButton;
+    }
+
+    public void setColorOfHtmlButton(String colorOfHtmlButton) {
+        this.colorOfHtmlButton = colorOfHtmlButton;
+    }
+
+    public String getColorOfTextButton() {
+        return colorOfTextButton;
+    }
+
+    public void setColorOfTextButton(String colorOfTextButton) {
+        this.colorOfTextButton = colorOfTextButton;
+    }
+    
     
 }

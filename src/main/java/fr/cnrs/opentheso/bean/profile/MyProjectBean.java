@@ -167,13 +167,8 @@ public class MyProjectBean implements Serializable {
         }
         
         int idGroup = Integer.parseInt(selectedProject);
-
-        UserHelper userHelper = new UserHelper();
-        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            //      return selectAllUsers();
-        }
         
-        listeThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idGroup,
+        listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(), idGroup,
                 connect.getWorkLanguage());
     } 
     

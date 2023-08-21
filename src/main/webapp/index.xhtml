@@ -170,12 +170,16 @@
                             </div>
 
                             <h:panelGroup id="contentConcept">
-                                <h:panelGroup rendered="#{!indexSetting.isSelectedTheso}" >
-                                    <ui:include src="thesaurus/main_thesaurus.xhtml" />
+                                <h:panelGroup rendered="#{indexSetting.projectSelected}">
+                                    <ui:include src="thesaurus/project.xhtml" />
                                 </h:panelGroup>
-
-                                <h:panelGroup rendered="#{indexSetting.isSelectedTheso}" >
-                                    <ui:include src="thesaurus/details_thesaurus.xhtml" />
+                                <h:panelGroup rendered="#{!indexSetting.projectSelected}">
+                                    <h:panelGroup rendered="#{!indexSetting.selectedTheso}" >
+                                        <ui:include src="thesaurus/main_thesaurus.xhtml" />
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{indexSetting.selectedTheso}" >
+                                        <ui:include src="thesaurus/details_thesaurus.xhtml" />
+                                    </h:panelGroup>
                                 </h:panelGroup>
                             </h:panelGroup>
                         </div>
@@ -220,12 +224,10 @@
         <ui:include src="dialog/login/forgetPass.xhtml" />
 
         <script>
-        if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
-            update_page();
-        }
-        </script>
+            if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+                update_page();
+            }
 
-        <script>
             var animated = false;
 
             function afficheNotificationBar() {

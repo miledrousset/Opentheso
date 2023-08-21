@@ -195,6 +195,7 @@ public class TreeConcepts implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {
         
         propositionBean.setRubriqueVisible(false);
+        propositionBean.setNewProposition(false);
         rightBodySetting.setIndex("0");
         
         if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {

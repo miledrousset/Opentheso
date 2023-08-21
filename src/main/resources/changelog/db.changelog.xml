@@ -12,8 +12,10 @@
     <include file="/changelog/v23.07.2/001-drop-primaryKey-concept_type.xml"/>
     <changeSet id="script0003" author="Miled">
         <sqlFile path="../install/liquibaseupdate/script0003.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>     
+    </changeSet>
     <include file="/changelog/v23.07.3/001-update_concept_dcterms.xml"/>
     <include file="/changelog/v23.07.3/001-update_thesaurus_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-update_dcterms.xml"/>
+    <include file="/changelog/v23.07.3/002-add-projet-description-table.xml"/>
+    <include file="/changelog/v23.07.3/003-update-primary-key-gps-table.xml"/>
 </databaseChangeLog>

@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 public class HtmlPageHelper {
 
     private final Log log = LogFactory.getLog(HtmlPageHelper.class);
-    private boolean queryReturnResult;
 
     /**
      * cette fonction permet de retourner le Home Page d'Opentheso c'est la page
@@ -58,92 +57,45 @@ public class HtmlPageHelper {
      * @param idLang
      * @return #MR
      */
-    public boolean setHomePage(HikariDataSource ds,
-            String htmlText, String idLang) {
+    public boolean setHomePage(HikariDataSource ds, String htmlText, String idLang) {
 
         if (isHomeExist(ds, idLang)) {
-            if (!updateHome(ds,
-                    htmlText,
-                    idLang)) {
+            if (!updateHome(ds, htmlText, idLang)) {
                 return false;
             }
         } else {
-            if (!insertHome(ds,
-                    htmlText,
-                    idLang)) {
+            if (!insertHome(ds, htmlText, idLang)) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean updateHome(HikariDataSource ds,
-            String htmlText,
-            String idLang) {
+    private boolean updateHome(HikariDataSource ds, String htmlText, String idLang) {
 
-        StringPlus stringPlus = new StringPlus();
-        htmlText = stringPlus.convertString(htmlText);
-
-        String query;
-        Statement stmt;
-        Connection conn;
-        boolean isPassed = false;
-
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    query = "update homepage set "
-                            + " htmlcode = '" + htmlText + "'"
-                            + " where lang = '" + idLang + "'";
-                    stmt.executeUpdate(query);
-                    isPassed = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("update homepage set htmlcode = '" + new StringPlus().convertString(htmlText) + "'"
+                        + " where lang = '" + idLang + "'");
+                return true;
             }
         } catch (SQLException ex) {
             this.log.error("error while updating homepage", ex);
         }
-        return isPassed;
+        return false;
     }
 
-    private boolean insertHome(HikariDataSource ds,
-            String htmlText,
-            String idLang) {
+    private boolean insertHome(HikariDataSource ds, String htmlText, String idLang) {
 
-        StringPlus stringPlus = new StringPlus();
-        htmlText = stringPlus.convertString(htmlText);
-
-        String query;
-        Statement stmt;
-        Connection conn;
-        boolean isPassed = false;
-
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    query = "insert into homepage "
-                            + "(htmlcode, lang) values"
-                            + " ('" + htmlText + "', "
-                            + " '" + idLang + "')";
-                    stmt.executeUpdate(query);
-                    isPassed = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("insert into homepage (htmlcode, lang) values ('" + htmlText + "', '" + idLang + "')");
+                return true;
             }
         } catch (SQLException ex) {
             this.log.error("error while inserting homepage", ex);
         }
-        return isPassed;
+        return false;
     }
 
     /**
@@ -330,13 +282,10 @@ public class HtmlPageHelper {
      * vérifie si la page Home d'Opentheso exist déjà
      *
      * @param ds
-     * @param idTheso
      * @param idLang
      * @return
      */
-    private boolean isHomeExist(
-            HikariDataSource ds,
-            String idLang) {
+    private boolean isHomeExist(HikariDataSource ds, String idLang) {
 
         Statement stmt;
         ResultSet resultSet;
@@ -475,16 +424,6 @@ public class HtmlPageHelper {
             log.error("Error while asking if theso have a copyright ", sqle);
         }
         return existe;
-    }
-
-    /**
-     * fonction hasQueryReturnResult Getter pour le boolean queryReturnResult
-     * (voir manageResult)
-     *
-     * @return boolean
-     */
-    public boolean hasQueryReturnResult() {
-        return queryReturnResult;
     }
 
 }
