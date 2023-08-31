@@ -17,16 +17,19 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
 @Named(value = "setAlignmentSourceBean")
 @SessionScoped
 public class SetAlignmentSourceBean implements Serializable {
@@ -43,8 +46,9 @@ public class SetAlignmentSourceBean implements Serializable {
     private ArrayList<AlignementSource> allAlignementSources;
     private List<NodeSelectedAlignment> selectedAlignments = new ArrayList<>();
     private ArrayList<NodeSelectedAlignment> selectedAlignmentsOfTheso;
+    private NodeSelectedAlignment selectedSource;
 
-    private ArrayList<NodeSelectedAlignment> nodeSelectedAlignmentsAll;
+    private List<NodeSelectedAlignment> nodeSelectedAlignmentsAll, sourcesSelected;
 
     //// pour l'ajout d'une nouvelle source
     private String sourceName;
@@ -80,9 +84,66 @@ public class SetAlignmentSourceBean implements Serializable {
     }
 
     public void init() {
+        initSourcesList();
+        alignmentBean.setViewSetting(true);
+        alignmentBean.setViewAddNewSource(false);
+    }
+
+    public void initAlignementAutomatique() {
+
+        if (CollectionUtils.isEmpty(nodeSelectedAlignmentsAll)) {
+            initSourcesList();
+        }
+
+        sourcesSelected = nodeSelectedAlignmentsAll.stream()
+                .filter(source -> source.isIsSelected())
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(sourcesSelected)) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Veuillez sélectionner une source !");
+            return;
+        }
+
+        if (sourcesSelected.size() == 1) {
+            var sourceFound = alignmentBean.getAlignementSources().stream()
+                    .filter(source -> source.getId() == sourcesSelected.get(0).getIdAlignmnetSource())
+                    .findFirst();
+            if (sourceFound.isPresent()) {
+                alignmentBean.searchAlignementsForAllConcepts(sourceFound.get());
+            } else {
+                showMessage(FacesMessage.SEVERITY_WARN, "Veuillez sélectionner une source !");
+            }
+            return;
+        }
+
+        sourcesSelected.forEach(source -> source.setIsSelected(false));
+        PrimeFaces.current().executeScript("PF('selectSourceManagement').show();");
+    }
+
+
+    public void startAlignementAutomatique() {
+        if (!ObjectUtils.isEmpty(selectedSource)) {
+            var sourceFound = alignmentBean.getAlignementSources().stream()
+                    .filter(source -> source.getId() == selectedSource.getIdAlignmnetSource())
+                    .findFirst();
+            alignmentBean.searchAlignementsForAllConcepts(sourceFound.get());
+            selectedSource = null;
+            PrimeFaces.current().executeScript("PF('selectSourceManagement').hide();");
+        } else {
+            showMessage(FacesMessage.SEVERITY_WARN, "Veuillez sélectionner une source !");
+        }
+    }
+
+    private void showMessage(FacesMessage.Severity severity, String message) {
+        FacesMessage msg = new FacesMessage(severity, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
+    }
+
+    private void initSourcesList() {
         AlignmentHelper alignmentHelper = new AlignmentHelper();
 
-        // toutes les sources d'alignements 
+        // toutes les sources d'alignements
         allAlignementSources = alignmentHelper.getAlignementSourceSAdmin(connect.getPoolConnexion());
         nodeSelectedAlignmentsAll = new ArrayList<>();
 
@@ -106,8 +167,6 @@ public class SetAlignmentSourceBean implements Serializable {
                 }
             }
         }
-        alignmentBean.setViewSetting(true);
-        alignmentBean.setViewAddNewSource(false);
     }
 
     public void initAddSource() {
@@ -253,70 +312,6 @@ public class SetAlignmentSourceBean implements Serializable {
     public void cancel() {
         alignmentBean.setViewSetting(false);
         alignmentBean.setViewAddNewSource(false);
-    }
-
-    public ArrayList<AlignementSource> getAllAlignementSources() {
-        return allAlignementSources;
-    }
-
-    public void setAllAlignementSources(ArrayList<AlignementSource> allAlignementSources) {
-        this.allAlignementSources = allAlignementSources;
-    }
-
-    public ArrayList<NodeSelectedAlignment> getSelectedAlignmentsOfTheso() {
-        return selectedAlignmentsOfTheso;
-    }
-
-    public void setSelectedAlignmentsOfTheso(ArrayList<NodeSelectedAlignment> selectedAlignmentsOfTheso) {
-        this.selectedAlignmentsOfTheso = selectedAlignmentsOfTheso;
-    }
-
-    public ArrayList<NodeSelectedAlignment> getNodeSelectedAlignmentsAll() {
-        return nodeSelectedAlignmentsAll;
-    }
-
-    public void setNodeSelectedAlignmentsAll(ArrayList<NodeSelectedAlignment> nodeSelectedAlignmentsAll) {
-        this.nodeSelectedAlignmentsAll = nodeSelectedAlignmentsAll;
-    }
-
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public void setSourceName(String sourceName) {
-        this.sourceName = sourceName;
-    }
-
-    public String getSourceUri() {
-        return sourceUri;
-    }
-
-    public void setSourceUri(String sourceUri) {
-        this.sourceUri = sourceUri;
-    }
-
-    public String getSourceIdTheso() {
-        return sourceIdTheso;
-    }
-
-    public void setSourceIdTheso(String sourceIdTheso) {
-        this.sourceIdTheso = sourceIdTheso;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<NodeSelectedAlignment> getSelectedAlignments() {
-        return selectedAlignments;
-    }
-
-    public void setSelectedAlignments(ArrayList<NodeSelectedAlignment> selectedAlignments) {
-        this.selectedAlignments = selectedAlignments;
     }
 
 }
