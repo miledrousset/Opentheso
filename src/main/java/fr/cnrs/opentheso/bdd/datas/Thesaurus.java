@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bdd.datas;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Thesaurus {
 
@@ -24,7 +25,7 @@ public class Thesaurus {
     private String type = "";
     private boolean privateTheso;
  
-    private ArrayList <DcElement> dcElement;
+    private List <DcElement> dcElement;
 
     /**
      *
@@ -201,11 +202,11 @@ public class Thesaurus {
         this.id_ark = id_ark;
     }
 
-    public ArrayList<DcElement> getDcElement() {
+    public List<DcElement> getDcElement() {
         return dcElement;
     }
 
-    public void setDcElement(ArrayList<DcElement> dcElement) {
+    public void setDcElement(List<DcElement> dcElement) {
         this.dcElement = dcElement;
     }
     

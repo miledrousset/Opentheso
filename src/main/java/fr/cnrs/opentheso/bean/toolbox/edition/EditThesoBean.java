@@ -116,7 +116,8 @@ public class EditThesoBean implements Serializable {
         } catch (IOException ex) {
             Logger.getLogger(EditThesoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
+        /// initialisation des métadonnées pour le thésaurus 
+        thesaurusMetadataAdd.init(nodeIdValueOfTheso.getId());        
     }    
     
     public void init(NodeIdValue nodeIdValueOfTheso) {

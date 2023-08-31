@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.core.exports.rdf4j;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.*;
@@ -221,6 +222,9 @@ public class ExportRdf4jHelperNew {
             }
             conceptScheme.setThesaurus(thesaurus);
         }
+        
+        /// ajout des DCMI
+        conceptScheme.getThesaurus().setDcElement(new DcElementHelper().getDcElementOfThesaurus(ds, idTheso));        
 
         //liste top concept
         ConceptHelper conceptHelper = new ConceptHelper();

@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.core.exports.rdf4j;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 
 import fr.cnrs.opentheso.skosapi.*;
@@ -7,13 +9,15 @@ import fr.cnrs.opentheso.skosapi.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.eclipse.rdf4j.model.vocabulary.FOAF;
-import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+//import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
@@ -245,13 +249,13 @@ public class WriteRdf4j {
         for (SKOSDate date : resource.getDateList()) {
             switch (date.getProperty()) {
                 case SKOSProperty.created:
-                    builder.add(DCTERMS.CREATED, vf.createLiteral(date.getDate(), XMLSchema.DATE));
+                    builder.add(DCTERMS.CREATED, vf.createLiteral(date.getDate(), XSD.DATE));
                     break;
                 case SKOSProperty.modified:
-                    builder.add(DCTERMS.MODIFIED, vf.createLiteral(date.getDate(), XMLSchema.DATE));
+                    builder.add(DCTERMS.MODIFIED, vf.createLiteral(date.getDate(), XSD.DATE));
                     break;
                 case SKOSProperty.date:
-                    builder.add(DCTERMS.DATE, vf.createLiteral(date.getDate(), XMLSchema.DATE));
+                    builder.add(DCTERMS.DATE, vf.createLiteral(date.getDate(), XSD.DATE));
                     break;
             }
         }
@@ -363,8 +367,115 @@ public class WriteRdf4j {
         if (StringUtils.isNotEmpty(resource.getThesaurus().getSource())) {
             builder.add(DCTERMS.SOURCE, resource.getThesaurus().getSource());
         }
+        
+        /// Ecriture des DCMI, à terme, ca doit remplacer les lignes au dessus
+        for (DcElement dcElement : resource.getThesaurus().getDcElement()) {
+            switch (dcElement.getName()) {
+                case "title":
+                    writeDcElement(dcElement, DCTERMS.TITLE);
+                case "creator":
+                    writeDcElement(dcElement, DCTERMS.CREATOR);
+                    break;
+                case "contributor":
+                    writeDcElement(dcElement, DCTERMS.CONTRIBUTOR);
+                    break;
+                case "subject":
+                    writeDcElement(dcElement, DCTERMS.SUBJECT);
+                    break;
+                case "description":
+                    writeDcElement(dcElement, DCTERMS.DESCRIPTION);
+                    break;
+                case "publisher":
+                    writeDcElement(dcElement, DCTERMS.PUBLISHER);
+                    break;
+                case "date":
+                    writeDcElement(dcElement, DCTERMS.DATE);
+                    break;
+                case "type":
+                    writeDcElement(dcElement, DCTERMS.TYPE);
+                    break;
+                case "format":
+                    writeDcElement(dcElement, DCTERMS.FORMAT);
+                    break;
+                case "identifier":
+                    writeDcElement(dcElement, DCTERMS.IDENTIFIER);
+                    break;
+                case "source":
+                    writeDcElement(dcElement, DCTERMS.SOURCE);
+                    break;
+                case "language":
+                    writeDcElement(dcElement, DCTERMS.LANGUAGE);
+                    break;
+                case "relation":
+                    writeDcElement(dcElement, DCTERMS.RELATION);
+                    break;
+                case "coverage":
+                    writeDcElement(dcElement, DCTERMS.COVERAGE);
+                    break;
+                case "rights":
+                    writeDcElement(dcElement, DCTERMS.RIGHTS);
+                    break;
+                case "rightsHolder":
+                    writeDcElement(dcElement, DCTERMS.RIGHTS_HOLDER);
+                    break;
+                case "conformsTo":
+                    writeDcElement(dcElement, DCTERMS.CONFORMS_TO);
+                    break;
+                case "created":
+                    writeDcElement(dcElement, DCTERMS.CREATED);
+                    break;
+                case "modified":
+                    writeDcElement(dcElement, DCTERMS.MODIFIED);
+                    break;
+                case "isRequiredBy":
+                    writeDcElement(dcElement, DCTERMS.IS_REPLACED_BY);
+                    break;
+                case "license":
+                    writeDcElement(dcElement, DCTERMS.LICENSE);
+                    break;
+                case "replaces":
+                    writeDcElement(dcElement, DCTERMS.REPLACES);
+                    break;
+                case "alternative":
+                    writeDcElement(dcElement, DCTERMS.ALTERNATIVE);
+                default:
+                    break;
+            }
+        }
+        
     }
 
+    private void writeDcElement(DcElement dcElement, IRI name){
+        if(StringUtils.isEmpty(dcElement.getType())) {
+            if(!StringUtils.isEmpty(dcElement.getLanguage())){
+                builder.add(name, vf.createLiteral(dcElement.getValue(), dcElement.getLanguage()));
+            } else {
+                builder.add(name, dcElement.getValue());
+            }
+            return;
+        }
+        switch (dcElement.getType()) {
+            case DCMIResource.TYPE_RESOURCE:
+                builder.add(name, vf.createIRI(dcElement.getValue()));
+                break;
+            case DCMIResource.TYPE_STRING:
+                builder.add(name, vf.createLiteral(dcElement.getValue(), XSD.STRING));
+                break;                    
+            case DCMIResource.TYPE_DATE:
+                builder.add(name, vf.createLiteral(dcElement.getValue(), XSD.DATE));
+                break;                            
+            default:
+                if(!StringUtils.isEmpty(dcElement.getLanguage())){
+                    builder.add(name, vf.createLiteral(dcElement.getValue(), dcElement.getLanguage()));
+                } else {
+                    builder.add(name, dcElement.getValue());
+                }
+                break;
+        }        
+    }
+            
+            
+            
     private void writeMatch(SKOSResource resource) {
         for (SKOSMatch match : resource.getMatchList()) {
             try {

@@ -1,9 +1,16 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:h="http://java.sun.com/jsf/html"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:p="http://primefaces.org/ui">
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
     
     <div style="margin: 20px; color: #000">
+        
+        <style>
+            body .ui-accordion .ui-accordion-header>.ui-icon.ui-icon-triangle-1-e {
+                font-size: 12px;
+            }
+        </style>        
         
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso()
                                   or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing())}">
@@ -20,7 +27,7 @@
         </h:panelGroup>
 
         <!-- vue pulic non connectée -->
-        <h:panelGroup rendered="#{!(viewEditorThesoHomeBean.isInEditing())}" style="border: none; margin-top: 20px">
+        <h:panelGroup id="thesoHomeData" rendered="#{!(viewEditorThesoHomeBean.isInEditing())}" style="border: none; margin-top: 20px">
             <div class="row" style="background-color: #F5F2F2">
                 <div class="col-1"  style="margin-top: 3px">
                     <i class="fas fa-info-circle fa-2x" style="color: #43B572" />
@@ -84,9 +91,41 @@
                                 <h:outputText rendered="#{!status1.last}" value=", " style="color: #FF7979"/>
                             </ui:repeat>
                         </div>                
-                    </div>                    
-                </div>                
+                    </div>  
+                    
+                    
+                    <!-- Méta-données -->
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-2">
+                            <img src="#{request.contextPath}/resources/img/dcmi_logo.png" style="height: 17px; " />
+                        </div>
+                        <div class="col-10" style="margin-top: -2px;">
+                            <p:accordionPanel id="meta" widgetVar="basic" activeIndex="-2" style="font-size: 12px;" >
+                                <p:tab title="#{langueBean.getMsg('thesohome.metadata')}" titleStyle="color: #858796; background-color: #F5F2F2; font-size: 12px; border: none">
+                                    <p:dataTable id="metadataTheso" widgetVar="metadataTheso" var="dcElement" value="#{viewEditorThesoHomeBean.meta()}"
+                                                 editable="false" scrollHeight="250" scrollable="true" showGridlines="true">
+
+                                        <p:column width="20%" headerText="#{langueBean.getMsg('toolbox.metadata_property')}">
+                                            <h:outputText value="#{dcElement.name}" />
+                                        </p:column>
+
+                                        <p:column width="60%" headerText="#{langueBean.getMsg('candidat.value')}">
+                                            <h:outputText value="#{dcElement.value}" />
+                                        </p:column>
+                                        <p:column width="10%" headerText="#{langueBean.getMsg('rightbody.conceptdialog.language')}">
+                                            <h:outputText value="#{dcElement.language}" />
+                                        </p:column>                                        
+                                        <p:column width="10%" headerText="#{langueBean.getMsg('statistique.type')}">
+                                            <h:outputText value="#{dcElement.type}" />
+                                        </p:column>  
+                                    </p:dataTable>                                    
+                                </p:tab>
+                            </p:accordionPanel>                     
+                        </div>                
+                    </div>                      
+                </div>   
             </div>
+           
             
             <p:separator style="color: #F47B2A" />
 

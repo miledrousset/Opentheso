@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -12,12 +14,14 @@ import lombok.Data;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -63,7 +67,6 @@ public class ViewEditorThesoHomeBean implements Serializable {
         text = copyrightHelper.getThesoHomePage(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), lang);
         isInEditing = true;
         isViewPlainText = false;
-        
         colorOfHtmlButton = "#F49F66;";
         colorOfTextButton = "#8C8C8C;";          
     }
@@ -78,7 +81,20 @@ public class ViewEditorThesoHomeBean implements Serializable {
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 lang);
+        
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("containerIndex:meta:metadataTheso");
+        }        
+
         return homePage;
+    }
+    
+    public List<DcElement> meta(){
+        DcElementHelper dcElementHelper = new DcElementHelper();
+        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        if(dcElements == null || dcElements.isEmpty())
+            dcElements = new ArrayList<>();           
+        return dcElements;
     }
     /**
      * permet d'ajouter un copyright, s'il n'existe pas, on le créé,sinon, on applique une mise à jour 

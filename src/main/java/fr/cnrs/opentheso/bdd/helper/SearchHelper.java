@@ -281,13 +281,13 @@ public class SearchHelper {
             String groupSearch = "";
             for (String idGroup : idGroups) {
                 if (groupSearch.isEmpty()) {
-                    groupSearch = "'" + idGroup + "'";
+                    groupSearch = "'" + idGroup.toLowerCase() + "'";
                 } else {
-                    groupSearch = groupSearch + ",'" + idGroup + "'";
+                    groupSearch = groupSearch + ",'" + idGroup.toLowerCase() + "'";
                 }
             }
-            multiValuesPT += " and concept_group_concept.idgroup in (" + groupSearch + ")";
-            multiValuesNPT += " and concept_group_concept.idgroup in (" + groupSearch + ")";
+            multiValuesPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
+            multiValuesNPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
         }
 
         for (String value1 : values) {
@@ -494,13 +494,13 @@ public class SearchHelper {
             String groupSearch = "";
             for (String idGroup : idGroups) {
                 if (groupSearch.isEmpty()) {
-                    groupSearch = "'" + idGroup + "'";
+                    groupSearch = "'" + idGroup.toLowerCase() + "'";
                 } else {
-                    groupSearch = groupSearch + ",'" + idGroup + "'";
+                    groupSearch = groupSearch + ",'" + idGroup.toLowerCase() + "'";
                 }
             }
-            multiValuesPT += " and concept_group_concept.idgroup in (" + groupSearch + ")";
-            multiValuesNPT += " and concept_group_concept.idgroup in (" + groupSearch + ")";
+            multiValuesPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
+            multiValuesNPT += " and LOWERconcept_group_concept.idgroup) in (" + groupSearch + ")";
         }
 
         multiValuesPT += " and ("

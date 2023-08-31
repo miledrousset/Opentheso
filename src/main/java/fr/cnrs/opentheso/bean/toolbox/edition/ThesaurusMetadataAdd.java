@@ -40,6 +40,16 @@ public class ThesaurusMetadataAdd implements Serializable{
         this.idTheso = idTheso1;
     }
     
+    /**
+     * retour des méta-données à la demande
+     * @param idTheso
+     * @return 
+     */
+    public List<DcElement> getThesaurusMetadata(String idTheso){
+        DcElementHelper dcElementHelper = new DcElementHelper();
+        return dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idTheso);
+    }
+    
     public void initlanguage(DcElement dcElement){
         if(!StringUtils.isEmpty(dcElement.getType()))
             dcElement.setLanguage("");
