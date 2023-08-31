@@ -29,7 +29,6 @@ public class AlignementAutomatique {
 
         var listConcepts = new HashSet<>(allignementsList);
 
-
         ExecutorService executor = Executors.newFixedThreadPool(listConcepts.size());
         List<Callable<List<NodeAlignment>>> callables = new ArrayList<>();
         for (AlignementElement alignementElement : listConcepts) {
