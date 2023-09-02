@@ -89,9 +89,8 @@ public class GpsBean implements Serializable {
 
         gpsRepository.removeGps(gps);
 
-        conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso()));
+        conceptView.createMap(conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Suppression des coordonnées GPS réussie");
         FacesContext.getCurrentInstance().addMessage(null, msg);

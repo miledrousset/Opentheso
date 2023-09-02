@@ -883,7 +883,7 @@ public class SelectedTheso implements Serializable {
         this.isUriRequest = isUriRequest;
     }
 
-    public boolean isIsNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         return isNetworkAvailable;
     }
 
