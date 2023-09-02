@@ -69,20 +69,21 @@
                 </div> 
             </div>
             <p:spacer height="10px;" />
-            <div class="row">
-                <div class="col-12" style="text-align: right; margin-left: -10px;">
-                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
-                                     actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept" 
-                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
-                                     icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
-                                     ajax="true" process="@this"/>
+            <h:panelGroup rendered="#{!propositionBean.isConsultation}">
+                <div class="row">
+                    <div class="col-12" style="text-align: right; margin-left: -10px;">
+                        <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
+                                         actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept"
+                                         style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
+                                         icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                         ajax="true" process="@this"/>
 
-                    <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="confirmDialogId"
-                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}"
-                                     ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" />
+                        <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="confirmDialogId"
+                                         actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}"
+                                         ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" />
+                    </div>
                 </div>
-            </div>
-
+            </h:panelGroup>
         </h:panelGroup>
 
         <h:panelGroup rendered="#{propositionBean.isCanMakeAction()}">
@@ -186,7 +187,7 @@
 
             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success"
                              icon="pi pi-check"
-                             update="containerIndex:contentConcept containerIndex:notificationPanel messageIndex"
+                             update="containerIndex:contentConcept containerIndex:notificationPanel containerIndex:header messageIndex"
                              actionListener="#{propositionBean.executionAction()}"/>
         </div>
     </p:dialog>

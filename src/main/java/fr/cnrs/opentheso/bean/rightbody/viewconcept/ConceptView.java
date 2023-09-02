@@ -84,7 +84,7 @@ public class ConceptView implements Serializable {
 
     private Map mapModel;
     private NodeConcept nodeConcept;
-    private String selectedLang, gpsModeSelected;
+    private String selectedLang, gpsModeSelected = "POINT";
     private ArrayList<NodeCorpus> nodeCorpuses;
     private ArrayList<NodePath> pathLabel;
     private ArrayList<NodeIdValue> nodeFacets;
@@ -239,7 +239,7 @@ public class ConceptView implements Serializable {
      */
     public void getConcept(String idTheso, String idConcept, String idLang) {
         offset = 0;
-        gpsModeSelected = "LINE";
+        gpsModeSelected = "POINT";
         nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) {
             return;

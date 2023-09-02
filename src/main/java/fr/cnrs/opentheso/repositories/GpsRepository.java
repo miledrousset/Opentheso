@@ -4,6 +4,7 @@ import fr.cnrs.opentheso.SessionFactoryMaker;
 import fr.cnrs.opentheso.entites.Gps;
 import jakarta.persistence.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.Collections;
@@ -15,8 +16,11 @@ public class GpsRepository {
 
     public void removeGps(Gps gps) {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            session.update(String.format("DELETE FROM gps WHERE id_concept = %s AND id_theso = %s AND latitude = %s AND longitude = %s",
-                    gps.getIdConcept(), gps.getIdTheso(), gps.getLatitude(), gps.getLongitude()));
+            Transaction transaction = session.beginTransaction();
+            Query query = session.createQuery("delete from Gps where id = :idGps");
+            query.setParameter("idGps", gps.getId());
+            query.executeUpdate();
+            transaction.commit();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

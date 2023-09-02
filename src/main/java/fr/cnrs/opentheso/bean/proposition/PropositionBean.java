@@ -69,7 +69,7 @@ public class PropositionBean implements Serializable {
     @Inject
     private LanguageBean languageBean;
 
-    private boolean isRubriqueVisible, isNewProposition;
+    private boolean isRubriqueVisible, isNewProposition, isConsultation;
     private Proposition proposition;
     private String nom, email, commentaire, commentaireAdmin;
     private String message;
@@ -137,6 +137,8 @@ public class PropositionBean implements Serializable {
         editorialNotesAccepted = false;
         examplesAccepted = false;
         historyAccepted = false;
+
+        isConsultation = true;
 
         prefTermeAccepted = proposition.isUpdateNomConcept();
         checkSynonymPropositionStatus();
@@ -327,6 +329,7 @@ public class PropositionBean implements Serializable {
 
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
         init();
+
         isNewProposition = true;
         isRubriqueVisible = true;
         if(currentUser.getNodeUser() == null)
@@ -339,6 +342,7 @@ public class PropositionBean implements Serializable {
         }
 
         proposition = propositionService.selectProposition(nodeConcept);
+        isConsultation = false;
 
         if (!ObjectUtils.isEmpty(currentUser.getNodeUser())) {
             nom = currentUser.getNodeUser().getName();
@@ -530,4 +534,9 @@ public class PropositionBean implements Serializable {
         return (currentUser.getNodeUser() !=null && !currentUser.getNodeUser().getMail().equalsIgnoreCase(email))
                 && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso());
     }
+
+    public boolean isIsConsultation() {
+        return isConsultation;
+    }
+    
 }

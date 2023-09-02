@@ -28,7 +28,7 @@
                     <p:column width="20" headerText="Supprimer">
                         <p:commandLink style="color: #FF7979" action="#{gpsBean.deleteCoordinateGps(gps)}"
                                        update="containerIndex:idDeleteGps containerIndex:formRightTab"
-                                       ajax="true" process="@form">
+                                       ajax="true" process="@this">
                             <i class="pi pi-trash" style="font-size: 13px;"/>
                         </p:commandLink>
                     </p:column>
