@@ -5550,9 +5550,8 @@ public class ConceptHelper {
         nodeConceptExport.setNodeNoteConcept(noteConcept);
 
         //récupération des coordonnées GPS
-        NodeGps nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
-
-        if (nodeGps != null) {
+        List<NodeGps> nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
+        if (CollectionUtils.isNotEmpty(nodeGps)) {
             nodeConceptExport.setNodeGps(nodeGps);
         }
 

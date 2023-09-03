@@ -422,26 +422,21 @@ public class PreferencesHelper {
                         + "," + np.isOriginalUriIsDoi()
                         + ",'" + np.isTree_cache() + "'"
                         + ",'" + np.isSort_by_notation() + "'"
-
                         + ",'" + np.isUseArkLocal()+ "'"
                         + ",'" + np.getNaanArkLocal()+ "'"
                         + ",'" + np.getPrefixArkLocal()+ "'"
                         + "," + np.getSizeIdArkLocal()
                         + "," + np.isBreadcrumb()
                         + "," + np.isSuggestion()
-                        
                         + "," + np.isUseCustomRelation()
-                        
                         + "," + np.isUppercase_for_ark()
-                        
                         + "," + np.isUseConceptTree()
                         + "," + np.isDisplayUserName()
-                        
-
                         + ")";
                 stmt.executeUpdate(query);
                 status = true;
-
+            } catch (SQLException ex) {
+                Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);

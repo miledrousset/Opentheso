@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class SKOSResource {
     private ArrayList<SKOSDate> dateList;
     private ArrayList<SKOSAgent> agentList;
 
-    private SKOSGPSCoordinates GPSCoordinates;
+    private List<SKOSGPSCoordinates> gpsCoordinates;
     private ArrayList<SKOSNotation> notationList;
     private ArrayList<SKOSMatch> matchList;
     
@@ -72,7 +73,7 @@ public class SKOSResource {
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
         agentList = new ArrayList<>();
-        GPSCoordinates = new SKOSGPSCoordinates();
+        gpsCoordinates = new ArrayList<>();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
         nodeImages = new ArrayList<>();
@@ -95,7 +96,7 @@ public class SKOSResource {
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
         agentList = new ArrayList<>();
-        GPSCoordinates = new SKOSGPSCoordinates();
+        gpsCoordinates = new ArrayList<>();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
         nodeImages = new ArrayList<>();
@@ -122,7 +123,7 @@ public class SKOSResource {
             dateList.clear();
         if(agentList != null)
             agentList.clear();
-        GPSCoordinates = null;
+        gpsCoordinates = null;
         if(notationList != null)
             notationList.clear();
         if(matchList != null)
@@ -204,8 +205,8 @@ public class SKOSResource {
         agentList.add(new SKOSAgent(agent, prop));
     }    
 
-    public SKOSGPSCoordinates getGPSCoordinates() {
-        return GPSCoordinates;
+    public List<SKOSGPSCoordinates> getGpsCoordinates() {
+        return gpsCoordinates;
     }
 
     public ArrayList<SKOSNotation> getNotationList() {
@@ -416,8 +417,8 @@ public class SKOSResource {
         }
     }
 
-    public void setGPSCoordinates(SKOSGPSCoordinates GPSCoordinates) {
-        this.GPSCoordinates = GPSCoordinates;
+    public void setGpsCoordinates(List<SKOSGPSCoordinates> gpsCoordinates) {
+        this.gpsCoordinates = gpsCoordinates;
     }
 
     public ArrayList<NodeImage> getNodeImage() {
@@ -542,7 +543,7 @@ public class SKOSResource {
      */
     public static Comparator<SKOSResource> sortForHiera(HikariDataSource hikariDataSource, boolean isTrad, String langCode,
             String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation,
-            HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS,
+            HashMap<String, ArrayList<String>> idToMatch, HashMap<String, List<String>> idToGPS,
             HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
             HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
         return new HieraComparator(hikariDataSource, isTrad, langCode, langCode2, idToNameHashMap,
@@ -557,7 +558,7 @@ public class SKOSResource {
         HashMap<String, List<String>> idToChildId;
         HashMap<String, ArrayList<String>> idToDocumentation;
         HashMap<String, ArrayList<String>> idToMatch;
-        HashMap<String, String> idToGPS;
+        HashMap<String, List<String>> idToGPS;
         HashMap<String, ArrayList<NodeImage>> idToImg;
         boolean isTrad;
         ArrayList<String> resourceChecked;
@@ -567,7 +568,7 @@ public class SKOSResource {
         public HieraComparator(HikariDataSource hikariDataSource, boolean isTrad, String langCode, String langCode2,
                 HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId,
                 HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch,
-                HashMap<String, String> idToGPS, HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
+                HashMap<String, List<String>> idToGPS, HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
                 HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
 
             this.hikariDataSource = hikariDataSource;
@@ -661,13 +662,11 @@ public class SKOSResource {
         }
 
         private void writeIdToGPS(SKOSResource resource) {
-            String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
-            SKOSGPSCoordinates gps = resource.getGPSCoordinates();
-            String lat = gps.getLat();
-            String lon = gps.getLon();
-
-            if (lat != null && lon != null) {
-                idToGPS.put(key, "gps : lat =" + lat + " long =" + lon);
+            if (CollectionUtils.isNotEmpty(resource.getGpsCoordinates())) {
+                idToGPS.put(resource.getIdentifier(),
+                        resource.getGpsCoordinates().stream()
+                                .map(element -> "gps : lat =" + element.getLat() + " long =" + element.getLon())
+                                .collect(Collectors.toList()));
             }
         }
 

@@ -81,8 +81,8 @@ public class ExportHelper {
 
         List<SKOSResource> concepts = new ArrayList<>();
         String [] contributors;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -147,11 +147,8 @@ public class ExportHelper {
                         addFacets(sKOSResource, resultSet.getString("facets"), idTheso, originalUri);
                         
                         addExternalResources(sKOSResource, resultSet.getString("externalResources"));
-                        
-                        if (resultSet.getString("latitude") != null || resultSet.getString("longitude") != null) {
-                            sKOSResource.setGPSCoordinates(new SKOSGPSCoordinates(
-                                    resultSet.getDouble("latitude"), resultSet.getDouble("longitude")));
-                        }
+
+                        addGps(sKOSResource, resultSet.getString("gpsData"));
                         
                         if (resultSet.getString("creator") != null) {
                             sKOSResource.addAgent(resultSet.getString("creator"), SKOSProperty.creator);
@@ -195,6 +192,19 @@ public class ExportHelper {
         }
 
         return concepts;
+    }
+
+    private void addGps(SKOSResource sKOSResource, String str) {
+        if (StringUtils.isNotEmpty(str)) {
+            String[] tabs = str.split(SEPERATEUR);
+
+            List<SKOSGPSCoordinates> tmp = new ArrayList<>();
+            for (String tab : tabs) {
+                String[] element = tab.split(SUB_SEPERATEUR);
+                tmp.add(new SKOSGPSCoordinates(Double.parseDouble(element[0]), Double.parseDouble(element[1])));
+            }
+            sKOSResource.setGpsCoordinates(tmp);
+        }
     }
 
     private String getUriFromId(String id, String originalUri, NodePreference nodePreference) {
@@ -244,10 +254,10 @@ public class ExportHelper {
             baseSQL = baseSQL + "opentheso_get_concepts_by_group('" + idTheso + "', '" + baseUrl + "', '" + idGroup;
         }
 
-        return baseSQL + "') as x(URI text, TYPE varchar,  LOCAL_URI text, IDENTIFIER varchar, ARK_ID varchar, "
+        return baseSQL + "') as x(URI text, TYPE varchar, LOCAL_URI text, IDENTIFIER varchar, ARK_ID varchar, "
                 + "prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, editorialNote text, changeNote text, "
                 + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
-                + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, "
+                + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, gpsData text, "
                 + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
                 + "replaces text, replaced_by text, facets text, externalResources text);";
     }
@@ -391,8 +401,6 @@ public class ExportHelper {
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
                 String str = new StringPlus().normalizeStringForXml(element[0]);
-                //str = formatLinkTag(str);
-                //str = str.replaceAll(htmlTagsRegEx, "");
                 sKOSResource.addDocumentation(str, element[1], type);
             }
         }

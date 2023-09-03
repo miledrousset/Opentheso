@@ -64,7 +64,7 @@ public class WritePdf {
     HashMap<String, ArrayList<String>> idToDocumentation2 = new HashMap<>();
     HashMap<String, ArrayList<String>> idToMatch = new HashMap<>();
     HashMap<String, ArrayList<NodeImage>> idToImg = new HashMap<>();
-    HashMap<String, String> idToGPS = new HashMap<>();
+    HashMap<String, List<String>> idToGPS = new HashMap<>();
 
     HashMap<String, ArrayList<Integer>> idToIsTrad = new HashMap<>();
     HashMap<String, ArrayList<Integer>> idToIsTradDiff = new HashMap<>();
@@ -301,9 +301,10 @@ public class WritePdf {
             }
         }
 
-        String gps = idToGPS.get(key);
-        if (gps != null) {
-            paragraphs.add(new Paragraph(space + gps, hieraInfoFont));
+        if (CollectionUtils.isNotEmpty(idToGPS.get(key))) {
+            for (String element : idToGPS.get(key)) {
+                paragraphs.add(new Paragraph(space + element, hieraInfoFont));
+            }
         }
         
         if (CollectionUtils.isNotEmpty(idToImg.get(key))) {
@@ -601,14 +602,12 @@ public class WritePdf {
             paragraphs.add(new Paragraph("    " + matchTypeName + ": " + match.getValue(), textFont));
         }
 
-        SKOSGPSCoordinates gps = concept.getGPSCoordinates();
-        String lat = gps.getLat();
-        String lon = gps.getLon();
 
-        if (lat != null && lon != null) {
-
-            paragraphs.add(new Paragraph("    lat: " + lat, textFont));
-            paragraphs.add(new Paragraph("    long: " + lon, textFont));
+        if (CollectionUtils.isNotEmpty(concept.getGpsCoordinates())) {
+            for (SKOSGPSCoordinates element : concept.getGpsCoordinates()) {
+                paragraphs.add(new Paragraph("    lat: " + element.getLat(), textFont));
+                paragraphs.add(new Paragraph("    long: " + element.getLon(), textFont));
+            }
         }
         
         if (CollectionUtils.isNotEmpty(concept.getNodeImage())) {

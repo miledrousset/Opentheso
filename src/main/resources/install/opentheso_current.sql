@@ -217,6 +217,7 @@ DECLARE
 	replaces text;
 	replacedBy text;
 	facets text;
+	gpsData text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -342,7 +343,11 @@ BEGIN
 		END LOOP;
 
 		-- geo:alt && geo:long
-		SELECT * INTO geo_rec FROM opentheso_get_gps(id_theso, con.id_concept);
+		gpsData = '';
+        FOR geo_rec IN SELECT * FROM opentheso_get_gps(id_theso, con.id_concept)
+        LOOP
+        gpsData = gpsData || geo_rec.gps_latitude || sous_seperateur || geo_rec.gps_longitude || seperateur;
+        END LOOP;
 
 		-- membre
 		membre = '';
@@ -408,7 +413,7 @@ BEGIN
 
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
-				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified,
+				broadMatch, relatedMatch, narrowMatch, gpsData, membre, con.created, con.modified,
 				img, creator, contributor, replaces, replacedBy, facets INTO rec;
 
   		RETURN NEXT rec;
@@ -478,6 +483,7 @@ DECLARE
 	replacedBy text;
 	replaces text;
 	facets text;
+	gpsData text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -605,7 +611,11 @@ BEGIN
 		END LOOP;
 
 		-- geo:alt && geo:long
-		SELECT * INTO geo_rec FROM opentheso_get_gps(id_theso, con.id_concept);
+		gpsData = '';
+		FOR geo_rec IN SELECT * FROM opentheso_get_gps(id_theso, con.id_concept)
+        LOOP
+            gpsData = gpsData || geo_rec.gps_latitude || sous_seperateur || geo_rec.gps_longitude || seperateur;
+        END LOOP;
 
 		-- membre
 		membre = '';
@@ -671,7 +681,7 @@ BEGIN
 
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
-				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified, img,
+				broadMatch, relatedMatch, narrowMatch, gpsData, membre, con.created, con.modified, img,
 				creator, contributor, replaces, replacedBy, facets INTO rec;
 
   		RETURN NEXT rec;

@@ -17,7 +17,6 @@ import fr.cnrs.opentheso.skosapi.SKOSMatch;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
@@ -28,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
+
+
 
 public class WriteAlphaPDF {
 
@@ -91,7 +92,7 @@ public class WriteAlphaPDF {
             addRelations(paragraphs, concept.getRelationsList());
             addDocuments(paragraphs, concept.getDocumentationsList(), traductions.get(idFromUri), codeLanguage1, codeLanguage2);
             addMatchs(paragraphs, concept.getMatchList());
-            addGpsCoordiantes(paragraphs, concept.getGPSCoordinates());
+            addGpsCoordiantes(paragraphs, concept.getGpsCoordinates());
             addImages(paragraphs, concept.getNodeImage());            
         }
     }
@@ -228,14 +229,13 @@ public class WriteAlphaPDF {
         }
     }
 
-    private void addGpsCoordiantes(List<Paragraph> paragraphs, SKOSGPSCoordinates skosgpsCoordinates) {
+    private void addGpsCoordiantes(List<Paragraph> paragraphs, List<SKOSGPSCoordinates> skosGpsCoordinates) {
 
-        if (ObjectUtils.isNotEmpty(skosgpsCoordinates)
-                && StringUtils.isNotEmpty(skosgpsCoordinates.getLat())
-                && StringUtils.isNotEmpty(skosgpsCoordinates.getLon())) {
-
-            paragraphs.add(new Paragraph(LATITUDE + skosgpsCoordinates.getLat(), writePdfSettings.textFont));
-            paragraphs.add(new Paragraph(LONGITUDE + skosgpsCoordinates.getLon(), writePdfSettings.textFont));
+        if (CollectionUtils.isNotEmpty(skosGpsCoordinates)) {
+            for (SKOSGPSCoordinates element : skosGpsCoordinates) {
+                paragraphs.add(new Paragraph(LATITUDE + element.getLat(), writePdfSettings.textFont));
+                paragraphs.add(new Paragraph(LONGITUDE + element.getLon(), writePdfSettings.textFont));
+            }
         }
     }
 
