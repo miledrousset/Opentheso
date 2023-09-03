@@ -47,8 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
+
 import org.apache.commons.collections.CollectionUtils;
 
 /**
@@ -559,11 +558,12 @@ public class ImportRdf4jHelper {
         }
 
         boolean isGpsPresent = false;
-        String longitude = null, altitude = null;
-        if (conceptResource.getGPSCoordinates() != null) {
+        String gpsData = "";
+        if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates())) {
             isGpsPresent = true;
-            altitude = conceptResource.getGPSCoordinates().getLat();
-            longitude = conceptResource.getGPSCoordinates().getLon();
+            for (SKOSGPSCoordinates element : conceptResource.getGpsCoordinates()) {
+                gpsData = gpsData + element.getLat() + SOUS_SEPERATEUR + element.getLon() + SEPERATEUR;
+            }
         }
 
         //Non Pref Term
@@ -575,8 +575,7 @@ public class ImportRdf4jHelper {
             prefTerm = "";
             for (SKOSLabel label : conceptResource.getLabelsList()) {
                 if (label.getProperty() == SKOSProperty.prefLabel) {
-                    prefTerm += SEPERATEUR + label.getLabel() 
-                            + SOUS_SEPERATEUR + label.getLanguage();
+                    prefTerm += SEPERATEUR + label.getLabel() + SOUS_SEPERATEUR + label.getLanguage();
                 } else {
                     String status = null;
                     boolean hiden = false;
@@ -670,23 +669,7 @@ public class ImportRdf4jHelper {
         }
 
         //CustomRelation
-        //-- 'id_concept1@role@id_concept2'
-        String customRelations = null;        
-    /*    if (CollectionUtils.isNotEmpty(conceptResource.getCustomRelations())) {
-            customRelations = "";
-            for (NodeIdValue nodeIdValue  : conceptObject.getCustomRelations()) {
-                customRelations += SEPERATEUR + conceptObject.getIdConcept()
-                        + SOUS_SEPERATEUR + nodeIdValue.getValue()
-                        + SOUS_SEPERATEUR + nodeIdValue.getId();
-            //    relations += SEPERATEUR + idCostomRelation
-            //            + SOUS_SEPERATEUR + "NT"
-            //            + SOUS_SEPERATEUR + conceptObject.getIdConcept();                
-            //   
-            }
-        }    
-        if (customRelations != null && customRelations.length() > 0) {
-            customRelations = customRelations.substring(SEPERATEUR.length(), customRelations.length());
-        }   */      
+        String customRelations = null;
         
         //Notes
         //-- 'value@typeCode@lang@id_term'
@@ -823,8 +806,7 @@ public class ImportRdf4jHelper {
                     + (images == null ? null : "'" + images + "'") + ", "
                     + (isReplacedBy == null ? null : "'" + isReplacedBy + "'") + ", "
                     + isGpsPresent + ", " 
-                    + (altitude == null ? null : Double.parseDouble(altitude)) + ", "
-                    + (longitude == null ? null : Double.parseDouble(longitude)) + ", "
+                    + (gpsData == null ? null : "'" + gpsData + "'") + ", "
                     //+ "'" + created + "', "
                     + (created == null ? null : "'" + created + "'") + ", "
 
@@ -1244,12 +1226,13 @@ public class ImportRdf4jHelper {
             acs.termHelper.addNonPreferredTerm(ds, acs.term, idUser);
         }
 
-        if (acs.nodeGps.getLatitude() != null && acs.nodeGps.getLongitude() != null) {
-            if (acs.nodeGps.getLatitude() != 0.0 && acs.nodeGps.getLongitude() != 0.0) {
-                // insertion des données GPS
-                acs.gpsHelper.insertCoordonees(ds, acs.concept.getIdConcept(),
-                        idTheso,//thesaurus.getId_thesaurus(),
-                        acs.nodeGps.getLatitude(), acs.nodeGps.getLongitude());
+        if (CollectionUtils.isNotEmpty(acs.nodeGps)) {
+            for (NodeGps nodeGps : acs.nodeGps) {
+                if (nodeGps.getLatitude() != 0.0 && nodeGps.getLongitude() != 0.0) {
+                    // insertion des données GPS
+                    acs.gpsHelper.insertCoordonees(ds, acs.concept.getIdConcept(), idTheso,
+                            nodeGps.getLatitude(), nodeGps.getLongitude());
+                }
             }
         }
 
@@ -1308,9 +1291,7 @@ public class ImportRdf4jHelper {
         }
 
         acs.isTopConcept = false;
-
-        acs.nodeGps = null;
-        acs.nodeGps = new NodeGps();
+        acs.nodeGps = new ArrayList<>();
 
         if (acs.nodeImages != null) {
             acs.nodeImages.clear();
@@ -1430,16 +1411,12 @@ public class ImportRdf4jHelper {
     }
 
     private void addGPSCoordinates(AddConceptsStruct acs) {
-        SKOSGPSCoordinates gPSCoordinates = acs.conceptResource.getGPSCoordinates();
-        try {
-            acs.nodeGps.setLatitude(Double.parseDouble(gPSCoordinates.getLat()));
-            acs.nodeGps.setLongitude(Double.parseDouble(gPSCoordinates.getLon()));
-
-        } catch (Exception e) {
-            acs.nodeGps.setLatitude(null);
-            acs.nodeGps.setLongitude(null);
+        for (SKOSGPSCoordinates element : acs.conceptResource.getGpsCoordinates()) {
+            NodeGps nodeGps = new NodeGps();
+            nodeGps.setLatitude(Double.parseDouble(element.getLat()));
+            nodeGps.setLongitude(Double.parseDouble(element.getLon()));
+            acs.nodeGps.add(nodeGps);
         }
-
     }
 
     private void addLabel(AddConceptsStruct acs) {

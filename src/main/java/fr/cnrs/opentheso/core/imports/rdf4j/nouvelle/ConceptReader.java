@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.core.imports.rdf4j.nouvelle;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
@@ -75,11 +76,39 @@ public class ConceptReader {
 
             //GPSCoordinates
             case "lat":
-                skosConcept.getGPSCoordinates().setLat(literal.getLabel());
+                if (skosConcept.getGpsCoordinates().stream()
+                        .filter(element -> element.getLat() == null)
+                        .findFirst()
+                        .isPresent()) {
+                    for (SKOSGPSCoordinates element : skosConcept.getGpsCoordinates()) {
+                        if (element.getLat() == null) {
+                            element.setLat(literal.getLabel());
+                            break;
+                        }
+                    }
+                } else {
+                    SKOSGPSCoordinates element = new SKOSGPSCoordinates();
+                    element.setLat(literal.getLabel());
+                    skosConcept.getGpsCoordinates().add(element);
+                }
                 break;
 
             case "long":
-                skosConcept.getGPSCoordinates().setLon(literal.getLabel());
+                if (skosConcept.getGpsCoordinates().stream()
+                        .filter(element -> element.getLon() == null)
+                        .findFirst()
+                        .isPresent()) {
+                    for (SKOSGPSCoordinates element : skosConcept.getGpsCoordinates()) {
+                        if (element.getLon() == null) {
+                            element.setLon(literal.getLabel());
+                            break;
+                        }
+                    }
+                } else {
+                    SKOSGPSCoordinates element = new SKOSGPSCoordinates();
+                    element.setLon(literal.getLabel());
+                    skosConcept.getGpsCoordinates().add(element);
+                }
                 break;
 
             //identifier

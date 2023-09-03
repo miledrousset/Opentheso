@@ -179,10 +179,11 @@ public class WriteRdf4j {
     }
 
     private void writeGPS(SKOSResource resource) {
-        if (StringUtils.isNotEmpty(resource.getGPSCoordinates().getLat())
-                && StringUtils.isNotEmpty(resource.getGPSCoordinates().getLon())) {
-            builder.add("geo:lat", Double.valueOf(resource.getGPSCoordinates().getLat()));
-            builder.add("geo:long", Double.valueOf(resource.getGPSCoordinates().getLon()));
+        if (CollectionUtils.isNotEmpty(resource.getGpsCoordinates())) {
+            for (SKOSGPSCoordinates skosgpsCoordinates : resource.getGpsCoordinates()) {
+                builder.add("geo:lat", Double.valueOf(skosgpsCoordinates.getLat()));
+                builder.add("geo:long", Double.valueOf(skosgpsCoordinates.getLon()));
+            }
         }
     }
 

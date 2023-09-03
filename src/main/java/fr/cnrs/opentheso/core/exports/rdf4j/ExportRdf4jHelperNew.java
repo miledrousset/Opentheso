@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
 import fr.cnrs.opentheso.skosapi.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -587,14 +587,17 @@ public class ExportRdf4jHelperNew {
     }
 
 
-    private void addGPSGiven(NodeGps gps, SKOSResource resource) {
-        if (gps == null) {
-            return;
+    private void addGPSGiven(List<NodeGps> gps, SKOSResource resource) {
+        if (CollectionUtils.isNotEmpty(gps)) {
+            List<SKOSGPSCoordinates> elements = new ArrayList<>();
+            for (NodeGps element : gps) {
+                elements.add(new SKOSGPSCoordinates(element.getLatitude(), element.getLongitude()));
+            }
+            resource.setGpsCoordinates(elements);
         }
-        double lat = gps.getLatitude();
-        double lon = gps.getLongitude();
-        resource.setGPSCoordinates(new SKOSGPSCoordinates(lat, lon));
-    }  
+    }
+
+
     private void addAlignementGiven(ArrayList<NodeAlignmentSmall> nodeAlignments, SKOSResource resource) {
         for (NodeAlignmentSmall alignment : nodeAlignments) {
 

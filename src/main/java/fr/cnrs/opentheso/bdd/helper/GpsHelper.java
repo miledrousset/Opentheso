@@ -10,6 +10,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.core.alignment.AlignementSource;
 import fr.cnrs.opentheso.core.alignment.GpsPreferences;
@@ -114,17 +117,19 @@ public class GpsHelper {
      * @param id_theso
      * @return 
      */
-    public NodeGps getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
-        NodeGps coordonnees = null;
+    public List<NodeGps> getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
+        List<NodeGps> coordonnees = null;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select latitude, longitude from gps where id_concept ='"
                         + id_concept + "' and id_theso = '" + id_theso + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        coordonnees = new NodeGps();
-                        coordonnees.setLatitude(resultSet.getDouble("latitude"));
-                        coordonnees.setLongitude(resultSet.getDouble("longitude"));
+                    coordonnees = new ArrayList<>();
+                    while (resultSet.next()) {
+                        NodeGps nodeGps = new NodeGps();
+                        nodeGps.setLatitude(resultSet.getDouble("latitude"));
+                        nodeGps.setLongitude(resultSet.getDouble("longitude"));
+                        coordonnees.add(nodeGps);
                     }
                 }
             }
