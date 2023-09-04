@@ -185,16 +185,22 @@
                                             </p:menuButton>
                                         </div>
 
-                                        <h:panelGroup rendered="#{conceptView.isMapVisible()}" style="width: 100%;">
-                                            <div style="width: 50%; text-align: right">
-                                                <p:selectOneButton value="#{conceptView.gpsModeSelected}">
-                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.point')}" itemValue="POINT"/>
-                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polyline')}" itemValue="POLYLINE"/>
-                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polygone')}" itemValue="POLYGONE"/>
-                                                    <p:ajax event="change" listener="#{conceptView.createMapWithMode()}"
-                                                            update="containerIndex:rightTab:idConceptGps" />
-                                                </p:selectOneButton>
-                                            </div>
+                                        <h:panelGroup rendered="#{conceptView.isMapVisible()}" style="width: 100%; text-align: right">
+                                            <p:selectOneButton value="#{conceptView.gpsModeSelected}">
+                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.point')}" 
+                                                              itemValue="POINT"/>
+                                                
+                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polyline')}" 
+                                                              itemValue="POLYLINE" 
+                                                              itemDisabled="#{conceptView.isPolylineDisable()}" />
+                                                
+                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polygone')}" 
+                                                              itemValue="POLYGONE"
+                                                              itemDisabled="#{conceptView.isPolygoneDisable()}" />
+                                                
+                                                <p:ajax event="change" listener="#{conceptView.createMapWithMode()}"
+                                                        update="containerIndex:rightTab:idConceptGps" />
+                                            </p:selectOneButton>
                                         </h:panelGroup>
                                     </h:panelGroup>
 

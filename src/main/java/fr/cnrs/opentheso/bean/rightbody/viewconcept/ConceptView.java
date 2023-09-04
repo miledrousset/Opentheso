@@ -347,6 +347,14 @@ public class ConceptView implements Serializable {
                 ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
     }
 
+    public boolean isPolylineDisable() {
+        return nodeConcept.getNodeGps().size() < 2;
+    }
+
+    public boolean isPolygoneDisable() {
+        return nodeConcept.getNodeGps().size() < 3;
+    }
+
     /**
      * récuparation des informations pour le concept sélectionné après une
      * sélection dans l'arbre

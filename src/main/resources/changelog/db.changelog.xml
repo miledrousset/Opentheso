@@ -3,6 +3,7 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
+    <include file="/changelog/v23.07.3/004-update-import-export-functions.xml"/>
     <changeSet id="executeScript" author="Miled">
         <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
@@ -10,7 +11,7 @@
     <include file="/changelog/v23.07.2/001-drop-primaryKey-concept_type.xml"/>
     <changeSet id="script0001" author="Miled">
         <sqlFile path="../install/liquibaseupdate/script0001.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>    
+    </changeSet>
     <include file="/changelog/v23.07.3/001-update_concept_dcterms.xml"/>
     <include file="/changelog/v23.07.3/001-update_thesaurus_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-add-projet-description-table.xml"/>
