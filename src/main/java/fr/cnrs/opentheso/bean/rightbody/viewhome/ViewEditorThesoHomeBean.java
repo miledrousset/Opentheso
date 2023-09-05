@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -135,6 +136,15 @@ public class ViewEditorThesoHomeBean implements Serializable {
             return date.toString();
         return "";
     }
+    
+    public String getProjectName(){
+        UserHelper userHelper = new UserHelper();
+        int idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        if(idProject != -1) {
+            return "(" + userHelper.getGroupName(connect.getPoolConnexion(), idProject) + ")";
+        } else 
+            return "";
+    }    
     
     public ArrayList<NodeIdValue> getLastModifiedConcepts(){
         ConceptHelper conceptHelper = new ConceptHelper();

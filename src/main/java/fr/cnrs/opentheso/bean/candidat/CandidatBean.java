@@ -159,21 +159,21 @@ public class CandidatBean implements Serializable {
         allCollections = new GroupHelper().searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang(), "%");
 
-        allTermesGenerique = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
+/*        allTermesGenerique = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
                 selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
         if (candidatSelected != null && CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
             for (NodeIdValue nodeIdValue : candidatSelected.getTermesGenerique()) {
                 allTermesGenerique.remove(nodeIdValue);
             }
-        }
+        }*/
 
-        AllTermesAssocies = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
+/*        AllTermesAssocies = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
                 selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
         if (candidatSelected != null && CollectionUtils.isNotEmpty(candidatSelected.getTermesAssocies())) {
             for (NodeIdValue nodeIdValue : candidatSelected.getTermesGenerique()) {
                 AllTermesAssocies.remove(nodeIdValue);
             }
-        }
+        }*/
 
         try {
             languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
@@ -201,28 +201,29 @@ public class CandidatBean implements Serializable {
     public void removeSynonyme(String synonyme) {
         if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
             candidatSelected.getEmployePourList().remove(synonyme);
-            PrimeFaces.current().ajax().update("tabViewCandidat");
+            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatSynonym");
         }
     }
 
     public void removeCollection(NodeIdValue collection) {
         if (CollectionUtils.isNotEmpty(candidatSelected.getCollections())) {
             candidatSelected.getCollections().remove(collection);
-            PrimeFaces.current().ajax().update("tabViewCandidat");
+            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
         }
     }
 
     public void removeGenericTerm(NodeIdValue genericTerm) {
         if (CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
             candidatSelected.getTermesGenerique().remove(genericTerm);
-            PrimeFaces.current().ajax().update("tabViewCandidat");
+            allTermesGenerique.add(genericTerm);
+            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");
         }
     }
 
     public void removeAssociesTerm(NodeIdValue associeTerm) {
         if (CollectionUtils.isNotEmpty(candidatSelected.getTermesAssocies())) {
             candidatSelected.getTermesAssocies().remove(associeTerm);
-            PrimeFaces.current().ajax().update("tabViewCandidat");
+            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");
         }
     }
 
@@ -745,6 +746,10 @@ public class CandidatBean implements Serializable {
      * @return
      */
     public List<NodeIdValue> searchTermeGenerique(String value) {
+        List<NodeIdValue> values = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+        return values;
+        /*
         if (CollectionUtils.isNotEmpty(allTermesGenerique)) {
             if ("%".equals(value)) {
                 return allTermesGenerique;
@@ -755,12 +760,16 @@ public class CandidatBean implements Serializable {
             }
         } else {
             return Collections.emptyList();
-        }
+        }*/
     }
 
 
     public List<NodeIdValue> searchTermeAssocie(String value) {
-        if (CollectionUtils.isNotEmpty(AllTermesAssocies)) {
+        List<NodeIdValue> values = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+        return values;        
+        
+    /*    if (CollectionUtils.isNotEmpty(AllTermesAssocies)) {
             if ("%".equals(value)) {
                 return AllTermesAssocies;
             } else {
@@ -770,7 +779,7 @@ public class CandidatBean implements Serializable {
             }
         } else {
             return Collections.emptyList();
-        }
+        }*/
     }
 
     public void initialNewCandidat() throws IOException {
@@ -835,12 +844,12 @@ public class CandidatBean implements Serializable {
         if (elementAdded.isPresent()) {
             candidatSelected.getCollections().add(elementAdded.get());
             collectionTemps = Collections.emptyList();
-            PrimeFaces.current().ajax().update("tabViewCandidat");
+            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
         }
     }
 
     public void onTraductionGenericSelect(SelectEvent<NodeIdValue> event) {
-
+        /*
         Optional<NodeIdValue> elementAdded = allTermesGenerique.stream()
                 .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
                 .findFirst();
@@ -849,18 +858,35 @@ public class CandidatBean implements Serializable {
                     .filter(element -> element.getValue().equalsIgnoreCase(elementAdded.get().getValue()))
                     .findFirst().isPresent()) {
                 showMessage(FacesMessage.SEVERITY_WARN, "Le terme generique existe déjà !");
-            } else {
-                candidatSelected.getTermesGenerique().add(elementAdded.get());
-                allTermesGenerique.remove(elementAdded.get());
-            }
-            termesGeneriqueTmp = Collections.emptyList();
-            PrimeFaces.current().ajax().update("tabViewCandidat");
+            } else {*/
+
+                     //   (NodeIdValue)event.getObject());//elementAdded.get());
+           //     allTermesGenerique.remove(elementAdded.get());
+           // }
+         //   termesGeneriqueTmp = Collections.emptyList();
+         //   PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");
+       // }*/
+       //####### Désactivé par Miled, ne prend pas en charge tous les concepts du thésaurus ######
+       
+        NodeIdValue elementAdded = (NodeIdValue)event.getObject();
+        Optional<NodeIdValue> elOptional = Optional.of(elementAdded);
+        
+        if (candidatSelected.getTermesGenerique().stream()
+                .filter(element -> element.getId().equalsIgnoreCase(elOptional.get().getId()))
+                .findFirst().isPresent()) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Le terme existe déjà !");
+        } else {        
+            elementAdded.setValue(new ConceptHelper().getLexicalValueOfConcept(
+                    connect.getPoolConnexion(), elementAdded.getId(), selectedTheso.getCurrentIdTheso(),selectedTheso.getCurrentLang()));
+            candidatSelected.getTermesGenerique().add(elementAdded); 
         }
+        termesGeneriqueTmp = Collections.emptyList();
+        PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");        
     }
 
     public void onTraductionAssocieSelect(SelectEvent<NodeIdValue> event) {
 
-        Optional<NodeIdValue> elementAdded = AllTermesAssocies.stream()
+    /*    Optional<NodeIdValue> elementAdded = AllTermesAssocies.stream()
                 .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
                 .findFirst();
         if (elementAdded.isPresent()) {
@@ -874,7 +900,24 @@ public class CandidatBean implements Serializable {
             }
             termesAssociesTmp = Collections.emptyList();
             PrimeFaces.current().ajax().update("tabViewCandidat");
+        }*/
+        NodeIdValue elementAdded = (NodeIdValue)event.getObject();
+        Optional<NodeIdValue> elOptional = Optional.of(elementAdded);
+        
+        if (candidatSelected.getTermesAssocies().stream()
+                .filter(element -> element.getId().equalsIgnoreCase(elOptional.get().getId()))
+                .findFirst().isPresent()) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Le terme existe déjà !");
+        } else {        
+            elementAdded.setValue(new ConceptHelper().getLexicalValueOfConcept(
+                    connect.getPoolConnexion(), elementAdded.getId(), selectedTheso.getCurrentIdTheso(),selectedTheso.getCurrentLang()));
+            candidatSelected.getTermesAssocies().add(elementAdded); 
         }
+        termesAssociesTmp = Collections.emptyList();
+        PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");     
+    
+    
+    
     }
 
     public void onRelationBTAdded(SelectEvent<NodeIdValue> event) {

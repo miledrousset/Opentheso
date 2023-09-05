@@ -80,169 +80,176 @@
             <!-- collection -->
             <div class="row" style="margin-top: 10px">
                 <div class="col-6">
-                    <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; background: #ECF8F1">
-                        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
+                    <h:panelGroup id="candidatCollection" >
+                        <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; background: #ECF8F1">
+                            <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
 
-                            <b><h:outputText value="#{langueBean.getMsg('candidat.domaine')}" style="font-size: 14px;"/></b>
+                                <b><h:outputText value="#{langueBean.getMsg('candidat.domaine')}" style="font-size: 14px;"/></b>
 
-                            <p:autoComplete value="#{candidatBean.collectionTemps}" multiple="true" style="width: 100%; margin-bottom: 3px"
-                                            var="values" forceSelection="true" completeMethod="#{candidatBean.searchCollection}"
-                                            minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}"
-                                            converter="searchConverterIdValue" scrollHeight="300">
-                                <p:ajax event="itemSelect" listener="#{candidatBean.onItemSelect}" update="messageIndex"/>
-                                <p:column>
-                                    <h:outputText title="#{values.value}" value="#{values.value}"/>
-                                </p:column>
-                            </p:autoComplete>
+                                <p:autoComplete value="#{candidatBean.collectionTemps}" multiple="true" style="width: 100%; margin-bottom: 3px"
+                                                var="values" forceSelection="true" completeMethod="#{candidatBean.searchCollection}"
+                                                minQueryLength="1" itemLabel="#{values.value}" itemValue="#{values}"
+                                                converter="searchConverterIdValue" scrollHeight="300">
+                                    <p:ajax event="itemSelect" listener="#{candidatBean.onItemSelect}" update="messageIndex"/>
+                                    <p:column>
+                                        <h:outputText title="#{values.value}" value="#{values.value}"/>
+                                    </p:column>
+                                </p:autoComplete>
 
-                            <div class="card mb-4 py-3 border-left-success">
-                                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
-                                    <p:dataView id="collectionList" var="collection"
-                                                value="#{candidatBean.candidatSelected.collections}"
-                                                emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
-                                        <p:dataViewListItem>
-                                            <div class="product-list-item" style="display: flex; justify-content: space-between;">
-                                                <div class="product-list-detail">
-                                                    <h:outputText value="#{collection.value}" style="font-weight: bold"/>
+                                <div class="card mb-4 py-3 border-left-success">
+                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                                        <p:dataView id="collectionList" var="collection"
+                                                    value="#{candidatBean.candidatSelected.collections}"
+                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
+                                            <p:dataViewListItem>
+                                                <div class="product-list-item" style="display: flex; justify-content: space-between;">
+                                                    <div class="product-list-detail">
+                                                        <h:outputText value="#{collection.value}" style="font-weight: bold"/>
+                                                    </div>
+                                                    <div class="product-list-detail">
+                                                        <p:commandLink title="Supprimer la collection : #{collection.value}"
+                                                                       action="#{candidatBean.removeCollection(collection)}"
+                                                                       update="@this" ajax="true" process="@this">
+                                                            <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
+                                                        </p:commandLink>
+                                                    </div>
                                                 </div>
-                                                <div class="product-list-detail">
-                                                    <p:commandLink title="Supprimer la collection : #{collection.value}"
-                                                                   action="#{candidatBean.removeCollection(collection)}"
-                                                                   update="@this" ajax="true" process="@this">
-                                                        <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
-                                                    </p:commandLink>
-                                                </div>
-                                            </div>
-                                        </p:dataViewListItem>
-                                    </p:dataView>
+                                            </p:dataViewListItem>
+                                        </p:dataView>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </h:panelGroup>
                 </div>
 
                 <div class="col-6">
-                    <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; background: #ECF8F1">
-                        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
+                    <h:panelGroup id="candidatSynonym" >
+                        <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; background: #ECF8F1">
+                            <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
 
-                            <b><h:outputText value="#{langueBean.getMsg('candidat.used_for')}" style="margin-top: 14px;"/></b>
+                                <b><h:outputText value="#{langueBean.getMsg('candidat.used_for')}" style="margin-top: 14px;"/></b>
 
-                            <!-- pour les synonymes -->
-                            <div class="grid ui-fluid ui-inputgroup" style="height: 35px; margin-bottom: 3px">
-                                <p:inputText id="enployerPourId" value="#{candidatBean.employePour}" />
-                                <p:commandButton icon="pi pi-check" styleClass="ui-button-success" style="width: 30px"
-                                                 action="#{candidatBean.addSynonyme()}" />
-                            </div>
-
-                            <div class="card mb-4 py-3 border-left-success">
-                                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
-                                    <p:dataView var="synonyme" value="#{candidatBean.candidatSelected.employePourList}"
-                                                emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
-                                        <p:dataViewListItem>
-                                            <div class="product-list-item" style="display: flex; justify-content: space-between;">
-                                                <div class="product-list-detail">
-                                                    <h:outputText value="#{synonyme}" style="font-weight: bold"/>
-                                                </div>
-                                                <div class="product-list-detail">
-                                                    <p:commandLink title="Supprimer le synonyme : #{synonyme}"
-                                                                   process="@this" ajax="true" update="tabViewCandidat"
-                                                                   action="#{candidatBean.removeSynonyme(synonyme)}">
-                                                        <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
-                                                    </p:commandLink>
-                                                </div>
-                                            </div>
-                                        </p:dataViewListItem>
-                                    </p:dataView>
+                                <!-- pour les synonymes -->
+                                <div class="grid ui-fluid ui-inputgroup" style="height: 35px; margin-bottom: 3px">
+                                    <p:inputText id="enployerPourId" value="#{candidatBean.employePour}" />
+                                    <p:commandButton icon="pi pi-check" styleClass="ui-button-success" style="width: 30px"
+                                                     action="#{candidatBean.addSynonyme()}" />
                                 </div>
-                            </div>
 
+                                <div class="card mb-4 py-3 border-left-success">
+                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                                        <p:dataView var="synonyme" value="#{candidatBean.candidatSelected.employePourList}"
+                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
+                                            <p:dataViewListItem>
+                                                <div class="product-list-item" style="display: flex; justify-content: space-between;">
+                                                    <div class="product-list-detail">
+                                                        <h:outputText value="#{synonyme}" style="font-weight: bold"/>
+                                                    </div>
+                                                    <div class="product-list-detail">
+                                                        <p:commandLink title="Supprimer le synonyme : #{synonyme}"
+                                                                       process="@this" ajax="true" update="tabViewCandidat:containerIndexCandidat:candidatSynonym"
+                                                                       action="#{candidatBean.removeSynonyme(synonyme)}">
+                                                            <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
+                                                        </p:commandLink>
+                                                    </div>
+                                                </div>
+                                            </p:dataViewListItem>
+                                        </p:dataView>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
+                    </h:panelGroup>
                 </div>
             </div>
-
+            
             <div class="row">
                 <div class="col-6">
-                    <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; background: #ECF8F1">
-                        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
-                            <b><h:outputText value="#{langueBean.getMsg('candidat.generic_term')}" style="font-size: 14px;" /></b>
+                    <h:panelGroup id="candidatBT" >
+                        <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; background: #ECF8F1">
+                            <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
+                                <b><h:outputText value="#{langueBean.getMsg('candidat.generic_term')}" style="font-size: 14px;" /></b>
 
-                            <!-- pour les relations BT -->
-                            <p:autoComplete id="autoBroaderLink" value="#{candidatBean.termesGeneriqueTmp}"
-                                            multiple="true" var="values" forceSelection="true" style="width: 100%;"
-                                            completeMethod="#{candidatBean.searchTermeGenerique}" minQueryLength="1" scrollHeight="300"
-                                            itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue">
-                                <p:ajax event="itemSelect" listener="#{candidatBean.onTraductionGenericSelect}" update="messageIndex"/>
-                                <p:column style="font-size: 12px;">
-                                    <h:outputText style="vertical-align: middle; margin-left: .5rem" title="#{values.id}" value="#{values.value}"/>
-                                </p:column>
-                            </p:autoComplete>
+                                <!-- pour les relations BT -->
+                                <p:autoComplete id="autoBroaderLink" value="#{candidatBean.termesGeneriqueTmp}"
+                                                multiple="true" var="values" forceSelection="true" style="width: 100%;"
+                                                completeMethod="#{candidatBean.searchTermeGenerique}" minQueryLength="1" scrollHeight="300"
+                                                itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue">
+                                    <p:ajax event="itemSelect" listener="#{candidatBean.onTraductionGenericSelect}" update="messageIndex"/>
+                                    <p:column style="font-size: 12px;">
+                                        <h:outputText style="vertical-align: middle; margin-left: .5rem" title="#{values.id}" value="#{values.value}"/>
+                                    </p:column>
+                                </p:autoComplete>
 
-                            <div class="card mb-4 py-3 border-left-success">
-                                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
-                                    <p:dataView var="terme" value="#{candidatBean.candidatSelected.termesGenerique}"
-                                                emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
-                                        <p:dataViewListItem>
-                                            <div class="product-list-item" style="display: flex; justify-content: space-between;">
-                                                <div class="product-list-detail">
-                                                    <h:outputText value="#{terme.value}" style="font-weight: bold"/>
+                                <div class="card mb-4 py-3 border-left-success">
+                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                                        <p:dataView var="terme" value="#{candidatBean.candidatSelected.termesGenerique}"
+                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
+                                            <p:dataViewListItem>
+                                                <div class="product-list-item" style="display: flex; justify-content: space-between;">
+                                                    <div class="product-list-detail">
+                                                        <h:outputText value="#{terme.value}" style="font-weight: bold"/>
+                                                    </div>
+                                                    <div class="product-list-detail">
+                                                        <p:commandLink title="Supprimer le terme : #{terme.value}"
+                                                                       action="#{candidatBean.removeGenericTerm(terme)}"
+                                                                       update="tabViewCandidat:containerIndexCandidat:candidatBT" ajax="true" process="@this">
+                                                            <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
+                                                        </p:commandLink>
+                                                    </div>
                                                 </div>
-                                                <div class="product-list-detail">
-                                                    <p:commandLink title="Supprimer le terme : #{terme.value}"
-                                                                   action="#{candidatBean.removeGenericTerm(terme)}"
-                                                                   update="tabViewCandidat" ajax="true" process="@this">
-                                                        <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
-                                                    </p:commandLink>
-                                                </div>
-                                            </div>
-                                        </p:dataViewListItem>
-                                    </p:dataView>
+                                            </p:dataViewListItem>
+                                        </p:dataView>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
+                    </h:panelGroup>
                 </div>
                 <div class="col-6">
-                    <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; background: #ECF8F1">
-                        <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
+                    <h:panelGroup id="candidatRT" >
+                        <div class="card mb-4 py-3 border-left-success" style="margin-top: 10px; background: #ECF8F1">
+                            <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 11px; margin-right: 11px">
 
-                            <!-- pour les relations RT -->
-                            <b><h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}" style="font-size: 14px;" /></b>
+                                <!-- pour les relations RT -->
+                                <b><h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}" style="font-size: 14px;" /></b>
 
-                            <p:autoComplete id="autoRelatedLink" value="#{candidatBean.termesAssociesTmp}"
-                                            multiple="true" var="values" forceSelection="true" style="width: 100%"
-                                            completeMethod="#{candidatBean.searchTermeAssocie}" minQueryLength="1" scrollHeight="300"
-                                            itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue" >
-                                <p:ajax event="itemSelect" listener="#{candidatBean.onTraductionAssocieSelect}" update="messageIndex"/>
-                                <p:column  style="font-size: 12px;">
-                                    <h:outputText title="#{values.id}" value="#{values.value}" />
-                                </p:column>
-                            </p:autoComplete>
+                                <p:autoComplete id="autoRelatedLink" value="#{candidatBean.termesAssociesTmp}"
+                                                multiple="true" var="values" forceSelection="true" style="width: 100%"
+                                                completeMethod="#{candidatBean.searchTermeAssocie}" minQueryLength="1" scrollHeight="300"
+                                                itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue" >
+                                    <p:ajax event="itemSelect" listener="#{candidatBean.onTraductionAssocieSelect}" update="messageIndex"/>
+                                    <p:column  style="font-size: 12px;">
+                                        <h:outputText title="#{values.id}" value="#{values.value}" />
+                                    </p:column>
+                                </p:autoComplete>
 
-                            <div class="card mb-4 py-3 border-left-success">
-                                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
-                                    <p:dataView var="terme" value="#{candidatBean.candidatSelected.termesAssocies}"
-                                                emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')} ...">
-                                        <p:dataViewListItem>
-                                            <div class="product-list-item" style="display: flex; justify-content: space-between;">
-                                                <div class="product-list-detail">
-                                                    <h:outputText value="#{terme.value}" style="font-weight: bold"/>
+                                <div class="card mb-4 py-3 border-left-success">
+                                    <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                                        <p:dataView var="terme" value="#{candidatBean.candidatSelected.termesAssocies}"
+                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')} ...">
+                                            <p:dataViewListItem>
+                                                <div class="product-list-item" style="display: flex; justify-content: space-between;">
+                                                    <div class="product-list-detail">
+                                                        <h:outputText value="#{terme.value}" style="font-weight: bold"/>
+                                                    </div>
+                                                    <div class="product-list-detail">
+                                                        <p:commandLink title="Supprimer le terme : #{terme.value}"
+                                                                       action="#{candidatBean.removeAssociesTerm(terme)}"
+                                                                       update="tabViewCandidat:containerIndexCandidat:candidatRT" ajax="true" process="@this">
+                                                            <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
+                                                        </p:commandLink>
+                                                    </div>
                                                 </div>
-                                                <div class="product-list-detail">
-                                                    <p:commandLink title="Supprimer le terme : #{terme.value}"
-                                                                   action="#{candidatBean.removeAssociesTerm(terme)}"
-                                                                   update="tabViewCandidat" ajax="true" process="@this">
-                                                        <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
-                                                    </p:commandLink>
-                                                </div>
-                                            </div>
-                                        </p:dataViewListItem>
-                                    </p:dataView>
+                                            </p:dataViewListItem>
+                                        </p:dataView>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </h:panelGroup>
                 </div>
             </div>
 

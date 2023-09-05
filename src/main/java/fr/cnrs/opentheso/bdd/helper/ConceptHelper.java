@@ -1353,7 +1353,7 @@ public class ConceptHelper {
                                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
                                 + " concept.status != 'CA' and"
                                 + " concept.top_concept = true and"
-                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
+                                + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') limit 2001;";
                         stmt.executeQuery(query);
                         resultSet = stmt.getResultSet();
 
@@ -1385,7 +1385,7 @@ public class ConceptHelper {
                                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
                                 + " concept.status != 'CA' and"
                                 + " concept.top_concept = true and"
-                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
+                                + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') limit 2001;";
                         stmt.executeQuery(query);
                         resultSet = stmt.getResultSet();
 
@@ -1451,7 +1451,7 @@ public class ConceptHelper {
                                 + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
                                 + " concept.status != 'CA' and"
-                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
+                                + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') limit 2001;";
                         stmt.executeQuery(query);
                         resultSet = stmt.getResultSet();
 
@@ -1482,7 +1482,7 @@ public class ConceptHelper {
                                 + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
                                 + " concept.status != 'CA' and"
-                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
+                                + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') limit 2001;";
                         stmt.executeQuery(query);
                         resultSet = stmt.getResultSet();
 
@@ -1530,7 +1530,7 @@ public class ConceptHelper {
                 + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
                 + " concept.status != 'CA' AND "
-                + " concept_group_concept.idgroup = '" + idGroup + "'";
+                + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')";
 
         return getConceptDetails(ds, query, idThesaurus);
     }
@@ -1587,7 +1587,7 @@ public class ConceptHelper {
                         + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                         + " concept.id_thesaurus = '" + idThesaurus + "' AND "
                         + " concept.status != 'CA' AND "
-                        + " concept_group_concept.idgroup = '" + idGroup + "'");
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
@@ -1782,7 +1782,7 @@ public class ConceptHelper {
                         + " concept_group_concept.idthesaurus = hierarchical_relationship.id_thesaurus AND"
                         + " concept_group_concept.idconcept = hierarchical_relationship.id_concept1 AND"
                         + " id_thesaurus = '" + idTheso + "' and role ilike 'BT%' AND"
-                        + " concept_group_concept.idgroup = '" + idGroup + "'"
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')"
                         + " group by id_concept1 having count(id_concept1) = 1");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -1836,7 +1836,7 @@ public class ConceptHelper {
                         + " concept_group_concept.idthesaurus = hierarchical_relationship.id_thesaurus AND"
                         + " concept_group_concept.idconcept = hierarchical_relationship.id_concept1 AND"
                         + " id_thesaurus = '" + idTheso + "' and role ilike 'BT%' AND"
-                        + " concept_group_concept.idgroup = '" + idGroup + "'"
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')"
                         + " group by id_concept1 having count(id_concept1) > 1");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -3833,7 +3833,6 @@ public class ConceptHelper {
         boolean status = false;
 
         try (Connection conn = ds.getConnection()) {
-            conn.setAutoCommit(false);
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
                         + idgroup + "', '" + idthesaurus + "', '" + idconcept + "');");
@@ -4369,12 +4368,12 @@ public class ConceptHelper {
             String groupSearch = "";
             for (String idGroup : idGroups) {
                 if (groupSearch.isEmpty()) {
-                    groupSearch = "'" + idGroup + "'";
+                    groupSearch = "lower('" + idGroup + "')";
                 } else {
-                    groupSearch = groupSearch + ",'" + idGroup + "'";
+                    groupSearch = groupSearch + ",lower('" + idGroup + "')";
                 }
             }
-            multiValuesGroup = " and concept_group_concept.idgroup in (" + groupSearch + ")";
+            multiValuesGroup = " and lower(concept_group_concept.idgroup) in (" + groupSearch + ")";
         }
 
         try (Connection conn = ds.getConnection()) {
@@ -4425,7 +4424,7 @@ public class ConceptHelper {
                         + " AND"
                         + " concept.status != 'CA' "
                         + " AND"
-                        + " concept_group_concept.idgroup = '" + idGroup + "'");
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -4482,7 +4481,7 @@ public class ConceptHelper {
                         + " where"
                         + " concept_group_concept.idthesaurus = hierarchical_relationship.id_thesaurus AND"
                         + " concept_group_concept.idconcept = hierarchical_relationship.id_concept1 AND"
-                        + " concept_group_concept.idgroup = '" + idGroup + "' AND"
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') AND"
                         + " hierarchical_relationship.role = 'BT' AND"
                         + " hierarchical_relationship.id_concept1 = '" + idConcept + "' AND"
                         + " hierarchical_relationship.id_thesaurus = '" + idTheso + "'");
@@ -5145,7 +5144,7 @@ public class ConceptHelper {
                             + " FROM concept, concept_group_concept WHERE"
                             + " concept_group_concept.idconcept = concept.id_concept AND"
                             + " concept_group_concept.idthesaurus = concept.id_thesaurus AND"
-                            + " concept_group_concept.idgroup = '" + idGroup + "' AND"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') AND"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND"
                             + " concept.top_concept = true"
                             + " ORDER BY concept.notation ASC";
@@ -5154,7 +5153,7 @@ public class ConceptHelper {
                             + " FROM concept, concept_group_concept WHERE"
                             + " concept_group_concept.idconcept = concept.id_concept AND"
                             + " concept_group_concept.idthesaurus = concept.id_thesaurus AND"
-                            + " concept_group_concept.idgroup = '" + idGroup + "' AND"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') AND"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND"
                             + " concept.top_concept = true";
                 }

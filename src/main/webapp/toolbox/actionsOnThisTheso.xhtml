@@ -70,7 +70,15 @@
                                 oncomplete="PF('listNotationCsv').show();"
                                 update="idListNotationCsv listNotationCsvForm"
                                 process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>      
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>     
+                    
+                    <p:menuitem value="#{langueBean.getMsg('actions.importCollections')}" 
+                                title="#{langueBean.getMsg('actions.importCollectionsTooltip')}"
+                                oncomplete="PF('listCollectionCsv').show();"
+                                update="idListCollectionCsv listCollectionCsvForm"
+                                process="@this" ajax="true"
+                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                      
+                    
                     <p:divider style="margin-bottom: 10px;" />
                     
                     <!-- Import d'une liste tabulée pour remplacer les valeurs existantes par les nouvelles valeurs, si la valeur est vide, on supprime le contenu -->
@@ -137,7 +145,8 @@
     <ui:include src="../dialog/import/listNoteCsv.xhtml" />      
     <ui:include src="../dialog/import/listArkCsv.xhtml" />      
     <ui:include src="../dialog/import/listImageCsv.xhtml" />      
-    <ui:include src="../dialog/import/listNotationCsv.xhtml" />     
+    <ui:include src="../dialog/import/listNotationCsv.xhtml" />  
+    <ui:include src="../dialog/import/listCollectionCsv.xhtml" />     
     <ui:include src="../dialog/import/listForMergeCsv.xhtml" />    
     <ui:include src="../dialog/import/listReplaceValueByNewValueCsv.xhtml" />  
     <ui:include src="../dialog/import/listDeprecateConceptsCsv.xhtml" />      

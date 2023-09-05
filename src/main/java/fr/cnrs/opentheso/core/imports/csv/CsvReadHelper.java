@@ -376,6 +376,51 @@ public class CsvReadHelper {
         return false;
     }    
 
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileCollection(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+
+            CSVParser cSVParser = cSVFormat.parse(in);
+            String value;
+            nodeIdValues = new ArrayList<>();
+            for (CSVRecord record : cSVParser) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setId(value);
+                } catch (Exception e) {
+                    continue;
+                }
+                // on récupère les ids des collections à ajouter au concept
+                try {
+                    value = record.get("skos:member");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setValue(value.trim());
+                } catch (Exception e) {
+                    continue;
+                }
+                nodeIdValues.add(nodeIdValue);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }       
+    
     public ArrayList<String > readHeadersFileAlignment (Reader in){
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)

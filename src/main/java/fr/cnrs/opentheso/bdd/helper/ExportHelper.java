@@ -104,7 +104,7 @@ public class ExportHelper {
                         getLabels(resultSet.getString("altLab"), sKOSResource, SKOSProperty.altLabel);
 
                         if (resultSet.getString("broader") == null || resultSet.getString("broader").isEmpty()) {
-                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri, nodePreference),
+                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriThesoFromId(idTheso, originalUri, nodePreference),
                                     SKOSProperty.topConceptOf));
                         }
 
@@ -130,7 +130,7 @@ public class ExportHelper {
                             addRelationsGiven(resultSet.getString("broader"), sKOSResource);
                         }
 
-                        sKOSResource.addRelation(idTheso, getUriFromId(idTheso, originalUri, nodePreference), SKOSProperty.inScheme);
+                        sKOSResource.addRelation(idTheso, getUriThesoFromId(idTheso, originalUri, nodePreference), SKOSProperty.inScheme);
                         
                         addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
                         
@@ -211,6 +211,21 @@ public class ExportHelper {
             return getPath(originalUri) + "/" + id;
         }
     }
+    
+    private String getUriThesoFromId(String id, String originalUri, NodePreference nodePreference) {
+        if(nodePreference.isOriginalUriIsArk()) {
+            return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
+        }
+        if(nodePreference.isOriginalUriIsHandle()) {
+            return "https://hdl.handle.net/" + id;
+        }
+        
+        if (originalUri != null && !originalUri.isEmpty()) {
+            return originalUri + "/?idt=" + id;
+        } else {
+            return getPath(originalUri) + "/?idt=" + id;
+        }
+    }    
 
     private String getPath(String originalUri) {
         if (FacesContext.getCurrentInstance() == null) {

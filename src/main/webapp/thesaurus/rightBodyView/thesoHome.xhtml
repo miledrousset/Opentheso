@@ -40,10 +40,11 @@
                                           title="#{langueBean.getMsg('thesohome.totalConcepts')} #{selectedTheso.thesoName}" 
                                           style="font-size: 13px; color: #F47B2A; font-weight: bold;"/>
                             <h:outputText value=" Concepts" style="font-size: 13px; font-weight: bold; color: #858796"/>
+                            <h:outputText value=" #{viewEditorThesoHomeBean.projectName}" style="font-size: 13px; color: #F47B2A;"/>                            
                         </div>
                         <div class="col-6" style="text-align: right">
-                            <h:outputText value="#{langueBean.getMsg('thesohome.lastModification')}: " style="font-size: 13px; color: #858796"/>
-                            <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 13px; color: #601e18; font-weight: bold;"/>
+                            <h:outputText value="#{langueBean.getMsg('thesohome.modified')}: " style="font-size: 13px; color: #858796"/>
+                            <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 13px; color: #601e18;"/>
                         </div>
                     </div>
                     <div class="row">

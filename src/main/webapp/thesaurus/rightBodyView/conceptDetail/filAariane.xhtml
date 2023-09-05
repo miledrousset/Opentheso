@@ -157,17 +157,17 @@
                             actionListener="#{editConcept.clear()}"
                             update="idGenerateAllArk generateAllArkForm"/>
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_handle')}" 
                             disabled="false" action="#{editConcept.generateHandleForConceptWithoutHandle()}"
                             update="messageIndex" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_handle_for_branch')}"
                             disabled="false" action="#{editConcept.generateHandleForThisBranch()}"
                             update="messageIndex" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso())}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_handle')}"
                             disabled="false" action="#{editConcept.generateAllHandle()}"
                             update="messageIndex" />
