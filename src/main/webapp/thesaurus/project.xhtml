@@ -22,7 +22,7 @@
                 <div class="card-header py-3" style="width: 100%; display: flex;">
                     <ul aria-label="Liste des thésaurus:">
                         <ui:repeat value="#{projectBean.getListeThesoOfProject()}" var="theso">
-                            <li>#{theso.getValue()}</li>
+                            <li>#{projectBean.getLabel(theso)}</li>
                         </ui:repeat>
                     </ul>
                 </div>

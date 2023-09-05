@@ -566,6 +566,11 @@ public class AlignmentBean implements Serializable {
         }
     }
 
+    public void openEditAlignementWindow(AlignementElement alignement) {
+        selectConceptForAlignment(alignement.getIdConceptOrig());
+        PrimeFaces.current().executeScript("PF('searchAlignement').show();");
+    }
+
     public void addSingleAlignment(NodeAlignment alignment, String idTheso, String idConcept, int idUser) {
 
         new AlignmentHelper().addNewAlignment(connect.getPoolConnexion(), idUser, alignment.getConcept_target(),

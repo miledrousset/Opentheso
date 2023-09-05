@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -47,6 +48,15 @@ public class ProjectBean implements Serializable {
         projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, getLang());
         listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(),
                 Integer.parseInt(projectIdSelected), connect.getWorkLanguage());
+        ConceptHelper conceptHelper = new ConceptHelper();
+        for (NodeIdValue element : listeThesoOfProject) {
+            try {
+                element.setNbrConcepts(conceptHelper.getNbrOfCanceptByThes(connect.getPoolConnexion().getConnection(),
+                        element.getId()));
+            } catch(Exception ex) {
+                element.setNbrConcepts(0);
+            }
+        }
         init();
     }
 
@@ -97,5 +107,9 @@ public class ProjectBean implements Serializable {
             lang = connect.getWorkLanguage();
         }
         return lang;
+    }
+
+    public String getLabel(NodeIdValue nodeIdValue) {
+        return nodeIdValue.getValue () + " (" + nodeIdValue.getNbrConcepts() + " concepts)";
     }
 }

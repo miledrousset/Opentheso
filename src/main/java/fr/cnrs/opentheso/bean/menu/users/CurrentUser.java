@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
@@ -103,6 +104,21 @@ public class CurrentUser implements Serializable {
         selectedTheso.loadProject();
         selectedTheso.setSelectedProject();
 
+        if ("-1".equals(selectedTheso.getProjectIdSelected())
+                && !new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
+            indexSetting.setSelectedTheso(true);
+        } else if (selectedTheso.getProjectsList().stream()
+                .filter(element -> element.getId() == Integer.parseInt(selectedTheso.getProjectIdSelected()))
+                .findFirst().isEmpty()) {
+            selectedTheso.setProjectIdSelected("-1");
+            selectedTheso.setSelectedIdTheso(null);
+            indexSetting.setSelectedTheso(false);
+        } else if (new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso())) {
+            selectedTheso.setSelectedIdTheso(null);
+        }
+        indexSetting.setProjectSelected(false);
+
         if (propositionBean.isPropositionVisibleControle()) {
             PrimeFaces.current().executeScript("disparaitre();");
             propositionBean.setPropositionVisibleControle(false);
@@ -144,17 +160,15 @@ public class CurrentUser implements Serializable {
             return;
         }
 
-        UserHelper userHelper = new UserHelper();
-
         int idUser = -1;
         if (ldapEnable) {
             if (!new LDAPUtils().authentificationLdapCheck(username, password)) {
                 showErrorMessage("User or password LDAP wrong, please try again");
                 return;
             }
-            idUser = userHelper.getIdUserFromPseudo(connect.getPoolConnexion(), username);
+            idUser = new UserHelper().getIdUserFromPseudo(connect.getPoolConnexion(), username);
         } else {
-            idUser = userHelper.getIdUser(connect.getPoolConnexion(), username, MD5Password.getEncodedPassword(password));
+            idUser = new UserHelper().getIdUser(connect.getPoolConnexion(), username, MD5Password.getEncodedPassword(password));
         }
 
         if (idUser == -1) {
@@ -163,7 +177,7 @@ public class CurrentUser implements Serializable {
         }
 
         // on récupère le compte de l'utilisatreur
-        nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
+        nodeUser = new UserHelper().getUser(connect.getPoolConnexion(), idUser);
         if (nodeUser == null) {
             showErrorMessage("Incohérence base de données ou utilisateur n'existe pas");
             return;
@@ -177,16 +191,17 @@ public class CurrentUser implements Serializable {
         }
         
         setInfos();
-
-        propositionBean.searchNewPropositions();
         
         if ("2".equals(rightBodySetting.getIndex())) {
             rightBodySetting.setIndex("0");
         }
+
+        propositionBean.searchNewPropositions();
         propositionBean.setRubriqueVisible(false);
 
         selectedTheso.loadProject();
         selectedTheso.setSelectedProject();
+        indexSetting.setProjectSelected(false);
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
