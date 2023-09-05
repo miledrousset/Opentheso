@@ -54,9 +54,16 @@
                         </div>
                     </div>
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
-                        <div class="col-12">
-                            <p:textEditor widgetVar="editor2" secure="false" value="#{propositionBean.commentaire}" height="300"  />
-                        </div>
+                        <h:panelGroup rendered="#{!propositionBean.isConsultation}" >
+                            <div class="col-12">
+                                <p:textEditor widgetVar="editor2" secure="false" value="#{propositionBean.commentaire}" height="300"  />
+                            </div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{propositionBean.isConsultation}" >
+                            <div class="col-12">
+                                <h:outputText escape="false" height="100" value="#{propositionBean.commentaire}"/>
+                            </div>
+                        </h:panelGroup>
                     </div>
                 </div>
             </div>

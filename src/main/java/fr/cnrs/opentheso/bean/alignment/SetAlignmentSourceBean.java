@@ -91,9 +91,7 @@ public class SetAlignmentSourceBean implements Serializable {
 
     public void initAlignementAutomatique() {
 
-        if (CollectionUtils.isEmpty(nodeSelectedAlignmentsAll)) {
-            initSourcesList();
-        }
+        initSourcesList();
 
         sourcesSelected = nodeSelectedAlignmentsAll.stream()
                 .filter(source -> source.isIsSelected())
