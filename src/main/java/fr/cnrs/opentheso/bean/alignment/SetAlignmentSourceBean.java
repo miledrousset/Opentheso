@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.alignment;
 
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
@@ -30,8 +25,8 @@ import org.primefaces.PrimeFaces;
 
 
 @Data
-@Named(value = "setAlignmentSourceBean")
 @SessionScoped
+@Named(value = "setAlignmentSourceBean")
 public class SetAlignmentSourceBean implements Serializable {
 
     @Inject

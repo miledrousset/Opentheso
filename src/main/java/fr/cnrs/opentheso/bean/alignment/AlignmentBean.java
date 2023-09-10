@@ -511,8 +511,10 @@ public class AlignmentBean implements Serializable {
     }
 
 
+    AlignementSource alignementSource;
     public void searchAlignementsForAllConcepts(AlignementSource alignementSource) {
 
+        this.alignementSource = alignementSource;
         selectAlignementForAdd = new ArrayList<>();
 
         allAlignementFound = new AlignementAutomatique().searchAlignementsAutomatique(connect.getPoolConnexion(),
@@ -612,7 +614,7 @@ public class AlignmentBean implements Serializable {
                             idTerm, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
 
                         noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, selectedResource.getIdLang(), idTheso,
-                                selectedResource.getGettedValue(), "definition", selectedAlignement, idUser);
+                                selectedResource.getGettedValue(), "definition", alignementSource.getSource(), idUser);
                     }
                 }
             }
@@ -622,7 +624,7 @@ public class AlignmentBean implements Serializable {
         if (CollectionUtils.isNotEmpty(alignment.getSelectedImagesList())) {
             for (SelectedResource selectedResource : alignment.getSelectedImagesList()) {
                 new ExternalImagesHelper().addExternalImage(connect.getPoolConnexion(), idConcept, idTheso, "",
-                        selectedAlignement, selectedResource.getGettedValue(), idUser);
+                        alignementSource.getSource(), selectedResource.getGettedValue(), idUser);
             }
         }
 
@@ -661,16 +663,6 @@ public class AlignmentBean implements Serializable {
 
         showMessage(FacesMessage.SEVERITY_INFO, "Alignement ajouté avec succès");
         PrimeFaces.current().executeScript("PF('addAlignement').hide();");
-
-        /*
-        setAllAlignementVisible(true);
-        setPropositionAlignementVisible(false);
-
-        initAlignementByStep(selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
-
-        getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());*/
 
     }
 
