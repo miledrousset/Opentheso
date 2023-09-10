@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.alignment.ResultatAlignement;
@@ -321,35 +322,36 @@ public class SelectedTheso implements Serializable {
             } else {
                 roleOnThesoBean.setOwnerThesos();
             }
+            currentIdTheso = null;
+            indexSetting.setSelectedTheso(false);
             indexSetting.setProjectSelected(false);
+            selectedIdTheso = null;
             return;
         } else {
             indexSetting.setProjectSelected(true);
-            List<Thesaurus> thesaurusList;
-            if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
-                thesaurusList = thesaurusRepository.getThesaurusByProjectAndStatus(Integer.parseInt(projectIdSelected), false);
-            } else {
-                thesaurusList = thesaurusRepository.getThesaurusByProject(Integer.parseInt(projectIdSelected));
-            }
+            projectBean.initProject(projectIdSelected);
 
-            if (!thesaurusList.isEmpty()) {
-                roleOnThesoBean.setAuthorizedTheso(thesaurusList.stream().map(Thesaurus::getThesaurusId).collect(Collectors.toList()));
+            if (!projectBean.getListeThesoOfProject().isEmpty()) {
+                roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
+                        .map(NodeIdValue::getId)
+                        .collect(Collectors.toList()));
             } else {
                 roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
-                selectedIdTheso = null;
-                currentIdTheso = null;
             }
             roleOnThesoBean.addAuthorizedThesoToHM();
             roleOnThesoBean.setUserRoleOnThisTheso();
-            if (!thesaurusList.isEmpty()) {
-                for (Thesaurus thesaurus : thesaurusList) {
-                   if(StringUtils.equalsIgnoreCase(thesaurus.getThesaurusId(),currentIdTheso)){
+
+            if (!projectBean.getListeThesoOfProject().isEmpty()) {
+                for (NodeIdValue thesaurus : projectBean.getListeThesoOfProject()) {
+                   if(StringUtils.equalsIgnoreCase(thesaurus.getId(), currentIdTheso)){
                         return;
                     }
                 }
             }
 
-            projectBean.initProject(projectIdSelected);
+            selectedIdTheso = null;
+            currentIdTheso = null;
+            projectBean.init();
         }
         indexSetting.setIsSelectedTheso(false);
     }
