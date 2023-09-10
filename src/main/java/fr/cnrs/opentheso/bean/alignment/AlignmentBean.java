@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -68,7 +69,7 @@ public class AlignmentBean implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private AlignmentManualBean alignmentManualBean;
     @Inject private LanguageBean languageBean;
-    @Inject private CurrentUser currentUser;     
+    @Inject private CurrentUser currentUser;
 
     private boolean withLang;
     private boolean withNote;
@@ -634,22 +635,73 @@ public class AlignmentBean implements Serializable {
         PrimeFaces.current().executeScript("window.open('" + url + "', '_blank');");
     }
 
-    public void addAlignementByConcept(NodeAlignment alignement) {
+    private NodeAlignment alignementSelect;
+    private NodeLangTheso nodeLangTheso;
+
+    public void addAlignementSelected() {
+
+        addSingleAlignment(alignementSelect, selectedTheso.getCurrentIdTheso(),
+                alignementSelect.getInternal_id_concept(),
+                selectedTheso.getCurrentUser().getNodeUser().getIdUser());
+
+        allAlignementFound = allAlignementFound.stream()
+                .filter(element -> !element.getInternal_id_concept().equals(alignementSelect.getInternal_id_concept()))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(allAlignementFound)) {
+            setAllAlignementVisible(true);
+            setPropositionAlignementVisible(false);
+
+            initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getSelectedLang());
+
+            getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        }
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Alignement ajouté avec succès");
+        PrimeFaces.current().executeScript("PF('addAlignement').hide();");
+
+        /*
+        setAllAlignementVisible(true);
+        setPropositionAlignementVisible(false);
+
+        initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                conceptBean.getSelectedLang());
+
+        getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());*/
+
+    }
+
+    public void addAlignementByConcept(NodeAlignment alignementSelect) {
         var alignementToSave = selectAlignementForAdd.stream()
-                .filter(element -> element.getInternal_id_concept().equals(alignement.getInternal_id_concept()))
+                .filter(element -> element.getInternal_id_concept().equals(alignementSelect.getInternal_id_concept()))
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(alignementToSave) && (alignementToSave.size() == 1)) {
-            addSingleAlignment(alignementToSave.get(0), selectedTheso.getCurrentIdTheso(),
-                    alignementToSave.get(0).getInternal_id_concept(),
-                    selectedTheso.getCurrentUser().getNodeUser().getIdUser());
-
-            allAlignementFound = allAlignementFound.stream()
-                    .filter(element -> !element.getInternal_id_concept().equals(alignement.getInternal_id_concept()))
-                    .collect(Collectors.toList());
+            this.alignementSelect = alignementToSave.get(0);
+            PrimeFaces.current().executeScript("PF('addAlignement').show();");
         } else {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez choisir un seul alignement pour le conception " + alignement.getConcept_target());
+            showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez choisir un seul alignement pour le conception"
+                    + alignementSelect.getConcept_target());
         }
+    }
+
+    public NodeAlignment getAlignementSelect() {
+        return alignementSelect;
+    }
+
+    public void setAlignementSelect(NodeAlignment alignementSelect) {
+        this.alignementSelect = alignementSelect;
+    }
+
+    public NodeLangTheso getNodeLangTheso() {
+        return nodeLangTheso;
+    }
+
+    public void setNodeLangTheso(NodeLangTheso nodeLangTheso) {
+        this.nodeLangTheso = nodeLangTheso;
     }
 
     private void showMessage(FacesMessage.Severity severity, String message) {
