@@ -594,6 +594,10 @@ public class Tree implements Serializable {
             indexSetting.setIsValueSelected(true);            
         }         
         if (event.getTab().getId().equals("viewTabConcept")) {
+            conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getSelectedLang());
+
             rightBodySetting.setIndex("0");
             indexSetting.setIsValueSelected(true);            
         }          

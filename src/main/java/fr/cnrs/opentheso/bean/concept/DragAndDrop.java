@@ -511,35 +511,20 @@ public class DragAndDrop implements Serializable {
                     ((TreeNodeData) dragNode.getData()).getNodeId(),//facetSelected.getIdFacet(),
                     selectedTheso.getCurrentIdTheso());
 
-            //facetSelected.setIdConceptParent(termeParentAssocie.getId());
-
-            //showMessage(FacesMessage.SEVERITY_INFO, "Concept parent modifié avec sucée !");
-
             tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
             tree.expandTreeToPath2(
                     ((TreeNodeData) dropNode.getParent().getData()).getNodeId(),//facetSelected.getIdConceptParent(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getSelectedLang(),
-                    ((TreeNodeData) dragNode.getData()).getNodeId() + "");//facetSelected.getIdFacet()+"");
-
-            /*concepParent = new ConceptHelper().getConcept(connect.getPoolConnexion(),
-                    termeParentAssocie.getId(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang());
-            conceptParentTerme = concepParent.getTerm().getLexical_value();
-            */
+                    ((TreeNodeData) dragNode.getData()).getNodeId() + "");
             PrimeFaces pf = PrimeFaces.current();
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formRightTab:facetView");
                 pf.ajax().update("formLeftTab:tabTree:tree");
-            }        
-        
-        
+            }
         
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Facette déplacée avec succès !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-        /*    rollBackAfterErrorOrCancelDragDrop();
-            updateMessage();*/
             return;
         }
         
