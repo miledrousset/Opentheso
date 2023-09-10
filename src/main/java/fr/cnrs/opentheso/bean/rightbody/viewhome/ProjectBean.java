@@ -48,16 +48,15 @@ public class ProjectBean implements Serializable {
         projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, getLang());
         listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(),
                 Integer.parseInt(projectIdSelected), connect.getWorkLanguage());
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         for (NodeIdValue element : listeThesoOfProject) {
             try {
-                element.setNbrConcepts(conceptHelper.getNbrOfCanceptByThes(connect.getPoolConnexion().getConnection(),
+                element.setNbrConcepts(new ConceptHelper().getNbrOfCanceptByThes(connect.getPoolConnexion().getConnection(),
                         element.getId()));
             } catch(Exception ex) {
                 element.setNbrConcepts(0);
             }
         }
-        init();
     }
 
     public void init() {
