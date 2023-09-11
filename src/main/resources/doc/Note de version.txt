@@ -1,1 +1,4 @@
 Note de version
+
+- Refonte visuelle de l'atelier des actions sur les thésaurus
+-  

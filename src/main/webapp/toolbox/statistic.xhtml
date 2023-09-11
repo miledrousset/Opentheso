@@ -176,10 +176,12 @@
                                         </p:column>
 
                                         <p:column width="5%" headerText="Info">
-                                            <p:commandButton icon="pi pi-pencil" update="idConceptStat conceptDdetailForm"
+                                            <p:commandButton 
+                                                icon="fa-solid fa-circle-info" styleClass="rounded-button ui-button-outlined"
+                                                update="containerIndex:idConceptStat containerIndex:conceptDdetailForm"
                                                              actionListener="#{statistiqueBean.setConceptSelected(stat)}"
                                                              oncomplete="PF('conceptDdetail').show()" process="@this"
-                                                             styleClass="edit-button rounded-button ui-button-success"/>
+                                                             />
                                         </p:column>
                                     </p:dataTable>
 

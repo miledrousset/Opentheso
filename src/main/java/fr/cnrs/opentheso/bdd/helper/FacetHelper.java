@@ -77,15 +77,35 @@ public class FacetHelper {
     public List<NodeIdValue> getAllIdValueFacetsOfConcept(HikariDataSource ds,
             String idConcept, String idThesaurus, String idLang) {
 
-        List<String> listIdFacets = getAllIdFacetsOfConcept(ds, idConcept, idThesaurus);
-        List<NodeIdValue> nodeIdValues = new ArrayList<>();
-        for (String idFacet : listIdFacets) {
-            NodeIdValue nodeIdValue = new NodeIdValue();
-            nodeIdValue.setId(idFacet);
-            nodeIdValue.setValue(getLabelOfFacet(ds, idFacet, idThesaurus, idLang));
-            nodeIdValues.add(nodeIdValue);
+        List<NodeIdValue> listFacets = new ArrayList<>();
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT thesaurus_array.id_facet, node_label.lexical_value " +
+                        " FROM thesaurus_array, node_label " +
+                        " WHERE" +
+                        " thesaurus_array.id_thesaurus = node_label.id_thesaurus" +
+                        " AND" +
+                        " thesaurus_array.id_facet = node_label.id_facet" +
+                        " AND" +
+                        " thesaurus_array.id_thesaurus = '" + idThesaurus + "'" +
+                        " AND " +
+                        " thesaurus_array.id_concept_parent = '" + idConcept + "'" +
+                        " AND" +
+                        " node_label.lang = '" + idLang + "'" +
+                        " order by lexical_value");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(resultSet.getString("id_facet"));
+                        nodeIdValue.setValue(resultSet.getString("lexical_value"));
+                        listFacets.add(nodeIdValue);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All id facets of concept : " + idConcept, sqle);
         }
-        return nodeIdValues;
+        return listFacets;
     }
 
     /**

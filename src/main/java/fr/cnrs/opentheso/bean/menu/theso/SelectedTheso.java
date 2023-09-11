@@ -117,6 +117,7 @@ public class SelectedTheso implements Serializable {
         idThesoFromUri = null;      
         thesoName = null;   
         localUri = null;
+        projectIdSelected = "-1";
     }      
     
     @PostConstruct
@@ -306,7 +307,7 @@ public class SelectedTheso implements Serializable {
             }
         }
         if(projectsList == null || projectsList.isEmpty()) {
-            projectIdSelected = null;
+            projectIdSelected = "-1";
         }
     }    
     
