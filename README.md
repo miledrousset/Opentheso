@@ -2,6 +2,41 @@
 
 [another docker install](https://github.com/viaacode/opentheso2-docker)
 
+# Installation rapide sous linux (Debian ou Ubuntu):
+Télécharger la dernière version du WAR exemple (https://github.com/miledrousset/Opentheso2/releases/tag/v23.09.01)
+
+    Pour une mise à jour : 
+    	il suffit de mettre le war dans le dossier tomcat (/var/lib/tomcat9/webapps) renommer le war en opentheso.war
+    	attendre que le WAR se déploie
+    	modifier les fichiers de conf (hikari.properties, hibernate.cfg.xml, preferences.properties)
+    	relancer Postgresql et Tomcat
+	
+    Pour le virtualHost, ajouter ces lignes :
+            ProxyPass /opentheso http://localhost:8080/opentheso timeout=3600
+            ProxyPassReverse /opentheso http://localhost:8080/opentheso timeout=3600
+            <Directory /opentheso>
+                Order allow,deny
+                Allow from all
+            </Directory>
+            <IfModule       mod_rewrite.c>
+                    RewriteEngine   On
+                    RewriteRule     ^/$     /opentheso/$1   [R]
+            </IfModule>
+
+    Pour une nouvelle installation :
+    	- télécharger Opentheso (WAR)
+    	- placer le war dans le dossier tomcat (/var/lib/tomcat9/webapps) renommer le war en opentheso.war 
+    	- Postgresql :
+    		. créer une BDD (opentheso)
+    		. créer un utilisateur (opentheso + pass) avec des droits SuperAdmin (juste le temps du déploiement du script ci-dessous)
+    		. appliquer sur la BDD opentheso le script qui est dans le war déployé (/var/lib/tomcat9/webapps/opentheso/WEB-INF/classes/install# opentheso_current.sql)
+    		PS: le script de mise à jour s’applique automatiquement à partir de maintenant
+    	- modifier les fichiers de conf (hikari.properties, hibernate.cfg.xml, preferences.properties) en fonction de vos paramètres de BDD
+    	- relancer Postgresql et Tomcat
+    
+    Pour le virtualHost, c’est identique 
+
+
 # Opentheso2
 Nouvelle version du logiciel Opentheso avec un nouveau design
 
@@ -44,6 +79,41 @@ OpenTheso is used by a network of 39 research libraries (FRANTIQ. Archaeology, 3
 License
 
 OpenTheso is released under the terms of the CeCILL_C license, fully compatible with the GNU GPL.
+
+
+# Quick installation under Linux (Debian or Ubuntu):
+Download the latest version of the WAR example (https://github.com/miledrousset/Opentheso2/releases/tag/v23.09.01)
+
+     For an update:
+     just put the war in the tomcat folder (/var/lib/tomcat9/webapps) rename the war to opentheso.war
+     wait for WAR to deploy
+     modify conf files (hikari.properties, hibernate.cfg.xml, preferences.properties)
+     restart Postgresql and Tomcat
+
+     For the virtualHost, add these lines:
+             ProxyPass /opentheso http://localhost:8080/opentheso timeout=3600
+             ProxyPassReverse /opentheso http://localhost:8080/opentheso timeout=3600
+             <Directory /opentheso>
+                 Order allow,deny
+                 Allow from all
+             </Directory>
+             <IfModule mod_rewrite.c>
+                     RewriteEngine On
+                     RewriteRule ^/$ /opentheso/$1 [R]
+             </IfModule>
+
+     For a new installation:
+     - download Opentheso (WAR)
+     - place the war in the tomcat folder (/var/lib/tomcat9/webapps) rename the war to opentheso.war
+     - Postgresql:
+     . create a database (opentheso)
+     . create a user (opentheso + pass) with SuperAdmin rights (just long enough to deploy the script below)
+     . apply the script that is in the deployed war to the opentheso database (/var/lib/tomcat9/webapps/opentheso/WEB-INF/classes/install# opentheso_current.sql)
+     PS: the update script applies automatically from now on
+     - modify the conf files (hikari.properties, hibernate.cfg.xml, preferences.properties) according to your database settings
+     - restart Postgresql and Tomcat
+    
+     For the virtualHost, it is identical
 
 ### How to run Opentheso2:
 --> Apach Tomcat < 10
