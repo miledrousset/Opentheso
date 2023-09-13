@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+
+    <session-factory>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://opentheso2-db:5432/opentheso</property>
+        <property name="hibernate.connection.username">opentheso</property>
+        <property name="hibernate.connection.password">opentheso</property>
+        <property name="hibernate.hbm2ddl.auto">validate</property>
+        <property name="hibernate.show_sql">false</property>
+
+        <mapping class="fr.cnrs.opentheso.entites.Release"/>
+        <mapping class="fr.cnrs.opentheso.entites.Thesaurus"/>
+        <mapping class="fr.cnrs.opentheso.entites.UserGroupLabel"/>
+        <mapping class="fr.cnrs.opentheso.entites.UserGroupThesaurus"/>
+        <mapping class="fr.cnrs.opentheso.entites.UserRoleGroup"/>
+    </session-factory>
+
+</hibernate-configuration>
