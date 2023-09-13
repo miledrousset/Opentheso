@@ -35,9 +35,9 @@ A Docker Container for the Opentheso2 Posgres database must be started before st
 ```
 cd opentheso2/docker
 
-docker run --name opentheso2-db --volume opentheso2-pgdata:/pgdata --env POSTGRES_USER=opentheso --env POSTGRES_PASSWORD=opentheso --env PGDATA=/pgdata miledrousset/opentheso2-postgres
+docker run --name opentheso2-db --volume opentheso2-pgdata:/pgdata --env POSTGRES_USER=opentheso --env POSTGRES_PASSWORD=opentheso --env PGDATA=/pgdata mycontainername/opentheso2-postgres
 
-docker run --name opentheso2 --link opentheso2-db --publish 8080:8080 -it miledrousset/opentheso2
+docker run --name opentheso2 --link opentheso2-db --publish 8080:8080 -it mycontainername/opentheso2
 ```
 
 ## Accessing Opentheso2
