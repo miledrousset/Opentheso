@@ -492,7 +492,8 @@ public class RoleOnThesoBean implements Serializable {
             selectedTheso.setSelectedIdTheso(null);
             selectedTheso.setSelectedLang(null);
             selectedTheso.setSelectedTheso();
-        }
+        } else
+            selectedTheso.redirectToTheso();
     }
     
     ////////////////////////////////////////////////////////////////////

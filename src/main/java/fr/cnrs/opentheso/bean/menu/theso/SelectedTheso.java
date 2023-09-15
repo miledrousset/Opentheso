@@ -289,6 +289,10 @@ public class SelectedTheso implements Serializable {
         
         menuBean.redirectToThesaurus();
     }
+    
+    public void redirectToTheso() throws IOException{
+        menuBean.redirectToThesaurus();
+    }
 
     
     /**
@@ -393,8 +397,9 @@ public class SelectedTheso implements Serializable {
      * @throws java.io.IOException
      */
     public void reloadSelectedTheso() throws IOException {
+        loadProject();
         roleOnThesoBean.showListTheso();
-
+        
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -404,6 +409,7 @@ public class SelectedTheso implements Serializable {
             return;
         }
         startNewTheso(null);
+
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);

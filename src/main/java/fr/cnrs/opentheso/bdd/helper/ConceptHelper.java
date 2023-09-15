@@ -2287,6 +2287,12 @@ public class ConceptHelper {
      * @return
      */
     public ArrayList<NodeIdValue> generateArkIdFast(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts, String idLang) {
+        
+        if(nodePreference.isUseArkLocal()) {
+            generateArkIdLocal(ds, idTheso, idConcepts);
+            return null;
+        }        
+        
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
         ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);

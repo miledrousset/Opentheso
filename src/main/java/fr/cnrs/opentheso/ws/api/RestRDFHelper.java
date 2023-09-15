@@ -1027,6 +1027,7 @@ public class RestRDFHelper {
      * @param ds
      * @param lang
      * @param idArks
+     * @param format
      * @return
      */
     public String findDatasForWidgetByArk(HikariDataSource ds,
@@ -1142,6 +1143,13 @@ public class RestRDFHelper {
 
         ArrayList<String> nodeIds;
         // recherche de toutes les valeurs
+        value = value.trim();
+        // si la valeur est entourée de ("), on fait alors une recherche exacte
+        if(StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
+            value = value.replaceAll("\"", "");
+            match = true;
+        } 
+        
         if(match) {
             nodeIds = searchHelper.searchAutoCompletionWSForWidgetMatchExact(ds, value, lang, groups, idTheso);
         } else {
