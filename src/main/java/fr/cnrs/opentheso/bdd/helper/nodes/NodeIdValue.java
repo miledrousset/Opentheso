@@ -15,6 +15,7 @@ public class NodeIdValue implements Comparable, Serializable{
     private String value;
     private boolean Status;
     private String notation;
+    private Integer nbrConcepts;
 
     @Override
     public int compareTo(Object o) {

@@ -8,7 +8,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
@@ -16,8 +15,13 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.entites.Gps;
+import lombok.Data;
+
 import java.util.List;
 
+
+@Data
 public class NodeConcept {
 
     //BT termes génériques
@@ -61,7 +65,7 @@ public class NodeConcept {
     private ArrayList <NodeAlignment> nodeAlignments;
     
     //coordonnées GPS
-    private NodeGps nodeGps;
+    private List<Gps> nodeGps;
     
     //concepts à utiliser pour un concept déprécié
     private ArrayList <NodeIdValue> replacedBy;
@@ -80,150 +84,6 @@ public class NodeConcept {
         nodeNotesConcept = new ArrayList<>();
     }
 
-    public ArrayList<NodeBT> getNodeBT() {
-        return nodeBT;
-    }
-
-    public void setNodeBT(ArrayList<NodeBT> nodeBT) {
-        this.nodeBT = nodeBT;
-    }
-
-    public Concept getConcept() {
-        return concept;
-    }
-
-    public void setConcept(Concept concept) {
-        this.concept = concept;
-    }
-
-    public Term getTerm() {
-        return term;
-    }
-
-    public void setTerm(Term term) {
-        this.term = term;
-    }
-
-    public ArrayList<NodeNT> getNodeNT() {
-        return nodeNT;
-    }
-
-    public void setNodeNT(ArrayList<NodeNT> nodeNT) {
-        this.nodeNT = nodeNT;
-    }
-
-    public ArrayList<NodeRT> getNodeRT() {
-        return nodeRT;
-    }
-
-    public void setNodeRT(ArrayList<NodeRT> nodeRT) {
-        this.nodeRT = nodeRT;
-    }
-
-    public ArrayList<NodeEM> getNodeEM() {
-        return nodeEM;
-    }
-
-    public void setNodeEM(ArrayList<NodeEM> nodeEM) {
-        this.nodeEM = nodeEM;
-    }
-
-    public ArrayList<NodeNote> getNodeNotesTerm() {
-        return nodeNotesTerm;
-    }
-
-    public void setNodeNotesTerm(ArrayList<NodeNote> nodeNotesTerm) {
-        this.nodeNotesTerm = nodeNotesTerm;
-    }
-
-    public ArrayList<NodeNote> getNodeNotesConcept() {
-        return nodeNotesConcept;
-    }
-
-    public void setNodeNotesConcept(ArrayList<NodeNote> nodeNotesConcept) {
-        this.nodeNotesConcept = nodeNotesConcept;
-    }
-
-    public ArrayList<NodeImage> getNodeimages() {
-        return nodeimages;
-    }
-
-    public void setNodeimages(ArrayList<NodeImage> nodeimages) {
-        this.nodeimages = nodeimages;
-    }
-
-    public ArrayList<NodeGroup> getNodeConceptGroup() {
-        return nodeConceptGroup;
-    }
-
-    public void setNodeConceptGroup(ArrayList<NodeGroup> nodeConceptGroup) {
-        this.nodeConceptGroup = nodeConceptGroup;
-    }
-
-    public ArrayList<NodeTermTraduction> getNodeTermTraductions() {
-        return nodeTermTraductions;
-    }
-
-    public void setNodeTermTraductions(ArrayList<NodeTermTraduction> nodeTermTraductions) {
-        this.nodeTermTraductions = nodeTermTraductions;
-    }
-
-    public ArrayList<NodeAlignment> getNodeAlignments() {
-        return nodeAlignments;
-    }
-
-    public void setNodeAlignments(ArrayList<NodeAlignment> nodeAlignments) {
-        this.nodeAlignments = nodeAlignments;
-    }
-
-    public NodeGps getNodeGps() {
-        return nodeGps;
-    }
-
-    public void setNodeGps(NodeGps nodeGps) {
-        this.nodeGps = nodeGps;
-    }
-
-    public ArrayList<NodeIdValue> getReplacedBy() {
-        return replacedBy;
-    }
-
-    public void setReplacedBy(ArrayList<NodeIdValue> replacedBy) {
-        this.replacedBy = replacedBy;
-    }
-
-    public ArrayList<NodeIdValue> getReplaces() {
-        return replaces;
-    }
-
-    public void setReplaces(ArrayList<NodeIdValue> replaces) {
-        this.replaces = replaces;
-    }
-
-    public ArrayList<NodeImage> getNodeExternalResources() {
-        return nodeExternalResources;
-    }
-
-    public void setNodeExternalResources(ArrayList<NodeImage> nodeExternalResources) {
-        this.nodeExternalResources = nodeExternalResources;
-    }
-
-    public ArrayList<NodeCustomRelation> getNodeCustomRelations() {
-        return nodeCustomRelations;
-    }
-
-    public void setNodeCustomRelations(ArrayList<NodeCustomRelation> nodeCustomRelations) {
-        this.nodeCustomRelations = nodeCustomRelations;
-    }
-
-    public ArrayList<DcElement> getDcElements() {
-        return dcElements;
-    }
-
-    public void setDcElements(ArrayList<DcElement> dcElements) {
-        this.dcElements = dcElements;
-    }
-
     public void clear(){
         if(nodeBT != null) nodeBT.clear();
         concept = null;
@@ -237,7 +97,7 @@ public class NodeConcept {
         if(nodeConceptGroup != null) nodeConceptGroup.clear();
         if(nodeTermTraductions != null) nodeTermTraductions.clear();
         if(nodeAlignments != null) nodeAlignments.clear();
-        nodeGps = null;
+        if(nodeGps != null) nodeGps.clear();
         if(replacedBy != null) replacedBy.clear();    
         if(replaces != null) replaces.clear();    
         if(nodeExternalResources != null) nodeExternalResources.clear(); 

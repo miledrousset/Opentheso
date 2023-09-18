@@ -11,9 +11,11 @@
                 <div class="row" style="margin-left: 0px;">
                     <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
                         <p:selectBooleanCheckbox value="#{propositionBean.prefTermeAccepted}" title="Accepter cette proposition"
-                                                 rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                             or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
-                                                             and propositionBean.showButtonAction()}"/>
+                                                 rendered="#{
+                                                    propositionBean.isConsultation
+                                                    and currentUser.nodeUser != null
+                                                    and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
+                                                    and propositionBean.showButtonAction()}"/>
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.preferred_term')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-left: 5px"/>
@@ -63,9 +65,10 @@
                     <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
 
                         <p:selectBooleanCheckbox value="#{propositionBean.varianteAccepted}" title="Accepter cette proposition"
-                                                 rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                             or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
-                                                             and propositionBean.showButtonAction()}"/>
+                                                 rendered="#{propositionBean.isConsultation
+                                                        and currentUser.nodeUser != null
+                                                        and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
+                                                        and propositionBean.showButtonAction()}"/>
 
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.synonym')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.synonym')}"

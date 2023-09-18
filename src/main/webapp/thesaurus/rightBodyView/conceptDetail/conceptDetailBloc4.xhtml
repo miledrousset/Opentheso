@@ -167,35 +167,49 @@
 
                             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
                                 <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6" style="margin-left: -10px; width: 100%">
-                                    <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
+
+                                    <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
                                                               or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
-                                                  icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                                  style="width: 100%; display: flex;">
+                                        <div style="width: 50%;">
+                                            <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_gps_coordinates')}" 
-                                                    actionListener="#{gpsBean.reset()}" oncomplete="PF('setGps').show();"
-                                                    update="containerIndex:idSetGps" icon="fas fa-plus" />
+                                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_gps_coordinates')}"
+                                                            actionListener="#{gpsBean.init()}" oncomplete="PF('setGps').show();"
+                                                            update="containerIndex:idSetGps" icon="fas fa-plus" />
 
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}" 
-                                                    actionListener="#{gpsBean.reset()}" oncomplete="PF('deleteGps').show();"
-                                                    update="containerIndex:idDeleteGps" icon="fas fa-minus"
-                                                    disabled="#{conceptView.nodeConcept.nodeGps == null}"/>
-                                    </p:menuButton>
+                                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_gps_coordinates')}"
+                                                            oncomplete="PF('deleteGps').show();"
+                                                            update="containerIndex:idDeleteGps" icon="fas fa-minus"
+                                                            disabled="#{conceptView.nodeConcept.nodeGps == null}"/>
+                                            </p:menuButton>
+                                        </div>
 
-                                    <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps == null}">
+                                        <h:panelGroup rendered="#{conceptView.isMapVisible()}" style="width: 100%; text-align: right">
+                                            <p:selectOneButton value="#{conceptView.gpsModeSelected}">
+                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.point')}" 
+                                                              itemValue="POINT"/>
+                                                
+                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polyline')}" 
+                                                              itemValue="POLYLINE" 
+                                                              itemDisabled="#{conceptView.isPolylineDisable()}" />
+                                                
+                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polygone')}" 
+                                                              itemValue="POLYGONE"
+                                                              itemDisabled="#{conceptView.isPolygoneDisable()}" />
+                                                
+                                                <p:ajax event="change" listener="#{conceptView.createMapWithMode()}"
+                                                        update="containerIndex:rightTab:idConceptGps" />
+                                            </p:selectOneButton>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{!conceptView.isMapVisible()}">
                                         <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                                        style="font-size: 12px; color: grey; font-style: italic " />
                                     </h:panelGroup>
 
-                                    <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps != null}" style="width: 100%">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <h:outputText value="Latitude:" style="font-size: 12px; font-weight: bold; margin-right: 10px"/>
-                                                <h:outputText value="#{conceptView.nodeConcept.nodeGps.latitude} " style="font-size: 12px; color: #666666"/>
-                                                <h:outputText value=" Longitude:" style="font-size: 12px; font-weight: bold; margin-right: 10px"/>
-                                                <h:outputText value="#{conceptView.nodeConcept.nodeGps.longitude}" style="font-size: 12px; color: #666666"/>                                        
-                                            </div>
-                                        </div>
-
+                                    <h:panelGroup rendered="#{conceptView.isMapVisible()}" style="width: 100%;">
                                         <div class="row">
                                             <div class="col-12" style="margin-top: 10px; border-color: #43B572; width: 100%">
                                                 <leaf:mapAdvanced map="#{conceptView.mapModel}" />
@@ -204,30 +218,6 @@
                                     </h:panelGroup>
                                 </div>                                    
                             </h:panelGroup>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser == null)}">
-                                <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px; width: 100%">
-                                    <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps == null}">
-                                        <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
-                                                       style="font-size: 12px; color: grey; font-style: italic " />
-                                    </h:panelGroup>
-                                    <h:panelGroup rendered="#{conceptView.nodeConcept.nodeGps != null}" style="width: 100%">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <h:outputText value="Latitude:" style="font-size: 12px; font-weight: bold; margin-right: 10px"/>
-                                                <h:outputText value="#{conceptView.nodeConcept.nodeGps.latitude} " style="font-size: 12px; color: #666666"/>
-                                                <h:outputText value=" Longitude:" style="font-size: 12px; font-weight: bold; margin-right: 10px"/>
-                                                <h:outputText value="#{conceptView.nodeConcept.nodeGps.longitude}" style="font-size: 12px; color: #666666; "/>                                        
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-12" style="margin-top: 10px; border-color: #43B572; width: 100%">
-                                                <leaf:mapAdvanced map="#{conceptView.mapModel}"/>
-                                            </div>
-                                        </div>
-                                    </h:panelGroup>
-                                </div>                                    
-                            </h:panelGroup>       
                         </div>
                     </div>
                 </h:panelGroup>

@@ -29,7 +29,7 @@ public class AddConceptsStruct {
     public NodeStatus status;
     public String collectionToAdd;
     // pour intégrer les coordonnées GPS
-    public NodeGps nodeGps = new NodeGps();
+    public List<NodeGps> nodeGps = new ArrayList<>();
     public GpsHelper gpsHelper = new GpsHelper();
     //ajout des termes et traductions
     public NodeTerm nodeTerm = new NodeTerm();

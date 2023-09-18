@@ -10,6 +10,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.core.alignment.AlignementSource;
 import fr.cnrs.opentheso.core.alignment.GpsPreferences;
@@ -106,22 +109,6 @@ public class GpsHelper {
         return existe;
     }
 
-/*    public boolean isHaveCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
-        boolean existe = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                try ( ResultSet resultSet = stmt.executeQuery("select gps from concept where id_concept ='"
-                        + id_concept + "' and id_thesaurus = '" + id_theso + "'")) {
-                    resultSet.next();
-                    existe = resultSet.getBoolean("gps");
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while Add coordonnes : " + id_concept, sqle);
-        }
-        return existe;
-    }*/
-
     /**
      * permet de retourner les coordonnées GPS d'un concept
      * 
@@ -130,26 +117,25 @@ public class GpsHelper {
      * @param id_theso
      * @return 
      */
-    public NodeGps getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
-        NodeGps coordonnees = null;
-      //  if (isHaveCoordinate(ds, id_concept, id_theso)) {
-            try ( Connection conn = ds.getConnection()) {
-                try ( Statement stmt = conn.createStatement()) {
-                    stmt.executeQuery("select latitude, longitude from gps where id_concept ='"
-                            + id_concept + "' and id_theso = '" + id_theso + "'");
-                    try ( ResultSet resultSet = stmt.getResultSet()) {
-                        if (resultSet.next()) {
-                            coordonnees = new NodeGps();
-                            coordonnees.setLatitude(resultSet.getDouble("latitude"));
-                            coordonnees.setLongitude(resultSet.getDouble("longitude"));
-                        }
+    public List<NodeGps> getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
+        List<NodeGps> coordonnees = null;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select latitude, longitude from gps where id_concept ='"
+                        + id_concept + "' and id_theso = '" + id_theso + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    coordonnees = new ArrayList<>();
+                    while (resultSet.next()) {
+                        NodeGps nodeGps = new NodeGps();
+                        nodeGps.setLatitude(resultSet.getDouble("latitude"));
+                        nodeGps.setLongitude(resultSet.getDouble("longitude"));
+                        coordonnees.add(nodeGps);
                     }
                 }
-            } catch (SQLException sqle) {
-                log.error("Error while Add coordonnes : " + id_concept, sqle);
             }
-//        }
-
+        } catch (SQLException sqle) {
+            log.error("Error while Add coordonnes : " + id_concept, sqle);
+        }
         return coordonnees;
     }
 

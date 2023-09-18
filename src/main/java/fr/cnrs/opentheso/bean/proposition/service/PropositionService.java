@@ -110,7 +110,7 @@ public class PropositionService implements Serializable {
                 showMessage(FacesMessage.SEVERITY_ERROR, "!! votre propostion n'a pas été envoyée !!");
                 return false;
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion n'a pas été envoyée !");
             return false;
         }

@@ -62,7 +62,7 @@
         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
             <div class="card shadow mb-4">
                 <h:panelGroup id="formRightTab">
-                    <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected}"
+                    <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected()}"
                                style="border-style: none; height: 100%; " >
 
                         <p:ajax event="tabChange" listener="#{tree.onTabConceptChange}" update="containerIndex:formRightTab" />
@@ -97,11 +97,11 @@
                         </p:tab>
                     </p:tabView>
 
-                    <h:panelGroup rendered="#{indexSetting.isFacetSelected}">
+                    <h:panelGroup rendered="#{indexSetting.facetSelected}">
                         <ui:include src="rightBodyView/facet.xhtml" />
                     </h:panelGroup>
 
-                    <h:panelGroup rendered="#{indexSetting.isHomeSelected}" >
+                    <h:panelGroup rendered="#{indexSetting.homeSelected}" >
                         <ui:include src="rightBodyView/thesoHome.xhtml" />
                     </h:panelGroup>
                 </h:panelGroup>
@@ -202,5 +202,7 @@
 
     <ui:include src="../dialog/concept/deleteConcept.xhtml" />
     <ui:include src="../dialog/concept/deprecateConcept.xhtml" />
+
+    <ui:include src="../dialog/alignment/AddAlignement.xhtml" />
 
 </ui:composition>

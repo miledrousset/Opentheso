@@ -1,16 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import com.jsf2leaf.model.LatLong;
-import com.jsf2leaf.model.Layer;
 import com.jsf2leaf.model.Map;
-import com.jsf2leaf.model.Marker;
-import com.jsf2leaf.model.Polyline;
-import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.bdd.datas.DCMIResource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
@@ -38,26 +28,18 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.repositories.GpsRepository;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -65,15 +47,13 @@ import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.ResponsiveOption;
+
 
 /**
  *
@@ -82,27 +62,38 @@ import org.primefaces.model.ResponsiveOption;
 @Named(value = "conceptView")
 @SessionScoped
 public class ConceptView implements Serializable {
-    @Inject private Connect connect;
-    @Inject private IndexSetting indexSetting;
-    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject private ViewEditorHomeBean viewEditorHomeBean;
-    @Inject private Tree tree;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private LanguageBean languageBean;
+
+    @Inject
+    private Connect connect;
+    @Inject
+    private IndexSetting indexSetting;
+    @Inject
+    private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Inject
+    private ViewEditorHomeBean viewEditorHomeBean;
+    @Inject
+    private Tree tree;
+    @Inject
+    private RoleOnThesoBean roleOnThesoBean;
+    @Inject
+    private SelectedTheso selectedTheso;
+    @Inject
+    private LanguageBean languageBean;
+    @Inject
+    private GpsRepository gpsRepository;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
-    private String selectedLang;
+    private String selectedLang, gpsModeSelected = "POINT";
     private ArrayList<NodeCorpus> nodeCorpuses;
     private ArrayList<NodePath> pathLabel;
     private ArrayList<NodeIdValue> nodeFacets;
 
     /// pagination
     private int offset;
-    private int step;    
+    private int step;
     private boolean haveNext;
-    
+
     // total de la branche
     private int countOfBranch;
 
@@ -121,9 +112,9 @@ public class ConceptView implements Serializable {
     private ArrayList<NodeNote> historyNotes;
 
     private ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals;
-    
+
     private List<ResponsiveOption> responsiveOptions;
-    
+
     private boolean toggleSwitchAltLabelLang;
     private boolean toggleSwitchNotesLang;
 
@@ -136,51 +127,18 @@ public class ConceptView implements Serializable {
     }
 
     public void clear() {
-        if (nodeCorpuses != null) {
-            nodeCorpuses.clear();
-            nodeCorpuses = null;
-        }
-        if (pathLabel != null) {
-            pathLabel.clear();
-            pathLabel = null;
-        }
-        if (notes != null) {
-            notes.clear();
-            notes = null;
-        }
-        if (scopeNotes != null) {
-            scopeNotes.clear();
-            scopeNotes = null;
-        }
-        if (changeNotes != null) {
-            changeNotes.clear();
-            changeNotes = null;
-        }
-        if (definitions != null) {
-            definitions.clear();
-            definitions = null;
-        }
-        if (editorialNotes != null) {
-            editorialNotes.clear();
-            editorialNotes = null;
-        }
-        if (examples != null) {
-            examples.clear();
-            examples = null;
-        }
-        if (historyNotes != null) {
-            historyNotes.clear();
-            historyNotes = null;
-        }
-        if (nodeConcept != null) {
-            nodeConcept.clear();
-            nodeConcept = null;
-        }
-        if (nodeFacets != null) {
-            nodeFacets.clear();
-            nodeFacets = null;
-        }        
-        
+        nodeCorpuses = new ArrayList<>();
+        pathLabel = new ArrayList<>();
+        notes = new ArrayList<>();
+        scopeNotes = new ArrayList<>();
+        changeNotes = new ArrayList<>();
+        definitions = new ArrayList<>();
+        editorialNotes = new ArrayList<>();
+        examples = new ArrayList<>();
+        historyNotes = new ArrayList<>();
+        nodeConcept = new NodeConcept();
+        nodeFacets = new ArrayList<>();
+
         selectedLang = null;
         mapModel = null;
         nodeCustomRelationReciprocals = null;
@@ -202,13 +160,13 @@ public class ConceptView implements Serializable {
 
         if (nodeFacets == null) {
             nodeFacets = new ArrayList<>();
-        }        
+        }
         clearNotes();
-        
+
         offset = 0;
         step = 20;
         haveNext = false;
-        
+
         nodeCorpuses = null;
         countOfBranch = 0;
         haveCorpus = false;
@@ -217,7 +175,7 @@ public class ConceptView implements Serializable {
         if (mapModel == null) {
             mapModel = new Map();
         }
-        
+
         responsiveOptions = new ArrayList<>();
         responsiveOptions.add(new ResponsiveOption("1024px", 5));
         responsiveOptions.add(new ResponsiveOption("768px", 3));
@@ -225,76 +183,51 @@ public class ConceptView implements Serializable {
     }
 
     private void clearNotes() {
-        if (notes == null) {
-            notes = new ArrayList<>();
-        } else 
-            notes.clear();
-                    
-        if (scopeNotes == null) {
-            scopeNotes = new ArrayList<>();
-        } else 
-            scopeNotes.clear();
-        
-        if (changeNotes == null) {
-            changeNotes = new ArrayList<>();
-        } else 
-            changeNotes.clear();
-        
-        if (definitions == null) {
-            definitions = new ArrayList<>();
-        } else 
-            definitions.clear();
-        
-        if (editorialNotes == null) {
-            editorialNotes = new ArrayList<>();
-        } else 
-            editorialNotes.clear();
-        
-        if (examples == null) {
-            examples = new ArrayList<>();
-        } else 
-            examples.clear();
-        
-        if (historyNotes == null) {
-            historyNotes = new ArrayList<>();
-        } else 
-            historyNotes.clear();        
+        notes = new ArrayList<>();
+        scopeNotes = new ArrayList<>();
+        changeNotes = new ArrayList<>();
+        definitions = new ArrayList<>();
+        editorialNotes = new ArrayList<>();
+        examples = new ArrayList<>();
+        historyNotes = new ArrayList<>();
     }
-    
+
     public String getDrapeauImg(String codePays) {
         if (StringUtils.isEmpty(codePays)) {
             return FacesContext.getCurrentInstance().getExternalContext()
                     .getRequestContextPath() + "/resources/img/nu.svg";
         }
-        
-        return "https://countryflagsapi.com/png/" + codePays;      
+
+        return "https://countryflagsapi.com/png/" + codePays;
     }
+
     public String getDrapeauImgLocal(String codePays) {
         if (StringUtils.isEmpty(codePays)) {
             return FacesContext.getCurrentInstance().getExternalContext()
                     .getRequestContextPath() + "/resources/img/flag/noflag.png";
         }
         return FacesContext.getCurrentInstance().getExternalContext()
-                .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";   
-    }    
-    
+                .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";
+    }
+
     /**
      * permet de retourner le label du type de concept en focntion de la langue de l'interface
+     *
      * @param conceptType
      * @param idTheso
-     * @return 
+     * @return
      */
-    public String getLabelOfConceptType(String conceptType, String idTheso){
+    public String getLabelOfConceptType(String conceptType, String idTheso) {
         String idLang;
         RelationsHelper relationsHelper = new RelationsHelper();
         idLang = getIdLangOfInterface();
-        
+
         return relationsHelper.getLabelOfTypeConcept(connect.getPoolConnexion(),
                 conceptType,
-                idTheso, 
+                idTheso,
                 idLang);
     }
-    
+
     /**
      * récuparation des informations pour le concept sélectionné c'est pour la
      * navigation entre les concepts dans la vue de droite avec deployement de
@@ -306,33 +239,33 @@ public class ConceptView implements Serializable {
      */
     public void getConcept(String idTheso, String idConcept, String idLang) {
         offset = 0;
-        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
+        gpsModeSelected = "POINT";
+        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) {
             return;
         }
         // permet de récupérer les qualificatifs
-        if(roleOnThesoBean.getNodePreference().isUseCustomRelation()){
-            String interfaceLang = getIdLangOfInterface();            
+        if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
+            String interfaceLang = getIdLangOfInterface();
 
             nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
                     connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
             setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
-        }        
-        
-        setOffset();
-        if (nodeConcept.getNodeGps() != null) {
-            initMap();
         }
+
+        setOffset();
+
+        createMap(idConcept, idTheso);
+
         selectedLang = idLang;
-        if(toggleSwitchAltLabelLang) {
+        if (toggleSwitchAltLabelLang) {
             getAltLabelWithAllLanguages();
         }
-        if(toggleSwitchNotesLang) {
+        if (toggleSwitchNotesLang) {
             getNotesWithAllLanguages();
         } else {
             setNotes();
         }
-
 
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
@@ -340,19 +273,19 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         haveCorpus = false;
-        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
-        if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
-            setCorpus();
+        List<NodeCorpus> nodeCorpusesTmp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+        if (CollectionUtils.isNotEmpty(nodeCorpusesTmp)) {
+            searchCorpus(nodeCorpusesTmp);
         }
         setRoles();
-        
+
         setFacetsOfConcept(idConcept, idTheso, idLang);
 
         // deployement de l'arbre si l'option est true
         if (roleOnThesoBean.getNodePreference() != null) {
-            if(roleOnThesoBean.getNodePreference().isBreadcrumb())
+            if (roleOnThesoBean.getNodePreference().isBreadcrumb())
                 pathOfConcept(idTheso, idConcept, idLang);
-            
+
             if (roleOnThesoBean.getNodePreference().isAuto_expand_tree()) {
                 tree.expandTreeToPath(
                         idConcept,
@@ -365,8 +298,61 @@ public class ConceptView implements Serializable {
                 selectedTheso.actionFromConceptToOn();
             }
         }
-        
+
         countOfBranch = 0;
+    }
+
+    private void searchCorpus(List<NodeCorpus> nodeCorpusesTmp) {
+        nodeCorpuses = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(nodeCorpusesTmp.size());
+        List<Callable<NodeCorpus>> callables = new ArrayList<>();
+
+        for (NodeCorpus nodeCorpus : nodeCorpusesTmp) {
+            callables.add(new SearchCorpus(nodeCorpus, nodeConcept));
+        }
+
+        try {
+            List<Future<NodeCorpus>> futures = executor.invokeAll(callables);
+            for (Future<NodeCorpus> future : futures) {
+                haveCorpus = true;
+                nodeCorpuses.add(future.get());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+    }
+
+    public void createMap(String idConcept, String idTheso) {
+        nodeConcept.setNodeGps(gpsRepository.getGpsByConceptAndThesorus(idConcept, idTheso));
+        if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
+            createMapWithMode();
+        }
+    }
+
+    public void createMapWithMode() {
+        GpsMode gpsMode;
+        switch (gpsModeSelected) {
+            case "POLYGONE":
+                gpsMode = GpsMode.POLYGONE;
+                break;
+            case "POLYLINE":
+                gpsMode = GpsMode.POLYLINE;
+                break;
+            default:
+                gpsMode = GpsMode.POINT;
+        }
+        mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsMode,
+                ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
+    }
+
+    public boolean isPolylineDisable() {
+        return nodeConcept.getNodeGps().size() < 2;
+    }
+
+    public boolean isPolygoneDisable() {
+        return nodeConcept.getNodeGps().size() < 3;
     }
 
     /**
@@ -378,44 +364,42 @@ public class ConceptView implements Serializable {
      * @param idLang
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
-        offset = 0; 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step+1, offset);
-        if(nodeConcept == null) return;
-        
+        offset = 0;
+        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
+        if (nodeConcept == null) return;
+
         // permet de récupérer les qualificatifs
-        if(roleOnThesoBean.getNodePreference().isUseCustomRelation()){
-            String interfaceLang = getIdLangOfInterface();
+        if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
-                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, getIdLangOfInterface()));
             setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
         }
-            
 
-
-        if(roleOnThesoBean.getNodePreference().isBreadcrumb())
+        if (roleOnThesoBean.getNodePreference().isBreadcrumb())
             pathOfConcept(idTheso, idConcept, idLang);
 
-        if(toggleSwitchAltLabelLang) {
+        if (toggleSwitchAltLabelLang) {
             getAltLabelWithAllLanguages();
         }
-        if(toggleSwitchNotesLang) {
+        if (toggleSwitchNotesLang) {
             getNotesWithAllLanguages();
         } else {
             setNotes();
         }
-        
+
         setOffset();
-        
+
         // récupération des informations sur les corpus liés
         haveCorpus = false;
-        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
-        if (nodeCorpuses != null && !nodeCorpuses.isEmpty()) {
-            setCorpus();
+        List<NodeCorpus> nodeCorpusesTmp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+        if (CollectionUtils.isNotEmpty(nodeCorpusesTmp)) {
+            searchCorpus(nodeCorpusesTmp);
         }
         setRoles();
-        if (nodeConcept.getNodeGps() != null) {
-            initMap();
+
+        nodeConcept.setNodeGps(gpsRepository.getGpsByConceptAndThesorus(idConcept, idTheso));
+        if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
+            mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), GpsMode.POINT, "");
         }
 
         setFacetsOfConcept(idConcept, idTheso, idLang);
@@ -430,36 +414,36 @@ public class ConceptView implements Serializable {
     /**
      * permet de récupérer toutes les notes dans toutes les langues
      */
-    public void getNotesWithAllLanguages(){
+    public void getNotesWithAllLanguages() {
         NoteHelper noteHelper = new NoteHelper();
-        if(toggleSwitchNotesLang) {
+        if (toggleSwitchNotesLang) {
             nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
-                    connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));  
+                    connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));
             nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
-                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));             
+                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
         } else {
             nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(
                     connect.getPoolConnexion(),
                     nodeConcept.getTerm().getId_term(),
                     nodeConcept.getConcept().getIdThesaurus(),
-                    selectedLang));             
-                   
+                    selectedLang));
+
             nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConcept(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
                     nodeConcept.getConcept().getIdThesaurus(),
-                    selectedLang));               
+                    selectedLang));
         }
         setNotes();
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
-    
-    public void getAltLabelWithAllLanguages(){   
+
+    public void getAltLabelWithAllLanguages() {
         TermHelper termHelper = new TermHelper();
-        
-        if(toggleSwitchAltLabelLang)
+
+        if (toggleSwitchAltLabelLang)
             nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
-                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));  
+                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
         else
             nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(connect.getPoolConnexion(),
                     nodeConcept.getTerm().getId_term(),
@@ -467,13 +451,13 @@ public class ConceptView implements Serializable {
                     selectedLang));
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
-    }    
-    
-    
-    private void setFacetsOfConcept(String idConcept, String idTheso, String idLang){
+    }
+
+
+    private void setFacetsOfConcept(String idConcept, String idTheso, String idLang) {
         FacetHelper facetHelper = new FacetHelper();
         List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(connect.getPoolConnexion(), idConcept, idTheso);
-        if(nodeFacets == null)
+        if (nodeFacets == null)
             nodeFacets = new ArrayList<>();
         else
             nodeFacets.clear();
@@ -492,220 +476,6 @@ public class ConceptView implements Serializable {
                 nodeConcept.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
         this.countOfBranch = listIdsOfBranch.size();
-    }
-
-    private void initMap() {
-        LatLong place = new LatLong(nodeConcept.getNodeGps().getLatitude() + "",
-                nodeConcept.getNodeGps().getLongitude() + "");
-
-        String titre = nodeConcept.getTerm() != null ? nodeConcept.getTerm().getLexical_value() : "";
-        titre = titre.replaceAll("'", "_");
-        
-        mapModel = new Map();
-        mapModel.setWidth("100%");
-        mapModel.setHeight("250px");
-        mapModel.setCenter(place);
-        mapModel.setZoom(13);
-        mapModel.setAttribution("©<a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>");
-        mapModel.setMiniMap(false);
-        mapModel.setLayerControl(false);
-        mapModel.setDraggingEnabled(true);
-        mapModel.setZoomEnabled(true);
-        
-        // pour marquer un point 
-        Layer placesLayer = (new Layer()).setLabel(titre);
-        placesLayer.addMarker(new Marker(new LatLong(nodeConcept.getNodeGps().getLatitude() + "",
-                nodeConcept.getNodeGps().getLongitude() + ""), titre, new Pulse(true, 10, "#F47B2A")));
-        
-        // pour marquer un polyline
-        Layer polycircleLayer = (new Layer()).setLabel(titre);
-        polycircleLayer.addPolyline((new Polyline())
-             /*   .addPoint(new LatLong(nodeConcept.getNodeGps().getLatitude() + "", nodeConcept.getNodeGps().getLongitude() + ""))
-                .addPoint(new LatLong("45.7466304","4.8344027"))
-                .addPoint(new LatLong("45.7575158","4.831995239159291"))
-                .addPoint(new LatLong("45.766704700000005","4.833645109701492"))
-                .addPoint(new LatLong("45.7592161","4.8473512"))  
-                .addPoint(new LatLong(nodeConcept.getNodeGps().getLatitude() + "", nodeConcept.getNodeGps().getLongitude() + ""))*/
-                .setColor("#F47B2A")
-        );
-        mapModel.addLayer(placesLayer).addLayer(polycircleLayer);
-    }
-
-    private void setCorpus() {
-        if (nodeConcept != null) {
-            for (NodeCorpus nodeCorpuse : nodeCorpuses) {
-                // cas où on compose uniquement une URL de lien vers les notices
-                if (nodeCorpuse.isIsOnlyUriLink()) {
-                    if (nodeCorpuse.getUriLink().contains("##id##")) {
-                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
-                        haveCorpus = true;
-                    }
-                    if (nodeCorpuse.getUriLink().contains("##value##")) {
-                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
-                        haveCorpus = true;
-                    }
-                } else {
-                    // recherche par Id
-                    
-                    /// pour le count par Id interne
-                    if (nodeCorpuse.getUriCount().contains("##id##")) {
-                        if (nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
-                            nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
-                        }
-                    }
-                    /// pour le count par Id ark
-                    if (nodeCorpuse.getUriCount().contains("##arkid##")) {
-                        if (nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
-                            nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##arkid##", nodeConcept.getConcept().getIdArk()));
-                        }
-                    }                    
-                    
-                    /// pour la construction de l'URL avec Id interne
-                    if (nodeCorpuse.getUriLink().contains("##id##")) {
-                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
-                    }
-                    /// pour la construction de l'URL avec Id Ark
-                    if (nodeCorpuse.getUriLink().contains("##arkid##")) {
-                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##arkid##", nodeConcept.getConcept().getIdArk()));
-                    }                    
-
-                    // recherche par value
-                    if (nodeCorpuse.getUriCount().contains("##value##")) {
-                        if (nodeCorpuse.getUriCount() != null && !nodeCorpuse.getUriCount().isEmpty()) {
-                            nodeCorpuse.setUriCount(nodeCorpuse.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
-                        }
-                    }
-                    if (nodeCorpuse.getUriLink().contains("##value##")) {
-                        nodeCorpuse.setUriLink(nodeCorpuse.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
-                    }
-                    setCorpusCount(nodeCorpuse);
-                }
-            }
-        }
-    }
-
-    private void setCorpusCount(NodeCorpus nodeCorpus) {
-        if (nodeConcept != null) {
-            if (nodeCorpus == null) {
-                return;
-            }
-        /*    if (nodeCorpus.getUriCount().contains("https://")) {
-                nodeCorpus.setCount(getCountOfResourcesFromHttps(nodeCorpus.getUriCount()));
-            }
-            if (nodeCorpus.getUriCount().contains("http://")) {*/
-                nodeCorpus.setCount(getCountOfResourcesFromHttp(nodeCorpus.getUriCount()));
-       //     }
-        }
-    }
-
-    private int getCountOfResourcesFromHttps(String uri) {
-        String output;
-        String json = "";
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-            }
-
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-            }
-        }
-        };
-
-        // Install the all-trusting trust manager
-        SSLContext sc;
-        try {
-            sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KeyManagementException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        // Create all-trusting host name verifier
-        HostnameVerifier allHostsValid = new HostnameVerifier() {
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        };
-        // Install the all-trusting host verifier
-        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-
-        // récupération du total des notices
-        try {
-            URL url = new URL(uri);
-
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setUseCaches(false);
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            int status = conn.getResponseCode();
-            if (status != 200) {
-                return -1;
-            }
-            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            while ((output = br.readLine()) != null) {
-                json += output;
-            }
-            br.close();
-            return getCountFromJson(json);
-
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return -1;
-    }
-    
-    private int getCountOfResourcesFromHttp(String uri) {
-        String output;
-        String json = "";
-
-        // récupération du total des notices
-        try {
-            URL url = new URL(uri);
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setUseCaches(false);
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            int status = conn.getResponseCode();
-            if (status != 200) {
-                return -1;
-            }
-            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            while ((output = br.readLine()) != null) {
-                json += output;
-            }
-            br.close();
-            return getCountFromJson(json);
-
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
-        } catch (IOException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
-        } catch (Exception ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
-        }
-        return -1;
     }
 
     private int getCountFromJson(String jsonText) {
@@ -756,32 +526,32 @@ public class ConceptView implements Serializable {
     }
 
     public void setOffset() {
-        if(nodeConcept.getNodeNT().size() < step) {
+        if (nodeConcept.getNodeNT().size() < step) {
             offset = 0;
             haveNext = false;
         } else {
-            offset = offset + step+1;
+            offset = offset + step + 1;
             haveNext = true;
-        } 
+        }
 
     }
-    
+
     public void setNodeCustomRelationWithReciprocal(ArrayList<NodeCustomRelation> nodeCustomRelations) {
         nodeCustomRelationReciprocals = new ArrayList<>();
         for (NodeCustomRelation nodeCustomRelation : nodeCustomRelations) {
-            if(nodeCustomRelation.isReciprocal())
+            if (nodeCustomRelation.isReciprocal())
                 nodeCustomRelationReciprocals.add(nodeCustomRelation);
         }
-        if(nodeCustomRelationReciprocals.isEmpty())
+        if (nodeCustomRelationReciprocals.isEmpty())
             nodeCustomRelationReciprocals = null;
     }
-    
+
     public void getNextNT(String idTheso, String idConcept, String idLang) {
     /*    if(tree != null 
                 && CollectionUtils.isNotEmpty(tree.getClickselectedNodes()) 
                 && tree.getClickselectedNodes().get(0) != null 
                 && tree.getClickselectedNodes().get(0).getData() != null) {*/
-            if(tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {            
+        if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
             RelationsHelper relationsHelper = new RelationsHelper();
           /*  ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
                     ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId(),
@@ -790,15 +560,15 @@ public class ConceptView implements Serializable {
             ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
                     ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
                     idTheso,
-                    idLang, step+1, offset);            
-            if(nodeNTs != null && !nodeNTs.isEmpty()) {
+                    idLang, step + 1, offset);
+            if (nodeNTs != null && !nodeNTs.isEmpty()) {
                 nodeConcept.getNodeNT().addAll(nodeNTs);
                 setOffset();
                 return;
             }
             haveNext = false;
         }
-    } 
+    }
 
     public int getStep() {
         return step;
@@ -807,12 +577,12 @@ public class ConceptView implements Serializable {
     public void setStep(int step) {
         this.step = step;
     }
-    
+
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
         List<Path> paths = pathHelper.getPathOfConcept2(
                 connect.getPoolConnexion(), idConcept, idTheso);
-        if(pathHelper.getMessage() != null){
+        if (pathHelper.getMessage() != null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
@@ -827,7 +597,7 @@ public class ConceptView implements Serializable {
         pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
     }
 
-    private void setRoles(){
+    private void setRoles() {
         if (nodeConcept == null || nodeConcept.getDcElements() == null) {
             creator = null;
             contributors = null;
@@ -835,20 +605,22 @@ public class ConceptView implements Serializable {
         contributors = null;
         creator = null;
         boolean firstElement = true;
-        for (DcElement dcElement : nodeConcept.getDcElements()) {
-            switch (dcElement.getName()) {
-                case DCMIResource.CONTRIBUTOR :
-                    if(firstElement) {
-                        contributors = dcElement.getValue();
-                        firstElement = false;
-                    } else {
-                        contributors = contributors + "; " + dcElement.getValue();
-                    }
-                    break;
-                case DCMIResource.CREATOR :
-                    creator = dcElement.getValue();                    
-                default:
-                    break;
+        if (CollectionUtils.isNotEmpty(nodeConcept.getDcElements())) {
+            for (DcElement dcElement : nodeConcept.getDcElements()) {
+                switch (dcElement.getName()) {
+                    case DCMIResource.CONTRIBUTOR:
+                        if (firstElement) {
+                            contributors = dcElement.getValue();
+                            firstElement = false;
+                        } else {
+                            contributors = contributors + "; " + dcElement.getValue();
+                        }
+                        break;
+                    case DCMIResource.CREATOR:
+                        creator = dcElement.getValue();
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -869,15 +641,15 @@ public class ConceptView implements Serializable {
         this.contributors = contributors;
     }
 
-    
-    public String getNoteSource(String noteSource){
-        if(StringUtils.isEmpty(noteSource))
+
+    public String getNoteSource(String noteSource) {
+        if (StringUtils.isEmpty(noteSource))
             return "";
         else
             return " (" + noteSource + ")";
     }
 
-/////////////////////////////////
+    /////////////////////////////////
 /////////////////////////////////
 // fonctions pour les notes /////    
 /////////////////////////////////
@@ -914,39 +686,39 @@ public class ConceptView implements Serializable {
             }
         }
     }
-    
-    public String getColorOfTypeConcept(){
-        if("concept".equalsIgnoreCase(nodeConcept.getConcept().getConceptType()))
-                return "";
+
+    public String getColorOfTypeConcept() {
+        if ("concept".equalsIgnoreCase(nodeConcept.getConcept().getConceptType()))
+            return "";
         else
             return "#fcd8bf";
     }
-    
-    public String geLabelReciprocal(NodeConceptType nodeConceptType){
-        if("concept".equalsIgnoreCase(nodeConceptType.getCode())) {
+
+    public String geLabelReciprocal(NodeConceptType nodeConceptType) {
+        if ("concept".equalsIgnoreCase(nodeConceptType.getCode())) {
             return "";
         }
         String idLang = languageBean.getIdLangue();
-        if(nodeConceptType.isReciprocal()) {
-            if("fr".equalsIgnoreCase(idLang)){
+        if (nodeConceptType.isReciprocal()) {
+            if ("fr".equalsIgnoreCase(idLang)) {
                 return " - Relation réciproque";
             }
-            if("en".equalsIgnoreCase(idLang)){
+            if ("en".equalsIgnoreCase(idLang)) {
                 return " - Reciprocal relation";
-            }            
+            }
         } else {
-            if("fr".equalsIgnoreCase(idLang)){
+            if ("fr".equalsIgnoreCase(idLang)) {
                 return " - Relation à sens unique";
             }
-            if("en".equalsIgnoreCase(idLang)){
+            if ("en".equalsIgnoreCase(idLang)) {
                 return " - One-way relationship";
-            }               
+            }
         }
         return "";
     }
-    
+
     public void changeStateAltLabelOtherLang() {
-        
+
     }
 
     public NodeConcept getNodeConcept() {
@@ -978,7 +750,7 @@ public class ConceptView implements Serializable {
         this.selectedLang = selectedLang;
     }
 
-/////// notes
+    /////// notes
     public ArrayList<NodeNote> getNotes() {
         return notes;
     }
@@ -1069,7 +841,7 @@ public class ConceptView implements Serializable {
 
     public ArrayList<NodeIdValue> getNodeFacets() {
         return nodeFacets;
-}
+    }
 
     public void setNodeFacets(ArrayList<NodeIdValue> nodeFacets) {
         this.nodeFacets = nodeFacets;
@@ -1101,16 +873,27 @@ public class ConceptView implements Serializable {
 
     /**
      * permet de retouver la langue de l'interface et se limiter au fr et en
-     * @return 
+     *
+     * @return
      */
-    private String getIdLangOfInterface(){
+    private String getIdLangOfInterface() {
         String idLang;
-        if("en".equalsIgnoreCase(languageBean.getIdLangue()) || "fr".equalsIgnoreCase(languageBean.getIdLangue())){
+        if ("en".equalsIgnoreCase(languageBean.getIdLangue()) || "fr".equalsIgnoreCase(languageBean.getIdLangue())) {
             idLang = languageBean.getIdLangue();
         } else
             idLang = "en";
-        return idLang;  
+        return idLang;
     }
-    
-    
+
+    public String getGpsModeSelected() {
+        return gpsModeSelected;
+    }
+
+    public void setGpsModeSelected(String gpsModeSelected) {
+        this.gpsModeSelected = gpsModeSelected;
+    }
+
+    public Boolean isMapVisible() {
+        return ObjectUtils.isNotEmpty(nodeConcept) && CollectionUtils.isNotEmpty(nodeConcept.getNodeGps());
+    }
 }

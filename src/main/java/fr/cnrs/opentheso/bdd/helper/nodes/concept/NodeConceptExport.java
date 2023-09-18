@@ -60,7 +60,7 @@ public class NodeConceptExport {
 
     private List<VoteDto> votes = new ArrayList<>();
 
-    private NodeGps nodeGps;
+    private List<NodeGps> nodeGps;
     
     //concepts à utiliser pour un concept déprécié
     private ArrayList <NodeHieraRelation> replacedBy;
@@ -145,11 +145,11 @@ public class NodeConceptExport {
 
 
 
-    public NodeGps getNodeGps() {
+    public List<NodeGps> getNodeGps() {
         return nodeGps;
     }
 
-    public void setNodeGps(NodeGps nodeGps) {
+    public void setNodeGps(List<NodeGps> nodeGps) {
         this.nodeGps = nodeGps;
     }
 

@@ -27,18 +27,21 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 
+@Data
 @SessionScoped
 @Named(value = "propositionBean")
 public class PropositionBean implements Serializable {
 
     @Inject
     private Connect connect;
+
     @Inject
     private CurrentUser currentUser;
 
@@ -64,9 +67,9 @@ public class PropositionBean implements Serializable {
     private SearchBean searchBean;
     
     @Inject
-    private LanguageBean languageBean;    
+    private LanguageBean languageBean;
 
-    private boolean isRubriqueVisible;
+    private boolean isRubriqueVisible, isNewProposition, isConsultation;
     private Proposition proposition;
     private String nom, email, commentaire, commentaireAdmin;
     private String message;
@@ -124,8 +127,7 @@ public class PropositionBean implements Serializable {
         
         chercherProposition();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
-        
-        //afficherListPropositions();
+
         varianteAccepted = false;
         traductionAccepted = false;
         noteAccepted = false;
@@ -135,6 +137,8 @@ public class PropositionBean implements Serializable {
         editorialNotesAccepted = false;
         examplesAccepted = false;
         historyAccepted = false;
+
+        isConsultation = true;
 
         prefTermeAccepted = proposition.isUpdateNomConcept();
         checkSynonymPropositionStatus();
@@ -325,6 +329,8 @@ public class PropositionBean implements Serializable {
 
     public void switchToNouvelleProposition(NodeConcept nodeConcept) {
         init();
+
+        isNewProposition = true;
         isRubriqueVisible = true;
         if(currentUser.getNodeUser() == null)
             rightBodySetting.setIndex("2");
@@ -336,6 +342,7 @@ public class PropositionBean implements Serializable {
         }
 
         proposition = propositionService.selectProposition(nodeConcept);
+        isConsultation = false;
 
         if (!ObjectUtils.isEmpty(currentUser.getNodeUser())) {
             nom = currentUser.getNodeUser().getName();
@@ -523,275 +530,13 @@ public class PropositionBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
     }
 
-    public Connect getConnect() {
-        return connect;
+    public Boolean isCanMakeAction() {
+        return (currentUser.getNodeUser() !=null && !currentUser.getNodeUser().getMail().equalsIgnoreCase(email))
+                && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso());
     }
 
-    public void setConnect(Connect connect) {
-        this.connect = connect;
+    public boolean isIsConsultation() {
+        return isConsultation;
     }
-
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(CurrentUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public ConceptView getConceptView() {
-        return conceptView;
-    }
-
-    public void setConceptView(ConceptView conceptView) {
-        this.conceptView = conceptView;
-    }
-
-    public IndexSetting getIndexSetting() {
-        return indexSetting;
-    }
-
-    public void setIndexSetting(IndexSetting indexSetting) {
-        this.indexSetting = indexSetting;
-    }
-
-    public RoleOnThesoBean getRoleOnThesoBean() {
-        return roleOnThesoBean;
-    }
-
-    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
-        this.roleOnThesoBean = roleOnThesoBean;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public void setSelectedTheso(SelectedTheso selectedTheso) {
-        this.selectedTheso = selectedTheso;
-    }
-
-    public RightBodySetting getRightBodySetting() {
-        return rightBodySetting;
-    }
-
-    public void setRightBodySetting(RightBodySetting rightBodySetting) {
-        this.rightBodySetting = rightBodySetting;
-    }
-
-    public PropositionService getPropositionService() {
-        return propositionService;
-    }
-
-    public void setPropositionService(PropositionService propositionService) {
-        this.propositionService = propositionService;
-    }
-
-    public SearchBean getSearchBean() {
-        return searchBean;
-    }
-
-    public void setSearchBean(SearchBean searchBean) {
-        this.searchBean = searchBean;
-    }
-
-    public LanguageBean getLanguageBean() {
-        return languageBean;
-    }
-
-    public void setLanguageBean(LanguageBean languageBean) {
-        this.languageBean = languageBean;
-    }
-
-    public boolean isRubriqueVisible() {
-        return isRubriqueVisible;
-    }
-
-    public void setRubriqueVisible(boolean rubriqueVisible) {
-        isRubriqueVisible = rubriqueVisible;
-    }
-
-    public Proposition getProposition() {
-        return proposition;
-    }
-
-    public void setProposition(Proposition proposition) {
-        this.proposition = proposition;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCommentaire() {
-        return commentaire;
-    }
-
-    public void setCommentaire(String commentaire) {
-        this.commentaire = commentaire;
-    }
-
-    public String getCommentaireAdmin() {
-        return commentaireAdmin;
-    }
-
-    public void setCommentaireAdmin(String commentaireAdmin) {
-        this.commentaireAdmin = commentaireAdmin;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getActionNom() {
-        return actionNom;
-    }
-
-    public void setActionNom(String actionNom) {
-        this.actionNom = actionNom;
-    }
-
-    public String getShowAllPropositions() {
-        return showAllPropositions;
-    }
-
-    public void setShowAllPropositions(String showAllPropositions) {
-        this.showAllPropositions = showAllPropositions;
-    }
-
-    public int getNbrNewPropositions() {
-        return nbrNewPropositions;
-    }
-
-    public void setNbrNewPropositions(int nbrNewPropositions) {
-        this.nbrNewPropositions = nbrNewPropositions;
-    }
-
-    public int getFilter2() {
-        return filter2;
-    }
-
-    public void setFilter2(int filter2) {
-        this.filter2 = filter2;
-    }
-
-    public PropositionDao getPropositionSelected() {
-        return propositionSelected;
-    }
-
-    public void setPropositionSelected(PropositionDao propositionSelected) {
-        this.propositionSelected = propositionSelected;
-    }
-
-    public List<PropositionDao> getPropositions() {
-        return propositions;
-    }
-
-    public void setPropositions(List<PropositionDao> propositions) {
-        this.propositions = propositions;
-    }
-
-    public boolean isPropositionVisibleControle() {
-        return propositionVisibleControle;
-    }
-
-    public void setPropositionVisibleControle(boolean propositionVisibleControle) {
-        this.propositionVisibleControle = propositionVisibleControle;
-    }
-
-    public boolean isPrefTermeAccepted() {
-        return prefTermeAccepted;
-    }
-
-    public void setPrefTermeAccepted(boolean prefTermeAccepted) {
-        this.prefTermeAccepted = prefTermeAccepted;
-    }
-
-    public boolean isVarianteAccepted() {
-        return varianteAccepted;
-    }
-
-    public void setVarianteAccepted(boolean varianteAccepted) {
-        this.varianteAccepted = varianteAccepted;
-    }
-
-    public boolean isTraductionAccepted() {
-        return traductionAccepted;
-    }
-
-    public void setTraductionAccepted(boolean traductionAccepted) {
-        this.traductionAccepted = traductionAccepted;
-    }
-
-    public boolean isNoteAccepted() {
-        return noteAccepted;
-    }
-
-    public void setNoteAccepted(boolean noteAccepted) {
-        this.noteAccepted = noteAccepted;
-    }
-
-    public boolean isDefinitionAccepted() {
-        return definitionAccepted;
-    }
-
-    public void setDefinitionAccepted(boolean definitionAccepted) {
-        this.definitionAccepted = definitionAccepted;
-    }
-
-    public boolean isChangeNoteAccepted() {
-        return changeNoteAccepted;
-    }
-
-    public void setChangeNoteAccepted(boolean changeNoteAccepted) {
-        this.changeNoteAccepted = changeNoteAccepted;
-    }
-
-    public boolean isScopeAccepted() {
-        return scopeAccepted;
-    }
-
-    public void setScopeAccepted(boolean scopeAccepted) {
-        this.scopeAccepted = scopeAccepted;
-    }
-
-    public boolean isEditorialNotesAccepted() {
-        return editorialNotesAccepted;
-    }
-
-    public void setEditorialNotesAccepted(boolean editorialNotesAccepted) {
-        this.editorialNotesAccepted = editorialNotesAccepted;
-    }
-
-    public boolean isExamplesAccepted() {
-        return examplesAccepted;
-    }
-
-    public void setExamplesAccepted(boolean examplesAccepted) {
-        this.examplesAccepted = examplesAccepted;
-    }
-
-    public boolean isHistoryAccepted() {
-        return historyAccepted;
-    }
-
-    public void setHistoryAccepted(boolean historyAccepted) {
-        this.historyAccepted = historyAccepted;
-    }
+    
 }

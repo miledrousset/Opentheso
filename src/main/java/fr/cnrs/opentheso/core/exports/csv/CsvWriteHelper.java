@@ -8,8 +8,6 @@ package fr.cnrs.opentheso.core.exports.csv;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
@@ -134,8 +132,7 @@ public class CsvWriteHelper {
                 header.add("relatedId");
                 header.add("skos:exactMatch");
                 header.add("skos:closeMatch");
-                header.add("geo:lat");
-                header.add("geo:long");
+                header.add("geo:gps");
                 header.add("skos:member");
                 header.add("dct:created");
                 header.add("dct:modified");
@@ -279,9 +276,7 @@ public class CsvWriteHelper {
         record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch));
 
         //geo:lat
-        record.add(getLatValue(skosResource.getGPSCoordinates()));
-        //geo:long
-        record.add(getLongValue(skosResource.getGPSCoordinates()));
+        record.add(getGpsValue(skosResource.getGpsCoordinates()));
         //skos:member
         record.add(getMemberValue(skosResource.getRelationsList()));
         //sdct:created
@@ -366,6 +361,12 @@ public class CsvWriteHelper {
         return matchs.stream()
                 .filter(alignment -> alignment.getProperty() == propertie)
                 .map(alignment -> alignment.getValue())
+                .collect(Collectors.joining(delim_multi_datas));
+    }
+
+    private String getGpsValue(List<SKOSGPSCoordinates> gpsList) {
+        return gpsList.stream()
+                .map(element -> element.getLat() + "@@" + element.getLon())
                 .collect(Collectors.joining(delim_multi_datas));
     }
 

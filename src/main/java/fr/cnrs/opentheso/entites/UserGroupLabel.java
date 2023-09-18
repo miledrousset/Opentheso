@@ -8,10 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 
+@Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,19 +28,4 @@ public class UserGroupLabel implements Serializable {
     @Column(name = "label_group")
     private String label;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
 }

@@ -2856,8 +2856,6 @@ public class ImportFileBean implements Serializable {
             event.queue();
         } else {
             try (InputStream is = event.getFile().getInputStream()) {
-                //ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
-                //sKOSXmlDocument = readRdf4j.getsKOSXmlDocument();
                 if (StringUtils.isEmpty(selectedLang)) {
                     selectedLang = connect.getWorkLanguage();
                 }
@@ -2984,9 +2982,8 @@ public class ImportFileBean implements Serializable {
     }
 
     public void addSkosThesoToBDDV2() throws SQLException {
-        long tempsDebut, tempsFin;
-        double seconds;
-        tempsDebut = System.currentTimeMillis();
+
+        long tempsDebut = System.currentTimeMillis();
 
         if (StringUtils.isEmpty(selectedLang)) {
             selectedLang = connect.getWorkLanguage();
@@ -3037,9 +3034,9 @@ public class ImportFileBean implements Serializable {
                 "Le thesaurus " + idTheso + " est correctement ajouté !", "import réussi"));
         PrimeFaces.current().ajax().update("messageIndex");
 
-        tempsFin = System.currentTimeMillis();
-        seconds = (tempsFin - tempsDebut) / 1000F;
-        System.out.println("Nouvelle méthode : Opération effectuée en: " + Double.toString(seconds) + " secondes.");
+        long tempsFin = System.currentTimeMillis();
+        double seconds = (tempsFin - tempsDebut) / 1000F;
+        System.out.println("Nouvelle méthode : Opération effectuée en: " + seconds + " secondes.");
     }
 
     /**

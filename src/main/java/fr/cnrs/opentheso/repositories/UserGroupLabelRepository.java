@@ -16,7 +16,7 @@ public class UserGroupLabelRepository {
 
     public List<UserGroupLabel> getAllProjects() {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            Query releaseQuery = session.createQuery("SELECT label FROM UserGroupLabel label", UserGroupLabel.class);
+            Query releaseQuery = session.createQuery("SELECT label FROM UserGroupLabel label ORDER BY label.label ASC", UserGroupLabel.class);
             return releaseQuery.getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -26,11 +26,12 @@ public class UserGroupLabelRepository {
 
     public List<UserGroupLabel> getProjectsByThesoStatus(boolean status) {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            Query releaseQuery = session.createQuery("SELECT labele "
-                    + "FROM Thesaurus the, UserGroupThesaurus grp, UserGroupLabel labele "
+            Query releaseQuery = session.createQuery("SELECT label "
+                    + "FROM Thesaurus the, UserGroupThesaurus grp, UserGroupLabel label "
                     + "WHERE the.privateTheso = :status "
                     + "AND grp.idThesaurus = the.thesaurusId "
-                    + "AND labele.id = grp.idGroup", UserGroupLabel.class)
+                    + "AND label.id = grp.idGroup "
+                    + "ORDER BY label.label ASC", UserGroupLabel.class)
                     .setParameter("status", status);
             return releaseQuery.getResultList();
         } catch (Exception ex) {
@@ -44,7 +45,8 @@ public class UserGroupLabelRepository {
             TypedQuery<UserGroupLabel> typedQuery = session.createQuery("SELECT distinct lab "
                             + "FROM UserRoleGroup grp, UserGroupLabel lab "
                             + "WHERE grp.idGroup = lab.id "
-                            + "AND grp.idUser = :userId", UserGroupLabel.class)
+                            + "AND grp.idUser = :userId "
+                            + "ORDER BY lab.label ASC", UserGroupLabel.class)
                     .setParameter("userId", userId);
             return typedQuery.getResultList();
         } catch (Exception ex) {

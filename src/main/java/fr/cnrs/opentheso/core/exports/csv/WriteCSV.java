@@ -234,8 +234,8 @@ public class WriteCSV {
 
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.exactMatch)).append(seperate) //exactMatch
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch)).append(seperate) //closeMatch
-                .append(getLatValue(skosResource.getGPSCoordinates())).append(seperate)//geo:lat
-                .append(getLongValue(skosResource.getGPSCoordinates())).append(seperate)//geo:long
+                .append(getLatValue(skosResource.getGpsCoordinates())).append(seperate)//geo:lat
+                .append(getLongValue(skosResource.getGpsCoordinates())).append(seperate)//geo:long
                 .append(getMemberValue(skosResource.getRelationsList())).append(seperate)//skos:member
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.created)).append(seperate)//sdct:created
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.modified));//dct:modified
@@ -243,22 +243,20 @@ public class WriteCSV {
         writer.newLine();
     }
 
-    private String getLatValue(SKOSGPSCoordinates coordinates) {
-        if (coordinates != null) {
-            if (coordinates.getLat() == null) {
-                return "";
-            }
-            return coordinates.getLat();
+    private String getLatValue(List<SKOSGPSCoordinates> coordinates) {
+        if (CollectionUtils.isNotEmpty(coordinates)) {
+            return coordinates.stream()
+                    .map(SKOSGPSCoordinates::getLat)
+                    .collect(Collectors.joining(delim_multi_datas));
         }
         return "";
     }
 
-    private String getLongValue(SKOSGPSCoordinates coordinates) {
-        if (coordinates != null) {
-            if (coordinates.getLon() == null) {
-                return "";
-            }
-            return coordinates.getLon();
+    private String getLongValue(List<SKOSGPSCoordinates> coordinates) {
+        if (CollectionUtils.isNotEmpty(coordinates)) {
+            return coordinates.stream()
+                    .map(SKOSGPSCoordinates::getLat)
+                    .collect(Collectors.joining(delim_multi_datas));
         }
         return "";
     }

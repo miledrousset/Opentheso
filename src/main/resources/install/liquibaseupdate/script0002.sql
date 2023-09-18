@@ -62,7 +62,7 @@ DECLARE
 	replaces text;
 	facets text;
         externalResources text;
-        
+
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -365,7 +365,7 @@ BEGIN
 
 		-- LocalUri
 		local_URI = path || '/?idc=' || con.id_concept || '&idt=' || id_theso;
-		
+
 		-- PrefLab
                 prefLab = '';
 		FOR traduction_rec IN SELECT * FROM opentheso_get_traductions(id_theso, con.id_concept)
@@ -575,7 +575,9 @@ BEGIN
 				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified,
 				img, creator, contributor, replaces, replacedBy, facets, externalResources INTO rec;
 
-  		RETURN NEXT rec;
-    END LOOP;
+RETURN NEXT rec;
+END LOOP;
 END;
 $$;
+
+>>>>>>> 4c923a90 (Update loquibase script)

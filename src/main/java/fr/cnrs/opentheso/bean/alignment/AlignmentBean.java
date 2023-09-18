@@ -20,6 +20,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -46,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -55,10 +57,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+
+
 @Named(value = "alignmentBean")
 @SessionScoped
 public class AlignmentBean implements Serializable {
@@ -69,7 +69,7 @@ public class AlignmentBean implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private AlignmentManualBean alignmentManualBean;
     @Inject private LanguageBean languageBean;
-    @Inject private CurrentUser currentUser;     
+    @Inject private CurrentUser currentUser;
 
     private boolean withLang;
     private boolean withNote;
@@ -511,17 +511,21 @@ public class AlignmentBean implements Serializable {
     }
 
 
-    public void searchAlignementsForAllConcepts() {
+    AlignementSource alignementSource;
+    public void searchAlignementsForAllConcepts(AlignementSource alignementSource) {
 
+        this.alignementSource = alignementSource;
         selectAlignementForAdd = new ArrayList<>();
 
         allAlignementFound = new AlignementAutomatique().searchAlignementsAutomatique(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), conceptView.getSelectedLang(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), allignementsList, alignementSources, nom, prenom);
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                allignementsList, alignementSource, nom, prenom);
 
         if (CollectionUtils.isNotEmpty(allAlignementFound)) {
             allAlignementVisible = false;
             propositionAlignementVisible = true;
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         } else {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "", "Aucun alignement trouvé !"));
@@ -529,11 +533,18 @@ public class AlignmentBean implements Serializable {
         }
     }
 
+
     public void annulerAlignementAutomatique() {
         selectAlignementForAdd = new ArrayList<>();
         allAlignementFound = new ArrayList<>();
+
         allAlignementVisible = true;
         propositionAlignementVisible = false;
+
+        initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                conceptBean.getSelectedLang());
+
+        getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
     }
 
     public void saveAlignements() {
@@ -556,6 +567,11 @@ public class AlignmentBean implements Serializable {
                     "", "Aucun alignement selectionné !"));
             PrimeFaces.current().ajax().update("messageIndex");
         }
+    }
+
+    public void openEditAlignementWindow(AlignementElement alignement) {
+        selectConceptForAlignment(alignement.getIdConceptOrig());
+        PrimeFaces.current().executeScript("PF('searchAlignement').show();");
     }
 
     public void addSingleAlignment(NodeAlignment alignment, String idTheso, String idConcept, int idUser) {
@@ -598,7 +614,7 @@ public class AlignmentBean implements Serializable {
                             idTerm, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
 
                         noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, selectedResource.getIdLang(), idTheso,
-                                selectedResource.getGettedValue(), "definition", selectedAlignement, idUser);
+                                selectedResource.getGettedValue(), "definition", alignementSource.getSource(), idUser);
                     }
                 }
             }
@@ -608,7 +624,7 @@ public class AlignmentBean implements Serializable {
         if (CollectionUtils.isNotEmpty(alignment.getSelectedImagesList())) {
             for (SelectedResource selectedResource : alignment.getSelectedImagesList()) {
                 new ExternalImagesHelper().addExternalImage(connect.getPoolConnexion(), idConcept, idTheso, "",
-                        selectedAlignement, selectedResource.getGettedValue(), idUser);
+                        alignementSource.getSource(), selectedResource.getGettedValue(), idUser);
             }
         }
 
@@ -621,21 +637,69 @@ public class AlignmentBean implements Serializable {
         PrimeFaces.current().executeScript("window.open('" + url + "', '_blank');");
     }
 
-    public void openEditAlignementWindow(AlignementElement alignement) {
-        /*if (setAlignmentSourceBean.getSelectedAlignments() == null
-                || setAlignmentSourceBean.getSelectedAlignments().isEmpty()) {
-            PrimeFaces pf = PrimeFaces.current();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Vous devez choisir au moins une source !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+    private NodeAlignment alignementSelect;
+    private NodeLangTheso nodeLangTheso;
+
+    public void addAlignementSelected() {
+
+        addSingleAlignment(alignementSelect, selectedTheso.getCurrentIdTheso(),
+                alignementSelect.getInternal_id_concept(),
+                selectedTheso.getCurrentUser().getNodeUser().getIdUser());
+
+        allAlignementFound = allAlignementFound.stream()
+                .filter(element -> !element.getInternal_id_concept().equals(alignementSelect.getInternal_id_concept()))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(allAlignementFound)) {
+            setAllAlignementVisible(true);
+            setPropositionAlignementVisible(false);
+
+            initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getSelectedLang());
+
+            getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        }
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Alignement ajouté avec succès");
+        PrimeFaces.current().executeScript("PF('addAlignement').hide();");
+
+    }
+
+    public void addAlignementByConcept(NodeAlignment alignementSelect) {
+        var alignementToSave = selectAlignementForAdd.stream()
+                .filter(element -> element.getInternal_id_concept().equals(alignementSelect.getInternal_id_concept()))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isNotEmpty(alignementToSave) && (alignementToSave.size() == 1)) {
+            this.alignementSelect = alignementToSave.get(0);
+            PrimeFaces.current().executeScript("PF('addAlignement').show();");
         } else {
-            selectConceptForAlignment(alignement.getIdConceptOrig());
-            PrimeFaces.current().executeScript("PF('saerchAlignement').show();");
-        }*/
-        selectConceptForAlignment(alignement.getIdConceptOrig());
-        PrimeFaces.current().executeScript("PF('searchAlignement').show();");
+            showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez choisir un seul alignement pour le conception"
+                    + alignementSelect.getConcept_target());
+        }
+    }
+
+    public NodeAlignment getAlignementSelect() {
+        return alignementSelect;
+    }
+
+    public void setAlignementSelect(NodeAlignment alignementSelect) {
+        this.alignementSelect = alignementSelect;
+    }
+
+    public NodeLangTheso getNodeLangTheso() {
+        return nodeLangTheso;
+    }
+
+    public void setNodeLangTheso(NodeLangTheso nodeLangTheso) {
+        this.nodeLangTheso = nodeLangTheso;
+    }
+
+    private void showMessage(FacesMessage.Severity severity, String message) {
+        FacesMessage msg = new FacesMessage(severity, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
     }
 
     private void setExistingAlignment(String idConcept, String idTheso) {

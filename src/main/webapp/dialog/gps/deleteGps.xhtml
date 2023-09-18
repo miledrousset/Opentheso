@@ -8,27 +8,31 @@
         <h:form>
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
+                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="lat: " style="font-size: 12px;"/>
-                    <h:outputText value="#{gpsBean.nodeGps.latitude}" style="font-size: 12px; color: #000"/>     
-                </div>
-                <div class="col-5">
-                    <h:outputText value="long: " style="font-size: 12px;"/>
-                    <h:outputText value="#{gpsBean.nodeGps.longitude}" style="font-size: 12px; color: #000"/>   
-                </div>
-                <div class="col-2">
-                    <p:commandLink style="color: #FF7979" action="#{gpsBean.deleteCoordinateGps()}"
-                                   process="@this" ajax="true" oncomplete="PF('deleteGps').hide();"
-                                   update="containerIndex:formRightTab" >
-                        <i class="pi pi-trash" />
-                    </p:commandLink>
-                </div>
+            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
+                <p:dataTable id="deleteGps" var="gps" value="#{conceptView.nodeConcept.nodeGps}" size="small"
+                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
+
+                    <p:column width="40" headerText="Latitude">
+                        <h:outputText value="#{gps.latitude}" style="color: #43B572; font-size: 13px"/>
+                    </p:column>
+
+                    <p:column width="40" headerText="Longitude">
+                        <h:outputText value="#{gps.longitude}" style="color: #43B572; font-size: 13px"/>
+                    </p:column>
+
+                    <p:column width="20" headerText="Supprimer">
+                        <p:commandLink style="color: #FF7979" action="#{gpsBean.deleteCoordinateGps(gps)}"
+                                       update="containerIndex:idDeleteGps containerIndex:formRightTab"
+                                       ajax="true" process="@this">
+                            <i class="pi pi-trash" style="font-size: 13px;"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
             </div>
         </h:form>
     </p:dialog>     
