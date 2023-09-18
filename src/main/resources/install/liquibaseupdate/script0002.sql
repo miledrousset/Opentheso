@@ -1,9 +1,8 @@
-SET ROLE = opentheso;
 SET schema 'public';
 
 DROP FUNCTION opentheso_get_concepts;
 DROP FUNCTION opentheso_get_concepts_by_group;
-DROP PROCEDURE opentheso_add_new_concept;
+--DROP PROCEDURE opentheso_add_new_concept;
 
 
 CREATE OR REPLACE procedure opentheso_add_alignements(alignements text)
