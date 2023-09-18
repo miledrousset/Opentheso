@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
@@ -13,11 +14,14 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ProjectBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Collectors;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -60,6 +64,8 @@ public class CurrentUser implements Serializable {
     private LanguageBean languageBean;
     @Inject
     private SelectedTheso selectedTheso;
+    @Inject
+    private ProjectBean projectBean;
 
     private NodeUser nodeUser;
     private String username;
@@ -104,20 +110,37 @@ public class CurrentUser implements Serializable {
         selectedTheso.loadProject();
         selectedTheso.setSelectedProject();
 
-        if ("-1".equals(selectedTheso.getProjectIdSelected())
-                && !new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
-            indexSetting.setSelectedTheso(true);
+        if ("-1".equals(selectedTheso.getProjectIdSelected())) {
+            roleOnThesoBean.setPublicThesos();
+            if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
+                indexSetting.setSelectedTheso(true);
+            } else {
+                selectedTheso.setCurrentIdTheso(null);
+                indexSetting.setSelectedTheso(false);
+            }
+            indexSetting.setProjectSelected(false);
         } else if (selectedTheso.getProjectsList().stream()
                 .filter(element -> element.getId() == Integer.parseInt(selectedTheso.getProjectIdSelected()))
                 .findFirst().isEmpty()) {
             selectedTheso.setProjectIdSelected("-1");
+            indexSetting.setProjectSelected(false);
             selectedTheso.setSelectedIdTheso(null);
             indexSetting.setSelectedTheso(false);
-        } else if (new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso())) {
-            selectedTheso.setSelectedIdTheso(null);
+        } else {
+            if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())) {
+                if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
+                    indexSetting.setSelectedTheso(true);
+                    indexSetting.setProjectSelected(false);
+                } else {
+                    selectedTheso.setCurrentIdTheso(null);
+                    indexSetting.setSelectedTheso(false);
+                    indexSetting.setProjectSelected(true);
+                }
+            } else {
+                indexSetting.setSelectedTheso(false);
+                indexSetting.setProjectSelected(false);
+            }
         }
-        indexSetting.setProjectSelected(false);
 
         if (propositionBean.isPropositionVisibleControle()) {
             PrimeFaces.current().executeScript("disparaitre();");
@@ -200,8 +223,45 @@ public class CurrentUser implements Serializable {
         propositionBean.setRubriqueVisible(false);
 
         selectedTheso.loadProject();
-        selectedTheso.setSelectedProject();
-        indexSetting.setProjectSelected(false);
+        //selectedTheso.setSelectedProject();
+        if ("-1".equals(selectedTheso.getProjectIdSelected())) {
+            roleOnThesoBean.setOwnerThesos();
+            indexSetting.setProjectSelected(false);
+            if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
+                indexSetting.setSelectedTheso(true);
+            } else {
+                selectedTheso.setCurrentIdTheso(null);
+                indexSetting.setSelectedTheso(false);
+            }
+        } else {
+            //indexSetting.setProjectSelected(true);
+            projectBean.initProject(selectedTheso.getProjectIdSelected());
+
+            if (!projectBean.getListeThesoOfProject().isEmpty()) {
+                roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
+                        .map(NodeIdValue::getId)
+                        .collect(Collectors.toList()));
+            } else {
+                roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+            }
+            roleOnThesoBean.addAuthorizedThesoToHM();
+            roleOnThesoBean.setUserRoleOnThisTheso();
+            projectBean.init();
+        }
+
+        if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())) {
+            if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
+                indexSetting.setSelectedTheso(true);
+                indexSetting.setProjectSelected(false);
+            } else {
+                selectedTheso.setCurrentIdTheso(null);
+                indexSetting.setSelectedTheso(false);
+                indexSetting.setProjectSelected(true);
+            }
+        } else {
+            indexSetting.setSelectedTheso(false);
+            indexSetting.setProjectSelected(false);
+        }
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
         PrimeFaces pf = PrimeFaces.current();
