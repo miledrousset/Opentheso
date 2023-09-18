@@ -605,20 +605,22 @@ public class ConceptView implements Serializable {
         contributors = null;
         creator = null;
         boolean firstElement = true;
-        for (DcElement dcElement : nodeConcept.getDcElements()) {
-            switch (dcElement.getName()) {
-                case DCMIResource.CONTRIBUTOR:
-                    if (firstElement) {
-                        contributors = dcElement.getValue();
-                        firstElement = false;
-                    } else {
-                        contributors = contributors + "; " + dcElement.getValue();
-                    }
-                    break;
-                case DCMIResource.CREATOR:
-                    creator = dcElement.getValue();
-                default:
-                    break;
+        if (CollectionUtils.isNotEmpty(nodeConcept.getDcElements())) {
+            for (DcElement dcElement : nodeConcept.getDcElements()) {
+                switch (dcElement.getName()) {
+                    case DCMIResource.CONTRIBUTOR:
+                        if (firstElement) {
+                            contributors = dcElement.getValue();
+                            firstElement = false;
+                        } else {
+                            contributors = contributors + "; " + dcElement.getValue();
+                        }
+                        break;
+                    case DCMIResource.CREATOR:
+                        creator = dcElement.getValue();
+                    default:
+                        break;
+                }
             }
         }
     }
