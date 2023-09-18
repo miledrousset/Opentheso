@@ -325,7 +325,6 @@ public class SelectedTheso implements Serializable {
             currentIdTheso = null;
             indexSetting.setSelectedTheso(false);
             indexSetting.setProjectSelected(false);
-            selectedIdTheso = null;
             return;
         } else {
             indexSetting.setProjectSelected(true);

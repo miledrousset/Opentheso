@@ -24,7 +24,7 @@ public class Gps {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "id_concept")
     private String idConcept;

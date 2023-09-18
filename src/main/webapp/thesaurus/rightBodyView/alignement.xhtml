@@ -220,9 +220,6 @@
             <p:toolbarGroup align="right">
                 <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
                                  actionListener="#{alignmentBean.annulerAlignementAutomatique()}" update="containerIndex"/>
-
-                <p:commandButton value="#{langueBean.getMsg('add')}" action="#{alignmentBean.saveAlignements()}" update="containerIndex"
-                                 styleClass="ui-button-success" icon="pi pi-check"/>
             </p:toolbarGroup>
         </p:toolbar>
     </h:panelGroup>
