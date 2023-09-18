@@ -121,7 +121,7 @@ public class SelectedTheso implements Serializable {
         thesoName = null;   
         localUri = null;
         projectIdSelected = "-1";
-    }      
+    }
     
     @PostConstruct
     public void initializing() {
@@ -289,7 +289,7 @@ public class SelectedTheso implements Serializable {
         indexSetting.setProjectSelected(false);
         menuBean.redirectToThesaurus();
     }
-    
+
     public void redirectToTheso() throws IOException{
         menuBean.redirectToThesaurus();
     }
@@ -403,7 +403,7 @@ public class SelectedTheso implements Serializable {
     public void reloadSelectedTheso() throws IOException {
         loadProject();
         roleOnThesoBean.showListTheso();
-        
+
         searchBean.reset();
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
