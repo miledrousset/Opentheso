@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -83,13 +84,13 @@ public class SearchHelper {
             String groupSearch = "";
             for (String idGroup : idGroups) {
                 if (groupSearch.isEmpty()) {
-                    groupSearch = "'" + idGroup + "'";
+                    groupSearch = "'" + idGroup.toLowerCase() + "'";
                 } else {
-                    groupSearch = groupSearch + ",'" + idGroup + "'";
+                    groupSearch = groupSearch + ",'" + idGroup.toLowerCase() + "'";
                 }
             }
-            multiValuesPT += " and concept_group_concept.idgroup in (" + groupSearch + ")";
-            multiValuesNPT += " and concept_group_concept.idgroup in (" + groupSearch + ")";
+            multiValuesPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
+            multiValuesNPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
         }
 
         for (String value1 : values) {
@@ -265,7 +266,12 @@ public class SearchHelper {
         value = value.trim();
         value = stringPlus.convertString(value);
         value = stringPlus.unaccentLowerString(value);
-
+        
+        String limit = " limit 100";
+        if(StringUtils.isEmpty(value)){
+            limit = " limit 500";
+        }
+        
         String multiValuesPT = "";
         String multiValuesNPT = "";
         String values[] = value.split(" ");
@@ -362,7 +368,7 @@ public class SearchHelper {
                                 + " CASE unaccent(lower(lexical_value)) "
                                 + " WHEN '" + value + "' THEN 1"
                                 + " END, lexical_value"
-                                + " limit 100";
+                                + limit;
 
                         //by unaccent(lower(lexical_value)) ASC limit 100";
                     } else {
@@ -382,7 +388,7 @@ public class SearchHelper {
                                 + " CASE unaccent(lower(lexical_value)) "
                                 + " WHEN '" + value + "' THEN 1"
                                 + " END, lexical_value"
-                                + " limit 100";
+                                + limit;
 
                         //+ " order by unaccent(lower(lexical_value)) ASC limit 100";
                     }
@@ -417,7 +423,7 @@ public class SearchHelper {
                                 + " CASE unaccent(lower(non_preferred_term.lexical_value)) "
                                 + " WHEN '" + value + "' THEN 1"
                                 + " END, lexical_value"
-                                + " limit 100";
+                                + limit ;
 
                         // + " order by unaccent(lower(non_preferred_term.lexical_value)) ASC limit 100";
                     } else {
@@ -434,7 +440,7 @@ public class SearchHelper {
                                 + " CASE unaccent(lower(non_preferred_term.lexical_value)) "
                                 + " WHEN '" + value + "' THEN 1"
                                 + " END, lexical_value"
-                                + " limit 100";
+                                + limit;
 
                         //+ " order by unaccent(lower(non_preferred_term.lexical_value)) ASC limit 100";
                     }
