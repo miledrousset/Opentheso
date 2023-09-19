@@ -6444,23 +6444,6 @@ public class ConceptHelper {
         this.message = message;
     }
 
-    public int getNbrOfCanceptByThes(Connection conn, String idThesaurus) {
-
-        int nbrConcept = 0;
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeQuery("SELECT count(*) FROM concept WHERE id_thesaurus = '" + idThesaurus
-                    + "' AND status != 'CA'");
-            try (ResultSet resultSet = stmt.getResultSet()) {
-                while (resultSet.next()) {
-                    nbrConcept = resultSet.getInt("count");
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting List Id or Groups of thesaurus : " + idThesaurus, sqle);
-        }
-        return nbrConcept;
-    }
-
     public List<ConceptStatisticData> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus, String lang,
             String dateDebut, String dateFin, String collectionId, String nbrResultat) throws SQLException {
 

@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -51,7 +52,7 @@ public class ProjectBean implements Serializable {
 
         for (NodeIdValue element : listeThesoOfProject) {
             try {
-                element.setNbrConcepts(new ConceptHelper().getNbrOfCanceptByThes(connect.getPoolConnexion().getConnection(),
+                element.setNbrConcepts(new StatisticHelper().getNbCpt(connect.getPoolConnexion(),
                         element.getId()));
             } catch(Exception ex) {
                 element.setNbrConcepts(0);

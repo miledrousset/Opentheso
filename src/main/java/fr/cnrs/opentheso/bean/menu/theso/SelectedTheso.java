@@ -413,6 +413,7 @@ public class SelectedTheso implements Serializable {
             return;
         }
         startNewTheso(null);
+        tree.setIdConceptSelected(null);
 
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);

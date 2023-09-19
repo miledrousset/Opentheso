@@ -16,7 +16,7 @@ public class UserGroupLabelRepository {
 
     public List<UserGroupLabel> getAllProjects() {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            Query releaseQuery = session.createQuery("SELECT label FROM UserGroupLabel label ORDER BY label.label ASC", UserGroupLabel.class);
+            Query releaseQuery = session.createQuery("SELECT label FROM UserGroupLabel label ORDER BY lower(label.label) ASC", UserGroupLabel.class);
             return releaseQuery.getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -31,7 +31,7 @@ public class UserGroupLabelRepository {
                     + "WHERE the.privateTheso = :status "
                     + "AND grp.idThesaurus = the.thesaurusId "
                     + "AND label.id = grp.idGroup "
-                    + "ORDER BY label.label ASC", UserGroupLabel.class)
+                    + "ORDER BY lower(label.label) ASC", UserGroupLabel.class)
                     .setParameter("status", status);
             return releaseQuery.getResultList();
         } catch (Exception ex) {
@@ -46,7 +46,7 @@ public class UserGroupLabelRepository {
                             + "FROM UserRoleGroup grp, UserGroupLabel lab "
                             + "WHERE grp.idGroup = lab.id "
                             + "AND grp.idUser = :userId "
-                            + "ORDER BY lab.label ASC", UserGroupLabel.class)
+                            + "ORDER BY lower(lab.label) ASC", UserGroupLabel.class)
                     .setParameter("userId", userId);
             return typedQuery.getResultList();
         } catch (Exception ex) {

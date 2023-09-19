@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
 
-    <changeSet id="executeScriptOriginal" author="Miled">
+    <changeSet id="executeScriptOriginal2" author="Miled">
         <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
 
@@ -13,6 +13,10 @@
     <changeSet id="script0003" author="Miled">
         <sqlFile path="../install/liquibaseupdate/script0003.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
+    <changeSet id="executeScriptOriginal3" author="Miled">
+        <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>    
+    
     <include file="/changelog/v23.07.3/001-update_concept_dcterms.xml"/>
     <include file="/changelog/v23.07.3/001-update_thesaurus_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-update_dcterms.xml"/>

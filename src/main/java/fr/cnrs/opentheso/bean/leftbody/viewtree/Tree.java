@@ -623,6 +623,10 @@ public class Tree implements Serializable {
         return idConceptSelected;
     }
 
+    public void setIdConceptSelected(String idConceptSelected) {
+        this.idConceptSelected = idConceptSelected;
+    }
+
     public boolean isGrapheLinkVisible() {
         return !StringUtils.isEmpty(idConceptSelected);
     }

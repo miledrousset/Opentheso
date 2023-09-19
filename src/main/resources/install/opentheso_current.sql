@@ -8,7 +8,7 @@
 -- Started on 2022-10-17 13:10:22 CEST
 
 
-SET role = opentheso;
+--SET role = opentheso;
 SET schema 'public';
 
 SET statement_timeout = 0;
