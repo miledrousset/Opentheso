@@ -68,7 +68,7 @@ Opentheso est distribué sous licence CeCILL_C, Licence libre de droit français
 Contacts
 
     Directeur informatique : miled.rousset[at]mom[dot]fr
-    Donnez-nous votre avis : opentheso[at]mom[dot]fr
+    Donnez-nous votre avis : opentheso.contact@services.cnrs[dot]fr
 
 What is Opentheso
 
@@ -131,4 +131,4 @@ Any technical question?
 
 Contact Opentheso R&D director : miled.rousset[at]mom[dot]fr
 
-Please give us your feedback : opentheso[at]mom[dot]fr
+Please give us your feedback : opentheso.contact@services.cnrs[dot]fr
