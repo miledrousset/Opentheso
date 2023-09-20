@@ -21,7 +21,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ProjectBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
-import fr.cnrs.opentheso.entites.Thesaurus;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
@@ -39,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
@@ -322,12 +322,11 @@ public class SelectedTheso implements Serializable {
             } else {
                 roleOnThesoBean.setOwnerThesos();
             }
-            currentIdTheso = null;
-            indexSetting.setSelectedTheso(false);
+
+            indexSetting.setSelectedTheso(StringUtils.isNotEmpty(currentIdTheso));
             indexSetting.setProjectSelected(false);
             return;
         } else {
-            indexSetting.setProjectSelected(true);
             projectBean.initProject(projectIdSelected);
 
             if (!projectBean.getListeThesoOfProject().isEmpty()) {
@@ -340,19 +339,22 @@ public class SelectedTheso implements Serializable {
             roleOnThesoBean.addAuthorizedThesoToHM();
             roleOnThesoBean.setUserRoleOnThisTheso();
 
-            if (!projectBean.getListeThesoOfProject().isEmpty()) {
-                for (NodeIdValue thesaurus : projectBean.getListeThesoOfProject()) {
-                   if(StringUtils.equalsIgnoreCase(thesaurus.getId(), currentIdTheso)){
-                        return;
-                    }
+            if (CollectionUtils.isNotEmpty(projectBean.getListeThesoOfProject())) {
+                if (projectBean.getListeThesoOfProject().stream()
+                        .filter(element -> StringUtils.equalsIgnoreCase(element.getId(), currentIdTheso))
+                        .findFirst()
+                        .isEmpty()) {
+                    selectedIdTheso = null;
+                    currentIdTheso = null;
                 }
             }
 
-            selectedIdTheso = null;
-            currentIdTheso = null;
+            if (StringUtils.isEmpty(selectedIdTheso)) {
+                indexSetting.setProjectSelected(true);
+            }
+
             projectBean.init();
         }
-        indexSetting.setIsSelectedTheso(false);
     }
 
     

@@ -136,9 +136,6 @@ public class CurrentUser implements Serializable {
                     indexSetting.setSelectedTheso(false);
                     indexSetting.setProjectSelected(true);
                 }
-            } else {
-                indexSetting.setSelectedTheso(false);
-                indexSetting.setProjectSelected(false);
             }
         }
 
@@ -258,9 +255,6 @@ public class CurrentUser implements Serializable {
                 indexSetting.setSelectedTheso(false);
                 indexSetting.setProjectSelected(true);
             }
-        } else {
-            indexSetting.setSelectedTheso(false);
-            indexSetting.setProjectSelected(false);
         }
 
         PrimeFaces.current().executeScript("PF('login').hiden();");
