@@ -66,6 +66,8 @@ public class CurrentUser implements Serializable {
     private SelectedTheso selectedTheso;
     @Inject
     private ProjectBean projectBean;
+    @Inject
+    private CurrentUser currentUser;
 
     private NodeUser nodeUser;
     private String username;
@@ -98,7 +100,6 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
         nodeUser = null;
-        roleOnThesoBean.showListTheso();
 
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
@@ -127,15 +128,20 @@ public class CurrentUser implements Serializable {
             selectedTheso.setSelectedIdTheso(null);
             indexSetting.setSelectedTheso(false);
         } else {
-            if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())) {
-                if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
-                    indexSetting.setSelectedTheso(true);
-                    indexSetting.setProjectSelected(false);
-                } else {
-                    selectedTheso.setCurrentIdTheso(null);
-                    indexSetting.setSelectedTheso(false);
-                    indexSetting.setProjectSelected(true);
-                }
+            if (!projectBean.getListeThesoOfProject().isEmpty()) {
+                roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
+                        .map(NodeIdValue::getId)
+                        .collect(Collectors.toList()));
+            } else {
+                roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+            }
+            roleOnThesoBean.addAuthorizedThesoToHM();
+            roleOnThesoBean.setUserRoleOnThisTheso();
+
+            if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())
+                    && new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
+                indexSetting.setSelectedTheso(true);
+                indexSetting.setProjectSelected(false);
             }
         }
 
@@ -180,7 +186,7 @@ public class CurrentUser implements Serializable {
             return;
         }
 
-        int idUser = -1;
+        int idUser;
         if (ldapEnable) {
             if (!new LDAPUtils().authentificationLdapCheck(username, password)) {
                 showErrorMessage("User or password LDAP wrong, please try again");
@@ -220,7 +226,7 @@ public class CurrentUser implements Serializable {
         propositionBean.setRubriqueVisible(false);
 
         selectedTheso.loadProject();
-        //selectedTheso.setSelectedProject();
+
         if ("-1".equals(selectedTheso.getProjectIdSelected())) {
             roleOnThesoBean.setOwnerThesos();
             indexSetting.setProjectSelected(false);
@@ -231,8 +237,8 @@ public class CurrentUser implements Serializable {
                 indexSetting.setSelectedTheso(false);
             }
         } else {
-            //indexSetting.setProjectSelected(true);
-            projectBean.initProject(selectedTheso.getProjectIdSelected());
+            boolean isConnect = ObjectUtils.isNotEmpty(currentUser.getNodeUser());
+            projectBean.initProject(selectedTheso.getProjectIdSelected(), !isConnect);
 
             if (!projectBean.getListeThesoOfProject().isEmpty()) {
                 roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
@@ -244,17 +250,6 @@ public class CurrentUser implements Serializable {
             roleOnThesoBean.addAuthorizedThesoToHM();
             roleOnThesoBean.setUserRoleOnThisTheso();
             projectBean.init();
-        }
-
-        if (StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())) {
-            if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
-                indexSetting.setSelectedTheso(true);
-                indexSetting.setProjectSelected(false);
-            } else {
-                selectedTheso.setCurrentIdTheso(null);
-                indexSetting.setSelectedTheso(false);
-                indexSetting.setProjectSelected(true);
-            }
         }
 
         PrimeFaces.current().executeScript("PF('login').hiden();");

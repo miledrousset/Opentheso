@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -24,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -41,14 +41,13 @@ public class ProjectBean implements Serializable {
     private String text, projectIdSelected;
     private boolean projectDescription, editingHomePage;
     private ProjectDescription projectDescriptionSelected;
-    private ArrayList<NodeIdValue> listeThesoOfProject;
+    private List<NodeIdValue> listeThesoOfProject;
 
 
-    public void initProject(String projectIdSelected) {
-        this.projectIdSelected = projectIdSelected;
+    public void initProject(String projectIdSelected, boolean isPrivate) {
         projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, getLang());
         listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(),
-                Integer.parseInt(projectIdSelected), connect.getWorkLanguage());
+                Integer.parseInt(projectIdSelected), connect.getWorkLanguage(), isPrivate);
 
         for (NodeIdValue element : listeThesoOfProject) {
             try {

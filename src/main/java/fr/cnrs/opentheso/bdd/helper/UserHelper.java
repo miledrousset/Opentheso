@@ -14,6 +14,7 @@ import java.util.Map;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
@@ -22,6 +23,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRole;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class UserHelper {
@@ -639,6 +641,48 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nodeIdTheso;        
+    }
+
+
+    public List<NodeIdValue> getThesaurusOfProject(HikariDataSource ds, int idProject, String idLang, boolean isPrivate) {
+
+        ArrayList<String> listIdTheso = getIdThesaurusOfProjectWithVisibility(ds, idProject, isPrivate);
+
+        if (CollectionUtils.isNotEmpty(listIdTheso)) {
+            return listIdTheso.stream().map(idTheso -> {
+                String idLangTemp = new PreferencesHelper().getWorkLanguageOfTheso(ds, idTheso);
+                if(StringUtils.isEmpty(idLangTemp))
+                    idLangTemp = idLang;
+
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                nodeIdValue.setId(idTheso);
+                nodeIdValue.setValue(new ThesaurusHelper().getTitleOfThesaurus(ds, idTheso, idLangTemp));
+                return nodeIdValue;
+            }).collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private ArrayList<String> getIdThesaurusOfProjectWithVisibility(HikariDataSource ds, int idProject, boolean isPrivate){
+        ArrayList<String> nodeIdTheso = new ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT the.id_thesaurus " +
+                        "FROM user_group_thesaurus, thesaurus the " +
+                        "WHERE the.id_thesaurus = user_group_thesaurus.id_thesaurus " +
+                        "AND user_group_thesaurus.id_group = '" + idProject + "' " +
+                        (isPrivate ? "AND the.private = "+isPrivate : ""));
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        nodeIdTheso.add(resultSet.getString("id_thesaurus"));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeIdTheso;
     }
     
 
