@@ -317,17 +317,13 @@ public class SelectedTheso implements Serializable {
     
     public void setSelectedProject() {
         if ("-1".equals(projectIdSelected)) {
-            if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
-                roleOnThesoBean.setPublicThesos();
-            } else {
-                roleOnThesoBean.setOwnerThesos();
-            }
-
-            indexSetting.setSelectedTheso(StringUtils.isNotEmpty(currentIdTheso));
+            roleOnThesoBean.showListTheso();
+            currentIdTheso = null;
+            indexSetting.setSelectedTheso(false);
             indexSetting.setProjectSelected(false);
-            return;
         } else {
-            projectBean.initProject(projectIdSelected);
+            boolean isConnect = ObjectUtils.isNotEmpty(currentUser.getNodeUser());
+            projectBean.initProject(projectIdSelected, !isConnect);
 
             if (!projectBean.getListeThesoOfProject().isEmpty()) {
                 roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
