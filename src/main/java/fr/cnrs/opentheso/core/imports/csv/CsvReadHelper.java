@@ -860,7 +860,7 @@ public class CsvReadHelper {
                 conceptObject = getAlignments(conceptObject, record, readEmptyData);
 
                 // on récupère la localisation
-                conceptObject.setGps(record.get("geo:gps"));
+                conceptObject = getGps(conceptObject, record);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
                 conceptObject = getMembers(conceptObject, record);
@@ -943,7 +943,7 @@ public class CsvReadHelper {
                 conceptObject = getAlignments(conceptObject, record, false);
 
                 // on récupère la localisation
-                conceptObject.setGps(record.get("geo:gps"));
+                conceptObject = getGps(conceptObject, record);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
                 conceptObject = getMembers(conceptObject, record);
@@ -959,6 +959,32 @@ public class CsvReadHelper {
             java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+    
+    /**
+     * permet de charger tous les alignements d'un concept
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getGps(ConceptObject conceptObject, CSVRecord record) {
+
+        String value;
+   //     String values[];
+
+        // skos:member
+        try {
+            value = record.get("geo:gps");
+//            values = value.split("##");
+  //          for (String value1 : values) {
+                if (!value.isEmpty()) {
+                    conceptObject.setGps(value.trim());
+                }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+        return conceptObject;
     }
 
     /**
@@ -1062,16 +1088,23 @@ public class CsvReadHelper {
     private ConceptObject getDates(ConceptObject conceptObject, CSVRecord record) {
 
         // dct:created
-        String value = record.get("dct:created");
-        if (!value.isEmpty()) {
-            conceptObject.setCreated(value.trim());
-        }
-        // dct:modified
-        value = record.get("dct:modified");
-        if (!value.isEmpty()) {
-            conceptObject.setModified(value.trim());
+        String value;
+        try {
+            value = record.get("dct:created");
+            if (!value.isEmpty()) {
+                conceptObject.setCreated(value.trim());
+            }            
+        } catch (Exception e) {
         }
 
+        // dct:modified
+        try {
+            value = record.get("dct:modified");
+            if (!value.isEmpty()) {
+                conceptObject.setModified(value.trim());
+            }            
+        } catch (Exception e) {
+        }
         return conceptObject;
     }
 
@@ -1111,10 +1144,14 @@ public class CsvReadHelper {
      * @return
      */
     private ConceptObject getArkId(ConceptObject conceptObject, CSVRecord record) {
-        String arkId = record.get("arkId");
-        if (arkId != null) {
-            conceptObject.setArkId(arkId.trim());
+        try {
+            String arkId = record.get("arkId");
+            if (arkId != null) {
+                conceptObject.setArkId(arkId.trim());
+            }
+        } catch (Exception e) {
         }
+
         return conceptObject;
     }
 

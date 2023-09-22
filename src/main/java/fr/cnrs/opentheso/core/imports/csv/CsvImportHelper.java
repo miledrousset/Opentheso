@@ -1059,7 +1059,7 @@ public class CsvImportHelper {
 
     private boolean addGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        if (StringUtils.isEmpty(conceptObject.getGps()) && conceptObject.getGps().length() < 3) {
+        if (StringUtils.isEmpty(conceptObject.getGps()) || conceptObject.getGps().length() < 3) {
             return true;
         }
 

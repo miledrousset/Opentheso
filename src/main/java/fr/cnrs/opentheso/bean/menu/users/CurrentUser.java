@@ -230,11 +230,16 @@ public class CurrentUser implements Serializable {
         if ("-1".equals(selectedTheso.getProjectIdSelected())) {
             roleOnThesoBean.setOwnerThesos();
             indexSetting.setProjectSelected(false);
-            if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
-                indexSetting.setSelectedTheso(true);
+            if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
+              //  indexSetting.setSelectedTheso(false);
+              //  indexSetting.setProjectSelected(false);
             } else {
-                selectedTheso.setCurrentIdTheso(null);
-                indexSetting.setSelectedTheso(false);
+                if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
+                    indexSetting.setSelectedTheso(true);
+                } else {
+                    selectedTheso.setCurrentIdTheso(null);
+                    indexSetting.setSelectedTheso(false);
+                }
             }
         } else {
             boolean isConnect = ObjectUtils.isNotEmpty(currentUser.getNodeUser());
