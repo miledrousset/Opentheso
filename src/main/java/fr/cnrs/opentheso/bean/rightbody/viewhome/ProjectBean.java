@@ -22,7 +22,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,14 +37,20 @@ public class ProjectBean implements Serializable {
     @Inject private LanguageBean languageBean;
     @Inject private ProjectDescriptionRepository projectDescriptionRepository;
 
-    private String text, projectIdSelected;
-    private boolean projectDescription, editingHomePage;
+    private String description, projectIdSelected;
+    private boolean projectDescription, editingHomePage, isButtonEnable;
     private ProjectDescription projectDescriptionSelected;
     private List<NodeIdValue> listeThesoOfProject;
 
 
     public void initProject(String projectIdSelected, boolean isPrivate) {
         projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, getLang());
+        if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
+            projectDescriptionSelected = new ProjectDescription();
+            projectDescriptionSelected.setLang(getLang());
+            projectDescriptionSelected.setIdGroup(projectIdSelected);
+        }
+        description = projectDescriptionSelected.getDescription();
         listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(),
                 Integer.parseInt(projectIdSelected), connect.getWorkLanguage(), isPrivate);
 
@@ -62,32 +67,28 @@ public class ProjectBean implements Serializable {
     public void init() {
         projectDescription = true;
         editingHomePage = false;
+        isButtonEnable = true;
     }
 
     public void setEditPage() {
         projectDescription = false;
         editingHomePage = true;
+        isButtonEnable = false;
     }
 
     public void updateHomePage() {
 
-        if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
-            projectDescriptionSelected = new ProjectDescription();
-            projectDescriptionSelected.setLang(getLang());
-            projectDescriptionSelected.setIdGroup(projectIdSelected);
-        }
-
-        if (text.equalsIgnoreCase(projectDescriptionSelected.getDescription())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Vérifier la description du projet");
+        if (description.equalsIgnoreCase(projectDescriptionSelected.getDescription())) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Veuillez proposer une présentation différente de l'ancienne !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
 
-        projectDescriptionSelected.setDescription(text);
+        projectDescriptionSelected.setDescription(description);
         projectDescriptionRepository.saveProjectDescription(projectDescriptionSelected);
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Texte ajouté avec succès");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Description ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         init();
