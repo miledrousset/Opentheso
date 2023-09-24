@@ -1099,7 +1099,7 @@ public class ImportFileBean implements Serializable {
         if (nodePreference == null) {
             preferencesHelper.initPreferences(connect.getPoolConnexion(), idNewTheso, selectedLang);
         } else {
-            nodePreference.setPreferredName(thesaurusName);
+            nodePreference.setPreferredName(idNewTheso);
             nodePreference.setSourceLang(selectedLang);
             preferencesHelper.addPreference(connect.getPoolConnexion(), nodePreference, idNewTheso);
         }

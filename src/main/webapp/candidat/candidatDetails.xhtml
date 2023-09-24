@@ -8,7 +8,7 @@
         <div class="col-12" style="text-align: center; margin-top: 10px; font-size: 14px;">
             <b>
                 <h:outputText value="#{langueBean.getMsg('candidat.file')} "/>
-                <h:outputText style="font-size: 14px; color: #f47b2a;" value=" (#{candidatBean.candidatSelected.createdBy})"
+                <h:outputText rendered="#{candidatBean.candidatSelected.createdBy != null}" style="font-size: 14px; color: #f47b2a;" value=" (#{candidatBean.candidatSelected.createdBy})"
                               title="#{langueBean.getMsg('rightbody.concept.createdBy')} #{candidatBean.candidatSelected.createdBy}"/>
             </b>
         </div>

@@ -13,7 +13,7 @@
     <changeSet id="script0003" author="Miled">
         <sqlFile path="../install/liquibaseupdate/script0003.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
-    <changeSet id="executeScriptOriginal3" author="Miled">
+    <changeSet id="executeScriptOriginal4" author="Miled">
         <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>    
     
@@ -22,4 +22,7 @@
     <include file="/changelog/v23.07.3/002-update_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-add-projet-description-table.xml"/>
     <include file="/changelog/v23.07.3/003-update-primary-key-gps-table.xml"/>
+    
+    <!-- changelog pour la v23.09 --> 
+    <include file="/changelog/v23.09/001-delete-table-pref-gps.xml"/>
 </databaseChangeLog>

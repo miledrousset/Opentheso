@@ -1255,24 +1255,15 @@ public class GroupHelper {
     public NodeGroup getThisConceptGroup(HikariDataSource ds,
             String idConceptGroup, String idThesaurus, String idLang) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         NodeGroup nodeConceptGroup = null;
         ConceptGroup conceptGroup = null;
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT * from concept_group where "
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT * from concept_group where "
                             + " LOWER(idgroup) = '" + idConceptGroup.toLowerCase() + "'"
-                            + " and idthesaurus = '" + idThesaurus + "'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    if (resultSet != null) {
-                        resultSet.next();
+                            + " and idthesaurus = '" + idThesaurus + "'");
+                try (ResultSet resultSet = stmt.getResultSet()){
+                    if (resultSet.next()) {
                         if (resultSet.getRow() != 0) {
                             conceptGroup = new ConceptGroup();
                             conceptGroup.setIdgroup(idConceptGroup);
@@ -1285,17 +1276,15 @@ public class GroupHelper {
                             conceptGroup.setModified(resultSet.getDate("modified"));
                         }
                     }
-                    if (conceptGroup != null) {
-                        query = "SELECT * FROM concept_group_label WHERE"
-                                + " LOWER(idgroup) = '" + conceptGroup.getIdgroup().toLowerCase() + "'"
-                                + " AND idthesaurus = '" + idThesaurus + "'"
-                                + " AND lang = '" + idLang + "'";
-
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
+                }
+                if (conceptGroup != null) {
+                    stmt.executeQuery("SELECT * FROM concept_group_label WHERE"
+                            + " LOWER(idgroup) = '" + conceptGroup.getIdgroup().toLowerCase() + "'"
+                            + " AND idthesaurus = '" + idThesaurus + "'"
+                            + " AND lang = '" + idLang + "'");
+                    try (ResultSet resultSet = stmt.getResultSet()){
+                        if (resultSet.next()) {                    
                             nodeConceptGroup = new NodeGroup();
-                            resultSet.next();
                             if (resultSet.getRow() == 0) {
                                 // cas du Group non traduit
                                 nodeConceptGroup.setLexicalValue("");
@@ -1310,16 +1299,8 @@ public class GroupHelper {
                             nodeConceptGroup.setConceptGroup(conceptGroup);
                         }
                     }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
+                } 
+            } 
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while adding element : " + idThesaurus, sqle);

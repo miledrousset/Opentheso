@@ -380,44 +380,32 @@ public class ThesaurusHelper {
      */
     public Map getListThesaurus(HikariDataSource ds, String idLang) {
 
-        ResultSet resultSet = null;
         Map map = new HashMap();
         ArrayList tabIdThesaurus = new ArrayList();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select DISTINCT id_thesaurus from thesaurus");
-                resultSet = stmt.getResultSet();
-                if (resultSet != null) {
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         tabIdThesaurus.add(resultSet.getString("id_thesaurus"));
                     }
-                    for (Object tabIdThesauru : tabIdThesaurus) {
-                        stmt.executeQuery("select title from thesaurus_label where"
-                                + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
-                            resultSet.next();
+                }
+                for (Object tabIdThesauru : tabIdThesaurus) {
+                    stmt.executeQuery("select title from thesaurus_label where"
+                            + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
+                    try ( ResultSet resultSet = stmt.getResultSet()) {
+                        if(resultSet.next()) {
                             if (resultSet.getRow() == 0) {
                                 map.put("(" + tabIdThesauru + ")", tabIdThesauru);
                             } else {
                                 map.put(resultSet.getString("title") + "(" + tabIdThesauru + ")", tabIdThesauru);
                             }
-
                         }
                     }
                 }
-                if (resultSet != null) {
-                    resultSet.close();
-                }
             }
         } catch (SQLException sqle) {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception ex) {
-            }
             log.error("Error while getting Map of thesaurus : " + map.toString(), sqle);
         }
         return map;
@@ -463,24 +451,23 @@ public class ThesaurusHelper {
     public Map getListThesaurusOfUser(HikariDataSource ds, int idUser, String idLang) {
         Map map = new HashMap();
         ArrayList tabIdThesaurus = new ArrayList();
-        ResultSet resultSet = null;
+        
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT DISTINCT user_role.id_thesaurus FROM user_role, thesaurus WHERE "
                         + "thesaurus.id_thesaurus = user_role.id_thesaurus and id_user = " + idUser);
-                resultSet = stmt.getResultSet();
-                if (resultSet != null) {
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         if (!resultSet.getString("id_thesaurus").isEmpty()) {
                             tabIdThesaurus.add(resultSet.getString("id_thesaurus"));
                         }
                     }
-                    for (Object tabIdThesauru : tabIdThesaurus) {
-                        stmt.executeQuery("select title from thesaurus_label where"
-                                + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
-                            resultSet.next();
+                }
+                for (Object tabIdThesauru : tabIdThesaurus) {
+                    stmt.executeQuery("select title from thesaurus_label where"
+                            + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
+                    try ( ResultSet resultSet = stmt.getResultSet()) {
+                        if (resultSet.next()) {
                             if (resultSet.getRow() == 0) {
                                 map.put("(" + tabIdThesauru + ")", tabIdThesauru);
                             } else {
@@ -489,19 +476,10 @@ public class ThesaurusHelper {
                         }
                     }
                 }
-                if (resultSet != null) {
-                    resultSet.close();
-                }
             }
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while getting Map of thesaurus : " + map.toString(), sqle);
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception ex) {
-            }
         }
         return map;
     }
