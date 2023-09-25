@@ -7,7 +7,7 @@
 
     <div class="container-fluid col-xl-12 col-lg-12" style="margin-top: 30px">
         <div class="card shadow mb-4">
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin())}">
+            <h:panelGroup rendered="#{currentUser.nodeUser != null and currentUser.nodeUser.isSuperAdmin() and projectBean.buttonEnable}">
                 <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
                     <div style="width: 100%; text-align: right;">
                         <p:commandButton value="Modifier" ajax="true" process="@this"
@@ -43,7 +43,7 @@
                 <!-- vue connectée pour édition -->
                 <h:panelGroup rendered="#{projectBean.editingHomePage}" >
 
-                    <p:textEditor value="#{projectBean.text}" secure="false" height="600" style="margin-bottom:5px; margin-right: 5px"/>
+                    <p:textEditor value="#{projectBean.description}" secure="false" height="300" style="margin-bottom:5px; margin-right: 5px"/>
 
                     <div class="row" style="margin-top: 15px">
                         <div class="col-4 offset-8" style="text-align: right">
