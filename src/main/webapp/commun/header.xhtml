@@ -18,6 +18,7 @@
 
         <!-- liste des projets -->
         <p:selectOneMenu rendered="#{!selectedTheso.isFromUrl}" value="#{selectedTheso.projectIdSelected}"
+                         filter="true" filterMatchMode="contains"
                          style="height: 28px; max-width: 400px; border-radius: 50px 0px 0px 50px; 
                          background-color: #ECF8F1; color: #FFF !important; margin-top: 0px;">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedProject()}" update="thesoSelect containerIndex" />

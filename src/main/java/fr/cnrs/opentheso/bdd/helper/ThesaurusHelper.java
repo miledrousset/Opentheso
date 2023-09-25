@@ -422,11 +422,11 @@ public class ThesaurusHelper {
         List<String> tabIdThesaurus = new ArrayList();
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                String query = "";
+                String query;
                 if (withPrivateTheso) {
-                    query = "select id_thesaurus from thesaurus order by created desc";
+                    query = "select id_thesaurus from thesaurus order by id desc";
                 } else { // uniquement pour les SuperAdmin
-                    query = "select id_thesaurus from thesaurus where thesaurus.private != true order by created desc";
+                    query = "select id_thesaurus from thesaurus where thesaurus.private != true order by id desc";
                 }
                 try ( ResultSet resultSet = stmt.executeQuery(query)) {
                     while (resultSet.next()) {

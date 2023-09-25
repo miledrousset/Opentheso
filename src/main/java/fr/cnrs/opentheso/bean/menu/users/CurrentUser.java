@@ -231,8 +231,6 @@ public class CurrentUser implements Serializable {
             roleOnThesoBean.setOwnerThesos();
             indexSetting.setProjectSelected(false);
             if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
-              //  indexSetting.setSelectedTheso(false);
-              //  indexSetting.setProjectSelected(false);
             } else {
                 if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
                     indexSetting.setSelectedTheso(true);
