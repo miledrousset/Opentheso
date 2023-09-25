@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcterms="http://purl.org/dc/terms/"
+	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+	xmlns:iso-thes="http://purl.org/iso25964/skos-thes#"
+	xmlns:opentheso="http://purl.org/umu/uneskos#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#ConceptScheme"/>
+	<skos:prefLabel xml:lang="fr">concept complet</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">concept complet</skos:prefLabel>
+	<skos:hasTopConcept rdf:resource="http://localhost:8080/opentheso2/?idc=1027236&amp;idt=th539"/>
+	<skos:hasTopConcept rdf:resource="http://localhost:8080/opentheso2/?idc=1027239&amp;idt=th539"/>
+	<skos:hasTopConcept rdf:resource="http://localhost:8080/opentheso2/?idc=1027241&amp;idt=th539"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:modified>
+	<dcterms:creator>miled.rousset</dcterms:creator>
+	<dcterms:contributor>miled.rousset</dcterms:contributor>
+	<dcterms:title>concept complet</dcterms:title>
+	<dcterms:language>en</dcterms:language>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idg=g3312&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">collection Lieux</skos:prefLabel>
+	<skos:prefLabel xml:lang="en">Place collection</skos:prefLabel>
+	<iso-thes:microThesaurusOf rdf:resource="http://localhost:8080/opentheso2/?idg=g3312&amp;idt=th539"/>
+	<skos:member rdf:resource="http://localhost:8080/opentheso2/?idc=1027236&amp;idt=th539"/>
+	<skos:member rdf:resource="http://localhost:8080/opentheso2/?idc=1027237&amp;idt=th539"/>
+	<skos:member rdf:resource="http://localhost:8080/opentheso2/?idc=1027238&amp;idt=th539"/>
+	<skos:member rdf:resource="http://localhost:8080/opentheso2/?idc=1027240&amp;idt=th539"/>
+	<iso-thes:subGroup rdf:resource="http://localhost:8080/opentheso2/?idg=g3313&amp;idt=th539"/>
+	<skos:notation>NC</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idg=g3313&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Collection"/>
+	<skos:prefLabel xml:lang="fr">sousLieux</skos:prefLabel>
+	<skos:member rdf:resource="http://localhost:8080/opentheso2/?idc=1027242&amp;idt=th539"/>
+	<iso-thes:superGroup rdf:resource="http://localhost:8080/opentheso2/?idg=g3312&amp;idt=th539"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idf=F144&amp;idt=th539">
+	<rdf:type rdf:resource="http://purl.org/iso25964/skos-thes#ThesaurusArray"/>
+	<iso-thes:superOrdinate rdf:resource="http://localhost:8080/opentheso2/?idc=1027239&amp;idt=th539"/>
+	<skos:member rdf:resource="http://localhost:8080/opentheso2/?idc=1027240&amp;idt=th539"/>
+	<skos:prefLabel xml:lang="fr">par type</skos:prefLabel>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22 13:56:24.233548+02</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22 13:56:24.233548+02</dcterms:modified>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idc=1027236&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Lieux</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<skos:narrower rdf:resource="http://localhost:8080/opentheso2/?idc=1027237&amp;idt=th539"/>
+	<skos:narrower rdf:resource="http://localhost:8080/opentheso2/?idc=1027238&amp;idt=th539"/>
+	<skos:narrower rdf:resource="http://localhost:8080/opentheso2/?idc=1027242&amp;idt=th539"/>
+	<skos:inScheme rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8080/opentheso2/?idg=g3312&amp;idt=th539"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:modified>
+	<dcterms:identifier>1027236</dcterms:identifier>
+	<dcterms:description>1027236</dcterms:description>
+	<dcterms:creator>miled.rousset</dcterms:creator>
+	<dcterms:contributor>miled.rousset</dcterms:contributor>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idc=1027237&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="en">Lyon</skos:prefLabel>
+	<skos:prefLabel xml:lang="fr">Lyon</skos:prefLabel>
+	<skos:hiddenLabel xml:lang="fr">caché</skos:hiddenLabel>
+	<skos:altLabel xml:lang="fr">gastronomie</skos:altLabel>
+	<skos:altLabel xml:lang="en">gastronomy</skos:altLabel>
+	<skos:broader rdf:resource="http://localhost:8080/opentheso2/?idc=1027236&amp;idt=th539"/>
+	<skos:inScheme rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8080/opentheso2/?idg=g3312&amp;idt=th539"/>
+	<skos:exactMatch rdf:resource="https://www.geonames.org/2996944"/>
+	<skos:exactMatch rdf:resource="https://www.wikidata.org/entity/Q456"/>
+	<skos:notation>NL</skos:notation>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:modified>
+	<dcterms:identifier>1027237</dcterms:identifier>
+	<dcterms:description>1027236##1027237</dcterms:description>
+	<dcterms:creator>miled.rousset</dcterms:creator>
+	<dcterms:contributor>miled.rousset</dcterms:contributor>
+	<skos:definition xml:lang="en">commune in the metropolis of Lyon, France</skos:definition>
+	<skos:definition xml:lang="fr">ville et commune française siège de la métropole de Lyon (chef-lieu de la région Auvergne-Rhône-Alpes)</skos:definition>
+	<geo:lat rdf:datatype="http://www.w3.org/2001/XMLSchema#double">45.74846</geo:lat>
+	<geo:long rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4.84671</geo:long>
+        <dcterms:source>https://www.lyon.fr</dcterms:source>
+	<dcterms:replaces rdf:resource="http://localhost:8080/opentheso2/?idc=1027238&amp;idt=th539"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="https://commons.wikimedia.org/wiki/Special:FilePath/01.%20Panorama%20de%20Lyon%20pris%20depuis%20le%20toit%20de%20la%20Basilique%20de%20Fourvière.jpg">
+	<rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Image"/>
+	<dcterms:identifier>1027237</dcterms:identifier>
+	<dcterms:rights>Wikidata_rest</dcterms:rights>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idc=1027238&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Lugdunum</skos:prefLabel>
+	<skos:broader rdf:resource="http://localhost:8080/opentheso2/?idc=1027236&amp;idt=th539"/>
+	<skos:inScheme rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8080/opentheso2/?idg=g3312&amp;idt=th539"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:modified>
+	<dcterms:identifier>1027238</dcterms:identifier>
+	<dcterms:description>1027236##1027238</dcterms:description>
+	<dcterms:creator>miled.rousset</dcterms:creator>
+	<dcterms:contributor>miled.rousset</dcterms:contributor>
+	<owl:deprecated rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</owl:deprecated>
+	<dcterms:isReplacedBy rdf:resource="http://localhost:8080/opentheso2/?idc=1027237&amp;idt=th539"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idc=1027239&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">test Facettes</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<skos:narrower rdf:resource="http://localhost:8080/opentheso2/?idc=1027240&amp;idt=th539"/>
+	<skos:inScheme rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<iso-thes:subordinateArray rdf:resource="http://localhost:8080/opentheso2/?idf=F144&amp;idt=th539"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:modified>
+	<dcterms:identifier>1027239</dcterms:identifier>
+	<dcterms:description>1027239</dcterms:description>
+	<dcterms:creator>miled.rousset</dcterms:creator>
+	<dcterms:contributor>miled.rousset</dcterms:contributor>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idc=1027240&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">lait</skos:prefLabel>
+	<skos:broader rdf:resource="http://localhost:8080/opentheso2/?idc=1027239&amp;idt=th539"/>
+	<skos:inScheme rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8080/opentheso2/?idg=g3312&amp;idt=th539"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:identifier>1027240</dcterms:identifier>
+	<dcterms:description>1027239##1027240</dcterms:description>
+	<dcterms:creator>miled.rousset</dcterms:creator>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idc=1027241&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">Qualificatif</skos:prefLabel>
+	<skos:topConceptOf rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<skos:inScheme rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:modified>
+	<dcterms:identifier>1027241</dcterms:identifier>
+	<dcterms:description>1027241</dcterms:description>
+	<dcterms:creator>miled.rousset</dcterms:creator>
+	<dcterms:contributor>miled.rousset</dcterms:contributor>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://localhost:8080/opentheso2/?idc=1027242&amp;idt=th539">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel xml:lang="fr">ConceptQualificatif</skos:prefLabel>
+	<skos:broader rdf:resource="http://localhost:8080/opentheso2/?idc=1027236&amp;idt=th539"/>
+	<skos:inScheme rdf:resource="http://localhost:8080/opentheso2/?idt=th539"/>
+	<opentheso:memberOf rdf:resource="http://localhost:8080/opentheso2/?idg=g3313&amp;idt=th539"/>
+	<dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:created>
+	<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2023-09-22</dcterms:modified>
+	<dcterms:identifier>1027242</dcterms:identifier>
+	<dcterms:description>1027236##1027242</dcterms:description>
+	<dcterms:creator>miled.rousset</dcterms:creator>
+	<dcterms:contributor>miled.rousset</dcterms:contributor>
+</rdf:Description>
+
+</rdf:RDF>
