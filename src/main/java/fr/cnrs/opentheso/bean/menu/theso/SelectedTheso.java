@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
+import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
@@ -49,7 +50,7 @@ import org.primefaces.PrimeFaces;
 @Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
 
-    @Inject private LanguageBean LanguageBean;
+    @Inject private LanguageBean languageBean;
     @Inject private Connect connect;
     @Inject private IndexSetting indexSetting;
     @Inject private TreeGroups treeGroups;
@@ -316,6 +317,10 @@ public class SelectedTheso implements Serializable {
     }    
     
     public void setSelectedProject() {
+        projectBean.setLangCodeSelected(languageBean.getIdLangue());
+        if (CollectionUtils.isEmpty(projectBean.getAllLangs())) {
+            projectBean.setAllLangs(new LanguageHelper().getAllLanguages(connect.getPoolConnexion()));
+        }
         if ("-1".equals(projectIdSelected)) {
             roleOnThesoBean.showListTheso();
             currentIdTheso = null;
@@ -464,7 +469,7 @@ public class SelectedTheso implements Serializable {
         nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(),
                 selectedIdTheso,
-                LanguageBean.getIdLangue());
+                languageBean.getIdLangue());
 
         currentLang = idLang;
         selectedLang = idLang;
@@ -700,11 +705,11 @@ public class SelectedTheso implements Serializable {
     }
 
     public LanguageBean getLanguageBean() {
-        return LanguageBean;
+        return languageBean;
     }
 
     public void setLanguageBean(LanguageBean LanguageBean) {
-        this.LanguageBean = LanguageBean;
+        this.languageBean = LanguageBean;
     }
 
     public Connect getConnect() {

@@ -38,6 +38,7 @@ import org.primefaces.PrimeFaces;
 @Named(value = "newThesoBean")
 @SessionScoped
 public class NewThesoBean implements Serializable {
+
     @Inject private Connect connect;
     @Inject private CurrentUser currentUser;
     @Inject private RoleOnThesoBean roleOnThesoBean;

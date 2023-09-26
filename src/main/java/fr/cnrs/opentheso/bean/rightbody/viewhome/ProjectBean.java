@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
+import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
+import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -37,10 +39,11 @@ public class ProjectBean implements Serializable {
     @Inject private LanguageBean languageBean;
     @Inject private ProjectDescriptionRepository projectDescriptionRepository;
 
-    private String description, projectIdSelected;
+    private String description, langCode, langCodeSelected;
     private boolean projectDescription, editingHomePage, isButtonEnable;
     private ProjectDescription projectDescriptionSelected;
     private List<NodeIdValue> listeThesoOfProject;
+    private List<Languages_iso639> allLangs;
 
 
     public void initProject(String projectIdSelected, boolean isPrivate) {
@@ -72,6 +75,12 @@ public class ProjectBean implements Serializable {
     }
 
     public void setEditPage() {
+        if (CollectionUtils.isEmpty(allLangs)) {
+            allLangs = new LanguageHelper().getAllLanguages(connect.getPoolConnexion());
+        }
+        if (StringUtils.isEmpty(langCode)) {
+            langCode = getLang();
+        }
         projectDescription = false;
         editingHomePage = true;
         isButtonEnable = false;
@@ -112,5 +121,35 @@ public class ProjectBean implements Serializable {
 
     public String getLabel(NodeIdValue nodeIdValue) {
         return nodeIdValue.getValue () + " (" + nodeIdValue.getNbrConcepts() + " concepts)";
+    }
+
+    public void changeLangListener() {
+        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(selectedTheso.getProjectIdSelected(), langCode);
+        if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
+            projectDescriptionSelected = new ProjectDescription();
+            projectDescriptionSelected.setLang(langCode);
+            projectDescriptionSelected.setIdGroup(selectedTheso.getProjectIdSelected());
+        }
+        description = projectDescriptionSelected.getDescription();
+    }
+
+    public void changeProjectDescription() {
+        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(selectedTheso.getProjectIdSelected(), langCodeSelected);
+    }
+
+    public String getDrapeauImgLocal(String codePays) {
+        if (StringUtils.isEmpty(codePays)) {
+            return FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequestContextPath() + "/resources/img/flag/noflag.png";
+        }
+
+        var pays = allLangs.stream().filter(element -> codePays.equalsIgnoreCase(element.getId_iso639_1())).findFirst();
+        if (pays.isPresent()) {
+            return FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequestContextPath() + "/resources/img/flag/" + pays.get().getCodePays() + ".png";
+        } else {
+            return FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequestContextPath() + "/resources/img/flag/noflag.png";
+        }
     }
 }
