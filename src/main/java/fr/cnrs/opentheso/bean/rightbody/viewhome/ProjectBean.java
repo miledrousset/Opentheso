@@ -44,6 +44,7 @@ public class ProjectBean implements Serializable {
 
 
     public void initProject(String projectIdSelected, boolean isPrivate) {
+        if(StringUtils.isEmpty(projectIdSelected)) return;
         projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, getLang());
         if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
             projectDescriptionSelected = new ProjectDescription();

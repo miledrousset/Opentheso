@@ -227,7 +227,7 @@ public class CurrentUser implements Serializable {
 
         selectedTheso.loadProject();
 
-        if ("-1".equals(selectedTheso.getProjectIdSelected())) {
+        if ("-1".equals(selectedTheso.getProjectIdSelected()) || StringUtils.isEmpty(selectedTheso.getProjectIdSelected())) {
             roleOnThesoBean.setOwnerThesos();
             indexSetting.setProjectSelected(false);
             if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){

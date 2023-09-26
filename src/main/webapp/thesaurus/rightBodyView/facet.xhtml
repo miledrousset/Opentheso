@@ -96,13 +96,13 @@
                                 <ui:repeat var="concept" value="#{editFacet.conceptList}" varStatus="status">
                                     <p:commandLink rendered="#{concept.value == ''}"
                                                    value="(#{concept.id})"
-                                                   style="color: #43B572;" styleClass="textOpentheso"
+                                                   style="color: #601e18;" styleClass="textOpentheso"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                              concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
 
                                     <p:commandLink rendered="#{concept.value != ''}"
                                                    value="#{concept.value}"
-                                                   style="color: #43B572;" styleClass="textOpentheso"
+                                                   style="color: #601e18;" styleClass="textOpentheso"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                              concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
                                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
