@@ -59,8 +59,8 @@ public class NodeConceptExport {
     private List<MessageDto> messages = new ArrayList<>();
 
     private List<VoteDto> votes = new ArrayList<>();
-
-    private List<NodeGps> nodeGps;
+    //TODO MILTI GPS
+    private NodeGps nodeGps;
     
     //concepts à utiliser pour un concept déprécié
     private ArrayList <NodeHieraRelation> replacedBy;
@@ -145,11 +145,11 @@ public class NodeConceptExport {
 
 
 
-    public List<NodeGps> getNodeGps() {
+    public NodeGps getNodeGps() {
         return nodeGps;
     }
 
-    public void setNodeGps(List<NodeGps> nodeGps) {
+    public void setNodeGps(NodeGps nodeGps) {
         this.nodeGps = nodeGps;
     }
 

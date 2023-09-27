@@ -242,22 +242,36 @@ public class WriteCSV {
         writer.write(stringBuffer.toString());
         writer.newLine();
     }
-
-    private String getLatValue(List<SKOSGPSCoordinates> coordinates) {
+    //TODO MILTI GPS
+    private String getLatValue(SKOSGPSCoordinates coordinates) {
+        if (coordinates != null) {
+            if (coordinates.getLat() == null) {
+                return "";
+            }
+            return coordinates.getLat();
+        }
+        /*
         if (CollectionUtils.isNotEmpty(coordinates)) {
             return coordinates.stream()
                     .map(SKOSGPSCoordinates::getLat)
                     .collect(Collectors.joining(delim_multi_datas));
-        }
+        }*/
         return "";
     }
 
-    private String getLongValue(List<SKOSGPSCoordinates> coordinates) {
+    private String getLongValue(SKOSGPSCoordinates coordinates) {
+        if (coordinates != null) {
+            if (coordinates.getLon() == null) {
+                return "";
+            }
+            return coordinates.getLon();
+        }
+        /*
         if (CollectionUtils.isNotEmpty(coordinates)) {
             return coordinates.stream()
                     .map(SKOSGPSCoordinates::getLat)
                     .collect(Collectors.joining(delim_multi_datas));
-        }
+        }*/
         return "";
     }
 
