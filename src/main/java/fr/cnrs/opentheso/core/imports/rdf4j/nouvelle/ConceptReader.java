@@ -76,9 +76,11 @@ public class ConceptReader {
                 skosConcept.setStatus(SKOSProperty.deprecated);
                 break;
 
-
             //GPSCoordinates
             case "lat":
+                //TODO MILTI GPS
+                skosConcept.getGpsCoordinates().setLat(literal.getLabel());
+                /*
                 if (skosConcept.getGpsCoordinates().stream()
                         .filter(element -> element.getLat() == null)
                         .findFirst()
@@ -93,10 +95,12 @@ public class ConceptReader {
                     SKOSGPSCoordinates element = new SKOSGPSCoordinates();
                     element.setLat(literal.getLabel());
                     skosConcept.getGpsCoordinates().add(element);
-                }
+                }*/
                 break;
 
             case "long":
+                skosConcept.getGpsCoordinates().setLon(literal.getLabel());
+                /*
                 if (skosConcept.getGpsCoordinates().stream()
                         .filter(element -> element.getLon() == null)
                         .findFirst()
@@ -111,7 +115,7 @@ public class ConceptReader {
                     SKOSGPSCoordinates element = new SKOSGPSCoordinates();
                     element.setLon(literal.getLabel());
                     skosConcept.getGpsCoordinates().add(element);
-                }
+                }*/
                 break;
 
             //identifier

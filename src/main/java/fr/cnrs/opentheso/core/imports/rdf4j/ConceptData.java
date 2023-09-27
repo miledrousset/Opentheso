@@ -109,6 +109,9 @@ public class ConceptData {
 
             //GPSCoordinates
             case "lat":
+                //TODO MILTI GPS
+                readStruct.resource.getGpsCoordinates().setLat(readStruct.literal.getLabel());
+                /*
                 if (readStruct.resource.getGpsCoordinates().stream()
                         .filter(element -> element.getLat() == null)
                         .findFirst()
@@ -123,9 +126,11 @@ public class ConceptData {
                     SKOSGPSCoordinates element = new SKOSGPSCoordinates();
                     element.setLat(readStruct.literal.getLabel());
                     readStruct.resource.getGpsCoordinates().add(element);
-                }
+                }*/
                 break;
             case "long":
+                readStruct.resource.getGpsCoordinates().setLon(readStruct.literal.getLabel());
+                /*
                 if (readStruct.resource.getGpsCoordinates().stream()
                         .filter(element -> element.getLon() == null)
                         .findFirst()
@@ -140,9 +145,8 @@ public class ConceptData {
                     SKOSGPSCoordinates element = new SKOSGPSCoordinates();
                     element.setLon(readStruct.literal.getLabel());
                     readStruct.resource.getGpsCoordinates().add(element);
-                }
+                }*/
                 break;
-
             //Notation
             case "notation":
                 readStruct.resource.addNotation(readStruct.literal.getLabel());

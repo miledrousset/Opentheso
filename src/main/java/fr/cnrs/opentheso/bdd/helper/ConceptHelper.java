@@ -5468,10 +5468,16 @@ public class ConceptHelper {
         nodeConceptExport.setNodeNoteConcept(noteConcept);
 
         //récupération des coordonnées GPS
+        //TODO MILTI GPS
+        NodeGps nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
+        if (nodeGps != null) {
+            nodeConceptExport.setNodeGps(nodeGps);
+        }
+        /*
         List<NodeGps> nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
         if (CollectionUtils.isNotEmpty(nodeGps)) {
             nodeConceptExport.setNodeGps(nodeGps);
-        }
+        }*/
 
         ArrayList<NodeImage> nodeImages = imagesHelper.getExternalImages(ds, idConcept, idThesaurus);
         if (nodeImages != null) {
