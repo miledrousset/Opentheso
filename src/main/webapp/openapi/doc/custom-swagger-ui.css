@@ -1,9 +1,41 @@
 header {
-    background: black;
+    background: #43B572;
     padding: 1vh;
     display: flex;
 }
 
 header > * {
     padding-right: 1vw;
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+    background: #43B572;
+}
+
+.swagger-ui .opblock.opblock-get {
+    background: none; 
+    border-color: #43B572;
+}
+
+.swagger-ui .scheme-container {
+    padding: 15px 0;
+}
+
+.swagger-ui .info {
+    margin: 10px 0;
+}
+
+.swagger-ui {
+    margin-bottom: 50px;
+}
+
+.swagger-ui .opblock .opblock-summary-operation-id, .swagger-ui .opblock .opblock-summary-path, .swagger-ui .opblock .opblock-summary-path__deprecated {
+    font-size: 14px;
+}
+
+.swagger-ui table tbody tr td:first-of-type {
+  padding: 25px 0;
+}
+.swagger-ui .response-col_links {
+  padding-top: 25px;
 }

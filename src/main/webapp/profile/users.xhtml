@@ -55,14 +55,14 @@
 
                                 <div class="row" style="margin-top: -15px; margin-bottom: 5px;">
                                     <div class="col-1 offset-11">
-                                        <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin}" 
+                                        <p:commandButton rendered="#{currentUser.getNodeUser().isSuperAdmin()}"
                                                          action="#{newUSerBean.initForSuperAdmin()}"
-                                                         oncomplete="PF('addNewUser').show();" 
-                                                         ajax="true" 
-                                                         icon="fa fa-user-plus" update="idAddNewUser" 
+                                                         oncomplete="PF('addNewUser2').show();"
+
+                                                         icon="fa fa-user-plus" update="idAddNewUser2 addNewUser2Form"
                                                          styleClass="rounded-button"
                                                          title="#{langueBean.getMsg('profile.new_user')}"
-                                                         disabled="true">
+                                                         disabled="false">
                                         </p:commandButton>
                                     </div>                          
                                 </div>                                
@@ -114,10 +114,10 @@
             </div>
         </h:panelGroup>
 
-        <p:dialog id="idAddNewUser" header="#{langueBean.getMsg('profile.new_user')}" widgetVar="addNewUser" 
+        <p:dialog id="idAddNewUser2" header="#{langueBean.getMsg('profile.new_user')}" widgetVar="addNewUser2"
                   width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-            <h:form>
+            <h:form id="addNewUser2Form">
 
                 <p:defaultCommand target="addUserBtn" />
 
@@ -169,7 +169,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : " title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
                     </div>
                     <div class="col-7">
-                        <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.isAlertMail}" /> 
+                        <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.alertMail}" />
                     </div>
                     <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="isAlertMail" />
                 </div>
@@ -180,7 +180,7 @@
                         <h:outputText value="#{langueBean.getMsg('profile.role')} : " /> 
                     </div>
                     <div class="col-7">                       
-                        <p:selectOneMenu value="#{newUSerBean.selectedProject}"
+                        <p:selectOneMenu value="#{newUSerBean.selectedRole}"
                                          styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "
                                          panelStyle="border: none; box-shadow: none; max-width: 300px">
@@ -207,14 +207,13 @@
                 <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                     <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
                                      icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
-                                     ajax="true" actionListener="PF('addNewUser').hide();" update="idAddNewUser" />
+                                     ajax="true" actionListener="PF('addNewUser2').hide();" update="idAddNewUser2" />
 
                     <p:commandButton id="addUserBtn" value="#{langueBean.getMsg('btnValidate')}"
-                                     icon="pi pi-check" oncomplete="PF('addNewUser').hide();"
+                                     icon="pi pi-check" oncomplete="PF('addNewUser2').hide();"
                                      styleClass="ui-button-success"
-                                     ajax="true" process="@this"
                                      update="messageIndex containerIndex" 
-                                     actionListener="#{newUSerBean.addNewUserBySuperAdmin()}" />
+                                     action="#{newUSerBean.addNewUserBySuperAdmin()}" />
                 </div>
             </h:form>
         </p:dialog> 

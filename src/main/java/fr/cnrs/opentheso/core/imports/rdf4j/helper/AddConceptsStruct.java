@@ -29,6 +29,7 @@ public class AddConceptsStruct {
     public NodeStatus status;
     public String collectionToAdd;
     // pour intégrer les coordonnées GPS
+    //TODO MILTI GPS
     public NodeGps nodeGps = new NodeGps();
     public GpsHelper gpsHelper = new GpsHelper();
     //ajout des termes et traductions

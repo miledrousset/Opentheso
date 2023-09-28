@@ -6,9 +6,9 @@
 
     <p:dialog id="idModifyUser" header="#{langueBean.getMsg('profile.modify_user')}" widgetVar="modifyUser" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-        
-        
-        
+
+
+
         <p:spacer height="20px;" />
         <h:form>
             <div class="row">
@@ -37,7 +37,7 @@
                     <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : "/>
                 </div>
                 <div class="col-7">
-                    <p:toggleSwitch value="#{modifyUSerBean.nodeUser.isAlertMail}" />
+                    <p:toggleSwitch value="#{modifyUSerBean.nodeUser.alertMail}" />
                 </div>
             </div>
 
@@ -47,7 +47,6 @@
                     <h:outputText value="#{langueBean.getMsg('profile.activateAccount')} : " />
                 </div>
                 <div class="col-7">
-                    <p:toggleSwitch value="#{modifyUSerBean.nodeUser.isActive}" />
                 </div>
             </div>
 

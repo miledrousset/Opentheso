@@ -1,33 +1,34 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.PrimeFaces;
 
 /**
  *
  * @author miledrousset
  */
-@Named(value = "viewEditorThesoHomeBean")
 @SessionScoped
+@Named(value = "viewEditorThesoHomeBean")
 public class ViewEditorThesoHomeBean implements Serializable {
     @Inject private Connect connect;
     @Inject private SelectedTheso selectedTheso;
@@ -65,7 +66,6 @@ public class ViewEditorThesoHomeBean implements Serializable {
         text = copyrightHelper.getThesoHomePage(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), lang);
         isInEditing = true;
         isViewPlainText = false;
-        
         colorOfHtmlButton = "#F49F66;";
         colorOfTextButton = "#8C8C8C;";          
     }
@@ -80,7 +80,20 @@ public class ViewEditorThesoHomeBean implements Serializable {
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 lang);
+        
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("containerIndex:meta:metadataTheso");
+        }        
+
         return homePage;
+    }
+    
+    public List<DcElement> meta(){
+        DcElementHelper dcElementHelper = new DcElementHelper();
+        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        if(dcElements == null || dcElements.isEmpty())
+            dcElements = new ArrayList<>();           
+        return dcElements;
     }
     /**
      * permet d'ajouter un copyright, s'il n'existe pas, on le créé,sinon, on applique une mise à jour 
@@ -122,6 +135,15 @@ public class ViewEditorThesoHomeBean implements Serializable {
         return "";
     }
     
+    public String getProjectName(){
+        UserHelper userHelper = new UserHelper();
+        int idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        if(idProject != -1) {
+            return "(" + userHelper.getGroupName(connect.getPoolConnexion(), idProject) + ")";
+        } else 
+            return "";
+    }    
+    
     public ArrayList<NodeIdValue> getLastModifiedConcepts(){
         ConceptHelper conceptHelper = new ConceptHelper();
         return conceptHelper.getLastModifiedConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
@@ -138,12 +160,44 @@ public class ViewEditorThesoHomeBean implements Serializable {
         isViewPlainText = status;
     }
 
-    public boolean isIsViewPlainText() {
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public LanguageBean getLanguageBean() {
+        return languageBean;
+    }
+
+    public void setLanguageBean(LanguageBean languageBean) {
+        this.languageBean = languageBean;
+    }
+
+    public boolean isViewPlainText() {
         return isViewPlainText;
     }
 
     public void setIsViewPlainText(boolean isViewPlainText) {
         this.isViewPlainText = isViewPlainText;
+    }
+
+    public boolean isInEditing() {
+        return isInEditing;
+    }
+
+    public void setIsInEditing(boolean isInEditing) {
+        this.isInEditing = isInEditing;
     }
 
     public String getText() {
@@ -152,14 +206,6 @@ public class ViewEditorThesoHomeBean implements Serializable {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public boolean isIsInEditing() {
-        return isInEditing;
-    }
-
-    public void setIsInEditing(boolean isInEditing) {
-        this.isInEditing = isInEditing;
     }
 
     public String getColorOfHtmlButton() {
@@ -177,7 +223,6 @@ public class ViewEditorThesoHomeBean implements Serializable {
     public void setColorOfTextButton(String colorOfTextButton) {
         this.colorOfTextButton = colorOfTextButton;
     }
-
-
+    
     
 }

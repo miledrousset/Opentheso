@@ -85,9 +85,9 @@
 
                                         <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                          icon="fas fa-people-carry" styleClass="edit-button rounded-button"
-                                                         process="@this"
+                                                         process="@this" ajax="true"
                                                          title="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}"
-                                                         update="containerIndex:idMoveThesoToAnotherProjectSA" oncomplete="PF('moveThesoToAnotherProjectSA').show();"
+                                                         update="containerIndex:idMoveThesoToAnotherProjectSA containerIndex:moveThesoToAnotherProjectSAForm" oncomplete="PF('moveThesoToAnotherProjectSA').show();"
                                                          actionListener="#{moveThesoToProjectBean.setThesoSuperAdmin(listTheso.idThesaurus, listTheso.thesaurusName, listTheso.idGroup)}"/>
 
                                     </p:column>

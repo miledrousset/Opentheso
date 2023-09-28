@@ -82,16 +82,17 @@ public class ConceptHelper {
      * /**************************************************************
      * /*************************************************************
      */
-    
     /**
-     * permet de changer les valeurs d'un type de concept dans la table ConceptType
+     * permet de changer les valeurs d'un type de concept dans la table
+     * ConceptType
+     *
      * @param ds
      * @param idThesaurus
      * @param nodeConceptType
-     * @return 
+     * @return
      */
     public boolean applyChangeForConceptType(HikariDataSource ds,
-            String idThesaurus, NodeConceptType nodeConceptType){
+            String idThesaurus, NodeConceptType nodeConceptType) {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE concept_type set "
@@ -106,66 +107,76 @@ public class ConceptHelper {
         } catch (SQLException sqle) {
             log.error("Error while updating type of concept : " + nodeConceptType.getCode(), sqle);
         }
-        return false;        
+        return false;
     }
-    
+
     /**
      * permet de déplacer le concept vers un autre thésaurus
+     *
      * @param ds
      * @param idConceptToMove
      * @param idThesoFrom
      * @param idThesoTarget
      * @param idUser
-     * @return 
+     * @return
      */
     public boolean moveConceptToAnotherTheso(HikariDataSource ds,
-            String idConceptToMove, String idThesoFrom, String idThesoTarget, int idUser){
+            String idConceptToMove, String idThesoFrom, String idThesoTarget, int idUser) {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(
                         " update concept set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
                         + " update thesaurus_array set id_thesaurus = '" + idThesoTarget + "' where id_concept_parent = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
-                        + " update thesaurus_array set id_thesaurus = '" + idThesoTarget + "' where id_concept_parent = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                               
-                        + " update concept_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';" 
-                        + " update preferred_term set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                 
-                        + " update concept_group_concept set idthesaurus = '" + idThesoTarget + "' where idconcept = '" + idConceptToMove + "' and idthesaurus = '" + idThesoFrom + "';" 
-                        + " update note set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"    
-                        + " update note_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"     
+                        + " update thesaurus_array set id_thesaurus = '" + idThesoTarget + "' where id_concept_parent = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update concept_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update term set id_thesaurus = '" + idThesoTarget + "' from preferred_term where term.id_term = preferred_term.id_term"
+                        + " and term.id_thesaurus = preferred_term.id_thesaurus and preferred_term.id_concept = '" + idConceptToMove + "' and term.id_thesaurus = '" + idThesoFrom + "';"
+                        + " update non_preferred_term set id_thesaurus = '" + idThesoTarget + "' from preferred_term where non_preferred_term.id_term = preferred_term.id_term"
+                        + " and non_preferred_term.id_thesaurus = preferred_term.id_thesaurus and preferred_term.id_concept = '" + idConceptToMove + "' and non_preferred_term.id_thesaurus = '" + idThesoFrom + "';"
+                        + " update note set id_thesaurus = '" + idThesoTarget + "' from preferred_term where note.id_term = preferred_term.id_term"
+                        + " and note.id_thesaurus = preferred_term.id_thesaurus and preferred_term.id_concept = '" + idConceptToMove + "' and note.id_thesaurus = '" + idThesoFrom + "';"
+                        + " update note set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update note_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update preferred_term set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update concept_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update candidat_status set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update candidat_messages set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update candidat_vote set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update concept_group_concept set idthesaurus = '" + idThesoTarget + "' where idconcept = '" + idConceptToMove + "' and idthesaurus = '" + idThesoFrom + "';"
                         + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
-                        + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"      
+                        + " update hierarchical_relationship set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
                         + " update hierarchical_relationship_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
-                        + " update hierarchical_relationship_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                  
-                        + " update concept_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"     
-                        + " update concept_term_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                 
-                        + " update alignement set internal_id_thesaurus = '" + idThesoTarget + "' where internal_id_concept = '" + idConceptToMove + "' and internal_id_thesaurus = '" + idThesoFrom + "';"                                 
-                        + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"     
+                        + " update hierarchical_relationship_historique set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update concept_term_candidat set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update alignement set internal_id_thesaurus = '" + idThesoTarget + "' where internal_id_concept = '" + idConceptToMove + "' and internal_id_thesaurus = '" + idThesoFrom + "';"
+                        + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
                         + " update concept_replacedby set id_thesaurus = '" + idThesoTarget + "' where id_concept1 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
-                        + " update concept_replacedby set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                  
-                        + " update gps set id_theso = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_theso = '" + idThesoFrom + "';"                                 
-                        + " update concept_facet set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';" 
-                        + " update external_resources set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                     
-                        + " update external_images set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                     
-                        + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"                                     
+                        + " update concept_replacedby set id_thesaurus = '" + idThesoTarget + "' where id_concept2 = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update gps set id_theso = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_theso = '" + idThesoFrom + "';"
+                        + " update concept_facet set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update external_resources set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update external_images set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
+                        + " update proposition set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
                         + " update concept_dcterms set id_thesaurus = '" + idThesoTarget + "' where id_concept = '" + idConceptToMove + "' and id_thesaurus = '" + idThesoFrom + "';"
                 );
-                updateDateOfConcept(ds, idThesoTarget, idConceptToMove, idUser);
                 return true;
             }
         } catch (SQLException sqle) {
             log.error("Error while moving concept : " + idThesoTarget, sqle);
         }
-        return false;        
-    }    
-    
+        return false;
+    }
+
     /**
      * permet de supprimer un type de concept
+     *
      * @param ds
      * @param idThesaurus
      * @param nodeConceptType
-     * @return 
+     * @return
      */
     public boolean deleteConceptType(HikariDataSource ds,
-            String idThesaurus, NodeConceptType nodeConceptType){
+            String idThesaurus, NodeConceptType nodeConceptType) {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from concept_type where "
@@ -176,41 +187,42 @@ public class ConceptHelper {
         } catch (SQLException sqle) {
             log.error("Error while deleting type of concept : " + nodeConceptType.getCode(), sqle);
         }
-        return false;        
-    }    
-    
+        return false;
+    }
+
     /**
      * Permet d'ajouter un nouveau type de concept
+     *
      * @param ds
      * @param idThesaurus
      * @param nodeConceptType
-     * @return 
+     * @return
      */
     public boolean addNewConceptType(HikariDataSource ds,
-            String idThesaurus, NodeConceptType nodeConceptType){
+            String idThesaurus, NodeConceptType nodeConceptType) {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("insert into concept_type (code, label_fr, label_en, reciprocal, id_theso) values ("
                         + "'" + nodeConceptType.getCode() + "',"
                         + "'" + nodeConceptType.getLabel_fr() + "',"
                         + "'" + nodeConceptType.getLabel_en() + "',"
-                        + nodeConceptType.isReciprocal() + ","     
-                        + "'" + idThesaurus + "'"                                
+                        + nodeConceptType.isReciprocal() + ","
+                        + "'" + idThesaurus + "'"
                         + ")");
                 return true;
             }
         } catch (SQLException sqle) {
             log.error("Error while adding type of concept : " + nodeConceptType.getCode(), sqle);
         }
-        return false;        
-    }    
+        return false;
+    }
 
     public boolean isConceptTypeExist(HikariDataSource ds, String idTheso, NodeConceptType nodeConceptType) {
         boolean existe = false;
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select code from concept_type where " + "code = '" + nodeConceptType.getCode() + "'"
-                                + " and id_theso = '" + idTheso + "'");
+                        + " and id_theso = '" + idTheso + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         existe = true;
@@ -222,7 +234,7 @@ public class ConceptHelper {
         }
         return existe;
     }
-    
+
     /**
      * Cette fonction permet de changer le type du concept
      *
@@ -263,7 +275,7 @@ public class ConceptHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from concept_type where id_theso in ('" + idTheso + "', 'all')"
-                        + " order by " 
+                        + " order by "
                         + " CASE unaccent(lower(code))"
                         + " WHEN 'concept' THEN 1"
                         + " END");
@@ -274,11 +286,12 @@ public class ConceptHelper {
                         nodeConceptType.setLabel_fr(resultSet.getString("label_fr"));
                         nodeConceptType.setLabel_en(resultSet.getString("label_en"));
                         nodeConceptType.setReciprocal(resultSet.getBoolean("reciprocal"));
-                        if("all".equalsIgnoreCase(resultSet.getString("id_theso"))) {
+                        if ("all".equalsIgnoreCase(resultSet.getString("id_theso"))) {
                             nodeConceptType.setPermanent(true);
-                        } else
+                        } else {
                             nodeConceptType.setPermanent(false);
-                        
+                        }
+
                         nodeConceptTypes.add(nodeConceptType);
                     }
                 }
@@ -1151,7 +1164,7 @@ public class ConceptHelper {
                         + " and "
                         + " term.lang = '" + idLang + "'"
                         + " and concept.status != 'DEP'"
-                        + " and concept.status != 'CA'"                                
+                        + " and concept.status != 'CA'"
                         + " and"
                         + " lower(term.lexical_value) = lower('" + label + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -1315,32 +1328,34 @@ public class ConceptHelper {
     /**
      * permet de retourner la liste des Top concepts pour un group donné retour
      * au format de NodeIdValue (informations pour construire l'arbre
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param idLang
+     * @param idGroup
+     * @param isSortByNotation
+     * @return
      */
     public ArrayList<NodeIdValue> getListTopConceptsOfGroup(HikariDataSource ds,
             String idThesaurus, String idLang, String idGroup, boolean isSortByNotation) {
 
-        ResultSet resultSet = null;
         ArrayList<NodeIdValue> tabIdValues = new ArrayList<>();
 
         String lexicalValue;
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                String query;
-                try {
-                    if (isSortByNotation) {
-                        ArrayList<NodeIdValue> tabIdConcepts = new ArrayList<>();
-                        query = "SELECT DISTINCT concept.id_concept, concept.notation"
-                                + " FROM concept, concept_group_concept"
-                                + " WHERE"
-                                + " concept.id_concept = concept_group_concept.idconcept AND"
-                                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                                + " concept.status != 'CA' and"
-                                + " concept.top_concept = true and"
-                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
-
+                if (isSortByNotation) {
+                    ArrayList<NodeIdValue> tabIdConcepts = new ArrayList<>();
+                    stmt.executeQuery("SELECT DISTINCT concept.id_concept, concept.notation"
+                            + " FROM concept, concept_group_concept"
+                            + " WHERE"
+                            + " concept.id_concept = concept_group_concept.idconcept AND"
+                            + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                            + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                            + " concept.status != 'CA' and"
+                            + " concept.top_concept = true and"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') limit 2001;");
+                    try (ResultSet resultSet = stmt.getResultSet()) {
                         while (resultSet.next()) {
                             NodeIdValue nodeIdValue = new NodeIdValue();
                             nodeIdValue.setId(resultSet.getString("id_concept"));
@@ -1359,20 +1374,20 @@ public class ConceptHelper {
                             nodeIdValue.setNotation(nodeIdValue1.getNotation());
                             tabIdValues.add(nodeIdValue);
                         }
-                    } else {
-                        ArrayList<String> tabIdConcepts = new ArrayList<>();
-                        query = "SELECT DISTINCT concept.id_concept, concept.notation"
-                                + " FROM concept, concept_group_concept"
-                                + " WHERE"
-                                + " concept.id_concept = concept_group_concept.idconcept AND"
-                                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                                + " concept.status != 'CA' and"
-                                + " concept.top_concept = true and"
-                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
+                    }
 
+                } else {
+                    ArrayList<String> tabIdConcepts = new ArrayList<>();
+                    stmt.executeQuery("SELECT DISTINCT concept.id_concept, concept.notation"
+                            + " FROM concept, concept_group_concept"
+                            + " WHERE"
+                            + " concept.id_concept = concept_group_concept.idconcept AND"
+                            + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                            + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                            + " concept.status != 'CA' and"
+                            + " concept.top_concept = true and"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') limit 2001;");
+                    try (ResultSet resultSet = stmt.getResultSet()) {
                         while (resultSet.next()) {
                             tabIdConcepts.add(resultSet.getString("id_concept"));
                         }
@@ -1387,10 +1402,6 @@ public class ConceptHelper {
                             nodeIdValue.setId(idConcept);
                             tabIdValues.add(nodeIdValue);
                         }
-                    }
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
                     }
                 }
             }
@@ -1418,27 +1429,21 @@ public class ConceptHelper {
     public ArrayList<NodeIdValue> getListConceptsOfGroup(HikariDataSource ds,
             String idThesaurus, String idLang, String idGroup, boolean isSortByNotation) {
 
-        ResultSet resultSet = null;
         ArrayList<NodeIdValue> tabIdValues = new ArrayList<>();
         String lexicalValue;
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-
-                String query;
-                try {
-                    if (isSortByNotation) {
-                        ArrayList<NodeIdValue> tabIdConcepts = new ArrayList<>();
-                        query = "SELECT DISTINCT concept.id_concept, concept.notation"
-                                + " FROM concept, concept_group_concept"
-                                + " WHERE"
-                                + " concept.id_concept = concept_group_concept.idconcept AND"
-                                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                                + " concept.status != 'CA' and"
-                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
-
+                if (isSortByNotation) {
+                    ArrayList<NodeIdValue> tabIdConcepts = new ArrayList<>();
+                    stmt.executeQuery("SELECT DISTINCT concept.id_concept, concept.notation"
+                            + " FROM concept, concept_group_concept"
+                            + " WHERE"
+                            + " concept.id_concept = concept_group_concept.idconcept AND"
+                            + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                            + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                            + " concept.status != 'CA' and"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') limit 2001;");
+                    try (ResultSet resultSet = stmt.getResultSet()) {
                         while (resultSet.next()) {
                             NodeIdValue nodeIdValue = new NodeIdValue();
                             nodeIdValue.setId(resultSet.getString("id_concept"));
@@ -1457,19 +1462,19 @@ public class ConceptHelper {
                             nodeIdValue.setNotation(nodeIdValue1.getNotation());
                             tabIdValues.add(nodeIdValue);
                         }
-                    } else {
-                        ArrayList<String> tabIdConcepts = new ArrayList<>();
-                        query = "SELECT DISTINCT concept.id_concept, concept.notation"
-                                + " FROM concept, concept_group_concept"
-                                + " WHERE"
-                                + " concept.id_concept = concept_group_concept.idconcept AND"
-                                + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                                + " concept.id_thesaurus = '" + idThesaurus + "' AND "
-                                + " concept.status != 'CA' and"
-                                + " concept_group_concept.idgroup = '" + idGroup + "' limit 2001;";
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
+                    }
 
+                } else {
+                    ArrayList<String> tabIdConcepts = new ArrayList<>();
+                    stmt.executeQuery("SELECT DISTINCT concept.id_concept, concept.notation"
+                            + " FROM concept, concept_group_concept"
+                            + " WHERE"
+                            + " concept.id_concept = concept_group_concept.idconcept AND"
+                            + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
+                            + " concept.id_thesaurus = '" + idThesaurus + "' AND "
+                            + " concept.status != 'CA' and"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') limit 2001;");
+                    try (ResultSet resultSet = stmt.getResultSet()) {
                         while (resultSet.next()) {
                             tabIdConcepts.add(resultSet.getString("id_concept"));
                         }
@@ -1484,10 +1489,6 @@ public class ConceptHelper {
                             nodeIdValue.setId(idConcept);
                             tabIdValues.add(nodeIdValue);
                         }
-                    }
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
                     }
                 }
             }
@@ -1514,7 +1515,7 @@ public class ConceptHelper {
                 + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                 + " concept.id_thesaurus = '" + idThesaurus + "' AND "
                 + " concept.status != 'CA' AND "
-                + " concept_group_concept.idgroup = '" + idGroup + "'";
+                + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')";
 
         return getConceptDetails(ds, query, idThesaurus);
     }
@@ -1571,7 +1572,7 @@ public class ConceptHelper {
                         + " concept.id_thesaurus = concept_group_concept.idthesaurus AND"
                         + " concept.id_thesaurus = '" + idThesaurus + "' AND "
                         + " concept.status != 'CA' AND "
-                        + " concept_group_concept.idgroup = '" + idGroup + "'");
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
@@ -1766,7 +1767,7 @@ public class ConceptHelper {
                         + " concept_group_concept.idthesaurus = hierarchical_relationship.id_thesaurus AND"
                         + " concept_group_concept.idconcept = hierarchical_relationship.id_concept1 AND"
                         + " id_thesaurus = '" + idTheso + "' and role ilike 'BT%' AND"
-                        + " concept_group_concept.idgroup = '" + idGroup + "'"
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')"
                         + " group by id_concept1 having count(id_concept1) = 1");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -1820,7 +1821,7 @@ public class ConceptHelper {
                         + " concept_group_concept.idthesaurus = hierarchical_relationship.id_thesaurus AND"
                         + " concept_group_concept.idconcept = hierarchical_relationship.id_concept1 AND"
                         + " id_thesaurus = '" + idTheso + "' and role ilike 'BT%' AND"
-                        + " concept_group_concept.idgroup = '" + idGroup + "'"
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')"
                         + " group by id_concept1 having count(id_concept1) > 1");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -1910,8 +1911,10 @@ public class ConceptHelper {
     private ArrayList<String> getIdsOfBranch__(HikariDataSource hd, String idConceptDeTete,
             String idTheso, ArrayList<String> lisIds) {
 
-        if(lisIds.contains(idConceptDeTete)) return lisIds;
-        
+        if (lisIds.contains(idConceptDeTete)) {
+            return lisIds;
+        }
+
         lisIds.add(idConceptDeTete);
 
         ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(hd, idConceptDeTete, idTheso);
@@ -1920,11 +1923,10 @@ public class ConceptHelper {
         }
         return lisIds;
     }
-    
+
     /**
      * Cette fonction permet de retrouver tous tes identifiants d'une branche en
-     * partant du concept en paramètre, 
-     * elle évite les boucles à l'infini
+     * partant du concept en paramètre, elle évite les boucles à l'infini
      *
      * @param hd
      * @param idConceptDeTete
@@ -1940,8 +1942,10 @@ public class ConceptHelper {
     private ArrayList<String> getIdsOfBranchWithoutLoop__(HikariDataSource hd, String idConceptDeTete,
             String idTheso, ArrayList<String> lisIds) {
 
-        if(lisIds.contains(idConceptDeTete)) return lisIds;
-        
+        if (lisIds.contains(idConceptDeTete)) {
+            return lisIds;
+        }
+
         lisIds.add(idConceptDeTete);
 
         ArrayList<String> listIdsOfConceptChildren = getListChildrenOfConcept(hd, idConceptDeTete, idTheso);
@@ -1949,7 +1953,7 @@ public class ConceptHelper {
             getIdsOfBranchWithoutLoop__(hd, listIdsOfConceptChildren1, idTheso, lisIds);
         }
         return lisIds;
-    }    
+    }
 
     /**
      * Cette fonction permet de retrouver tous tes identifiants d'une branche en
@@ -1980,76 +1984,6 @@ public class ConceptHelper {
             getIdsOfBranchLimited__(hd, listIdsOfConceptChildren1, idTheso, lisIds, limit);
         }
         return lisIds;
-    }
-
-    /**
-     * permet de modifier l'identifiant du concept en numérique, la fonction
-     * modifie toutes les tables dépendantes et les relations
-     */
-    public boolean setIdConceptToNumeric(HikariDataSource ds, String idTheso, String id) {
-
-        if (id == null) {
-            return false;
-        }
-        if (idTheso == null) {
-            return false;
-        }
-
-        // on récupère un nouvel identifiant numérique
-        String newId = getNumericConceptId(ds);
-        if (newId == null) {
-            return false;
-        }
-        GpsHelper gpsHelper = new GpsHelper();
-        NoteHelper noteHelper = new NoteHelper();
-        ImagesHelper imagesHelper = new ImagesHelper();
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-
-        try {
-            Connection conn = ds.getConnection();
-            conn.setAutoCommit(false);
-
-            try {
-                //table concept
-                setIdConcept(conn, idTheso, id, newId);
-                //table concept_group_concept
-                setIdConceptGroupConcept(conn, idTheso, id, newId);
-                //table concept_historique
-                setIdConceptHistorique(conn, idTheso, id, newId);
-                //table gps 
-                gpsHelper.setIdConceptGPS(conn, idTheso, id, newId);
-                //table hierarchical_relationship
-                setIdConceptHieraRelation(conn, idTheso, id, newId);
-                //table hierarchical_relationship_historique
-                setIdConceptHieraRelationHisto(conn, idTheso, id, newId);
-                //table note
-                noteHelper.setIdConceptNote(conn, idTheso, id, newId);
-                //table note_historique
-                noteHelper.setIdConceptNoteHisto(conn, idTheso, id, newId);
-                //table images 
-                imagesHelper.setIdConceptImage(conn, idTheso, id, newId);
-                //table ExternalImages 
-                imagesHelper.setIdConceptExternalImages(conn, idTheso, id, newId);
-                //table concept_replacedby
-                setIdConceptReplacedby(conn, idTheso, id, newId);
-                //table preferred_term 
-                setIdConceptPreferedTerm(conn, idTheso, id, newId);
-                //table alignement
-                alignmentHelper.setIdConceptAlignement(conn, idTheso, id, newId);
-                conn.commit();
-                conn.close();
-                return true;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-
-        } catch (SQLException sqle) {
-
-        }
-        return false;
     }
 
     /**
@@ -2271,6 +2205,12 @@ public class ConceptHelper {
      * @return
      */
     public ArrayList<NodeIdValue> generateArkIdFast(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts, String idLang) {
+
+        if (nodePreference.isUseArkLocal()) {
+            generateArkIdLocal(ds, idTheso, idConcepts);
+            return null;
+        }
+
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
         ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
@@ -2397,12 +2337,12 @@ public class ConceptHelper {
      * @return
      */
     public ArrayList<NodeIdValue> generateArkId(HikariDataSource ds, String idTheso, ArrayList<String> idConcepts, String idLang) {
-        if(nodePreference.isUseArkLocal()) {
+        if (nodePreference.isUseArkLocal()) {
             generateArkIdLocal(ds, idTheso, idConcepts);
             return null;
         }
-        
-        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();        
+
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
         if (!arkHelper2.login()) {
             NodeIdValue nodeIdValue = new NodeIdValue();
@@ -2979,6 +2919,7 @@ public class ConceptHelper {
                     }
                 }
             }
+
             return idConcept;
 
         } catch (SQLException ex) {
@@ -3816,7 +3757,6 @@ public class ConceptHelper {
         boolean status = false;
 
         try (Connection conn = ds.getConnection()) {
-            conn.setAutoCommit(false);
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("INSERT INTO concept_group_concept (idgroup, idthesaurus, idconcept) VALUES ('"
                         + idgroup + "', '" + idthesaurus + "', '" + idconcept + "');");
@@ -4352,12 +4292,12 @@ public class ConceptHelper {
             String groupSearch = "";
             for (String idGroup : idGroups) {
                 if (groupSearch.isEmpty()) {
-                    groupSearch = "'" + idGroup + "'";
+                    groupSearch = "lower('" + idGroup + "')";
                 } else {
-                    groupSearch = groupSearch + ",'" + idGroup + "'";
+                    groupSearch = groupSearch + ",lower('" + idGroup + "')";
                 }
             }
-            multiValuesGroup = " and concept_group_concept.idgroup in (" + groupSearch + ")";
+            multiValuesGroup = " and lower(concept_group_concept.idgroup) in (" + groupSearch + ")";
         }
 
         try (Connection conn = ds.getConnection()) {
@@ -4408,7 +4348,7 @@ public class ConceptHelper {
                         + " AND"
                         + " concept.status != 'CA' "
                         + " AND"
-                        + " concept_group_concept.idgroup = '" + idGroup + "'");
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -4465,7 +4405,7 @@ public class ConceptHelper {
                         + " where"
                         + " concept_group_concept.idthesaurus = hierarchical_relationship.id_thesaurus AND"
                         + " concept_group_concept.idconcept = hierarchical_relationship.id_concept1 AND"
-                        + " concept_group_concept.idgroup = '" + idGroup + "' AND"
+                        + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') AND"
                         + " hierarchical_relationship.role = 'BT' AND"
                         + " hierarchical_relationship.id_concept1 = '" + idConcept + "' AND"
                         + " hierarchical_relationship.id_thesaurus = '" + idTheso + "'");
@@ -4688,8 +4628,8 @@ public class ConceptHelper {
             log.error("Error while getting notation of Concept : " + idConcept, sqle);
         }
         return conceptType;
-    }    
-    
+    }
+
     /**
      * Cette fonction permet de récupérer les identifiants d'un concept idArk,
      * idHandle, idConcept sous forme de nodeUri
@@ -5128,7 +5068,7 @@ public class ConceptHelper {
                             + " FROM concept, concept_group_concept WHERE"
                             + " concept_group_concept.idconcept = concept.id_concept AND"
                             + " concept_group_concept.idthesaurus = concept.id_thesaurus AND"
-                            + " concept_group_concept.idgroup = '" + idGroup + "' AND"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') AND"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND"
                             + " concept.top_concept = true"
                             + " ORDER BY concept.notation ASC";
@@ -5137,7 +5077,7 @@ public class ConceptHelper {
                             + " FROM concept, concept_group_concept WHERE"
                             + " concept_group_concept.idconcept = concept.id_concept AND"
                             + " concept_group_concept.idthesaurus = concept.id_thesaurus AND"
-                            + " concept_group_concept.idgroup = '" + idGroup + "' AND"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "') AND"
                             + " concept.id_thesaurus = '" + idThesaurus + "' AND"
                             + " concept.top_concept = true";
                 }
@@ -5528,11 +5468,16 @@ public class ConceptHelper {
         nodeConceptExport.setNodeNoteConcept(noteConcept);
 
         //récupération des coordonnées GPS
+        //TODO MILTI GPS
         NodeGps nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
-
         if (nodeGps != null) {
             nodeConceptExport.setNodeGps(nodeGps);
         }
+        /*
+        List<NodeGps> nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
+        if (CollectionUtils.isNotEmpty(nodeGps)) {
+            nodeConceptExport.setNodeGps(nodeGps);
+        }*/
 
         ArrayList<NodeImage> nodeImages = imagesHelper.getExternalImages(ds, idConcept, idThesaurus);
         if (nodeImages != null) {
@@ -5790,9 +5735,6 @@ public class ConceptHelper {
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         nodeConcept.setNodeAlignments(alignmentHelper.getAllAlignmentOfConcept(ds, idConcept, idThesaurus));
 
-        GpsHelper gpsHelper = new GpsHelper();
-        nodeConcept.setNodeGps(gpsHelper.getCoordinate(ds, idConcept, idThesaurus));
-
         ImagesHelper imagesHelper = new ImagesHelper();
         nodeConcept.setNodeimages(imagesHelper.getExternalImages(ds, idConcept, idThesaurus));
 
@@ -5806,23 +5748,22 @@ public class ConceptHelper {
         // les concepts dépécés que ce concept remplace
         nodeConcept.setReplaces(deprecatedHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
 
-        DcElmentHelper dcElmentHelper = new DcElmentHelper();
-                
+        DcElementHelper dcElmentHelper = new DcElementHelper();
+
         /// récupération des Méta-données DC_terms
-        nodeConcept.setDcElements(dcElmentHelper.getDcElement(ds, idThesaurus, idConcept));
-        
-        
+        nodeConcept.setDcElements(dcElmentHelper.getDcElementOfConcept(ds, idThesaurus, idConcept));
+
         return nodeConcept;
     }
 
     /**
      * Cette fonction permet de retourner l'id du Concept d'après un idTerm
-    * 
-    * @param ds
-    * @param idTerm
-    * @param idThesaurus
-    * @return 
-    */
+     *
+     * @param ds
+     * @param idTerm
+     * @param idThesaurus
+     * @return
+     */
     public String getIdConceptOfTerm(HikariDataSource ds, String idTerm, String idThesaurus) {
 
         String idConcept = null;
@@ -6022,6 +5963,7 @@ public class ConceptHelper {
             String idConcept, String idThesaurus, ArrayList<String> path, ArrayList<ArrayList<String>> tabId) {
 
         ArrayList<String> firstPath = new ArrayList<>();
+
         ArrayList<ArrayList<String>> tabIdInvert = getInvertPathOfConceptWithoutGroup(ds, idConcept,
                 idThesaurus, firstPath, path, tabId);
         for (int i = 0; i < tabIdInvert.size(); i++) {
@@ -6423,23 +6365,6 @@ public class ConceptHelper {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public int getNbrOfCanceptByThes(Connection conn, String idThesaurus) {
-
-        int nbrConcept = 0;
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeQuery("SELECT count(*) FROM concept WHERE id_thesaurus = '" + idThesaurus
-                    + "' AND status != 'CA'");
-            try (ResultSet resultSet = stmt.getResultSet()) {
-                while (resultSet.next()) {
-                    nbrConcept = resultSet.getInt("count");
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting List Id or Groups of thesaurus : " + idThesaurus, sqle);
-        }
-        return nbrConcept;
     }
 
     public List<ConceptStatisticData> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus, String lang,

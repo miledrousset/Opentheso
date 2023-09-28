@@ -7,7 +7,7 @@
 
     <div class="row">
         <div class="col-12">
-            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                           value="#{langueBean.getMsg('actions.actionsOnThisTheso')}"  
                           style="font-size: 14px;"/>             
         </div>
@@ -15,119 +15,182 @@
 
     <div class="row">
         <div class="col-12">
-            <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" >
-                <!--Pour importer des alignements -->
-                
-                <p:menuButton value="#{langueBean.getMsg('actions')}"  style="box-shadow: 0 0 0px; background: none; background-color: transparent;
-                              color: transparent;  font-size: 12px" >
-                    <p:menuitem value="#{langueBean.getMsg('actions.importAlignments')}" 
-                                title="#{langueBean.getMsg('actions.importAlignmentsTooltip')}"
-                                oncomplete="PF('listAlignmentCsv').show();"
-                                update="idListAlignmentCsv listAlignmentCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
+            <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                <p:scrollPanel  style="height:400px;">
+                    <p:panel style=" margin-left: 10px;">
+                        <!--Pour importer des alignements -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importAlignments')}"
+                                         title="#{langueBean.getMsg('actions.importAlignmentsTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listAlignmentCsv').show();"
+                                         update="idListAlignmentCsv listAlignmentCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18; margin-top: 10px;" />
 
-                    <p:menuitem value="#{langueBean.getMsg('actions.deleteAlignments')}" 
-                                title="#{langueBean.getMsg('actions.deleteAlignmentsTooltip')}"
-                                oncomplete="PF('deleteListAlignmentCsv').show();"
-                                update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-times" style="font-size: 12px; "/>      
-                    
-                    <p:menuitem value="#{langueBean.getMsg('actions.exportAlignments')}" 
-                                title="#{langueBean.getMsg('actions.exportAlignmentsTooltip')}"
-                                oncomplete="PF('exportAlignment').show();"
-                                update="idExportAlignment exportAlignmentForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-upload" style="font-size: 12px; "/>                       
+                        <br/>
+                        <!--Pour supprimer des alignements -->
+                        <i class="pi pi-times"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.deleteAlignments')}"
+                                         title="#{langueBean.getMsg('actions.deleteAlignmentsTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('deleteListAlignmentCsv').show();"
+                                         update="idDeleteListAlignmentCsv deleteListAlignmentCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                    
+                        <br/>
+                        <!--Pour exporter les alignements -->
+                        <i class="pi pi-upload"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.exportAlignments')}" 
+                                         title="#{langueBean.getMsg('actions.exportAlignmentsTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('exportAlignment').show();"
+                                         update="idExportAlignment exportAlignmentForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                       
+                        
+                        <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>  
 
-                    <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 10px;"/>   
+                        <!--Pour importer des notes -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importNotes')}" 
+                                         title="#{langueBean.getMsg('actions.importNotesTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listNoteCsv').show();"
+                                         update="idListNoteCsv listNoteCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                           
+                        <br/>
+                        <!--Pour importer des Ark -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importArks')}" 
+                                         title="#{langueBean.getMsg('actions.importArksTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listArkCsv').show();"
+                                         update="idListArkCsv listArkCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                           
+                        
+                        <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>                         
+                        
+                        <!--Pour importer des images -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importImages')}" 
+                                         title="#{langueBean.getMsg('actions.importImagesTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listImageCsv').show();"
+                                         update="idListImageCsv listImageCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />     
+                        
+                        <br/>
+                        <!--Pour importer des Notations -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importNotations')}" 
+                                         title="#{langueBean.getMsg('actions.importNotationsTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listNotationCsv').show();"
+                                         update="idListNotationCsv listNotationCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                          
+                        <br/>
+                        <!--Pour importer des collections -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importCollections')}" 
+                                         title="#{langueBean.getMsg('actions.importCollectionsTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listCollectionCsv').show();"
+                                         update="idListCollectionCsv listCollectionCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                         
+                        
+                        <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>  
+                        
+                        <!-- Import d'une liste tabulée pour remplacer les valeurs existantes par les nouvelles valeurs, si la valeur est vide, on supprime le contenu -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importListForMerging')}" 
+                                         title="#{langueBean.getMsg('actions.importListForMergingTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listForMergeCsv').show();"
+                                         update="idListForMergeCsv listForMergeCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                        
 
-                    <p:menuitem value="#{langueBean.getMsg('actions.importNotes')}" 
-                                title="#{langueBean.getMsg('actions.importNotesTooltip')}"
-                                oncomplete="PF('listNoteCsv').show();"
-                                update="idListNoteCsv listNoteCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
-                    
-                    <p:menuitem value="#{langueBean.getMsg('actions.importArks')}" 
-                                title="#{langueBean.getMsg('actions.importArksTooltip')}"
-                                oncomplete="PF('listArkCsv').show();"
-                                update="idListArkCsv listArkCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>               
-                    <p:divider style="font-size: 11px; color: #F47B2A ;margin-bottom: 10px;"/> 
+                        <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/> 
 
-                    <p:menuitem value="#{langueBean.getMsg('actions.importImages')}" 
-                                title="#{langueBean.getMsg('actions.importImagesTooltip')}"
-                                oncomplete="PF('listImageCsv').show();"
-                                update="idListImageCsv listImageCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/> 
-                    
-                    <p:menuitem value="#{langueBean.getMsg('actions.importNotations')}" 
-                                title="#{langueBean.getMsg('actions.importNotationsTooltip')}"
-                                oncomplete="PF('listNotationCsv').show();"
-                                update="idListNotationCsv listNotationCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>      
-                    <p:divider style="margin-bottom: 10px;" />
-                    
-                    <!-- Import d'une liste tabulée pour remplacer les valeurs existantes par les nouvelles valeurs, si la valeur est vide, on supprime le contenu -->
-                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.importListForMerging')}" 
-                                title="#{langueBean.getMsg('actions.importListForMergingTooltip')}"
-                                oncomplete="PF('listForMergeCsv').show();"
-                                update="idListForMergeCsv listForMergeCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>
-                    
-                    
-                    <p:divider style="margin-bottom: 10px;" />                    
-                    <!-- Import d'une liste tabulée pour remplacer valeur par valeur_new pour, si la valeur_new est vide, on ne change rien -->
-                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.importListForReplaceBy')}" 
-                                title="#{langueBean.getMsg('actions.importListForReplaceByTooltip')}"
-                                oncomplete="PF('listReplaceValueByNewValueCsv').show();"
-                                update="idListReplaceValueByNewValueCsv listReplaceValueByNewValueCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                    
+                        <!-- Import d'une liste tabulée pour remplacer valeur par valeur_new pour, si la valeur_new est vide, on ne change rien -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importListForReplaceBy')}" 
+                                         title="#{langueBean.getMsg('actions.importListForReplaceByTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listReplaceValueByNewValueCsv').show();"
+                                         update="idListReplaceValueByNewValueCsv listReplaceValueByNewValueCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />   
 
-                    <!-- Import d'une liste tabulée pour ajouter des concepts au thésaurus, si l'ID est vide, un identifiant sera généré automatiquement -->                    
-                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.importListConceptToAdd')}" 
-                                title="#{langueBean.getMsg('actions.importListConceptToAddTooltip')}"
-                                oncomplete="PF('listAddConceptsCsv').show();"
-                                update="idListAddConceptsCsv listAddConceptsCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                   
+                        <br/>
+                        <!-- Import d'une liste tabulée pour ajouter des concepts au thésaurus, si l'ID est vide, un identifiant sera généré automatiquement -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importListConceptToAdd')}" 
+                                         title="#{langueBean.getMsg('actions.importListConceptToAddTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listAddConceptsCsv').show();"
+                                         update="idListAddConceptsCsv listAddConceptsCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                          
+                        
+                        <br/>
+                        <!-- Import d'une liste tabulée pour déprécier des concepts -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importListForDeprecate')}" 
+                                         title="#{langueBean.getMsg('actions.importListForDeprecateTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listDeprecateConceptsCsv').show();"
+                                         update="idListDeprecateConceptsCsv listDeprecateConceptsCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                          
+                        
+                        <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>                         
+                        
+                        <!-- Récupère les Identifiant d'après un prefLabel -->
+                        <i class="pi pi-upload"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.getIdFromPrefLabel')}" 
+                                         title="#{langueBean.getMsg('actions.getIdFromPrefLabelTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('getIdFromPrefLabel').show();"
+                                         update="idGetIdFromPrefLabel getIdFromPrefLabelForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />  
 
-                    <!-- Import d'une liste tabulée pour déprécier des concepts -->
-                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.importListForDeprecate')}" 
-                                title="#{langueBean.getMsg('actions.importListForDeprecateTooltip')}"
-                                oncomplete="PF('listDeprecateConceptsCsv').show();"
-                                update="idListDeprecateConceptsCsv listDeprecateConceptsCsvForm"
-                                process="@this" ajax="true"
-                                action="#{importFileBean.init()}" icon="pi pi-download" style="font-size: 12px;"/>                      
-                    
-                    <p:divider style="margin-bottom: 10px;" />  
-                    
-                    
-                    <!-- Récupère les Identifiant d'après un prefLabel -->
-                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.getIdFromPrefLabel')}" 
-                                title="#{langueBean.getMsg('actions.getIdFromPrefLabelTooltip')}"
-                                oncomplete="PF('getIdFromPrefLabel').show();"
-                                update="idGetIdFromPrefLabel getIdFromPrefLabelForm"
-                                action="#{importFileBean.init()}" 
-                                process="@this" ajax="true"
-                                icon="pi pi-upload" style="font-size: 12px;"/> 
-                    
-                    <!-- Compare une liste de mots avec les termes existants du thésaurus (recherche étendue sur altLabel) -->
-                    <p:menuitem disabled="false" value="#{langueBean.getMsg('actions.compareListToTheso')}" 
-                                title="#{langueBean.getMsg('actions.compareListToThesoTooltip')}"
-                                oncomplete="PF('compareListToTheso').show();"
-                                update="idCompareListToTheso compareListToThesoForm"
-                                process="@this" ajax="true"
-                                actionListener="#{importFileBean.init()}" icon="pi pi-upload" style="font-size: 12px;"/>                     
-                </p:menuButton>
-            </p:panel>           
+                        <br/>
+                        <!-- Compare une liste de mots avec les termes existants du thésaurus (recherche étendue sur altLabel) -->
+                        <i class="pi pi-upload"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.compareListToTheso')}" 
+                                         title="#{langueBean.getMsg('actions.compareListToThesoTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('compareListToTheso').show();"
+                                         update="idCompareListToTheso compareListToThesoForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />
+
+                    </p:panel>
+                </p:scrollPanel>
+            </p:panel>    
+
         </div>
     </div>
 
@@ -137,12 +200,13 @@
     <ui:include src="../dialog/import/listNoteCsv.xhtml" />      
     <ui:include src="../dialog/import/listArkCsv.xhtml" />      
     <ui:include src="../dialog/import/listImageCsv.xhtml" />      
-    <ui:include src="../dialog/import/listNotationCsv.xhtml" />     
+    <ui:include src="../dialog/import/listNotationCsv.xhtml" />  
+    <ui:include src="../dialog/import/listCollectionCsv.xhtml" />     
     <ui:include src="../dialog/import/listForMergeCsv.xhtml" />    
     <ui:include src="../dialog/import/listReplaceValueByNewValueCsv.xhtml" />  
     <ui:include src="../dialog/import/listDeprecateConceptsCsv.xhtml" />      
     <ui:include src="../dialog/import/listAddConceptsCsv.xhtml" />   
     <ui:include src="../dialog/actions/getIdFromPrefLabel.xhtml" />     
     <ui:include src="../dialog/actions/compareListToTheso.xhtml" />       
-    
+
 </ui:fragment>

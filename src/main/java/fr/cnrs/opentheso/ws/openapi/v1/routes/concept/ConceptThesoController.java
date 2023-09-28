@@ -59,7 +59,7 @@ public class ConceptThesoController {
         }
 
         if (StringUtils.isEmpty(datas)) {
-            return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, emptyMessage(format), format);
+            return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "No data found with the thesaurus ID " + idThesaurus + " and concept ID " + idConcept, format);
         }
 
         return ResponseHelper.response(Response.Status.OK, datas, format);

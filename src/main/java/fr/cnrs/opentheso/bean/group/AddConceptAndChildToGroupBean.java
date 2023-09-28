@@ -5,12 +5,16 @@
  */
 package fr.cnrs.opentheso.bean.group;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -34,6 +38,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
     @Inject private LanguageBean languageBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private ConceptView conceptView;
+    @Inject private CurrentUser currentUser;                    
     
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
 
@@ -113,6 +118,13 @@ public class AddConceptAndChildToGroupBean implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
+        
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////          
 
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),

@@ -17,7 +17,7 @@
 
 
 --- fonctions à appliquer en premier et à part depuis la version 4.4.1
-SET ROLE = opentheso;
+--SET ROLE = opentheso;
 SET schema 'public';
 ----------------------------------------------------------------------------
 -- ne pas modifier, ces sont les fonctions de base
@@ -521,6 +521,8 @@ begin
 end
 $$language plpgsql;
 
+
+
 -- Préférences : ajout une option pour choisir si l'id ARK est majuscule ou non 
 --
 create or replace function update_table_preferences_uppercase_ark() returns void as $$
@@ -562,6 +564,17 @@ CREATE TABLE IF NOT EXISTS public.thesaurus_dcterms
     CONSTRAINT thesaurus_dcterms_pkey PRIMARY KEY (id_thesaurus, name, value, language)
 );
 
+-- Users : suppression de la table inutile User2
+--
+create or replace function delete_table_user2() returns void as $$
+begin
+    IF EXISTS(SELECT *  FROM information_schema.columns where table_name='users2') THEN
+        execute 'Drop TABLE users2;';
+END IF;
+end
+$$language plpgsql;
+
+
 ----------------------------------------------------------------------------
 -- exécution des fonctions
 ----------------------------------------------------------------------------
@@ -593,7 +606,7 @@ SELECT update_table_preferences_custom_relation();
 SELECT update_table_concept_type2();
 SELECT update_table_preferences_uppercase_ark();
 SELECT update_table_group();
-
+SELECT delete_table_user2();
 
 
 ----------------------------------------------------------------------------
@@ -627,6 +640,7 @@ SELECT delete_fonction('update_table_preferences_custom_relation', '');
 SELECT delete_fonction('update_table_concept_type2', '');
 SELECT delete_fonction('update_table_preferences_uppercase_ark', '');
 SELECT delete_fonction('update_table_group', '');
+SELECT delete_fonction('delete_table_user2', '');
 
 
 -- auto_suppression de nettoyage
@@ -1214,7 +1228,7 @@ DECLARE
 	replace_rec record;
 	replacedBy_rec record;
 	facet_rec record;
-        externalResource_rec record;
+    externalResource_rec record;
 
 	tmp text;
 	uri text;
@@ -1244,7 +1258,8 @@ DECLARE
 	replacedBy text;
 	replaces text;
 	facets text;
-        externalResources text;
+    externalResources text;
+    gpsData text;
         
 BEGIN
 
@@ -1382,13 +1397,13 @@ BEGIN
 			IF (theso_rec.original_uri_is_ark = true AND group_rec.group_id_ark IS NOT NULL  AND group_rec.group_id_ark != '') THEN
 				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
 			ELSIF (theso_rec.original_uri_is_ark = true AND (group_rec.group_id_ark IS NULL OR group_rec.group_id_ark = '')) THEN
-				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || path || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSIF (group_rec.group_id_handle IS NOT NULL) THEN
 				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
 			ELSIF (theso_rec.original_uri IS NOT NULL) THEN
-				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSE
-				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || path || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			END IF;
 		END LOOP;
 
@@ -1485,7 +1500,7 @@ DECLARE
 	replace_rec record;
 	replacedBy_rec record;
 	facet_rec record;
-        externalResource_rec record;
+    externalResource_rec record;
 
 	tmp text;
 	uri text;
@@ -1515,7 +1530,8 @@ DECLARE
 	replaces text;
 	replacedBy text;
 	facets text;
-        externalResources text;
+    externalResources text;
+    gpsData text;
 BEGIN
 
 	SELECT * INTO theso_rec FROM preferences where id_thesaurus = id_theso;
@@ -1726,6 +1742,80 @@ $$;
 
 -- Procédures
 
+--- nettoyage 
+DROP PROCEDURE IF EXISTS opentheso_add_new_concept(
+	character varying,
+	character varying,
+	integer,
+	character varying,
+	text,
+	character varying,
+	character varying,
+	boolean,
+	character varying,
+	character varying,
+	text,
+	text,
+	text,
+	text,
+	text,
+	text,
+	text,
+	text,
+	boolean,
+	double precision,
+	double precision,
+	date,
+	date);
+DROP PROCEDURE IF EXISTS opentheso_add_new_concept(
+	character varying,
+	character varying,
+	integer,
+	character varying,
+	text,
+	character varying,
+	character varying,
+	boolean,
+	character varying,
+	character varying,
+	text,
+	text,
+	text,
+	text,
+	text,
+	text,
+	text,
+	text,
+	boolean,
+	double precision,
+	double precision,
+	date,
+	date,
+	text);
+DROP PROCEDURE IF EXISTS opentheso_add_new_concept(
+	character varying,
+	character varying,
+	integer,
+	character varying,
+	character varying,
+	character varying,
+	boolean,
+	character varying,
+	character varying,
+	text,
+	text,
+	text,
+	text,
+	text,
+	text,
+	text,
+	boolean,
+	double precision,
+	double precision,
+	date,
+	date);
+
+
 CREATE OR REPLACE procedure opentheso_add_terms(
 	id_term character varying,
 	id_thesaurus character varying,
@@ -1921,6 +2011,31 @@ END;
 $BODY$;
 
 
+CREATE OR REPLACE procedure opentheso_add_gps(
+    id_concept character varying,
+    id_thesaurus character varying,
+    gpsList text)
+    LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+    seperateur constant varchar := '##';
+    sous_seperateur constant varchar := '@@';
+
+    gps_rec record;
+    array_string   text[];
+BEGIN
+    FOR gps_rec IN SELECT unnest(string_to_array(gpsList, seperateur)) AS gps_value
+        LOOP
+            SELECT string_to_array(gps_rec.gps_value, sous_seperateur) INTO array_string;
+            IF array_string[1] IS NOT NULL THEN
+                insert into gps(id_concept, id_theso, latitude, longitude)
+                values (id_concept, id_thesaurus, CAST (array_string[1] AS double precision), CAST (array_string[2] AS double precision));
+            END IF;
+        END LOOP;
+END;
+$BODY$;
+
+
 
 
 CREATE OR REPLACE procedure opentheso_add_alignements(alignements text) 
@@ -1946,143 +2061,96 @@ $BODY$;
 
 
 CREATE OR REPLACE procedure opentheso_add_new_concept(
-	id_thesaurus character varying,
-	id_con character varying,
-	id_user int,
-	conceptStatus character varying,
-        conceptType text,
-	notationConcept character varying,
-	id_ark character varying, 
-	isTopConcept Boolean, 
-	id_handle character varying,
-	id_doi character varying,
-	prefterms text,
-	relation_hiarchique text,
-	custom_relation text,
-	notes text,
-	non_pref_terms text,
-	alignements text,
-	images text,
-	idsConceptsReplaceBy text,
-	isGpsPresent Boolean,
-	altitude double precision,
-	longitude double precision,
-        created Date,
-        modified Date,
-        concept_dcterms text)
+    id_thesaurus character varying,
+    id_con character varying,
+    id_user int,
+    conceptStatus character varying,
+    conceptType text,
+    notationConcept character varying,
+    id_ark character varying,
+    isTopConcept Boolean,
+    id_handle character varying,
+    id_doi character varying,
+    prefterms text,
+    relation_hiarchique text,
+    custom_relation text,
+    notes text,
+    non_pref_terms text,
+    alignements text,
+    images text,
+    idsConceptsReplaceBy text,
+    isGpsPresent Boolean,
+    altitude double precision,
+    longitude double precision,
+    created Date,
+    modified Date,
+    concept_dcterms text)
     LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
     id_new_concet character varying;
-    idConceptReplaceBy character varying;
     seperateur constant varchar := '##';
-    concept_Rep_rec record; 
-    replaces_rec record;
+    concept_Rep_rec record;
 BEGIN
 
-	Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, concept_type, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
-		values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, conceptType, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent) ;
-		
-	SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
-		
-	IF (id_new_concet IS NOT NULL) THEN
-		
-		IF (prefterms IS NOT NULL AND prefterms != 'null') THEN
-			-- 'lexical_value@lang@source@status@createed@modified'
-			CALL opentheso_add_terms(id_new_concet, id_thesaurus, id_new_concet, id_user, prefterms);
-		END IF;
+    Insert into concept (id_concept, id_thesaurus, id_ark, created, modified, status, concept_type, notation, top_concept, id_handle, id_doi, creator, contributor, gps)
+    values (id_con, id_thesaurus, id_ark, created, modified, conceptStatus, conceptType, notationConcept, isTopConcept, id_handle, id_doi, id_user, id_user, isGpsPresent) ;
 
-		IF (relation_hiarchique IS NOT NULL AND relation_hiarchique != 'null') THEN
-			-- 'id_concept1@role@id_concept2'
-			CALL opentheso_add_hierarchical_relations(id_thesaurus, relation_hiarchique);
-		END IF;
-		
-		IF (custom_relation IS NOT NULL AND custom_relation != 'null') THEN
-			-- 'id_concept1@role@id_concept2'
-			CALL opentheso_add_custom_relations(id_thesaurus, custom_relation);
-		END IF;
+    SELECT concept.id_concept INTO id_new_concet FROM concept WHERE concept.id_concept = id_con;
 
-		IF (concept_dcterms IS NOT NULL AND concept_dcterms != 'null') THEN
-			-- 'creator@@miled@@fr##contributor@@zozo@@fr'
-			CALL opentheso_add_concept_dcterms(id_new_concet, id_thesaurus, concept_dcterms);
-		END IF;
+    IF (id_new_concet IS NOT NULL) THEN
 
+        IF (prefterms IS NOT NULL AND prefterms != 'null') THEN
+            -- 'lexical_value@lang@source@status@createed@modified'
+            CALL opentheso_add_terms(id_new_concet, id_thesaurus, id_new_concet, id_user, prefterms);
+        END IF;
 
+        IF (relation_hiarchique IS NOT NULL AND relation_hiarchique != 'null') THEN
+            -- 'id_concept1@role@id_concept2'
+            CALL opentheso_add_hierarchical_relations(id_thesaurus, relation_hiarchique);
+        END IF;
 
-		IF (notes IS NOT NULL AND notes != 'null') THEN
-			-- 'value@typeCode@lang@id_term'
-			CALL opentheso_add_notes(id_new_concet, id_thesaurus, id_user, notes);
-		END IF;
-		
-		IF (non_pref_terms IS NOT NULL AND non_pref_terms != 'null') THEN
-			-- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
-			CALL opentheso_add_non_preferred_term(id_thesaurus, id_user, non_pref_terms);
-		END IF;
-		
-		IF (images IS NOT NULL AND images != 'null') THEN
-			-- 'url1##url2'
-			CALL opentheso_add_external_images(id_thesaurus, id_new_concet, id_user, images);
-		END IF;
-		
-		IF (alignements IS NOT NULL AND alignements != 'null') THEN
-			-- 'author@concept_target@thesaurus_target@uri_target@alignement_id_type@internal_id_thesaurus@internal_id_concept'
-			CALL opentheso_add_alignements(alignements);
-		END IF;
-		
-		IF (idsConceptsReplaceBy IS NOT NULL AND idsConceptsReplaceBy != 'null') THEN
-        	FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
-            LOOP
-				Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user)
-							values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
+        IF (custom_relation IS NOT NULL AND custom_relation != 'null') THEN
+            -- 'id_concept1@role@id_concept2'
+            CALL opentheso_add_custom_relations(id_thesaurus, custom_relation);
+        END IF;
+
+        IF (concept_dcterms IS NOT NULL AND concept_dcterms != 'null') THEN
+            -- 'creator@@miled@@fr##contributor@@zozo@@fr'
+            CALL opentheso_add_concept_dcterms(id_new_concet, id_thesaurus, concept_dcterms);
+        END IF;
+
+        IF (notes IS NOT NULL AND notes != 'null') THEN
+            -- 'value@typeCode@lang@id_term'
+            CALL opentheso_add_notes(id_new_concet, id_thesaurus, id_user, notes);
+        END IF;
+
+        IF (non_pref_terms IS NOT NULL AND non_pref_terms != 'null') THEN
+            -- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
+            CALL opentheso_add_non_preferred_term(id_thesaurus, id_user, non_pref_terms);
+        END IF;
+
+        IF (images IS NOT NULL AND images != 'null') THEN
+            -- 'url1##url2'
+            CALL opentheso_add_external_images(id_thesaurus, id_new_concet, id_user, images);
+        END IF;
+
+        IF (alignements IS NOT NULL AND alignements != 'null') THEN
+            -- 'author@concept_target@thesaurus_target@uri_target@alignement_id_type@internal_id_thesaurus@internal_id_concept'
+            CALL opentheso_add_alignements(alignements);
+        END IF;
+
+        IF (idsConceptsReplaceBy IS NOT NULL AND idsConceptsReplaceBy != 'null') THEN
+            FOR concept_Rep_rec IN SELECT unnest(string_to_array(idsConceptsReplaceBy, seperateur)) AS idConceptReplaceBy
+                                                  LOOP
+                                                  Insert into concept_replacedby (id_concept1, id_concept2, id_thesaurus, id_user)
+                                   values(id_new_concet, concept_Rep_rec.idConceptReplaceBy, id_thesaurus, id_user);
             END LOOP;
-		END IF;
-		
-       	IF (altitude > 0 AND longitude > 0) THEN
-			insert into gps values(id_new_concet, id_thesaurus, altitude, longitude);
-        END IF;		
-	END IF;
+        END IF;
+
+        IF (altitude > 0 AND longitude > 0) THEN
+            insert into gps values(id_new_concet, id_thesaurus, altitude, longitude);
+        END IF;
+    END IF;
 END;
 $BODY$;
-
-
-
-
-CREATE OR REPLACE procedure opentheso_add_facet(
-	id_facet character varying,
-	id_thesaurus character varying,
-	id_conceotParent character varying,
-	labels text,
-	membres text)
-    LANGUAGE 'plpgsql'
-AS $BODY$
-DECLARE
-	seperateur constant varchar := '##';
-	sous_seperateur constant varchar := '@@';
-	
-	label_rec record;
-	membres_rec record;
-	array_string   text[];
-	isFirst boolean;
-BEGIN
-	isFirst = false;
-	FOR label_rec IN SELECT unnest(string_to_array(labels, seperateur)) AS label_value
-    LOOP
-		SELECT string_to_array(label_rec.label_value, sous_seperateur) INTO array_string;
-		
-		if (isFirst = false) then
-			isFirst = true;
-			INSERT INTO node_label(id_facet, id_thesaurus, lexical_value, created, modified, lang) 
-				VALUES (id_facet, id_thesaurus, array_string[1], CURRENT_DATE, CURRENT_DATE, array_string[2]);
-							
-			INSERT INTO thesaurus_array(id_thesaurus, id_concept_parent, id_facet) VALUES (id_thesaurus, id_conceotParent, id_facet);
-		ELSE
-			Insert into node_label (id_facet, id_thesaurus, lexical_value, lang) values (id_facet, id_thesaurus, array_string[1], array_string[2]);	
-		END IF;
-	END LOOP;
-	
-	FOR membres_rec IN SELECT unnest(string_to_array(membres, seperateur)) AS membre_value
-    LOOP		
-		INSERT INTO concept_facet(id_facet, id_thesaurus, id_concept) VALUES (id_facet, id_thesaurus, membres_rec.membre_value);
-	END LOOP;
-END;
-$BODY$;;

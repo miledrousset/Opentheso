@@ -44,7 +44,9 @@ public class SKOSResource {
     private ArrayList<SKOSDate> dateList;
     private ArrayList<SKOSAgent> agentList;
 
-    private SKOSGPSCoordinates GPSCoordinates;
+    //TODO MILTI GPS
+    //private List<SKOSGPSCoordinates> gpsCoordinates;
+    private SKOSGPSCoordinates gpsCoordinates;
     private ArrayList<SKOSNotation> notationList;
     private ArrayList<SKOSMatch> matchList;
     
@@ -73,7 +75,8 @@ public class SKOSResource {
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
         agentList = new ArrayList<>();
-        GPSCoordinates = new SKOSGPSCoordinates();
+        //psCoordinates = new ArrayList<>();
+        gpsCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
         nodeImages = new ArrayList<>();
@@ -96,7 +99,7 @@ public class SKOSResource {
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
         agentList = new ArrayList<>();
-        GPSCoordinates = new SKOSGPSCoordinates();
+        gpsCoordinates = new SKOSGPSCoordinates();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
         nodeImages = new ArrayList<>();
@@ -123,7 +126,7 @@ public class SKOSResource {
             dateList.clear();
         if(agentList != null)
             agentList.clear();
-        GPSCoordinates = null;
+        gpsCoordinates = null;
         if(notationList != null)
             notationList.clear();
         if(matchList != null)
@@ -205,8 +208,8 @@ public class SKOSResource {
         agentList.add(new SKOSAgent(agent, prop));
     }    
 
-    public SKOSGPSCoordinates getGPSCoordinates() {
-        return GPSCoordinates;
+    public SKOSGPSCoordinates getGpsCoordinates() {
+        return gpsCoordinates;
     }
 
     public ArrayList<SKOSNotation> getNotationList() {
@@ -417,8 +420,8 @@ public class SKOSResource {
         }
     }
 
-    public void setGPSCoordinates(SKOSGPSCoordinates GPSCoordinates) {
-        this.GPSCoordinates = GPSCoordinates;
+    public void setGpsCoordinates(SKOSGPSCoordinates gpsCoordinates) {
+        this.gpsCoordinates = gpsCoordinates;
     }
 
     public ArrayList<NodeImage> getNodeImage() {
@@ -660,16 +663,25 @@ public class SKOSResource {
             return r1_name.compareTo(r2_name);
 
         }
-
+        //TODO MILTI GPS
         private void writeIdToGPS(SKOSResource resource) {
             String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
-            SKOSGPSCoordinates gps = resource.getGPSCoordinates();
+            SKOSGPSCoordinates gps = resource.getGpsCoordinates();
             String lat = gps.getLat();
             String lon = gps.getLon();
 
             if (lat != null && lon != null) {
                 idToGPS.put(key, "gps : lat =" + lat + " long =" + lon);
             }
+
+            /*
+            if (CollectionUtils.isNotEmpty(resource.getGpsCoordinates())) {
+                idToGPS.put(resource.getIdentifier(),
+                        resource.getGpsCoordinates().stream()
+                                .map(element -> "gps : lat =" + element.getLat() + " long =" + element.getLon())
+                                .collect(Collectors.toList()));
+            }
+             */
         }
 
         private void writeIdToImg(SKOSResource resource) {

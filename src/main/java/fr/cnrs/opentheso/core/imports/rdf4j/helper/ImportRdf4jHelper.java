@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.ConceptGroupLabel;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
@@ -45,8 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
+
 import org.apache.commons.collections.CollectionUtils;
 
 /**
@@ -143,7 +144,8 @@ public class ImportRdf4jHelper {
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         thesaurusHelper.setIdentifierType("2");
-
+        DcElementHelper dcElementHelper = new DcElementHelper();
+        
         String idTheso1;
         try ( Connection conn = ds.getConnection()) {
 
@@ -165,9 +167,13 @@ public class ImportRdf4jHelper {
                     thesaurus.setTitle("theso_" + idTheso1);
                 }
             }
-
             thesaurus.setId_thesaurus(idTheso1);
-
+            
+            // intégration des métadonnées DC
+            for (DcElement dcElement : skosXmlDocument.getConceptScheme().getThesaurus().getDcElement()) {
+                dcElementHelper.addDcElementThesaurus(ds, dcElement, idTheso1);
+            }
+            
             // boucler pour les traductions
             for (SKOSLabel label : skosXmlDocument.getConceptScheme().getLabelsList()) {
                 thesaurus.setTitle(label.getLabel());
@@ -221,9 +227,11 @@ public class ImportRdf4jHelper {
             if (selectedIdentifier.equalsIgnoreCase("doi")) {
                 nodePreference.setOriginalUriIsDoi(true);
             }
+            preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
    
         } else {
             nodePreference.setCheminSite(uri);
+            nodePreference.setSourceLang(langueSource);
             nodePreference.setPreferredName(idTheso);
             nodePreference.setOriginalUri(uri);
             if (selectedIdentifier.equalsIgnoreCase("ark")) {
@@ -235,8 +243,8 @@ public class ImportRdf4jHelper {
             if (selectedIdentifier.equalsIgnoreCase("doi")) {
                 nodePreference.setOriginalUriIsDoi(true);
             }
+            preferencesHelper.addPreference(ds, nodePreference, idTheso);
         }
-        preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
     }
 
     private void setOriginalUri(String idTheso, String uri) {
@@ -550,13 +558,22 @@ public class ImportRdf4jHelper {
             }
         }
 
+        //TODO MILTI GPS
         boolean isGpsPresent = false;
         String longitude = null, altitude = null;
-        if (conceptResource.getGPSCoordinates() != null) {
+        if (conceptResource.getGpsCoordinates() != null) {
             isGpsPresent = true;
-            altitude = conceptResource.getGPSCoordinates().getLat();
-            longitude = conceptResource.getGPSCoordinates().getLon();
+            altitude = conceptResource.getGpsCoordinates().getLat();
+            longitude = conceptResource.getGpsCoordinates().getLon();
         }
+        /*
+        String gpsData = "";
+        if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates())) {
+            isGpsPresent = true;
+            for (SKOSGPSCoordinates element : conceptResource.getGpsCoordinates()) {
+                gpsData = gpsData + element.getLat() + SOUS_SEPERATEUR + element.getLon() + SEPERATEUR;
+            }
+        }*/
 
         //Non Pref Term
         //-- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
@@ -567,8 +584,7 @@ public class ImportRdf4jHelper {
             prefTerm = "";
             for (SKOSLabel label : conceptResource.getLabelsList()) {
                 if (label.getProperty() == SKOSProperty.prefLabel) {
-                    prefTerm += SEPERATEUR + label.getLabel() 
-                            + SOUS_SEPERATEUR + label.getLanguage();
+                    prefTerm += SEPERATEUR + label.getLabel() + SOUS_SEPERATEUR + label.getLanguage();
                 } else {
                     String status = null;
                     boolean hiden = false;
@@ -662,23 +678,7 @@ public class ImportRdf4jHelper {
         }
 
         //CustomRelation
-        //-- 'id_concept1@role@id_concept2'
-        String customRelations = null;        
-    /*    if (CollectionUtils.isNotEmpty(conceptResource.getCustomRelations())) {
-            customRelations = "";
-            for (NodeIdValue nodeIdValue  : conceptObject.getCustomRelations()) {
-                customRelations += SEPERATEUR + conceptObject.getIdConcept()
-                        + SOUS_SEPERATEUR + nodeIdValue.getValue()
-                        + SOUS_SEPERATEUR + nodeIdValue.getId();
-            //    relations += SEPERATEUR + idCostomRelation
-            //            + SOUS_SEPERATEUR + "NT"
-            //            + SOUS_SEPERATEUR + conceptObject.getIdConcept();                
-            //   
-            }
-        }    
-        if (customRelations != null && customRelations.length() > 0) {
-            customRelations = customRelations.substring(SEPERATEUR.length(), customRelations.length());
-        }   */      
+        String customRelations = null;
         
         //Notes
         //-- 'value@typeCode@lang@id_term'
@@ -814,9 +814,11 @@ public class ImportRdf4jHelper {
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
                     + (images == null ? null : "'" + images + "'") + ", "
                     + (isReplacedBy == null ? null : "'" + isReplacedBy + "'") + ", "
-                    + isGpsPresent + ", " 
+                    + isGpsPresent + ", "
+                    //TODO MILTI GPS
                     + (altitude == null ? null : Double.parseDouble(altitude)) + ", "
                     + (longitude == null ? null : Double.parseDouble(longitude)) + ", "
+                    //+ (gpsData == null ? null : "'" + gpsData + "'") + ", "
                     //+ "'" + created + "', "
                     + (created == null ? null : "'" + created + "'") + ", "
 
@@ -1235,7 +1237,7 @@ public class ImportRdf4jHelper {
             acs.term.setHidden(nodeEMList1.isHiden());
             acs.termHelper.addNonPreferredTerm(ds, acs.term, idUser);
         }
-
+//TODO MILTI GPS
         if (acs.nodeGps.getLatitude() != null && acs.nodeGps.getLongitude() != null) {
             if (acs.nodeGps.getLatitude() != 0.0 && acs.nodeGps.getLongitude() != 0.0) {
                 // insertion des données GPS
@@ -1244,6 +1246,16 @@ public class ImportRdf4jHelper {
                         acs.nodeGps.getLatitude(), acs.nodeGps.getLongitude());
             }
         }
+        /*
+        if (CollectionUtils.isNotEmpty(acs.nodeGps)) {
+            for (NodeGps nodeGps : acs.nodeGps) {
+                if (nodeGps.getLatitude() != 0.0 && nodeGps.getLongitude() != 0.0) {
+                    // insertion des données GPS
+                    acs.gpsHelper.insertCoordonees(ds, acs.concept.getIdConcept(), idTheso,
+                            nodeGps.getLatitude(), nodeGps.getLongitude());
+                }
+            }
+        }*/
 
         if (acs.isTopConcept) {
             if (!acs.conceptHelper.setTopConcept(ds, acs.concept.getIdConcept(), idTheso)) {//thesaurus.getId_thesaurus())) {
@@ -1300,8 +1312,6 @@ public class ImportRdf4jHelper {
         }
 
         acs.isTopConcept = false;
-
-        acs.nodeGps = null;
         acs.nodeGps = new NodeGps();
 
         if (acs.nodeImages != null) {
@@ -1421,8 +1431,9 @@ public class ImportRdf4jHelper {
         }
     }
 
+    //TODO MILTI GPS
     private void addGPSCoordinates(AddConceptsStruct acs) {
-        SKOSGPSCoordinates gPSCoordinates = acs.conceptResource.getGPSCoordinates();
+        SKOSGPSCoordinates gPSCoordinates = acs.conceptResource.getGpsCoordinates();
         try {
             acs.nodeGps.setLatitude(Double.parseDouble(gPSCoordinates.getLat()));
             acs.nodeGps.setLongitude(Double.parseDouble(gPSCoordinates.getLon()));
@@ -1431,7 +1442,13 @@ public class ImportRdf4jHelper {
             acs.nodeGps.setLatitude(null);
             acs.nodeGps.setLongitude(null);
         }
-
+        /*
+        for (SKOSGPSCoordinates element : acs.conceptResource.getGpsCoordinates()) {
+            NodeGps nodeGps = new NodeGps();
+            nodeGps.setLatitude(Double.parseDouble(element.getLat()));
+            nodeGps.setLongitude(Double.parseDouble(element.getLon()));
+            acs.nodeGps.add(nodeGps);
+        }*/
     }
 
     private void addLabel(AddConceptsStruct acs) {

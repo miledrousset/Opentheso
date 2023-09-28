@@ -21,7 +21,7 @@
 
         <ui:include src="NoteProposition.xhtml" />
 
-        <h:panelGroup rendered="#{(!currentUser.nodeUser.isSuperAdmin and !roleOnTheso.isAdminOnThisTheso)}">
+        <h:panelGroup rendered="#{propositionBean.isNewProposition()}">
             <div class="card mb-4 py-3 border-left-success" style="margin: 10px;">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
@@ -54,9 +54,16 @@
                         </div>
                     </div>
                     <div class="row" style=" margin-left: 15px; margin-right: 15px">
-                        <div class="col-12">
-                            <p:textEditor widgetVar="editor2" secure="false" value="#{propositionBean.commentaire}" height="300"  />
-                        </div>
+                        <h:panelGroup rendered="#{!propositionBean.isConsultation}" >
+                            <div class="col-12">
+                                <p:textEditor widgetVar="editor2" secure="false" value="#{propositionBean.commentaire}" height="300"  />
+                            </div>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{propositionBean.isConsultation}" >
+                            <div class="col-12">
+                                <h:outputText escape="false" value="#{propositionBean.commentaire}"/>
+                            </div>
+                        </h:panelGroup>
                     </div>
                 </div>
             </div>
@@ -69,23 +76,24 @@
                 </div> 
             </div>
             <p:spacer height="10px;" />
-            <div class="row">
-                <div class="col-12" style="text-align: right; margin-left: -10px;">
-                    <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
-                                     actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept" 
-                                     style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
-                                     icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
-                                     ajax="true" process="@this"/>
+            <h:panelGroup rendered="#{!propositionBean.isConsultation}">
+                <div class="row">
+                    <div class="col-12" style="text-align: right; margin-left: -10px;">
+                        <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
+                                         actionListener="#{propositionBean.annuler()}" update="containerIndex:contentConcept"
+                                         style="margin-right: 10px; background-color: #8f8f8f; border-color: #8f8f8f"
+                                         icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                         ajax="true" process="@this"/>
 
-                    <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="confirmDialogId"
-                                     actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}"
-                                     ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" />
+                        <p:commandButton value="#{langueBean.getMsg('rightbody.sendProposal')}" update="confirmDialogId"
+                                         actionListener="#{propositionBean.preparerConfirmationDialog('envoyerProposition')}"
+                                         ajax="true" process="@this" styleClass="ui-button-success" icon="pi pi-check-circle" />
+                    </div>
                 </div>
-            </div>
-
+            </h:panelGroup>
         </h:panelGroup>
 
-        <h:panelGroup rendered="#{currentUser.nodeUser.isSuperAdmin or roleOnTheso.isAdminOnThisTheso}">
+        <h:panelGroup rendered="#{propositionBean.isCanMakeAction()}">
             <div class="card mb-4 py-3 border-left-success" style="margin: 10px;">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                     <div class="row" style="margin-left: 15px; margin-right: 15px">
@@ -108,7 +116,7 @@
                         </div>
                     </div>
 
-                    <h:panelGroup rendered="#{propositionBean.commentaire != null and propositionBean.commentaire.length() > 0}">  
+                    <h:panelGroup rendered="#{propositionBean.commentaire != null and propositionBean.commentaire.length() > 0}">
 
                         <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 10px">
                             <div class="col-12">
@@ -118,26 +126,24 @@
 
                         <div class="row" style=" margin-left: 15px; margin-right: 15px">
                             <div class="col-12">
-                                <p:textEditor readonly="true" value="#{propositionBean.commentaire}" widgetVar="editor" secure="false"
-                                                 height="100"/>
+                                <h:outputText escape="false" value="#{propositionBean.commentaire}"/>
                             </div>
                         </div>
                     </h:panelGroup>
 
-                    <h:panelGroup >  
-                        <div class="row" style=" margin-left: 15px; margin-right: 15px; margin-top: 20px">
-                            <div class="col-12">
-                                <h:outputText value="Commentaire de l'administrateur : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
-                            </div>
+                    <div class="row" style="margin-left: 15px; margin-right: 15px; margin-top: 20px">
+                        <div class="col-12">
+                            <h:outputText value="Commentaire de l'administrateur : " style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
+                    </div>
 
-                        <div class="row" style=" margin-left: 15px; margin-right: 15px">
-                            <div class="col-12">
-                                <p:textEditor readonly="#{!propositionBean.showButtonDecision()}" widgetVar="editor1" value="#{propositionBean.commentaireAdmin}" secure="false" height="150"  />
-                            </div>
+                    <div class="row" style="margin-left: 15px; margin-right: 15px">
+                        <div class="col-12">
+                            <p:textEditor readonly="#{!propositionBean.showButtonDecision()}"
+                                          widgetVar="editor1" value="#{propositionBean.commentaireAdmin}"
+                                          secure="false" height="150"  />
                         </div>
-                    </h:panelGroup>
-                    
+                    </div>
                 </div>
             </div>
 
@@ -152,7 +158,7 @@
                 <div class="col-9" style="text-align: right;">
                     <p:commandButton value="#{langueBean.getMsg('candidat.remove')}"
                                      actionListener="#{propositionBean.preparerConfirmationDialog('supprimerProposition')}"
-                                     ajax="true" process="@this" icon="fa fa-regular fa-trash" update="messageIndex confirmDialogId" 
+                                     ajax="true" process="@this" icon="fa fa-regular fa-trash" update="messageIndex confirmDialogId"
                                      style="margin-right: 10px;" styleClass="ui-button-secondary button" />
 
                     <p:commandButton value="#{langueBean.getMsg('proposition.refuser')}" rendered="#{propositionBean.showButtonDecision()}"
@@ -188,7 +194,7 @@
 
             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success"
                              icon="pi pi-check"
-                             update="containerIndex:contentConcept containerIndex:notificationPanel messageIndex"
+                             update="containerIndex:contentConcept containerIndex:notificationPanel containerIndex:header messageIndex"
                              actionListener="#{propositionBean.executionAction()}"/>
         </div>
     </p:dialog>

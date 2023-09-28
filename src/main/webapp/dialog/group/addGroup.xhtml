@@ -48,7 +48,7 @@
                                  actionListener="PF('addGroup').hide();" update="containerIndex:idAddGroup"/>
 
                 <p:commandButton id="addGroupBtn" value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
-                                 update="containerIndex messageIndex" oncomplete="PF('addGroup').hide();"
+                                 update="containerIndex:formLeftTab:tabTree:treeGroups messageIndex" oncomplete="PF('addGroup').hide();"
                                  ajax="true" process="@form"
                                  actionListener="#{addGroupBean.addGroup(selectedTheso.currentIdTheso,
                                                    selectedTheso.currentLang, currentUser.nodeUser.idUser)}"/>

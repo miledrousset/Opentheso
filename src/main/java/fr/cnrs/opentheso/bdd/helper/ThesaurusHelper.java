@@ -128,43 +128,6 @@ public class ThesaurusHelper {
     /**
      * Permet de créer un nouveau Thésaurus. Retourne l'identifiant du thésaurus
      * ou null
-     * @param ds
-     * @param thesaurus
-     * @param urlSite
-     * @param isArkActive
-     * @return 
-     */
-    public String addThesaurus(HikariDataSource ds, Thesaurus thesaurus,
-            String urlSite, boolean isArkActive) {
-
-        String idThesaurus = null;//"TH";//"ark:/66666/srvq9a5Ll41sk";
-
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select max(id) from thesaurus");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    resultSet.next();
-                    int idNumeriqueThesaurus = resultSet.getInt(1);
-                    idThesaurus = "" + ++idNumeriqueThesaurus;
-
-                    //récupération du code Ark via WebServices
-                    String idArk = "";
-                    stmt.executeUpdate("Insert into thesaurus (id_thesaurus, id_ark, created, modified)"
-                            + " values ('" + idThesaurus + "','" + idArk + "'"
-                            + "," + "current_date, current_date)");
-                    thesaurus.setId_thesaurus(idThesaurus);
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while adding Thesaurus : " + idThesaurus, sqle);
-            idThesaurus = null;
-        }
-        return idThesaurus;
-    }
-
-    /**
-     * Permet de créer un nouveau Thésaurus. Retourne l'identifiant du thésaurus
-     * ou null
      *
      * @param conn
      * @param urlSite
@@ -204,6 +167,7 @@ public class ThesaurusHelper {
         }
         return idThesaurus;
     }
+    
 
     /**
      * Permet de rajouter une traduction à un Thésaurus existant suivant un l'id
@@ -416,44 +380,32 @@ public class ThesaurusHelper {
      */
     public Map getListThesaurus(HikariDataSource ds, String idLang) {
 
-        ResultSet resultSet = null;
         Map map = new HashMap();
         ArrayList tabIdThesaurus = new ArrayList();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select DISTINCT id_thesaurus from thesaurus");
-                resultSet = stmt.getResultSet();
-                if (resultSet != null) {
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         tabIdThesaurus.add(resultSet.getString("id_thesaurus"));
                     }
-                    for (Object tabIdThesauru : tabIdThesaurus) {
-                        stmt.executeQuery("select title from thesaurus_label where"
-                                + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
-                            resultSet.next();
+                }
+                for (Object tabIdThesauru : tabIdThesaurus) {
+                    stmt.executeQuery("select title from thesaurus_label where"
+                            + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
+                    try ( ResultSet resultSet = stmt.getResultSet()) {
+                        if(resultSet.next()) {
                             if (resultSet.getRow() == 0) {
                                 map.put("(" + tabIdThesauru + ")", tabIdThesauru);
                             } else {
                                 map.put(resultSet.getString("title") + "(" + tabIdThesauru + ")", tabIdThesauru);
                             }
-
                         }
                     }
                 }
-                if (resultSet != null) {
-                    resultSet.close();
-                }
             }
         } catch (SQLException sqle) {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception ex) {
-            }
             log.error("Error while getting Map of thesaurus : " + map.toString(), sqle);
         }
         return map;
@@ -470,11 +422,11 @@ public class ThesaurusHelper {
         List<String> tabIdThesaurus = new ArrayList();
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                String query = "";
+                String query;
                 if (withPrivateTheso) {
-                    query = "select id_thesaurus from thesaurus order by created desc";
+                    query = "select id_thesaurus from thesaurus order by id desc";
                 } else { // uniquement pour les SuperAdmin
-                    query = "select id_thesaurus from thesaurus where thesaurus.private != true order by created desc";
+                    query = "select id_thesaurus from thesaurus where thesaurus.private != true order by id desc";
                 }
                 try ( ResultSet resultSet = stmt.executeQuery(query)) {
                     while (resultSet.next()) {
@@ -499,24 +451,23 @@ public class ThesaurusHelper {
     public Map getListThesaurusOfUser(HikariDataSource ds, int idUser, String idLang) {
         Map map = new HashMap();
         ArrayList tabIdThesaurus = new ArrayList();
-        ResultSet resultSet = null;
+        
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT DISTINCT user_role.id_thesaurus FROM user_role, thesaurus WHERE "
                         + "thesaurus.id_thesaurus = user_role.id_thesaurus and id_user = " + idUser);
-                resultSet = stmt.getResultSet();
-                if (resultSet != null) {
+                try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         if (!resultSet.getString("id_thesaurus").isEmpty()) {
                             tabIdThesaurus.add(resultSet.getString("id_thesaurus"));
                         }
                     }
-                    for (Object tabIdThesauru : tabIdThesaurus) {
-                        stmt.executeQuery("select title from thesaurus_label where"
-                                + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
-                            resultSet.next();
+                }
+                for (Object tabIdThesauru : tabIdThesaurus) {
+                    stmt.executeQuery("select title from thesaurus_label where"
+                            + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
+                    try ( ResultSet resultSet = stmt.getResultSet()) {
+                        if (resultSet.next()) {
                             if (resultSet.getRow() == 0) {
                                 map.put("(" + tabIdThesauru + ")", tabIdThesauru);
                             } else {
@@ -525,19 +476,10 @@ public class ThesaurusHelper {
                         }
                     }
                 }
-                if (resultSet != null) {
-                    resultSet.close();
-                }
             }
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while getting Map of thesaurus : " + map.toString(), sqle);
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (Exception ex) {
-            }
         }
         return map;
     }
@@ -631,7 +573,7 @@ public class ThesaurusHelper {
      * @param idThesaurus
      * @return 
      */
-    public ArrayList<String> getIsoLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    public List<String> getIsoLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
 
         ArrayList<String> idLang = new ArrayList<>();
         try ( Connection conn = ds.getConnection()) {

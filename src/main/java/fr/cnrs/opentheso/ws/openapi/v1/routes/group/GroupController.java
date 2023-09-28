@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
+import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 
 /**
  * @author julie
@@ -52,7 +53,7 @@ public class GroupController {
                 return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Server unavailable", format);
 
             RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.exportGroup(ds, naan + "/" + arkId, format);
+            datas = restRDFHelper.exportGroup(ds, naan + "/" + arkId, HeaderHelper.removeCharset(format));
         }
         return ResponseHelper.response(Response.Status.OK, Objects.requireNonNullElseGet(datas, () -> MessageHelper.emptyMessage(format)), format);
     }

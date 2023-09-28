@@ -24,7 +24,7 @@
                     <h:outputText value="Langue à ajouter: "/>
                 </div>
                 <div class="col-7">
-                    <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable}">
+                    <h:panelGroup rendered="#{selectedTheso.isNetworkAvailable()}">
                         <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" 
                                          panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "
@@ -34,7 +34,7 @@
                                        itemValue="#{lang.id_iso639_1}" var="lang" /> 
                         </p:selectOneMenu> 
                     </h:panelGroup>
-                    <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable}">
+                    <h:panelGroup rendered="#{!selectedTheso.isNetworkAvailable()}">
                         <p:selectOneMenu value="#{editThesoBean.selectedLang}" styleClass="selectOneMenu_custom" 
                                          panelStyleClass="selectOneMenu_panelStyle_custom"
                                          style="width: 100%; background: none;  box-shadow: none; "

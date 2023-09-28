@@ -4,44 +4,30 @@
  * and open the template in the editor.
  */
 package fr.cnrs.opentheso.bdd.datas;
+import lombok.Data;
 
 /**
  *
  * @author miled.rousset
  */
 
+@Data
 public class DcElement {
-
-    protected String language;
+    private int id;
     protected String name;
     protected String value;
+    protected String language;
+    private String type;
 
     public DcElement() {
     }
 
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
+    
+    public DcElement(String name, String value, String language, String type) {
+        this.id = -1;
         this.language = language;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
         this.value = value;
+        this.type = type;
     }
-
-
 }

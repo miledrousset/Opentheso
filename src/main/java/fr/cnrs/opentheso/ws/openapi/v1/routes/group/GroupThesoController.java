@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,4 +161,50 @@ public class GroupThesoController {
         if (datas == null || datas.equals("{}")) return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Group not found", format);
         return ResponseHelper.response(Response.Status.OK, datas, format);
     }
+    
+    @Path("/branchtree")
+    @GET
+    @Produces({APPLICATION_JSON_UTF_8})
+    @Operation(
+            summary = "${getAllBranchOfGroupAsTree.summary}$",
+            description = "${getAllBranchOfGroupAsTree.description}$",
+            tags = {"Group"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "${getAllBranchOfGroupAsTree.200.description}$", content = {
+                            @Content(mediaType = APPLICATION_JSON_UTF_8)
+                    }),
+                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+            }
+    )
+    public Response getAllBranchOfGroupAsTree(
+            @Parameter(name = "idTheso", required = true, description = "${getAllBranchOfGroupAsTree.idTheso.description}$") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchAutocomplete.lang.description}$") @QueryParam("lang") String lang,
+            @Parameter(name = "idGroups", required = true, description = "${getAllBranchOfGroupAsTree.idGroups.description}$", example = "g1,g2,g3") @QueryParam("idGroups") String idGroups,
+            @Context HttpHeaders headers
+    ) {
+        String format = HeaderHelper.getContentTypeFromHeader(headers);
+        
+        if (idGroups == null) {
+            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "No group id", format);
+        }
+        
+        String[] groups = idGroups.split(",");
+        
+        if (groups.length == 0) {
+            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "No group id", format);
+        }
+        
+        String datas;
+        
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", format);
+            RestRDFHelper restRDFHelper = new RestRDFHelper();
+            datas = restRDFHelper.brancheOfGroupAsTree(ds, groups, idTheso, lang);
+        }
+        if (datas == null || datas.equals("{}")) return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Group not found", format);
+        return ResponseHelper.response(Response.Status.OK, datas, format);
+    }    
+    
 }

@@ -1,9 +1,10 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
+import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.alignment.ResultatAlignement;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -13,15 +14,20 @@ import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.bean.rightbody.viewhome.ProjectBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.ThesaurusRepository;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.Socket;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,19 +35,22 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collections;
 import java.util.List;
-import java.util.Arrays;
-import javax.faces.application.FacesMessage;
-import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.UnselectEvent;
 
 
-@Named(value = "selectedTheso")
+
 @SessionScoped
+@Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
-    @Inject private LanguageBean LanguageBean;
+
+    @Inject private LanguageBean languageBean;
     @Inject private Connect connect;
     @Inject private IndexSetting indexSetting;
     @Inject private TreeGroups treeGroups;
@@ -56,8 +65,16 @@ public class SelectedTheso implements Serializable {
     @Inject private RightBodySetting rightBodySetting;
     @Inject private MenuBean menuBean;
     @Inject private PropositionBean propositionBean;
+    @Inject private UserGroupLabelRepository userGroupLabelRepository;
+    @Inject private ThesaurusRepository thesaurusRepository;
+    @Inject private CurrentUser currentUser;
+    @Inject private ProjectBean projectBean;
 
     private static final long serialVersionUID = 1L;
+
+    private List<UserGroupLabel> projects;
+
+    private boolean isFromUrl;
 
     private String selectedIdTheso;
     private String currentIdTheso;
@@ -79,17 +96,19 @@ public class SelectedTheso implements Serializable {
     private boolean sortByNotation;
     
     private boolean isNetworkAvailable;
-    
+
     private String localUri;
 
-    private List<AlignementElement> listAlignementElement;
+    private String projectIdSelected;
+    private List<UserGroupLabel> projectsList;
     private List<ResultatAlignement> resultAlignementList;
+
 
     @PreDestroy
     public void destroy(){
-        /// c'est le premier composant qui se détruit
         clear();
-    }  
+    }
+
     public void clear(){
         if(nodeLangs!= null){
             nodeLangs.clear();
@@ -102,44 +121,22 @@ public class SelectedTheso implements Serializable {
         idThesoFromUri = null;      
         thesoName = null;   
         localUri = null;
-    //    System.gc();
-    //    System.runFinalization();        
-    }      
+        projectIdSelected = "-1";
+    }
     
     @PostConstruct
     public void initializing() {
+
         if (!connect.isConnected()) {
             System.err.println("Erreur de connexion BDD");
             return;
         }
         
-        isNetworkAvailable = true;  
-//#MR désactivé temporairement pour tester pourquoi le serveur ne répond pas rapidement au démarrage // hostAvailabilityCheck();
-
-
-
-
-        ///////#MR désactivé, ce n'est plus utile
-        ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire
-/*        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        HttpServletRequest req = (HttpServletRequest) externalContext.getRequest();
-        if(!req.getSession().isNew()){
-            System.gc();
-      //      System.runFinalization();
-        }     */   
-        ///////
-        ////// ne pas modifier, elle permet de détecter si le timeOut est déclenché pour vider la mémoire        
-        
+        isNetworkAvailable = true;
         roleOnThesoBean.showListTheso();
         sortByNotation = false;
-    }
-    
-    public boolean hostAvailabilityCheck() { 
-        try (Socket s = new Socket("countryflagsapi.com", 80)) {
-            return true;
-        } catch (IOException ex) {
-            return false;
-        }
+
+        loadProject();
     }
 
     public void init() {
@@ -178,30 +175,24 @@ public class SelectedTheso implements Serializable {
                 break;
         }
     }
-    
+
     public String getUriOfTheso(NodePreference nodePreference){
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
         String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
-    //    HttpServletRequest request = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
         String baseUrl = protocole + "://" + serverAdress + contextPath;
-        
-        
-   /*     String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
-        String uri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  */
+
         if(nodePreference == null) {
-            return baseUrl + "/?idt=" + currentIdTheso; 
+            return baseUrl + "/?idt=" + currentIdTheso;
         }
         else {
             String idArk = new ThesaurusHelper().getIdArkOfThesaurus(connect.getPoolConnexion(), currentIdTheso);
             if(StringUtils.isEmpty(idArk)){
                 return baseUrl + "/?idt=" + currentIdTheso;
-            } else 
-            return baseUrl + "/api/ark:/" + idArk;
+            } else {
+                return baseUrl + "/api/ark:/" + idArk;
+            }
         }
-        /*
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        thesaurusHelper.get*/
     }
 
     /**
@@ -229,9 +220,8 @@ public class SelectedTheso implements Serializable {
             return;
         }
 
-        if (selectedIdTheso == null || selectedIdTheso.isEmpty()) {
-            
-            roleOnThesoBean.showListTheso();
+        if (StringUtils.isEmpty(selectedIdTheso)) {
+
             treeGroups.reset();
             tree.reset();
             treeConcepts.reset();
@@ -239,8 +229,10 @@ public class SelectedTheso implements Serializable {
             conceptBean.init();
             init();
             
-            indexSetting.setIsSelectedTheso(false); 
-            
+            indexSetting.setIsSelectedTheso(false);
+            indexSetting.setProjectSelected(true);
+            projectBean.init();
+
             roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());
             for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
                 roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
@@ -251,7 +243,7 @@ public class SelectedTheso implements Serializable {
                 searchBean.setBarVisisble(false);
                 PrimeFaces.current().executeScript("disparaitre();");
             }
-            
+
             menuBean.redirectToThesaurus();
             return;
         }
@@ -280,10 +272,12 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsThesoActive(true);
         
         propositionBean.searchNewPropositions();
-        
+
+        roleOnThesoBean.setUserRoleOnThisTheso();
+
         for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
             if (selectedIdTheso.equals(thesoModel.getId())) {
-                roleOnThesoBean.setSelectedThesoForSearch(Arrays.asList(selectedIdTheso));
+                roleOnThesoBean.setSelectedThesoForSearch(Collections.singletonList(selectedIdTheso));
             }
         }
         
@@ -292,10 +286,78 @@ public class SelectedTheso implements Serializable {
             searchBean.setBarVisisble(false);
             PrimeFaces.current().executeScript("disparaitre();");
         }
-        
+
+        indexSetting.setProjectSelected(false);
         menuBean.redirectToThesaurus();
     }
+
+    public void redirectToTheso() throws IOException{
+        menuBean.redirectToThesaurus();
+    }
+
     
+    /**
+     * Récupération de tous les projets en fonction de l'utilisateur :
+     * - mode non connecté = on charge tous les projets
+     * - mode connecté = on charge uniquement les projets de l'utilisateur
+     */
+    public void loadProject() {
+        if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
+        } else {
+            if (currentUser.getNodeUser().isSuperAdmin()) {
+                projectsList = userGroupLabelRepository.getAllProjects();
+            } else {
+                projectsList = userGroupLabelRepository.getProjectsByUserId(currentUser.getNodeUser().getIdUser());
+            }
+        }
+        if(projectsList == null || projectsList.isEmpty()) {
+            projectIdSelected = "-1";
+        }
+    }    
+    
+    public void setSelectedProject() {
+        projectBean.setLangCodeSelected(languageBean.getIdLangue());
+        if (CollectionUtils.isEmpty(projectBean.getAllLangs())) {
+            projectBean.setAllLangs(new LanguageHelper().getAllLanguages(connect.getPoolConnexion()));
+        }
+        if ("-1".equals(projectIdSelected)) {
+            roleOnThesoBean.showListTheso();
+            currentIdTheso = null;
+            indexSetting.setSelectedTheso(false);
+            indexSetting.setProjectSelected(false);
+        } else {
+            boolean isConnect = ObjectUtils.isNotEmpty(currentUser.getNodeUser());
+            projectBean.initProject(projectIdSelected, !isConnect);
+
+            if (!projectBean.getListeThesoOfProject().isEmpty()) {
+                roleOnThesoBean.setAuthorizedTheso(projectBean.getListeThesoOfProject().stream()
+                        .map(NodeIdValue::getId)
+                        .collect(Collectors.toList()));
+            } else {
+                roleOnThesoBean.setAuthorizedTheso(Collections.emptyList());
+            }
+            roleOnThesoBean.addAuthorizedThesoToHM();
+            roleOnThesoBean.setUserRoleOnThisTheso();
+
+            if (CollectionUtils.isNotEmpty(projectBean.getListeThesoOfProject())) {
+                if (projectBean.getListeThesoOfProject().stream()
+                        .filter(element -> StringUtils.equalsIgnoreCase(element.getId(), currentIdTheso))
+                        .findFirst()
+                        .isEmpty()) {
+                    selectedIdTheso = null;
+                    currentIdTheso = null;
+                }
+            }
+
+            if (StringUtils.isEmpty(selectedIdTheso)) {
+                indexSetting.setProjectSelected(true);
+            }
+
+            projectBean.init();
+        }
+    }
+
     
     public void setSelectedThesoForSearch() throws IOException {
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
@@ -319,28 +381,6 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsValueSelected(true);
         indexSetting.setIsHomeSelected(false);
         indexSetting.setIsThesoActive(true);
-    }    
-
-    public List<AlignementElement> getListAlignementElement() {
-        return listAlignementElement;
-    }
-
-    public List<ResultatAlignement> getResultAlignementList() {
-        return resultAlignementList;
-    }
-
-    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
-        this.resultAlignementList = resultAlignementList;
-    }
-
-/*    public void onSelect(SelectEvent<ResultatAlignement> event) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().getTitle()));
-    }
-*/
-    public void onUnselect(UnselectEvent<ResultatAlignement> event) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().getTitle()));
     }
 
     /**
@@ -364,6 +404,7 @@ public class SelectedTheso implements Serializable {
      * @throws java.io.IOException
      */
     public void reloadSelectedTheso() throws IOException {
+        loadProject();
         roleOnThesoBean.showListTheso();
 
         searchBean.reset();
@@ -375,6 +416,8 @@ public class SelectedTheso implements Serializable {
             return;
         }
         startNewTheso(null);
+        tree.setIdConceptSelected(null);
+
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
@@ -416,21 +459,22 @@ public class SelectedTheso implements Serializable {
         currentIdTheso = selectedIdTheso;
         // setting des préférences du thésaurus sélectionné
         roleOnThesoBean.initNodePref();
-        roleOnThesoBean.showListTheso();
-        if (idLang == null) {
+        if (StringUtils.isEmpty(idLang)) {
             idLang = getIdLang();
-            if (idLang == null || idLang.isEmpty()) {
-                return;
-            }
         }
+        if (StringUtils.isEmpty(idLang)) {
+            return;
+        }
+
         nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(),
                 selectedIdTheso,
-                LanguageBean.getIdLangue());
+                languageBean.getIdLangue());
 
         currentLang = idLang;
         selectedLang = idLang;
-        setThesoName();
+        thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(),
+                selectedIdTheso, selectedLang);
 
         // initialisation de l'arbre des groupes
         treeGroups.reset();
@@ -445,12 +489,6 @@ public class SelectedTheso implements Serializable {
         listIndex.reset();
         conceptBean.clear();
         conceptBean.init();
-    }
-
-    private void setThesoName() {
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        thesoName = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(),
-                selectedIdTheso, selectedLang);
     }
 
     private void startNewLang() {
@@ -493,13 +531,16 @@ public class SelectedTheso implements Serializable {
     }
 
     /**
-     * Pour sélectionner un thésaurus ou un concept en passant par l'URL 
-     * @throws java.io.IOException 
+     * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      */
     public void preRenderView() throws IOException {
+
         if (idThesoFromUri == null) {
+            isFromUrl = false;
             return;
         }
+
+        isFromUrl = true;
         if (idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (idConceptFromUri == null || idConceptFromUri.isEmpty()) {
                 //test si c'est une collection 
@@ -525,6 +566,7 @@ public class SelectedTheso implements Serializable {
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang);
             actionFromConceptToOn();
             initIdsFromUri();
+            thesoName = new ThesaurusHelper().getTitleOfThesaurus(connect.getPoolConnexion(), selectedIdTheso, selectedLang);
             return;
         }
 
@@ -662,8 +704,221 @@ public class SelectedTheso implements Serializable {
         this.optionThesoSelected = optionThesoSelected;
     }
 
-    public boolean isIsNetworkAvailable() {
+    public LanguageBean getLanguageBean() {
+        return languageBean;
+    }
+
+    public void setLanguageBean(LanguageBean LanguageBean) {
+        this.languageBean = LanguageBean;
+    }
+
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public IndexSetting getIndexSetting() {
+        return indexSetting;
+    }
+
+    public void setIndexSetting(IndexSetting indexSetting) {
+        this.indexSetting = indexSetting;
+    }
+
+    public TreeGroups getTreeGroups() {
+        return treeGroups;
+    }
+
+    public void setTreeGroups(TreeGroups treeGroups) {
+        this.treeGroups = treeGroups;
+    }
+
+    public TreeConcepts getTreeConcepts() {
+        return treeConcepts;
+    }
+
+    public void setTreeConcepts(TreeConcepts treeConcepts) {
+        this.treeConcepts = treeConcepts;
+    }
+
+    public Tree getTree() {
+        return tree;
+    }
+
+    public void setTree(Tree tree) {
+        this.tree = tree;
+    }
+
+    public ListIndex getListIndex() {
+        return listIndex;
+    }
+
+    public void setListIndex(ListIndex listIndex) {
+        this.listIndex = listIndex;
+    }
+
+    public ConceptView getConceptBean() {
+        return conceptBean;
+    }
+
+    public void setConceptBean(ConceptView conceptBean) {
+        this.conceptBean = conceptBean;
+    }
+
+    public SearchBean getSearchBean() {
+        return searchBean;
+    }
+
+    public void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
+    }
+
+    public RoleOnThesoBean getRoleOnThesoBean() {
+        return roleOnThesoBean;
+    }
+
+    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
+        this.roleOnThesoBean = roleOnThesoBean;
+    }
+
+    public ViewEditorThesoHomeBean getViewEditorThesoHomeBean() {
+        return viewEditorThesoHomeBean;
+    }
+
+    public void setViewEditorThesoHomeBean(ViewEditorThesoHomeBean viewEditorThesoHomeBean) {
+        this.viewEditorThesoHomeBean = viewEditorThesoHomeBean;
+    }
+
+    public ViewEditorHomeBean getViewEditorHomeBean() {
+        return viewEditorHomeBean;
+    }
+
+    public void setViewEditorHomeBean(ViewEditorHomeBean viewEditorHomeBean) {
+        this.viewEditorHomeBean = viewEditorHomeBean;
+    }
+
+    public RightBodySetting getRightBodySetting() {
+        return rightBodySetting;
+    }
+
+    public void setRightBodySetting(RightBodySetting rightBodySetting) {
+        this.rightBodySetting = rightBodySetting;
+    }
+
+    public MenuBean getMenuBean() {
+        return menuBean;
+    }
+
+    public void setMenuBean(MenuBean menuBean) {
+        this.menuBean = menuBean;
+    }
+
+    public PropositionBean getPropositionBean() {
+        return propositionBean;
+    }
+
+    public void setPropositionBean(PropositionBean propositionBean) {
+        this.propositionBean = propositionBean;
+    }
+
+    public UserGroupLabelRepository getUserGroupLabelRepository() {
+        return userGroupLabelRepository;
+    }
+
+    public void setUserGroupLabelRepository(UserGroupLabelRepository userGroupLabelRepository) {
+        this.userGroupLabelRepository = userGroupLabelRepository;
+    }
+
+    public ThesaurusRepository getThesaurusRepository() {
+        return thesaurusRepository;
+    }
+
+    public void setThesaurusRepository(ThesaurusRepository thesaurusRepository) {
+        this.thesaurusRepository = thesaurusRepository;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public ProjectBean getProjectBean() {
+        return projectBean;
+    }
+
+    public void setProjectBean(ProjectBean projectBean) {
+        this.projectBean = projectBean;
+    }
+
+    public List<UserGroupLabel> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<UserGroupLabel> projects) {
+        this.projects = projects;
+    }
+
+    public boolean isIsFromUrl() {
+        return isFromUrl;
+    }
+
+    public void setIsFromUrl(boolean isFromUrl) {
+        this.isFromUrl = isFromUrl;
+    }
+
+    public boolean isIsActionFromConcept() {
+        return isActionFromConcept;
+    }
+
+    public void setIsActionFromConcept(boolean isActionFromConcept) {
+        this.isActionFromConcept = isActionFromConcept;
+    }
+
+    public boolean isIsUriRequest() {
+        return isUriRequest;
+    }
+
+    public void setIsUriRequest(boolean isUriRequest) {
+        this.isUriRequest = isUriRequest;
+    }
+
+    public boolean isNetworkAvailable() {
         return isNetworkAvailable;
     }
+
+    public void setIsNetworkAvailable(boolean isNetworkAvailable) {
+        this.isNetworkAvailable = isNetworkAvailable;
+    }
+
+    public String getProjectIdSelected() {
+        return projectIdSelected;
+    }
+
+    public void setProjectIdSelected(String projectIdSelected) {
+        this.projectIdSelected = projectIdSelected;
+    }
+
+    public List<UserGroupLabel> getProjectsList() {
+        return projectsList;
+    }
+
+    public void setProjectsList(List<UserGroupLabel> projectsList) {
+        this.projectsList = projectsList;
+    }
+
+    public List<ResultatAlignement> getResultAlignementList() {
+        return resultAlignementList;
+    }
+
+    public void setResultAlignementList(List<ResultatAlignement> resultAlignementList) {
+        this.resultAlignementList = resultAlignementList;
+    }
+
 
 }

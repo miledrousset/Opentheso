@@ -2,24 +2,17 @@ package fr.cnrs.opentheso.bdd.helper.nodes;
 
 import java.io.Serializable;
 
+
 public class NodeUser implements Serializable {
 
     private int idUser;
     private String name;
     private String mail;
-    private boolean isActive;
-    private boolean isAlertMail = false;
-    private boolean isSuperAdmin = false;
-    private boolean passtomodify = false;
+    private boolean active;
+    private boolean alertMail;
+    private boolean superAdmin;
+    private boolean passtomodify;
 
-    public NodeUser() {
-        name = "";
-        mail = "";
-        isActive = false;
-        isAlertMail = false;
-        isSuperAdmin = false;
-        passtomodify = false;
-    }
 
     public int getIdUser() {
         return idUser;
@@ -31,10 +24,6 @@ public class NodeUser implements Serializable {
 
     public String getName() {
         return name;
-    }
-    
-    public String getFormatName() {
-        return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
     public void setName(String name) {
@@ -49,28 +38,28 @@ public class NodeUser implements Serializable {
         this.mail = mail;
     }
 
-    public boolean isIsActive() {
-        return isActive;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    public boolean isIsAlertMail() {
-        return isAlertMail;
+    public boolean isAlertMail() {
+        return alertMail;
     }
 
-    public void setIsAlertMail(boolean isAlertMail) {
-        this.isAlertMail = isAlertMail;
+    public void setAlertMail(boolean alertMail) {
+        this.alertMail = alertMail;
     }
 
-    public boolean isIsSuperAdmin() {
-        return isSuperAdmin;
+    public boolean isSuperAdmin() {
+        return superAdmin;
     }
 
-    public void setIsSuperAdmin(boolean isSuperAdmin) {
-        this.isSuperAdmin = isSuperAdmin;
+    public void setSuperAdmin(boolean superAdmin) {
+        this.superAdmin = superAdmin;
     }
 
     public boolean isPasstomodify() {
@@ -80,5 +69,4 @@ public class NodeUser implements Serializable {
     public void setPasstomodify(boolean passtomodify) {
         this.passtomodify = passtomodify;
     }
-
 }

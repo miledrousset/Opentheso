@@ -135,6 +135,7 @@
 
     <div class="container" style="margin-top: -25px; z-index: 9;">
         <p:defaultCommand target="applySearch" />
+        <p:focus context="autocompleteSearch"/>
         <div class="row">
             <div class="col-lg-12 card-margin">
                 <div class="card search-form">
@@ -142,7 +143,8 @@
                         <div class="row" >
                             <div class="col-12">
                                 <div class="row no-gutters" >
-                                    <div style="width: 25%; z-index: 100" >
+                                    
+                                    <div style="width: 30%; z-index: 100" >
                                         <p:selectOneMenu id="languageSelect" value="#{selectedTheso.selectedLang}"
                                                          class="form-control" title="#{langueBean.getMsg('search.change_thesaurus_language')}"
                                                          style="background: transparent; border-color: transparent; background-color: transparent; font-size: 12px;
@@ -154,8 +156,8 @@
                                             <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all"/>
                                         </p:selectOneMenu>
                                     </div>
-                                    <div style="width: 50%; z-index: 100">
-                                        <p:autoComplete class="form-control" value="#{searchBean.searchSelected}" var="values"
+                                    <div style="width: 55%; z-index: 100">
+                                        <p:autoComplete id="autocompleteSearch" class="form-control" value="#{searchBean.searchSelected}" var="values"
                                                         placeholder="#{langueBean.getMsg('candidat.search')}..."
                                                         completeMethod="#{searchBean.completTermFullText}" minQueryLength="1" itemLabel="#{values.prefLabel}"
                                                         itemValue="#{values}" converter="searchConverterAdvanced" scrollHeight="600"
@@ -198,17 +200,8 @@
                                             <p:ajax event="itemSelect" listener="#{searchBean.onSelect}" update="containerIndex messageIndex"/>
                                         </p:autoComplete>
                                     </div>
-                                    <div style="width: 25%; text-align: right; z-index: 100; position: relative; display: inline-block;">
-                                        <div id="searchBarVisible" style="display: none">
-                                            <p:commandLink class="btn btn-base" action="#{searchBean.managerSearchBar()}">
-                                                <i class="pi pi-chevron-up" style="color: #f47b2a; font-size: 14px;"/>
-                                            </p:commandLink>
-                                        </div>
-                                        <div id="searchBarInvisible" style="display: inline-block">
-                                            <p:commandLink class="btn btn-base" action="#{searchBean.managerSearchBar()}">
-                                                <i class="pi pi-chevron-down" style="color: #f47b2a; font-size: 14px"/>
-                                            </p:commandLink>
-                                        </div>
+                                    <div style="width: 15%; text-align: right; z-index: 100; position: relative; display: inline-block;">
+
                                         <p:commandLink id="applySearch" class="btn btn-base" actionListener="#{searchBean.applySearch()}"
                                                        ajax="true" process="@this" style="display: inline-block"
                                                        update="containerIndex:notificationPanel messageIndex">
@@ -251,12 +244,9 @@
         }
     </script>
 
-    <div class="row test222" id="test3333" style="width: 100%; margin-top: -30px; z-index: 1">
-        <div class="col-2"/>
-
-        <div id="choixPanelDiv" class="col-8 researchAdvanceClass" style="display:flex; flex-direction: row; justify-content: center; align-items: center; visibility: visible">
+        <div id="choixPanelDiv" class="col-lg-auto researchAdvanceClass" style="display:flex; flex-direction: row; justify-content: center; align-items: center; visibility: visible">
             <h:panelGroup id="choixPanel" style="background-color: #ECF8F1; padding-left: 20px; padding-right: 20px; z-index: 1;
-                          padding-bottom: 5px; padding-top: 3px; border-radius: 0px 0px 7px 7px;">
+                          padding-bottom: 5px; padding-top: 3px; border-radius: 0px 0px 7px 7px; margin-top: -28px;">
                 <p:selectBooleanCheckbox id="select1" itemLabel="#{langueBean.getMsg('search.startWith')}" value="#{searchBean.indexMatch}"
                                          style="color: #143a1e; background-color: transparent; font-size: 12px">
                     <p:ajax listener="#{searchBean.activateIndexMatch()}" update="choixPanel"/>
@@ -319,10 +309,8 @@
             </h:panelGroup>
         </div>
 
-        <div class="col-2">
 
-        </div>
-    </div>
+
     <h:form id="formSearch">
 
     </h:form>

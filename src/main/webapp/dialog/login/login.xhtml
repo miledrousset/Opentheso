@@ -76,8 +76,8 @@
                 <p:inputText type="password" placeholder="password" value="#{currentUser.password}"/>
                 <p:commandButton value="#{langueBean.getMsg('menu.connect')}" styleClass="ui-button-success" icon="fa-solid fa-key"
                                  ajax="true" action="#{currentUser.login()}" 
-                                 update="messageIndex containerIndex:header containerIndex:notificationProp 
-                                 menuBar containerIndex:searchBar containerIndex:contentConcept">
+                                 update="containerIndex:header containerIndex:notificationProp 
+                                 menuBar containerIndex:searchBar containerIndex:contentConcept messageIndex">
                 </p:commandButton>
                 <p class="message">
                     <p:commandLink update="idForgetPass forgetPassForm" oncomplete="PF('forgetPass').show();"

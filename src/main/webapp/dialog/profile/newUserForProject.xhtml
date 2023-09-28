@@ -60,9 +60,9 @@
                     <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')}" title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
                 </div>
                 <div class="col-7">
-                    <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.isAlertMail}" /> 
+                    <p:toggleSwitch id="alertMail" value="#{newUSerBean.nodeUser.alertMail}" />
                 </div>
-                <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="isAlertMail" />
+                <p:tooltip value="#{langueBean.getMsg('profile.alert_by_emailTooltip')}" showDelay="500" for="alertMail" />
             </div>
 
             <div class="row" style="margin-top: 5px;">

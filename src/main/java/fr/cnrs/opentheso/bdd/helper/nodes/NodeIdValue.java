@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
+import lombok.Data;
 import java.io.Serializable;
 import java.text.Normalizer;
 
@@ -12,46 +8,14 @@ import java.text.Normalizer;
  *
  * @author miled.rousset
  */
+@Data
 public class NodeIdValue implements Comparable, Serializable{
+
     private String id;
     private String value;
     private boolean Status;
     private String notation;
-
-    public NodeIdValue() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public boolean isStatus() {
-        return Status;
-    }
-
-    public void setStatus(boolean Status) {
-        this.Status = Status;
-    }
-
-    public void setNotation(String notation) {
-        this.notation = notation;
-    }
-
-    public String getNotation() {
-        return notation;
-    }
+    private Integer nbrConcepts;
 
     @Override
     public int compareTo(Object o) {

@@ -1,8 +1,11 @@
 package fr.cnrs.opentheso.bean.proposition.service;
 
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
@@ -107,7 +110,7 @@ public class PropositionService implements Serializable {
                 showMessage(FacesMessage.SEVERITY_ERROR, "!! votre propostion n'a pas été envoyée !!");
                 return false;
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion n'a pas été envoyée !");
             return false;
         }
@@ -675,6 +678,13 @@ public class PropositionService implements Serializable {
                 propositionSelected.getIdTheso(),
                 propositionSelected.getLang(),
                 currentUser.getNodeUser().getIdUser());
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                propositionSelected.getIdConcept(), propositionSelected.getIdTheso());
+        ///////////////  
+  
 
         new PropositionHelper().updateStatusProposition(connect.getPoolConnexion(),
                 PropositionStatusEnum.APPROUVER.name(),

@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -66,6 +67,8 @@ public class SearchBean implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Inject
     private PropositionBean propositionBean;
+    @Inject
+    private LanguageBean languageBean;
 
     private NodeSearchMini searchSelected;
 
@@ -442,7 +445,7 @@ public class SearchBean implements Serializable {
     public void afficherResultatRecherche() {
         if (propositionBean.isPropositionVisibleControle()) {
             if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut faire une recherche avant !");
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", languageBean.getMsg("search.doSearchBefore") + " !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 PrimeFaces.current().ajax().update("messageIndex");
                 return;
@@ -460,7 +463,7 @@ public class SearchBean implements Serializable {
                 searchVisibleControle = false;
             } else {
                 if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
-                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Il faut faire une recherche avant !");
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", languageBean.getMsg("search.doSearchBefore") + " !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     PrimeFaces.current().ajax().update("messageIndex");
                 } else {
@@ -820,6 +823,8 @@ public class SearchBean implements Serializable {
     }
 
     public void onSelectConcept(String idTheso, String idConcept, String idLang) {
+
+        propositionBean.setNewProposition(false);
         roleOnThesoBean.initNodePref(idTheso);
         selectedTheso.setSelectedIdTheso(idTheso);
         selectedTheso.setSelectedLang(idLang);

@@ -61,13 +61,15 @@
                 </div>
             </div>               
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 2px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" style="margin-right: 10px"
-                                 actionListener="PF('addTraductionGroup').hide();" update="containerIndex:idAddTraductionGroup"/>
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
+                                 style="margin-right: 10px"
+                                 actionListener="PF('addTraductionGroup').hide();"
+                                 update="containerIndex:idAddTraductionGroup"/>
 
                 <p:commandButton id="validateAddTraductionGroup" 
-                                 value="#{langueBean.getMsg('btnValidate')}" 
+                                 value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
                                  update="containerIndex:idAddTraductionGroup containerIndex:formRightTab messageIndex"
-                                 styleClass="ui-button-primary" oncomplete="PF('addTraductionGroup').show();"
+                                 oncomplete="PF('addTraductionGroup').show();"
                                  ajax="true" process="@form"
                                  actionListener="#{traductionGroupBean.addNewTraduction(currentUser.nodeUser.idUser)}"/>
             </div>

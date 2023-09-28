@@ -80,9 +80,9 @@ public class ExportHelper {
             String baseUrl, String idGroup, String originalUri, NodePreference nodePreference) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
-
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        String [] contributors;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -104,7 +104,7 @@ public class ExportHelper {
                         getLabels(resultSet.getString("altLab"), sKOSResource, SKOSProperty.altLabel);
 
                         if (resultSet.getString("broader") == null || resultSet.getString("broader").isEmpty()) {
-                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriFromId(idTheso, originalUri, nodePreference),
+                            sKOSResource.getRelationsList().add(new SKOSRelation(idTheso, getUriThesoFromId(idTheso, originalUri, nodePreference),
                                     SKOSProperty.topConceptOf));
                         }
 
@@ -130,7 +130,7 @@ public class ExportHelper {
                             addRelationsGiven(resultSet.getString("broader"), sKOSResource);
                         }
 
-                        sKOSResource.addRelation(idTheso, getUriFromId(idTheso, originalUri, nodePreference), SKOSProperty.inScheme);
+                        sKOSResource.addRelation(idTheso, getUriThesoFromId(idTheso, originalUri, nodePreference), SKOSProperty.inScheme);
                         
                         addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
                         
@@ -147,17 +147,23 @@ public class ExportHelper {
                         addFacets(sKOSResource, resultSet.getString("facets"), idTheso, originalUri);
                         
                         addExternalResources(sKOSResource, resultSet.getString("externalResources"));
-                        
+
+                        //TODO MILTI GPS
+                        //addGps(sKOSResource, resultSet.getString("gpsData"));
                         if (resultSet.getString("latitude") != null || resultSet.getString("longitude") != null) {
-                            sKOSResource.setGPSCoordinates(new SKOSGPSCoordinates(
+                            sKOSResource.setGpsCoordinates(new SKOSGPSCoordinates(
                                     resultSet.getDouble("latitude"), resultSet.getDouble("longitude")));
                         }
                         
                         if (resultSet.getString("creator") != null) {
                             sKOSResource.addAgent(resultSet.getString("creator"), SKOSProperty.creator);
                         }
-                        if (resultSet.getString("contributor") != null) {
-                            sKOSResource.addAgent(resultSet.getString("contributor"), SKOSProperty.contributor);
+                        
+                        if(!StringUtils.isEmpty(resultSet.getString("contributor"))){
+                            contributors = resultSet.getString("contributor").split(SEPERATEUR);
+                            for (String contributor : contributors) {
+                                sKOSResource.addAgent(contributor, SKOSProperty.contributor);
+                            }
                         }
 
                         String created = resultSet.getString("created");
@@ -193,6 +199,20 @@ public class ExportHelper {
         return concepts;
     }
 
+    /*//TODO MILTI GPS
+    private void addGps(SKOSResource sKOSResource, String str) {
+        if (StringUtils.isNotEmpty(str)) {
+            String[] tabs = str.split(SEPERATEUR);
+
+            List<SKOSGPSCoordinates> tmp = new ArrayList<>();
+            for (String tab : tabs) {
+                String[] element = tab.split(SUB_SEPERATEUR);
+                tmp.add(new SKOSGPSCoordinates(Double.parseDouble(element[0]), Double.parseDouble(element[1])));
+            }
+            sKOSResource.setGpsCoordinates(tmp);
+        }
+    }*/
+
     private String getUriFromId(String id, String originalUri, NodePreference nodePreference) {
         if(nodePreference.isOriginalUriIsArk()) {
             return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
@@ -207,6 +227,21 @@ public class ExportHelper {
             return getPath(originalUri) + "/" + id;
         }
     }
+    
+    private String getUriThesoFromId(String id, String originalUri, NodePreference nodePreference) {
+        if(nodePreference.isOriginalUriIsArk()) {
+            return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
+        }
+        if(nodePreference.isOriginalUriIsHandle()) {
+            return "https://hdl.handle.net/" + id;
+        }
+        
+        if (originalUri != null && !originalUri.isEmpty()) {
+            return originalUri + "/?idt=" + id;
+        } else {
+            return getPath(originalUri) + "/?idt=" + id;
+        }
+    }    
 
     private String getPath(String originalUri) {
         if (FacesContext.getCurrentInstance() == null) {
@@ -224,11 +259,11 @@ public class ExportHelper {
         } else {
             baseSQL = baseSQL + "opentheso_get_concepts_by_group('" + idTheso + "', '" + baseUrl + "', '" + idGroup;
         }
-
-        return baseSQL + "') as x(URI text, TYPE varchar,  LOCAL_URI text, IDENTIFIER varchar, ARK_ID varchar, "
+//TODO MILTI GPS
+        return baseSQL + "') as x(URI text, TYPE varchar, LOCAL_URI text, IDENTIFIER varchar, ARK_ID varchar, "
                 + "prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, editorialNote text, changeNote text, "
                 + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
-                + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, "
+                + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, " //gpsData text
                 + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
                 + "replaces text, replaced_by text, facets text, externalResources text);";
     }
@@ -372,15 +407,15 @@ public class ExportHelper {
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
                 String str = new StringPlus().normalizeStringForXml(element[0]);
-                //str = formatLinkTag(str);
-                //str = str.replaceAll(htmlTagsRegEx, "");
                 sKOSResource.addDocumentation(str, element[1], type);
             }
         }
     }
 
     private void getLabels(String labelBrut, SKOSResource sKOSResource, int type) throws SQLException {
-
+        if("16238".equalsIgnoreCase(sKOSResource.getIdentifier())){
+            System.out.println("concept : " + sKOSResource.getIdentifier() + "  " + labelBrut);
+        }
         if (StringUtils.isNotEmpty(labelBrut)) {
             String[] tabs = labelBrut.split(SEPERATEUR);
 

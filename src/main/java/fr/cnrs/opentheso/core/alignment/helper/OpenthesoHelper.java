@@ -33,6 +33,7 @@ import fr.cnrs.opentheso.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
 /**
@@ -117,8 +118,6 @@ public class OpenthesoHelper {
             while ((output = br.readLine()) != null) {
                 xmlRecord += output;
             }
-//            byte[] bytes = xmlRecord.getBytes();
-//            xmlRecord = new String(bytes, Charset.forName("UTF-8"));
             if(cons != null)
                 cons.disconnect();
             if(con != null)
@@ -126,8 +125,8 @@ public class OpenthesoHelper {
             
             listeAlign = getValues(xmlRecord, idC, idLang, idTheso, source);
             br.close();
-        } catch (MalformedURLException e) {
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.out.println("Erreur : " + e.getMessage());
         }
         return listeAlign;
     }
@@ -160,12 +159,10 @@ public class OpenthesoHelper {
                             break;
                         case SKOSProperty.altLabel:
                             if(label.getLanguage().equals(idLang)) {
-                                if(na.getConcept_target_alt().isEmpty()) {
+                                if(StringUtils.isEmpty(na.getConcept_target_alt())) {
                                     na.setConcept_target_alt(label.getLabel());
-                                } 
-                                else {
-                                    na.setConcept_target_alt(
-                                            na.getConcept_target_alt() + ";" + label.getLabel());                                        
+                                } else {
+                                    na.setConcept_target_alt(na.getConcept_target_alt() + ";" + label.getLabel());
                                 }
                             }
                             break;                                

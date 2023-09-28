@@ -123,7 +123,7 @@
                         </div>
 
                         <div class="col-5">
-                            <p:selectOneMenu id="idGroupSelected11" rendered="#{currentUser.nodeUser.isSuperAdmin}" 
+                            <p:selectOneMenu id="idGroupSelected11" rendered="#{currentUser.nodeUser.isSuperAdmin()}"
                                              style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                              panelStyle="font-size: 12px;  border: none; box-shadow: none;"
                                              value="#{importFileBean.selectedUserProject}" >
@@ -132,7 +132,7 @@
                                                itemLabel="#{selectedProject.groupName}" itemValue="#{selectedProject.idGroup}"/>
                             </p:selectOneMenu>
 
-                            <p:selectOneMenu id="idGroupSelected12" rendered="#{!currentUser.nodeUser.isSuperAdmin}"
+                            <p:selectOneMenu id="idGroupSelected12" rendered="#{!currentUser.nodeUser.isSuperAdmin()}"
                                              style="font-size: 12px; width: 100%; background: none;  box-shadow: none; "
                                              panelStyle="font-size: 12px;  border: none; box-shadow: none;"
                                              value="#{importFileBean.selectedUserProject}" >
@@ -219,7 +219,6 @@
                                                  styleClass="ui-button-success" icon="fa fa-download"
                                                  disabled="#{!importFileBean.loadDone}"
                                                  title="Import rapide" style="margin-left: 20px"/>
-
                             </div>
                         </div>
                     </h:panelGroup>

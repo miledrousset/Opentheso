@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import javax.inject.Named;
@@ -32,8 +31,7 @@ public class MyAccountBean implements Serializable {
 
     @Inject
     private Connect connect;
-    @Inject
-    private LanguageBean languageBean;
+
     @Inject
     private CurrentUser currentUser;
 
@@ -111,7 +109,7 @@ public class MyAccountBean implements Serializable {
         if (!userHelper.setAlertMailForUser(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
-                nodeUser.isIsAlertMail())) {
+                nodeUser.isAlertMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant le changement d'alertes !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -188,6 +186,22 @@ public class MyAccountBean implements Serializable {
         }
     }
 
+    public Connect getConnect() {
+        return connect;
+    }
+
+    public void setConnect(Connect connect) {
+        this.connect = connect;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+    }
+
     public NodeUser getNodeUser() {
         return nodeUser;
     }
@@ -219,5 +233,4 @@ public class MyAccountBean implements Serializable {
     public void setAllMyRoleProject(ArrayList<NodeUserRoleGroup> allMyRoleProject) {
         this.allMyRoleProject = allMyRoleProject;
     }
-
 }

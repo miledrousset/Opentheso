@@ -24,8 +24,8 @@
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}" icon="pi pi-cog"
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
+                                                      or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" icon="pi pi-cog"
                                           style="background: none; border: none; color: #000; box-shadow: none;">
                                 <p:menuitem value="#{langueBean.getMsg('leftbody.renamefacet')}" oncomplete="PF('renameFacet').show();" 
                                             icon="fas fa-pencil-alt" update="containerIndex:idRenameFacet"/>
@@ -44,8 +44,8 @@
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                        
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso 
-                                                      or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
+                                                      or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                                           icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
 
                                 <p:menuitem value="#{langueBean.getMsg('leftbody.modify_ParentConcept')}" 
@@ -71,7 +71,7 @@
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">    
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                                           icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.new_concept')}"
                                             actionListener="#{addConcept.resetForFacet(editFacet.facetSelected)}"                    
@@ -96,13 +96,13 @@
                                 <ui:repeat var="concept" value="#{editFacet.conceptList}" varStatus="status">
                                     <p:commandLink rendered="#{concept.value == ''}"
                                                    value="(#{concept.id})"
-                                                   style="color: #43B572;" styleClass="textOpentheso"
+                                                   style="color: #601e18;" styleClass="textOpentheso"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                              concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
 
                                     <p:commandLink rendered="#{concept.value != ''}"
                                                    value="#{concept.value}"
-                                                   style="color: #43B572;" styleClass="textOpentheso"
+                                                   style="color: #601e18;" styleClass="textOpentheso"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                              concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
                                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
@@ -120,7 +120,7 @@
                                 <h:outputText value="#{langueBean.getMsg('candidat.traduction')}" style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                            
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                                               icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" 
@@ -171,7 +171,7 @@
                                          update="containerIndex messageIndex" 
                                          class="btn btn-danger" ajax="true" process="@this"
                                          rendered="#{(currentUser.nodeUser != null) 
-                                                     and (roleOnTheso.isManagerOnThisTheso or roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"/>
+                                                     and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"/>
                     </div>
                 </div>
             </div>

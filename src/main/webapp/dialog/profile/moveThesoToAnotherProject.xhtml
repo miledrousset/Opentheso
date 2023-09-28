@@ -4,14 +4,14 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="idMoveThesoToAnotherProject" header="Déplacer le thésaurus" widgetVar="moveThesoToAnotherProject" 
+    <p:dialog id="idMoveThesoToAnotherProject" header="#{langueBean.getMsg('profile.moveThesaurus')}" widgetVar="moveThesoToAnotherProject" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >      
 
         <h:form>
             <!-- thésaurus -->
             <div class="row">
                 <div class="col-5">
-                    <h:outputText value="Déplacer le thesaurus : " style="font-size: 12px;"/> 
+                    <h:outputText value="#{langueBean.getMsg('profile.moveThesaurus')}: " style="font-size: 12px;"/> 
                 </div>
                 <div class="col-7">
                     <h:outputText value="#{moveThesoToProjectBean.selectedThesoToMove.value} (#{moveThesoToProjectBean.selectedThesoToMove.id})"
@@ -22,7 +22,7 @@
             <!-- Projets -->
             <div class="row" style="margin-top: 5px;"> 
                 <div class="col-5">
-                    <h:outputText value="Du projet : " style="font-size: 12px;"/> 
+                    <h:outputText value="#{langueBean.getMsg('profile.fromProject')}: " style="font-size: 12px;"/> 
                 </div>
                 <div class="col-7">
                     <h:outputText value="#{myProjectBean.selectedProjectName}"
@@ -33,7 +33,7 @@
             <!-- Utilisateur autocomplete -->
             <div class="row" style="margin-top: 5px;"> 
                 <div class="col-5">
-                    <h:outputText value="vers le projet : " style="font-size: 12px;"/> 
+                    <h:outputText value="#{langueBean.getMsg('profile.toProject')}: " style="font-size: 12px;"/> 
                 </div>                
                 <div class="col-7">            
                     <p:autoComplete value="#{moveThesoToProjectBean.newProject}" var="project" forceSelection="true"
@@ -50,13 +50,16 @@
 
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
+                                 style="margin-right: 10px"
                                  actionListener="PF('moveThesoToAnotherProject').hide();" update="idMoveThesoToAnotherProject"/>
 
-                <p:commandButton title="Déplacer" update="containerIndex messageIndex"
-                                 class="btn btn-primary" oncomplete="PF('moveThesoToAnotherProject').hide();"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
+                                 update="containerIndex messageIndex"
+                                 ajax="true" process="@form"
+                                 oncomplete="PF('moveThesoToAnotherProject').hide();"
                                  actionListener="#{moveThesoToProjectBean.moveThesoToProject()}" >
-                    <p:tooltip value="Ajouter l'utilisateur au projet" showDelay="1000" />
+                    <p:tooltip value="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}" showDelay="1000" />
                 </p:commandButton>
             </div> 
         </h:form>

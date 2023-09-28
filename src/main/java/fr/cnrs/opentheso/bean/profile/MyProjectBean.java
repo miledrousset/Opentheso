@@ -105,7 +105,7 @@ public class MyProjectBean implements Serializable {
      */
     private void initAuthorizedRoles() {
         int idRoleFrom = 4;
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             idRoleFrom = 1; // l'utilisateur est SuperAdmin
         } else {
             if (myRoleOnThisProject == null) {
@@ -132,7 +132,7 @@ public class MyProjectBean implements Serializable {
      */
     private void getGroupsOfUser() {
         UserHelper userHelper = new UserHelper();
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             listeGroupsOfUser = userHelper.getAllGroups(connect.getPoolConnexion());
             return;
         }
@@ -167,13 +167,8 @@ public class MyProjectBean implements Serializable {
         }
         
         int idGroup = Integer.parseInt(selectedProject);
-
-        UserHelper userHelper = new UserHelper();
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
-            //      return selectAllUsers();
-        }
         
-        listeThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idGroup,
+        listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(), idGroup,
                 connect.getWorkLanguage());
     } 
     
@@ -191,7 +186,7 @@ public class MyProjectBean implements Serializable {
 //        } else {
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             listeUser = userHelper.getUsersRolesByGroup(connect.getPoolConnexion(),
                     idGroup, nodeUserRoleSuperAdmin.getIdRole());
         } else {
@@ -223,7 +218,7 @@ public class MyProjectBean implements Serializable {
         }
         int idGroup = Integer.parseInt(selectedProject);        
         UserHelper userHelper = new UserHelper();
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {// l'utilisateur est superAdmin
+        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             nodeUserRoleSuperAdmin = userHelper.getUserRoleForSuperAdmin(
                     connect.getPoolConnexion());
             return;
@@ -239,7 +234,7 @@ public class MyProjectBean implements Serializable {
      * @return
      */
     public boolean isAdminOnThisGroup() {
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             return true;
         }
         if (selectedProject == null) {

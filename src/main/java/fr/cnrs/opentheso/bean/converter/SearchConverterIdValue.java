@@ -8,6 +8,7 @@ import javax.faces.convert.FacesConverter;
 
 @FacesConverter("searchConverterIdValue")
 public class SearchConverterIdValue implements Converter{
+
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
         if(value != null && value.trim().length() > 0) {

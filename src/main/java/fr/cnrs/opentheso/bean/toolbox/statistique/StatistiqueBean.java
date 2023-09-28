@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.toolbox.statistique;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -222,10 +223,11 @@ public class StatistiqueBean implements Serializable {
         if ("0".equals(selectedStatistiqueTypeCode)) {
 
             ConceptHelper conceptHelper = new ConceptHelper();
+            StatisticHelper statisticHelper = new StatisticHelper();
 
             genericStatistiques = new StatistiqueService().searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage);
 
-            nbrCanceptByThes = conceptHelper.getNbrOfCanceptByThes(connect.getPoolConnexion().getConnection(), selectedTheso.getCurrentIdTheso());
+            nbrCanceptByThes = statisticHelper.getNbCpt(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
 
             derniereModification = conceptHelper.getLastModification(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
 

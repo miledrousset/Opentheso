@@ -234,15 +234,15 @@ public class WriteCSV {
 
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.exactMatch)).append(seperate) //exactMatch
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch)).append(seperate) //closeMatch
-                .append(getLatValue(skosResource.getGPSCoordinates())).append(seperate)//geo:lat
-                .append(getLongValue(skosResource.getGPSCoordinates())).append(seperate)//geo:long
+                .append(getLatValue(skosResource.getGpsCoordinates())).append(seperate)//geo:lat
+                .append(getLongValue(skosResource.getGpsCoordinates())).append(seperate)//geo:long
                 .append(getMemberValue(skosResource.getRelationsList())).append(seperate)//skos:member
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.created)).append(seperate)//sdct:created
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.modified));//dct:modified
         writer.write(stringBuffer.toString());
         writer.newLine();
     }
-
+    //TODO MILTI GPS
     private String getLatValue(SKOSGPSCoordinates coordinates) {
         if (coordinates != null) {
             if (coordinates.getLat() == null) {
@@ -250,6 +250,12 @@ public class WriteCSV {
             }
             return coordinates.getLat();
         }
+        /*
+        if (CollectionUtils.isNotEmpty(coordinates)) {
+            return coordinates.stream()
+                    .map(SKOSGPSCoordinates::getLat)
+                    .collect(Collectors.joining(delim_multi_datas));
+        }*/
         return "";
     }
 
@@ -260,6 +266,12 @@ public class WriteCSV {
             }
             return coordinates.getLon();
         }
+        /*
+        if (CollectionUtils.isNotEmpty(coordinates)) {
+            return coordinates.stream()
+                    .map(SKOSGPSCoordinates::getLat)
+                    .collect(Collectors.joining(delim_multi_datas));
+        }*/
         return "";
     }
 

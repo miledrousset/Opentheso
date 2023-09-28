@@ -27,8 +27,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
+
+
 
 public class WriteAlphaPDF {
 
@@ -62,7 +63,7 @@ public class WriteAlphaPDF {
     }
 
     public void writeAlphabetiquePDF(ArrayList<Paragraph> paragraphs, ArrayList<Paragraph> paragraphTradList,
-                                     String codeLanguage1, String codeLanguage2) {
+            String codeLanguage1, String codeLanguage2) {
 
         traitement(paragraphs, false, codeLanguage1, codeLanguage2);
 
@@ -87,19 +88,19 @@ public class WriteAlphaPDF {
 
         String idFromUri = concept.getIdentifier();//writePdfSettings.getIdFromUri(concept.getUri());
 
-        addLabels(paragraphs, concept.getLabelsList(), codeLanguage1, codeLanguage2, idFromUri, concept.getArkId());
-        paragraphs.add(new Paragraph(ID + idFromUri, writePdfSettings.textFont));
-        addRelations(paragraphs, concept.getRelationsList());
-        addDocuments(paragraphs, concept.getDocumentationsList(), traductions.get(idFromUri), codeLanguage1, codeLanguage2);
-        addMatchs(paragraphs, concept.getMatchList());
-        addGpsCoordiantes(paragraphs, concept.getGPSCoordinates());
-        addImages(paragraphs, concept.getNodeImage());
-
+        if(addLabels(paragraphs, concept.getLabelsList(), codeLanguage1, codeLanguage2, idFromUri, concept.getArkId())) {
+            paragraphs.add(new Paragraph(ID + idFromUri, writePdfSettings.textFont));
+            addRelations(paragraphs, concept.getRelationsList());
+            addDocuments(paragraphs, concept.getDocumentationsList(), traductions.get(idFromUri), codeLanguage1, codeLanguage2);
+            addMatchs(paragraphs, concept.getMatchList());
+            addGpsCoordiantes(paragraphs, concept.getGpsCoordinates());
+            addImages(paragraphs, concept.getNodeImage());            
+        }
     }
 
-    private void addLabels(List<Paragraph> paragraphs, ArrayList<SKOSLabel> labels, String codeLanguage1,
-                                String codeLanguage2, String idFromUri, String idArk) {
-
+    private boolean addLabels(List<Paragraph> paragraphs, ArrayList<SKOSLabel> labels, String codeLanguage1,
+            String codeLanguage2, String idFromUri, String idArk) {
+        boolean added = false;
         int altLabelCount = 0;
         if (CollectionUtils.isNotEmpty(traductions.get(idFromUri))) {
             altLabelCount = (int) traductions.get(idFromUri).stream().filter(trad -> trad == SKOSProperty.altLabel).count();
@@ -108,6 +109,7 @@ public class WriteAlphaPDF {
         int altLabelWrite = 0;
         for (SKOSLabel label : labels) {
             if (label.getLanguage().equals(codeLanguage1) || label.getLanguage().equals(codeLanguage2)) {
+                added = true;
                 String labelValue;
                 boolean prefIsTrad = false;
                 boolean altIsTrad = false;
@@ -133,9 +135,9 @@ public class WriteAlphaPDF {
                     Paragraph paragraph = new Paragraph();
                     Anchor anchor = new Anchor(labelValue, writePdfSettings.termFont);
                     anchor.setReference(uriHelper.getUriForConcept(idFromUri, idArk, idArk));//uri + "&idc=" + idFromUri);
-                    
+
                     anchor.setName(idFromUri);
-                    
+
                     paragraph.add(anchor);
                     paragraphs.add(paragraph);
                 } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {
@@ -143,6 +145,7 @@ public class WriteAlphaPDF {
                 }
             }
         }
+        return added;
     }
 
     private void addRelations(List<Paragraph> paragraphs, List<SKOSRelation> relations) {
@@ -150,22 +153,45 @@ public class WriteAlphaPDF {
         if (CollectionUtils.isNotEmpty(relations)) {
             relations.stream()
                     .forEach(relation -> {
-                        String targetName = labels.get(relation.getLocalIdentifier());//writePdfSettings.getIdFromUri(relation.getTargetUri()));
-                        if (ObjectUtils.isEmpty(targetName)) {
-                            targetName = relation.getLocalIdentifier();
-                        }
-                        if (StringUtils.isNotEmpty(writePdfSettings.getCodeRelation(relation.getProperty()))) {
-                            Chunk chunk = new Chunk(TAB_NIVEAU + writePdfSettings.getCodeRelation(relation.getProperty())
-                                    + ": " + targetName, writePdfSettings.relationFont);
-                            chunk.setLocalGoto(relation.getLocalIdentifier());//writePdfSettings.getIdFromUri(relation.getTargetUri()));
-                            paragraphs.add(new Paragraph(chunk));
-                        }
-                    });
+                        switch (relation.getProperty()) {
+                    case SKOSProperty.inScheme:
+                        break;
+                    case SKOSProperty.topConceptOf:
+                        break;
+                    case SKOSProperty.narrower:
+                        appendRelation(paragraphs, relation);
+                        break;
+                    case SKOSProperty.broader:
+                        appendRelation(paragraphs, relation);
+                        break;
+                    case SKOSProperty.related:
+                        appendRelation(paragraphs, relation);
+                        break;                        
+                    default:
+                        break;
+                }
+            });
+
+        }
+    }
+
+    private void appendRelation(List<Paragraph> paragraphs, SKOSRelation relation) {
+        String targetName = labels.get(relation.getLocalIdentifier());//writePdfSettings.getIdFromUri(relation.getTargetUri()));
+        if(!StringUtils.isEmpty(targetName)){
+            /*if (ObjectUtils.isEmpty(targetName)) {
+                targetName = relation.getLocalIdentifier();
+            }*/
+            if (StringUtils.isNotEmpty(writePdfSettings.getCodeRelation(relation.getProperty()))) {
+                Chunk chunk = new Chunk(TAB_NIVEAU + writePdfSettings.getCodeRelation(relation.getProperty())
+                        + ": " + targetName, writePdfSettings.relationFont);
+                chunk.setLocalGoto(relation.getLocalIdentifier());//writePdfSettings.getIdFromUri(relation.getTargetUri()));
+                paragraphs.add(new Paragraph(chunk));
+            }            
         }
     }
 
     private void addDocuments(List<Paragraph> paragraphs, List<SKOSDocumentation> documentations, List<Integer> tradList,
-                              String codeLanguage1, String codeLanguage2) {
+            String codeLanguage1, String codeLanguage2) {
 
         if (CollectionUtils.isNotEmpty(documentations)) {
             documentations.stream()
@@ -194,25 +220,33 @@ public class WriteAlphaPDF {
         }
     }
 
-    private void addMatchs(List<Paragraph> paragraphs, List<SKOSMatch> matchs){
+    private void addMatchs(List<Paragraph> paragraphs, List<SKOSMatch> matchs) {
 
         if (CollectionUtils.isNotEmpty(matchs)) {
-            matchs.stream().forEach(match ->
-                    paragraphs.add(new Paragraph(TAB_NIVEAU + writePdfSettings.getMatchTypeName(match.getProperty())
-                    + ": " + match.getValue(), writePdfSettings.textFont))
+            matchs.stream().forEach(match
+                    -> paragraphs.add(new Paragraph(TAB_NIVEAU + writePdfSettings.getMatchTypeName(match.getProperty())
+                            + ": " + match.getValue(), writePdfSettings.textFont))
             );
         }
     }
 
-    private void addGpsCoordiantes(List<Paragraph> paragraphs, SKOSGPSCoordinates skosgpsCoordinates) {
+    //TODO MILTI GPS
+    private void addGpsCoordiantes(List<Paragraph> paragraphs, SKOSGPSCoordinates skosGpsCoordinates) {
 
-        if (ObjectUtils.isNotEmpty(skosgpsCoordinates)
-                && StringUtils.isNotEmpty(skosgpsCoordinates.getLat())
-                && StringUtils.isNotEmpty(skosgpsCoordinates.getLon())) {
+        if (ObjectUtils.isNotEmpty(skosGpsCoordinates)
+                && StringUtils.isNotEmpty(skosGpsCoordinates.getLat())
+                && StringUtils.isNotEmpty(skosGpsCoordinates.getLon())) {
 
-            paragraphs.add(new Paragraph(LATITUDE + skosgpsCoordinates.getLat(), writePdfSettings.textFont));
-            paragraphs.add(new Paragraph(LONGITUDE + skosgpsCoordinates.getLon(), writePdfSettings.textFont));
+            paragraphs.add(new Paragraph(LATITUDE + skosGpsCoordinates.getLat(), writePdfSettings.textFont));
+            paragraphs.add(new Paragraph(LONGITUDE + skosGpsCoordinates.getLon(), writePdfSettings.textFont));
         }
+        /*
+        if (CollectionUtils.isNotEmpty(skosGpsCoordinates)) {
+            for (SKOSGPSCoordinates element : skosGpsCoordinates) {
+                paragraphs.add(new Paragraph(LATITUDE + element.getLat(), writePdfSettings.textFont));
+                paragraphs.add(new Paragraph(LONGITUDE + element.getLon(), writePdfSettings.textFont));
+            }
+        }*/
     }
 
     private void addImages(List<Paragraph> paragraphs, List<NodeImage> images) {
@@ -224,7 +258,8 @@ public class WriteAlphaPDF {
                     Image image = Image.getInstance(new URL(element.getUri()));
                     image.scaleAbsolute(writePdfSettings.resiseImage(image));
                     paragraphs.add(new Paragraph(new Chunk(image, 11, 0, true)));
-                } catch(Exception ex) {}
+                } catch (Exception ex) {
+                }
             });
         }
     }

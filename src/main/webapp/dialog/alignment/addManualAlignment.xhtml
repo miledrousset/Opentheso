@@ -58,7 +58,7 @@
                                  update="containerIndex:formRightTab messageIndex"
                                  oncomplete="PF('addManualAlignment').hide();"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
-                                 actionListener="#{alignmentManualBean.addManualAlignement(conceptView.nodeConcept.concept.idConcept)}" />
+                                 actionListener="#{alignmentManualBean.addManualAlignement(conceptView.nodeConcept.concept.idConcept, true)}" />
             </div>
         </h:form>       
     </p:dialog> 

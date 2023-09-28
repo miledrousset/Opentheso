@@ -59,6 +59,7 @@ public class MoveThesoToProjectBean implements Serializable {
     public void setTheso(NodeIdValue selectedThesoToMove, String currentProject) {
         this.selectedThesoToMove = selectedThesoToMove;
         this.currentProject = currentProject;
+        newProject = null; 
     }   
     
     public void setThesoSuperAdmin(String idTheso, String thesoName, String currentProject) {
@@ -67,12 +68,13 @@ public class MoveThesoToProjectBean implements Serializable {
         selectedThesoToMove.setValue(thesoName);
 
         this.currentProject = currentProject;
+        newProject = null; 
     }       
     
     public ArrayList<NodeUserGroup> autoCompleteProject(String projectName) {
         UserHelper userHelper = new UserHelper();
         ArrayList<NodeUserGroup> nodeProjects = null;
-        if(currentUser.getNodeUser().isIsSuperAdmin()) {
+        if(currentUser.getNodeUser().isSuperAdmin()) {
             nodeProjects = userHelper.searchAllProject(
                     connect.getPoolConnexion(),
                     projectName);            

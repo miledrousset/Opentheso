@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -438,6 +439,17 @@ public class ExportFileBean implements Serializable {
         if (nodePreference == null) {
             return null;
         }
+        if(StringUtils.isEmpty(nodePreference.getOriginalUri())){
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Veuillez paramétrer l'URI de l'export dans les préférences !"));
+            return null;
+        }
+        if("null".equalsIgnoreCase(nodePreference.getOriginalUri())){
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Veuillez paramétrer l'URI de l'export dans les préférences !"));            
+            return null;            
+        }
+        
         UriHelper uriHelper = new UriHelper(connect.getPoolConnexion(), nodePreference, viewExportBean.getNodeIdValueOfTheso().getId()); 
 
         
@@ -638,8 +650,7 @@ public class ExportFileBean implements Serializable {
         
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(),
-                idTheso, nodePreference);
+        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
 
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
@@ -660,7 +671,7 @@ public class ExportFileBean implements Serializable {
                         exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
                 sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
                         exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
-                exportRdf4jHelperNew.addChildsGroupRecursive(connect.getPoolConnexion(), idTheso, idGroup, sKOSResource);
+                exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
 
                 concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(),
                         idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference));
@@ -735,13 +746,6 @@ public class ExportFileBean implements Serializable {
         ArrayList<String> allConcepts = new ArrayList<>();
         if (!viewExportBean.isToogleFilterByGroup()) {
             allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
-      /*      allConcepts = conceptHelper.getAllIdConceptOfThesaurusByUser(connect.getPoolConnexion(), idTheso);
-            ArrayList<String> allConcepts2 = conceptHelper.getAllIdConceptOfThesaurusByUser2(connect.getPoolConnexion(), idTheso);
-            for (String id : allConcepts2) {
-                if(!allConcepts.contains(id))
-                    allConcepts.add(id);
-            }*/
-            
         } else {
             for (String idGroup : selectedGroups) {
                 ArrayList<String> allConceptsTemp;

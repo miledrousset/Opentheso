@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="dropPrimaryKeyThesaurusDcterms" author="Miled">
+        <dropPrimaryKey
+                tableName="thesaurus_dcterms"/>
+        
+        <addColumn tableName="thesaurus_dcterms">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>        
+        </addColumn>
+
+        <addUniqueConstraint columnNames="id_thesaurus,name,value"
+                       constraintName="thesaurus_dcterms_uniquekey"
+                       tableName="thesaurus_dcterms" />         
+               
+        <dropNotNullConstraint 
+            tableName="thesaurus_dcterms" 
+            columnName="language"
+            columnDataType="character varying"/>
+            
+    </changeSet>
+</databaseChangeLog>

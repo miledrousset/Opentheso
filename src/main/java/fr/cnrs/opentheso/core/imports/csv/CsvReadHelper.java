@@ -309,7 +309,7 @@ public class CsvReadHelper {
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
                     value = record.get("localId");
-                    if (value == null) {
+                    if (StringUtils.isEmpty(value)) {
                         continue;
                     }
                     conceptObject.setLocalId(value);
@@ -376,6 +376,51 @@ public class CsvReadHelper {
         return false;
     }    
 
+    /**
+     * permet de lire un fichier CSV complet pour importer les alignements
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileCollection(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+
+            CSVParser cSVParser = cSVFormat.parse(in);
+            String value;
+            nodeIdValues = new ArrayList<>();
+            for (CSVRecord record : cSVParser) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    value = record.get("localId");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setId(value);
+                } catch (Exception e) {
+                    continue;
+                }
+                // on récupère les ids des collections à ajouter au concept
+                try {
+                    value = record.get("skos:member");
+                    if (value == null) {
+                        continue;
+                    }
+                    nodeIdValue.setValue(value.trim());
+                } catch (Exception e) {
+                    continue;
+                }
+                nodeIdValues.add(nodeIdValue);
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }       
+    
     public ArrayList<String > readHeadersFileAlignment (Reader in){
         try {
             CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
@@ -555,6 +600,7 @@ public class CsvReadHelper {
                         continue;
                     }
                 } catch (Exception e) {
+                    System.out.println(e.getMessage());
                     continue;
                 }                
                 for (String idLang1 : usedLangs) {
@@ -690,7 +736,8 @@ public class CsvReadHelper {
                 nodeReplaceValueByValue.setOldValue(value);
                 return nodeReplaceValueByValue;
             } else {
-                return null;
+                nodeReplaceValueByValue.setOldValue(null);
+                return nodeReplaceValueByValue;
             }
         } catch (Exception e) {
             //System.err.println("");
@@ -726,7 +773,7 @@ public class CsvReadHelper {
                     if(values.length < 2) continue;
                     if (values[1] != null) {
                         if (!customRelations.contains(values[1])) {
-                            customRelations.add(values[1].toLowerCase());//columnName.substring(columnName.indexOf("@"), columnName.indexOf("@" +2)));
+                            customRelations.add(values[1]);//.toLowerCase());//columnName.substring(columnName.indexOf("@"), columnName.indexOf("@" +2)));
                         }
                     }
                 }                
@@ -813,6 +860,8 @@ public class CsvReadHelper {
                 conceptObject = getAlignments(conceptObject, record, readEmptyData);
 
                 // on récupère la localisation
+                //TODO MILTI GPS
+                //conceptObject = getGps(conceptObject, record);
                 conceptObject = getGeoLocalisation(conceptObject, record, readEmptyData);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
@@ -850,16 +899,6 @@ public class CsvReadHelper {
             //          boolean first = true;
 
             for (CSVRecord record : cSVParser) {
-//                if(first) {
-//                    // set the Uri
-//                    try {
-//                        uri = record.get("URI");
-//                        uri = uri.substring(0, uri.lastIndexOf("/"));
-//                    } catch (Exception e) {
-//                        //System.err.println("");
-//                    }
-//                    first = false;
-//                }
                 ConceptObject conceptObject = new ConceptObject();
 
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
@@ -906,6 +945,8 @@ public class CsvReadHelper {
                 conceptObject = getAlignments(conceptObject, record, false);
 
                 // on récupère la localisation
+                //TODO MILTI GPS
+                //conceptObject = getGps(conceptObject, record);
                 conceptObject = getGeoLocalisation(conceptObject, record, false);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
@@ -923,6 +964,28 @@ public class CsvReadHelper {
         }
         return false;
     }
+    
+    /**
+     * permet de charger tous les alignements d'un concept
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    /*
+    private ConceptObject getGps(ConceptObject conceptObject, CSVRecord record) {
+
+        String value;
+        try {
+            value = record.get("geo:gps");
+            if (!value.isEmpty()) {
+                conceptObject.setGps(value.trim());
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+        return conceptObject;
+    }*/
 
     /**
      * permet de récupérer l'identifiant d'près une URI
@@ -932,7 +995,7 @@ public class CsvReadHelper {
     private String getId(String uri) {
         String id;
 
-        uri = uri.toLowerCase();
+    //    uri = uri.toLowerCase();
         if (uri == null || uri.isEmpty()) {
             return null;
         }
@@ -1024,27 +1087,24 @@ public class CsvReadHelper {
      */
     private ConceptObject getDates(ConceptObject conceptObject, CSVRecord record) {
 
-        String value;
-
         // dct:created
+        String value;
         try {
             value = record.get("dct:created");
             if (!value.isEmpty()) {
                 conceptObject.setCreated(value.trim());
-            }
+            }            
         } catch (Exception e) {
-            //System.err.println("");
         }
+
         // dct:modified
         try {
             value = record.get("dct:modified");
             if (!value.isEmpty()) {
                 conceptObject.setModified(value.trim());
-            }
+            }            
         } catch (Exception e) {
-            //System.err.println("");
         }
-
         return conceptObject;
     }
 
@@ -1084,48 +1144,14 @@ public class CsvReadHelper {
      * @return
      */
     private ConceptObject getArkId(ConceptObject conceptObject, CSVRecord record) {
-        String arkId;
         try {
-            arkId = record.get("arkId");
+            String arkId = record.get("arkId");
             if (arkId != null) {
                 conceptObject.setArkId(arkId.trim());
             }
         } catch (Exception e) {
-            //System.err.println("");
         }
-        return conceptObject;
-    }
 
-    /**
-     * permet de charger tous les alignements d'un concept
-     *
-     * @param conceptObject
-     * @param record
-     * @return
-     */
-    private ConceptObject getGeoLocalisation(
-            ConceptObject conceptObject,
-            CSVRecord record, boolean readEmptyData) {
-        String lat;
-        String longitude;
-        // geo:lat
-        try {
-            lat = record.get("geo:lat");
-            longitude = record.get("geo:long");
-            if(readEmptyData) {
-                conceptObject.setLatitude(lat.trim());
-                conceptObject.setLongitude(longitude.trim());                
-            } else {
-                if (!lat.isEmpty()) {
-                    if (!longitude.isEmpty()) {
-                        conceptObject.setLatitude(lat.trim());
-                        conceptObject.setLongitude(longitude.trim());
-                    }
-                }                
-            }
-        } catch (Exception e) {
-            //System.err.println("");
-        }
         return conceptObject;
     }
 
@@ -1299,7 +1325,7 @@ public class CsvReadHelper {
         if (record.isMapped("narrowerid")) {
             try {
                 value = record.get("narrowerid");
-                value = value.toLowerCase();
+           //     value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1313,7 +1339,7 @@ public class CsvReadHelper {
             // skos:narrower
             try {
                 value = record.get("skos:narrower");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1329,7 +1355,7 @@ public class CsvReadHelper {
         if (record.isMapped("broaderid")) {
             try {
                 value = record.get("broaderid");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1343,7 +1369,7 @@ public class CsvReadHelper {
             // skos:broader
             try {
                 value = record.get("skos:broader");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1359,7 +1385,7 @@ public class CsvReadHelper {
             // relatedId        
             try {
                 value = record.get("relatedid");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1373,7 +1399,7 @@ public class CsvReadHelper {
             // skos:related
             try {
                 value = record.get("skos:related");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1405,7 +1431,7 @@ public class CsvReadHelper {
             if (record.isMapped("customRelationId:"+ customRelation )) {
                 try {
                     value = record.get("customRelationId:"+ customRelation);
-                    value = value.toLowerCase();
+                //    value = value.toLowerCase();
                     values = value.split("##");
                     for (String value1 : values) {
                         if (!value1.isEmpty()) {
@@ -1806,6 +1832,39 @@ public class CsvReadHelper {
         this.nodeCompareThesos = nodeCompareThesos;
     }
 
+    /**
+     * permet de charger tous les alignements d'un concept
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getGeoLocalisation(
+            ConceptObject conceptObject,
+            CSVRecord record, boolean readEmptyData) {
+        String lat;
+        String longitude;
+        // geo:lat
+        try {
+            lat = record.get("geo:lat");
+            longitude = record.get("geo:long");
+            if(readEmptyData) {
+                conceptObject.setLatitude(lat.trim());
+                conceptObject.setLongitude(longitude.trim());
+            } else {
+                if (!lat.isEmpty()) {
+                    if (!longitude.isEmpty()) {
+                        conceptObject.setLatitude(lat.trim());
+                        conceptObject.setLongitude(longitude.trim());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+        return conceptObject;
+    }
+
     public class ConceptObject {
 
         private String idConcept;
@@ -1851,8 +1910,10 @@ public class CsvReadHelper {
 
         // géolocalisation
         // geo:lat  geo:long
+        //TODO MILTI GPS
         private String latitude;
         private String longitude;
+        //private String gps;
 
         // skos:member, l'appartenance du concept à un groupe ou collection ...
         private ArrayList<String> members;

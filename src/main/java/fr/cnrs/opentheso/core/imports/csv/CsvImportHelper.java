@@ -378,7 +378,7 @@ public class CsvImportHelper {
         }
         
         if (StringUtils.isEmpty(formatDate)) {
-            formatDate = "dd-mm-yyyy";
+            formatDate = "yyyy-mm-dd";
         }
         Date created = null;
         Date modified = null;
@@ -750,24 +750,6 @@ public class CsvImportHelper {
         }
 
         String dcterms = null;
-     /*   for (SKOSAgent agent : conceptObject.getAgentList()) {
-            switch (agent.getProperty()) {
-                case SKOSProperty.creator:
-                    if(StringUtils.isEmpty(dcterms)) {
-                        dcterms= "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;
-                    } else
-                        dcterms= dcterms + "##" + "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
-                    break;
-                case SKOSProperty.contributor:
-                    if(StringUtils.isEmpty(dcterms)) {
-                        dcterms= "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;
-                    } else
-                        dcterms= dcterms + "##" + "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
-                    break;                    
-                default:
-                    break;
-            }
-        }        */
         
         String sql = "";
         try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
@@ -790,7 +772,8 @@ public class CsvImportHelper {
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
                     + (images == null ? null : "'" + images + "'") + ", "
                     + null + ", "
-                    + (conceptObject.getLatitude() != null) + ", " 
+                    //TODO MILTI GPS
+                    + (conceptObject.getLatitude() != null) + ", "
                     + (conceptObject.getLatitude() == null ? null : "'" + conceptObject.getLatitude() + "'") + ", "
                     + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ", "
                     + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
@@ -1076,6 +1059,7 @@ public class CsvImportHelper {
         return true;
     }
 
+    //TODO MILTI GPS
     private boolean addGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         Double latitude;
@@ -1090,11 +1074,24 @@ public class CsvImportHelper {
         try {
             latitude = Double.valueOf(conceptObject.getLatitude());
             longitude = Double.valueOf(conceptObject.getLongitude());
+            new GpsHelper().insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
+            return true;
         } catch (Exception e) {
             return true;
         }
-        new GpsHelper().insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
-        return true;
+        /*
+        if (StringUtils.isEmpty(conceptObject.getGps()) || conceptObject.getGps().length() < 3) {
+            return true;
+        }
+
+        String[] values = conceptObject.getGps().split("##");
+        for (String value1 : values) {
+            String[] gps = value1.split("@@");
+            new GpsHelper().insertCoordonees(ds, conceptObject.getIdConcept(), idTheso,
+                    Double.valueOf(gps[1]), Double.valueOf(gps[2]));
+        }
+
+        return true;*/
     }
 
     private boolean addMembers(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
@@ -1150,19 +1147,16 @@ public class CsvImportHelper {
                 break;                  
                 
                 
-            /*    Action dangereuse, à activer plus tard 
+            /*    Action dangereuse, à activer plus tard */
             case SKOSProperty.broader:
                 if (!updateBroader(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
                     addMessage("Erreur : ", nodeReplaceValueByValue);
                 }
                 break;                
-                */
+                
             default:
                 break;
         }
-
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(ds, idTheso, nodeReplaceValueByValue.getIdConcept(), idUser1);
         return true;
     }    
     private boolean updatePrefLabel(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
@@ -1280,12 +1274,15 @@ public class CsvImportHelper {
         }
         
         RelationsHelper relationsHelper = new RelationsHelper();
-        if(!relationsHelper.deleteRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getOldValue(), idUser1)) {
-            addMessage("Rename error :", nodeReplaceValueByValue);
-        }        
+        if(!StringUtils.isEmpty( nodeReplaceValueByValue.getOldValue())){
+            if(!relationsHelper.deleteRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getOldValue(), idUser1)) {
+                addMessage("Rename error :", nodeReplaceValueByValue);
+            }      
+        }
         if(!relationsHelper.addRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1)) {
             addMessage("Rename error :", nodeReplaceValueByValue);
         }
+        new ConceptHelper().setNotTopConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
         /*
         if(!relationsHelper.deleteRelationNT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1)) {
             addMessage("Rename error :", nodeReplaceValueByValue);
@@ -1315,46 +1312,12 @@ public class CsvImportHelper {
     public boolean updateConcept(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
 
         conceptObject.setIdTerm(new TermHelper().getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso));
-
-        if (!updatePrefLabel(ds, idTheso, conceptObject, idUser1)) {
-            //  return false;
-        }
-        // synonymes et cachés
-        if (!updateAltLabel(ds, idTheso, conceptObject, idUser1)) {
-            //    return false;
-        }
-        // notes
-        if (!updateNotes(ds, idTheso, conceptObject, idUser1)) {
-            //      return false;
-        }
-        // alignements
-        if (!updateAlignments(ds, idTheso, conceptObject, idUser1)) {
-
-            //return false;
-        }
-        // géolocalisation
-        if (!updateGeoLocalisation(ds, idTheso, conceptObject, idUser1)) {
-            //  return false;
-        }
-
-        // images
-        if (!updateImages(ds, idTheso, conceptObject, idUser1)) {
-            //    return false;
-        }
-
-        // ressources externes
-        /*      // relations
-        if (!addRelations(ds, idTheso, conceptObject)) {
-            return false;
-        }
-        
-        // Membres ou appartenance aux groupes
-        if (!addMembers(ds, idTheso, conceptObject)) {
-            return false;
-        }
-         */
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(ds, idTheso, conceptObject.getIdConcept(), idUser1);
+        updatePrefLabel(ds, idTheso, conceptObject, idUser1);
+        updateAltLabel(ds, idTheso, conceptObject, idUser1);
+        updateNotes(ds, idTheso, conceptObject, idUser1);
+        updateAlignments(ds, idTheso, conceptObject, idUser1);
+        updateGeoLocalisation(ds, idTheso, conceptObject);
+        updateImages(ds, idTheso, conceptObject, idUser1);
         return true;
     }
 
@@ -1642,7 +1605,7 @@ public class CsvImportHelper {
         return true;
     }
 
-    private boolean updateGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
+    private boolean updateGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         Double latitude;
         Double longitude;
@@ -1651,7 +1614,6 @@ public class CsvImportHelper {
         if (conceptObject.getLatitude() == null || conceptObject.getLongitude() == null) {
             return true;
         }
-
         gpsHelper.deleteGpsCoordinate(ds, conceptObject.getIdConcept(), idTheso);
         if (conceptObject.getLatitude().isEmpty() || conceptObject.getLongitude().isEmpty()) {
             return true;
@@ -1664,6 +1626,21 @@ public class CsvImportHelper {
         }
         gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
         return true;
+        /*
+        if (StringUtils.isEmpty(conceptObject.getGps()) && conceptObject.getGps().length() < 3) {
+            return true;
+        }
+
+        GpsHelper gpsHelper = new GpsHelper();
+        gpsHelper.deleteGpsCoordinate(ds, conceptObject.getIdConcept(), idTheso);
+
+        String[] values = conceptObject.getGps().split("##");
+        for (String value1 : values) {
+            String[] gps = value1.split("@@");
+            gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso,
+                    Double.valueOf(gps[1]), Double.valueOf(gps[2]));
+        }
+        return true;*/
     }
 
     private boolean updateImages(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {

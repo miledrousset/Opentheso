@@ -8,7 +8,6 @@ import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.helpers.AbstractRDFHandler;
 
-
 public class ReadCommunFlux extends AbstractRDFHandler {
 
     private final static String RESOURCE_TAG = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
@@ -19,7 +18,7 @@ public class ReadCommunFlux extends AbstractRDFHandler {
     private final static String IMAGE_TAG = "http://xmlns.com/foaf/0.1/Image";
 
     private SKOSXmlDocument skosXmlDocument;
-    private Resource subject;
+    private Resource subject, subjectTmp;
     private IRI predicate;
     private Value value;
     private boolean isConceptScheme;
@@ -33,7 +32,6 @@ public class ReadCommunFlux extends AbstractRDFHandler {
     private ConceptReader conceptReader = new ConceptReader();
     private GenericReader genericReader = new GenericReader();
 
-
     public ReadCommunFlux(SKOSXmlDocument skosXmlDocument, String defaultLang) {
         this.defaultLang = defaultLang;
         this.skosXmlDocument = skosXmlDocument;
@@ -41,33 +39,38 @@ public class ReadCommunFlux extends AbstractRDFHandler {
 
     @Override
     public void handleStatement(Statement st) throws RDFHandlerException {
-
+        // On commence par lire la première ligne d'un bloc de type "rdf:Description"
         predicate = st.getPredicate();
         value = st.getObject();
         subject = st.getSubject();
 
         // On teste si on est au niveau du début/fin d'une balise de type "rdf:Description"
-        if (RESOURCE_TAG.equalsIgnoreCase(predicate.stringValue())) {
-
+        if ((subjectTmp == null || (subjectTmp != null && !subject.stringValue().equals(subjectTmp.stringValue()))) && RESOURCE_TAG.equalsIgnoreCase(predicate.stringValue())) {
+        //if (RESOURCE_TAG.equalsIgnoreCase(predicate.stringValue())) {
             // Ajouter l'objet SKOSResource dans SKOSXmlDocument
             // Ce code est executé à la fin de chaque balise "rdf:Description"
             addNewResources();
-
             // Définir la nature de l'élément "rdf:Description"
             // Ce code est executé au début de chaque balise "rdf:Description"
+            // initialisation de l'objet Bloc au début d'un nouveau bloc
             if (!isConceptScheme && !isFacet && !isConcept && !isCollection && !isImage) {
                 skosResource = new SKOSResource();
                 skosResource.setUri(subject.stringValue());
-                if (CONCEPT_SCHEME_TAG.equals(value.stringValue())) {
-                    isConceptScheme = true;
-                } else if (COLLECTION_TAG.equals(value.stringValue())) {
-                    isCollection = true;
-                } else if (FACET_TAG.equals(value.stringValue())) {
-                    isFacet = true;
-                } else if (CONCEPT_TAG.equals(value.stringValue())) {
-                    isConcept = true;
-                } else if (IMAGE_TAG.equals(value.stringValue())) {
-                    isImage = true;
+                switch(value.stringValue()) {
+                    case CONCEPT_SCHEME_TAG:
+                        isConceptScheme = true;
+                        break;
+                    case COLLECTION_TAG:
+                        isCollection = true;
+                        break;
+                    case FACET_TAG:
+                        isFacet = true;
+                        break;
+                    case CONCEPT_TAG:
+                        isConcept = true;
+                        break;
+                    case IMAGE_TAG:
+                        isImage = true;
                 }
             }
         }
@@ -92,9 +95,10 @@ public class ReadCommunFlux extends AbstractRDFHandler {
                 conceptReader.readGeneric(skosXmlDocument, skosResource, predicate, literal, lang);
             }
         } else {
-            // Pour traiter les lignes d'un concept qui ne contiennent pas une langue
+            // Pour traiter les lignes d'un bloc qui ne contiennent pas une langue, le bloc peut être de plusieurs type
             conceptReader.readConcept(skosXmlDocument, skosResource, predicate, value, literal);
         }
+        subjectTmp = subject;
     }
 
     @Override
@@ -105,6 +109,7 @@ public class ReadCommunFlux extends AbstractRDFHandler {
     }
 
     private void addNewResources() {
+        // finalisation de l'objet lu suivant le type de l'objet et démarrage d'un nouvel objet
         if (isConceptScheme) {
             isConceptScheme = false;
             skosXmlDocument.setTitle(subject.stringValue());
@@ -115,10 +120,10 @@ public class ReadCommunFlux extends AbstractRDFHandler {
         } else if (isConcept) {
             isConcept = false;
             fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.Concept);
-        } else  if (isCollection) {
+        } else if (isCollection) {
             isCollection = false;
             fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.Collection);
-        } else  if (isImage) {
+        } else if (isImage) {
             isImage = false;
             fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.FoafImage);
         }

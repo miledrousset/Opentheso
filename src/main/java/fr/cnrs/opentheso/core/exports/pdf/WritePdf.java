@@ -64,6 +64,7 @@ public class WritePdf {
     HashMap<String, ArrayList<String>> idToDocumentation2 = new HashMap<>();
     HashMap<String, ArrayList<String>> idToMatch = new HashMap<>();
     HashMap<String, ArrayList<NodeImage>> idToImg = new HashMap<>();
+    //TODO MILTI GPS
     HashMap<String, String> idToGPS = new HashMap<>();
 
     HashMap<String, ArrayList<Integer>> idToIsTrad = new HashMap<>();
@@ -300,11 +301,17 @@ public class WritePdf {
                 paragraphs.add(new Paragraph(space + match, hieraInfoFont));
             }
         }
-
+//TODO MILTI GPS
         String gps = idToGPS.get(key);
         if (gps != null) {
             paragraphs.add(new Paragraph(space + gps, hieraInfoFont));
         }
+        /*
+        if (CollectionUtils.isNotEmpty(idToGPS.get(key))) {
+            for (String element : idToGPS.get(key)) {
+                paragraphs.add(new Paragraph(space + element, hieraInfoFont));
+            }
+        }*/
         
         if (CollectionUtils.isNotEmpty(idToImg.get(key))) {
             paragraphs.add(new Paragraph(Chunk.NEWLINE));
@@ -600,8 +607,8 @@ public class WritePdf {
             }
             paragraphs.add(new Paragraph("    " + matchTypeName + ": " + match.getValue(), textFont));
         }
-
-        SKOSGPSCoordinates gps = concept.getGPSCoordinates();
+//TODO MILTI GPS
+        SKOSGPSCoordinates gps = concept.getGpsCoordinates();
         String lat = gps.getLat();
         String lon = gps.getLon();
 
@@ -610,6 +617,13 @@ public class WritePdf {
             paragraphs.add(new Paragraph("    lat: " + lat, textFont));
             paragraphs.add(new Paragraph("    long: " + lon, textFont));
         }
+/*
+        if (CollectionUtils.isNotEmpty(concept.getGpsCoordinates())) {
+            for (SKOSGPSCoordinates element : concept.getGpsCoordinates()) {
+                paragraphs.add(new Paragraph("    lat: " + element.getLat(), textFont));
+                paragraphs.add(new Paragraph("    long: " + element.getLon(), textFont));
+            }
+        }*/
         
         if (CollectionUtils.isNotEmpty(concept.getNodeImage())) {
             paragraphs.add(new Paragraph(Chunk.NEWLINE));

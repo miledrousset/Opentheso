@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.core.imports.rdf4j.nouvelle;
 
+import fr.cnrs.opentheso.core.imports.rdf4j.ReadRdf4j;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -11,6 +12,15 @@ import java.io.InputStream;
 
 
 public class ReadRDF4JNewGen {
+
+    public static void main(String args[]) throws IOException {
+
+        ReadRdf4j readRdf4j = new ReadRdf4j(ReadRDF4JNewGen.class.getClassLoader().getResourceAsStream("test.rdf"), 0, false, "fr");
+
+        SKOSXmlDocument test = new ReadRDF4JNewGen().readRdfFlux(ReadRDF4JNewGen.class.getClassLoader().getResourceAsStream("test.rdf"), RDFFormat.RDFXML, "fr");
+
+        System.out.println("XXX");
+    }
 
     public SKOSXmlDocument readRdfFlux(InputStream inputStream, RDFFormat rdfFormat, String defaultLang) throws IOException {
 

@@ -1,6 +1,9 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
@@ -508,35 +511,20 @@ public class DragAndDrop implements Serializable {
                     ((TreeNodeData) dragNode.getData()).getNodeId(),//facetSelected.getIdFacet(),
                     selectedTheso.getCurrentIdTheso());
 
-            //facetSelected.setIdConceptParent(termeParentAssocie.getId());
-
-            //showMessage(FacesMessage.SEVERITY_INFO, "Concept parent modifié avec sucée !");
-
             tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
             tree.expandTreeToPath2(
                     ((TreeNodeData) dropNode.getParent().getData()).getNodeId(),//facetSelected.getIdConceptParent(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getSelectedLang(),
-                    ((TreeNodeData) dragNode.getData()).getNodeId() + "");//facetSelected.getIdFacet()+"");
-
-            /*concepParent = new ConceptHelper().getConcept(connect.getPoolConnexion(),
-                    termeParentAssocie.getId(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang());
-            conceptParentTerme = concepParent.getTerm().getLexical_value();
-            */
+                    ((TreeNodeData) dragNode.getData()).getNodeId() + "");
             PrimeFaces pf = PrimeFaces.current();
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("formRightTab:facetView");
                 pf.ajax().update("formLeftTab:tabTree:tree");
-            }        
-        
-        
+            }
         
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Facette déplacée avec succès !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-        /*    rollBackAfterErrorOrCancelDragDrop();
-            updateMessage();*/
             return;
         }
         
@@ -1155,7 +1143,13 @@ public class DragAndDrop implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());  
-
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        /////////////// 
+        
         // si le concept n'est pas déployé à doite, alors on ne fait rien
         if(conceptBean.getNodeConcept() != null){
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),

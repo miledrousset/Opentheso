@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.core.exports.rdf4j;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.*;
@@ -22,6 +23,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
 import fr.cnrs.opentheso.skosapi.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -30,7 +32,6 @@ import java.util.ArrayList;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -221,6 +222,9 @@ public class ExportRdf4jHelperNew {
             }
             conceptScheme.setThesaurus(thesaurus);
         }
+        
+        /// ajout des DCMI
+        conceptScheme.getThesaurus().setDcElement(new DcElementHelper().getDcElementOfThesaurus(ds, idTheso));        
 
         //liste top concept
         ConceptHelper conceptHelper = new ConceptHelper();
@@ -269,6 +273,15 @@ public class ExportRdf4jHelperNew {
         }
     }
 
+    public void exportThisCollection(HikariDataSource ds, String idTheso, String idGroup){
+        GroupHelper groupHelper = new GroupHelper();
+        NodeGroupLabel nodeGroupLabel;
+        nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
+        SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
+        sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+        writeGroupInfo(ds, sKOSResource, idTheso, idGroup);
+    }    
+    
     public void exportCollections(HikariDataSource ds, String idTheso){
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<String> rootGroupList = groupHelper.getListIdOfRootGroup(ds, idTheso);
@@ -297,8 +310,9 @@ public class ExportRdf4jHelperNew {
 
     private void writeGroupInfo(HikariDataSource ds, SKOSResource sKOSResource, String idTheso, String idOfGroupChild) {
 
+        GroupHelper groupHelper = new GroupHelper();
         NodeGroupLabel nodeGroupLabel;
-        nodeGroupLabel = new GroupHelper().getNodeGroupLabel(ds, idOfGroupChild, idTheso);
+        nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idOfGroupChild, idTheso);
 
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.ConceptGroup);
@@ -321,22 +335,25 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.prefLabel);
         }
 
-        ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idOfGroupChild, idTheso);
+        ArrayList<NodeUri> childURIs = groupHelper.getListGroupChildOfGroup(ds, idTheso, idOfGroupChild);
         ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
         }
 
-        for (String id : childURI) {
-            sKOSResource.addRelation(id, getUriFromId(id), SKOSProperty.subGroup);
-            superGroupHashMap.put(id, idOfGroupChild);
+        for (NodeUri nodeUri : childURIs) {
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.subGroup);
+            superGroupHashMap.put(nodeUri.getIdConcept(), idOfGroupChild);
         }
 
         String idSuperGroup = superGroupHashMap.get(idOfGroupChild);
         if (idSuperGroup != null) {
-            sKOSResource.addRelation(idSuperGroup, getUriFromId(idSuperGroup), SKOSProperty.superGroup);
-            superGroupHashMap.remove(idOfGroupChild);
+            NodeUri nodeUri1 = groupHelper.getThisGroupIds(ds, idSuperGroup, idTheso);
+            if(nodeUri1 != null){
+                sKOSResource.addRelation(idSuperGroup, getUriGroupFromNodeUri(nodeUri1, idTheso), SKOSProperty.superGroup);
+                superGroupHashMap.remove(idOfGroupChild);
+            }
         }
 
         // ajout de la notation
@@ -582,15 +599,26 @@ public class ExportRdf4jHelperNew {
         }
     }
 
-
+    //TODO MILTI GPS
     private void addGPSGiven(NodeGps gps, SKOSResource resource) {
         if (gps == null) {
             return;
         }
         double lat = gps.getLatitude();
         double lon = gps.getLongitude();
-        resource.setGPSCoordinates(new SKOSGPSCoordinates(lat, lon));
-    }  
+        resource.setGpsCoordinates(new SKOSGPSCoordinates(lat, lon));
+
+            /*
+        if (CollectionUtils.isNotEmpty(gps)) {
+            List<SKOSGPSCoordinates> elements = new ArrayList<>();
+            for (NodeGps element : gps) {
+                elements.add(new SKOSGPSCoordinates(element.getLatitude(), element.getLongitude()));
+            }
+            resource.setGpsCoordinates(elements);
+        }*/
+    }
+
+
     private void addAlignementGiven(ArrayList<NodeAlignmentSmall> nodeAlignments, SKOSResource resource) {
         for (NodeAlignmentSmall alignment : nodeAlignments) {
 

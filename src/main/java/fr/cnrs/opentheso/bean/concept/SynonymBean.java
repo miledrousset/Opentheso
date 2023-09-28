@@ -5,13 +5,17 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -34,18 +38,11 @@ import org.primefaces.PrimeFaces;
 @Named(value = "synonymBean")
 @SessionScoped
 public class SynonymBean implements Serializable {
-
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private ConceptView conceptBean;
-
-    @Inject
-    private SelectedTheso selectedTheso;
-
-    @Inject
-    private PropositionBean propositionBean;
+    @Inject private Connect connect;
+    @Inject private ConceptView conceptBean;
+    @Inject private SelectedTheso selectedTheso;
+    @Inject private PropositionBean propositionBean;
+    @Inject private CurrentUser currentUser;     
 
     private String selectedLang;
     private String selectedValue;
@@ -282,7 +279,13 @@ public class SynonymBean implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////
+        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme ajouté avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();
@@ -403,6 +406,12 @@ public class SynonymBean implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////        
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -612,6 +621,12 @@ public class SynonymBean implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////        
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -663,6 +678,12 @@ public class SynonymBean implements Serializable {
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////        
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Synonyme supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);

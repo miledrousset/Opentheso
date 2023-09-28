@@ -59,7 +59,7 @@ public class NodeConceptExport {
     private List<MessageDto> messages = new ArrayList<>();
 
     private List<VoteDto> votes = new ArrayList<>();
-
+    //TODO MILTI GPS
     private NodeGps nodeGps;
     
     //concepts à utiliser pour un concept déprécié

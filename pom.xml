@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>23.06.3</version>
+    <version>23.09.05</version>
     <packaging>war</packaging>
     <name>opentheso2</name>
 
@@ -262,7 +262,6 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson-annotations.version}</version>
         </dependency>
-        
          <dependency>
             <groupId>io.swagger.parser.v3</groupId>
             <artifactId>swagger-parser</artifactId>
@@ -274,7 +273,29 @@
             <artifactId>swagger-jaxrs2</artifactId>
             <version>${swagger.version}</version>
         </dependency>
-        
+
+
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.28</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.2.4.Final</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -282,10 +303,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>17</source>
+                    <target>17</target>
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
@@ -295,7 +316,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -304,7 +325,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -326,25 +347,6 @@
                     </execution>
                 </executions>
             </plugin>
-            
-            <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.8</version>
-            <executions>
-                <execution>
-                    <phase>initialize</phase>
-                    <configuration>
-                        <target>
-                            <mkdir dir="${project.build.directory}/openapi" />
-                        </target>
-                    </configuration>
-                    <goals>
-                        <goal>run</goal>
-                    </goals>
-                </execution>
-                </executions>
-            </plugin>
-            
         </plugins>
     </build>
 
@@ -410,6 +412,7 @@
         <jackson-core.version>2.15.0-rc2</jackson-core.version>
         <commons-compress.version>1.21</commons-compress.version>
         <jackson-annotations.version>2.13.3</jackson-annotations.version>
+        <cloning.version>1.10.3</cloning.version>
         <swagger.version>2.2.10</swagger.version>
         <swagger.parser.version>2.1.14</swagger.parser.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

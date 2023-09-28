@@ -1,8 +1,11 @@
 package fr.cnrs.opentheso.core.imports.rdf4j.nouvelle;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.tools.FileUtilities;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
+import org.apache.commons.lang3.StringUtils;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -63,7 +66,27 @@ public class GenericReader {
                 
             /// ajout des créativecommons
             /// ajout des dcterms
+        }
+        if(StringUtils.contains(predicate.getNamespace(), "purl.org/dc/terms")){
+            String dcLang;
+            try {
+                switch (literal.getDatatype().getLocalName()) {
+                    case DCMIResource.TYPE_DATE:
+                        skosConcept.getThesaurus().addDcElement(new DcElement(predicate.getLocalName(), literal.getLabel(), null, DCMIResource.TYPE_DATE));                        
+                        break;
+                    case DCMIResource.TYPE_LANGUE:
+                        dcLang = literal.getLanguage().get(); literal.getDatatype().getLocalName();
+                        skosConcept.getThesaurus().addDcElement(new DcElement(predicate.getLocalName(), literal.getLabel(), dcLang, null));
+                        break;       
+                    case DCMIResource.TYPE_STRING:
+                        skosConcept.getThesaurus().addDcElement(new DcElement(predicate.getLocalName(), literal.getLabel(), null, DCMIResource.TYPE_STRING));                         
+                        break;                         
+                    default:
+                        break;
+                }
                 
+            } catch (Exception e) {
+            }
         }
     }
 

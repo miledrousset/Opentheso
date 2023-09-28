@@ -1,10 +1,6 @@
 Note de version
-- Correction de l'import de candidats en SKOS
-- intégration des rebonds dans le même document PDF au foramt alphabétique
-- correction d'une erreur lors du téléchargement d'un concept en SKOS
-- correction mineur dans l'import CSV
-- ajout des méta-données Dublin-Core pour les auteurs des concepts
-- finalisation de l'intégration de l'OPEN API
 
-
-- ajout de l'identifiant Ark pour le thésaurus
+- Refonte visuelle de l'atelier des actions sur les thésaurus
+- Correction de l'import CSV (les Ids sont sensibles à la casse)
+- introduction d'une page HTML pour les projets avec traduction 
+-  

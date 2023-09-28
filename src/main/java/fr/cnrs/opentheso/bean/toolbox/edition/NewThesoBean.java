@@ -38,6 +38,7 @@ import org.primefaces.PrimeFaces;
 @Named(value = "newThesoBean")
 @SessionScoped
 public class NewThesoBean implements Serializable {
+
     @Inject private Connect connect;
     @Inject private CurrentUser currentUser;
     @Inject private RoleOnThesoBean roleOnThesoBean;
@@ -81,7 +82,7 @@ public class NewThesoBean implements Serializable {
         selectedProject = "";
         title = "";
         UserHelper userHelper = new UserHelper();
-        if (currentUser.getNodeUser().isIsSuperAdmin()) {
+        if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeProjects = userHelper.getAllProject(connect.getPoolConnexion());
         } else {
             nodeProjects = userHelper.getProjectsOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());

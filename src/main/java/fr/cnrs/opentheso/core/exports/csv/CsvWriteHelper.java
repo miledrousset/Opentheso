@@ -8,8 +8,6 @@ package fr.cnrs.opentheso.core.exports.csv;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
@@ -134,6 +132,8 @@ public class CsvWriteHelper {
                 header.add("relatedId");
                 header.add("skos:exactMatch");
                 header.add("skos:closeMatch");
+                //TODO MILTI GPS
+                //header.add("geo:gps");
                 header.add("geo:lat");
                 header.add("geo:long");
                 header.add("skos:member");
@@ -279,9 +279,11 @@ public class CsvWriteHelper {
         record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch));
 
         //geo:lat
-        record.add(getLatValue(skosResource.getGPSCoordinates()));
+        //TODO MILTI GPS
+        record.add(getLatValue(skosResource.getGpsCoordinates()));
         //geo:long
-        record.add(getLongValue(skosResource.getGPSCoordinates()));
+        record.add(getLongValue(skosResource.getGpsCoordinates()));
+        //record.add(getGpsValue(skosResource.getGpsCoordinates()));
         //skos:member
         record.add(getMemberValue(skosResource.getRelationsList()));
         //sdct:created
@@ -368,6 +370,13 @@ public class CsvWriteHelper {
                 .map(alignment -> alignment.getValue())
                 .collect(Collectors.joining(delim_multi_datas));
     }
+    //TODO MILTI GPS
+/*
+    private String getGpsValue(SKOSGPSCoordinates gpsList) {
+        return gpsList.stream()
+                .map(element -> element.getLat() + "@@" + element.getLon())
+                .collect(Collectors.joining(delim_multi_datas));
+    }*/
 
     public String getNotation(List<SKOSNotation> notations) {
         if (!CollectionUtils.isEmpty(notations)) {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+
+    <include file="/changelog/v23.05.1/001-create-release-table.xml"/>
+    <include file="/changelog/v23.07.2/001-drop-primaryKey-concept_type.xml"/>
+    <changeSet id="script0003" author="Miled">
+        <sqlFile path="../install/liquibaseupdate/script0003.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
+    <changeSet id="executeScriptOriginal5" author="Miled">
+        <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>    
+    
+    <include file="/changelog/v23.07.3/001-update_concept_dcterms.xml"/>
+    <include file="/changelog/v23.07.3/001-update_thesaurus_dcterms.xml"/>
+    <include file="/changelog/v23.07.3/002-update_dcterms.xml"/>
+    <include file="/changelog/v23.07.3/002-add-projet-description-table.xml"/>
+    <include file="/changelog/v23.07.3/003-update-primary-key-gps-table.xml"/>
+    
+    <!-- changelog pour la v23.09 --> 
+    <include file="/changelog/v23.09/001-delete-table-pref-gps.xml"/>
+</databaseChangeLog>

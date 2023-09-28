@@ -5,7 +5,10 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
@@ -16,6 +19,7 @@ import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -44,6 +48,7 @@ public class NarrowerBean implements Serializable {
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private Tree tree;
+    @Inject private CurrentUser currentUser;     
 
     private NodeSearchMini searchSelected;
     private ArrayList<NodeNT> nodeNTs;
@@ -182,7 +187,12 @@ public class NarrowerBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        /////////////// 
 
         if (pf.isAjaxRequest()) {
             //    pf.ajax().update("messageIndex");
@@ -249,7 +259,14 @@ public class NarrowerBean implements Serializable {
 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);     
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////        
+        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
@@ -325,7 +342,14 @@ public class NarrowerBean implements Serializable {
 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
-                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);  
+        ///// insert DcTermsData to add contributor
+        DcElementHelper dcElmentHelper = new DcElementHelper();                
+        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        ///////////////        
+        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", " Relation modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         initForChangeRelations();

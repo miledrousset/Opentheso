@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.core.imports.rdf4j;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
@@ -12,8 +13,7 @@ import org.eclipse.rdf4j.model.Statement;
 public class ConceptData {
 
     
-    public void addConceptData(ReadStruct readStruct, Statement statement, 
-            ArrayList<String> nonReco, SKOSXmlDocument sKOSXmlDocument) {
+    public void addConceptData(ReadStruct readStruct, Statement statement, ArrayList<String> nonReco, SKOSXmlDocument sKOSXmlDocument) {
         
         switch (readStruct.property.getLocalName()) {
             case "type":
@@ -109,12 +109,44 @@ public class ConceptData {
 
             //GPSCoordinates
             case "lat":
-                readStruct.resource.getGPSCoordinates().setLat(readStruct.literal.getLabel());
+                //TODO MILTI GPS
+                readStruct.resource.getGpsCoordinates().setLat(readStruct.literal.getLabel());
+                /*
+                if (readStruct.resource.getGpsCoordinates().stream()
+                        .filter(element -> element.getLat() == null)
+                        .findFirst()
+                        .isPresent()) {
+                    for (SKOSGPSCoordinates element : readStruct.resource.getGpsCoordinates()) {
+                        if (element.getLat() == null) {
+                            element.setLat(readStruct.literal.getLabel());
+                            break;
+                        }
+                    }
+                } else {
+                    SKOSGPSCoordinates element = new SKOSGPSCoordinates();
+                    element.setLat(readStruct.literal.getLabel());
+                    readStruct.resource.getGpsCoordinates().add(element);
+                }*/
                 break;
             case "long":
-                readStruct.resource.getGPSCoordinates().setLon(readStruct.literal.getLabel());
+                readStruct.resource.getGpsCoordinates().setLon(readStruct.literal.getLabel());
+                /*
+                if (readStruct.resource.getGpsCoordinates().stream()
+                        .filter(element -> element.getLon() == null)
+                        .findFirst()
+                        .isPresent()) {
+                    for (SKOSGPSCoordinates element : readStruct.resource.getGpsCoordinates()) {
+                        if (element.getLon() == null) {
+                            element.setLon(readStruct.literal.getLabel());
+                            break;
+                        }
+                    }
+                } else {
+                    SKOSGPSCoordinates element = new SKOSGPSCoordinates();
+                    element.setLon(readStruct.literal.getLabel());
+                    readStruct.resource.getGpsCoordinates().add(element);
+                }*/
                 break;
-
             //Notation
             case "notation":
                 readStruct.resource.addNotation(readStruct.literal.getLabel());

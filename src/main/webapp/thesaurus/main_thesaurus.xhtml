@@ -7,7 +7,7 @@
 
     <div class="container-fluid col-xl-12 col-lg-12">
         <div class="card shadow mb-4">
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin)}">
+            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin())}">
                 <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
                     <div style="width: 90%; text-align: right;">
                         <p:column style="text-align: right">
@@ -26,13 +26,13 @@
             <div class="card-body">
                 <!-- vue Page d'accueil -->
                 <h:panelGrid>
-                    <h:outputText rendered="#{viewEditorHomeBean.isTextVisisble()}" 
+                    <h:outputText rendered="#{viewEditorHomeBean.isTextVisible()}"
                                   style="font-size: 14px;"
                                   value="#{viewEditorHomeBean.getHomePage(connect.workLanguage)}" escape="false"/>              
                 </h:panelGrid>
 
                 <!-- vue connectée pour Google Analytics -->
-                <h:panelGroup id="homePageEditionAnalytics" rendered="#{(viewEditorHomeBean.isInEditingGoogleAnalytics)}" >
+                <h:panelGroup id="homePageEditionAnalytics" rendered="#{(viewEditorHomeBean.isInEditingGoogleAnalytics())}" >
 
                     <p:inputTextarea value="#{viewEditorHomeBean.codeGoogleAnalitics}" style="width: 100%; min-height: 300px;"/>
 
@@ -54,7 +54,7 @@
                 </h:panelGroup>
 
                 <!-- vue connectée pour édition -->
-                <h:panelGroup id="homePageEdition" rendered="#{(viewEditorHomeBean.isInEditingHomePage)}" >
+                <h:panelGroup id="homePageEdition" rendered="#{(viewEditorHomeBean.isInEditingHomePage())}" >
 
                     <div style="width: 100%; display: flex; margin-bottom: 10px">
                         <div style="width: 50%;">
@@ -69,12 +69,12 @@
                         </div>
                     </div>
 
-                    <h:panelGroup id="viewEditor" rendered="#{!viewEditorHomeBean.isViewPlainText}">                               
+                    <h:panelGroup id="viewEditor" rendered="#{!viewEditorHomeBean.isViewPlainText()}">                               
                         <p:textEditor widgetVar="editor1" value="#{viewEditorHomeBean.text}" secure="false" height="600" 
                                       style="margin-bottom:5px; margin-right: 5px"/>
                     </h:panelGroup>
 
-                    <h:panelGroup id="viewPlainText" rendered="#{viewEditorHomeBean.isViewPlainText}">
+                    <h:panelGroup id="viewPlainText" rendered="#{viewEditorHomeBean.isViewPlainText()}">
                         <p:inputTextarea value="#{viewEditorHomeBean.text}" style="width: 100%; min-height: 600px;"/>
                     </h:panelGroup>
 

@@ -5,7 +5,9 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
@@ -287,12 +289,7 @@ public class CutAndPaste implements Serializable {
     private void reloadConcept(){
         PrimeFaces pf = PrimeFaces.current();
 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());  
-
-        // si le concept n'est pas déployé à doite, alors on ne fait rien
+        // si le concept n'est pas déployé à droite, alors on ne fait rien
         if(conceptBean.getNodeConcept() != null){
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                     nodeConceptDrag.getConcept().getIdConcept(),

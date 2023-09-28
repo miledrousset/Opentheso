@@ -118,7 +118,7 @@
             <!-- pour réactiver le candidat -->
             <div class="row" style="margin-top: 20px; text-align: right">
                 <div class="col-12">
-                    <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso or roleOnTheso.isSuperAdmin)}"
+                    <p:commandButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                         value="réactiver le candidat" action="#{candidatBean.reactivateRejectedCandidat()}" update="messageIndex tabViewCandidat"/>
                 </div>            
             </div>            

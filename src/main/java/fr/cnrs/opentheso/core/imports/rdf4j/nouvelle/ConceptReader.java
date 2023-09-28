@@ -1,9 +1,13 @@
 package fr.cnrs.opentheso.core.imports.rdf4j.nouvelle;
 
+import fr.cnrs.opentheso.bdd.datas.DCMIResource;
+import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
@@ -72,14 +76,46 @@ public class ConceptReader {
                 skosConcept.setStatus(SKOSProperty.deprecated);
                 break;
 
-
             //GPSCoordinates
             case "lat":
-                skosConcept.getGPSCoordinates().setLat(literal.getLabel());
+                //TODO MILTI GPS
+                skosConcept.getGpsCoordinates().setLat(literal.getLabel());
+                /*
+                if (skosConcept.getGpsCoordinates().stream()
+                        .filter(element -> element.getLat() == null)
+                        .findFirst()
+                        .isPresent()) {
+                    for (SKOSGPSCoordinates element : skosConcept.getGpsCoordinates()) {
+                        if (element.getLat() == null) {
+                            element.setLat(literal.getLabel());
+                            break;
+                        }
+                    }
+                } else {
+                    SKOSGPSCoordinates element = new SKOSGPSCoordinates();
+                    element.setLat(literal.getLabel());
+                    skosConcept.getGpsCoordinates().add(element);
+                }*/
                 break;
 
             case "long":
-                skosConcept.getGPSCoordinates().setLon(literal.getLabel());
+                skosConcept.getGpsCoordinates().setLon(literal.getLabel());
+                /*
+                if (skosConcept.getGpsCoordinates().stream()
+                        .filter(element -> element.getLon() == null)
+                        .findFirst()
+                        .isPresent()) {
+                    for (SKOSGPSCoordinates element : skosConcept.getGpsCoordinates()) {
+                        if (element.getLon() == null) {
+                            element.setLon(literal.getLabel());
+                            break;
+                        }
+                    }
+                } else {
+                    SKOSGPSCoordinates element = new SKOSGPSCoordinates();
+                    element.setLon(literal.getLabel());
+                    skosConcept.getGpsCoordinates().add(element);
+                }*/
                 break;
 
             //identifier
@@ -247,6 +283,11 @@ public class ConceptReader {
             case "deprecated":
                 skosConcept.setStatus(SKOSProperty.deprecated);
                 break;
+        }
+        if(StringUtils.contains(predicate.getNamespace(), "purl.org/dc/terms")){
+            if(predicate.isResource()) {
+                skosConcept.getThesaurus().addDcElement(new DcElement(predicate.getLocalName(), value.stringValue(), null, DCMIResource.TYPE_RESOURCE));
+            }
         }
     }
 }

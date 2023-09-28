@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.proposition.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.proposition.dao.PropositionDetailDao;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -47,6 +48,9 @@ public class PropositionDetailHelper {
     }
 
     public boolean createNewPropositionDetail(HikariDataSource ds, PropositionDetailDao propositionDetail) {
+        StringPlus stringPlus = new StringPlus();
+        propositionDetail.setValue(stringPlus.convertString(propositionDetail.getValue()));
+        propositionDetail.setOldValue(stringPlus.convertString(propositionDetail.getOldValue()));
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("INSERT INTO public.proposition_modification_detail(id_proposition, categorie, value, old_value, action, lang, hiden, status, id_term) "

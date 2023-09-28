@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +14,7 @@ import java.util.Map;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
@@ -23,6 +23,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRole;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class UserHelper {
@@ -336,11 +337,11 @@ public class UserHelper {
                         nodeUser = new NodeUser();
                         nodeUser.setIdUser(idUser);
                         nodeUser.setName(resultSet.getString("username"));
-                        nodeUser.setIsActive(resultSet.getBoolean("active"));
+                        nodeUser.setActive(resultSet.getBoolean("active"));
                         nodeUser.setMail(resultSet.getString("mail"));
-                        nodeUser.setIsAlertMail(resultSet.getBoolean("alertmail"));
+                        nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
                         nodeUser.setPasstomodify(resultSet.getBoolean("passtomodify"));
-                        nodeUser.setIsSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
                     }
                 }
             }
@@ -490,7 +491,7 @@ public class UserHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT  user_group_label.id_group,  user_group_label.label_group FROM user_group_label order by label_group");
+                stmt.executeQuery("SELECT user_group_label.id_group, user_group_label.label_group FROM user_group_label order by label_group");
                 try (ResultSet resultSet = stmt.getResultSet()) {          
                     while (resultSet.next()) {
                         NodeUserGroup nodeUserGroup = new NodeUserGroup();
@@ -641,6 +642,48 @@ public class UserHelper {
         }
         return nodeIdTheso;        
     }
+
+
+    public List<NodeIdValue> getThesaurusOfProject(HikariDataSource ds, int idProject, String idLang, boolean isPrivate) {
+
+        ArrayList<String> listIdTheso = getIdThesaurusOfProjectWithVisibility(ds, idProject, isPrivate);
+
+        if (CollectionUtils.isNotEmpty(listIdTheso)) {
+            return listIdTheso.stream().map(idTheso -> {
+                String idLangTemp = new PreferencesHelper().getWorkLanguageOfTheso(ds, idTheso);
+                if(StringUtils.isEmpty(idLangTemp))
+                    idLangTemp = idLang;
+
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                nodeIdValue.setId(idTheso);
+                nodeIdValue.setValue(new ThesaurusHelper().getTitleOfThesaurus(ds, idTheso, idLangTemp));
+                return nodeIdValue;
+            }).collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private ArrayList<String> getIdThesaurusOfProjectWithVisibility(HikariDataSource ds, int idProject, boolean isPrivate){
+        ArrayList<String> nodeIdTheso = new ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT the.id_thesaurus " +
+                        "FROM user_group_thesaurus, thesaurus the " +
+                        "WHERE the.id_thesaurus = user_group_thesaurus.id_thesaurus " +
+                        "AND user_group_thesaurus.id_group = '" + idProject + "' " +
+                        (isPrivate ? "AND the.private = "+!isPrivate : ""));
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        nodeIdTheso.add(resultSet.getString("id_thesaurus"));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeIdTheso;
+    }
     
 
     /**
@@ -697,8 +740,8 @@ public class UserHelper {
                         NodeUser nodeUser = new NodeUser();
                         nodeUser.setIdUser(resultSet.getInt("id_user"));
                         nodeUser.setName(resultSet.getString("username"));
-                        nodeUser.setIsActive(resultSet.getBoolean("active"));
-                        nodeUser.setIsSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setActive(resultSet.getBoolean("active"));
+                        nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
                         nodeUsers.add(nodeUser);
                     }
                 }
@@ -708,33 +751,6 @@ public class UserHelper {
         }
         return nodeUsers;
     }
-
-    /**
-     * permet de retourner la liste de tous les utilisateurs qui ne sont pas
-     * SuperAdmin
-     *
-     * @param ds
-     * @return
-     */
-    public Map<String, String> getAllUsersNotSuperadmin(HikariDataSource ds) {
-        Map<String, String> listUsers = null;
-
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT id_user, username FROM users where issuperadmin != true order by username");
-                try (ResultSet resultSet = stmt.getResultSet()) { 
-                    listUsers = new HashMap<>();
-                    while (resultSet.next()) {
-                        listUsers.put(resultSet.getString("id_user"), resultSet.getString("username"));
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listUsers;
-    }
-    
   
 
     /**

@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
+import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -31,7 +32,7 @@ import org.primefaces.PrimeFaces;
 public class NewUSerBean implements Serializable {
     @Inject private Connect connect;
     @Inject private MyProjectBean myProjectBean;
-    
+    @Inject private SuperAdminBean superAdminBean;
     private NodeUser nodeUser;
     private String passWord1;
     private String passWord2; 
@@ -40,7 +41,8 @@ public class NewUSerBean implements Serializable {
     private ArrayList<NodeUserGroup> nodeAllProjects;
     private ArrayList<NodeUserRoleGroup> nodeAllRoles; 
     
-    
+    private String name;
+
     @PreDestroy
     public void destroy(){
         clear();
@@ -85,7 +87,7 @@ public class NewUSerBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }
-    /*    
+
         if(nodeUser.getName().isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le pseudo est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -121,14 +123,24 @@ public class NewUSerBean implements Serializable {
             return;             
         }        
         
-/*        
+        try {
+            int role = Integer.parseInt(selectedRole);
+            if(role == 1)
+                nodeUser.setSuperAdmin(true);
+        } catch (Exception e) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+
         if(!userHelper.addUser(
                 connect.getPoolConnexion(),
                 nodeUser.getName(),
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
-                false,
-                nodeUser.isIsAlertMail())){
+                nodeUser.isSuperAdmin(),
+                nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -155,9 +167,9 @@ public class NewUSerBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Utilisateur créé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
         
-        myProjectBean.setLists();
+        superAdminBean.init();
         
-        PrimeFaces.current().executeScript("PF('newUser').hide();");
+        PrimeFaces.current().executeScript("PF('addNewUser2').hide();");
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -165,7 +177,7 @@ public class NewUSerBean implements Serializable {
             pf.ajax().update("containerIndex");
             
         }
-        */
+
     }      
     
     public void addUser(){
@@ -219,7 +231,7 @@ public class NewUSerBean implements Serializable {
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
                 false,
-                nodeUser.isIsAlertMail())){
+                nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -316,7 +328,15 @@ public class NewUSerBean implements Serializable {
     public void setNodeAllRoles(ArrayList<NodeUserRoleGroup> nodeAllRoles) {
         this.nodeAllRoles = nodeAllRoles;
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     
     
     
