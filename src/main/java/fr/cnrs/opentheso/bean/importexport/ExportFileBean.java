@@ -671,7 +671,7 @@ public class ExportFileBean implements Serializable {
                         exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
                 sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
                         exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
-                exportRdf4jHelperNew.addChildsGroupRecursive(connect.getPoolConnexion(), idTheso, idGroup, sKOSResource);
+                exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
 
                 concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(),
                         idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference));

@@ -273,6 +273,15 @@ public class ExportRdf4jHelperNew {
         }
     }
 
+    public void exportThisCollection(HikariDataSource ds, String idTheso, String idGroup){
+        GroupHelper groupHelper = new GroupHelper();
+        NodeGroupLabel nodeGroupLabel;
+        nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
+        SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
+        sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+        writeGroupInfo(ds, sKOSResource, idTheso, idGroup);
+    }    
+    
     public void exportCollections(HikariDataSource ds, String idTheso){
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<String> rootGroupList = groupHelper.getListIdOfRootGroup(ds, idTheso);

@@ -4,16 +4,12 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
 
-    <changeSet id="executeScriptOriginal2" author="Miled">
-        <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>
-
     <include file="/changelog/v23.05.1/001-create-release-table.xml"/>
     <include file="/changelog/v23.07.2/001-drop-primaryKey-concept_type.xml"/>
     <changeSet id="script0003" author="Miled">
         <sqlFile path="../install/liquibaseupdate/script0003.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
-    <changeSet id="executeScriptOriginal4" author="Miled">
+    <changeSet id="executeScriptOriginal5" author="Miled">
         <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>    
     
