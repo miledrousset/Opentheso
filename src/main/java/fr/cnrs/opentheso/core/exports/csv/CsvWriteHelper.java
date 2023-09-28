@@ -132,7 +132,10 @@ public class CsvWriteHelper {
                 header.add("relatedId");
                 header.add("skos:exactMatch");
                 header.add("skos:closeMatch");
-                header.add("geo:gps");
+                //TODO MILTI GPS
+                //header.add("geo:gps");
+                header.add("geo:lat");
+                header.add("geo:long");
                 header.add("skos:member");
                 header.add("dct:created");
                 header.add("dct:modified");
@@ -276,7 +279,11 @@ public class CsvWriteHelper {
         record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch));
 
         //geo:lat
-        record.add(getGpsValue(skosResource.getGpsCoordinates()));
+        //TODO MILTI GPS
+        record.add(getLatValue(skosResource.getGpsCoordinates()));
+        //geo:long
+        record.add(getLongValue(skosResource.getGpsCoordinates()));
+        //record.add(getGpsValue(skosResource.getGpsCoordinates()));
         //skos:member
         record.add(getMemberValue(skosResource.getRelationsList()));
         //sdct:created
@@ -363,12 +370,13 @@ public class CsvWriteHelper {
                 .map(alignment -> alignment.getValue())
                 .collect(Collectors.joining(delim_multi_datas));
     }
-
-    private String getGpsValue(List<SKOSGPSCoordinates> gpsList) {
+    //TODO MILTI GPS
+/*
+    private String getGpsValue(SKOSGPSCoordinates gpsList) {
         return gpsList.stream()
                 .map(element -> element.getLat() + "@@" + element.getLon())
                 .collect(Collectors.joining(delim_multi_datas));
-    }
+    }*/
 
     public String getNotation(List<SKOSNotation> notations) {
         if (!CollectionUtils.isEmpty(notations)) {

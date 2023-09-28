@@ -16,11 +16,10 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.eclipse.rdf4j.model.vocabulary.FOAF;
-//import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
-import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 
 
 public class WriteRdf4j {
@@ -182,13 +181,26 @@ public class WriteRdf4j {
         writeDcTerms(conceptScheme);
     }
 
+    //TODO MILTI GPS
     private void writeGPS(SKOSResource resource) {
+        if (StringUtils.isNotEmpty(resource.getGpsCoordinates().getLat())
+                && StringUtils.isNotEmpty(resource.getGpsCoordinates().getLon())) {
+            builder.add("geo:lat", Double.valueOf(resource.getGpsCoordinates().getLat()));
+            builder.add("geo:long", Double.valueOf(resource.getGpsCoordinates().getLon()));
+        }
+        /*
         if (CollectionUtils.isNotEmpty(resource.getGpsCoordinates())) {
             for (SKOSGPSCoordinates skosgpsCoordinates : resource.getGpsCoordinates()) {
-                builder.add("geo:lat", Double.valueOf(skosgpsCoordinates.getLat()));
-                builder.add("geo:long", Double.valueOf(skosgpsCoordinates.getLon()));
+
+                String wktLiteralValue = "Point(" + skosgpsCoordinates.getLon() + " " + skosgpsCoordinates.getLat() + ")";
+                Literal wktLiteral = vf.createLiteral(wktLiteralValue, vf.createIRI("http://www.opengis.net/ont/geosparql#wktLiteral"));
+
+                // Ajoutez le triplet au graphe RDF
+                IRI subject = vf.createIRI("http://www.wikidata.org/entity/Q123"); // Exemple de sujet Wikidata
+                IRI predicate = vf.createIRI("http://www.wikidata.org/prop/direct/P625"); // Propriété wdt:P625
+                builder.add(subject, predicate, wktLiteral);
             }
-        }
+        }*/
     }
 
     private void writeExternalResources(SKOSResource resource) {

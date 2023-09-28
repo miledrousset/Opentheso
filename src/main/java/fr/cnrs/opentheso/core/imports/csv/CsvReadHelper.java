@@ -860,7 +860,9 @@ public class CsvReadHelper {
                 conceptObject = getAlignments(conceptObject, record, readEmptyData);
 
                 // on récupère la localisation
-                conceptObject = getGps(conceptObject, record);
+                //TODO MILTI GPS
+                //conceptObject = getGps(conceptObject, record);
+                conceptObject = getGeoLocalisation(conceptObject, record, readEmptyData);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
                 conceptObject = getMembers(conceptObject, record);
@@ -943,7 +945,9 @@ public class CsvReadHelper {
                 conceptObject = getAlignments(conceptObject, record, false);
 
                 // on récupère la localisation
-                conceptObject = getGps(conceptObject, record);
+                //TODO MILTI GPS
+                //conceptObject = getGps(conceptObject, record);
+                conceptObject = getGeoLocalisation(conceptObject, record, false);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
                 conceptObject = getMembers(conceptObject, record);
@@ -968,24 +972,20 @@ public class CsvReadHelper {
      * @param record
      * @return
      */
+    /*
     private ConceptObject getGps(ConceptObject conceptObject, CSVRecord record) {
 
         String value;
-   //     String values[];
-
-        // skos:member
         try {
             value = record.get("geo:gps");
-//            values = value.split("##");
-  //          for (String value1 : values) {
-                if (!value.isEmpty()) {
-                    conceptObject.setGps(value.trim());
-                }
+            if (!value.isEmpty()) {
+                conceptObject.setGps(value.trim());
+            }
         } catch (Exception e) {
             //System.err.println("");
         }
         return conceptObject;
-    }
+    }*/
 
     /**
      * permet de récupérer l'identifiant d'près une URI
@@ -1832,6 +1832,39 @@ public class CsvReadHelper {
         this.nodeCompareThesos = nodeCompareThesos;
     }
 
+    /**
+     * permet de charger tous les alignements d'un concept
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getGeoLocalisation(
+            ConceptObject conceptObject,
+            CSVRecord record, boolean readEmptyData) {
+        String lat;
+        String longitude;
+        // geo:lat
+        try {
+            lat = record.get("geo:lat");
+            longitude = record.get("geo:long");
+            if(readEmptyData) {
+                conceptObject.setLatitude(lat.trim());
+                conceptObject.setLongitude(longitude.trim());
+            } else {
+                if (!lat.isEmpty()) {
+                    if (!longitude.isEmpty()) {
+                        conceptObject.setLatitude(lat.trim());
+                        conceptObject.setLongitude(longitude.trim());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+        return conceptObject;
+    }
+
     public class ConceptObject {
 
         private String idConcept;
@@ -1877,7 +1910,10 @@ public class CsvReadHelper {
 
         // géolocalisation
         // geo:lat  geo:long
-        private String gps;
+        //TODO MILTI GPS
+        private String latitude;
+        private String longitude;
+        //private String gps;
 
         // skos:member, l'appartenance du concept à un groupe ou collection ...
         private ArrayList<String> members;
@@ -2212,12 +2248,20 @@ public class CsvReadHelper {
             this.relatedMatchs = relatedMatchs;
         }
 
-        public String getGps() {
-            return gps;
+        public String getLatitude() {
+            return latitude;
         }
 
-        public void setGps(String gps) {
-            this.gps = gps;
+        public void setLatitude(String latitude) {
+            this.latitude = latitude;
+        }
+
+        public String getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(String longitude) {
+            this.longitude = longitude;
         }
 
         public ArrayList<String> getMembers() {

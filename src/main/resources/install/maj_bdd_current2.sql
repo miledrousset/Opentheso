@@ -2088,7 +2088,8 @@ CREATE OR REPLACE procedure opentheso_add_new_concept(
     images text,
     idsConceptsReplaceBy text,
     isGpsPresent Boolean,
-    gps text,
+    altitude double precision,
+    longitude double precision,
     created Date,
     modified Date,
     concept_dcterms text)
@@ -2155,8 +2156,8 @@ BEGIN
             END LOOP;
         END IF;
 
-        IF (gps IS NOT NULL AND gps != 'null') THEN
-            CALL opentheso_add_gps(id_new_concet, id_thesaurus, gps);
+        IF (altitude > 0 AND longitude > 0) THEN
+            insert into gps values(id_new_concet, id_thesaurus, altitude, longitude);
         END IF;
     END IF;
 END;

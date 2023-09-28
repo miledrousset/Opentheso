@@ -772,8 +772,10 @@ public class CsvImportHelper {
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
                     + (images == null ? null : "'" + images + "'") + ", "
                     + null + ", "
-                    + (conceptObject.getGps() != null) + ", "
-                    + (conceptObject.getGps() == null ? null : "'" + conceptObject.getGps() + "'") + ", "
+                    //TODO MILTI GPS
+                    + (conceptObject.getLatitude() != null) + ", "
+                    + (conceptObject.getLatitude() == null ? null : "'" + conceptObject.getLatitude() + "'") + ", "
+                    + (conceptObject.getLongitude() == null ? null : "'" + conceptObject.getLongitude() + "'") + ", "
                     + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
                     + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ", "
                     + (dcterms == null ? null : "'" + dcterms + "'") 
@@ -1057,8 +1059,27 @@ public class CsvImportHelper {
         return true;
     }
 
+    //TODO MILTI GPS
     private boolean addGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
+        Double latitude;
+        Double longitude;
+
+        if (conceptObject.getLatitude() == null || conceptObject.getLatitude().isEmpty()) {
+            return true;
+        }
+        if (conceptObject.getLongitude() == null || conceptObject.getLongitude().isEmpty()) {
+            return true;
+        }
+        try {
+            latitude = Double.valueOf(conceptObject.getLatitude());
+            longitude = Double.valueOf(conceptObject.getLongitude());
+            new GpsHelper().insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
+            return true;
+        } catch (Exception e) {
+            return true;
+        }
+        /*
         if (StringUtils.isEmpty(conceptObject.getGps()) || conceptObject.getGps().length() < 3) {
             return true;
         }
@@ -1070,7 +1091,7 @@ public class CsvImportHelper {
                     Double.valueOf(gps[1]), Double.valueOf(gps[2]));
         }
 
-        return true;
+        return true;*/
     }
 
     private boolean addMembers(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
@@ -1586,6 +1607,26 @@ public class CsvImportHelper {
 
     private boolean updateGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
+        Double latitude;
+        Double longitude;
+
+        GpsHelper gpsHelper = new GpsHelper();
+        if (conceptObject.getLatitude() == null || conceptObject.getLongitude() == null) {
+            return true;
+        }
+        gpsHelper.deleteGpsCoordinate(ds, conceptObject.getIdConcept(), idTheso);
+        if (conceptObject.getLatitude().isEmpty() || conceptObject.getLongitude().isEmpty()) {
+            return true;
+        }
+        try {
+            latitude = Double.valueOf(conceptObject.getLatitude());
+            longitude = Double.valueOf(conceptObject.getLongitude());
+        } catch (Exception e) {
+            return true;
+        }
+        gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
+        return true;
+        /*
         if (StringUtils.isEmpty(conceptObject.getGps()) && conceptObject.getGps().length() < 3) {
             return true;
         }
@@ -1599,7 +1640,7 @@ public class CsvImportHelper {
             gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso,
                     Double.valueOf(gps[1]), Double.valueOf(gps[2]));
         }
-        return true;
+        return true;*/
     }
 
     private boolean updateImages(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {

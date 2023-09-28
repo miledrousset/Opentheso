@@ -17,6 +17,7 @@ import fr.cnrs.opentheso.skosapi.SKOSMatch;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
@@ -229,14 +230,23 @@ public class WriteAlphaPDF {
         }
     }
 
-    private void addGpsCoordiantes(List<Paragraph> paragraphs, List<SKOSGPSCoordinates> skosGpsCoordinates) {
+    //TODO MILTI GPS
+    private void addGpsCoordiantes(List<Paragraph> paragraphs, SKOSGPSCoordinates skosGpsCoordinates) {
 
+        if (ObjectUtils.isNotEmpty(skosGpsCoordinates)
+                && StringUtils.isNotEmpty(skosGpsCoordinates.getLat())
+                && StringUtils.isNotEmpty(skosGpsCoordinates.getLon())) {
+
+            paragraphs.add(new Paragraph(LATITUDE + skosGpsCoordinates.getLat(), writePdfSettings.textFont));
+            paragraphs.add(new Paragraph(LONGITUDE + skosGpsCoordinates.getLon(), writePdfSettings.textFont));
+        }
+        /*
         if (CollectionUtils.isNotEmpty(skosGpsCoordinates)) {
             for (SKOSGPSCoordinates element : skosGpsCoordinates) {
                 paragraphs.add(new Paragraph(LATITUDE + element.getLat(), writePdfSettings.textFont));
                 paragraphs.add(new Paragraph(LONGITUDE + element.getLon(), writePdfSettings.textFont));
             }
-        }
+        }*/
     }
 
     private void addImages(List<Paragraph> paragraphs, List<NodeImage> images) {
