@@ -1,4 +1,6 @@
 Note de version
 
 - Refonte visuelle de l'atelier des actions sur les thésaurus
+- Correction de l'import CSV (les Ids sont sensibles à la casse)
+- introduction d'une page HTML pour les projets avec traduction 
 -  
