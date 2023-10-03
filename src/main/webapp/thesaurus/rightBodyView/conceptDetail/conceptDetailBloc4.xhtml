@@ -165,7 +165,7 @@
                                               style="font-size: 14px; font-weight: bold; margin-right: 10px; color: #8f8f8f"/>
                             </div>
 
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                            <h:panelGroup>
                                 <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6" style="margin-left: -10px; width: 100%">
 
                                     <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
@@ -208,8 +208,8 @@
                                         <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                                        style="font-size: 12px; color: grey; font-style: italic " />
                                     </h:panelGroup>
-
                                     <h:panelGroup rendered="#{conceptView.isMapVisible()}" style="width: 100%;">
+                                        
                                         <div class="row">
                                             <div class="col-12">
                                                 <ui:repeat value="#{conceptView.nodeConcept.nodeGps}" var="gps" varStatus="status">

@@ -15,7 +15,7 @@
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso()
                                   or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing())}">
             <div class="row">
-                <div class="col-2 offset-10" style="text-align: right">
+                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 offset-xl-10 offset-lg-9 offset-md-9 offset-sm-8" style="text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('candidat.edit')}" 
                                      update="containerIndex:formRightTab"
                                      icon="pi pi-pencil"
@@ -143,13 +143,14 @@
         <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing())}" >
 
             <div class="row">
-                <div class="col-3" >
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6" >
                     <p:commandButton value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
                                      update="containerIndex" styleClass="ui-button-success"
                                      action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"/>
                 </div>
                 
-                <div class="col-3 offset-6" style="font-size: 12px; text-align: right">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 offset-xl-4 offset-lg-4 offset-md-0 offset-sm-0"
+                     style="font-size: 12px; text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
                                      styleClass="ui-button-success" update="containerIndex"
                                      action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"
