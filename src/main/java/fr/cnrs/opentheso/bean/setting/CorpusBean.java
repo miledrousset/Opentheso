@@ -61,9 +61,15 @@ public class CorpusBean implements Serializable {
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso());
         nodeCorpusForEdit = new NodeCorpus();
-        oldName = null;
+        oldName = "";
     }
 
+    public void setState(){
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("newCorpusForm:uriCount");
+        }
+    }
+    
     public void updateCorpus() {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
@@ -88,6 +94,17 @@ public class CorpusBean implements Serializable {
             }
             return;
         }
+        
+        if(!nodeCorpusForEdit.isIsOnlyUriLink()) {
+            if (nodeCorpusForEdit.getUriCount().isEmpty()) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'URI pour le comptage est obligatoire !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
+                return;
+            }        
+        }        
 
         CorpusHelper corpusHelper = new CorpusHelper();
         if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
@@ -148,6 +165,17 @@ public class CorpusBean implements Serializable {
                 pf.ajax().update("messageIndex");
             }
             return;
+        }
+        
+        if(!nodeCorpusForEdit.isIsOnlyUriLink()) {
+            if (nodeCorpusForEdit.getUriCount().isEmpty()) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'URI pour le comptage est obligatoire !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
+                return;
+            }        
         }
 
         CorpusHelper corpusHelper = new CorpusHelper();
@@ -214,8 +242,18 @@ public class CorpusBean implements Serializable {
         }
     }
 
+    
     public void setCorpusForEdit(NodeCorpus nodeCorpus) {
-        nodeCorpusForEdit = nodeCorpus;
+        nodeCorpusForEdit = new NodeCorpus();
+        
+        nodeCorpusForEdit.setActive(nodeCorpus.isActive());
+        nodeCorpusForEdit.setCorpusName(nodeCorpus.getCorpusName());
+        nodeCorpusForEdit.setIsOnlyUriLink(nodeCorpus.isIsOnlyUriLink());
+        nodeCorpusForEdit.setUriLink(nodeCorpus.getUriLink());
+        nodeCorpusForEdit.setUriCount(nodeCorpus.getUriCount());
+        
+        
+//        nodeCorpusForEdit = nodeCorpus;
         oldName = nodeCorpus.getCorpusName();
     }
 

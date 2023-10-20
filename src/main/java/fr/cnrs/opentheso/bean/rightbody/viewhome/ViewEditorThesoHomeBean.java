@@ -41,6 +41,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     private String colorOfHtmlButton;
     private String colorOfTextButton;    
 
+
     @PreDestroy
     public void destroy(){
         clear();
@@ -67,7 +68,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
         isInEditing = true;
         isViewPlainText = false;
         colorOfHtmlButton = "#F49F66;";
-        colorOfTextButton = "#8C8C8C;";          
+        colorOfTextButton = "#8C8C8C;";        
     }
 
     public String getThesoHomePage(){
@@ -80,9 +81,9 @@ public class ViewEditorThesoHomeBean implements Serializable {
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 lang);
-        
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("containerIndex:meta:metadataTheso");
+            PrimeFaces.current().ajax().update("containerIndex:thesoHomeData");
         }        
 
         return homePage;
@@ -223,6 +224,5 @@ public class ViewEditorThesoHomeBean implements Serializable {
     public void setColorOfTextButton(String colorOfTextButton) {
         this.colorOfTextButton = colorOfTextButton;
     }
-    
     
 }

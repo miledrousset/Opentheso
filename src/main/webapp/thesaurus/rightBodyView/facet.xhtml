@@ -160,6 +160,26 @@
                         </div>
                     </div>
                 </h:panelGroup>
+                
+                <p:spacer height="20px" />
+                
+                <!-- ligne Id -->
+                <h:panelGroup >
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row" style="margin-left: 0px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
+                                <h:outputText value="#{langueBean.getMsg('search.identifier')}" style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                            
+                                <h:panelGroup >
+                                    <h:outputText  value="#{editFacet.facetSelected.idFacet}" style="color: #601e18;" />
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>                
+                
+                
             </div>
         </div>
         <h:form>

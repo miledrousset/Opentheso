@@ -20,12 +20,12 @@
             </div>
             <p:separator />
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary"
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
                                  style="margin-right: 10px"
                                  ajax="true" process="@form"
                                  oncomplete="PF('generateArkGroup').hide();"/>
 
-                <p:commandButton value="#{langueBean.getMsg('service.generate')}" styleClass="ui-button-primary"
+                <p:commandButton value="#{langueBean.getMsg('service.generate')}" styleClass="ui-button-success" icon="pi pi-check"
                                  update="containerIndex messageIndex" 
                                  ajax="true" process="@form"
                                  actionListener="#{addArkGroupBean.generateArkGroup(selectedTheso.currentIdTheso)}" 

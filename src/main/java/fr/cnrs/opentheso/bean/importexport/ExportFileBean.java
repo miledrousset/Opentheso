@@ -845,7 +845,12 @@ public class ExportFileBean implements Serializable {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
-        }        
+        }   
+        if (StringUtils.isEmpty(roleOnThesoBean.getNodePreference().getOriginalUri())) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
+            FacesContext.getCurrentInstance().addMessage(null, message);
+            return null;
+        }          
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());

@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -69,6 +70,7 @@ public class MoveConcept implements Serializable {
         idConceptsToMove = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(),
                 idConcept, selectedTheso.getCurrentIdTheso());
         this.idThesoFrom = idThesoFrom;
+        idThesoTo = null;
     }    
     
     public void action(){
@@ -125,6 +127,11 @@ public class MoveConcept implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<String> lisIdGroup;
+        String idArk;
+        ArrayList<String> idConcepts = new ArrayList<>();
+        
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoTo);
         for (String idConcept : idConceptsToMove) {
             if(!conceptHelper.moveConceptToAnotherTheso(connect.getPoolConnexion(),
                     idConcept, idThesoFrom, idThesoTo, currentUser.getNodeUser().getIdUser())) {
@@ -147,8 +154,14 @@ public class MoveConcept implements Serializable {
             for (String idGroup : lisIdGroup) {
                 groupHelper.deleteRelationConceptGroupConcept(connect.getPoolConnexion(), idGroup, idConcept, idThesoTo, currentUser.getNodeUser().getIdUser());                
             }
+            idArk = conceptHelper.getIdArkOfConcept(connect.getPoolConnexion(), idConcept, idThesoTo);
+            if(!StringUtils.isEmpty(idArk)) {
+                idConcepts.clear();
+                idConcepts.add(idConcept);
+                conceptHelper.setNodePreference(nodePreference);
+                conceptHelper.generateArkId(connect.getPoolConnexion(), idThesoTo, idConcepts, selectedTheso.getCurrentLang());
+            }
         }
-        PrimeFaces pf = PrimeFaces.current();
         
         RelationsHelper relationsHelper = new RelationsHelper();  
         

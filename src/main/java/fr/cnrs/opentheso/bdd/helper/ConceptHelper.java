@@ -1686,7 +1686,7 @@ public class ConceptHelper {
                         + " concept.id_thesaurus = '" + idTheso + "'"
                         + " and"
                         + " term.lang = '" + idLang + "'"
-                        + " and concept.status != 'CA' and concept.modified IS not null  order by concept.modified DESC limit 10");
+                        + " and concept.status != 'CA' and concept.modified IS not null  order by concept.modified DESC, term.lexical_value limit 10");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();
@@ -2549,9 +2549,13 @@ public class ConceptHelper {
 
         ToolsHelper toolsHelper = new ToolsHelper();
         String idArk;
+        ConceptHelper conceptHelper = new ConceptHelper();
         for (String idConcept : idConcepts) {
-            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
-            idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
+            idArk = conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso);
+            if(StringUtils.isEmpty(idArk)) {
+                idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+                idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
+            }
             if (!updateArkIdOfConcept(ds, idConcept, idTheso, idArk)) {
                 return false;
             }

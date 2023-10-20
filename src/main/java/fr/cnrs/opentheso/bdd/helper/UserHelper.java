@@ -1406,38 +1406,14 @@ public class UserHelper {
      * @return
      */
     public boolean deleteUser(HikariDataSource ds, int idUser) {
-        Connection conn;
-        Statement stmt;
         boolean status = false;
-        try {
-            conn = ds.getConnection();
-            conn.setAutoCommit(false);
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "delete from users where"
-                            + " id_user =" + idUser;
-                    stmt.executeUpdate(query);
-                    query = "delete from user_role_group where"
-                            + " id_user = " + idUser;
-                    stmt.executeUpdate(query);
-                    query = "update users_historique "
-                            + " set delete = '" + new ToolsHelper().getDate()
-                            + " ' where id_user = '" + idUser + "'";
-                    stmt.executeUpdate(query);
-                    status = true;
-                    conn.commit();
-                    conn.close();
-                } finally {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                }
-            } finally {
-                if (status == false) {
-                    conn.rollback();
-                }
-                conn.close();
+        try (Connection conn = ds.getConnection()) {
+            try(Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from users where"
+                            + " id_user =" + idUser);
+                stmt.executeUpdate("delete from user_role_group where"
+                            + " id_user = " + idUser);           
+                status = true;
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);

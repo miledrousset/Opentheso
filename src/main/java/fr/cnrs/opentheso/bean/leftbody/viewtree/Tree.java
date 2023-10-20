@@ -147,7 +147,7 @@ public class Tree implements Serializable {
     private boolean addFirstNodes() {
         ConceptHelper conceptHelper = new ConceptHelper();
         TreeNodeData data;
-
+        FacetHelper facetHelper = new FacetHelper();
         // la liste est triée par alphabétique ou notation
         ArrayList<NodeConceptTree> nodeConceptTrees
                 = conceptHelper.getListOfTopConcepts(connect.getPoolConnexion(),
@@ -168,11 +168,27 @@ public class Tree implements Serializable {
                     true,//isTopConcept
                     "topTerm"
             );
-            if (nodeConceptTree.isHaveChildren()) {
-                dataService.addNodeWithChild("concept", data, root);
-            } else {
-                dataService.addNodeWithoutChild("file", data, root);
+            if (conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso,
+                    nodeConceptTree.getIdConcept())) {
+                if(nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep"))                 
+                    dataService.addNodeWithChild("deprecated", data, root);
+                else
+                    dataService.addNodeWithChild("concept", data, root);
+                continue;
+            }            
+            
+            if (facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), nodeConceptTree.getIdConcept(), idTheso)) {
+                if(nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) 
+                    dataService.addNodeWithChild("deprecated", data, root);
+                else
+                    dataService.addNodeWithChild("concept", data, root);
+                continue;
             }
+            
+            if(nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) 
+                dataService.addNodeWithoutChild("deprecated", data, root);
+            else
+                dataService.addNodeWithoutChild("file", data, root);          
         }
 
         return true;

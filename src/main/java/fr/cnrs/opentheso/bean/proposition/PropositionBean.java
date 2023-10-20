@@ -534,6 +534,13 @@ public class PropositionBean implements Serializable {
         return (currentUser.getNodeUser() !=null && !currentUser.getNodeUser().getMail().equalsIgnoreCase(email))
                 && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso());
     }
+    
+    public boolean isSameUser() {
+        if(currentUser.getNodeUser() != null) {
+            return currentUser.getNodeUser().getMail().equalsIgnoreCase(email); 
+        }
+       return false;
+    }
 
     public boolean isIsConsultation() {
         return isConsultation;

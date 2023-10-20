@@ -7,7 +7,7 @@
 
     <div class="container-fluid col-xl-12 col-lg-12" style="margin-top: 30px">
         <div class="card shadow mb-4">
-            <h:panelGroup rendered="#{currentUser.nodeUser != null and currentUser.nodeUser.isSuperAdmin() and projectBean.buttonEnable}">
+            <h:panelGroup rendered="#{currentUser.nodeUser != null and (currentUser.nodeUser.isSuperAdmin() )  and projectBean.buttonEnable}">
                 <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
                     <div style="width: 100%; text-align: right;">
                         <p:commandButton value="Modifier" ajax="true" process="@this"
