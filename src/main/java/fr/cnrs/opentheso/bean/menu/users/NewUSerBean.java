@@ -21,6 +21,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import liquibase.util.StringUtil;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -123,14 +124,19 @@ public class NewUSerBean implements Serializable {
             return;             
         }        
         
-        try {
-            int role = Integer.parseInt(selectedRole);
-            if(role == 1)
-                nodeUser.setSuperAdmin(true);
-        } catch (Exception e) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
+        if(StringUtil.isEmpty(selectedRole)) {
+            nodeUser.setSuperAdmin(false);
+            selectedProject = null;
+        } else {
+            try {
+                int role = Integer.parseInt(selectedRole);
+                if(role == 1)
+                    nodeUser.setSuperAdmin(true);
+            } catch (Exception e) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
         }
 
 

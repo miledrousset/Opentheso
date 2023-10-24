@@ -113,13 +113,16 @@ public class CurrentUser implements Serializable {
 
         if ("-1".equals(selectedTheso.getProjectIdSelected())) {
             roleOnThesoBean.setPublicThesos();
-            if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
-                indexSetting.setSelectedTheso(true);
-            } else {
-                selectedTheso.setCurrentIdTheso(null);
-                indexSetting.setSelectedTheso(false);
+            if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
+            } else {            
+                if (!new ThesaurusHelper().isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
+                    indexSetting.setSelectedTheso(true);
+                } else {
+                    selectedTheso.setCurrentIdTheso(null);
+                    indexSetting.setSelectedTheso(false);
+                }
+                indexSetting.setProjectSelected(false);
             }
-            indexSetting.setProjectSelected(false);
         } else if (selectedTheso.getProjectsList().stream()
                 .filter(element -> element.getId() == Integer.parseInt(selectedTheso.getProjectIdSelected()))
                 .findFirst().isEmpty()) {
@@ -227,7 +230,7 @@ public class CurrentUser implements Serializable {
 
         selectedTheso.loadProject();
 
-        if ("-1".equals(selectedTheso.getProjectIdSelected())) {
+        if ("-1".equals(selectedTheso.getProjectIdSelected()) || StringUtils.isEmpty(selectedTheso.getProjectIdSelected())) {
             roleOnThesoBean.setOwnerThesos();
             indexSetting.setProjectSelected(false);
             if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){

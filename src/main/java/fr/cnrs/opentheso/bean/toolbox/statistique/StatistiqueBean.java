@@ -107,7 +107,7 @@ public class StatistiqueBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous devez choisir un Thesorus avant !");
             return;
         }
-
+        selectedLanguage = selectedTheso.getCurrentLang();
         initChamps();
     }
     public void clearFilter(){

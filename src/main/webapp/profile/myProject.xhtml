@@ -126,7 +126,7 @@
                                                                          stripedRows="true"
                                                                          style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
-                                                                <p:column headerText="#{langueBean.getMsg('profile.pseudo')}">
+                                                                <p:column width="40" headerText="#{langueBean.getMsg('profile.pseudo')}">
                                                                     <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" 
                                                                                   value="#{listUser.userName}" rendered="#{!listUser.isActive}"
                                                                                   style="color: red; font-style: oblique" />
@@ -134,11 +134,11 @@
                                                                     <h:outputText value="#{listUser.userName}" rendered="#{listUser.isActive}"/>
                                                                 </p:column>
 
-                                                                <p:column headerText="#{langueBean.getMsg('profile.role')}">
+                                                                <p:column width="10" headerText="#{langueBean.getMsg('profile.role')}">
                                                                     <h:outputText value="#{listUser.roleName}" />
                                                                 </p:column>
 
-                                                                <p:column headerText="#{langueBean.getMsg('profile.modify_user')}">
+                                                                <p:column width="10" headerText="#{langueBean.getMsg('profile.modify_user')}" style="text-align: center">
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                                      actionListener="#{modifyUSerBean.selectUser(listUser.idUser)}"
                                                                                      icon="pi pi-user-edit" update="idModifyUser"
@@ -146,7 +146,7 @@
                                                                                      styleClass="edit-button rounded-button" />
                                                                 </p:column>
 
-                                                                <p:column headerText="#{langueBean.getMsg('profile.modify_roles')}">
+                                                                <p:column width="10" headerText="#{langueBean.getMsg('profile.modify_roles')}" style="text-align: center">
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                                      actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
                                                                                      icon="pi pi-users" update="idModifyRole"
@@ -154,7 +154,7 @@
                                                                                      styleClass="edit-button rounded-button"/>
                                                                 </p:column>
 
-                                                                <p:column headerText="#{langueBean.getMsg('profile.removeUserFromProjet')}">
+                                                                <p:column width="30" headerText="#{langueBean.getMsg('profile.removeUserFromProjet')}" style="text-align: center">
                                                                     <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-user-minus" process="@this"
                                                                                      actionListener="#{modifyRoleBean.selectUser(listUser.idUser, listUser.idRole , myProjectBean.selectedProject)}"
                                                                                      update="idConfirmRemoveUserFromProject"
@@ -189,11 +189,11 @@
                                                                     <h:outputText value="#{listTheso.id}" />
                                                                 </p:column>
 
-                                                                <p:column width="70%" headerText="#{langueBean.getMsg('profile.name')}">
+                                                                <p:column width="80%" headerText="#{langueBean.getMsg('statistique.thesaurus.name')}">
                                                                     <h:outputText value="#{listTheso.value}"/>
                                                                 </p:column>
 
-                                                                <p:column width="20%" headerText="#{langueBean.getMsg('profile.action')}" >
+                                                                <p:column width="10%" headerText="#{langueBean.getMsg('profile.action')}" style="text-align: center" >
                                                                     <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                                                      actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
                                                                                      update="idMoveThesoToAnotherProject"

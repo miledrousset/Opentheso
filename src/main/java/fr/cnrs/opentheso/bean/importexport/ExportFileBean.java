@@ -7,6 +7,7 @@ import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -438,6 +439,17 @@ public class ExportFileBean implements Serializable {
         if (nodePreference == null) {
             return null;
         }
+        if(StringUtils.isEmpty(nodePreference.getOriginalUri())){
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Veuillez paramétrer l'URI de l'export dans les préférences !"));
+            return null;
+        }
+        if("null".equalsIgnoreCase(nodePreference.getOriginalUri())){
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Veuillez paramétrer l'URI de l'export dans les préférences !"));            
+            return null;            
+        }
+        
         UriHelper uriHelper = new UriHelper(connect.getPoolConnexion(), nodePreference, viewExportBean.getNodeIdValueOfTheso().getId()); 
 
         
@@ -659,7 +671,7 @@ public class ExportFileBean implements Serializable {
                         exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
                 sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
                         exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
-                exportRdf4jHelperNew.addChildsGroupRecursive(connect.getPoolConnexion(), idTheso, idGroup, sKOSResource);
+                exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
 
                 concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(),
                         idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference));
@@ -833,7 +845,12 @@ public class ExportFileBean implements Serializable {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
-        }        
+        }   
+        if (StringUtils.isEmpty(roleOnThesoBean.getNodePreference().getOriginalUri())) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
+            FacesContext.getCurrentInstance().addMessage(null, message);
+            return null;
+        }          
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());

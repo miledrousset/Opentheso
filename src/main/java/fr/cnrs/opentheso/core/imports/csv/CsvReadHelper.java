@@ -773,7 +773,7 @@ public class CsvReadHelper {
                     if(values.length < 2) continue;
                     if (values[1] != null) {
                         if (!customRelations.contains(values[1])) {
-                            customRelations.add(values[1].toLowerCase());//columnName.substring(columnName.indexOf("@"), columnName.indexOf("@" +2)));
+                            customRelations.add(values[1]);//.toLowerCase());//columnName.substring(columnName.indexOf("@"), columnName.indexOf("@" +2)));
                         }
                     }
                 }                
@@ -995,7 +995,7 @@ public class CsvReadHelper {
     private String getId(String uri) {
         String id;
 
-        uri = uri.toLowerCase();
+    //    uri = uri.toLowerCase();
         if (uri == null || uri.isEmpty()) {
             return null;
         }
@@ -1325,7 +1325,7 @@ public class CsvReadHelper {
         if (record.isMapped("narrowerid")) {
             try {
                 value = record.get("narrowerid");
-                value = value.toLowerCase();
+           //     value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1339,7 +1339,7 @@ public class CsvReadHelper {
             // skos:narrower
             try {
                 value = record.get("skos:narrower");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1355,7 +1355,7 @@ public class CsvReadHelper {
         if (record.isMapped("broaderid")) {
             try {
                 value = record.get("broaderid");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1369,7 +1369,7 @@ public class CsvReadHelper {
             // skos:broader
             try {
                 value = record.get("skos:broader");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1385,7 +1385,7 @@ public class CsvReadHelper {
             // relatedId        
             try {
                 value = record.get("relatedid");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1399,7 +1399,7 @@ public class CsvReadHelper {
             // skos:related
             try {
                 value = record.get("skos:related");
-                value = value.toLowerCase();
+            //    value = value.toLowerCase();
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
@@ -1431,7 +1431,7 @@ public class CsvReadHelper {
             if (record.isMapped("customRelationId:"+ customRelation )) {
                 try {
                     value = record.get("customRelationId:"+ customRelation);
-                    value = value.toLowerCase();
+                //    value = value.toLowerCase();
                     values = value.split("##");
                     for (String value1 : values) {
                         if (!value1.isEmpty()) {

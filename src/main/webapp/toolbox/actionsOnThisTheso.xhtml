@@ -9,14 +9,16 @@
         <div class="col-12">
             <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                           value="#{langueBean.getMsg('actions.actionsOnThisTheso')}"  
-                          style="font-size: 14px;"/>             
+                          style="font-size: 14px;"/>   
+            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                          value=": #{selectedTheso.thesoName}"  
+                          style="font-size: 14px; color: #F47B2A;"/>              
         </div>
     </div>
 
-    <div class="row">
+    <div  class="row">
         <div class="col-12">
-            <p:panel id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
-                <p:scrollPanel  style="height:400px;">
+            <h:panelGroup id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
                     <p:panel style=" margin-left: 10px;">
                         <!--Pour importer des alignements -->
                         <i class="pi pi-download"></i>
@@ -188,9 +190,7 @@
                                          style="font-size: 12px; color: #601e18" />
 
                     </p:panel>
-                </p:scrollPanel>
-            </p:panel>    
-
+            </h:panelGroup>    
         </div>
     </div>
 

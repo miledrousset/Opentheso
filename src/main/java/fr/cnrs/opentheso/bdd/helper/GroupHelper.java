@@ -231,6 +231,10 @@ public class GroupHelper {
             String idGroup,
             String labelGroup) {
         if (nodePreference != null) {
+            if (nodePreference.isUseArkLocal()) {
+                generateArkIdLocal(ds, idTheso, idGroup);
+                return true;
+            }            
             
             ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
             if (!arkHelper2.login()) {
@@ -293,6 +297,29 @@ public class GroupHelper {
         }
         return false;
     }
+    
+    /**
+     * Cette fonction permet de générer les idArk en local
+     *
+     * @param ds
+     * @param idTheso
+     * @param idGroup
+     * @return
+     */
+    public boolean generateArkIdLocal(HikariDataSource ds, String idTheso, String idGroup) {
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseArkLocal()) {
+            return false;
+        }
+
+        ToolsHelper toolsHelper = new ToolsHelper();
+        String idArk;
+        idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+        idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
+        return updateArkIdOfGroup(ds, idGroup, idTheso, idArk);
+    }    
 
     /**
      * Permet d'ajouter le Groupe par défaut pour les concepts qui sont
@@ -861,6 +888,35 @@ public class GroupHelper {
         }
         return status;
     }
+    
+    /**
+     * Cette fonction permet de mettre à jour l'identifiant Ark d'un group
+     * existant
+     *
+     * @param ds
+     * @param idGroup
+     * @param idTheso
+     * @param idArk
+     * @return
+     */
+    public boolean updateArkIdOfGroup(HikariDataSource ds, String idGroup,
+            String idTheso, String idArk) {
+
+        boolean status = false;
+        try (Connection conn = ds.getConnection()) {
+            try(Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept_group "
+                            + "set id_ark='" + idArk + "'"
+                            + " WHERE LOWER(idgroup) ='" + idGroup.toLowerCase() + "'"
+                            + " AND idthesaurus='" + idTheso + "'");
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while updating or adding ArkId of Group : " + idGroup, sqle);
+        }
+        return status;
+    }    
 
     /**
      * Cette fonction permet de mettre à jour l'identifiant Handle d'un group
@@ -1283,21 +1339,18 @@ public class GroupHelper {
                             + " AND idthesaurus = '" + idThesaurus + "'"
                             + " AND lang = '" + idLang + "'");
                     try (ResultSet resultSet = stmt.getResultSet()){
+                        nodeConceptGroup = new NodeGroup();
                         if (resultSet.next()) {                    
-                            nodeConceptGroup = new NodeGroup();
-                            if (resultSet.getRow() == 0) {
-                                // cas du Group non traduit
-                                nodeConceptGroup.setLexicalValue("");
-                                nodeConceptGroup.setIdLang(idLang);
-
-                            } else {
-                                nodeConceptGroup.setLexicalValue(resultSet.getString("lexicalvalue"));
-                                nodeConceptGroup.setIdLang(idLang);
-                                nodeConceptGroup.setCreated(resultSet.getDate("created"));
-                                nodeConceptGroup.setModified(resultSet.getDate("modified"));
-                            }
-                            nodeConceptGroup.setConceptGroup(conceptGroup);
+                            nodeConceptGroup.setLexicalValue(resultSet.getString("lexicalvalue"));
+                            nodeConceptGroup.setIdLang(idLang);
+                            nodeConceptGroup.setCreated(resultSet.getDate("created"));
+                            nodeConceptGroup.setModified(resultSet.getDate("modified"));
+                            
+                        } else {
+                            nodeConceptGroup.setLexicalValue("");
+                            nodeConceptGroup.setIdLang(idLang);
                         }
+                        nodeConceptGroup.setConceptGroup(conceptGroup);
                     }
                 } 
             } 
@@ -2503,14 +2556,14 @@ public class GroupHelper {
             String idThesaurus, String idLang) {
 
         ArrayList<NodeGroup> nodeConceptGroupList;
-        ArrayList tabIdConceptGroup = getListIdOfGroup(ds, idThesaurus);
+        ArrayList<String> tabIdConceptGroup = getListIdOfGroup(ds, idThesaurus);
 
         nodeConceptGroupList = new ArrayList<>();
-        for (Object tabIdGroup1 : tabIdConceptGroup) {
+        for (String tabIdGroup1 : tabIdConceptGroup) {
             NodeGroup nodeConceptGroup;
-            nodeConceptGroup = getThisConceptGroup(ds, tabIdGroup1.toString(), idThesaurus, idLang);
+            nodeConceptGroup = getThisConceptGroup(ds, tabIdGroup1, idThesaurus, idLang);
             if (nodeConceptGroup == null) {
-                return null;
+                continue;
             }
             nodeConceptGroupList.add(nodeConceptGroup);
         }

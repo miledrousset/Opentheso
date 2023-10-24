@@ -1752,17 +1752,22 @@ public class NoteHelper {
             try (Statement stmt = conn.createStatement()) {
 
                 // ajouté par Miled pour test et optimisation 
-                stmt.executeQuery("SELECT count (note.id)"
-                        + " FROM preferred_term, note, concept"
-                        + " WHERE preferred_term.id_concept = note.id_concept "
-                        + " AND preferred_term.id_thesaurus = note.id_thesaurus"
-                        + " AND concept.id_thesaurus = preferred_term.id_thesaurus"
-                        + " AND concept.id_concept = preferred_term.id_concept"
-                        + " AND preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                        + " AND note.lang = '" + idLang + "' "
-                        + " AND preferred_term.id_concept "
-                        + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "'"
-                        + " and concept_group_concept.idgroup='" + idGroup + "')");
+                stmt.executeQuery("SELECT count (note.id) \n" +
+                    "FROM preferred_term, note, concept_group_concept \n" +
+                    "WHERE \n" +
+                    "preferred_term.id_concept = note.id_concept  \n" +
+                    "AND \n" +
+                    "preferred_term.id_thesaurus = note.id_thesaurus \n" +
+                    "AND\n" +
+                    "concept_group_concept.idthesaurus = preferred_term.id_thesaurus \n" +
+                    "AND\n" +
+                    "concept_group_concept.idconcept = preferred_term.id_concept \n" +
+                    "AND \n" +
+                    "note.id_thesaurus = '" + idThesaurus + "'" +
+                    "AND\n" +
+                    "note.lang = '" + idLang + "'" +
+                    "AND\n" +
+                    "concept_group_concept.idgroup = '" + idGroup + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
@@ -1787,29 +1792,22 @@ public class NoteHelper {
             stmt = conn.createStatement();
 
             // ajouté par Miled pour test et optimisation 
-            stmt.executeQuery("SELECT count (note.id)"
-                    + " FROM preferred_term, note, concept"
-                    + " WHERE preferred_term.id_term = note.id_term "
-                    + " AND preferred_term.id_thesaurus = note.id_thesaurus"
-                    + " AND concept.id_thesaurus = preferred_term.id_thesaurus"
-                    + " AND concept.id_concept = preferred_term.id_concept"
-                    + " AND preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                    + " AND note.lang = '" + idLang + "' "
-                    + " AND preferred_term.id_concept "
-                    + " IN (SELECT idconcept FROM concept_group_concept WHERE idthesaurus = '" + idThesaurus + "'"
-                    + " and concept_group_concept.idgroup='" + idGroup + "')");
-            /*stmt.executeQuery("SELECT count(preferred_term.id_concept) " +
-                              "FROM preferred_term, note " +
-                              "WHERE preferred_term.id_thesaurus = note.id_thesaurus " +
-                              "AND (preferred_term.id_term = note.id_term or preferred_term.id_concept = note.id_concept) " +
-                              "AND preferred_term.id_thesaurus = '"+idThesaurus+"' " +
-                              "AND preferred_term.id_concept IN (SELECT concept.id_concept " +
-                                             "FROM concept, concept_group_concept " +
-                                             "WHERE concept.id_concept = concept_group_concept.idconcept " +
-                                             "AND concept.id_thesaurus = concept_group_concept.idthesaurus " +
-                                             "AND concept.id_thesaurus = '"+idThesaurus+"' " +
-                                             "AND concept_group_concept.idgroup = '"+idGroup+"') " +
-                              "AND note.lang = '"+idLang+"'");*/
+            stmt.executeQuery("SELECT count (note.id) \n" +
+                        "FROM preferred_term, note, concept_group_concept \n" +
+                        "WHERE \n" +
+                        "preferred_term.id_term = note.id_term  \n" +
+                        "AND \n" +
+                        "preferred_term.id_thesaurus = note.id_thesaurus \n" +
+                        "AND \n" +
+                        "concept_group_concept.idthesaurus = preferred_term.id_thesaurus \n" +
+                        "AND\n" +
+                        "concept_group_concept.idconcept = preferred_term.id_concept \n" +
+                        "AND\n" +
+                        "note.id_thesaurus = '" + idThesaurus + "'" +
+                        "AND \n" +
+                        "note.lang = '" + idLang + "'" +
+                        "AND \n" +
+                        "concept_group_concept.idgroup='" + idGroup + "'");
             ResultSet resultSet = stmt.getResultSet();
             if (resultSet.next()) {
                 count = resultSet.getInt(1);

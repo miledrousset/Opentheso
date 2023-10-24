@@ -15,7 +15,7 @@
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso()
                                   or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing())}">
             <div class="row">
-                <div class="col-2 offset-10" style="text-align: right">
+                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 offset-xl-10 offset-lg-9 offset-md-9 offset-sm-8" style="text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('candidat.edit')}" 
                                      update="containerIndex:formRightTab"
                                      icon="pi pi-pencil"
@@ -82,13 +82,13 @@
                         <div class="col-12">
                             <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')}: " style="font-size: 13px;color: #858796"/>
 
-                            <ui:repeat var="value" varStatus="status1" value="#{viewEditorThesoHomeBean.lastModifiedConcepts}">
+                            <ui:repeat var="value1" varStatus="status1" value="#{viewEditorThesoHomeBean.getLastModifiedConcepts()}">
 
-                                <p:commandLink rendered="#{value.value != ''}" value="#{value.value}"
+                                <p:commandLink rendered="#{value1.value != ''}" value="#{value1.value}"
                                                style="font-size: 13px; color: #601e18;"
-                                               title="#{value.id}"
+                                               title="#{value1.id}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.id, selectedTheso.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>                           
+                                                         value1.id, selectedTheso.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>                           
                                 <h:outputText rendered="#{!status1.last}" value=", " style="color: #FF7979"/>
                             </ui:repeat>
                         </div>                
@@ -143,13 +143,14 @@
         <h:panelGroup id="thesoHomePageEdition" rendered="#{(viewEditorThesoHomeBean.isInEditing())}" >
 
             <div class="row">
-                <div class="col-3" >
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6" >
                     <p:commandButton value="#{langueBean.getMsg('thesohome.interpretedHTMLView')}"
                                      update="containerIndex" styleClass="ui-button-success"
                                      action="#{viewEditorThesoHomeBean.setViewPlainTextTo(false)}"/>
                 </div>
                 
-                <div class="col-3 offset-6" style="font-size: 12px; text-align: right">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 offset-xl-4 offset-lg-4 offset-md-0 offset-sm-0"
+                     style="font-size: 12px; text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('thesohome.rawHTMLView')}"
                                      styleClass="ui-button-success" update="containerIndex"
                                      action="#{viewEditorThesoHomeBean.setViewPlainTextTo(true)}"

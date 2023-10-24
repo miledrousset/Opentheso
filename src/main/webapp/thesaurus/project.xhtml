@@ -7,7 +7,7 @@
 
     <div class="container-fluid col-xl-12 col-lg-12" style="margin-top: 30px">
         <div class="card shadow mb-4">
-            <h:panelGroup rendered="#{currentUser.nodeUser != null and currentUser.nodeUser.isSuperAdmin() and projectBean.buttonEnable}">
+            <h:panelGroup rendered="#{currentUser.nodeUser != null and (currentUser.nodeUser.isSuperAdmin() )  and projectBean.buttonEnable}">
                 <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
                     <div style="width: 100%; text-align: right;">
                         <p:commandButton value="Modifier" ajax="true" process="@this"
@@ -30,10 +30,9 @@
 
             <h:panelGroup rendered="#{!projectBean.isListThesoVisible()}">
                 <div class="card-header py-3" style="width: 100%; text-align: center; padding: 10px">
-                    <h:outputLabel value="Aucune thésaurus existe dans le projet sélectionné !" />
+                    <h:outputLabel value="Il n'y a aucun thésaurus dans le projet sélectionné !" />
                 </div>
             </h:panelGroup>
-
             <div style="padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 10px">
                 <!-- vue Page d'accueil -->
                 <h:panelGroup rendered="#{projectBean.projectDescription}">

@@ -89,6 +89,13 @@ public class ProjectBean implements Serializable {
         }
     }
 
+    /**
+     * pour effacer toutes les données des variables
+     */
+    public void reset(){
+        projectDescriptionSelected = null;
+    }
+
     public void init() {
         editingHomePage = false;
         isButtonEnable = true;

@@ -96,13 +96,13 @@
                                 <ui:repeat var="concept" value="#{editFacet.conceptList}" varStatus="status">
                                     <p:commandLink rendered="#{concept.value == ''}"
                                                    value="(#{concept.id})"
-                                                   style="color: #43B572;" styleClass="textOpentheso"
+                                                   style="color: #601e18;" styleClass="textOpentheso"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                              concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
 
                                     <p:commandLink rendered="#{concept.value != ''}"
                                                    value="#{concept.value}"
-                                                   style="color: #43B572;" styleClass="textOpentheso"
+                                                   style="color: #601e18;" styleClass="textOpentheso"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                              concept.id, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
                                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
@@ -160,6 +160,26 @@
                         </div>
                     </div>
                 </h:panelGroup>
+                
+                <p:spacer height="20px" />
+                
+                <!-- ligne Id -->
+                <h:panelGroup >
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row" style="margin-left: 0px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
+                                <h:outputText value="#{langueBean.getMsg('search.identifier')}" style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                            
+                                <h:panelGroup >
+                                    <h:outputText  value="#{editFacet.facetSelected.idFacet}" style="color: #601e18;" />
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>                
+                
+                
             </div>
         </div>
         <h:form>

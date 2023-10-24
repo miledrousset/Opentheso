@@ -68,10 +68,12 @@
 
         <div class="formLogin">
             <h:form class="login-form">
+                <!--
                 <div style="height: auto; margin-top: -40px; margin-bottom: 7px; text-align: right; vertical-align: central">
                     <p:outputLabel value="LDAP" styleClass="formLogin-label" />
-                    <p:inputSwitch id="activeLDAP" value="#{currentUser.ldapEnable}" style="color: #f47b2a; margin-left: 10px" />
+                    <p:inputSwitch id="activeLDAP" value="# {currentUser.ldapEnable}" style="color: #f47b2a; margin-left: 10px" />
                 </div>
+                -->
                 <p:inputText placeholder="username" value="#{currentUser.username}" />
                 <p:inputText type="password" placeholder="password" value="#{currentUser.password}"/>
                 <p:commandButton value="#{langueBean.getMsg('menu.connect')}" styleClass="ui-button-success" icon="fa-solid fa-key"

@@ -1388,11 +1388,7 @@ BEGIN
 		END LOOP;
 
 		-- geo:alt && geo:long
-		gpsData = '';
-        FOR geo_rec IN SELECT * FROM opentheso_get_gps(id_theso, con.id_concept)
-        LOOP
-            gpsData = gpsData || geo_rec.gps_latitude || sous_seperateur || geo_rec.gps_longitude || seperateur;
-        END LOOP;
+		SELECT * INTO geo_rec FROM opentheso_get_gps(id_theso, con.id_concept);
 
 		-- membre
 		membre = '';
@@ -1401,13 +1397,13 @@ BEGIN
 			IF (theso_rec.original_uri_is_ark = true AND group_rec.group_id_ark IS NOT NULL  AND group_rec.group_id_ark != '') THEN
 				membre = membre || theso_rec.original_uri || '/' || group_rec.group_id_ark || seperateur;
 			ELSIF (theso_rec.original_uri_is_ark = true AND (group_rec.group_id_ark IS NULL OR group_rec.group_id_ark = '')) THEN
-				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || path || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSIF (group_rec.group_id_handle IS NOT NULL) THEN
 				membre = membre || 'https://hdl.handle.net/' || group_rec.group_id_handle || seperateur;
 			ELSIF (theso_rec.original_uri IS NOT NULL) THEN
-				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || theso_rec.original_uri || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			ELSE
-				membre = membre || path || '/?idg=' || group_rec.group_idgroup || '&idt=' || id_theso || seperateur;
+				membre = membre || path || '/?idg=' || group_rec.group_id || '&idt=' || id_theso || seperateur;
 			END IF;
 		END LOOP;
 
@@ -1467,7 +1463,7 @@ BEGIN
 
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
-				broadMatch, relatedMatch, narrowMatch, gpsData, membre, con.created, con.modified, img,
+				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified, img,
 				creator, contributor, replaces, replacedBy, facets, externalResources INTO rec;
 
   		RETURN NEXT rec;
@@ -1661,11 +1657,7 @@ BEGIN
 		END LOOP;
 
 		-- geo:alt && geo:long
-		gpsData = '';
-        FOR geo_rec IN SELECT * FROM opentheso_get_gps(id_theso, con.id_concept)
-        LOOP
-            gpsData = gpsData || geo_rec.gps_latitude || sous_seperateur || geo_rec.gps_longitude || seperateur;
-        END LOOP;
+		SELECT * INTO geo_rec FROM opentheso_get_gps(id_theso, con.id_concept);
 
 		-- membre
 		membre = '';
@@ -1740,7 +1732,7 @@ BEGIN
 
 		SELECT 	uri, con.status, local_URI, con.id_concept, con.id_ark, prefLab, altLab, altLab_hiden, definition, example,
 				editorialNote, changeNote, secopeNote, note, historyNote, con.notation, narrower, broader, related, exactMatch, closeMatch,
-				broadMatch, relatedMatch, narrowMatch, gpsData, membre, con.created, con.modified,
+				broadMatch, relatedMatch, narrowMatch, geo_rec.gps_latitude, geo_rec.gps_longitude, membre, con.created, con.modified,
 				img, creator, contributor, replaces, replacedBy, facets, externalResources INTO rec;
 
   		RETURN NEXT rec;
