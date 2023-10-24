@@ -39,21 +39,43 @@ public class ProjectBean implements Serializable {
     @Inject private LanguageBean languageBean;
     @Inject private ProjectDescriptionRepository projectDescriptionRepository;
 
-    private String description, langCode, langCodeSelected;
+    private String description, langCode, langCodeSelected, projectIdSelected;
     private boolean projectDescription, editingHomePage, isButtonEnable;
     private ProjectDescription projectDescriptionSelected;
     private List<NodeIdValue> listeThesoOfProject;
-    private List<Languages_iso639> allLangs;
+    private List<Languages_iso639> allLangs, selectedLangs;
 
 
     public void initProject(String projectIdSelected, boolean isPrivate) {
+        this.projectIdSelected = projectIdSelected;
+        selectedLangs = new LanguageHelper().getLanguagesByProject(connect.getPoolConnexion(), projectIdSelected);
+        projectDescription = CollectionUtils.isNotEmpty(selectedLangs);
+
         projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, getLang());
+
         if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
-            projectDescriptionSelected = new ProjectDescription();
-            projectDescriptionSelected.setLang(getLang());
-            projectDescriptionSelected.setIdGroup(projectIdSelected);
+            if (CollectionUtils.isNotEmpty(selectedLangs)) {
+                projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected,
+                        selectedLangs.get(0).getId_iso639_1());
+
+                if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
+                    projectDescriptionSelected = new ProjectDescription();
+                    projectDescriptionSelected.setLang(getLang());
+                    projectDescriptionSelected.setIdGroup(projectIdSelected);
+                    projectDescriptionSelected.setLang(getLang());
+                }
+            } else {
+                projectDescriptionSelected = new ProjectDescription();
+                projectDescriptionSelected.setLang(getLang());
+                projectDescriptionSelected.setIdGroup(projectIdSelected);
+                projectDescriptionSelected.setLang(getLang());
+            }
         }
-        description = projectDescriptionSelected.getDescription();
+
+        if (ObjectUtils.isNotEmpty(projectDescriptionSelected)) {
+            description = projectDescriptionSelected.getDescription();
+            langCodeSelected = projectDescriptionSelected.getLang();
+        }
         listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(),
                 Integer.parseInt(projectIdSelected), connect.getWorkLanguage(), isPrivate);
 
@@ -68,6 +90,11 @@ public class ProjectBean implements Serializable {
     }
 
     public void init() {
+        editingHomePage = false;
+        isButtonEnable = true;
+    }
+
+    public void back() {
         projectDescription = true;
         editingHomePage = false;
         isButtonEnable = true;
@@ -77,15 +104,31 @@ public class ProjectBean implements Serializable {
         if (CollectionUtils.isEmpty(allLangs)) {
             allLangs = new LanguageHelper().getAllLanguages(connect.getPoolConnexion());
         }
-        if (StringUtils.isEmpty(langCode)) {
+
+        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, langCodeSelected);
+        if (!ObjectUtils.isEmpty(projectDescriptionSelected)) {
+            description = projectDescriptionSelected.getDescription();
+            langCode = projectDescriptionSelected.getLang();
+        } else {
+            projectDescriptionSelected = new ProjectDescription();
+            projectDescriptionSelected.setLang(getLang());
+            projectDescriptionSelected.setIdGroup(projectIdSelected);
             langCode = getLang();
         }
+
         projectDescription = false;
         editingHomePage = true;
         isButtonEnable = false;
     }
 
     public void updateHomePage() {
+
+        if (StringUtils.isEmpty(description)) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Veuillez saisir une description !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
 
         if (description.equalsIgnoreCase(projectDescriptionSelected.getDescription())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Veuillez proposer une présentation différente de l'ancienne !");
@@ -95,15 +138,51 @@ public class ProjectBean implements Serializable {
         }
 
         projectDescriptionSelected.setDescription(description);
-        projectDescriptionRepository.saveProjectDescription(projectDescriptionSelected);
+        projectDescriptionSelected.setLang(langCode);
+
+        if (projectDescriptionSelected.getId() != null) {
+            projectDescriptionRepository.updateProjectDescription(projectDescriptionSelected);
+        } else {
+            projectDescriptionRepository.saveProjectDescription(projectDescriptionSelected);
+        }
+
+        langCodeSelected = projectDescriptionSelected.getLang();
+
+        selectedLangs = new LanguageHelper().getLanguagesByProject(connect.getPoolConnexion(),
+                projectDescriptionSelected.getIdGroup());
+        projectDescription = CollectionUtils.isNotEmpty(selectedLangs);
+        editingHomePage = false;
+        isButtonEnable = true;
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Description ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        init();
-
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex");
+    }
+
+    public void deleteDescription() {
+
+        projectDescriptionRepository.removeProjectDescription(projectDescriptionSelected);
+
+        selectedLangs = new LanguageHelper().getLanguagesByProject(connect.getPoolConnexion(),
+                projectDescriptionSelected.getIdGroup());
+
+        if (CollectionUtils.isNotEmpty(selectedLangs)) {
+            projectDescription = true;
+            projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(
+                    projectDescriptionSelected.getIdGroup(), selectedLangs.get(0).getId_iso639_1());
+
+            projectDescription = true;
+            langCodeSelected = selectedLangs.get(0).getId_iso639_1();
+            description = projectDescriptionSelected.getDescription();
+        } else {
+            projectDescription = false;
+        }
+
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Description supprimée avec succès !");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
     }
 
     public Boolean isListThesoVisible() {
@@ -150,5 +229,10 @@ public class ProjectBean implements Serializable {
             return FacesContext.getCurrentInstance().getExternalContext()
                     .getRequestContextPath() + "/resources/img/flag/noflag.png";
         }
+    }
+
+    public boolean isDescriptionVisible() {
+        return ObjectUtils.isNotEmpty(projectDescriptionSelected)
+                && StringUtils.isEmpty(projectDescriptionSelected.getDescription());
     }
 }
