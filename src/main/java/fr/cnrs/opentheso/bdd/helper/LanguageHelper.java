@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import javax.faces.model.SelectItem;
 import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import org.apache.commons.logging.Log;
@@ -104,6 +105,35 @@ public class LanguageHelper {
             log.error("Error while adding element : " + language, sqle);
         }
         return language;
+    }
+
+    public List<Languages_iso639> getLanguagesByProject(HikariDataSource ds, String idProject) {
+
+        List<Languages_iso639> language = null;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select lang.* from languages_iso639 lang, project_description pro " +
+                        "where lang.iso639_1 = pro.lang and pro.id_group = '"+idProject+"'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+
+                    if (resultSet != null) {
+                        language = new ArrayList<>();
+                        while (resultSet.next()) {
+                            Languages_iso639 languageTmp = new Languages_iso639();
+                            languageTmp.setId_iso639_1(resultSet.getString("iso639_1").trim());
+                            languageTmp.setId_iso639_2(resultSet.getString("iso639_2").trim());
+                            languageTmp.setFrench_name(resultSet.getString("french_name"));
+                            languageTmp.setEnglish_name(resultSet.getString("english_name"));
+                            languageTmp.setCodePays(resultSet.getString("code_pays"));
+                            language.add(languageTmp);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting languages of project : " + idProject, sqle);
+        }
+        return language ;
     }
 
     /**
