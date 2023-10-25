@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -54,6 +55,76 @@ public class GroupHelper {
     ////////////////// Nouvelles fonctions #MR//////////////////////////////
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////    
+
+    
+    /**
+     * permet de savoir si le group à déplacer est vers un descendant, c'est interdit
+     * @param ds
+     * @param idGroup
+     * @param toIdGroup
+     * @param idTheso
+     * @return 
+     */
+    public boolean isMoveToDescending(HikariDataSource ds,
+            String idGroup, String toIdGroup, String idTheso){
+        ArrayList<String> idGroupDescending = getAllGroupDescending(ds, idGroup, idTheso);
+        return idGroupDescending.contains(toIdGroup);
+    }
+    
+    /**
+     * récupération des IdGroup fils par récurcivité
+     * @param ds
+     * @param idGroup
+     * @param idTheso
+     * @return 
+     */
+    public ArrayList<String> getAllGroupDescending(HikariDataSource ds,
+            String idGroup, String idTheso) {
+        ArrayList<String> allIdGroup = new ArrayList<>();
+        return getDescendingId_(ds, idGroup, idTheso, allIdGroup);         
+    }
+    
+    private ArrayList<String> getDescendingId_(HikariDataSource ds,
+            String idGroup, String idTheso, ArrayList<String> allIdGroup) {
+        
+        allIdGroup.add(idGroup);
+        ArrayList<String> listIds = getListGroupChildIdOfGroup(ds, idGroup, idTheso);
+        for (String idGroupFils : listIds) {
+            getDescendingId_(ds, idGroupFils, idTheso, allIdGroup);
+        }
+        return allIdGroup;
+    }    
+    
+    /**
+     * Permet de retirer le groupe du parent
+     * @param ds
+     * @param idGroup
+     * @param idParent
+     * @param idTheso
+     * @return 
+     */
+    public boolean removeGroupFromGroup(HikariDataSource ds,
+            String idGroup, String idParent, String idTheso){
+        boolean status = false;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from relation_group where"
+                            + " LOWER(id_group2)= '" + idGroup.toLowerCase() + "'"
+                            + " and "
+                            + " LOWER(id_group1)='" + idParent.toLowerCase() + "'"
+                            + " AND id_thesaurus='" + idTheso + "'");
+
+                    status = true;
+                    updateModifiedDate(ds, idGroup, idTheso);
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while updating groupType : " + idGroup, sqle);
+        }
+        return status;        
+    }
+    
+    
     /**
      * permet de mettre à jour le Type de groupe
      *
@@ -316,8 +387,13 @@ public class GroupHelper {
 
         ToolsHelper toolsHelper = new ToolsHelper();
         String idArk;
-        idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
-        idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
+        GroupHelper groupHelper = new GroupHelper();
+        idArk = groupHelper.getIdArkOfGroup(ds, idGroup, idTheso);
+        
+        if(StringUtils.isEmpty(idArk)) {
+            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+            idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
+        }
         return updateArkIdOfGroup(ds, idGroup, idTheso, idArk);
     }    
 
@@ -441,6 +517,7 @@ public class GroupHelper {
                         return null;
                     }
                 }
+               
                 // création de l'identifiant Handle
                 if (nodePreference.isUseHandle()) {
                     if (!addIdHandle(conn,
@@ -3853,7 +3930,7 @@ public class GroupHelper {
         }
         return subGroup;
     }
-
+    
     /**
      * Change l'id d'un group dans la table concept_group
      *

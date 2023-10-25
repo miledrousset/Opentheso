@@ -46,11 +46,15 @@
 
             <div class="row">
                 <div class="col-11" >
-                    <p:outputLabel value="Valeurs disponibles (##id##, ##value##, ##arkId##) example : " style="font-size: 12px; margin-left: 10px;"/>
-                    <p:outputLabel value=" https://monserveur/_count?q=concept-number:##id##" style="font-size: 12px; color: #4f1915; font-style: italic"/>
+                    <p:outputLabel value="Varibales disponibles: (##id##, ##value##, ##arkid##) " style="font-size: 12px; margin-left: 10px;color: #D32F2F;"/>
                 </div>
-            
-            </div>            
+            </div> 
+            <div class="row">
+                <div class="col-11" style="margin-top: -10px;">
+                    <p:outputLabel value="example : " style="font-size: 12px; margin-left: 10px; color: #D32F2F; font-style: italic; color: #D32F2F;"/>
+                    <p:outputLabel value=" https://monserveur/_count?q=concept-number:##id##" style="font-size: 12px; color: #4f1915; font-style: italic;"/>
+                </div>
+            </div>             
             
 
             <div class="row" style="margin-top: 5px" contentDisabled="#{corpusBean.nodeCorpusForEdit.isOnlyUriLink}">
