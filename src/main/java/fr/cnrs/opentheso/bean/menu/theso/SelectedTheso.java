@@ -324,6 +324,7 @@ public class SelectedTheso implements Serializable {
         if ("-1".equals(projectIdSelected)) {
             roleOnThesoBean.showListTheso();
             currentIdTheso = null;
+            selectedIdTheso = "";
             indexSetting.setSelectedTheso(false);
             indexSetting.setProjectSelected(false);
         } else {

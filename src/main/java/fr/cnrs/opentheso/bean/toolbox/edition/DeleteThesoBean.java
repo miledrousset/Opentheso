@@ -117,9 +117,11 @@ public class DeleteThesoBean implements Serializable {
         }
         // vérification si le thésaurus supprimé est en cours de consultation, alors il faut nettoyer l'écran
         if(idThesoToDelete.equalsIgnoreCase(currentIdTheso)) {
-            selectedTheso.setSelectedIdTheso(null);
+            selectedTheso.setSelectedIdTheso("");
             selectedTheso.setSelectedLang(null);
             selectedTheso.setSelectedTheso();
+            selectedTheso.setProjectIdSelected("-1");
+            selectedTheso.setSelectedProject();
         }
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Thesaurus supprimé avec succès");
