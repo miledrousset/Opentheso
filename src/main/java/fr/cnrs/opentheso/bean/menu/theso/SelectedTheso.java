@@ -389,7 +389,8 @@ public class SelectedTheso implements Serializable {
      */
     public void reloadGroups(){
         treeGroups.reset();
-        treeGroups.initialise(selectedIdTheso, selectedLang);        
+        treeGroups.initialise(selectedIdTheso, selectedLang);   
+        rightBodySetting.setIndex("1");
     }
     
     /**

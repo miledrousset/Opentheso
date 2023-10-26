@@ -6,6 +6,7 @@
 package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
@@ -15,12 +16,14 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -48,7 +51,10 @@ public class ModifyGroupBean implements Serializable {
     private String titleGroup;
     private String notation;
     private List<SelectItem> listGroupType;
-
+    
+    private NodeAutoCompletion selectedNodeAutoCompletionGroup;    
+    private boolean moveToRoot = false;
+    
     @PreDestroy
     public void destroy() {
         clear();
@@ -63,12 +69,14 @@ public class ModifyGroupBean implements Serializable {
             listGroupType.clear();
             listGroupType = null;
         }
+        moveToRoot = false;
     }
 
     public ModifyGroupBean() {
     }
 
     public void init() {
+        moveToRoot = false;        
         idGroup = groupView.getNodeGroup().getConceptGroup().getIdgroup();
         titleGroup = groupView.getNodeGroup().getLexicalValue();
         notation = groupView.getNodeGroup().getConceptGroup().getNotation();
@@ -85,6 +93,95 @@ public class ModifyGroupBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
+    
+    public void moveGroupTo(){
+        if(StringUtils.isEmpty(idGroup)){
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Pas de sélection !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);     
+            return;
+        }     
+        
+        GroupHelper groupHelper = new GroupHelper();
+        
+        String idParent = groupHelper.getIdFather(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso());
+        
+        if(isMoveToRoot()) {
+            if(!StringUtils.isEmpty(idParent)) {
+                if(!groupHelper.removeGroupFromGroup(connect.getPoolConnexion(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);               
+                    return;
+                }                
+            } else {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Déplacement à la même place !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);     
+                return;                
+            }
+        } else {
+            
+            if(selectedNodeAutoCompletionGroup == null || StringUtils.isEmpty(selectedNodeAutoCompletionGroup.getIdGroup())){
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Pas de sélection !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);     
+                return;
+            }
+
+            if(selectedNodeAutoCompletionGroup.getIdGroup().equalsIgnoreCase(idGroup)) {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Déplacement impossible !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);     
+                return;
+            }               
+            
+            /// contrôle si le groupe est à déplacer dans la même hiérarchie, c'est interdit
+            if(groupHelper.isMoveToDescending(connect.getPoolConnexion(),
+                    idGroup, selectedNodeAutoCompletionGroup.getIdGroup(), selectedTheso.getCurrentIdTheso())){
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Déplacement impossible !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);     
+                return;           
+            }        
+
+
+            if(!StringUtils.isEmpty(idParent)) {
+                if(selectedNodeAutoCompletionGroup.getIdGroup().equalsIgnoreCase(idParent)) {
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Déplacement à la même place !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);     
+                    return;
+                }              
+
+                if(!groupHelper.removeGroupFromGroup(connect.getPoolConnexion(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);               
+                    return;
+                }
+            }
+            groupHelper.addSubGroup(connect.getPoolConnexion(),
+                    selectedNodeAutoCompletionGroup.getIdGroup(), idGroup, selectedTheso.getCurrentIdTheso());
+        }
+
+        selectedTheso.reloadGroups();
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", " Déplacement réussi !");
+        FacesContext.getCurrentInstance().addMessage(null, msg);                    
+    }
+    
+    /**
+     * permet de retourner la liste des groupes / collections contenus dans le
+     * thésaurus
+     *
+     * @param value
+     * @return
+     */
+    public List<NodeAutoCompletion> getAutoCompletCollection(String value) {
+        selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
+        List<NodeAutoCompletion> liste = new ArrayList<>();
+        if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
+            liste = new GroupHelper().getAutoCompletionGroup(
+                    connect.getPoolConnexion(),
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(),
+                    value);
+        }
+        return liste;
+    }    
+    
     /**
      * Modification du label du gourpe
      *
@@ -302,6 +399,22 @@ public class ModifyGroupBean implements Serializable {
 
     public void setListGroupType(List<SelectItem> listGroupType) {
         this.listGroupType = listGroupType;
+    }
+
+    public NodeAutoCompletion getSelectedNodeAutoCompletionGroup() {
+        return selectedNodeAutoCompletionGroup;
+    }
+
+    public void setSelectedNodeAutoCompletionGroup(NodeAutoCompletion selectedNodeAutoCompletionGroup) {
+        this.selectedNodeAutoCompletionGroup = selectedNodeAutoCompletionGroup;
+    }
+
+    public boolean isMoveToRoot() {
+        return moveToRoot;
+    }
+
+    public void setMoveToRoot(boolean moveToRoot) {
+        this.moveToRoot = moveToRoot;
     }
 
 }
