@@ -12,6 +12,9 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class ConceptReader {
 
@@ -77,10 +80,38 @@ public class ConceptReader {
                 break;
 
             //GPSCoordinates
+            case "P625":
+                if (literal.getLabel().startsWith("Point")) {
+                    Pattern pattern = Pattern.compile("Point\\((-?\\d+\\.\\d+) (-?\\d+\\.\\d+)\\)");
+                    Matcher matcher = pattern.matcher(literal.getLabel());
+
+                    if (matcher.find()) {
+                        SKOSGPSCoordinates element = new SKOSGPSCoordinates();
+                        element.setLat(matcher.group(1));
+                        element.setLon(matcher.group(2));
+                        skosConcept.getGpsCoordinates().add(element);
+                    }
+                } else {
+                    Pattern pattern = Pattern.compile("(Polygon|MultiPoint)\\\\(\\\\(([^)]+)\\\\)\\\\)");
+                    Matcher matcher = pattern.matcher(literal.getLabel());
+
+                    if (matcher.find()) {
+                        String coordinatesStr = matcher.group(1);
+                        String[] coordinatePairs = coordinatesStr.split(", ");
+
+                        for (String coordinatePair : coordinatePairs) {
+                            String[] parts = coordinatePair.split(" ");
+                            if (parts.length == 2) {
+                                SKOSGPSCoordinates element = new SKOSGPSCoordinates();
+                                element.setLat(parts[0]);
+                                element.setLon(parts[1]);
+                                skosConcept.getGpsCoordinates().add(element);
+                            }
+                        }
+                    }
+                }
+                break;
             case "lat":
-                //TODO MILTI GPS
-                skosConcept.getGpsCoordinates().setLat(literal.getLabel());
-                /*
                 if (skosConcept.getGpsCoordinates().stream()
                         .filter(element -> element.getLat() == null)
                         .findFirst()
@@ -95,12 +126,10 @@ public class ConceptReader {
                     SKOSGPSCoordinates element = new SKOSGPSCoordinates();
                     element.setLat(literal.getLabel());
                     skosConcept.getGpsCoordinates().add(element);
-                }*/
+                }
                 break;
 
             case "long":
-                skosConcept.getGpsCoordinates().setLon(literal.getLabel());
-                /*
                 if (skosConcept.getGpsCoordinates().stream()
                         .filter(element -> element.getLon() == null)
                         .findFirst()
@@ -115,7 +144,7 @@ public class ConceptReader {
                     SKOSGPSCoordinates element = new SKOSGPSCoordinates();
                     element.setLon(literal.getLabel());
                     skosConcept.getGpsCoordinates().add(element);
-                }*/
+                }
                 break;
 
             //identifier

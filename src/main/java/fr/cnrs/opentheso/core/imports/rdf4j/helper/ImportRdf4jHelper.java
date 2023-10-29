@@ -38,6 +38,8 @@ import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
 
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.skosapi.*;
 import java.sql.Statement;
 import java.util.Date;
@@ -558,22 +560,18 @@ public class ImportRdf4jHelper {
             }
         }
 
-        //TODO MILTI GPS
+        String gpsData = "";
         boolean isGpsPresent = false;
         String longitude = null, altitude = null;
-        if (conceptResource.getGpsCoordinates() != null) {
+        if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates()) &&  conceptResource.getGpsCoordinates().size() == 1) {
             isGpsPresent = true;
-            altitude = conceptResource.getGpsCoordinates().getLat();
-            longitude = conceptResource.getGpsCoordinates().getLon();
-        }
-        /*
-        String gpsData = "";
-        if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates())) {
-            isGpsPresent = true;
+            altitude = conceptResource.getGpsCoordinates().get(0).getLat();
+            longitude = conceptResource.getGpsCoordinates().get(0).getLon();
+        } else if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates())) {
             for (SKOSGPSCoordinates element : conceptResource.getGpsCoordinates()) {
                 gpsData = gpsData + element.getLat() + SOUS_SEPERATEUR + element.getLon() + SEPERATEUR;
             }
-        }*/
+        }
 
         //Non Pref Term
         //-- 'id_term@lexical_value@lang@id_thesaurus@source@status@hiden'
@@ -791,6 +789,16 @@ public class ImportRdf4jHelper {
                     break;
             }
         }
+
+        String gps = null;
+        if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates())) {
+            gps = "";
+            for (SKOSGPSCoordinates gpsValue : conceptResource.getGpsCoordinates()) {
+                gps += SEPERATEUR + gpsValue.getLat() + SOUS_SEPERATEUR + gpsValue.getLon();
+            }
+
+            gps = gps.substring(SEPERATEUR.length());
+        }
         
         
         String sql = "";
@@ -814,11 +822,8 @@ public class ImportRdf4jHelper {
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
                     + (images == null ? null : "'" + images + "'") + ", "
                     + (isReplacedBy == null ? null : "'" + isReplacedBy + "'") + ", "
-                    + isGpsPresent + ", "
-                    //TODO MILTI GPS
-                    + (altitude == null ? null : Double.parseDouble(altitude)) + ", "
-                    + (longitude == null ? null : Double.parseDouble(longitude)) + ", "
-                    //+ (gpsData == null ? null : "'" + gpsData + "'") + ", "
+                    + (gps != null) + ", "
+                    + (gps == null ? null : "'" + gps + "'") + ", "
                     //+ "'" + created + "', "
                     + (created == null ? null : "'" + created + "'") + ", "
 
@@ -1237,16 +1242,7 @@ public class ImportRdf4jHelper {
             acs.term.setHidden(nodeEMList1.isHiden());
             acs.termHelper.addNonPreferredTerm(ds, acs.term, idUser);
         }
-//TODO MILTI GPS
-        if (acs.nodeGps.getLatitude() != null && acs.nodeGps.getLongitude() != null) {
-            if (acs.nodeGps.getLatitude() != 0.0 && acs.nodeGps.getLongitude() != 0.0) {
-                // insertion des données GPS
-                acs.gpsHelper.insertCoordonees(ds, acs.concept.getIdConcept(),
-                        idTheso,//thesaurus.getId_thesaurus(),
-                        acs.nodeGps.getLatitude(), acs.nodeGps.getLongitude());
-            }
-        }
-        /*
+
         if (CollectionUtils.isNotEmpty(acs.nodeGps)) {
             for (NodeGps nodeGps : acs.nodeGps) {
                 if (nodeGps.getLatitude() != 0.0 && nodeGps.getLongitude() != 0.0) {
@@ -1255,7 +1251,7 @@ public class ImportRdf4jHelper {
                             nodeGps.getLatitude(), nodeGps.getLongitude());
                 }
             }
-        }*/
+        }
 
         if (acs.isTopConcept) {
             if (!acs.conceptHelper.setTopConcept(ds, acs.concept.getIdConcept(), idTheso)) {//thesaurus.getId_thesaurus())) {
@@ -1312,7 +1308,7 @@ public class ImportRdf4jHelper {
         }
 
         acs.isTopConcept = false;
-        acs.nodeGps = new NodeGps();
+        acs.nodeGps = new ArrayList<>();
 
         if (acs.nodeImages != null) {
             acs.nodeImages.clear();
@@ -1431,24 +1427,13 @@ public class ImportRdf4jHelper {
         }
     }
 
-    //TODO MILTI GPS
     private void addGPSCoordinates(AddConceptsStruct acs) {
-        SKOSGPSCoordinates gPSCoordinates = acs.conceptResource.getGpsCoordinates();
-        try {
-            acs.nodeGps.setLatitude(Double.parseDouble(gPSCoordinates.getLat()));
-            acs.nodeGps.setLongitude(Double.parseDouble(gPSCoordinates.getLon()));
-
-        } catch (Exception e) {
-            acs.nodeGps.setLatitude(null);
-            acs.nodeGps.setLongitude(null);
-        }
-        /*
         for (SKOSGPSCoordinates element : acs.conceptResource.getGpsCoordinates()) {
             NodeGps nodeGps = new NodeGps();
             nodeGps.setLatitude(Double.parseDouble(element.getLat()));
             nodeGps.setLongitude(Double.parseDouble(element.getLon()));
             acs.nodeGps.add(nodeGps);
-        }*/
+        }
     }
 
     private void addLabel(AddConceptsStruct acs) {

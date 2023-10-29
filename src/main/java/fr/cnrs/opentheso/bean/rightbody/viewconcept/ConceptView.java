@@ -26,8 +26,10 @@ import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
+import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.repositories.GpsRepository;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import javax.inject.Named;
@@ -40,6 +42,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -48,10 +52,13 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.ReorderEvent;
+import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.ResponsiveOption;
 
 
@@ -59,8 +66,9 @@ import org.primefaces.model.ResponsiveOption;
  *
  * @author miledrousset
  */
-@Named(value = "conceptView")
+@Data
 @SessionScoped
+@Named(value = "conceptView")
 public class ConceptView implements Serializable {
 
     @Inject
@@ -81,6 +89,8 @@ public class ConceptView implements Serializable {
     private LanguageBean languageBean;
     @Inject
     private GpsRepository gpsRepository;
+    @Inject
+    private CurrentUser currentUser;
 
     private Map mapModel;
     private NodeConcept nodeConcept;
@@ -328,7 +338,35 @@ public class ConceptView implements Serializable {
         nodeConcept.setNodeGps(gpsRepository.getGpsByConceptAndThesorus(idConcept, idTheso));
         if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
             createMapWithMode();
+
+            var lastIndex = nodeConcept.getNodeGps().size() - 1;
+            if (nodeConcept.getNodeGps().size() == 1) {
+                gpsModeSelected = "POINT";
+            } else if (nodeConcept.getNodeGps().get(0).getLongitude()
+                    .equals(nodeConcept.getNodeGps().get(lastIndex).getLongitude())
+                    && nodeConcept.getNodeGps().get(0).getLatitude().equals(nodeConcept.getNodeGps().get(lastIndex).getLatitude())) {
+                gpsModeSelected = "POLYGONE";
+            } else {
+                gpsModeSelected = "POLYLINE";
+            }
+            gpsList = formatCoordonnees(nodeConcept.getNodeGps());
+        } else {
+            gpsList = "";
         }
+    }
+
+    public boolean isGpsDisable() {
+        return currentUser.getNodeUser() == null || (currentUser.getNodeUser() != null &&
+                !(roleOnThesoBean.isManagerOnThisTheso() || roleOnThesoBean.isAdminOnThisTheso() || roleOnThesoBean.isSuperAdmin()));
+    }
+
+    private String formatCoordonnees(List<Gps> listeCoordonnees) {
+        StringBuilder resultat = new StringBuilder();
+        for (Gps gps : listeCoordonnees) {
+            resultat.append(gps.toString()).append(" ");
+        }
+        resultat.deleteCharAt(resultat.length() - 1);
+        return resultat.toString();
     }
 
     public void createMapWithMode() {
@@ -345,14 +383,6 @@ public class ConceptView implements Serializable {
         }
         mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsMode,
                 ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
-    }
-
-    public boolean isPolylineDisable() {
-        return nodeConcept.getNodeGps().size() < 2;
-    }
-
-    public boolean isPolygoneDisable() {
-        return nodeConcept.getNodeGps().size() < 3;
     }
 
     /**
@@ -397,10 +427,7 @@ public class ConceptView implements Serializable {
         }
         setRoles();
 
-        nodeConcept.setNodeGps(gpsRepository.getGpsByConceptAndThesorus(idConcept, idTheso));
-        if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
-            mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), GpsMode.POINT, "");
-        }
+        createMap(idConcept, idTheso);
 
         setFacetsOfConcept(idConcept, idTheso, idLang);
 
@@ -513,18 +540,6 @@ public class ConceptView implements Serializable {
         return datas;
     }
 
-    public int getCountOfBranch() {
-        return countOfBranch;
-    }
-
-    public void setCountOfBranch(int countOfBranch) {
-        this.countOfBranch = countOfBranch;
-    }
-
-    public int getOffset() {
-        return offset;
-    }
-
     public void setOffset() {
         if (nodeConcept.getNodeNT().size() < step) {
             offset = 0;
@@ -547,17 +562,8 @@ public class ConceptView implements Serializable {
     }
 
     public void getNextNT(String idTheso, String idConcept, String idLang) {
-    /*    if(tree != null 
-                && CollectionUtils.isNotEmpty(tree.getClickselectedNodes()) 
-                && tree.getClickselectedNodes().get(0) != null 
-                && tree.getClickselectedNodes().get(0).getData() != null) {*/
         if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
-            RelationsHelper relationsHelper = new RelationsHelper();
-          /*  ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
-                    ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId(),
-                    idTheso,
-                    idLang, step+1, offset);*/
-            ArrayList<NodeNT> nodeNTs = relationsHelper.getListNT(connect.getPoolConnexion(),
+            ArrayList<NodeNT> nodeNTs = new RelationsHelper().getListNT(connect.getPoolConnexion(),
                     ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
                     idTheso,
                     idLang, step + 1, offset);
@@ -568,14 +574,6 @@ public class ConceptView implements Serializable {
             }
             haveNext = false;
         }
-    }
-
-    public int getStep() {
-        return step;
-    }
-
-    public void setStep(int step) {
-        this.step = step;
     }
 
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
@@ -593,15 +591,10 @@ public class ConceptView implements Serializable {
             }
             return;
         }
-        //pathOfConcept = getPathFromArray(paths);
         pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
     }
 
     private void setRoles() {
-        if (nodeConcept == null || nodeConcept.getDcElements() == null) {
-            creator = null;
-            contributors = null;
-        }
         contributors = null;
         creator = null;
         boolean firstElement = true;
@@ -624,23 +617,6 @@ public class ConceptView implements Serializable {
             }
         }
     }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public String getContributors() {
-        return contributors;
-    }
-
-    public void setContributors(String contributors) {
-        this.contributors = contributors;
-    }
-
 
     public String getNoteSource(String noteSource) {
         if (StringUtils.isEmpty(noteSource))
@@ -717,160 +693,6 @@ public class ConceptView implements Serializable {
         return "";
     }
 
-    public void changeStateAltLabelOtherLang() {
-
-    }
-
-    public NodeConcept getNodeConcept() {
-        return nodeConcept;
-    }
-
-    public void setNodeConcept(NodeConcept nodeConcept) {
-        this.nodeConcept = nodeConcept;
-    }
-
-    public ArrayList<NodePath> getPathLabel() {
-        return pathLabel;
-    }
-
-    public void setPathLabel(ArrayList<NodePath> pathLabel) {
-        this.pathLabel = pathLabel;
-    }
-
-    public void actionAfaire(String id) {
-        String i = id;
-        FacesContext.getCurrentInstance().getExternalContext().getInitParameterMap().get("version");
-    }
-
-    public String getSelectedLang() {
-        return selectedLang;
-    }
-
-    public void setSelectedLang(String selectedLang) {
-        this.selectedLang = selectedLang;
-    }
-
-    /////// notes
-    public ArrayList<NodeNote> getNotes() {
-        return notes;
-    }
-
-    public void setNotes(ArrayList<NodeNote> notes) {
-        this.notes = notes;
-    }
-
-    public ArrayList<NodeNote> getScopeNotes() {
-        return scopeNotes;
-    }
-
-    public void setScopeNotes(ArrayList<NodeNote> scopeNotes) {
-        this.scopeNotes = scopeNotes;
-    }
-
-    public ArrayList<NodeNote> getChangeNotes() {
-        return changeNotes;
-    }
-
-    public void setChangeNotes(ArrayList<NodeNote> changeNotes) {
-        this.changeNotes = changeNotes;
-    }
-
-    public ArrayList<NodeNote> getDefinitions() {
-        return definitions;
-    }
-
-    public void setDefinitions(ArrayList<NodeNote> definitions) {
-        this.definitions = definitions;
-    }
-
-    public ArrayList<NodeNote> getEditorialNotes() {
-        return editorialNotes;
-    }
-
-    public void setEditorialNotes(ArrayList<NodeNote> editorialNotes) {
-        this.editorialNotes = editorialNotes;
-    }
-
-    public ArrayList<NodeNote> getExamples() {
-        return examples;
-    }
-
-    public void setExamples(ArrayList<NodeNote> examples) {
-        this.examples = examples;
-    }
-
-    public ArrayList<NodeNote> getHistoryNotes() {
-        return historyNotes;
-    }
-
-    public void setHistoryNotes(ArrayList<NodeNote> historyNotes) {
-        this.historyNotes = historyNotes;
-    }
-
-    public ArrayList<NodeCorpus> getNodeCorpuses() {
-        return nodeCorpuses;
-    }
-
-    public void setNodeCorpuses(ArrayList<NodeCorpus> nodeCorpuses) {
-        this.nodeCorpuses = nodeCorpuses;
-    }
-
-    public Map getMapModel() {
-        return mapModel;
-    }
-
-    public boolean isHaveCorpus() {
-        return haveCorpus;
-    }
-
-    public void setHaveCorpus(boolean haveCorpus) {
-        this.haveCorpus = haveCorpus;
-    }
-
-    public boolean isHaveNext() {
-        return haveNext;
-    }
-
-    public void setHaveNext(boolean haveNext) {
-        this.haveNext = haveNext;
-    }
-
-    public List<ResponsiveOption> getResponsiveOptions() {
-        return responsiveOptions;
-    }
-
-    public ArrayList<NodeIdValue> getNodeFacets() {
-        return nodeFacets;
-    }
-
-    public void setNodeFacets(ArrayList<NodeIdValue> nodeFacets) {
-        this.nodeFacets = nodeFacets;
-    }
-
-    public boolean isToggleSwitchAltLabelLang() {
-        return toggleSwitchAltLabelLang;
-    }
-
-    public void setToggleSwitchAltLabelLang(boolean toggleSwitchAltLabelLang) {
-        this.toggleSwitchAltLabelLang = toggleSwitchAltLabelLang;
-    }
-
-    public boolean isToggleSwitchNotesLang() {
-        return toggleSwitchNotesLang;
-    }
-
-    public void setToggleSwitchNotesLang(boolean toggleSwitchNotesLang) {
-        this.toggleSwitchNotesLang = toggleSwitchNotesLang;
-    }
-
-    public ArrayList<NodeCustomRelation> getNodeCustomRelationReciprocals() {
-        return nodeCustomRelationReciprocals;
-    }
-
-    public void setNodeCustomRelationReciprocals(ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals) {
-        this.nodeCustomRelationReciprocals = nodeCustomRelationReciprocals;
-    }
-
     /**
      * permet de retouver la langue de l'interface et se limiter au fr et en
      *
@@ -885,15 +707,126 @@ public class ConceptView implements Serializable {
         return idLang;
     }
 
-    public String getGpsModeSelected() {
-        return gpsModeSelected;
-    }
-
-    public void setGpsModeSelected(String gpsModeSelected) {
-        this.gpsModeSelected = gpsModeSelected;
-    }
-
     public Boolean isMapVisible() {
         return ObjectUtils.isNotEmpty(nodeConcept) && CollectionUtils.isNotEmpty(nodeConcept.getNodeGps());
+    }
+
+    public void onRowEdit(RowEditEvent<Gps> event) {
+        gpsRepository.updateGps(event.getObject());
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+
+        FacesMessage msg = new FacesMessage("Coordonnée modifiée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public void onRowCancel(RowEditEvent<Gps> event) {
+        gpsRepository.removeGps(event.getObject());
+
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+
+        FacesMessage msg = new FacesMessage("Coordonnée supprimée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public void addNewGps() {
+        Gps gps = new Gps();
+        gps.setIdTheso(selectedTheso.getCurrentIdTheso());
+        gps.setIdConcept(nodeConcept.getConcept().getIdConcept());
+        gps.setPosition(nodeConcept.getNodeGps().size() + 1);
+
+        gpsRepository.saveNewGps(gps);
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+
+        FacesMessage msg = new FacesMessage("Nouvelle coordonnée ajoutée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public void onRowReorder(ReorderEvent event) {
+        Integer fromId = 0, toId = 0;
+
+        for (Gps gps : nodeConcept.getNodeGps()) {
+            if (gps.getPosition() == (event.getFromIndex() + 1)) {
+                fromId = gps.getId();
+            }
+            if (gps.getPosition() == (event.getToIndex() + 1)) {
+                toId = gps.getId();
+            }
+        }
+
+        gpsRepository.updateGpsPosition(fromId, (event.getToIndex() + 1));
+        gpsRepository.updateGpsPosition(toId, (event.getFromIndex() + 1));
+
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+
+        FacesMessage msg = new FacesMessage("Réorganisation des coordonnées effectuée");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    private String gpsList;
+
+    public void formatGpsList() {
+
+        if (StringUtils.isEmpty(gpsList)) {
+            FacesMessage msg = new FacesMessage("La liste des gps est vide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+        nodeConcept.setNodeGps(readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeConcept.getConcept().getIdConcept()));
+
+        gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
+
+        gpsRepository.removeGpsByConcept(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        for (Gps gps : nodeConcept.getNodeGps()) {
+            gpsRepository.saveNewGps(gps);
+        }
+
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+    }
+
+    private String getGpsMode(List<Gps> nodeGps) {
+        String gpsMode = "";
+        if (CollectionUtils.isNotEmpty(nodeGps)) {
+            var lastIndex = nodeGps.size() - 1;
+            if (nodeGps.size() == 1) {
+                gpsMode = "POINT";
+            } else if (nodeGps.get(0).getLongitude().equals(nodeGps.get(lastIndex).getLongitude())
+                    && nodeGps.get(0).getLatitude().equals(nodeGps.get(lastIndex).getLatitude())) {
+                gpsMode = "POLYGONE";
+            } else {
+                gpsMode = "POLYLINE";
+            }
+        }
+        return gpsMode;
+    }
+
+    public static List<Gps> readGps(String gpsValue, String idTheso, String idConcept) {
+        List<Gps> gpsList = new ArrayList<>();
+        Matcher matcher = Pattern.compile("\\(([^)]+)\\)").matcher(gpsValue);
+        while (matcher.find()) {
+            Pattern pattern = Pattern.compile("([0-9]+\\.[0-9]+), ([0-9]+\\.[0-9]+)");
+            Matcher matcherGps = pattern.matcher(matcher.group(1));
+
+            // Si une correspondance est trouvée, extrayez les deux nombres
+            if (matcherGps.find()) {
+                try {
+                    Gps gpsTmp = new Gps();
+                    gpsTmp.setIdTheso(idTheso);
+                    gpsTmp.setIdConcept(idConcept);
+                    gpsTmp.setPosition(gpsList.size() + 1);
+                    gpsTmp.setLatitude(Double.parseDouble(matcherGps.group(1)));
+                    gpsTmp.setLongitude(Double.parseDouble(matcherGps.group(2)));
+                    gpsList.add(gpsTmp);
+                } catch (Exception ex) {
+                    FacesMessage msg = new FacesMessage("Le donnée du coordonée '" + matcher.group(1) + "' n'est pas valide !");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                }
+            } else {
+                FacesMessage msg = new FacesMessage("Aucune correspondance trouvée !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+            }
+        }
+
+        return gpsList;
     }
 }

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.base.AbstractNamespace;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
@@ -20,6 +21,8 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.SKOS;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
+
+import java.util.List;
 
 
 public class WriteRdf4j {
@@ -60,6 +63,7 @@ public class WriteRdf4j {
         builder.setNamespace("opentheso", "http://purl.org/umu/uneskos#");
         builder.setNamespace("foaf", "http://xmlns.com/foaf/0.1/");
         builder.setNamespace("owl", "http://www.w3.org/2002/07/owl#");
+        builder.setNamespace("wdt", "http://www.opengis.net/ont/geosparql#");
     }
 
     private void writeModel() {
@@ -181,26 +185,67 @@ public class WriteRdf4j {
         writeDcTerms(conceptScheme);
     }
 
-    //TODO MILTI GPS
     private void writeGPS(SKOSResource resource) {
-        if (StringUtils.isNotEmpty(resource.getGpsCoordinates().getLat())
-                && StringUtils.isNotEmpty(resource.getGpsCoordinates().getLon())) {
-            builder.add("geo:lat", Double.valueOf(resource.getGpsCoordinates().getLat()));
-            builder.add("geo:long", Double.valueOf(resource.getGpsCoordinates().getLon()));
-        }
-        /*
         if (CollectionUtils.isNotEmpty(resource.getGpsCoordinates())) {
-            for (SKOSGPSCoordinates skosgpsCoordinates : resource.getGpsCoordinates()) {
 
-                String wktLiteralValue = "Point(" + skosgpsCoordinates.getLon() + " " + skosgpsCoordinates.getLat() + ")";
-                Literal wktLiteral = vf.createLiteral(wktLiteralValue, vf.createIRI("http://www.opengis.net/ont/geosparql#wktLiteral"));
-
-                // Ajoutez le triplet au graphe RDF
-                IRI subject = vf.createIRI("http://www.wikidata.org/entity/Q123"); // Exemple de sujet Wikidata
-                IRI predicate = vf.createIRI("http://www.wikidata.org/prop/direct/P625"); // Propriété wdt:P625
-                builder.add(subject, predicate, wktLiteral);
+            String str = "";
+            String wktLiteralValue = "";
+            switch(getGpsMode(resource.getGpsCoordinates())) {
+                case "POLYGONE":
+                    for (SKOSGPSCoordinates gps : resource.getGpsCoordinates()) {
+                        str = str + ", " + gps.getLat() + " " + gps.getLon();
+                    }
+                    wktLiteralValue = "Polygon((" + str.substring(2) + "))";
+                    break;
+                case "POLYLINE":
+                    for (SKOSGPSCoordinates gps : resource.getGpsCoordinates()) {
+                        str = str + ", " + gps.getLat() + " " + gps.getLon();
+                    }
+                    wktLiteralValue = "MultiPoint((" + str.substring(2) + "))";
+                    break;
+                default:
+                    wktLiteralValue = "Point(" + resource.getGpsCoordinates().get(0).getLat() + " "
+                            + resource.getGpsCoordinates().get(0).getLon() + ")";
             }
-        }*/
+
+            String wdtNamespace = "http://www.opengis.net/ont/geosparql#";
+            builder.add(vf.createIRI(wdtNamespace, "P625"), vf.createLiteral(wktLiteralValue,
+                            vf.createIRI(wdtNamespace, "wktLiteral")));
+
+        }
+    }
+
+    private static class VocabularyNamespace extends AbstractNamespace {
+        private final String prefix;
+        private final String namespace;
+
+        public VocabularyNamespace(String prefix, String namespace) {
+            this.prefix = prefix;
+            this.namespace = namespace;
+        }
+
+        public String getPrefix() {
+            return this.prefix;
+        }
+
+        public String getName() {
+            return this.namespace;
+        }
+    }
+
+    private String getGpsMode(List<SKOSGPSCoordinates> getGpsCoordinates) {
+        if (CollectionUtils.isNotEmpty(getGpsCoordinates)) {
+            var lastIndex = getGpsCoordinates.size() - 1;
+            if (getGpsCoordinates.size() == 1) {
+                return "POINT";
+            } else if (getGpsCoordinates.get(0).getLon().equals(getGpsCoordinates.get(lastIndex).getLon())
+                    && getGpsCoordinates.get(0).getLat().equals(getGpsCoordinates.get(lastIndex).getLat())) {
+                return "POLYGONE";
+            } else {
+                return "POLYLINE";
+            }
+        }
+        return "";
     }
 
     private void writeExternalResources(SKOSResource resource) {

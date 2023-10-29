@@ -230,23 +230,14 @@ public class WriteAlphaPDF {
         }
     }
 
-    //TODO MILTI GPS
-    private void addGpsCoordiantes(List<Paragraph> paragraphs, SKOSGPSCoordinates skosGpsCoordinates) {
+    private void addGpsCoordiantes(List<Paragraph> paragraphs, List<SKOSGPSCoordinates> skosGpsCoordinates) {
 
-        if (ObjectUtils.isNotEmpty(skosGpsCoordinates)
-                && StringUtils.isNotEmpty(skosGpsCoordinates.getLat())
-                && StringUtils.isNotEmpty(skosGpsCoordinates.getLon())) {
-
-            paragraphs.add(new Paragraph(LATITUDE + skosGpsCoordinates.getLat(), writePdfSettings.textFont));
-            paragraphs.add(new Paragraph(LONGITUDE + skosGpsCoordinates.getLon(), writePdfSettings.textFont));
-        }
-        /*
         if (CollectionUtils.isNotEmpty(skosGpsCoordinates)) {
             for (SKOSGPSCoordinates element : skosGpsCoordinates) {
                 paragraphs.add(new Paragraph(LATITUDE + element.getLat(), writePdfSettings.textFont));
                 paragraphs.add(new Paragraph(LONGITUDE + element.getLon(), writePdfSettings.textFont));
             }
-        }*/
+        }
     }
 
     private void addImages(List<Paragraph> paragraphs, List<NodeImage> images) {

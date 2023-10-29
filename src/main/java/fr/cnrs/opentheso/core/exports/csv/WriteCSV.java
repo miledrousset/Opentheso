@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.core.exports.csv;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.skosapi.SKOSDate;
 import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
@@ -113,6 +115,7 @@ public class WriteCSV {
                     .append("skos:closeMatch").append(seperate)
                     .append("geo:lat").append(seperate)
                     .append("geo:long").append(seperate)
+                    .append("geo:gps").append(seperate)
                     .append("skos:member").append(seperate)
                     .append("dct:created").append(seperate)
                     .append("dct:modified");
@@ -236,19 +239,20 @@ public class WriteCSV {
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch)).append(seperate) //closeMatch
                 .append(getLatValue(skosResource.getGpsCoordinates())).append(seperate)//geo:lat
                 .append(getLongValue(skosResource.getGpsCoordinates())).append(seperate)//geo:long
+                .append(getGps(skosResource.getGpsCoordinates())).append(seperate)//gps
                 .append(getMemberValue(skosResource.getRelationsList())).append(seperate)//skos:member
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.created)).append(seperate)//sdct:created
                 .append(getDateValue(skosResource.getDateList(), SKOSProperty.modified));//dct:modified
         writer.write(stringBuffer.toString());
         writer.newLine();
     }
-    //TODO MILTI GPS
-    private String getLatValue(SKOSGPSCoordinates coordinates) {
-        if (coordinates != null) {
-            if (coordinates.getLat() == null) {
+
+    private String getLatValue(List<SKOSGPSCoordinates> coordinates) {
+        if (CollectionUtils.isNotEmpty(coordinates) && coordinates.size() == 1) {
+            if (coordinates.get(0).getLat() == null) {
                 return "";
             }
-            return coordinates.getLat();
+            return coordinates.get(0).getLat();
         }
         /*
         if (CollectionUtils.isNotEmpty(coordinates)) {
@@ -259,12 +263,12 @@ public class WriteCSV {
         return "";
     }
 
-    private String getLongValue(SKOSGPSCoordinates coordinates) {
-        if (coordinates != null) {
-            if (coordinates.getLon() == null) {
+    private String getLongValue(List<SKOSGPSCoordinates> coordinates) {
+        if (CollectionUtils.isNotEmpty(coordinates) && coordinates.size() == 1) {
+            if (coordinates.get(0).getLon() == null) {
                 return "";
             }
-            return coordinates.getLon();
+            return coordinates.get(0).getLon();
         }
         /*
         if (CollectionUtils.isNotEmpty(coordinates)) {
@@ -273,6 +277,23 @@ public class WriteCSV {
                     .collect(Collectors.joining(delim_multi_datas));
         }*/
         return "";
+    }
+
+    private String getGps(List<SKOSGPSCoordinates> coordinates) {
+        if (CollectionUtils.isNotEmpty(coordinates) && coordinates.size() > 1) {
+            StringBuilder result = new StringBuilder();
+            for (SKOSGPSCoordinates gps : coordinates) {
+                result.append(gps.toString()).append(" ");
+            }
+
+            if (result.length() > 0) {
+                result.deleteCharAt(result.length() - 1);
+            }
+
+            return result.toString();
+        } else {
+            return "";
+        }
     }
 
     private String getMemberValue(ArrayList<SKOSRelation> sKOSRelations) {

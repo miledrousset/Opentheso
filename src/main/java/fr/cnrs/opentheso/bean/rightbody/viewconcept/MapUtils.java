@@ -19,7 +19,7 @@ public class MapUtils {
         Map mapModel = new Map();
         mapModel.setWidth("100%");
         mapModel.setHeight("250px");
-        mapModel.setZoom(13);
+        mapModel.setZoom(10);
         mapModel.setAttribution("©<a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>");
         mapModel.setMiniMap(false);
         mapModel.setLayerControl(false);

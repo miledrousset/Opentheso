@@ -38,7 +38,7 @@ public class WriteHierachiquePDF {
     private WritePdfSettings writePdfSettings;
 
     private HashMap<String, String> labels;
-    private HashMap<String, String> gps;//TODO MILTI GPS
+    private HashMap<String, List<String>> gps;
     private HashMap<String, List<String>> idToChildId;
     private HashMap<String, ArrayList<String>> notes;
     private HashMap<String, ArrayList<String>> notesTraduction;
@@ -194,17 +194,12 @@ public class WriteHierachiquePDF {
         }
     }
 
-    private void addGpsCoordiantes(List<Paragraph> paragraphs, String gps, String space) {
-        //TODO MILTI GPS
-        if (StringUtils.isNotEmpty(gps)) {
-            paragraphs.add(new Paragraph(space + gps, writePdfSettings.hieraInfoFont));
-        }
-        /*
+    private void addGpsCoordiantes(List<Paragraph> paragraphs, List<String> gps, String space) {
         if (CollectionUtils.isNotEmpty(gps)) {
             for (String element : gps) {
                 paragraphs.add(new Paragraph(space + element, writePdfSettings.hieraInfoFont));
             }
-        }*/
+        }
     }
 
     private void addImages(List<Paragraph> paragraphs, ArrayList<NodeImage> images, String indentation) {

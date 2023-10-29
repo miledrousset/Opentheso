@@ -582,9 +582,8 @@ public class ExportFileBean implements Serializable {
             }
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-            
-            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
-            byte[] str = csvWriteHelper.writeCsv(skosxd,
+
+            byte[] str = new CsvWriteHelper().writeCsv(skosxd,
                         viewExportBean.getSelectedLanguages(),
                         viewExportBean.getCsvDelimiterChar());               
 
