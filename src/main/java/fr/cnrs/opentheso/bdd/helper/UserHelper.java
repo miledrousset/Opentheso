@@ -1296,6 +1296,129 @@ public class UserHelper {
         }
         return status;
     }
+    
+    /**
+     * permet de supprimer un role pour un utilisateur sur un thésaurus 
+     * cas où l'utilisateur d'un projet a un rôle uniquement à une partie 
+     * des thésaurus du projet
+     *
+     * @param ds
+     * @param idUser
+     * @param idRole
+     * @param idProject
+     * @param idTheso
+     * @return
+     */
+    public boolean deleteUserRoleOnTheso(HikariDataSource ds,
+            int idUser, int idRole, int idProject, String idTheso) {
+        boolean status = false;
+
+        try (Connection conn = ds.getConnection()) {        
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from user_role_only_on "
+                        + " where "
+                        + " id_user = " + idUser
+                        + " and "
+                        + " id_role = " + idRole
+                        + " and "
+                        + " id_group = " + idProject
+                        + " and "
+                        + " id_theso = '" + idTheso + "'"
+                        );  
+                status = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;
+    }      
+    
+    /**
+     * permet de supprimer tous les roles pour un utilisateur sur les thésaurus 
+     * d'un projet
+     * cas des rôles uniquement à une partie des thésaurus du projet
+     * à appliquer avent update
+     *
+     * @param ds
+     * @param idUser
+     * @param idProject
+     * @return
+     */
+    public boolean deleteAllUserRoleOnTheso(HikariDataSource ds,
+            int idUser, int idProject) {
+        boolean status = false;
+
+        try (Connection conn = ds.getConnection()) {        
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from user_role_only_on "
+                        + " where "
+                        + " id_user = " + idUser
+                        + " and "
+                        + " id_group = " + idProject
+                        );  
+                status = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;
+    }      
+    
+    /**
+     * permet d'ajouter un role pour un utilisateur sur un lot de thésaurus 
+     * cas où on ne donne pas accès à l'utilisateur à un projet, mais uniquement à une partie 
+     * des thésaurus du projet
+     *
+     * @param ds
+     * @param idUser
+     * @param idRole
+     * @param idProject
+     * @param idThesos
+     * @return
+     */
+    public boolean addUserRoleOnTheso(HikariDataSource ds,
+            int idUser, int idRole, int idProject, List<String> idThesos) {
+        boolean status = false;
+
+        try (Connection conn = ds.getConnection()) {        
+            conn.setAutoCommit(false);
+            /// On supprime d'abord le rôle de l'utilisateur sur le groupe
+            if (!deleteRoleOnGroup(conn, idUser, idProject)) {
+                conn.rollback();
+                return false;
+            }
+            for (String idTheso : idThesos) {
+                if (!addUserRoleOnTheso_(conn,
+                        idUser, idRole, idTheso, idProject)) {
+                    conn.rollback();
+                    return false;
+                }                
+            }
+            conn.commit();
+            status = true;
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;
+    }    
+    
+    private boolean addUserRoleOnTheso_(Connection conn,
+            int idUser, int idRole, String idTheso, int idProject) {
+        
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("insert into user_role_only_on (id_user, id_role, id_theso, id_group)"
+                            + " values("
+                            + idUser + ","
+                            + idRole + ","
+                            + "'" + idTheso + "'"
+                            + "," + idProject 
+                            + ") on conflict do nothing");  
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;         
+    }   
 
     private boolean addUserRoleOnGroupRollBack(Connection conn,
             int idUser, int idRole, int idGroup) {
@@ -1605,6 +1728,102 @@ public class UserHelper {
         return nodeUserRoleGroup;
     }
 
+    /**
+     * cette fonction permet de retourner la liste des utilisateurs pour un
+     * groupe avec un role limité sur des thésaurus du group/projet en cours
+     *
+     *
+     * @param ds
+     * @param idGroup
+     * @return
+     */
+    public ArrayList<NodeUserRole> getAllUsersRolesLimitedByTheso(HikariDataSource ds,
+            int idGroup) {
+        ArrayList<NodeUserRole> listUser = new ArrayList<>();
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        String idLang;
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT users.id_user, users.username, users.active, roles.name, roles.id, user_role_only_on.id_theso" +
+                        " FROM" +
+                        " users, roles, user_role_only_on " +
+                        " WHERE " +
+                        " user_role_only_on.id_role = roles.id" +
+                        " AND" +
+                        " users.id_user = user_role_only_on.id_user" +
+                        " AND" +
+                        " user_role_only_on.id_group = " + idGroup  +
+                        " AND" +
+                        " users.issuperadmin != true " +
+                        " ORDER BY LOWER(users.username)");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeUserRole nodeUserRole = new NodeUserRole();
+                        nodeUserRole.setIdUser(resultSet.getInt("id_user"));
+                        nodeUserRole.setUserName(resultSet.getString("username"));
+                        nodeUserRole.setIsActive(resultSet.getBoolean("active"));
+                        nodeUserRole.setIdRole(resultSet.getInt("id"));
+                        nodeUserRole.setRoleName(resultSet.getString("name"));
+                        nodeUserRole.setIdTheso(resultSet.getString("id_theso"));
+                        idLang = preferencesHelper.getWorkLanguageOfTheso(ds, nodeUserRole.getIdTheso());
+                        nodeUserRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(ds, nodeUserRole.getIdTheso(), idLang));
+                        listUser.add(nodeUserRole);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listUser;
+    }    
+    
+    /**
+     * cette fonction permet de retourner la liste des utilisateurs pour un
+     * groupe avec un role limité sur des thésaurus du group/projet en cours
+     *
+     *
+     * @param ds
+     * @param idGroup
+     * @return
+     */
+    public ArrayList<NodeUserRole> getListRoleByThesoLimited(HikariDataSource ds,
+            int idGroup, int idUser) {
+        ArrayList<NodeUserRole> listUser = new ArrayList<>();
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        String idLang;
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT user_role_only_on.id_theso, roles.name, roles.id " +
+                        " FROM user_role_only_on, roles " +
+                        " WHERE " +
+                        " user_role_only_on.id_role = roles.id" +
+                        " AND " +
+                        " user_role_only_on.id_group = " + idGroup +
+                        " AND " +
+                        " user_role_only_on.id_user = " + idUser +
+                        " ORDER BY LOWER(id_theso)") ;
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeUserRole nodeUserRole = new NodeUserRole();
+                        nodeUserRole.setIdRole(resultSet.getInt("id"));
+                        nodeUserRole.setRoleName(resultSet.getString("name"));
+                        nodeUserRole.setIdTheso(resultSet.getString("id_theso"));
+                        idLang = preferencesHelper.getWorkLanguageOfTheso(ds, nodeUserRole.getIdTheso());
+                        nodeUserRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(ds, nodeUserRole.getIdTheso(), idLang));
+                        listUser.add(nodeUserRole);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listUser;
+    }      
+    
     /**
      * cette fonction permet de retourner la liste des utilisateurs pour un
      * groupe avec un role égale ou inférieur au role de l'utilisateur en cours

@@ -22,4 +22,7 @@
     <!-- changelog pour la v23.09 --> 
     <include file="/changelog/v23.09/001-delete-table-pref-gps.xml"/>
     <include file="/changelog/v23.09/002-add-apikey-user.xml"/>
+    
+    <!-- changelog pour la v23.10 --> 
+    <include file="/changelog/v23.10/001-table-roleonly.xml"/>
 </databaseChangeLog>

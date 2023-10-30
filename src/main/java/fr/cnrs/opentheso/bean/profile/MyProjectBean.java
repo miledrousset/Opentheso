@@ -36,6 +36,8 @@ public class MyProjectBean implements Serializable {
     private Map<String, String> listeGroupsOfUser;
     private ArrayList<NodeUserRole> listeUser; // la liste des utilisateur du groupe    
     
+    private ArrayList<NodeUserRole> listeUserLimitedRole; // la liste des utilisateur du groupe avec des droits limités       
+    
     private NodeUserRoleGroup nodeUserRoleOnThisGroup;
     private NodeUserRoleGroup nodeUserRoleSuperAdmin;   
     
@@ -65,6 +67,12 @@ public class MyProjectBean implements Serializable {
             listeUser.clear();
             listeUser = null;
         }
+        
+        if(listeUserLimitedRole != null){
+            listeUserLimitedRole.clear();
+            listeUserLimitedRole = null;
+        }
+        
         if(myAuthorizedRoles!= null){
             myAuthorizedRoles.clear();
             myAuthorizedRoles = null;
@@ -74,6 +82,7 @@ public class MyProjectBean implements Serializable {
         myRoleOnThisProject = null;  
         selectedProject = null;  
         selectedProjectName = null;  
+
     }  
     
     public MyProjectBean() {
@@ -86,6 +95,7 @@ public class MyProjectBean implements Serializable {
         selectedProjectName = null;
         myRoleOnThisProject = null;
         myAuthorizedRoles = null;
+      
         getGroupsOfUser();
         getListThesoByGroup();
     }
@@ -141,11 +151,13 @@ public class MyProjectBean implements Serializable {
     
     public void setLists() {
         listeUser = null;
+        listeUserLimitedRole = null;
         listeThesoOfProject = null;
         nodeUserRoleOnThisGroup = null;
         nodeUserRoleSuperAdmin = null;
         getListThesoByGroup();
         listUsersByGroup();
+        listUsersLimitedRoleByGroup();
         initMyAuthorizedRoleOnThisGroup();
         initAuthorizedRoles();        
     }    
@@ -156,6 +168,15 @@ public class MyProjectBean implements Serializable {
     public void resetListUsers(){
         listUsersByGroup();
     }
+    
+    /**
+     * appel après la modifcation d'un rôle limité pour un utilisateur
+     */
+    public void resetListLimitedRoleUsers(){
+        listUsersLimitedRoleByGroup(); 
+    }    
+    
+   
     
     /**
      * retourne la liste des thésaurus par groupe
@@ -201,6 +222,32 @@ public class MyProjectBean implements Serializable {
         }
     //    }        
     }
+    
+    /**
+     * permet de récupérer la liste des utilisateurs suivants les options choisies
+     */
+    private void listUsersLimitedRoleByGroup(){
+        if (selectedProject == null || selectedProject.isEmpty()) {
+            return;
+        }
+        UserHelper userHelper = new UserHelper();
+        int idGroup = Integer.parseInt(selectedProject);
+        setUserRoleOnThisGroup();
+        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
+            listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(),
+                    idGroup);
+        } else {
+            if (nodeUserRoleOnThisGroup != null) {
+                listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(),
+                        idGroup);
+            } else {
+                if (listeUserLimitedRole != null) {
+                    listeUserLimitedRole.clear(); //cas où on supprime l'utilisateur en cours
+                }
+            }
+        }
+    //    }        
+    }    
     
     /**
      * setting du role de l'utilisateur sur le group séléctionné
@@ -309,6 +356,14 @@ public class MyProjectBean implements Serializable {
 
     public void setMyRoleOnThisProject(NodeUserRoleGroup myRoleOnThisProject) {
         this.myRoleOnThisProject = myRoleOnThisProject;
+    }
+
+    public ArrayList<NodeUserRole> getListeUserLimitedRole() {
+        return listeUserLimitedRole;
+    }
+
+    public void setListeUserLimitedRole(ArrayList<NodeUserRole> listeUserLimitedRole) {
+        this.listeUserLimitedRole = listeUserLimitedRole;
     }
  
     

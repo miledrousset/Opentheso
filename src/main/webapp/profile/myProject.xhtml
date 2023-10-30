@@ -51,7 +51,7 @@
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.my_authorized_projects')}</span></h1>
                         </div>
 
-                        <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 20px">
+                        <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin-left: 20px; margin-right: 20px;">
                             <div class="row" style="margin-left: 30px; margin-right: 30px;">
                                 <div class="col-3">
                                     <h:outputText value="#{langueBean.getMsg('profile.my_authorized_projects')} : "/>
@@ -67,7 +67,7 @@
                                                      filter="true" filterMatchMode="contains">
 
                                         <f:selectItem itemLabel="...." itemValue="" />
-                                        <f:selectItems value="#{myProjectBean.listeGroupsOfUser.entrySet()}" var="project" itemLabel="#{project.value}" itemValue="#{project.key}"/>
+                                        <f:selectItems value="#{myProjectBean.listeGroupsOfUser.entrySet()}" var="project" itemLabel="#{project.value} (#{project.key})" itemValue="#{project.key}"/>
                                         <p:ajax event="change" listener="#{myProjectBean.setLists()}" update="containerIndex"/>                        
 
                                     </p:selectOneMenu>
@@ -91,30 +91,71 @@
                         </div>
 
                         <h:panelGroup id="contenu" rendered="#{(myProjectBean.isAdminOnThisGroup())  and (myProjectBean.listeThesoOfProject != null)}" >
-                            <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 20px">
+                            <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin-left: 20px; margin-right: 20px;">
                                 <div class="row" style="margin-left: 30px; margin-right: 30px;">
                                     <div class="col-12">
-                                        <p:tabView>
-                                            <!-- Vue liste d'utilisateurs par groupe -->
-                                            <p:tab title="#{langueBean.getMsg('profile.list_of_users')}">
-                                                <p:toolbar>
-                                                    <p:toolbarGroup align="left" />
-                                                    <p:toolbarGroup align="right">
-                                                        <p:commandButton value="#{langueBean.getMsg('profile.new_userOnProject')}" icon="fas fa-user-plus"
-                                                                         actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
-                                                                         style="padding-left: 35px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px;"
-                                                                         update="idNewUserForProject newUserForProjectForm" oncomplete="PF('newUserForProject').show();"
-                                                                         styleClass="ui-button-success" 
-                                                                         title="#{langueBean.getMsg('profile.new_userOnProject')}"/>
+                                        <p:toolbar>
+                                            <p:toolbarGroup align="right">
+                                                <p:commandButton value="#{langueBean.getMsg('profile.new_userOnProject')}" icon="fas fa-user-plus"
+                                                                 actionListener="#{newUSerBean.init(myProjectBean.selectedProject)}"
+                                                                 style="padding-left: 35px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px;"
+                                                                 update="idNewUserForProject newUserForProjectForm" oncomplete="PF('newUserForProject').show();"
+                                                                 styleClass="ui-button-success" 
+                                                                 title="#{langueBean.getMsg('profile.new_userOnProject')}"/>
 
-                                                        <p:commandButton value="#{langueBean.getMsg('profile.add_existing_user')}"
-                                                                         actionListener="#{modifyRoleBean.setSelectedProject(myProjectBean.selectedProject)}" icon="fas fa-user"
-                                                                         style="padding-left: 35px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; margin-left: 10px"
-                                                                         update="idAddExistingUserToProject" oncomplete="PF('addExistingUserToProject').show();"
-                                                                         styleClass="ui-button-success" />
-                                                    </p:toolbarGroup>
-                                                </p:toolbar>
+                                                <p:commandButton value="#{langueBean.getMsg('profile.add_existing_user')}"
+                                                                 actionListener="#{modifyRoleBean.setSelectedProject(myProjectBean.selectedProject)}" icon="fas fa-user"
+                                                                 style="padding-left: 35px; padding-right: 10px; padding-top: 5px; padding-bottom: 5px; margin-left: 10px"
+                                                                 update="idAddExistingUserToProject" oncomplete="PF('addExistingUserToProject').show();"
+                                                                 styleClass="ui-button-success" />
+                                            </p:toolbarGroup>
+                                        </p:toolbar> 
+                                    </div>
+                                </div>
+                                
+                                <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                                    <div class="col-12">
+                                        <p:tabView id="tabViewRoles">
+                                            <!-- vue des thésaurus du projet -->
+                                            <p:tab title="#{langueBean.getMsg('profile.list_of_thesauri')}" titleStyle="font-size: 12px;" >
 
+                                                <!-- Vue liste de thesaurus -->
+                                                <div class="row" style="margin-top: 10px">
+                                                    <div class="col-12">
+                                                        <div class="card mb-4 py-3 border-left-success">
+                                                            <p:dataTable value="#{myProjectBean.listeThesoOfProject}" var="listTheso" size="small"
+                                                                         widgetVar="listTheso" styleClass="products-table"
+                                                                         resizableColumns="true" scrollHeight="450" reflow="true"
+                                                                         paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
+                                                                         emptyMessage="#{langueBean.getMsg('toolbox.noThesaurus')}"
+                                                                         stripedRows="true"
+                                                                         style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
+
+                                                                <p:column width="10%" headerText="Id">
+                                                                    <h:outputText value="#{listTheso.id}" />
+                                                                </p:column>
+
+                                                                <p:column width="80%" headerText="#{langueBean.getMsg('statistique.thesaurus.name')}">
+                                                                    <h:outputText value="#{listTheso.value}"/>
+                                                                </p:column>
+
+                                                                <p:column width="10%" headerText="#{langueBean.getMsg('profile.action')}" style="text-align: center" >
+                                                                    <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
+                                                                                     actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
+                                                                                     update="idMoveThesoToAnotherProject"
+                                                                                     oncomplete="PF('moveThesoToAnotherProject').show();" process="@this"
+                                                                                     title="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}"
+                                                                                     icon="fas fa-people-carry" styleClass="edit-button rounded-button" />
+                                                                </p:column>
+
+                                                            </p:dataTable>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </p:tab>  
+                                            
+                                            <!-- Vue liste des utilisateurs qui ont des droits sur le projet -->
+                                            <p:tab id="tabListUser" title="#{langueBean.getMsg('profile.listUserByProject')}" titletip="#{langueBean.getMsg('profile.listUserByProjectTooltip')}">
                                                 <div class="row" style="margin-top: 10px">
                                                     <div class="col-12">
                                                         <div class="card mb-4 py-3 border-left-success">
@@ -122,7 +163,7 @@
                                                                          widgetVar="listUser" styleClass="products-table"
                                                                          resizableColumns="true" scrollHeight="450" reflow="true"
                                                                          paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
-                                                                         emptyMessage="Aucun utilisateur disponible..."
+                                                                         emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}..."
                                                                          stripedRows="true"
                                                                          style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
@@ -131,7 +172,7 @@
                                                                                   value="#{listUser.userName}" rendered="#{!listUser.isActive}"
                                                                                   style="color: red; font-style: oblique" />
 
-                                                                    <h:outputText value="#{listUser.userName}" rendered="#{listUser.isActive}"/>
+                                                                    <h:outputText value="#{listUser.userName} (#{listUser.idUser})" rendered="#{listUser.isActive}"/>
                                                                 </p:column>
 
                                                                 <p:column width="10" headerText="#{langueBean.getMsg('profile.role')}">
@@ -169,44 +210,71 @@
                                                         </div>
                                                     </div>
                                                 </div>                                          
-                                            </p:tab>
-
-                                            <p:tab title="#{langueBean.getMsg('profile.list_of_thesauri')}" titleStyle="font-size: 12px;" >
-
-                                                <!-- Vue liste de thesaurus -->
+                                            </p:tab>                  
+                                            
+                                            <!-- Vue liste des utilisateurs qui ont des droits limités sur des thésaurus du projet -->
+                                            <p:tab id="tabListUserWithLimitedRole" title="#{langueBean.getMsg('profile.listUserRestrictedRole')}" titletip="#{langueBean.getMsg('profile.listUserRestrictedRoleTooltip')}">
                                                 <div class="row" style="margin-top: 10px">
                                                     <div class="col-12">
                                                         <div class="card mb-4 py-3 border-left-success">
-                                                            <p:dataTable value="#{myProjectBean.listeThesoOfProject}" var="listTheso" size="small"
-                                                                         widgetVar="listTheso" styleClass="products-table"
+                                                            <p:dataTable value="#{myProjectBean.listeUserLimitedRole}" var="listUserLimited"  size="small"
+                                                                         widgetVar="listUserLimited" styleClass="products-table"
                                                                          resizableColumns="true" scrollHeight="450" reflow="true"
                                                                          paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
-                                                                         emptyMessage="#{langueBean.getMsg('toolbox.noThesaurus')}"
+                                                                         emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}..."
                                                                          stripedRows="true"
                                                                          style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
-                                                                <p:column width="10%" headerText="Id">
-                                                                    <h:outputText value="#{listTheso.id}" />
+                                                                <p:column width="40" headerText="#{langueBean.getMsg('profile.pseudo')}">
+                                                                    <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" 
+                                                                                  value="#{listUserLimited.userName}" rendered="#{!listUserLimited.isActive}"
+                                                                                  style="color: red; font-style: oblique" />
+
+                                                                    <h:outputText value="#{listUserLimited.userName} (#{listUserLimited.idUser})" rendered="#{listUserLimited.isActive}"/>
                                                                 </p:column>
 
-                                                                <p:column width="80%" headerText="#{langueBean.getMsg('statistique.thesaurus.name')}">
-                                                                    <h:outputText value="#{listTheso.value}"/>
+                                                                <p:column width="10" headerText="#{langueBean.getMsg('profile.role')}">
+                                                                    <h:outputText value="#{listUserLimited.roleName}" />
+                                                                </p:column>
+                                                                
+                                                                <p:column width="40" headerText="#{langueBean.getMsg('menu.thesaurus')}">
+                                                                    <h:outputText value="#{listUserLimited.thesoName} (#{listUserLimited.idTheso})" />
+                                                                </p:column>                                                                
+
+                                                                <p:column width="10" headerText="#{langueBean.getMsg('profile.modify_user')}" style="text-align: center">
+                                                                    <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUserLimited.idUser}"
+                                                                                     actionListener="#{modifyUSerBean.selectUser(listUserLimited.idUser)}"
+                                                                                     icon="pi pi-user-edit" update="idModifyUser"
+                                                                                     oncomplete="PF('modifyUser').show()" process="@this"
+                                                                                     styleClass="edit-button rounded-button" />
                                                                 </p:column>
 
-                                                                <p:column width="10%" headerText="#{langueBean.getMsg('profile.action')}" style="text-align: center" >
-                                                                    <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
-                                                                                     actionListener="#{moveThesoToProjectBean.setTheso(listTheso, myProjectBean.selectedProject)}"
-                                                                                     update="idMoveThesoToAnotherProject"
-                                                                                     oncomplete="PF('moveThesoToAnotherProject').show();" process="@this"
-                                                                                     title="#{langueBean.getMsg('profile.move_thesaurus_to_another_project')}"
-                                                                                     icon="fas fa-people-carry" styleClass="edit-button rounded-button" />
+                                                                <p:column width="10" headerText="#{langueBean.getMsg('profile.modify_roles')}" style="text-align: center">
+                                                                    <p:commandButton 
+                                                                                     actionListener="#{modifyRoleBean.selectUserWithLimitedRole(listUserLimited, myProjectBean.selectedProject)}"
+                                                                                     icon="pi pi-users" update="idModifyLimitedRole modifyLimitedRoleForm modifyLimitedRoleForm:userRoleDef"
+                                                                                     oncomplete="PF('modifyLimitedRole').show()" process="@this"
+                                                                                     styleClass="edit-button rounded-button"/>
                                                                 </p:column>
 
+                                                                <p:column width="10" headerText="#{langueBean.getMsg('profile.deleteRole')}" style="text-align: center">
+                                                                    <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-user-minus" process="@this"
+                                                                                     actionListener="#{modifyRoleBean.selectUserWithLimitedRole(listUserLimited, myProjectBean.selectedProject)}"
+                                                                                     update="idConfirmRemoveUserRole confirmRemoveUserRoleForm"
+                                                                                     title="#{langueBean.getMsg('profile.deleteRoleTooltip')}"
+                                                                                     oncomplete="PF('confirmRemoveUserRole').show()"/>
+                                                                </p:column>
+
+                                                                <f:facet name="footer">
+                                                                    <span class="p-text-bold">#{langueBean.getMsg('profile.totalOfUsers')}:  #{myProjectBean.listeUserLimitedRole.size()}</span>
+                                                                </f:facet>
                                                             </p:dataTable>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </p:tab>                            
+                                                </div>                                          
+                                            </p:tab>                                               
+                                            
+                                            
                                         </p:tabView>
                                     </div>
                                 </div>
@@ -226,8 +294,10 @@
 
                 <ui:include src="../dialog/profile/modifyUser.xhtml" /> 
                 <ui:include src="../dialog/profile/modifyRole.xhtml" />  
+                <ui:include src="../dialog/profile/modifyLimitedRole.xhtml" />                
                 <ui:include src="../dialog/profile/confirmRemoveUserFromProject.xhtml" /> 
-
+                <ui:include src="../dialog/profile/confirmRemoveUserRole.xhtml" /> 
+                
                 <ui:include src="../dialog/profile/moveThesoToAnotherProject.xhtml" /> 
                 
                 <ui:include src="../dialog/login/logout.xhtml" />
