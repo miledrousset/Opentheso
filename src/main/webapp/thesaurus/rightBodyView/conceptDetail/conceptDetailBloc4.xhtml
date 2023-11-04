@@ -170,120 +170,37 @@
 
                             <h:panelGroup>
                                 <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6" style="margin-left: -10px; width: 100%">
-
-                                    <h:panelGroup rendered="#{!conceptView.isMapVisible()}">
-                                        <h:outputText value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}"
-                                                      style="font-size: 12px; color: grey; font-style: italic " />
-                                    </h:panelGroup>
-
-                                    <div class="col-12">
-                                        <div class="ui-inputgroup" style="width: 100%">
-                                            <p:inputText placeholder="Liste des coordonnées .." style="width: 100%"
-                                                value="#{conceptView.gpsList}" disabled="#{conceptView.isGpsDisable()}"/>
-                                            <p:commandButton icon="pi pi-search-plus" styleClass="ui-button-danger"
-                                                             disabled="#{conceptView.isGpsDisable()}"
-                                                             style="background-color: #f47b2a; border-color: #f47b2a"
-                                                             actionListener="#{conceptView.formatGpsList()}" ajax="true"
-                                                             update="messageIndex containerIndex:rightTab:idConceptGps"/>
-                                        </div>
+                                    <div class="ui-inputgroup" style="width: 100%">
+                                        <p:inputText placeholder="Liste des coordonnées .." style="width: 100%"
+                                                     value="#{conceptView.gpsList}" disabled="#{conceptView.isGpsDisable()}"/>
+                                        <p:commandButton icon="pi pi-search-plus" styleClass="ui-button-danger"
+                                                         disabled="#{conceptView.isGpsDisable()}"
+                                                         style="background-color: #f47b2a; border-color: #f47b2a"
+                                                         actionListener="#{conceptView.formatGpsList()}"
+                                                         update="messageIndex containerIndex:rightTab:idConceptGps"/>
                                     </div>
 
-                                    <p:toolbar>
-                                        <p:toolbarGroup>
-                                            <!--<p:selectOneButton>
-                                                <f:selectItem itemLabel="Ajouter" update="containerIndex:rightTab:idConceptGps" />
+                                    <h:panelGroup rendered="#{conceptView.isMapVisible()}">
+                                        <p:toolbar style="margin-top: 10px">
+                                            <p:toolbarGroup align="right">
+                                                <p:selectOneButton value="#{conceptView.gpsModeSelected}" disabled="true">
+                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.point')}"
+                                                                  itemValue="POINT"/>
 
-                                                <p:ajax event="change" listener="#{conceptView.addNewGps()}"
-                                                        update="messageIndex containerIndex:rightTab:idConceptGps" />
-                                            </p:selectOneButton>-->
-                                        </p:toolbarGroup>
+                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polyline')}"
+                                                                  itemValue="POLYLINE" />
 
-                                        <p:toolbarGroup align="right">
-                                            <p:selectOneButton value="#{conceptView.gpsModeSelected}" disabled="true">
-                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.point')}"
-                                                              itemValue="POINT"/>
+                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polygone')}"
+                                                                  itemValue="POLYGONE"/>
 
-                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polyline')}"
-                                                              itemValue="POLYLINE" />
+                                                    <p:ajax event="change" listener="#{conceptView.createMapWithMode()}"
+                                                            update="containerIndex:rightTab:idConceptGps" />
+                                                </p:selectOneButton>
+                                            </p:toolbarGroup>
+                                        </p:toolbar>
 
-                                                <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polygone')}"
-                                                              itemValue="POLYGONE"/>
-
-                                                <p:ajax event="change" listener="#{conceptView.createMapWithMode()}"
-                                                        update="containerIndex:rightTab:idConceptGps" />
-                                            </p:selectOneButton>
-                                        </p:toolbarGroup>
-                                    </p:toolbar>
-
-                                    <p:accordionPanel widgetVar="basic" style="width: 100%; margin-top: 10px"
-                                                      rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                              or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
-                                        <p:tab title="Coordonnées">
-                                            <p:dataTable var="gps" value="#{conceptView.nodeConcept.nodeGps}" draggableRows="true"
-                                                         editable="true" style="margin-top: 10px">
-
-                                                <p:ajax event="rowEdit" listener="#{conceptView.onRowEdit}" process="@this"
-                                                        update="messageIndex containerIndex:rightTab:idConceptGps"/>
-                                                <p:ajax event="rowEditCancel" listener="#{conceptView.onRowCancel}" process="@this"
-                                                        update="messageIndex containerIndex:rightTab:idConceptGps"/>
-                                                <p:ajax event="rowReorder" listener="#{conceptView.onRowReorder}" process="@this"
-                                                        update="messageIndex containerIndex:rightTab:idConceptGps"/>
-
-                                                <p:column headerText="Position">
-                                                    <p:cellEditor>
-                                                        <f:facet name="output">
-                                                            <h:outputText value="#{gps.position}"/>
-                                                        </f:facet>
-                                                        <f:facet name="input">
-                                                            <p:inputText value="#{gps.position}"/>
-                                                        </f:facet>
-                                                    </p:cellEditor>
-                                                </p:column>
-
-                                                <p:column headerText="Latitude">
-                                                    <p:cellEditor>
-                                                        <f:facet name="output">
-                                                            <h:outputText value="#{gps.latitude}"/>
-                                                        </f:facet>
-                                                        <f:facet name="input">
-                                                            <p:inputText value="#{gps.latitude}" style="width:100%"/>
-                                                        </f:facet>
-                                                    </p:cellEditor>
-                                                </p:column>
-
-                                                <p:column headerText="Longitude">
-                                                    <p:cellEditor>
-                                                        <f:facet name="output">
-                                                            <h:outputText value="#{gps.longitude}"/>
-                                                        </f:facet>
-                                                        <f:facet name="input">
-                                                            <p:inputText value="#{gps.longitude}" label="Name"/>
-                                                        </f:facet>
-                                                    </p:cellEditor>
-                                                </p:column>
-
-                                                <p:column style="width:6rem">
-                                                    <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
-                                                </p:column>
-                                            </p:dataTable>
-                                        </p:tab>
-                                    </p:accordionPanel>
-                                    <h:panelGroup rendered="#{conceptView.isMapVisible()}" style="width: 100%;">
-                                        <!--<div class="row">
-                                            <div class="col-12">
-                                                <ui:repeat value="#{conceptView.nodeConcept.nodeGps}" var="gps" varStatus="status">
-                                                    <h:outputText value="(" style="font-size: 12px;"/>
-                                                    <h:outputText value="#{gps.latitude}" style="font-size: 12px; color: #666666"/>
-                                                    <h:outputText value=", " style="font-size: 12px;"/>
-                                                    <h:outputText value="#{gps.longitude}" style="font-size: 12px; color: #666666; "/>                                         
-                                                    <h:outputText value=") " style="font-size: 12px;"/>
-                                                </ui:repeat>                                                
-                                            </div>
-                                        </div>-->
-                                        <div class="row">
-                                            <div class="col-12" style="margin-top: 10px; border-color: #43B572; width: 100%">
-                                                <leaf:mapAdvanced map="#{conceptView.mapModel}" />
-                                            </div>
+                                        <div style="margin-top: 10px">
+                                            <leaf:mapAdvanced map="#{conceptView.mapModel}" update="ajax" />
                                         </div>
                                     </h:panelGroup>
                                 </div>

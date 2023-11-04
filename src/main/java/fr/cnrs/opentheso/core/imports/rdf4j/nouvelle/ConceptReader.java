@@ -92,19 +92,19 @@ public class ConceptReader {
                         skosConcept.getGpsCoordinates().add(element);
                     }
                 } else {
-                    Pattern pattern = Pattern.compile("(Polygon|MultiPoint)\\\\(\\\\(([^)]+)\\\\)\\\\)");
+                    Pattern pattern = Pattern.compile("\\(([^)]+)\\)");
                     Matcher matcher = pattern.matcher(literal.getLabel());
 
-                    if (matcher.find()) {
-                        String coordinatesStr = matcher.group(1);
-                        String[] coordinatePairs = coordinatesStr.split(", ");
+                    while (matcher.find()) {
+                        String coordinates = matcher.group(1).substring(1);
+                        String[] parts = coordinates.split(", ");
 
-                        for (String coordinatePair : coordinatePairs) {
-                            String[] parts = coordinatePair.split(" ");
-                            if (parts.length == 2) {
+                        for (String part : parts) {
+                            String[] values = part.split(" ");
+                            if (values.length == 2) {
                                 SKOSGPSCoordinates element = new SKOSGPSCoordinates();
-                                element.setLat(parts[0]);
-                                element.setLon(parts[1]);
+                                element.setLat(values[0]);
+                                element.setLon(values[1]);
                                 skosConcept.getGpsCoordinates().add(element);
                             }
                         }

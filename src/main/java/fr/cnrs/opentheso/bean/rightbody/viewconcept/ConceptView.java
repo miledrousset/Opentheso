@@ -31,11 +31,10 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.repositories.GpsRepository;
-import fr.cnrs.opentheso.ws.api.RestRDFHelper;
+import fr.cnrs.opentheso.utils.UrlUtils;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -44,13 +43,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
@@ -94,7 +91,8 @@ public class ConceptView implements Serializable {
 
     private Map mapModel;
     private NodeConcept nodeConcept;
-    private String selectedLang, gpsModeSelected = "POINT";
+    private String selectedLang;
+    private GpsMode gpsModeSelected;
     private ArrayList<NodeCorpus> nodeCorpuses;
     private ArrayList<NodePath> pathLabel;
     private ArrayList<NodeIdValue> nodeFacets;
@@ -182,10 +180,6 @@ public class ConceptView implements Serializable {
         haveCorpus = false;
         nodeCustomRelationReciprocals = null;
 
-        if (mapModel == null) {
-            mapModel = new Map();
-        }
-
         responsiveOptions = new ArrayList<>();
         responsiveOptions.add(new ResponsiveOption("1024px", 5));
         responsiveOptions.add(new ResponsiveOption("768px", 3));
@@ -249,7 +243,7 @@ public class ConceptView implements Serializable {
      */
     public void getConcept(String idTheso, String idConcept, String idLang) {
         offset = 0;
-        gpsModeSelected = "POINT";
+        gpsModeSelected = GpsMode.POINT;
         nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) {
             return;
@@ -337,19 +331,15 @@ public class ConceptView implements Serializable {
     public void createMap(String idConcept, String idTheso) {
         nodeConcept.setNodeGps(gpsRepository.getGpsByConceptAndThesorus(idConcept, idTheso));
         if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
-            createMapWithMode();
-
-            var lastIndex = nodeConcept.getNodeGps().size() - 1;
-            if (nodeConcept.getNodeGps().size() == 1) {
-                gpsModeSelected = "POINT";
-            } else if (nodeConcept.getNodeGps().get(0).getLongitude()
-                    .equals(nodeConcept.getNodeGps().get(lastIndex).getLongitude())
-                    && nodeConcept.getNodeGps().get(0).getLatitude().equals(nodeConcept.getNodeGps().get(lastIndex).getLatitude())) {
-                gpsModeSelected = "POLYGONE";
-            } else {
-                gpsModeSelected = "POLYLINE";
-            }
+            gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
             gpsList = formatCoordonnees(nodeConcept.getNodeGps());
+            if (mapModel != null) {
+                mapModel = new MapUtils().updateMap(nodeConcept.getNodeGps(), mapModel, gpsModeSelected,
+                        ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
+            } else {
+                mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsModeSelected,
+                        ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
+            }
         } else {
             gpsList = "";
         }
@@ -361,28 +351,16 @@ public class ConceptView implements Serializable {
     }
 
     private String formatCoordonnees(List<Gps> listeCoordonnees) {
-        StringBuilder resultat = new StringBuilder();
-        for (Gps gps : listeCoordonnees) {
-            resultat.append(gps.toString()).append(" ");
+        if (CollectionUtils.isEmpty(listeCoordonnees)) {
+            return "";
+        } else {
+            StringBuilder resultat = new StringBuilder();
+            for (Gps gps : listeCoordonnees) {
+                resultat.append(gps.toString()).append(" ");
+            }
+            resultat.deleteCharAt(resultat.length() - 1);
+            return resultat.toString();
         }
-        resultat.deleteCharAt(resultat.length() - 1);
-        return resultat.toString();
-    }
-
-    public void createMapWithMode() {
-        GpsMode gpsMode;
-        switch (gpsModeSelected) {
-            case "POLYGONE":
-                gpsMode = GpsMode.POLYGONE;
-                break;
-            case "POLYLINE":
-                gpsMode = GpsMode.POLYLINE;
-                break;
-            default:
-                gpsMode = GpsMode.POINT;
-        }
-        mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsMode,
-                ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
     }
 
     /**
@@ -423,7 +401,12 @@ public class ConceptView implements Serializable {
         haveCorpus = false;
         List<NodeCorpus> nodeCorpusesTmp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if (CollectionUtils.isNotEmpty(nodeCorpusesTmp)) {
-            searchCorpus(nodeCorpusesTmp);
+            var tmp = nodeCorpusesTmp.stream()
+                    .filter(element -> UrlUtils.isAPIAvailable(element.getUriLink()))
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(tmp)) {
+                searchCorpus(tmp);
+            }
         }
         setRoles();
 
@@ -494,50 +477,6 @@ public class ConceptView implements Serializable {
             nodeIdValue.setValue(facetHelper.getLabelOfFacet(connect.getPoolConnexion(), facetId, idTheso, idLang));
             nodeFacets.add(nodeIdValue);
         }
-    }
-
-    public void countTheTotalOfBranch() {
-        ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> listIdsOfBranch = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
-                nodeConcept.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
-        this.countOfBranch = listIdsOfBranch.size();
-    }
-
-    private int getCountFromJson(String jsonText) {
-        if (jsonText == null) {
-            return -1;
-        }
-        JsonObject jsonObject;
-        try {
-            JsonReader reader = Json.createReader(new StringReader(jsonText));
-            jsonObject = reader.readObject();
-            //         System.err.println(jsonText + " #### " + nodeConcept.getConcept().getIdConcept());
-            int count = jsonObject.getInt("count");
-            if (count > 0) {
-                haveCorpus = true;
-            }
-            return count;
-        } catch (Exception e) {
-            System.err.println(e + " " + jsonText + " " + nodeConcept.getConcept().getIdConcept());
-            return -1;
-        }
-    }
-
-    public String getMetaData() {
-        if (nodeConcept == null || nodeConcept.getConcept() == null || nodeConcept.getConcept().getIdConcept().isEmpty()) {
-            return "";
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(connect.getPoolConnexion(),
-                nodeConcept.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                "application/ld+json");
-        if (datas == null) {
-            return "";
-        }
-        return datas;
     }
 
     public void setOffset() {
@@ -772,57 +711,65 @@ public class ConceptView implements Serializable {
             return;
         }
 
-        nodeConcept.setNodeGps(readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeConcept.getConcept().getIdConcept()));
+        var gpsListTmps = readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeConcept.getConcept().getIdConcept());
+        if (ObjectUtils.isNotEmpty(gpsListTmps)) {
+            nodeConcept.setNodeGps(gpsListTmps);
 
-        gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
+            gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
 
-        gpsRepository.removeGpsByConcept(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        for (Gps gps : nodeConcept.getNodeGps()) {
-            gpsRepository.saveNewGps(gps);
+            gpsRepository.removeGpsByConcept(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+            for (Gps gps : nodeConcept.getNodeGps()) {
+                gpsRepository.saveNewGps(gps);
+            }
+
+            createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Coordonnée GPS modifiés !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+
+            PrimeFaces.current().ajax().update("messageIndex");
+            PrimeFaces.current().ajax().update("containerIndex:rightTab");
         }
-
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
     }
 
-    private String getGpsMode(List<Gps> nodeGps) {
-        String gpsMode = "";
+    private GpsMode getGpsMode(List<Gps> nodeGps) {
         if (CollectionUtils.isNotEmpty(nodeGps)) {
             var lastIndex = nodeGps.size() - 1;
             if (nodeGps.size() == 1) {
-                gpsMode = "POINT";
+                return GpsMode.POINT;
             } else if (nodeGps.get(0).getLongitude().equals(nodeGps.get(lastIndex).getLongitude())
                     && nodeGps.get(0).getLatitude().equals(nodeGps.get(lastIndex).getLatitude())) {
-                gpsMode = "POLYGONE";
+                return GpsMode.POLYGONE;
             } else {
-                gpsMode = "POLYLINE";
+                return GpsMode.POLYLINE;
             }
         }
-        return gpsMode;
+        return null;
     }
 
     public static List<Gps> readGps(String gpsValue, String idTheso, String idConcept) {
         List<Gps> gpsList = new ArrayList<>();
         Matcher matcher = Pattern.compile("\\(([^)]+)\\)").matcher(gpsValue);
         while (matcher.find()) {
-            Pattern pattern = Pattern.compile("([0-9]+\\.[0-9]+), ([0-9]+\\.[0-9]+)");
-            Matcher matcherGps = pattern.matcher(matcher.group(1));
+            Matcher matcher2 = Pattern.compile("\\d+[,.]?\\d+").matcher(matcher.group(1));
+            List<Double> doubles = new ArrayList<>();
+            while (matcher2.find()) {
+                String match = matcher2.group();
+                match = match.replace(',', '.');
+                doubles.add(Double.parseDouble(match));
+            }
 
-            // Si une correspondance est trouvée, extrayez les deux nombres
-            if (matcherGps.find()) {
-                try {
-                    Gps gpsTmp = new Gps();
-                    gpsTmp.setIdTheso(idTheso);
-                    gpsTmp.setIdConcept(idConcept);
-                    gpsTmp.setPosition(gpsList.size() + 1);
-                    gpsTmp.setLatitude(Double.parseDouble(matcherGps.group(1)));
-                    gpsTmp.setLongitude(Double.parseDouble(matcherGps.group(2)));
-                    gpsList.add(gpsTmp);
-                } catch (Exception ex) {
-                    FacesMessage msg = new FacesMessage("Le donnée du coordonée '" + matcher.group(1) + "' n'est pas valide !");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                }
+            // Obtenez les deux doubles (ou plus) extraits de la chaîne
+            if (doubles.size() == 2) {
+                Gps gpsTmp = new Gps();
+                gpsTmp.setIdTheso(idTheso);
+                gpsTmp.setIdConcept(idConcept);
+                gpsTmp.setPosition(gpsList.size() + 1);
+                gpsTmp.setLatitude(doubles.get(0));
+                gpsTmp.setLongitude(doubles.get(1));
+                gpsList.add(gpsTmp);
             } else {
-                FacesMessage msg = new FacesMessage("Aucune correspondance trouvée !");
+                FacesMessage msg = new FacesMessage("Moins de deux nombres décimaux trouvés dans la chaîne.");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             }
         }

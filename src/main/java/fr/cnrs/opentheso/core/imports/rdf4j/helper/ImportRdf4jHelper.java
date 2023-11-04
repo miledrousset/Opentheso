@@ -38,8 +38,6 @@ import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
 
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
-import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.skosapi.*;
 import java.sql.Statement;
 import java.util.Date;
@@ -487,11 +485,6 @@ public class ImportRdf4jHelper {
         if (conceptResource.getStatus() == SKOSProperty.deprecated) {
             conceptStatus = "dep";
         }
-        // concept type
-        String conceptType = "concept";// conceptResource.getConceptType();
-        //if(StringUtils.isEmpty(conceptType)) 
-        //    conceptType = "concept";
-        
         
         // option cochée
         String idArk = "";
@@ -560,17 +553,20 @@ public class ImportRdf4jHelper {
             }
         }
 
-        String gpsData = "";
+        String gpsData = null;
         boolean isGpsPresent = false;
         String longitude = null, altitude = null;
-        if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates()) &&  conceptResource.getGpsCoordinates().size() == 1) {
+        if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates()) && conceptResource.getGpsCoordinates().size() == 1) {
             isGpsPresent = true;
             altitude = conceptResource.getGpsCoordinates().get(0).getLat();
             longitude = conceptResource.getGpsCoordinates().get(0).getLon();
         } else if (CollectionUtils.isNotEmpty(conceptResource.getGpsCoordinates())) {
+            isGpsPresent = true;
+            gpsData = "";
             for (SKOSGPSCoordinates element : conceptResource.getGpsCoordinates()) {
                 gpsData = gpsData + element.getLat() + SOUS_SEPERATEUR + element.getLon() + SEPERATEUR;
             }
+            gpsData = gpsData.substring(0, gpsData.length() - 2);
         }
 
         //Non Pref Term
@@ -807,7 +803,7 @@ public class ImportRdf4jHelper {
                     + "'" + idConcept + "', "
                     + idUser + ", "
                     + "'" + conceptStatus + "', "
-                    + "'" + conceptType + "', "
+                    + "'concept', "
                     + (notationConcept == null ? null : "'" + notationConcept + "'") + ""
                     + ", " 
                     + (idArk == null ? "''":  "'" + idArk + "'") + ", "
