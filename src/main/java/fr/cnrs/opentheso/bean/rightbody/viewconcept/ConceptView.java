@@ -279,7 +279,12 @@ public class ConceptView implements Serializable {
         haveCorpus = false;
         List<NodeCorpus> nodeCorpusesTmp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if (CollectionUtils.isNotEmpty(nodeCorpusesTmp)) {
-            searchCorpus(nodeCorpusesTmp);
+            var tmp = nodeCorpusesTmp.stream()
+                    .filter(element -> UrlUtils.isAPIAvailable(element.getUriLink()))
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(tmp)) {
+                searchCorpus(tmp);
+            }
         }
         setRoles();
 
@@ -318,14 +323,14 @@ public class ConceptView implements Serializable {
         try {
             List<Future<NodeCorpus>> futures = executor.invokeAll(callables);
             for (Future<NodeCorpus> future : futures) {
-                haveCorpus = true;
                 nodeCorpuses.add(future.get());
             }
+            haveCorpus = nodeCorpuses.stream().filter(element -> element.getCount() > 0).findFirst().isPresent();
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         } catch (Exception e) {
             e.printStackTrace();
         }
         executor.shutdown();
-        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     public void createMap(String idConcept, String idTheso) {
