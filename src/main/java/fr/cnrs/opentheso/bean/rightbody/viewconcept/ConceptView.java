@@ -325,7 +325,8 @@ public class ConceptView implements Serializable {
             for (Future<NodeCorpus> future : futures) {
                 nodeCorpuses.add(future.get());
             }
-            haveCorpus = nodeCorpuses.stream().filter(element -> element.getCount() > 0).findFirst().isPresent();
+            haveCorpus = nodeCorpuses.stream().filter(element -> element.isIsOnlyUriLink()
+                    || !element.isIsOnlyUriLink() && element.getCount() > 0).findFirst().isPresent();
             PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         } catch (Exception e) {
             e.printStackTrace();
