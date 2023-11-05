@@ -174,7 +174,7 @@
                                         <p:inputText placeholder="Liste des coordonnées .." style="width: 100%"
                                                      value="#{conceptView.gpsList}" disabled="#{conceptView.isGpsDisable()}"/>
                                         <p:commandButton icon="pi pi-search-plus" styleClass="ui-button-danger"
-                                                         disabled="#{conceptView.isGpsDisable()}"
+                                                         rendered="#{!conceptView.isGpsDisable()}"
                                                          style="background-color: #f47b2a; border-color: #f47b2a"
                                                          actionListener="#{conceptView.formatGpsList()}"
                                                          update="messageIndex containerIndex:rightTab:idConceptGps"/>
@@ -200,7 +200,7 @@
                                         </p:toolbar>
 
                                         <div style="margin-top: 10px">
-                                            <leaf:mapAdvanced map="#{conceptView.mapModel}" update="ajax" />
+                                            <leaf:mapAdvanced map="#{conceptView.mapModel}" />
                                         </div>
                                     </h:panelGroup>
                                 </div>
