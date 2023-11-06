@@ -25,23 +25,15 @@ public class SKOSGPSCoordinates {
     }
     
     public SKOSGPSCoordinates(double lat,double lon) {
-        String la = null;
-        String lo=null;        
         try{
-            la = Double.toString(lat);
-            lo = Double.toString(lon);
-        }catch(Exception e){
-            return;
-        }
-        
-        
-        this.lat = la;
-        this.lon = lo;
+            this.lat = Double.toString(lat);
+            this.lon = Double.toString(lon);
+        }catch(Exception e){}
     }
 
 
     @Override
     public String toString() {
-        return String.format("(%f, %f)", lat, lon);
+        return lat + " " + lon;
     }
 }

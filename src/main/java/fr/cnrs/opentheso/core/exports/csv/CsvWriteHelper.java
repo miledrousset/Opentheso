@@ -383,9 +383,11 @@ public class CsvWriteHelper {
 
     private String getGpsValue(List<SKOSGPSCoordinates> gpsList) {
         if (CollectionUtils.isNotEmpty(gpsList)) {
-            return gpsList.stream()
-                    .map(element -> "(" + element.getLat() + ", " + element.getLon() + ")")
-                    .collect(Collectors.joining(" "));
+            StringBuilder resultat = new StringBuilder();
+            for (SKOSGPSCoordinates gps : gpsList) {
+                resultat.append(gps.toString()).append(", ");
+            }
+            return "(" + resultat.substring(0, resultat.length() - 2) + ")";
         } else {
             return "";
         }

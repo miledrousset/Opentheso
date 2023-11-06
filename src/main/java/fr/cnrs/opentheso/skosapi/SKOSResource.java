@@ -665,7 +665,7 @@ public class SKOSResource {
             if (CollectionUtils.isNotEmpty(resource.getGpsCoordinates())) {
                 idToGPS.put(resource.getIdentifier(),
                         resource.getGpsCoordinates().stream()
-                                .map(element -> "gps : lat =" + element.getLat() + " long =" + element.getLon())
+                                .map(element -> element.getLat() + " " + element.getLon())
                                 .collect(Collectors.toList()));
             }
         }

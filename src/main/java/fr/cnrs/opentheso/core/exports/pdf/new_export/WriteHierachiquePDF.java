@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortForHiera;
 
@@ -196,9 +197,7 @@ public class WriteHierachiquePDF {
 
     private void addGpsCoordiantes(List<Paragraph> paragraphs, List<String> gps, String space) {
         if (CollectionUtils.isNotEmpty(gps)) {
-            for (String element : gps) {
-                paragraphs.add(new Paragraph(space + element, writePdfSettings.hieraInfoFont));
-            }
+            paragraphs.add(new Paragraph(space + "GPS : (" + gps.stream().collect(Collectors.joining(", ")) + ")", writePdfSettings.hieraInfoFont));
         }
     }
 

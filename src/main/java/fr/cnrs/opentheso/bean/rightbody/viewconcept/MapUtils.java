@@ -66,6 +66,7 @@ public class MapUtils {
                             .setColor("#F47B2A")));
         }
 
+        mapModel.setCenter(calculerCentrePolyline(gpsList));
         return mapModel;
     }
 

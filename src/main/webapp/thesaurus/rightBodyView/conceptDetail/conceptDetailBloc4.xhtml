@@ -170,15 +170,20 @@
 
                             <h:panelGroup>
                                 <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6" style="margin-left: -10px; width: 100%">
-                                    <div class="ui-inputgroup" style="width: 100%">
-                                        <p:inputText placeholder="Liste des coordonnées .." style="width: 100%"
-                                                     value="#{conceptView.gpsList}" disabled="#{conceptView.isGpsDisable()}"/>
-                                        <p:commandButton icon="pi pi-search-plus" styleClass="ui-button-danger"
-                                                         rendered="#{!conceptView.isGpsDisable()}"
-                                                         style="background-color: #f47b2a; border-color: #f47b2a"
-                                                         actionListener="#{conceptView.formatGpsList()}"
-                                                         update="messageIndex containerIndex:rightTab:idConceptGps"/>
-                                    </div>
+                                    <h:panelGroup rendered="#{!conceptView.isGpsDisable()}">
+                                        <div class="ui-inputgroup" style="width: 100%">
+                                            <p:inputText placeholder="Liste des coordonnées .." style="width: 100%"
+                                                         value="#{conceptView.gpsList}"/>
+                                            <p:commandButton icon="pi pi-search-plus" styleClass="ui-button-danger"
+                                                             style="background-color: #f47b2a; border-color: #f47b2a"
+                                                             actionListener="#{conceptView.formatGpsList()}"
+                                                             update="messageIndex containerIndex:rightTab:idConceptGps"/>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{conceptView.isGpsDisable()}">
+                                        <h:outputText value="#{conceptView.gpsList}"/>
+                                    </h:panelGroup>
 
                                     <h:panelGroup rendered="#{conceptView.isMapVisible()}">
                                         <p:toolbar style="margin-top: 10px">

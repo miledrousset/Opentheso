@@ -40,6 +40,6 @@ public class Gps {
 
     @Override
     public String toString() {
-        return String.format("(%f, %f)", latitude, longitude);
+        return String.format("%f %f", latitude, longitude);
     }
 }

@@ -17,7 +17,6 @@ import fr.cnrs.opentheso.skosapi.SKOSMatch;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
@@ -30,16 +29,13 @@ import java.util.List;
 import static fr.cnrs.opentheso.skosapi.SKOSResource.sortAlphabeticInLang;
 
 
-
 public class WriteAlphaPDF {
 
     private final static String TAB_NIVEAU = "    ";
     private final static String ID = TAB_NIVEAU + "ID: ";
     private final static String USE = TAB_NIVEAU + "USE: ";
-    private final static String LATITUDE = TAB_NIVEAU + "lat: ";
-    private final static String LONGITUDE = TAB_NIVEAU + "lon: ";
+    private final static String GPS = TAB_NIVEAU + "GPS: ";
 
-    private String uri;
     private WritePdfSettings writePdfSettings;
 
     private HashMap<String, String> labels;
@@ -49,16 +45,14 @@ public class WriteAlphaPDF {
     private ArrayList<String> resourceChecked;
     private UriHelper uriHelper;
 
+
     public WriteAlphaPDF(WritePdfSettings writePdfSettings, SKOSXmlDocument xmlDocument, UriHelper uriHelper) {
 
         this.writePdfSettings = writePdfSettings;
-
-        uri = xmlDocument.getConceptScheme().getUri();
-        concepts = xmlDocument.getConceptList();
-
-        resourceChecked = new ArrayList<>();
-        labels = new HashMap<>();
-        traductions = new HashMap<>();
+        this.concepts = xmlDocument.getConceptList();
+        this.resourceChecked = new ArrayList<>();
+        this.labels = new HashMap<>();
+        this.traductions = new HashMap<>();
         this.uriHelper = uriHelper;
     }
 
@@ -86,8 +80,7 @@ public class WriteAlphaPDF {
 
     private void writeTerm(SKOSResource concept, ArrayList<Paragraph> paragraphs, String codeLanguage1, String codeLanguage2) {
 
-        String idFromUri = concept.getIdentifier();//writePdfSettings.getIdFromUri(concept.getUri());
-
+        String idFromUri = concept.getIdentifier();
         if(addLabels(paragraphs, concept.getLabelsList(), codeLanguage1, codeLanguage2, idFromUri, concept.getArkId())) {
             paragraphs.add(new Paragraph(ID + idFromUri, writePdfSettings.textFont));
             addRelations(paragraphs, concept.getRelationsList());
@@ -233,10 +226,19 @@ public class WriteAlphaPDF {
     private void addGpsCoordiantes(List<Paragraph> paragraphs, List<SKOSGPSCoordinates> skosGpsCoordinates) {
 
         if (CollectionUtils.isNotEmpty(skosGpsCoordinates)) {
-            for (SKOSGPSCoordinates element : skosGpsCoordinates) {
-                paragraphs.add(new Paragraph(LATITUDE + element.getLat(), writePdfSettings.textFont));
-                paragraphs.add(new Paragraph(LONGITUDE + element.getLon(), writePdfSettings.textFont));
+            paragraphs.add(new Paragraph(GPS + formatCoordonnees(skosGpsCoordinates), writePdfSettings.textFont));
+        }
+    }
+
+    public String formatCoordonnees(List<SKOSGPSCoordinates> listeCoordonnees) {
+        if (CollectionUtils.isEmpty(listeCoordonnees)) {
+            return "";
+        } else {
+            StringBuilder resultat = new StringBuilder();
+            for (SKOSGPSCoordinates gps : listeCoordonnees) {
+                resultat.append(gps.toString()).append(", ");
             }
+            return "ALPHA(" + resultat.substring(0, resultat.length() - 2) + ")";
         }
     }
 

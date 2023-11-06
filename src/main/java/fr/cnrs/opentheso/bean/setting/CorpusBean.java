@@ -180,34 +180,21 @@ public class CorpusBean implements Serializable {
     }
 
     public void deleteCorpus() {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
+
         if (nodeCorpusForEdit == null) {
             return;
         }
 
-        CorpusHelper corpusHelper = new CorpusHelper();
-        if (!corpusHelper.deleteCorpus(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeCorpusForEdit.getCorpusName())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression de corpus !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+        if (!new CorpusHelper().deleteCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression de corpus !");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus suprimé avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Corpus suprimé avec succès");
         PrimeFaces.current().executeScript("PF('newCorpus').hide();");
+        
         init();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     

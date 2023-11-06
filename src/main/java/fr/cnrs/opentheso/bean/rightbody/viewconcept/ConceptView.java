@@ -362,10 +362,9 @@ public class ConceptView implements Serializable {
         } else {
             StringBuilder resultat = new StringBuilder();
             for (Gps gps : listeCoordonnees) {
-                resultat.append(gps.toString()).append(" ");
+                resultat.append(gps.toString()).append(", ");
             }
-            resultat.deleteCharAt(resultat.length() - 1);
-            return resultat.toString();
+            return "(" + resultat.substring(0, resultat.length() - 2) + ")";
         }
     }
 
@@ -718,6 +717,7 @@ public class ConceptView implements Serializable {
         }
 
         var gpsListTmps = readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeConcept.getConcept().getIdConcept());
+
         if (ObjectUtils.isNotEmpty(gpsListTmps)) {
             nodeConcept.setNodeGps(gpsListTmps);
 
@@ -754,30 +754,44 @@ public class ConceptView implements Serializable {
     }
 
     public static List<Gps> readGps(String gpsValue, String idTheso, String idConcept) {
+
         List<Gps> gpsList = new ArrayList<>();
         Matcher matcher = Pattern.compile("\\(([^)]+)\\)").matcher(gpsValue);
         while (matcher.find()) {
-            Matcher matcher2 = Pattern.compile("\\d+[,.]?\\d+").matcher(matcher.group(1));
-            List<Double> doubles = new ArrayList<>();
-            while (matcher2.find()) {
-                String match = matcher2.group();
-                match = match.replace(',', '.');
-                doubles.add(Double.parseDouble(match));
-            }
 
-            // Obtenez les deux doubles (ou plus) extraits de la chaîne
-            if (doubles.size() == 2) {
+            Matcher matcher2 = Pattern.compile("([0-9]+[.,][0-9]+) ([0-9]+[.,][0-9]+)").matcher(matcher.group(1));
+
+            while (matcher2.find()) {
                 Gps gpsTmp = new Gps();
                 gpsTmp.setIdTheso(idTheso);
                 gpsTmp.setIdConcept(idConcept);
                 gpsTmp.setPosition(gpsList.size() + 1);
-                gpsTmp.setLatitude(doubles.get(0));
-                gpsTmp.setLongitude(doubles.get(1));
+                gpsTmp.setLatitude(Double.parseDouble(matcher2.group(1).replace(",", ".")));
+                gpsTmp.setLongitude(Double.parseDouble(matcher2.group(2).replace(",", ".")));
                 gpsList.add(gpsTmp);
-            } else {
-                FacesMessage msg = new FacesMessage("Moins de deux nombres décimaux trouvés dans la chaîne.");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
             }
+
+            /*
+            Matcher matcher2 = Pattern.compile("(-?\\d+[,.]\\d+) (-?\\d+[,.]\\d+)\\,").matcher(matcher.group(1));
+
+            while (matcher2.find()) {
+                String latStr = matcher2.group(1).replace(',', '.');
+                String lonStr = matcher2.group(2).replace(',', '.');
+
+                try {
+                    Gps gpsTmp = new Gps();
+                    gpsTmp.setIdTheso(idTheso);
+                    gpsTmp.setIdConcept(idConcept);
+                    gpsTmp.setPosition(gpsList.size() + 1);
+                    gpsTmp.setLatitude(Double.parseDouble(latStr));
+                    gpsTmp.setLongitude(Double.parseDouble(lonStr));
+                    gpsList.add(gpsTmp);
+                } catch (NumberFormatException e) {
+                    // Gestion de l'erreur si la conversion échoue
+                    FacesMessage msg = new FacesMessage("Erreur de conversion de coordonnées : " + matcher2.group());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                }
+            }*/
         }
 
         return gpsList;

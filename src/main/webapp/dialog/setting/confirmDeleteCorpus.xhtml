@@ -28,7 +28,7 @@
                              actionListener="PF('confirmDeleteCorpus').hide();" update="idConfirmDeleteCorpus"/>
 
             <p:commandButton value="Supprimer" styleClass="ui-button-success" icon="pi pi-check"
-                             update="containerIndex messageIndex"
+                             update="containerIndex messageIndex" ajax="true" process="@this"
                              oncomplete="PF('confirmDeleteCorpus').hide();"
                              actionListener="#{corpusBean.deleteCorpus()}" />
         </div>

@@ -654,18 +654,12 @@ public class CsvImportHelper {
                 customRelations += SEPERATEUR + conceptObject.getIdConcept()
                         + SOUS_SEPERATEUR + nodeIdValue.getValue()
                         + SOUS_SEPERATEUR + nodeIdValue.getId();
-            /*    relations += SEPERATEUR + idCostomRelation
-                        + SOUS_SEPERATEUR + "NT"
-                        + SOUS_SEPERATEUR + conceptObject.getIdConcept();                
-                */
             }
         }    
         if (customRelations != null && customRelations.length() > 0) {
             customRelations = customRelations.substring(SEPERATEUR.length(), customRelations.length());
         }        
-        
-        
-        
+
         //Notes
         //-- 'value@typeCode@lang@id_term'
         String notes = null;
@@ -1074,7 +1068,6 @@ public class CsvImportHelper {
         return true;
     }
 
-    //TODO MILTI GPS
     private boolean addGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         if (StringUtils.isEmpty(conceptObject.getGps()) || conceptObject.getGps().length() < 3) {
