@@ -770,28 +770,6 @@ public class ConceptView implements Serializable {
                 gpsTmp.setLongitude(Double.parseDouble(matcher2.group(2).replace(",", ".")));
                 gpsList.add(gpsTmp);
             }
-
-            /*
-            Matcher matcher2 = Pattern.compile("(-?\\d+[,.]\\d+) (-?\\d+[,.]\\d+)\\,").matcher(matcher.group(1));
-
-            while (matcher2.find()) {
-                String latStr = matcher2.group(1).replace(',', '.');
-                String lonStr = matcher2.group(2).replace(',', '.');
-
-                try {
-                    Gps gpsTmp = new Gps();
-                    gpsTmp.setIdTheso(idTheso);
-                    gpsTmp.setIdConcept(idConcept);
-                    gpsTmp.setPosition(gpsList.size() + 1);
-                    gpsTmp.setLatitude(Double.parseDouble(latStr));
-                    gpsTmp.setLongitude(Double.parseDouble(lonStr));
-                    gpsList.add(gpsTmp);
-                } catch (NumberFormatException e) {
-                    // Gestion de l'erreur si la conversion échoue
-                    FacesMessage msg = new FacesMessage("Erreur de conversion de coordonnées : " + matcher2.group());
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                }
-            }*/
         }
 
         return gpsList;

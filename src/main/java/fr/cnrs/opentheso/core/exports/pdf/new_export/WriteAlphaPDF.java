@@ -238,7 +238,7 @@ public class WriteAlphaPDF {
             for (SKOSGPSCoordinates gps : listeCoordonnees) {
                 resultat.append(gps.toString()).append(", ");
             }
-            return "ALPHA(" + resultat.substring(0, resultat.length() - 2) + ")";
+            return "(" + resultat.substring(0, resultat.length() - 2) + ")";
         }
     }
 
