@@ -97,7 +97,7 @@
                             <h:outputText value="#{langueBean.getMsg('profile.limitRoleOnTheso')} : " title="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}"/>
                         </div>
                         <div class="col-7">
-                            <p:toggleSwitch id="limitToThesaurus" value="#{newUSerBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
+                            <p:toggleSwitch  id="limitToThesaurus" value="#{newUSerBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
                                 <p:ajax listener="#{newUSerBean.toogleLimitTheso()}" update="newUserForProjectForm:userRoleDef"/>
                             </p:toggleSwitch>
 
@@ -134,7 +134,7 @@
                                  icon="pi pi-check"
                                  ajax="true" process="@form"
                                  styleClass="ui-button-success"
-                                 update="messageIndex newUserForProjectForm" 
+                                 update="messageIndex newUserForProjectForm containerIndex:tabViewRoles" 
                                  action="#{newUSerBean.addUser()}" />
             </div>
         </h:form>

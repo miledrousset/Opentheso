@@ -345,7 +345,7 @@ public class CandidatService implements Serializable {
             candidatSelected.setTraductions(new TermHelper().getTraductionsOfConcept(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
                     term -> new TraductionDto(term.getLang(),
-                            term.getLexicalValue())).collect(Collectors.toList()));
+                            term.getLexicalValue(), term.getCodePays())).collect(Collectors.toList()));
 
             candidatSelected.setMessages(messageDao.getAllMessagesByCandidat(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getUserId()));

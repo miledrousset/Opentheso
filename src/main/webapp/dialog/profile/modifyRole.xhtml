@@ -76,14 +76,11 @@
                 </h:panelGroup>              
             </h:panelGroup>
             
-            
-            
-            
 
             <div class="row" style="margin-top: 20px;">
                 <div class="col-12" style="text-align: right" >
                     <p:commandButton value="#{langueBean.getMsg('apply')}" styleClass="ui-button-success" icon="pi pi-check"
-                                     update="containerIndex messageIndex" 
+                                     update="containerIndex:tabViewRoles messageIndex" 
                                      actionListener="#{modifyRoleBean.updateRoleForSelectedUser()}"
                                      oncomplete="PF('modifyRole').hide();">
                         <p:tooltip value="#{langueBean.getMsg('profile.modify_roles')}" showDelay="1000" />

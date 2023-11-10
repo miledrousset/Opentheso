@@ -16,9 +16,9 @@
             
             <div class="row" style="margin-top: 5px">
                 <div class="col-12" >
-                    <h:outputText value="#{modifyRoleBean.nodeUserRole.roleName} -> "
+                    <h:outputText value="#{modifyRoleBean.selectedNodeUserRole.roleName} -> "
                                   style="font-size: 13px;"/>                       
-                    <h:outputText value="#{modifyRoleBean.nodeUserRole.thesoName} (#{modifyRoleBean.nodeUserRole.idTheso})"
+                    <h:outputText value="#{modifyRoleBean.selectedNodeUserRole.thesoName} (#{modifyRoleBean.selectedNodeUserRole.idTheso})"
                                   style="font-size: 13px; color: #C63632;"/>
                 </div>            
             </div>            
@@ -40,7 +40,7 @@
 
                 <p:commandButton value="#{langueBean.getMsg('profile.remove')}" styleClass="ui-button-success" 
                                  ajax="true" process="@this" icon="pi pi-check" 
-                                 update="messageIndex containerIndex:tabViewRoles:tabListUserWithLimitedRole"                            
+                                 update="messageIndex containerIndex:tabViewRoles"                            
                                  oncomplete="PF('confirmRemoveUserRole').hide();"
                                  actionListener="#{modifyRoleBean.removeUserRoleOnTheso()}" />
             </div>

@@ -205,6 +205,8 @@ public class SelectedTheso implements Serializable {
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
         connect.setLocalUri(localUri);
         
+        currentUser.getUserPermissions();
+        
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
         if (isUriRequest) {

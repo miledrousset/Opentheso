@@ -49,6 +49,8 @@ public class MyProjectBean implements Serializable {
     
     private String selectedProject;
     private String selectedProjectName;    
+    private String selectedIndex;
+    
 
     @PreDestroy
     public void destroy(){
@@ -82,7 +84,7 @@ public class MyProjectBean implements Serializable {
         myRoleOnThisProject = null;  
         selectedProject = null;  
         selectedProjectName = null;  
-
+        selectedIndex = "0";
     }  
     
     public MyProjectBean() {
@@ -95,6 +97,7 @@ public class MyProjectBean implements Serializable {
         selectedProjectName = null;
         myRoleOnThisProject = null;
         myAuthorizedRoles = null;
+        selectedIndex = "0";
       
         getGroupsOfUser();
         getListThesoByGroup();
@@ -201,10 +204,6 @@ public class MyProjectBean implements Serializable {
             return;
         }
         UserHelper userHelper = new UserHelper();
-        // récupération des utilisateurs sans groupe
-//        if (selectedProject.isEmpty()) {
-//            listeUser = userHelper.getUsersWithoutGroup(connect.getPoolConnexion());            
-//        } else {
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
@@ -220,11 +219,13 @@ public class MyProjectBean implements Serializable {
                 }
             }
         }
-    //    }        
+        listUsersLimitedRoleByGroup();
     }
     
+     
+    
     /**
-     * permet de récupérer la liste des utilisateurs suivants les options choisies
+     * permet de récupérer la liste des utilisateurs et les rôles sur les thésaurus du projet
      */
     private void listUsersLimitedRoleByGroup(){
         if (selectedProject == null || selectedProject.isEmpty()) {
@@ -232,21 +233,12 @@ public class MyProjectBean implements Serializable {
         }
         UserHelper userHelper = new UserHelper();
         int idGroup = Integer.parseInt(selectedProject);
-        setUserRoleOnThisGroup();
-        if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(),
-                    idGroup);
-        } else {
-            if (nodeUserRoleOnThisGroup != null) {
-                listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(),
-                        idGroup);
-            } else {
-                if (listeUserLimitedRole != null) {
-                    listeUserLimitedRole.clear(); //cas où on supprime l'utilisateur en cours
-                }
-            }
-        }
-    //    }        
+//        setUserRoleOnThisGroup();
+        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(),
+                idGroup);
+    /*    if (listeUserLimitedRole != null) {
+            listeUserLimitedRole.clear(); //cas où on supprime l'utilisateur en cours
+        }*/
     }    
     
     /**
@@ -364,6 +356,14 @@ public class MyProjectBean implements Serializable {
 
     public void setListeUserLimitedRole(ArrayList<NodeUserRole> listeUserLimitedRole) {
         this.listeUserLimitedRole = listeUserLimitedRole;
+    }
+
+    public String getSelectedIndex() {
+        return selectedIndex;
+    }
+
+    public void setSelectedIndex(String selectedIndex) {
+        this.selectedIndex = selectedIndex;
     }
  
     

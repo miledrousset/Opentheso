@@ -300,7 +300,7 @@
 
                 <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes.size() > 0}" >
                     <div class="row" style="font-size: 12px; color: #601e18; margin-bottom: 5px">
-                        <div class="col-4">
+                        <div class="col-3">
                             <b><h:outputText value="#{langueBean.getMsg('candidat.value')}"/></b>
                         </div>
                         <div class="col-2">
@@ -309,7 +309,7 @@
                         <div class="col-2">
                             <b><h:outputText value="#{langueBean.getMsg('statistique.type')}"/></b>
                         </div>
-                        <div class="col-1">
+                        <div class="col-2">
                             <b><h:outputText value="#{langueBean.getMsg('candidat.language')}"/></b>
                         </div>
                         <div class="col-1">
@@ -326,7 +326,7 @@
                     <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
                         <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
                              tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}">
-                            <div class="col-4" >
+                            <div class="col-3" >
                                 <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                             </div>
                             <div class="col-2" >
@@ -335,8 +335,8 @@
                             <div class="col-2" >
                                 <h:outputText value="#{note.notetypecode}" escape="false" style="font-size: 14px;"/>
                             </div>
-                            <div class="col-1" >
-                                <img src="#{conceptView.getDrapeauImgLocal(note.lang)}" width="25" height="20"/>
+                            <div class="col-2" >
+                                <img src="#{conceptView.getFlagFromCodeLang(note.lang)}" width="25" height="20"/>
                                 <h:outputLabel value=" (#{note.lang})" style="font-size: 14px; margin-left: 10px;" />
                             </div>
                             <div class="col-1" style="margin-top: -5px">
@@ -393,10 +393,10 @@
 
                 <h:panelGroup rendered="#{candidatBean.candidatSelected.traductions.size() > 0}" style="margin-top: 10px">
                     <div class="row" style="font-size: 12px; color: #601e18; margin-bottom: 5px">
-                        <div class="col-4" style="margin-top: -2px;">
+                        <div class="col-2" style="margin-top: -2px;">
                             <b><h:outputText value="#{langueBean.getMsg('candidat.language')}"/></b>
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                             <b><h:outputText value="#{langueBean.getMsg('candidat.traduction')}"/></b>
                         </div>
                         <div class="col-2">
@@ -410,11 +410,12 @@
                     <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
                         <div class="row" style="background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.traductions.indexOf(traduction))};
                              padding-top: 5px" >
-                            <div class="col-4" style="margin-top: -2px;">
-                                <img src="#{conceptView.getDrapeauImgLocal(traduction.langue)}" width="25" height="20"/>
+                            
+                            <div class="col-2" style="margin-top: -2px;">
+                                <img src="#{conceptView.getDrapeauImgLocal(traduction.codePays)}" width="25" height="20"/>
                                 <h:outputLabel value=" (#{traduction.langue})" style="font-size: 14px; margin-left: 10px;" />
                             </div>
-                            <div class="col-4" style="margin-top: -2px;">
+                            <div class="col-6" style="margin-top: -2px;">
                                 <h:outputText value="#{traduction.traduction}" style="font-size: 14px;"/>
                             </div>
                             <div class="col-2" style="margin-top: -5px">

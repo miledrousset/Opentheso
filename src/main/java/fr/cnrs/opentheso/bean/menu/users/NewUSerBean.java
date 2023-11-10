@@ -335,8 +335,6 @@ public class NewUSerBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-            
         }
     }      
 

@@ -115,9 +115,10 @@
                                 
                                 <div class="row" style="margin-left: 30px; margin-right: 30px;">
                                     <div class="col-12">
-                                        <p:tabView id="tabViewRoles">
+                                        <p:tabView id="tabViewRoles" activeIndex="#{myProjectBean.selectedIndex}">
+                                            <p:ajax event="tabChange" listener="#{myProjectBean.setSelectedIndex(myProjectBean.selectedIndex)}" />
                                             <!-- vue des thésaurus du projet -->
-                                            <p:tab title="#{langueBean.getMsg('profile.list_of_thesauri')}" titleStyle="font-size: 12px;" >
+                                            <p:tab id="tabListTheso" title="#{langueBean.getMsg('profile.list_of_thesauri')}" titleStyle="font-size: 12px;" >
 
                                                 <!-- Vue liste de thesaurus -->
                                                 <div class="row" style="margin-top: 10px">
@@ -213,7 +214,7 @@
                                             </p:tab>                  
                                             
                                             <!-- Vue liste des utilisateurs qui ont des droits limités sur des thésaurus du projet -->
-                                            <p:tab id="tabListUserWithLimitedRole" title="#{langueBean.getMsg('profile.listUserRestrictedRole')}" titletip="#{langueBean.getMsg('profile.listUserRestrictedRoleTooltip')}">
+                                            <p:tab  id="tabListUserWithLimitedRole" title="#{langueBean.getMsg('profile.listUserRestrictedRole')}" titletip="#{langueBean.getMsg('profile.listUserRestrictedRoleTooltip')}">
                                                 <div class="row" style="margin-top: 10px">
                                                     <div class="col-12">
                                                         <div class="card mb-4 py-3 border-left-success">

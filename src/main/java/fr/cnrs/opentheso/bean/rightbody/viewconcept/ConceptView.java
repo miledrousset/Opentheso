@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
+import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
@@ -208,6 +209,13 @@ public class ConceptView implements Serializable {
         }
         return FacesContext.getCurrentInstance().getExternalContext()
                 .getRequestContextPath() + "/resources/img/flag/" + codePays + ".png";
+    }
+    
+    public String getFlagFromCodeLang(String idLang){
+        LanguageHelper languageHelper = new LanguageHelper();
+        String flag = languageHelper.getFlagFromIdLang(connect.getPoolConnexion(), idLang);
+        return FacesContext.getCurrentInstance().getExternalContext()
+                .getRequestContextPath() + "/resources/img/flag/" + flag + ".png";        
     }
 
     /**
