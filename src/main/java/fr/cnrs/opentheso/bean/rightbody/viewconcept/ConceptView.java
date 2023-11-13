@@ -732,10 +732,13 @@ public class ConceptView implements Serializable {
 
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Coordonnée GPS modifiés !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-
-            PrimeFaces.current().ajax().update("messageIndex");
-            PrimeFaces.current().ajax().update("containerIndex:rightTab");
+        } else {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Aucune coordonnée GPS trouvée !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
+
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex:rightTab");
     }
 
     private GpsMode getGpsMode(List<Gps> nodeGps) {

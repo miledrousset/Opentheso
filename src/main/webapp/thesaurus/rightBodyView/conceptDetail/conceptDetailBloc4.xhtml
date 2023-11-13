@@ -172,9 +172,10 @@
                                 <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6" style="margin-left: -10px; width: 100%">
                                     <h:panelGroup rendered="#{!conceptView.isGpsDisable()}">
                                         <div class="ui-inputgroup" style="width: 100%">
-                                            <p:inputText placeholder="Liste des coordonnées .." style="width: 100%"
+                                            <p:inputText placeholder="Exemple de format : (48.922548 2.145240, 48.897888 2.242193, ...)"
+                                                         style="width: 100%"
                                                          value="#{conceptView.gpsList}"/>
-                                            <p:commandButton icon="pi pi-search-plus" styleClass="ui-button-danger"
+                                            <p:commandButton icon="pi pi-map-marker" styleClass="ui-button-danger"
                                                              style="background-color: #f47b2a; border-color: #f47b2a"
                                                              actionListener="#{conceptView.formatGpsList()}"
                                                              update="messageIndex containerIndex:rightTab:idConceptGps"/>
