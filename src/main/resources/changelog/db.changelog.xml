@@ -24,6 +24,6 @@
     <include file="/changelog/v23.09/003-add-position-gps-table.xml"/>
     <include file="/changelog/v23.09/004-update-primary-key-gps-table.xml"/>
     <changeSet id="executeScriptOriginal6" author="Fgabsi">
-        <sqlFile path="/changelog/v23.09/maj_functions.sql" relativeToChangelogFile="true" splitStatements="false"/>
+        <sqlFile path="../changelog/v23.09/maj_functions.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
 </databaseChangeLog>
