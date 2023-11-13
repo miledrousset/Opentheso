@@ -326,26 +326,50 @@ public class CurrentUser implements Serializable {
     }
     
     public void initUserPermissionsForThisTheso(){
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }
+        
         UserHelper userHelper = new UserHelper();
         int idProject, idRole; 
         userPermissions.setSelectedTheso(selectedTheso.getCurrentIdTheso());
         userPermissions.setSelectedThesoName(selectedTheso.getThesoName());
         idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());     
-
-        idRole = userHelper.getRoleOnThisTheso(connect.getPoolConnexion(), nodeUser.getIdUser(), idProject, selectedTheso.getCurrentIdTheso());
-        userPermissions.setRole(idRole);
-        userPermissions.setRoleName(userHelper.getRoleName(idRole));
-
-        userPermissions.setSelectedProject(idProject);
-        userPermissions.setSelectedProjectName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));
+        
+        if(nodeUser != null) {
+            idRole = userHelper.getRoleOnThisTheso(connect.getPoolConnexion(), nodeUser.getIdUser(), idProject, selectedTheso.getCurrentIdTheso());
+            userPermissions.setRole(idRole);
+            userPermissions.setRoleName(userHelper.getRoleName(idRole));
+        }
+        
+        userPermissions.setProjectOfselectedTheso(idProject);
+        userPermissions.setProjectOfselectedThesoName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));
     }    
     
     public void initUserPermissionsForThisProject(int idProject){
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }        
         UserHelper userHelper = new UserHelper();
         userPermissions.setSelectedProject(idProject);
         userPermissions.setSelectedProjectName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));        
     }
     
+    public void resetUserPermissionsForThisTheso(){
+        userPermissions.setSelectedTheso(null);
+        userPermissions.setSelectedThesoName("");
+        
+        userPermissions.setProjectOfselectedTheso(-1);
+        userPermissions.setProjectOfselectedThesoName("");
+                
+        userPermissions.setRole(-1);
+        userPermissions.setRoleName("");
+    }       
+    
+    public void resetUserPermissionsForThisProject(){
+        userPermissions.setSelectedProject(-1);
+        userPermissions.setSelectedProjectName("");  
+    }      
     
     
     

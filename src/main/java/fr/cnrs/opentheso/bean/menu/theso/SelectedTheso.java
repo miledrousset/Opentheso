@@ -223,7 +223,7 @@ public class SelectedTheso implements Serializable {
         }
 
         if (StringUtils.isEmpty(selectedIdTheso)) {
-
+            currentUser.resetUserPermissionsForThisTheso();
             treeGroups.reset();
             tree.reset();
             treeConcepts.reset();
@@ -268,6 +268,7 @@ public class SelectedTheso implements Serializable {
 
         sortByNotation = false;
         startNewTheso(null);
+        currentUser.initUserPermissionsForThisTheso();
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);

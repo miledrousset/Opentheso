@@ -15,10 +15,16 @@ public class UserPermissions {
     // infos à initialiser après la sélection d'un projet ou thésaurus
     private String selectedTheso;
     private String selectedThesoName;
+    private int projectOfselectedTheso;
+    private String projectOfselectedThesoName;
     
+    
+    // le role sur ce thésaurus en cas d'utilisateur authentifié 
     private int role;
     private String roleName;
     
+    
+    // pour le projet sélectionné
     private int selectedProject;
     private String selectedProjectName;
     
