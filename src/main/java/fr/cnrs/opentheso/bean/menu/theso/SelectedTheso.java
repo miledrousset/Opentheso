@@ -325,7 +325,7 @@ public class SelectedTheso implements Serializable {
             projectBean.setAllLangs(new LanguageHelper().getAllLanguages(connect.getPoolConnexion()));
         }
         if ("-1".equals(projectIdSelected)) {
-            currentUser.resetUserPermissionsForThisProject();
+            //currentUser.resetUserPermissionsForThisProject();
             roleOnThesoBean.showListTheso();
             currentIdTheso = null;
             selectedIdTheso = "";
