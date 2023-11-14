@@ -20,16 +20,17 @@
             </div>            
         </div>
 
-        <f:facet name="footer">
-            <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+        <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="Fermer" class="btn btn-secondary" style="margin-right: 10px"
-                                 actionListener="PF('confirmDeleteCorpus').hide();" update="idConfirmDeleteCorpus"/>
+            <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                             styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
+                             style="margin-right: 10px"
+                             actionListener="PF('confirmDeleteCorpus').hide();" update="idConfirmDeleteCorpus"/>
 
-                <p:commandButton title="Supprimer" update="containerIndex messageIndex" oncomplete="PF('confirmDeleteCorpus').hide();"
-                                 class="btn btn-primary" style="background-color: #C63632; border-color: #C63632"
-                                 actionListener="#{corpusBean.deleteCorpus()}" />
-            </div>                    
-        </f:facet>
+            <p:commandButton value="Supprimer" styleClass="ui-button-success" icon="pi pi-check"
+                             update="containerIndex messageIndex" ajax="true" process="@this"
+                             oncomplete="PF('confirmDeleteCorpus').hide();"
+                             actionListener="#{corpusBean.deleteCorpus()}" />
+        </div>
     </p:dialog>     
 </ui:fragment>
