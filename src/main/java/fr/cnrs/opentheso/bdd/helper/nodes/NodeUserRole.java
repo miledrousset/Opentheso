@@ -16,6 +16,9 @@ public class NodeUserRole {
     private int idRole;
     private String roleName;
     
+    private String idTheso;
+    private String thesoName; 
+    
     public NodeUserRole() {
     }
 
@@ -57,6 +60,22 @@ public class NodeUserRole {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getIdTheso() {
+        return idTheso;
+    }
+
+    public void setIdTheso(String idTheso) {
+        this.idTheso = idTheso;
+    }
+
+    public String getThesoName() {
+        return thesoName;
+    }
+
+    public void setThesoName(String thesoName) {
+        this.thesoName = thesoName;
     }
     
 }

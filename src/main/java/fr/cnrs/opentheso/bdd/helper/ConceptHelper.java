@@ -3079,7 +3079,16 @@ public class ConceptHelper {
                 ds,
                 idConceptTop,
                 idTheso);
-        // supprimer les concepts
+
+        // test si les concepts fils ont une poly-hiérarchie, on refuse la suppression (qui peut supprimer plusieurs branches 
+        for (String idConcept : idConcepts) {
+            if(relationsHelper.isConceptHaveManyRelationBT(ds, idConcept, idTheso)){
+                message = idConcept;
+                return false;
+            }
+        }
+        
+        // supprimer les concepts        
         for (String idConcept : idConcepts) {
             if (!deleteConcept__(ds,
                     idConcept, idTheso, idUser,

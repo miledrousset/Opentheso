@@ -2928,6 +2928,40 @@ public class RelationsHelper {
         }
         return existe;
     }
+    
+    /**
+     * Cette fonction permet de savoir si le Concept au moins 2 relations BT (terme
+     * générique)
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return Objet class Concept
+     */
+    public boolean isConceptHaveManyRelationBT(HikariDataSource ds,
+            String idConcept, String idThesaurus) {
+
+        boolean existe = false;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select count(id_concept1)" +
+                        " from hierarchical_relationship" +
+                        " where id_thesaurus = '" + idThesaurus + "'" +
+                        " and id_concept1 = '" + idConcept + "'" +
+                        " and role LIKE 'BT%'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        if(resultSet.getInt("count") > 1)
+                            existe = true;
+                    }
+                }
+            } 
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while asking if relation BT exist of Concept : " + idConcept, sqle);
+        }
+        return existe;
+    }    
 
     /**
      * Cette fonction permet de savoir si le Concept1 a une relation NT avec le

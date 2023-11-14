@@ -25,6 +25,31 @@ public class LanguageHelper {
 
     private final Log log = LogFactory.getLog(ThesaurusHelper.class);
     
+    
+    /**
+     * Permet de retourner le code du drapeau d'un pays à partir du code de la langue
+     *
+     * @param ds le pool de connexion
+     * @param idLang
+     * @return Objet Class Thesaurus
+     */
+    public String getFlagFromIdLang(HikariDataSource ds, String idLang) {
+        String flag = "";
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select code_pays from languages_iso639 where iso639_1 = '" + idLang + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        flag = resultSet.getString("code_pays");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Flag : " + idLang, sqle);
+        }
+        return flag;
+    }    
+    
     /**
      * Permet de remplir un tableau de SelectItem avec l'intégralité des langues
      * ayant un id_1 non null

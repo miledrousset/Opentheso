@@ -63,6 +63,7 @@ public class RoleOnThesoBean implements Serializable {
     private boolean isAdminOnThisTheso = false;
     private boolean isManagerOnThisTheso = false;
     private boolean isContributorOnThisTheso = false;
+    private boolean isNoRole = false;
 
     //liste des thesaurus pour l'utilisateur connecté suivant ses droits, inclus aussi ses thésaurus privés 
     private List<String> authorizedTheso;
@@ -204,7 +205,25 @@ public class RoleOnThesoBean implements Serializable {
         } else {
             UserHelper currentUserHelper = new UserHelper();
             authorizedTheso = currentUserHelper.getThesaurusOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+
+            // récupération de la liste des thésaurus pour les utilisateurs qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
+            List<String> listThesoTemp = new UserHelper().getListThesoLimitedRoleByUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            for (String idThesoTemp : listThesoTemp) {
+                if(!authorizedTheso.contains(idThesoTemp)) {
+                    authorizedTheso.add(idThesoTemp);
+                }
+            }
+
             authorizedThesoAsAdmin = currentUserHelper.getThesaurusOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());         
+            
+            // récupération de la liste des thésaurus pour les utilisateurs avec les droits admin, mais qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
+            listThesoTemp = new UserHelper().getListThesoLimitedRoleByUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            for (String idThesoTemp : listThesoTemp) {
+                if(!authorizedThesoAsAdmin.contains(idThesoTemp)) {
+                    authorizedThesoAsAdmin.add(idThesoTemp);
+                }
+            }
+            
         }
         addAuthorizedThesoToHM();
         initAuthorizedThesoAsAdmin();
@@ -413,25 +432,33 @@ public class RoleOnThesoBean implements Serializable {
             isAdminOnThisTheso = false;
             return;
         }
-
+        int idGroup = new UserHelper().getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserRoleGroup = getUserRoleOnThisGroup(-1); // cas de superadmin, on a accès à tous les groupes
             setRole();
         } else {
-            int idGroup = new UserHelper().getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+
             nodeUserRoleGroup = getUserRoleOnThisGroup(idGroup);
         }
 
         if (ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
             setRole();
         } else {
-            isAdminOnThisTheso = false;
+            nodeUserRoleGroup = new UserHelper().getUserRoleOnThisTheso(connect.getPoolConnexion(),
+                    currentUser.getNodeUser().getIdUser(), idGroup, selectedTheso.getCurrentIdTheso());
+            if(ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
+                setRole();
+            } else
+                isAdminOnThisTheso = false;
         }
     }
 
     private void setRole() {
 
         switch(nodeUserRoleGroup.getIdRole()) {
+            case -1:
+                isNoRole = true;
+                break;
             case 1:
                 isSuperAdmin = true;
                 break;

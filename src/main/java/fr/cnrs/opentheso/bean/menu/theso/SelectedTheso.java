@@ -205,6 +205,8 @@ public class SelectedTheso implements Serializable {
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
         connect.setLocalUri(localUri);
         
+        currentUser.getUserPermissions();
+        
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
         if (isUriRequest) {
@@ -221,7 +223,7 @@ public class SelectedTheso implements Serializable {
         }
 
         if (StringUtils.isEmpty(selectedIdTheso)) {
-
+            currentUser.resetUserPermissionsForThisTheso();
             treeGroups.reset();
             tree.reset();
             treeConcepts.reset();
@@ -266,6 +268,7 @@ public class SelectedTheso implements Serializable {
 
         sortByNotation = false;
         startNewTheso(null);
+        currentUser.initUserPermissionsForThisTheso();
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
@@ -322,12 +325,14 @@ public class SelectedTheso implements Serializable {
             projectBean.setAllLangs(new LanguageHelper().getAllLanguages(connect.getPoolConnexion()));
         }
         if ("-1".equals(projectIdSelected)) {
+            //currentUser.resetUserPermissionsForThisProject();
             roleOnThesoBean.showListTheso();
             currentIdTheso = null;
             selectedIdTheso = "";
             indexSetting.setSelectedTheso(false);
             indexSetting.setProjectSelected(false);
         } else {
+            currentUser.initUserPermissionsForThisProject(Integer.parseInt(projectIdSelected));
             boolean isConnect = ObjectUtils.isNotEmpty(currentUser.getNodeUser());
             projectBean.initProject(projectIdSelected, !isConnect);
 

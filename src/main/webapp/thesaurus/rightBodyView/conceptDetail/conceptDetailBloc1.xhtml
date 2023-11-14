@@ -283,9 +283,11 @@
                             <h:panelGroup rendered="#{conceptView.nodeFacets.size() != 0}" > 
                                 <ui:repeat var="facets" value="#{conceptView.nodeFacets}" varStatus="status">
                                     <p:commandLink id="commandFacets" rendered="#{facets.value != ''}"
+                                                   action="#{tree.selectThisFacet(facets.id)}"
                                                    value="#{facets.value}" ajax="true"
                                                    update="containerIndex indexTitle"/>
                                     <p:commandLink rendered="#{facets.value == ''}"
+                                                   action="#{tree.selectThisFacet(facets.id)}"
                                                    value="(#{facets.id})" ajax="true"
                                                    update="containerIndex indexTitle" />                                        
                                     <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>

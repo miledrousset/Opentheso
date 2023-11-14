@@ -5,6 +5,9 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
+import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeProjectThesoRole;
+import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
+import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.UserPermissions;
 import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -31,6 +34,8 @@ import javax.inject.Inject;
 import javax.annotation.PreDestroy;
 
 import fr.cnrs.opentheso.utils.LDAPUtils;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -75,6 +80,10 @@ public class CurrentUser implements Serializable {
     private boolean ldapEnable = false;
 
     private ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin;
+    
+    // nouvel objet pour gérer les permissions
+    private UserPermissions userPermissions;
+    
 
     @PreDestroy
     public void destroy() {
@@ -100,7 +109,9 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
 
         nodeUser = null;
-
+        
+        userPermissions = null;
+        
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
         indexSetting.setIsThesoActive(true);
@@ -218,8 +229,11 @@ public class CurrentUser implements Serializable {
         if ("index".equals(menuBean.getActivePageName())) {
             menuBean.setNotificationPannelVisible(true);
         }
-        
+        initUserPermissions();
         setInfos();
+        //// Nouvelle gestion des droits pour l'utilisateur avec l'Objet UserPermissions
+
+        
         
         if ("2".equals(rightBodySetting.getIndex())) {
             rightBodySetting.setIndex("0");
@@ -266,6 +280,111 @@ public class CurrentUser implements Serializable {
         }
     }
 
+    
+    
+    
+    
+    
+    
+    /**
+     * Nouvelle gestion des droits pour l'utilisateur
+     */
+    private void initUserPermissions(){
+        userPermissions = new UserPermissions();
+        UserHelper userHelper = new UserHelper();
+
+        // si un thésaurus est sélectionné, on initialise les droits de l'utilisateur dessus
+        if(!StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
+            initUserPermissionsForThisTheso();
+        }
+        
+        if(!StringUtils.isEmpty(selectedTheso.getProjectIdSelected())){
+            int idProject = Integer.parseInt(selectedTheso.getProjectIdSelected());
+            if(idProject != -1)
+                initUserPermissionsForThisProject(idProject);
+        }        
+        
+
+        // liste des projets de l'utilisateur
+        Map<String, String> listeGroupsOfUser = userHelper.getGroupsOfUser(connect.getPoolConnexion(), nodeUser.getIdUser());
+        userPermissions.setProjectlist(listeGroupsOfUser);
+        
+        // les projets de l'utilisateurs avec les roles sur les thésaurus par projet
+        List<NodeProjectThesoRole> nodeProjectThesoRoles = new ArrayList<>();
+        
+        for (Map.Entry<String, String> entry : listeGroupsOfUser.entrySet()) {
+            NodeProjectThesoRole nodeProjectThesoRole = new NodeProjectThesoRole();
+            nodeProjectThesoRole.setIdProject(Integer.parseInt(entry.getKey())); // id du projet
+            nodeProjectThesoRole.setProjectName(entry.getValue()); // label du projet
+            
+            List<NodeThesoRole> nodeThesoRoles = userHelper.getAllRolesThesosByUserGroup(connect.getPoolConnexion(), nodeProjectThesoRole.getIdProject(), nodeUser.getIdUser());
+           
+            nodeProjectThesoRole.setNodeThesoRoles(nodeThesoRoles);
+            nodeProjectThesoRoles.add(nodeProjectThesoRole);
+        }
+        userPermissions.setNodeProjectThesoRoles(nodeProjectThesoRoles);
+    }
+    
+    public void initUserPermissionsForThisTheso(){
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }
+        
+        UserHelper userHelper = new UserHelper();
+        int idProject, idRole; 
+        userPermissions.setSelectedTheso(selectedTheso.getCurrentIdTheso());
+        userPermissions.setSelectedThesoName(selectedTheso.getThesoName());
+        idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());     
+        
+        if(nodeUser != null) {
+            idRole = userHelper.getRoleOnThisTheso(connect.getPoolConnexion(), nodeUser.getIdUser(), idProject, selectedTheso.getCurrentIdTheso());
+            userPermissions.setRole(idRole);
+            userPermissions.setRoleName(userHelper.getRoleName(idRole));
+        }
+        
+        userPermissions.setProjectOfselectedTheso(idProject);
+        userPermissions.setProjectOfselectedThesoName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));
+    }    
+    
+    public void initUserPermissionsForThisProject(int idProject){
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }        
+        UserHelper userHelper = new UserHelper();
+        userPermissions.setSelectedProject(idProject);
+        userPermissions.setSelectedProjectName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));
+        userPermissions.setListThesoOfProject(userHelper.getThesaurusOfProject(
+                connect.getPoolConnexion(), idProject, connect.getWorkLanguage(), nodeUser == null));
+    }
+    
+    public void resetUserPermissionsForThisTheso(){
+        userPermissions.setSelectedTheso(null);
+        userPermissions.setSelectedThesoName("");
+        
+        userPermissions.setProjectOfselectedTheso(-1);
+        userPermissions.setProjectOfselectedThesoName("");
+                
+        userPermissions.setRole(-1);
+        userPermissions.setRoleName("");
+    }       
+    
+    public void resetUserPermissionsForThisProject(){
+        userPermissions.setSelectedProject(-1);
+        userPermissions.setSelectedProjectName("");  
+        userPermissions.setListThesoOfProject(null);
+    }      
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private void showErrorMessage(String msg) {
         // utilisateur ou mot de passe n'existent pas
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Login Error!", msg);
@@ -460,4 +579,13 @@ public class CurrentUser implements Serializable {
     public void setAllAuthorizedProjectAsAdmin(ArrayList<NodeUserRoleGroup> allAuthorizedProjectAsAdmin) {
         this.allAuthorizedProjectAsAdmin = allAuthorizedProjectAsAdmin;
     }
+
+    public UserPermissions getUserPermissions() {
+        return userPermissions;
+    }
+
+    public void setUserPermissions(UserPermissions userPermissions) {
+        this.userPermissions = userPermissions;
+    }
+    
 }

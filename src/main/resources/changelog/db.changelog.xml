@@ -17,6 +17,7 @@
     <include file="/changelog/v23.07.3/001-update_thesaurus_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-update_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-add-projet-description-table.xml"/>
+    <include file="/changelog/v23.07.3/003-update-primary-key-gps-table.xml"/>
 
     <!-- changelog pour la v23.09 --> 
     <include file="/changelog/v23.09/001-delete-table-pref-gps.xml"/>
@@ -26,4 +27,7 @@
     <changeSet id="executeScriptOriginal6" author="Fgabsi">
         <sqlFile path="../changelog/v23.09/maj_functions.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
+
+    <!-- changelog pour la v23.10 -->
+    <include file="/changelog/v23.10/001-table-roleonly.xml"/>
 </databaseChangeLog>
