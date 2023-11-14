@@ -352,7 +352,9 @@ public class CurrentUser implements Serializable {
         }        
         UserHelper userHelper = new UserHelper();
         userPermissions.setSelectedProject(idProject);
-        userPermissions.setSelectedProjectName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));        
+        userPermissions.setSelectedProjectName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));
+        userPermissions.setListThesoOfProject(userHelper.getThesaurusOfProject(
+                connect.getPoolConnexion(), idProject, connect.getWorkLanguage(), nodeUser == null));
     }
     
     public void resetUserPermissionsForThisTheso(){
@@ -369,6 +371,7 @@ public class CurrentUser implements Serializable {
     public void resetUserPermissionsForThisProject(){
         userPermissions.setSelectedProject(-1);
         userPermissions.setSelectedProjectName("");  
+        userPermissions.setListThesoOfProject(null);
     }      
     
     

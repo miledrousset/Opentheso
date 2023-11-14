@@ -1,6 +1,7 @@
 
 package fr.cnrs.opentheso.bdd.helper.nodes.userpermissions;
 
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import lombok.Data;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,9 @@ public class UserPermissions {
     // pour le projet sélectionné
     private int selectedProject;
     private String selectedProjectName;
+    private List<NodeIdValue> listThesoOfProject;
+    
+    
     
     // liste des thésaurus du projet avec les rôles
     List<NodeThesoRole> listThesoRoleOfSelectedProject;    
