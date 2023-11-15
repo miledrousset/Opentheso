@@ -302,7 +302,6 @@ public class RoleOnThesoBean implements Serializable {
         }
 
         nodeListTheso = new ArrayList<>();
-        HashMap<String, String> authorizedThesoHM = new LinkedHashMap();
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
 
         // ajout de code qui permet de charger une liste de thésaurus avec le nom en utilisant la langue préférée dans les préférences du thésaurus.
@@ -323,10 +322,8 @@ public class RoleOnThesoBean implements Serializable {
             String title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso1, preferredIdLangOfTheso);
             if (StringUtils.isEmpty(title)) {
                 thesoModel.setNom("(" + idTheso1 + ")");
-                authorizedThesoHM.put(thesoModel.nom, idTheso1);
             } else {
                 thesoModel.setNom(title + " (" + idTheso1 + ")");
-                authorizedThesoHM.put(thesoModel.nom, idTheso1);
             }
 
             thesoModel.setDefaultLang(preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1));
@@ -385,6 +382,7 @@ public class RoleOnThesoBean implements Serializable {
      *
      */
     public void setPublicThesos() {
+        currentUser.initAllTheso();
         authorizedTheso = new ThesaurusHelper().getAllIdOfThesaurus(connect.getPoolConnexion(), false);
         addAuthorizedThesoToHM();
         setUserRoleOnThisTheso();

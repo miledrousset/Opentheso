@@ -2,6 +2,7 @@
 package fr.cnrs.opentheso.bdd.helper.nodes.userpermissions;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
 import lombok.Data;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,13 @@ import java.util.Map;
 @Data
 public class UserPermissions {
 
+    // chargenement de tous les projets (non connecté) ou après connection
+    private List<UserGroupLabel> listProjects;
+    // chargenement de tous les thésaurus (non connecté)ou après sélection d'un projet
+    private List <NodeIdValue> listThesos;
+    
+    
+    
     // infos à initialiser après la sélection d'un projet ou thésaurus
     private String selectedTheso;
     private String selectedThesoName;
@@ -28,7 +36,7 @@ public class UserPermissions {
     // pour le projet sélectionné
     private int selectedProject;
     private String selectedProjectName;
-    private List<NodeIdValue> listThesoOfProject;
+//    private List<NodeIdValue> listThesoOfProject;
     
     
     
@@ -42,10 +50,10 @@ public class UserPermissions {
     // infos pour l'utilisateur sélectionné après une authentification 
     
     // liste des projets de l'utilisateur
-    private Map<String, String> projectlist;
+//    private Map<String, String> projectlist;
     
     // Liste des projets de l'utilisateur, avec la liste des thesaurus/role par projet
-    List<NodeProjectThesoRole> nodeProjectThesoRoles;
+    List<NodeProjectThesoRole> nodeProjectsWithThesosRoles;
    
     public boolean isSuperAdmin(){
         return role == 1;   

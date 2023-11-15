@@ -205,7 +205,7 @@ public class SelectedTheso implements Serializable {
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
         connect.setLocalUri(localUri);
         
-        currentUser.getUserPermissions();
+      //  currentUser.getUserPermissions();
         
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -305,6 +305,7 @@ public class SelectedTheso implements Serializable {
      * - mode connecté = on charge uniquement les projets de l'utilisateur
      */
     public void loadProject() {
+        currentUser.initAllProject();
         if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
             projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
         } else {
@@ -325,7 +326,7 @@ public class SelectedTheso implements Serializable {
             projectBean.setAllLangs(new LanguageHelper().getAllLanguages(connect.getPoolConnexion()));
         }
         if ("-1".equals(projectIdSelected)) {
-            //currentUser.resetUserPermissionsForThisProject();
+            currentUser.resetUserPermissionsForThisProject();
             roleOnThesoBean.showListTheso();
             currentIdTheso = null;
             selectedIdTheso = "";

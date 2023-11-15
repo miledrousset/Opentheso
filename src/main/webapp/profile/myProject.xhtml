@@ -137,7 +137,8 @@
                                                                 </p:column>
 
                                                                 <p:column width="80%" headerText="#{langueBean.getMsg('statistique.thesaurus.name')}">
-                                                                    <h:outputText value="#{listTheso.value}"/>
+                                                                    <h:outputText rendered="#{!listTheso.status}" value="#{listTheso.value}"/>
+                                                                    <h:outputText rendered="#{listTheso.status}" value="#{listTheso.value}" style="color: red; font-style: italic"/>                                                                
                                                                 </p:column>
 
                                                                 <p:column width="10%" headerText="#{langueBean.getMsg('profile.action')}" style="text-align: center" >

@@ -619,6 +619,7 @@ public class UserHelper {
             nodeIdValue.setId(idTheso);
             nodeIdValue.setValue(title);
             nodeIdValues.add(nodeIdValue);
+            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(ds, idTheso));
         }
         return nodeIdValues;
     }
@@ -847,12 +848,15 @@ public class UserHelper {
                         + "  user_group_label.label_group,"
                         + "  thesaurus_label.title,"
                         + "  user_group_thesaurus.id_thesaurus,"
-                        + "  user_group_thesaurus.id_group"
+                        + "  user_group_thesaurus.id_group,"
+                        + "  thesaurus.private"
                         + " FROM "
                         + "  thesaurus_label, "
                         + "  user_group_thesaurus, "
-                        + "  user_group_label"
+                        + "  user_group_label,"
+                        + "  thesaurus"
                         + " WHERE "
+                        + "  thesaurus.id_thesaurus = thesaurus_label.id_thesaurus and"
                         + "  user_group_thesaurus.id_group = user_group_label.id_group AND"
                         + "  user_group_thesaurus.id_thesaurus = thesaurus_label.id_thesaurus AND"
                         + "  thesaurus_label.lang = '" + idLangSource + "'"
@@ -864,6 +868,7 @@ public class UserHelper {
                         nodeUserGroupThesaurus.setThesaurusName(resultSet.getString("title"));
                         nodeUserGroupThesaurus.setIdGroup(resultSet.getInt("id_group"));
                         nodeUserGroupThesaurus.setGroupName(resultSet.getString("label_group"));
+                        nodeUserGroupThesaurus.setPrivateTheso(resultSet.getBoolean("private"));
 
                         nodeUserGroupThesauruses.add(nodeUserGroupThesaurus);
                     }
@@ -889,9 +894,10 @@ public class UserHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT thesaurus_label.id_thesaurus, thesaurus_label.title "
-                        + " FROM  thesaurus_label"
+                stmt.executeQuery("SELECT thesaurus_label.id_thesaurus, thesaurus_label.title, thesaurus.private "
+                        + " FROM  thesaurus_label, thesaurus"
                         + " WHERE thesaurus_label.lang = '" + idLangSource + "'"
+                        + " and thesaurus.id_thesaurus = thesaurus_label.id_thesaurus"
                         + " and thesaurus_label.id_thesaurus not in "
                         + "(select id_thesaurus from  user_group_thesaurus)"
                         + " ORDER BY LOWER(thesaurus_label.title)");
@@ -902,6 +908,7 @@ public class UserHelper {
                         nodeUserGroupThesaurus.setThesaurusName(resultSet.getString("title"));
                         nodeUserGroupThesaurus.setIdGroup(-1);
                         nodeUserGroupThesaurus.setGroupName("");
+                        nodeUserGroupThesaurus.setPrivateTheso(resultSet.getBoolean("private"));
 
                         nodeUserGroupThesauruses.add(nodeUserGroupThesaurus);
                     }

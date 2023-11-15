@@ -20,6 +20,8 @@ import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ProjectBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ public class CurrentUser implements Serializable {
     private ProjectBean projectBean;
     @Inject
     private CurrentUser currentUser;
+    @Inject private UserGroupLabelRepository userGroupLabelRepository;    
 
     private NodeUser nodeUser;
     private String username;
@@ -306,23 +309,22 @@ public class CurrentUser implements Serializable {
         
 
         // liste des projets de l'utilisateur
-        Map<String, String> listeGroupsOfUser = userHelper.getGroupsOfUser(connect.getPoolConnexion(), nodeUser.getIdUser());
-        userPermissions.setProjectlist(listeGroupsOfUser);
+        userPermissions.setListProjects(userGroupLabelRepository.getProjectsByUserId(nodeUser.getIdUser()));
         
         // les projets de l'utilisateurs avec les roles sur les thésaurus par projet
         List<NodeProjectThesoRole> nodeProjectThesoRoles = new ArrayList<>();
         
-        for (Map.Entry<String, String> entry : listeGroupsOfUser.entrySet()) {
+        for (UserGroupLabel userGroupLabel : userPermissions.getListProjects()) {
             NodeProjectThesoRole nodeProjectThesoRole = new NodeProjectThesoRole();
-            nodeProjectThesoRole.setIdProject(Integer.parseInt(entry.getKey())); // id du projet
-            nodeProjectThesoRole.setProjectName(entry.getValue()); // label du projet
+            nodeProjectThesoRole.setIdProject(userGroupLabel.getId()); // id du projet
+            nodeProjectThesoRole.setProjectName(userGroupLabel.getLabel()); // label du projet
             
             List<NodeThesoRole> nodeThesoRoles = userHelper.getAllRolesThesosByUserGroup(connect.getPoolConnexion(), nodeProjectThesoRole.getIdProject(), nodeUser.getIdUser());
            
             nodeProjectThesoRole.setNodeThesoRoles(nodeThesoRoles);
             nodeProjectThesoRoles.add(nodeProjectThesoRole);
         }
-        userPermissions.setNodeProjectThesoRoles(nodeProjectThesoRoles);
+        userPermissions.setNodeProjectsWithThesosRoles(nodeProjectThesoRoles);
     }
     
     public void initUserPermissionsForThisTheso(){
@@ -353,7 +355,7 @@ public class CurrentUser implements Serializable {
         UserHelper userHelper = new UserHelper();
         userPermissions.setSelectedProject(idProject);
         userPermissions.setSelectedProjectName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));
-        userPermissions.setListThesoOfProject(userHelper.getThesaurusOfProject(
+        userPermissions.setListThesos(userHelper.getThesaurusOfProject(
                 connect.getPoolConnexion(), idProject, connect.getWorkLanguage(), nodeUser == null));
     }
     
@@ -371,9 +373,31 @@ public class CurrentUser implements Serializable {
     public void resetUserPermissionsForThisProject(){
         userPermissions.setSelectedProject(-1);
         userPermissions.setSelectedProjectName("");  
-        userPermissions.setListThesoOfProject(null);
+        userPermissions.setListThesos(null);
     }      
     
+    public void initAllProject(){
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }         
+        userPermissions.setListProjects(userGroupLabelRepository.getProjectsByThesoStatus(false));
+
+        if(userPermissions.getListProjects() == null || userPermissions.getListProjects().isEmpty()) {
+            resetUserPermissionsForThisProject();
+        }    
+    }
+    
+    public void initAllTheso(){
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }         
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        userPermissions.setListThesos(thesaurusHelper.getAllTheso(connect.getPoolConnexion(), false));
+
+        if(userPermissions.getListThesos() == null || userPermissions.getListThesos().isEmpty()) {
+            resetUserPermissionsForThisTheso();
+        }   
+    }    
     
     
     

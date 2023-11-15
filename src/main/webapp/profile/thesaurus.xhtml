@@ -74,12 +74,17 @@
                                     </p:column>
 
                                     <p:column width="40" headerText="#{langueBean.getMsg('menu.thesaurus')}" sortBy="#{listTheso.thesaurusName}" >
-                                        <h:outputText value="#{listTheso.thesaurusName}"/>
+                                        <h:outputText rendered="#{!listTheso.privateTheso}" value="#{listTheso.thesaurusName}"/>
+                                        <h:outputText rendered="#{listTheso.privateTheso}" value="#{listTheso.thesaurusName}" style="color: red; font-style: italic"/>
                                     </p:column>
 
                                     <p:column width="50" headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
                                         <h:outputText value="#{listTheso.groupName}"/>
                                     </p:column>
+                                    
+                                    <p:column width="10" headerText="#{langueBean.getMsg('toolbox.publicPrivate')}">
+                                        <p:toggleSwitch value="#{listTheso.privateTheso}"/>
+                                    </p:column>                                    
 
                                     <p:column width="1" headerText="Action" style="text-align: center"> 
 
