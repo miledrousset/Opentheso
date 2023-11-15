@@ -5481,16 +5481,10 @@ public class ConceptHelper {
         nodeConceptExport.setNodeNoteConcept(noteConcept);
 
         //récupération des coordonnées GPS
-        //TODO MILTI GPS
-        NodeGps nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
-        if (nodeGps != null) {
-            nodeConceptExport.setNodeGps(nodeGps);
-        }
-        /*
         List<NodeGps> nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
         if (CollectionUtils.isNotEmpty(nodeGps)) {
             nodeConceptExport.setNodeGps(nodeGps);
-        }*/
+        }
 
         ArrayList<NodeImage> nodeImages = imagesHelper.getExternalImages(ds, idConcept, idThesaurus);
         if (nodeImages != null) {
@@ -5697,13 +5691,11 @@ public class ConceptHelper {
      * @param offset
      * @return
      */
-    public NodeConcept getConcept(HikariDataSource ds,
-            String idConcept, String idThesaurus, String idLang, int step, int offset) {
+    public NodeConcept getConcept(HikariDataSource ds, String idConcept, String idThesaurus, String idLang, int step, int offset) {
         NodeConcept nodeConcept = new NodeConcept();
 
         // récupération des BT
-        RelationsHelper relationsHelper = new RelationsHelper();
-        ArrayList<NodeBT> nodeListBT = relationsHelper.getListBT(ds, idConcept, idThesaurus, idLang);
+        ArrayList<NodeBT> nodeListBT = new RelationsHelper().getListBT(ds, idConcept, idThesaurus, idLang);
         nodeConcept.setNodeBT(nodeListBT);
 
         //récupération du Concept
@@ -5717,54 +5709,42 @@ public class ConceptHelper {
         nodeConcept.setConcept(concept);
 
         //récupération du Terme
-        TermHelper termHelper = new TermHelper();
-        Term term = termHelper.getThisTerm(ds, idConcept, idThesaurus, idLang);
+        Term term = new TermHelper().getThisTerm(ds, idConcept, idThesaurus, idLang);
         nodeConcept.setTerm(term);
 
         //récupération des termes spécifiques
-        nodeConcept.setNodeNT(relationsHelper.getListNT(ds, idConcept, idThesaurus, idLang, step, offset));
+        nodeConcept.setNodeNT(new RelationsHelper().getListNT(ds, idConcept, idThesaurus, idLang, step, offset));
 
         //récupération des termes associés
-        nodeConcept.setNodeRT(relationsHelper.getListRT(ds, idConcept, idThesaurus, idLang));
+        nodeConcept.setNodeRT(new RelationsHelper().getListRT(ds, idConcept, idThesaurus, idLang));
 
         //récupération des Non Prefered Term
-        nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(ds, term.getId_term(), idThesaurus, idLang));
+        nodeConcept.setNodeEM(new TermHelper().getNonPreferredTerms(ds, term.getId_term(), idThesaurus, idLang));
 
         //récupération des traductions
-        nodeConcept.setNodeTermTraductions(termHelper.getTraductionsOfConcept(ds, idConcept, idThesaurus, idLang));
-
-        NoteHelper noteHelper = new NoteHelper();
+        nodeConcept.setNodeTermTraductions(new TermHelper().getTraductionsOfConcept(ds, idConcept, idThesaurus, idLang));
 
         //récupération des notes du Concept
-        nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConcept(
-                ds, idConcept, idThesaurus, idLang));
+        nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConcept(ds, idConcept, idThesaurus, idLang));
         //récupération des notes du term        
-        nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(ds, term.getId_term(),
-                idThesaurus, idLang));
+        nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTerm(ds, term.getId_term(), idThesaurus, idLang));
 
-        GroupHelper groupHelper = new GroupHelper();
-        nodeConcept.setNodeConceptGroup(groupHelper.getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));
+        nodeConcept.setNodeConceptGroup(new GroupHelper().getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));
 
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-        nodeConcept.setNodeAlignments(alignmentHelper.getAllAlignmentOfConcept(ds, idConcept, idThesaurus));
+        nodeConcept.setNodeAlignments(new AlignmentHelper().getAllAlignmentOfConcept(ds, idConcept, idThesaurus));
 
-        ImagesHelper imagesHelper = new ImagesHelper();
-        nodeConcept.setNodeimages(imagesHelper.getExternalImages(ds, idConcept, idThesaurus));
+        nodeConcept.setNodeimages(new ImagesHelper().getExternalImages(ds, idConcept, idThesaurus));
 
         //gestion des ressources externes
-        ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();
-        nodeConcept.setNodeExternalResources(externalResourcesHelper.getExternalResources(ds, idConcept, idThesaurus));
+        nodeConcept.setNodeExternalResources(new ExternalResourcesHelper().getExternalResources(ds, idConcept, idThesaurus));
 
         // concepts qui remplacent un concept déprécié
-        DeprecateHelper deprecatedHelper = new DeprecateHelper();
-        nodeConcept.setReplacedBy(deprecatedHelper.getAllReplacedBy(ds, idThesaurus, idConcept, idLang));
+        nodeConcept.setReplacedBy(new DeprecateHelper().getAllReplacedBy(ds, idThesaurus, idConcept, idLang));
         // les concepts dépécés que ce concept remplace
-        nodeConcept.setReplaces(deprecatedHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
-
-        DcElementHelper dcElmentHelper = new DcElementHelper();
+        nodeConcept.setReplaces(new DeprecateHelper().getAllReplaces(ds, idThesaurus, idConcept, idLang));
 
         /// récupération des Méta-données DC_terms
-        nodeConcept.setDcElements(dcElmentHelper.getDcElementOfConcept(ds, idThesaurus, idConcept));
+        nodeConcept.setDcElements(new DcElementHelper().getDcElementOfConcept(ds, idThesaurus, idConcept));
 
         return nodeConcept;
     }

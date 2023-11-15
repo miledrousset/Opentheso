@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
@@ -16,7 +17,10 @@ import java.sql.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
@@ -148,12 +152,7 @@ public class ExportHelper {
                         
                         addExternalResources(sKOSResource, resultSet.getString("externalResources"));
 
-                        //TODO MILTI GPS
-                        //addGps(sKOSResource, resultSet.getString("gpsData"));
-                        if (resultSet.getString("latitude") != null || resultSet.getString("longitude") != null) {
-                            sKOSResource.setGpsCoordinates(new SKOSGPSCoordinates(
-                                    resultSet.getDouble("latitude"), resultSet.getDouble("longitude")));
-                        }
+                        addGps(sKOSResource, resultSet.getString("gpsData"));
                         
                         if (resultSet.getString("creator") != null) {
                             sKOSResource.addAgent(resultSet.getString("creator"), SKOSProperty.creator);
@@ -199,7 +198,6 @@ public class ExportHelper {
         return concepts;
     }
 
-    /*//TODO MILTI GPS
     private void addGps(SKOSResource sKOSResource, String str) {
         if (StringUtils.isNotEmpty(str)) {
             String[] tabs = str.split(SEPERATEUR);
@@ -211,7 +209,7 @@ public class ExportHelper {
             }
             sKOSResource.setGpsCoordinates(tmp);
         }
-    }*/
+    }
 
     private String getUriFromId(String id, String originalUri, NodePreference nodePreference) {
         if(nodePreference.isOriginalUriIsArk()) {
@@ -259,11 +257,11 @@ public class ExportHelper {
         } else {
             baseSQL = baseSQL + "opentheso_get_concepts_by_group('" + idTheso + "', '" + baseUrl + "', '" + idGroup;
         }
-//TODO MILTI GPS
+
         return baseSQL + "') as x(URI text, TYPE varchar, LOCAL_URI text, IDENTIFIER varchar, ARK_ID varchar, "
                 + "prefLab varchar, altLab varchar, altLab_hiden varchar, definition text, example text, editorialNote text, changeNote text, "
                 + "secopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
-                + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, latitude double precision, longitude double precision, " //gpsData text
+                + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, gpsData text, "
                 + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
                 + "replaces text, replaced_by text, facets text, externalResources text);";
     }

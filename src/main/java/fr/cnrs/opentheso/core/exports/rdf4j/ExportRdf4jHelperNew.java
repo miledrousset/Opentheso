@@ -599,23 +599,17 @@ public class ExportRdf4jHelperNew {
         }
     }
 
-    //TODO MILTI GPS
-    private void addGPSGiven(NodeGps gps, SKOSResource resource) {
+    private void addGPSGiven(List<NodeGps> gps, SKOSResource resource) {
         if (gps == null) {
             return;
         }
-        double lat = gps.getLatitude();
-        double lon = gps.getLongitude();
-        resource.setGpsCoordinates(new SKOSGPSCoordinates(lat, lon));
-
-            /*
         if (CollectionUtils.isNotEmpty(gps)) {
             List<SKOSGPSCoordinates> elements = new ArrayList<>();
             for (NodeGps element : gps) {
                 elements.add(new SKOSGPSCoordinates(element.getLatitude(), element.getLongitude()));
             }
             resource.setGpsCoordinates(elements);
-        }*/
+        }
     }
 
 

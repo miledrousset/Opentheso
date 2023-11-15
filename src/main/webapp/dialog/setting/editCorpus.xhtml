@@ -77,7 +77,6 @@
 
                 <p:commandButton value="#{langueBean.getMsg('apply')}" styleClass="ui-button-success" icon="pi pi-check"
                                  update="containerIndex messageIndex"
-                                 oncomplete="PF('editCorpus').hide();"
                                  ajax="true" process="@form"
                                  actionListener="#{corpusBean.updateCorpus()}" />
             </div>              

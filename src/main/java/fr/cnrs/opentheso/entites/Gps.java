@@ -35,4 +35,11 @@ public class Gps {
     private Double latitude;
 
     private Double longitude;
+
+    private Integer position;
+
+    @Override
+    public String toString() {
+        return String.format("%f %f", latitude, longitude).replaceAll(",", ".");
+    }
 }

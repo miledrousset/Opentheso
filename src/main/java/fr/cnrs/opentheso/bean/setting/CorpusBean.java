@@ -17,6 +17,8 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import fr.cnrs.opentheso.utils.UrlUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -71,175 +73,128 @@ public class CorpusBean implements Serializable {
     }
     
     public void updateCorpus() {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
+
         if (nodeCorpusForEdit == null) {
             return;
         }
 
         if (nodeCorpusForEdit.getCorpusName().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " le nom du corpus est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            showMessage(FacesMessage.SEVERITY_INFO, "Le nom du corpus est obligatoire !");
             return;
         }
 
+        //Vérification de l'URI
         if (nodeCorpusForEdit.getUriLink().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'URI du lien est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI du lien est obligatoire !");
             return;
         }
-        
-        if(!nodeCorpusForEdit.isIsOnlyUriLink()) {
-            if (nodeCorpusForEdit.getUriCount().isEmpty()) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'URI pour le comptage est obligatoire !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
-                return;
-            }        
-        }        
+        if (!UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriLink())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI n'est pas valide !");
+            return;
+        }
+
+        //Vérification de l'URI du comptage
+        if(!nodeCorpusForEdit.isIsOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
+            return;
+        }
+        if (nodeCorpusForEdit.isIsOnlyUriLink() && !UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriCount())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
+            return;
+        }
 
         CorpusHelper corpusHelper = new CorpusHelper();
-        if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
-            if (!nodeCorpusForEdit.getCorpusName().equalsIgnoreCase(oldName)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " ce corpus existe déjà, changez de nom !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
-                return;
-            }
-        }
-
-        if (!corpusHelper.updateCorpus(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                oldName,
-                nodeCorpusForEdit)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification de corpus !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+        if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+                nodeCorpusForEdit.getCorpusName()) && !nodeCorpusForEdit.getCorpusName().equalsIgnoreCase(oldName)) {
+            showMessage(FacesMessage.SEVERITY_INFO, "Ce corpus existe déjà, changez de nom !");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus modifié avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (!corpusHelper.updateCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), oldName, nodeCorpusForEdit)) {
+            showMessage(FacesMessage.SEVERITY_INFO, "Erreur de modification de corpus !");
+            return;
+        }
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Corpus modifié avec succès");
         PrimeFaces.current().executeScript("PF('editCorpus').hide();");
         init();
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     public void addNewCorpus() {
-        FacesMessage msg;
+
         PrimeFaces pf = PrimeFaces.current();
         if (nodeCorpusForEdit == null) {
             return;
         }
 
         if (nodeCorpusForEdit.getCorpusName().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " le nom du corpus est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            showMessage(FacesMessage.SEVERITY_ERROR, "Le nom du corpus est obligatoire !");
             return;
         }
 
+        //Vérification de l'URI
         if (nodeCorpusForEdit.getUriLink().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'URI du lien est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI du lien est obligatoire !");
             return;
         }
-        
-        if(!nodeCorpusForEdit.isIsOnlyUriLink()) {
-            if (nodeCorpusForEdit.getUriCount().isEmpty()) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'URI pour le comptage est obligatoire !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                if (pf.isAjaxRequest()) {
-                    pf.ajax().update("messageIndex");
-                }
-                return;
-            }        
-        }
-
-        CorpusHelper corpusHelper = new CorpusHelper();
-        if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " ce corpus existe déjà, changez de nom !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+        if (!UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriLink())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI n'est pas valide !");
             return;
         }
 
-        if (!corpusHelper.addNewCorpus(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeCorpusForEdit)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de création du corpus !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+        //Vérification de l'URI du comptage
+        if(!nodeCorpusForEdit.isIsOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
+            return;
+        }
+        if (nodeCorpusForEdit.isIsOnlyUriLink() && !UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriCount())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus crée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (new CorpusHelper().isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Ce corpus existe déjà, changez de nom !");
+            return;
+        }
+
+        if (!new CorpusHelper().addNewCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de création du corpus !");
+            return;
+        }
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Corpus crée avec succès");
         PrimeFaces.current().executeScript("PF('newCorpus').hide();");
         init();
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("containerIndex");
+    }
+
+    private void showMessage(FacesMessage.Severity severity, String message) {
+        FacesMessage msg = new FacesMessage(severity, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
     }
 
     public void deleteCorpus() {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
+
         if (nodeCorpusForEdit == null) {
             return;
         }
 
-        CorpusHelper corpusHelper = new CorpusHelper();
-        if (!corpusHelper.deleteCorpus(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeCorpusForEdit.getCorpusName())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression de corpus !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("messageIndex");
-            }
+        if (!new CorpusHelper().deleteCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression de corpus !");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Corpus suprimé avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO, "Corpus suprimé avec succès");
         PrimeFaces.current().executeScript("PF('newCorpus').hide();");
+        
         init();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-        }
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     
