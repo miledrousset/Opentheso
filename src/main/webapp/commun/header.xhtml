@@ -23,7 +23,7 @@
                          background-color: #ECF8F1; color: #FFF !important; margin-top: 0px;">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedProject()}" update="thesoSelect containerIndex" />
             <f:selectItem itemLabel="#{langueBean.getMsg('menu.all_project')}" itemValue="-1"/>
-            <f:selectItems value="#{selectedTheso.projectsList}" var="project" itemLabel="#{project.label}" itemValue="#{project.id}" />
+            <f:selectItems value="#{currentUser.userPermissions.listProjects}" var="project" itemLabel="#{project.label}" itemValue="#{project.id}" />
         </p:selectOneMenu>
 
         <!-- liste des thésaurus -->
@@ -33,7 +33,7 @@
                          filter="true" filterMatchMode="contains">
             <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedTheso()}" />
             <f:selectItem itemLabel="(#{langueBean.getMsg('menu.select_thesaurus')})" itemValue=""/>
-            <f:selectItems value="#{roleOnTheso.listTheso}" var="th" itemLabel="#{th.getNom()}" itemValue="#{th.getId()}" />
+            <f:selectItems value="#{currentUser.userPermissions.listThesos}" var="theso" itemLabel="#{theso.value} (#{theso.id})" itemValue="#{theso.id}" />
         </p:selectOneMenu>
 
         <p:commandLink action="#{selectedTheso.reloadSelectedTheso()}" rendered="#{!selectedTheso.isFromUrl}" style="margin-left: 15px;">
@@ -65,7 +65,7 @@
                 </p:commandLink>
             </h:panelGroup>
 
-            <h:panelGroup rendered="#{currentUser.isAlertVisible() and menuBean.isNotificationPannelVisible()}"
+            <h:panelGroup rendered="#{currentUser.isHasRoleAsAdmin() and menuBean.isNotificationPannelVisible()}"
                           style="margin-top: 30px; margin-right: 10px" id="notificationProp"  >
                 <p:commandLink actionListener="#{propositionBean.afficherPropositionsNotification()}"
                                rendered="#{propositionBean.getNbrNewPropositions() > 0}" >

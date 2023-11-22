@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
+import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -37,7 +38,6 @@ import javax.annotation.PreDestroy;
 
 import fr.cnrs.opentheso.utils.LDAPUtils;
 import java.util.List;
-import java.util.Map;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -113,7 +113,11 @@ public class CurrentUser implements Serializable {
 
         nodeUser = null;
         
-        userPermissions = null;
+
+        // initialisation des permissions
+        resetPermissionsAfterLogout();
+       
+       
         
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
@@ -248,7 +252,7 @@ public class CurrentUser implements Serializable {
         selectedTheso.loadProject();
 
         if ("-1".equals(selectedTheso.getProjectIdSelected()) || StringUtils.isEmpty(selectedTheso.getProjectIdSelected())) {
-            roleOnThesoBean.setOwnerThesos();
+          //  roleOnThesoBean.setOwnerThesos();
             indexSetting.setProjectSelected(false);
             if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
             } else {
@@ -288,58 +292,129 @@ public class CurrentUser implements Serializable {
     
     
     
+
     
     /**
-     * Nouvelle gestion des droits pour l'utilisateur
+     * Nouvelle gestion des droits pour l'utilisateur par #MR
      */
-    private void initUserPermissions(){
-        userPermissions = new UserPermissions();
+    
+  
+    /**
+     * initialisation des permissions suivant l'utilisateur connecté 
+     */
+    public void initUserPermissions(){
+        if(nodeUser == null) return;
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }        
         UserHelper userHelper = new UserHelper();
 
-        // si un thésaurus est sélectionné, on initialise les droits de l'utilisateur dessus
-        if(!StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
-            initUserPermissionsForThisTheso();
-        }
-        
-        if(!StringUtils.isEmpty(selectedTheso.getProjectIdSelected())){
-            int idProject = Integer.parseInt(selectedTheso.getProjectIdSelected());
-            if(idProject != -1)
-                initUserPermissionsForThisProject(idProject);
-        }        
-        
-
         // liste des projets de l'utilisateur
-        userPermissions.setListProjects(userGroupLabelRepository.getProjectsByUserId(nodeUser.getIdUser()));
-        
-        // les projets de l'utilisateurs avec les roles sur les thésaurus par projet
-        List<NodeProjectThesoRole> nodeProjectThesoRoles = new ArrayList<>();
-        
-        for (UserGroupLabel userGroupLabel : userPermissions.getListProjects()) {
-            NodeProjectThesoRole nodeProjectThesoRole = new NodeProjectThesoRole();
-            nodeProjectThesoRole.setIdProject(userGroupLabel.getId()); // id du projet
-            nodeProjectThesoRole.setProjectName(userGroupLabel.getLabel()); // label du projet
-            
-            List<NodeThesoRole> nodeThesoRoles = userHelper.getAllRolesThesosByUserGroup(connect.getPoolConnexion(), nodeProjectThesoRole.getIdProject(), nodeUser.getIdUser());
-           
-            nodeProjectThesoRole.setNodeThesoRoles(nodeThesoRoles);
-            nodeProjectThesoRoles.add(nodeProjectThesoRole);
+        if (nodeUser.isSuperAdmin()) {
+            userPermissions.setListProjects(userGroupLabelRepository.getAllProjects());
+        } else {  
+            userPermissions.setListProjects(userHelper.getProjectOfUser(connect.getPoolConnexion(), nodeUser.getIdUser()));//userGroupLabelRepository.getProjectsByUserId(nodeUser.getIdUser()));
+            setListProjectForUser();
         }
-        userPermissions.setNodeProjectsWithThesosRoles(nodeProjectThesoRoles);
+        setAllListThesoOfAllProject();
     }
     
-    public void initUserPermissionsForThisTheso(){
+    private void setAllListThesoOfAllProject(){
+        // liste des thésaurus de l'utilisateur (tous les droits en partant du contributeur)
+        if (nodeUser.isSuperAdmin()) {
+            userPermissions.setListThesos(new ThesaurusHelper().getAllTheso(connect.getPoolConnexion(), true));
+        } else {  
+            // les projets de l'utilisateurs avec les roles sur les thésaurus par projet
+            List<NodeProjectThesoRole> nodeProjectThesoRoles = new ArrayList<>();
+
+            for (UserGroupLabel userGroupLabel : userPermissions.getListProjects()) {
+                NodeProjectThesoRole nodeProjectThesoRole = new NodeProjectThesoRole();
+                nodeProjectThesoRole.setIdProject(userGroupLabel.getId()); // id du projet
+                nodeProjectThesoRole.setProjectName(userGroupLabel.getLabel()); // label du projet
+
+                List<NodeThesoRole> nodeThesoRoles = new UserHelper().getAllRolesThesosByUserGroup(connect.getPoolConnexion(), nodeProjectThesoRole.getIdProject(), nodeUser.getIdUser());
+
+                nodeProjectThesoRole.setNodeThesoRoles(nodeThesoRoles);
+                nodeProjectThesoRoles.add(nodeProjectThesoRole);
+            }
+            userPermissions.setNodeProjectsWithThesosRoles(nodeProjectThesoRoles);
+            setListThesoForUser();
+        }        
+    }
+    
+    private void setListProjectForUser(){
+        if(userPermissions.getSelectedProject() == -1) return;
+
+        for (UserGroupLabel userGroupLabel : userPermissions.getListProjects()) {
+            if(userPermissions.getSelectedProject() == userGroupLabel.getId()) return;
+        }
+        resetUserPermissionsForThisProject();
+        resetSelectedTheso();
+    }  
+
+    private void resetSelectedTheso(){
+        userPermissions.setSelectedTheso(null);
+        userPermissions.setSelectedThesoName("");
+        userPermissions.setPreferredLangOfSelectedTheso(null);
+        userPermissions.setListLangsOfSelectedTheso(null);
+        userPermissions.setProjectOfselectedTheso(-1);
+        userPermissions.setProjectOfselectedThesoName("");
+    }
+    
+    private void setListThesoForUser(){
+        boolean resetTheso = true;
+        ArrayList<NodeIdValue> thesos = new ArrayList<>();
+        for (NodeProjectThesoRole nodeProjectsWithThesosRole : userPermissions.getNodeProjectsWithThesosRoles()) {
+            for (NodeThesoRole nodeThesoRole : nodeProjectsWithThesosRole.getNodeThesoRoles()) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                nodeIdValue.setId(nodeThesoRole.getIdTheso());
+                nodeIdValue.setValue(nodeThesoRole.getThesoName());
+                if(!StringUtils.isEmpty(userPermissions.getSelectedTheso())) {
+                    if(userPermissions.getSelectedTheso().equalsIgnoreCase(nodeThesoRole.getIdTheso())) {
+                        resetTheso = false;
+                    }
+                }
+                thesos.add(nodeIdValue);
+            }
+        }
+        userPermissions.setListThesos(thesos);
+        if(resetTheso) {
+            resetUserPermissionsForThisTheso();
+            resetUserPermissionsForThisProject();
+        }
+        else
+            initUserPermissionsForThisTheso(userPermissions.getSelectedTheso());
+    }
+    
+    public void initUserPermissionsForThisTheso(String idTheso){
         if(userPermissions == null){
             userPermissions = new UserPermissions();
         }
-        
+        if(StringUtils.isEmpty(idTheso)) {
+            resetUserPermissionsForThisTheso();
+            return;
+        }
         UserHelper userHelper = new UserHelper();
+        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         int idProject, idRole; 
-        userPermissions.setSelectedTheso(selectedTheso.getCurrentIdTheso());
-        userPermissions.setSelectedThesoName(selectedTheso.getThesoName());
+        userPermissions.setSelectedTheso(idTheso);
+        userPermissions.setPreferredLangOfSelectedTheso(new PreferencesHelper().getWorkLanguageOfTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso()));
+        userPermissions.setSelectedThesoName(thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso, userPermissions.getPreferredLangOfSelectedTheso()));        
+        
+        
+        userPermissions.setListLangsOfSelectedTheso(thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
+                connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                userPermissions.getPreferredLangOfSelectedTheso()));
+        
         idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());     
         
         if(nodeUser != null) {
-            idRole = userHelper.getRoleOnThisTheso(connect.getPoolConnexion(), nodeUser.getIdUser(), idProject, selectedTheso.getCurrentIdTheso());
+            if(nodeUser.isSuperAdmin()) {
+                userPermissions.setRole(1);
+                userPermissions.setRoleName("superAdmin");                
+            }
+            idRole = userHelper.getRoleOnThisTheso(connect.getPoolConnexion(), nodeUser.getIdUser(), idProject, idTheso);
             userPermissions.setRole(idRole);
             userPermissions.setRoleName(userHelper.getRoleName(idRole));
         }
@@ -357,36 +432,77 @@ public class CurrentUser implements Serializable {
         userPermissions.setSelectedProjectName(userHelper.getGroupName(connect.getPoolConnexion(),idProject));
         userPermissions.setListThesos(userHelper.getThesaurusOfProject(
                 connect.getPoolConnexion(), idProject, connect.getWorkLanguage(), nodeUser == null));
+        if(selectedTheso != null){
+            for (NodeIdValue nodeIdValue : userPermissions.getListThesos()) {
+                if(nodeIdValue.getId().equalsIgnoreCase(userPermissions.getSelectedTheso()))
+                    return;
+            }
+            resetUserPermissionsForThisTheso();
+        }
     }
     
+    /**
+     * remise à zéro des variables pour le projet en cours
+     */    
     public void resetUserPermissionsForThisTheso(){
-        userPermissions.setSelectedTheso(null);
-        userPermissions.setSelectedThesoName("");
-        
-        userPermissions.setProjectOfselectedTheso(-1);
-        userPermissions.setProjectOfselectedThesoName("");
-                
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }           
         userPermissions.setRole(-1);
         userPermissions.setRoleName("");
     }       
     
+    /**
+     * remise à zéro des variables pour le projet en cours
+     */
     public void resetUserPermissionsForThisProject(){
+        if(userPermissions == null){
+            userPermissions = new UserPermissions();
+        }           
         userPermissions.setSelectedProject(-1);
-        userPermissions.setSelectedProjectName("");  
-        userPermissions.setListThesos(null);
+        userPermissions.setSelectedProjectName("");
+      //  userPermissions.setListThesos(null);
     }      
     
+    /**
+     * initialisation des toutes les permissions vers un droit public
+     */
+    private void resetPermissionsAfterLogout(){
+        if(userPermissions == null) return;
+        userPermissions.setNodeProjectsWithThesosRoles(null);
+        
+        resetUserPermissionsForThisTheso();
+
+        //resetUserPermissionsForThisProject();        
+    }
+    
+    /**
+     * Chargement de tous les projets publics
+     */
     public void initAllProject(){
         if(userPermissions == null){
             userPermissions = new UserPermissions();
-        }         
+        }
         userPermissions.setListProjects(userGroupLabelRepository.getProjectsByThesoStatus(false));
 
         if(userPermissions.getListProjects() == null || userPermissions.getListProjects().isEmpty()) {
             resetUserPermissionsForThisProject();
         }    
     }
+    /**
+     * Rcharge tous les thésaurus de tous les projets après avoir sélectionné (tous les projets)  
+     */
+    public void reloadAllThesoOfAllProject(){
+        if(nodeUser == null) {
+            initAllTheso();
+        } else {
+            setAllListThesoOfAllProject();      
+        }
+    }
     
+    /**
+     * chargement de tous les thésaurus publics
+     */
     public void initAllTheso(){
         if(userPermissions == null){
             userPermissions = new UserPermissions();
@@ -398,6 +514,66 @@ public class CurrentUser implements Serializable {
             resetUserPermissionsForThisTheso();
         }   
     }    
+    
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    //// lecture des droits pour le thésaurus sélectionné //////////////////
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+
+    
+    public boolean isHasRoleAsContributor(){
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) &&
+                ( 
+                (userPermissions.isContributor()) || (userPermissions.isManager()) || (userPermissions.isAdmin()) || (userPermissions.isSuperAdmin())
+                ) ;
+    }
+    
+    public boolean isHasRoleAsManager(){
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
+                (  
+                (userPermissions.isManager()) || (userPermissions.isAdmin()) || (userPermissions.isSuperAdmin()) 
+                );
+    }    
+    
+    public boolean isHasRoleAsAdmin(){
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
+                (  
+                (userPermissions.isAdmin()) || (userPermissions.isSuperAdmin()) 
+                );
+    }
+    
+    public boolean isHasRoleAsSuperAdmin(){
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
+                (  
+                (userPermissions.isSuperAdmin())
+                );
+    }    
+    
+    
+    public boolean isAlertVisible() {
+        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
+    }
+
+    public boolean isCanModify() {
+        return ObjectUtils.isNotEmpty(nodeUser) && (roleOnThesoBean.isManagerOnThisTheso() || nodeUser.isSuperAdmin()
+                || roleOnThesoBean.isAdminOnThisTheso());
+    }    
+    
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    //////// Fin lecture des droits //////////////////
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////        
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -483,14 +659,6 @@ public class CurrentUser implements Serializable {
         FacesContext.getCurrentInstance().addMessage("loginForm:password", msg);
     }
 
-    public boolean isAlertVisible() {
-        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
-    }
-
-    public boolean isCanModify() {
-        return ObjectUtils.isNotEmpty(nodeUser) && (roleOnThesoBean.isManagerOnThisTheso() || nodeUser.isSuperAdmin()
-                || roleOnThesoBean.isAdminOnThisTheso());
-    }
 
     public Connect getConnect() {
         return connect;

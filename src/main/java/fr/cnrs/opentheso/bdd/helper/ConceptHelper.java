@@ -1082,10 +1082,8 @@ public class ConceptHelper {
 
         String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
 
-        if (idTerm != null) {
-            //récupération des Non Prefered Term
-            nodeConceptSerach.setNodeEM(termHelper.getNonPreferredTerms(ds, idTerm, idThesaurus, idLang));
-        }
+        //récupération des Non Prefered Term
+        nodeConceptSerach.setNodeEM(termHelper.getNonPreferredTerms(ds, idConcept, idThesaurus, idLang));
         nodeConceptSerach.setNodeConceptGroup(groupHelper.getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));
 
         return nodeConceptSerach;
@@ -1316,10 +1314,8 @@ public class ConceptHelper {
 
         String idTerm = termHelper.getIdTermOfConcept(ds, conceptId, idThesaurus);
 
-        if (idTerm != null) {
-            //récupération des Non Prefered Term
-            nodeConceptSearch.setNodeEM(termHelper.getNonPreferredTerms(ds, idTerm, idThesaurus, idLang));
-        }
+        nodeConceptSearch.setNodeEM(termHelper.getNonPreferredTerms(ds, conceptId, idThesaurus, idLang));
+        
         nodeConceptSearch.setNodeConceptGroup(groupHelper.getListGroupOfConcept(ds, idThesaurus, conceptId, idLang));
 
         return nodeConceptSearch;
@@ -5707,7 +5703,7 @@ public class ConceptHelper {
             concept.setIsDeprecated(true);
         }
         nodeConcept.setConcept(concept);
-
+        
         //récupération du Terme
         Term term = new TermHelper().getThisTerm(ds, idConcept, idThesaurus, idLang);
         nodeConcept.setTerm(term);
@@ -5719,7 +5715,7 @@ public class ConceptHelper {
         nodeConcept.setNodeRT(new RelationsHelper().getListRT(ds, idConcept, idThesaurus, idLang));
 
         //récupération des Non Prefered Term
-        nodeConcept.setNodeEM(new TermHelper().getNonPreferredTerms(ds, term.getId_term(), idThesaurus, idLang));
+        nodeConcept.setNodeEM(new TermHelper().getNonPreferredTerms(ds, idConcept, idThesaurus, idLang));
 
         //récupération des traductions
         nodeConcept.setNodeTermTraductions(new TermHelper().getTraductionsOfConcept(ds, idConcept, idThesaurus, idLang));

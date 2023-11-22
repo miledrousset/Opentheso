@@ -88,17 +88,17 @@ public class CorpusBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI du lien est obligatoire !");
             return;
         }
-        if (!UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriLink())) {
+    /*    if (!UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriLink())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI n'est pas valide !");
             return;
-        }
+        }*/
 
         //Vérification de l'URI du comptage
         if(!nodeCorpusForEdit.isIsOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
             return;
         }
-        if (nodeCorpusForEdit.isIsOnlyUriLink() && !UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriCount())) {
+        if (nodeCorpusForEdit.isIsOnlyUriLink() ) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
             return;
         }
@@ -140,17 +140,17 @@ public class CorpusBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI du lien est obligatoire !");
             return;
         }
-        if (!UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriLink())) {
+    /*    if (!UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriLink())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI n'est pas valide !");
             return;
-        }
+        }*/
 
         //Vérification de l'URI du comptage
         if(!nodeCorpusForEdit.isIsOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
             return;
         }
-        if (nodeCorpusForEdit.isIsOnlyUriLink() && !UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriCount())) {
+        if (nodeCorpusForEdit.isIsOnlyUriLink() ) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
             return;
         }

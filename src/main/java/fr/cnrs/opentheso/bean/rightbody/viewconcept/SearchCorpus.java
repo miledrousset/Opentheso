@@ -112,6 +112,7 @@ public class SearchCorpus implements Callable<NodeCorpus> {
             conn.setUseCaches(false);
             conn.setDoInput(true);
             conn.setDoOutput(true);
+            conn.setConnectTimeout(2000); 
             int status = conn.getResponseCode();
             if (status != 200) {
                 return -1;

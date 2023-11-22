@@ -576,10 +576,6 @@ END;
 $$;
 
 
-CALL opentheso_add_new_concept('th75', '2492', 1, '', 'concept',
-                               '','', true, '', '', 'test GPS@@fr',
-                               null, null, null, null, null, null,
-                               null, true, '48.922021@@2.156506', '2023-10-26', null, null);
 
 CREATE OR REPLACE procedure opentheso_add_new_concept(
     id_thesaurus character varying,

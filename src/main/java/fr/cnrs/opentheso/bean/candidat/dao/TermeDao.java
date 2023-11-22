@@ -188,13 +188,13 @@ public class TermeDao extends BasicDao {
     /**
      * permet de récupérer les temes non préférés ou synonymes
      * @param ds
-     * @param idTerm
+     * @param idConcept
      * @param idTheso
      * @param idLang
      * @return 
      */
-    public List<String> getEmployePour(HikariDataSource ds, String idTerm, String idTheso, String idLang){
-        List<NodeEM> nodeEMs = new TermHelper().getNonPreferredTerms(ds, idTerm, idTheso, idLang);
+    public List<String> getEmployePour(HikariDataSource ds, String idConcept, String idTheso, String idLang){
+        List<NodeEM> nodeEMs = new TermHelper().getNonPreferredTerms(ds, idConcept, idTheso, idLang);
         if(CollectionUtils.isNotEmpty(nodeEMs)) {
             return nodeEMs.stream().map(NodeEM::getLexical_value).collect(Collectors.toList());
         } else {

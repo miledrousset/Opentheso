@@ -24,6 +24,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRole;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import fr.cnrs.opentheso.entites.UserGroupLabel;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -454,6 +455,62 @@ public class UserHelper {
         }
         return listGroup;
     }
+    
+    /**
+     * cette fonction permet de retourner la liste des projets d'un utilisateur
+     *
+     *
+     * @param ds
+     * @param idUser
+     * @return
+     * #MR
+     */
+    public List<UserGroupLabel> getProjectOfUser(
+            HikariDataSource ds, int idUser) {
+        List<UserGroupLabel> userGroupLabels = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT"
+                        + "  user_group_label.id_group,"
+                        + "  user_group_label.label_group"
+                        + " FROM"
+                        + "  user_role_group,"
+                        + "  user_group_label"
+                        + " WHERE"
+                        + "  user_role_group.id_group = user_group_label.id_group AND"
+                        + "  user_role_group.id_user = " + idUser + " order by label_group");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        UserGroupLabel userGroupLabel = new UserGroupLabel();
+                        userGroupLabel.setId(resultSet.getInt("id_group"));
+                        userGroupLabel.setLabel(resultSet.getString("label_group"));
+                        userGroupLabels.add(userGroupLabel);
+                        //listGroup.put("" + resultSet.getInt("id_group"), resultSet.getString("label_group"));
+                    }
+                }
+                stmt.executeQuery("SELECT distinct (user_group_label.id_group),  user_group_label.label_group "
+                        + " FROM "
+                        + " user_role_only_on,  user_group_label "
+                        + " WHERE "
+                        + " user_role_only_on.id_group = user_group_label.id_group "
+                        + " AND  user_role_only_on.id_user = " + idUser
+                        + " order by label_group");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        UserGroupLabel userGroupLabel = new UserGroupLabel();
+                        userGroupLabel.setId(resultSet.getInt("id_group"));
+                        userGroupLabel.setLabel(resultSet.getString("label_group"));
+                        userGroupLabels.add(userGroupLabel);                        
+                   //     listGroup.put("" + resultSet.getInt("id_group"), resultSet.getString("label_group"));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return userGroupLabels;
+    }    
 
     /**
      * cette fonction permet de retourner tous les groupes existant au format

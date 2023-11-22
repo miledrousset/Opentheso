@@ -134,7 +134,7 @@ public class SelectedTheso implements Serializable {
         
         isNetworkAvailable = true;
         roleOnThesoBean.showListTheso();
-        sortByNotation = false;
+        sortByNotation = false; 
 
         loadProject();
     }
@@ -268,7 +268,7 @@ public class SelectedTheso implements Serializable {
 
         sortByNotation = false;
         startNewTheso(null);
-        currentUser.initUserPermissionsForThisTheso();
+        currentUser.initUserPermissionsForThisTheso(selectedIdTheso);
         indexSetting.setIsSelectedTheso(true);
         indexSetting.setIsValueSelected(false);
         indexSetting.setIsHomeSelected(true);
@@ -305,8 +305,9 @@ public class SelectedTheso implements Serializable {
      * - mode connecté = on charge uniquement les projets de l'utilisateur
      */
     public void loadProject() {
-        currentUser.initAllProject();
+
         if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
+            currentUser.initAllProject();
             projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
         } else {
             if (currentUser.getNodeUser().isSuperAdmin()) {
@@ -327,10 +328,12 @@ public class SelectedTheso implements Serializable {
         }
         if ("-1".equals(projectIdSelected)) {
             currentUser.resetUserPermissionsForThisProject();
+            currentUser.reloadAllThesoOfAllProject();
             roleOnThesoBean.showListTheso();
-            currentIdTheso = null;
-            selectedIdTheso = "";
-            indexSetting.setSelectedTheso(false);
+           // currentIdTheso = null;
+           // selectedIdTheso = "";
+           if(StringUtils.isEmpty(selectedIdTheso))
+                indexSetting.setSelectedTheso(false); 
             indexSetting.setProjectSelected(false);
         } else {
             currentUser.initUserPermissionsForThisProject(Integer.parseInt(projectIdSelected));

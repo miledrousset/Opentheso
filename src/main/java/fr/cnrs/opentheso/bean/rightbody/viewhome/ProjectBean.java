@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.ProjectDescription;
 import fr.cnrs.opentheso.repositories.GpsRepository;
@@ -38,6 +39,7 @@ public class ProjectBean implements Serializable {
     @Inject private GpsRepository gpsRepository;
     @Inject private LanguageBean languageBean;
     @Inject private ProjectDescriptionRepository projectDescriptionRepository;
+    @Inject private CurrentUser currentUser;
 
     private String description, langCode, langCodeSelected, projectIdSelected;
     private boolean projectDescription, editingHomePage, isButtonEnable;
@@ -76,8 +78,9 @@ public class ProjectBean implements Serializable {
             description = projectDescriptionSelected.getDescription();
             langCodeSelected = projectDescriptionSelected.getLang();
         }
-        listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(),
-                Integer.parseInt(projectIdSelected), connect.getWorkLanguage(), isPrivate);
+        listeThesoOfProject = currentUser.getUserPermissions().getListThesos();
+                //new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(),
+                //Integer.parseInt(projectIdSelected), connect.getWorkLanguage(), isPrivate);
 
         for (NodeIdValue element : listeThesoOfProject) {
             try {

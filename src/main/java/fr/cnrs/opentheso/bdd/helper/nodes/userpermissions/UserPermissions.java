@@ -2,10 +2,10 @@
 package fr.cnrs.opentheso.bdd.helper.nodes.userpermissions;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import lombok.Data;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -26,6 +26,8 @@ public class UserPermissions {
     private String selectedThesoName;
     private int projectOfselectedTheso;
     private String projectOfselectedThesoName;
+    private String preferredLangOfSelectedTheso;
+    private List<NodeLangTheso> listLangsOfSelectedTheso;
     
     
     // le role sur ce thésaurus en cas d'utilisateur authentifié 
@@ -33,27 +35,28 @@ public class UserPermissions {
     private String roleName;
     
     
-    // pour le projet sélectionné
+    // le projet sélectionné
     private int selectedProject;
     private String selectedProjectName;
-//    private List<NodeIdValue> listThesoOfProject;
+    
+    
+    // infos pour l'utilisateur sélectionné après une authentification 
+    // Liste des projets de l'utilisateur, avec la liste des thesaurus/role par projet
+    List<NodeProjectThesoRole> nodeProjectsWithThesosRoles;    
     
     
     
     // liste des thésaurus du projet avec les rôles
-    List<NodeThesoRole> listThesoRoleOfSelectedProject;    
+//    List<NodeThesoRole> listThesoRoleOfSelectedProject;    
+
+    public UserPermissions() {
+        selectedProject = -1;
+    }
     
+    
+  
     
 
-    
-    
-    // infos pour l'utilisateur sélectionné après une authentification 
-    
-    // liste des projets de l'utilisateur
-//    private Map<String, String> projectlist;
-    
-    // Liste des projets de l'utilisateur, avec la liste des thesaurus/role par projet
-    List<NodeProjectThesoRole> nodeProjectsWithThesosRoles;
    
     public boolean isSuperAdmin(){
         return role == 1;   
@@ -70,4 +73,8 @@ public class UserPermissions {
     public boolean isNoRole(){
         return role == -1; 
     }     
+    
+    
+    
+    
 }

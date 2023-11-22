@@ -288,7 +288,7 @@ public class ConceptView implements Serializable {
         List<NodeCorpus> nodeCorpusesTmp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if (CollectionUtils.isNotEmpty(nodeCorpusesTmp)) {
             var tmp = nodeCorpusesTmp.stream()
-                    .filter(element -> UrlUtils.isAPIAvailable(element.getUriLink()))
+                   // .filter(element -> UrlUtils.isAPIAvailable(element.getUriLink()))
                     .collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(tmp)) {
                 searchCorpus(tmp);
@@ -415,7 +415,7 @@ public class ConceptView implements Serializable {
         List<NodeCorpus> nodeCorpusesTmp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
         if (CollectionUtils.isNotEmpty(nodeCorpusesTmp)) {
             var tmp = nodeCorpusesTmp.stream()
-                    .filter(element -> UrlUtils.isAPIAvailable(element.getUriLink()))
+                  //  .filter(element -> UrlUtils.isAPIAvailable(element.getUriLink()))
                     .collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(tmp)) {
                 searchCorpus(tmp);
@@ -469,7 +469,7 @@ public class ConceptView implements Serializable {
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
         else
             nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(connect.getPoolConnexion(),
-                    nodeConcept.getTerm().getId_term(),
+                    nodeConcept.getConcept().getIdConcept(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));
         PrimeFaces.current().ajax().update("messageIndex");

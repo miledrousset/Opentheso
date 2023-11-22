@@ -20,7 +20,7 @@
 
             <h:panelGroup rendered="#{projectBean.isListThesoVisible()}">
                 <div class="card-header py-3" style="width: 100%; display: flex;">
-                    <ul aria-label="Liste des thésaurus:">
+                    <ul aria-label="#{langueBean.getMsg('profile.list_of_thesauri')} :">
                         <ui:repeat value="#{projectBean.getListeThesoOfProject()}" var="theso">
                             <li>#{projectBean.getLabel(theso)}</li>
                         </ui:repeat>
@@ -30,7 +30,7 @@
 
             <h:panelGroup rendered="#{!projectBean.isListThesoVisible()}">
                 <div class="card-header py-3" style="width: 100%; text-align: center; padding: 10px">
-                    <h:outputLabel value="Il n'y a aucun thésaurus dans le projet sélectionné !" />
+                    <h:outputLabel value="#{langueBean.getMsg('toolbox.noThesaurus')} !" />
                 </div>
             </h:panelGroup>
             <div style="padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 10px">

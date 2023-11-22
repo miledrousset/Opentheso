@@ -67,7 +67,7 @@ public class WriteAltLabel  {
         ArrayList<NodeNote> nodeNotes;
 
         for (NodeTab2Levels nodeTab2Levels : nodeConceptTermId) {
-            nodeEMs = termHelper.getNonPreferredTerms(ds, nodeTab2Levels.getIdTerm(), idTheso, idLang);
+            nodeEMs = termHelper.getNonPreferredTerms(ds, nodeTab2Levels.getIdConcept(), idTheso, idLang);
 
             if (!nodeEMs.isEmpty()) {
 

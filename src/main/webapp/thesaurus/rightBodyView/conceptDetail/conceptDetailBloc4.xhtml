@@ -172,12 +172,14 @@
                                 <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6" style="margin-left: -10px; width: 100%">
                                     <h:panelGroup rendered="#{!conceptView.isGpsDisable()}">
                                         <div class="ui-inputgroup" style="width: 100%">
-                                            <p:inputText placeholder="Exemple de format : (48.922548 2.145240, 48.897888 2.242193, ...)"
+                                            <p:inputText placeholder="#{langueBean.getMsg('example')} : (48.922548 2.145240, 48.897888 2.242193, ...)"
                                                          style="width: 100%"
+                                                         title="#{langueBean.getMsg('example')} : (48.922548 2.145240, 48.897888 2.242193, ...)"
                                                          value="#{conceptView.gpsList}"/>
                                             <p:commandButton icon="pi pi-map-marker" styleClass="ui-button-danger"
                                                              style="background-color: #f47b2a; border-color: #f47b2a"
                                                              actionListener="#{conceptView.formatGpsList()}"
+                                                             title="#{langueBean.getMsg('apply')}"
                                                              update="messageIndex containerIndex:rightTab:idConceptGps"/>
                                         </div>
                                     </h:panelGroup>
@@ -187,7 +189,7 @@
                                     </h:panelGroup>
 
                                     <h:panelGroup rendered="#{conceptView.isMapVisible()}">
-                                        <p:toolbar style="margin-top: 10px">
+                                        <p:toolbar rendered="ee" style="margin-top: 10px">
                                             <p:toolbarGroup align="right">
                                                 <p:selectOneButton value="#{conceptView.gpsModeSelected}" disabled="true">
                                                     <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.point')}"
@@ -198,9 +200,6 @@
 
                                                     <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polygone')}"
                                                                   itemValue="POLYGONE"/>
-
-                                                    <p:ajax event="change" listener="#{conceptView.createMapWithMode()}"
-                                                            update="containerIndex:rightTab:idConceptGps" />
                                                 </p:selectOneButton>
                                             </p:toolbarGroup>
                                         </p:toolbar>
