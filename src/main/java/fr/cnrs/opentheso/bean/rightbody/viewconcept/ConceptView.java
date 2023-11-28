@@ -268,9 +268,10 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         nodeCorpuses = null;
-        haveCorpus = true;        
-        
-        createMap(idConcept, idTheso);
+        haveCorpus = true;
+
+
+        createMap(idConcept, idTheso, Boolean.TRUE);
 
         selectedLang = idLang;
         if (toggleSwitchAltLabelLang) {
@@ -318,9 +319,9 @@ public class ConceptView implements Serializable {
     public boolean thesoHaveActiveCorpus(){
         return new CorpusHelper().isHaveActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
     }
-    
+
     public void searchCorpus() {
-         ArrayList<NodeCorpus> nodeCorpusesTemp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());        
+         ArrayList<NodeCorpus> nodeCorpusesTemp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         if(nodeCorpusesTemp == null || nodeCorpusesTemp.isEmpty()) return;
         nodeCorpuses = new ArrayList<>();
         ExecutorService executor = Executors.newFixedThreadPool(nodeCorpusesTemp.size());
@@ -345,17 +346,17 @@ public class ConceptView implements Serializable {
             nodeCorpuses = null;
         executor.shutdown();
     }
-    
-    public void createMap(String idConcept, String idTheso) {
+
+    public void createMap(String idConcept, String idTheso, Boolean isFirstTime) {
         nodeConcept.setNodeGps(gpsRepository.getGpsByConceptAndThesorus(idConcept, idTheso));
         if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
             gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
             gpsList = formatCoordonnees(nodeConcept.getNodeGps());
-            if (mapModel != null) {
-                mapModel = new MapUtils().updateMap(nodeConcept.getNodeGps(), mapModel, gpsModeSelected,
+            if (isFirstTime) {
+                mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsModeSelected,
                         ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
             } else {
-                mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsModeSelected,
+                mapModel = new MapUtils().updateMap(nodeConcept.getNodeGps(), mapModel, gpsModeSelected,
                         ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
             }
         } else {
@@ -421,7 +422,7 @@ public class ConceptView implements Serializable {
 
         setRoles();
 
-        createMap(idConcept, idTheso);
+        createMap(idConcept, idTheso, Boolean.TRUE);
 
         setFacetsOfConcept(idConcept, idTheso, idLang);
 
@@ -500,7 +501,7 @@ public class ConceptView implements Serializable {
         }
 
     }
-    
+
     public void countTheTotalOfBranch() {
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> listIdsOfBranch = conceptHelper.getIdsOfBranch(
@@ -508,7 +509,7 @@ public class ConceptView implements Serializable {
                 nodeConcept.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
         this.countOfBranch = listIdsOfBranch.size();
-    }    
+    }
 
     public void setNodeCustomRelationWithReciprocal(ArrayList<NodeCustomRelation> nodeCustomRelations) {
         nodeCustomRelationReciprocals = new ArrayList<>();
@@ -672,7 +673,7 @@ public class ConceptView implements Serializable {
 
     public void onRowEdit(RowEditEvent<Gps> event) {
         gpsRepository.updateGps(event.getObject());
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage("Coordonnée modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -681,7 +682,7 @@ public class ConceptView implements Serializable {
     public void onRowCancel(RowEditEvent<Gps> event) {
         gpsRepository.removeGps(event.getObject());
 
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage("Coordonnée supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -694,7 +695,7 @@ public class ConceptView implements Serializable {
         gps.setPosition(nodeConcept.getNodeGps().size() + 1);
 
         gpsRepository.saveNewGps(gps);
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage("Nouvelle coordonnée ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -715,7 +716,7 @@ public class ConceptView implements Serializable {
         gpsRepository.updateGpsPosition(fromId, (event.getToIndex() + 1));
         gpsRepository.updateGpsPosition(toId, (event.getFromIndex() + 1));
 
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage("Réorganisation des coordonnées effectuée");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -748,7 +749,7 @@ public class ConceptView implements Serializable {
             }
         }
 
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Coordonnée GPS modifiés !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
