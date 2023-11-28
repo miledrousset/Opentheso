@@ -33,7 +33,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected() and (currentUser.allAuthorizedProjectAsAdmin.size() > 0 or currentUser.hasRoleAsAdmin)}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 

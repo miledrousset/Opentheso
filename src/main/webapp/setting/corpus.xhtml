@@ -33,7 +33,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected() and currentUser.hasRoleAsAdmin}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -74,7 +74,7 @@
                                     <p:toolbar>
                                         <p:toolbarGroup align="left" />
                                         <p:toolbarGroup align="right">
-                                            <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso()}"
+                                            <p:commandButton rendered="#{currentUser.hasRoleAsAdmin}"
                                                              actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
                                                              styleClass="ui-button-success" icon="pi pi-check"
                                                              value="#{langueBean.getMsg('setting.newCorpus')}" 

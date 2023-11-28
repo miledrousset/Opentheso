@@ -10,12 +10,12 @@
                 <div class="row" style="margin-left: 0px;">
                     <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" >
                         
-                        <h:panelGroup id="notesActions" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                        <h:panelGroup id="notesActions" rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
 
                             <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
                                           style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                           icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_note')}"
@@ -52,7 +52,7 @@
                                               style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                                <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.reset()}"
                                                     action="#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNote').show();"
@@ -87,8 +87,7 @@
                                               style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                                
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.reset()}"
@@ -124,8 +123,7 @@
                                               style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" icon="fas fa-cog"
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}" icon="fas fa-cog"
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                 actionListener="#{noteBean.reset()}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
@@ -161,8 +159,7 @@
                                               style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
@@ -200,8 +197,7 @@
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
@@ -240,8 +236,7 @@
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
@@ -280,8 +275,7 @@
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 

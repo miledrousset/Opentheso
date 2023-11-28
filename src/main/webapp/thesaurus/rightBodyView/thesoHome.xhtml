@@ -12,8 +12,7 @@
             }
         </style>        
         
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso()
-                                  or roleOnTheso.isSuperAdmin()) and !(viewEditorThesoHomeBean.isInEditing())}">
+        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsAdmin) and !(viewEditorThesoHomeBean.isInEditing())}">
             <div class="row">
                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 offset-xl-10 offset-lg-9 offset-md-9 offset-sm-8" style="text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('candidat.edit')}" 

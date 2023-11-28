@@ -175,7 +175,7 @@ public class ExportHelper {
                             sKOSResource.addDate(modified.substring(0, modified.indexOf(" ")), SKOSProperty.modified);
                         }
 
-                        ArrayList<String> first = new ArrayList<>();
+                    /*    ArrayList<String> first = new ArrayList<>();
                         first.add(resultSet.getString("identifier"));
                         ArrayList<ArrayList<String>> paths = new ArrayList<>();
 
@@ -184,7 +184,7 @@ public class ExportHelper {
                         ArrayList<String> pathFromArray = getPathFromArray(paths);
                         if (!pathFromArray.isEmpty()) {
                             sKOSResource.setPaths(pathFromArray);
-                        }
+                        }*/
 
                         concepts.add(sKOSResource);
                     //System.out.println(">> " + "Ajout d'un concept " + sKOSResource.getIdentifier());                         

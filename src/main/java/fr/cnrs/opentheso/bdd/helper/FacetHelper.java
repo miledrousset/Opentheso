@@ -80,24 +80,19 @@ public class FacetHelper {
         List<NodeIdValue> listFacets = new ArrayList<>();
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT thesaurus_array.id_facet, node_label.lexical_value " +
-                        " FROM thesaurus_array, node_label " +
+                stmt.executeQuery(
+                        "SELECT thesaurus_array.id_facet" +
+                        " FROM thesaurus_array" +
                         " WHERE" +
-                        " thesaurus_array.id_thesaurus = node_label.id_thesaurus" +
-                        " AND" +
-                        " thesaurus_array.id_facet = node_label.id_facet" +
-                        " AND" +
                         " thesaurus_array.id_thesaurus = '" + idThesaurus + "'" +
-                        " AND " +
-                        " thesaurus_array.id_concept_parent = '" + idConcept + "'" +
                         " AND" +
-                        " node_label.lang = '" + idLang + "'" +
-                        " order by lexical_value");
+                        " thesaurus_array.id_concept_parent = '" + idConcept + "'");
+                       
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeIdValue nodeIdValue = new NodeIdValue();
                         nodeIdValue.setId(resultSet.getString("id_facet"));
-                        nodeIdValue.setValue(resultSet.getString("lexical_value"));
+                        nodeIdValue.setValue(getLabelOfFacet(ds, nodeIdValue.getId(), idThesaurus, idLang));
                         listFacets.add(nodeIdValue);
                     }
                 }
@@ -105,6 +100,8 @@ public class FacetHelper {
         } catch (SQLException sqle) {
             log.error("Error while getting All id facets of concept : " + idConcept, sqle);
         }
+
+        Collections.sort(listFacets);
         return listFacets;
     }
 

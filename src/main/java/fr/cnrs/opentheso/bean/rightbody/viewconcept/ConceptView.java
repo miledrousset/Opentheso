@@ -266,6 +266,11 @@ public class ConceptView implements Serializable {
 
         setOffset();
 
+        // récupération des informations sur les corpus liés
+        nodeCorpuses = null;
+        haveCorpus = true;
+
+
         createMap(idConcept, idTheso, Boolean.TRUE);
 
         selectedLang = idLang;
@@ -284,15 +289,8 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         haveCorpus = false;
-        List<NodeCorpus> nodeCorpusesTmp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
-        if (CollectionUtils.isNotEmpty(nodeCorpusesTmp)) {
-            var tmp = nodeCorpusesTmp.stream()
-                   // .filter(element -> UrlUtils.isAPIAvailable(element.getUriLink()))
-                    .collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(tmp)) {
-                searchCorpus(tmp);
-            }
-        }
+    //    nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+
         setRoles();
 
         setFacetsOfConcept(idConcept, idTheso, idLang);
@@ -318,12 +316,18 @@ public class ConceptView implements Serializable {
         countOfBranch = 0;
     }
 
-    private void searchCorpus(List<NodeCorpus> nodeCorpusesTmp) {
+    public boolean thesoHaveActiveCorpus(){
+        return new CorpusHelper().isHaveActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+    }
+
+    public void searchCorpus() {
+         ArrayList<NodeCorpus> nodeCorpusesTemp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        if(nodeCorpusesTemp == null || nodeCorpusesTemp.isEmpty()) return;
         nodeCorpuses = new ArrayList<>();
-        ExecutorService executor = Executors.newFixedThreadPool(nodeCorpusesTmp.size());
+        ExecutorService executor = Executors.newFixedThreadPool(nodeCorpusesTemp.size());
         List<Callable<NodeCorpus>> callables = new ArrayList<>();
 
-        for (NodeCorpus nodeCorpus : nodeCorpusesTmp) {
+        for (NodeCorpus nodeCorpus : nodeCorpusesTemp) {
             callables.add(new SearchCorpus(nodeCorpus, nodeConcept));
         }
 
@@ -338,6 +342,8 @@ public class ConceptView implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        if(!haveCorpus)
+            nodeCorpuses = null;
         executor.shutdown();
     }
 
@@ -410,16 +416,10 @@ public class ConceptView implements Serializable {
         setOffset();
 
         // récupération des informations sur les corpus liés
-        haveCorpus = false;
-        List<NodeCorpus> nodeCorpusesTmp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
-        if (CollectionUtils.isNotEmpty(nodeCorpusesTmp)) {
-            var tmp = nodeCorpusesTmp.stream()
-                  //  .filter(element -> UrlUtils.isAPIAvailable(element.getUriLink()))
-                    .collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(tmp)) {
-                searchCorpus(tmp);
-            }
-        }
+        nodeCorpuses = null;
+        haveCorpus = true;
+      //  nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
+
         setRoles();
 
         createMap(idConcept, idTheso, Boolean.TRUE);
@@ -502,6 +502,15 @@ public class ConceptView implements Serializable {
 
     }
 
+    public void countTheTotalOfBranch() {
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> listIdsOfBranch = conceptHelper.getIdsOfBranch(
+                connect.getPoolConnexion(),
+                nodeConcept.getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+        this.countOfBranch = listIdsOfBranch.size();
+    }
+
     public void setNodeCustomRelationWithReciprocal(ArrayList<NodeCustomRelation> nodeCustomRelations) {
         nodeCustomRelationReciprocals = new ArrayList<>();
         for (NodeCustomRelation nodeCustomRelation : nodeCustomRelations) {
@@ -529,7 +538,7 @@ public class ConceptView implements Serializable {
 
     private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
-        List<Path> paths = pathHelper.getPathOfConcept2(
+        List<Path> paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
         if (pathHelper.getMessage() != null) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());

@@ -308,6 +308,9 @@ public class SelectedTheso implements Serializable {
 
         if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
             currentUser.initAllProject();
+            currentUser.initAllTheso();
+            projectIdSelected = ""+currentUser.getUserPermissions().getSelectedProject();
+            selectedIdTheso = currentUser.getUserPermissions().getSelectedTheso();
             projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
         } else {
             if (currentUser.getNodeUser().isSuperAdmin()) {
@@ -358,6 +361,9 @@ public class SelectedTheso implements Serializable {
                     selectedIdTheso = null;
                     currentIdTheso = null;
                 }
+            } else {
+                selectedIdTheso = null;
+                currentIdTheso = null;
             }
 
             if (StringUtils.isEmpty(selectedIdTheso)) {
@@ -391,6 +397,7 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsValueSelected(true);
         indexSetting.setIsHomeSelected(false);
         indexSetting.setIsThesoActive(true);
+        indexSetting.setProjectSelected(false);
     }
 
     /**

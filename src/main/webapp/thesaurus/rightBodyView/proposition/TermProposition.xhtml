@@ -14,7 +14,7 @@
                                                  rendered="#{
                                                     propositionBean.isConsultation
                                                     and currentUser.nodeUser != null
-                                                    and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
+                                                    and (currentUser.hasRoleAsManager)
                                                     and propositionBean.showButtonAction()}"/>
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.preferred_term')}" 
                                       title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"
@@ -67,7 +67,7 @@
                         <p:selectBooleanCheckbox value="#{propositionBean.varianteAccepted}" title="Accepter cette proposition"
                                                  rendered="#{propositionBean.isConsultation
                                                         and currentUser.nodeUser != null
-                                                        and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
+                                                        and (currentUser.hasRoleAsManager)
                                                         and propositionBean.showButtonAction()}"/>
 
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.synonym')}" 

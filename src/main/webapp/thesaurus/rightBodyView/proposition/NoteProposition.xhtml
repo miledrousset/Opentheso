@@ -37,7 +37,7 @@
                                 <p:selectBooleanCheckbox value="#{propositionBean.noteAccepted}" title="Accepter cette proposition"
                                                          rendered="#{propositionBean.isConsultation
                                                                     and currentUser.nodeUser != null
-                                                                    and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
+                                                                    and (currentUser.hasRoleAsManager)
                                                                     and propositionBean.showButtonAction()}"/>
 
                                 <h:panelGroup>
@@ -97,8 +97,8 @@
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
 
                                 <p:selectBooleanCheckbox value="#{propositionBean.changeNoteAccepted}" title="Accepter cette proposition"
-                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                                     or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin()) and propositionBean.showButtonAction()}"/>
+                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null
+                                                                     and (currentUser.hasRoleAsManager) and propositionBean.showButtonAction()}"/>
 
                                 <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;"
                                               rendered="${propositionBean.showButtonAction()}">
@@ -162,8 +162,8 @@
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
 
                                 <p:selectBooleanCheckbox value="#{propositionBean.definitionAccepted}" title="Accepter cette proposition"
-                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                                     or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin()) and propositionBean.showButtonAction()}"/>
+                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null 
+                                                                     and (currentUser.hasRoleAsManager) and propositionBean.showButtonAction()}"/>
 
                                 <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;" >
@@ -233,8 +233,8 @@
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
 
                                 <p:selectBooleanCheckbox value="#{propositionBean.editorialNotesAccepted}" title="Accepter cette proposition"
-                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                                     or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin()) and propositionBean.showButtonAction()}"/>
+                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null 
+                                                                     and (currentUser.hasRoleAsManager) and propositionBean.showButtonAction()}"/>
 
                                 <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}"
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
@@ -299,8 +299,8 @@
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
 
                                 <p:selectBooleanCheckbox value="#{propositionBean.examplesAccepted}" title="Accepter cette proposition"
-                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                                     or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin()) and propositionBean.showButtonAction()}"/>
+                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null
+                                                                     and (currentUser.hasRoleAsManager) and propositionBean.showButtonAction()}"/>
 
                                 <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
@@ -367,8 +367,8 @@
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
 
                                 <p:selectBooleanCheckbox value="#{propositionBean.historyAccepted}" title="Accepter cette proposition"
-                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                                     or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin()) and propositionBean.showButtonAction()}"/>
+                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null 
+                                                                     and (currentUser.hasRoleAsManager) and propositionBean.showButtonAction()}"/>
 
                                 <p:menuButton icon="fas fa-cog" rendered="${propositionBean.showButtonAction()}" 
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
@@ -434,8 +434,8 @@
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
 
                                 <p:selectBooleanCheckbox value="#{propositionBean.scopeAccepted}" title="Accepter cette proposition"
-                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                                     or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin()) and propositionBean.showButtonAction()}"/>
+                                                         rendered="#{propositionBean.isConsultation and currentUser.nodeUser != null
+                                                                     and (currentUser.hasRoleAsManager) and propositionBean.showButtonAction()}"/>
 
                                 <p:menuButton rendered="${propositionBean.showButtonAction()}" icon="fas fa-cog" 
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
