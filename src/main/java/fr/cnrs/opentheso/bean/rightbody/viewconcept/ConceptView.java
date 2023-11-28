@@ -32,7 +32,6 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
 import fr.cnrs.opentheso.repositories.GpsRepository;
-import fr.cnrs.opentheso.utils.UrlUtils;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -727,31 +726,32 @@ public class ConceptView implements Serializable {
     public void formatGpsList() {
 
         if (StringUtils.isEmpty(gpsList)) {
-            FacesMessage msg = new FacesMessage("La liste des gps est vide !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
-
-        var gpsListTmps = readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeConcept.getConcept().getIdConcept());
-
-        if (ObjectUtils.isNotEmpty(gpsListTmps)) {
-            nodeConcept.setNodeGps(gpsListTmps);
-
-            gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
-
+            nodeConcept.setNodeGps(null);
             gpsRepository.removeGpsByConcept(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-            for (Gps gps : nodeConcept.getNodeGps()) {
-                gpsRepository.saveNewGps(gps);
-            }
-
-            createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Coordonnée GPS modifiés !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
         } else {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Aucune coordonnée GPS trouvée !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            var gpsListTmps = readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeConcept.getConcept().getIdConcept());
+
+            if (ObjectUtils.isNotEmpty(gpsListTmps)) {
+                nodeConcept.setNodeGps(gpsListTmps);
+
+                gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
+
+                gpsRepository.removeGpsByConcept(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+                for (Gps gps : nodeConcept.getNodeGps()) {
+                    gpsRepository.saveNewGps(gps);
+                }
+            } else {
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Aucune coordonnée GPS trouvée !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                PrimeFaces.current().ajax().update("messageIndex");
+                return;
+            }
         }
+
+        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Coordonnée GPS modifiés !");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
 
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:rightTab");
