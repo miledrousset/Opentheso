@@ -7,8 +7,8 @@
     <div style="width: 100%; display: flex; background-color: #f3f3f3; padding-top: 3px; padding-bottom: 3px; ">
 
         <div style="height: 100%; vertical-align: central; ">
-            <p:menuButton icon="pi pi-align-justify" rendered="#{roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin()  or roleOnTheso.managerOnThisTheso}">
-                <p:menuitem rendered="#{(currentUser.nodeUser.superAdmin or roleOnTheso.adminOnThisTheso or roleOnTheso.managerOnThisTheso)}"
+            <p:menuButton icon="pi pi-align-justify" rendered="#{currentUser.hasRoleAsManager}">
+                <p:menuitem rendered="#{currentUser.hasRoleAsManager}"
                             disabled="false"
                             actionListener="#{modifyGroupBean.init()}"
                             oncomplete="PF('moveGroupTo').show();"
@@ -16,7 +16,7 @@
                             value="#{langueBean.getMsg('group.moveTo')}"
                             icon="fas fa-cut" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.managerOnThisTheso)}"
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.hasRoleAsManager)}"
                             disabled="false" id="newArkIdGroup" 
                             actionListener="#{editConcept.infosArk()}"
                             oncomplete="PF('generateArkGroup').show();"

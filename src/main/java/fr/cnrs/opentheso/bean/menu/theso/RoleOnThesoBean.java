@@ -197,6 +197,12 @@ public class RoleOnThesoBean implements Serializable {
             setUserRoleOnThisTheso();
             return;
         }
+        
+        // nouvelle méthode de gestion des droitds
+        currentUser.initUserPermissions();
+        
+        
+        
         authorizedTheso = new ArrayList<>();
         if (currentUser.getNodeUser().isSuperAdmin()) {
             boolean withPrivateTheso = true;

@@ -7,10 +7,10 @@
 
     <div class="row">
         <div class="col-12">
-            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (currentUser.hasRoleAsAdmin)}"
                           value="#{langueBean.getMsg('actions.actionsOnThisTheso')}"  
                           style="font-size: 14px;"/>   
-            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+            <h:outputText rendered="#{(selectedTheso.currentIdTheso != null) and (currentUser.hasRoleAsAdmin)}"
                           value=": #{selectedTheso.thesoName}"  
                           style="font-size: 14px; color: #F47B2A;"/>              
         </div>
@@ -18,7 +18,7 @@
 
     <div  class="row">
         <div class="col-12">
-            <h:panelGroup id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+            <h:panelGroup id="actionsOnTheso" rendered="#{(selectedTheso.currentIdTheso != null) and (currentUser.hasRoleAsAdmin)}">
                     <p:panel style=" margin-left: 10px;">
                         <!--Pour importer des alignements -->
                         <i class="pi pi-download"></i>

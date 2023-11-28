@@ -7,7 +7,7 @@
     <div style="width: 100%; display: flex; background-color: #ecf8f1; padding-top: 3px; padding-bottom: 3px;">
         <h:panelGroup id="idConceptViewActions" 
                       rendered="#{currentUser.nodeUser != null
-                      and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" >
+                                  and (currentUser.hasRoleAsManager)}" >
             
             <p:menuButton icon="pi pi-align-justify" >
                 

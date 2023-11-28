@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-2" style="text-align: right;">
                         <p:commandButton rendered="#{(currentUser.nodeUser != null) 
-                                                     and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                                     and (currentUser.hasRoleAsManager)}"
                                          icon="fa fa-history" styleClass="rounded-button ui-button-outlined"
                                          actionListener="#{historyBean.reset()}" update="idHistoricalView"
                                          oncomplete="PF('historicalView').show();" style="margin-right: 10px; height: 2rem; width: 2rem; color: #43B572" 

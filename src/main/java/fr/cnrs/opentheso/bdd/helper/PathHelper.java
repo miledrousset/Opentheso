@@ -307,8 +307,13 @@ public class PathHelper {
         }
 
         for (String idBT : idBTs) {
-            path.add(idBT);
-            getPathOfConcept(ds, idBT, idThesaurus, firstPath, path, allPaths);
+            if(!path.contains(idBT)){
+                path.add(idBT);
+                getPathOfConcept(ds, idBT, idThesaurus, firstPath, path, allPaths);
+            } else {
+                message = "!! Attention, erreur de boucle détectée, vérifier le concept  :" + idBT;
+                message = message + "  ___ et le chemin " + path;
+            }
         }
         
         return allPaths;

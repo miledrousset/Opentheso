@@ -133,14 +133,14 @@ public class ExportRdf4jHelperNew {
         sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
         
 
-        ArrayList<String> first = new ArrayList<>();
+    /*    ArrayList<String> first = new ArrayList<>();
         first.add(idConcept);
         ArrayList<ArrayList<String>> paths = new ArrayList<>();
             
         paths = new ConceptHelper().getPathOfConceptWithoutGroup(ds, idConcept, idTheso, first, paths);
         ArrayList<String> pathFromArray = getPathFromArray(paths);
         if(!pathFromArray.isEmpty())
-            sKOSResource.setPaths(pathFromArray);
+            sKOSResource.setPaths(pathFromArray);*/
         skosXmlDocument.addconcept(sKOSResource);
     }        
     
@@ -458,7 +458,7 @@ public class ExportRdf4jHelperNew {
             }
         }
 
-        ArrayList<String> first = new ArrayList<>();
+    /*    ArrayList<String> first = new ArrayList<>();
         first.add(idConcept);
         ArrayList<ArrayList<String>> paths = new ArrayList<>();
 
@@ -467,6 +467,7 @@ public class ExportRdf4jHelperNew {
         if (!pathFromArray.isEmpty()) {
             sKOSResource.setPaths(pathFromArray);
         }
+        */
         
         // les images
         if(nodeConcept.getNodeImages() != null || (!nodeConcept.getNodeImages().isEmpty())) {

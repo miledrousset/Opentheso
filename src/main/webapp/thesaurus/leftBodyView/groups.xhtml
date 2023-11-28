@@ -16,7 +16,7 @@
                 <!-- ajout des collections et sous collections -->
                 <p:menuButton icon="pi pi-align-justify"
                               rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null) 
-                                          and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                          and (currentUser.hasRoleAsManager)}"
                               style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
                               class="dropdown-submenu pull-left">
 

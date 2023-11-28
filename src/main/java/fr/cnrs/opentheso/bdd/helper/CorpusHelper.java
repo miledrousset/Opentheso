@@ -75,6 +75,25 @@ public class CorpusHelper {
         }
         return nodeCorpuses;
     }
+    
+    public boolean isHaveActiveCorpus(HikariDataSource ds, String idTheso) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                String query = "select corpus_name from corpus_link"
+                        + " where id_theso = '" + idTheso + "'"
+                        + " and active = true";
+                stmt.executeQuery(query);
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Liste of linked corpus : " + idTheso, sqle);
+        }
+        return false;
+    }    
 
     /**
      * permet de mettre à jour un corpus

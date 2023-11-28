@@ -30,10 +30,12 @@ import java.util.List;
 import javax.annotation.PreDestroy;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.protocol.RequestContent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
@@ -656,7 +658,7 @@ public class Tree implements Serializable {
      */
     public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
 
-        List<Path> paths = new PathHelper().getPathOfConcept2(
+        List<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
 
         if (root == null) {
@@ -714,7 +716,7 @@ public class Tree implements Serializable {
 
     public void expandTreeToPath2(String idConcept, String idTheso, String idLang, String idFacette) {
 
-        List<Path> paths = new PathHelper().getPathOfConcept2(
+        List<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
         paths.get(0).getPath().add(idFacette);
 
@@ -785,7 +787,7 @@ public class Tree implements Serializable {
             String idTheso,
             String idLang) {
 
-        List<Path> paths = new PathHelper().getPathOfConcept2(
+        List<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
 
         initialise(idTheso, idLang);
