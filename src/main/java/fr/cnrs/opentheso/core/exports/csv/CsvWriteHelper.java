@@ -798,7 +798,9 @@ public class CsvWriteHelper {
                 header.add("deprecatedLabel");
                 header.add("replacedBy");
                 header.add("replacedByLabel");
-
+                header.add("lastModification");
+                header.add("userName");                
+                
                 csvFilePrinter.printRecord(header);
 
                 ConceptHelper conceptHelper = new ConceptHelper();
@@ -829,6 +831,8 @@ public class CsvWriteHelper {
                         record.add(nodeDeprecated.getDeprecatedLabel());
                         record.add(nodeDeprecated.getReplacedById());
                         record.add(nodeDeprecated.getReplacedByLabel());
+                        record.add(nodeDeprecated.getModified());
+                        record.add(nodeDeprecated.getUserName());
                         csvFilePrinter.printRecord(record);
                         record.clear();
                     } catch (IOException e) {

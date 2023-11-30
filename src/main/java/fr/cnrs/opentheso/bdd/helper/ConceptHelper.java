@@ -341,30 +341,28 @@ public class ConceptHelper {
      * @param idTheso
      * @param idLang
      * @return
+     * #MR
      */
     public ArrayList<NodeDeprecated> getAllDeprecatedConceptOfThesaurus(HikariDataSource ds, String idTheso, String idLang) {
         ArrayList<NodeDeprecated> nodeDeprecateds = new ArrayList<>();
+        DeprecateHelper deprecateHelper = new DeprecateHelper();
+        ArrayList<NodeIdValue> replacesValues;
+        
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select concept.id_concept, term.lexical_value, concept_replacedby.id_concept2 as replacedBy from term, concept, preferred_term, concept_replacedby"
-                        + " where "
-                        + " concept.id_concept = preferred_term.id_concept"
-                        + " and"
-                        + " concept.id_thesaurus = preferred_term.id_thesaurus"
-                        + " and"
-                        + " preferred_term.id_term = term.id_term"
-                        + " and"
-                        + " preferred_term.id_thesaurus = term.id_thesaurus"
-                        + " and"
-                        + " concept_replacedby.id_concept1 = concept.id_concept"
-                        + " and"
-                        + " concept_replacedby.id_thesaurus = concept.id_thesaurus"
-                        + " and"
-                        + " concept.id_thesaurus = '" + idTheso + "'"
-                        + " and"
-                        + " term.lang = '" + idLang + "'"
-                        + " and"
-                        + " concept.status = 'DEP' order by unaccent(lower(lexical_value))");
+                stmt.executeQuery("select concept.id_concept, concept.modified, users.username, term.lexical_value" +
+                    " from term, concept, preferred_term, users" +
+                    " where  " +
+                    " concept.contributor = users.id_user" +
+                    " and" +
+                    " concept.id_concept = preferred_term.id_concept " +
+                    " and concept.id_thesaurus = preferred_term.id_thesaurus " +
+                    " and preferred_term.id_term = term.id_term " +
+                    " and preferred_term.id_thesaurus = term.id_thesaurus " +
+                    " and concept.id_thesaurus = '" + idTheso + "'" +
+                    " and term.lang = '" + idLang + "'" +
+                    " and concept.status = 'DEP'" +
+                    " order by unaccent(lower(lexical_value))");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -372,12 +370,24 @@ public class ConceptHelper {
 
                         nodeDeprecated.setDeprecatedId(resultSet.getString("id_concept"));
                         nodeDeprecated.setDeprecatedLabel(resultSet.getString("lexical_value"));
-                        nodeDeprecated.setReplacedById(resultSet.getString("replacedBy"));
+                        nodeDeprecated.setModified(resultSet.getDate("modified"));
+                        nodeDeprecated.setUserName(resultSet.getString("username"));
                         nodeDeprecateds.add(nodeDeprecated);
                     }
                 }
                 for (NodeDeprecated nodeDeprecated : nodeDeprecateds) {
-                    nodeDeprecated.setReplacedByLabel(getLexicalValueOfConcept(ds, nodeDeprecated.getReplacedById(), idTheso, idLang));
+                    replacesValues = deprecateHelper.getAllReplacedBy(ds, idTheso, nodeDeprecated.getDeprecatedId(), idLang);
+                    boolean first = true;
+                    for (NodeIdValue replacesValue : replacesValues) {
+                        if(first) {
+                            nodeDeprecated.setReplacedByLabel(replacesValue.getValue());
+                            nodeDeprecated.setReplacedById(replacesValue.getId());                            
+                        } else {
+                            nodeDeprecated.setReplacedByLabel(nodeDeprecated.getDeprecatedLabel() + "##" + replacesValue.getValue());
+                            nodeDeprecated.setReplacedById(nodeDeprecated.getDeprecatedId()+ "##" + replacesValue.getId());                               
+                        }
+                        first = false;
+                    }
                 }
                 return nodeDeprecateds;
             }

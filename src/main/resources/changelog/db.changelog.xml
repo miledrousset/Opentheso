@@ -31,4 +31,7 @@
     <!-- changelog pour la v23.10 -->
     <include file="/changelog/v23.10/001-table-roleonly.xml"/>
     <include file="/changelog/v23.10/002-update-primary-key-ceoncept_group_label-table.xml"/>
+    
+     <!-- changelog pour la v23.12 -->
+    <include file="/changelog/v23.12/23-12_001.xml"/>    
 </databaseChangeLog>

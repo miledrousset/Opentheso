@@ -28,7 +28,13 @@ public class DeprecateHelper {
 
     /**
      * permet de retourner les concepts qui remplacent ce concept déprécié
-     */
+    * 
+    * @param ds
+    * @param idTheso
+    * @param idConcept
+    * @param idLang
+    * @return 
+    */ 
     public ArrayList<NodeIdValue> getAllReplacedBy(HikariDataSource ds,
             String idTheso, String idConcept, String idLang) {
 

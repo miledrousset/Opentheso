@@ -245,7 +245,7 @@
 
                                             <p:commandButton 
                                                              value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check" 
-                                                             update="containerIndex:resultat"
+                                                             update="containerIndex:resultat containerIndex:commandExport containerIndex:bloc1"
                                                              actionListener="#{statistiqueBean.getStatisticByConcept()}"/>
                                         </div>
                                     </div>
@@ -291,7 +291,7 @@
 
                                     <div class="row">
                                         <div class="col-12" style="text-align: right; margin-top: 20px;">
-                                            <p:commandButton rendered="#{statistiqueBean.canceptStatistiques.size() != 0}" 
+                                            <p:commandButton id="commandExport" rendered="#{statistiqueBean.canceptStatistiques.size() != 0}" 
                                                             icon="pi pi-download" value="#{langueBean.getMsg('download')}" styleClass="ui-button-success"
                                                              title="#{langueBean.getMsg('statistique.exporter_csv')}"
                                                              update="containerIndex:bloc1 containerIndex:bloc2" style=" height: 33px;" >
@@ -307,7 +307,6 @@
                     </div>
 
                     <ui:include src="../commun/footer.xhtml" />
-
                     <p:dialog id="noteChartID" widgetVar="noteChart" modal="true" resizable="false" 
                               position="top" width="600" style="margin-top: 50px" header="Diagramme des notes" >
                         <div class="card">

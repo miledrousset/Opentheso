@@ -1,6 +1,6 @@
 Note de version
 
-- Refonte visuelle de l'atelier des actions sur les thésaurus
-- Correction de l'import CSV (les Ids sont sensibles à la casse)
-- introduction d'une page HTML pour les projets avec traduction 
-- Collections : possibilité de les déplacer d'une collection à une autre
+- Intégration d'une nouvelle méthode de Gestion des permissions
+- possibilité de gérer les permissions par thésaurus 
+- Accélération de l'export des thésaurus x30
+- export des concepts dépréciés amélioré 

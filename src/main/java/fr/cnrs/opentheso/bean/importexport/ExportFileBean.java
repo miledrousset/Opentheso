@@ -330,9 +330,10 @@ public class ExportFileBean implements Serializable {
         ///////////////////////////////////
 
         /// autres exports
+        System.out.println("commence");
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                 viewExportBean.getSelectedIdGroups());
-
+        System.out.println("fini");
         if (skosxd == null) {
             return null;
         }
@@ -549,7 +550,6 @@ public class ExportFileBean implements Serializable {
         }
 
         SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId());
-
         if (skosxd == null) {
             return null;
         }
