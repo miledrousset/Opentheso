@@ -80,6 +80,18 @@ public class ExportHelper {
         return path + "/?idf=" + idFacet + "&idt=" +idTheso;
     }
 
+    /**
+     * Nouvelle version pour récupérer un thésaurus entier en utilisant les 
+     * requêtes plpgsql 
+     * @param ds
+     * @param idTheso
+     * @param baseUrl
+     * @param idGroup
+     * @param originalUri
+     * @param nodePreference
+     * @return
+     * @throws Exception 
+     */
     public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso,
             String baseUrl, String idGroup, String originalUri, NodePreference nodePreference) throws Exception {
 

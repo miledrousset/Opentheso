@@ -34,4 +34,7 @@
     
      <!-- changelog pour la v23.12 -->
     <include file="/changelog/v23.12/23-12_001.xml"/>    
+    <changeSet id="23.12.002" author="Miled">
+        <sqlFile path="../changelog/v23.12/23-12_002.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>    
 </databaseChangeLog>
