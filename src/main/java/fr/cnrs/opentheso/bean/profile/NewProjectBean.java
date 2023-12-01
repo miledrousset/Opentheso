@@ -95,10 +95,10 @@ public class NewProjectBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
-        
+        currentUser.initUserPermissions();
         // on vérifie si l'utilisateur en cours est un Admin 
         if(!currentUser.getNodeUser().isSuperAdmin()){
-            if(currentUser.getAllAuthorizedProjectAsAdmin() != null && currentUser.getAllAuthorizedProjectAsAdmin().size() > 0) {
+            if(currentUser.getAllAuthorizedProjectAsAdmin() != null && !currentUser.getAllAuthorizedProjectAsAdmin().isEmpty()) {
                 // on donne le droit admin pour l'utilisateur courant sur ce groupe
                 int projectId = userHelper.getThisProjectId(connect.getPoolConnexion(), projectName);
                 if(projectId == -1) {
@@ -180,6 +180,7 @@ public class NewProjectBean implements Serializable {
         }
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Suppression OK :", nodeUserGroup.getGroupName()));
+        currentUser.initUserPermissions();
         myProjectBean.init();        
         init();
         PrimeFaces pf = PrimeFaces.current();

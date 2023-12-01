@@ -18,7 +18,23 @@
     <include file="/changelog/v23.07.3/002-update_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-add-projet-description-table.xml"/>
     <include file="/changelog/v23.07.3/003-update-primary-key-gps-table.xml"/>
-    
+
     <!-- changelog pour la v23.09 --> 
     <include file="/changelog/v23.09/001-delete-table-pref-gps.xml"/>
+    <include file="/changelog/v23.09/002-add-apikey-user.xml"/>
+    <include file="/changelog/v23.09/003-add-position-gps-table.xml"/>
+    <include file="/changelog/v23.09/004-update-primary-key-gps-table.xml"/>
+    <changeSet id="executeScriptOriginal7" author="Fgabsi">
+        <sqlFile path="../changelog/v23.09/maj_functions.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
+
+    <!-- changelog pour la v23.10 -->
+    <include file="/changelog/v23.10/001-table-roleonly.xml"/>
+    <include file="/changelog/v23.10/002-update-primary-key-ceoncept_group_label-table.xml"/>
+    
+     <!-- changelog pour la v23.12 -->
+    <include file="/changelog/v23.12/23-12_001.xml"/>    
+    <changeSet id="23.12.002" author="Miled">
+        <sqlFile path="../changelog/v23.12/23-12_002.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>    
 </databaseChangeLog>

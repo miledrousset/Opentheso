@@ -36,6 +36,8 @@ public class MyProjectBean implements Serializable {
     private Map<String, String> listeGroupsOfUser;
     private ArrayList<NodeUserRole> listeUser; // la liste des utilisateur du groupe    
     
+    private ArrayList<NodeUserRole> listeUserLimitedRole; // la liste des utilisateur du groupe avec des droits limités       
+    
     private NodeUserRoleGroup nodeUserRoleOnThisGroup;
     private NodeUserRoleGroup nodeUserRoleSuperAdmin;   
     
@@ -47,6 +49,8 @@ public class MyProjectBean implements Serializable {
     
     private String selectedProject;
     private String selectedProjectName;    
+    private String selectedIndex;
+    
 
     @PreDestroy
     public void destroy(){
@@ -65,6 +69,12 @@ public class MyProjectBean implements Serializable {
             listeUser.clear();
             listeUser = null;
         }
+        
+        if(listeUserLimitedRole != null){
+            listeUserLimitedRole.clear();
+            listeUserLimitedRole = null;
+        }
+        
         if(myAuthorizedRoles!= null){
             myAuthorizedRoles.clear();
             myAuthorizedRoles = null;
@@ -74,6 +84,7 @@ public class MyProjectBean implements Serializable {
         myRoleOnThisProject = null;  
         selectedProject = null;  
         selectedProjectName = null;  
+        selectedIndex = "0";
     }  
     
     public MyProjectBean() {
@@ -86,6 +97,8 @@ public class MyProjectBean implements Serializable {
         selectedProjectName = null;
         myRoleOnThisProject = null;
         myAuthorizedRoles = null;
+        selectedIndex = "0";
+      
         getGroupsOfUser();
         getListThesoByGroup();
     }
@@ -141,11 +154,13 @@ public class MyProjectBean implements Serializable {
     
     public void setLists() {
         listeUser = null;
+        listeUserLimitedRole = null;
         listeThesoOfProject = null;
         nodeUserRoleOnThisGroup = null;
         nodeUserRoleSuperAdmin = null;
         getListThesoByGroup();
         listUsersByGroup();
+        listUsersLimitedRoleByGroup();
         initMyAuthorizedRoleOnThisGroup();
         initAuthorizedRoles();        
     }    
@@ -156,6 +171,15 @@ public class MyProjectBean implements Serializable {
     public void resetListUsers(){
         listUsersByGroup();
     }
+    
+    /**
+     * appel après la modifcation d'un rôle limité pour un utilisateur
+     */
+    public void resetListLimitedRoleUsers(){
+        listUsersLimitedRoleByGroup(); 
+    }    
+    
+   
     
     /**
      * retourne la liste des thésaurus par groupe
@@ -180,10 +204,6 @@ public class MyProjectBean implements Serializable {
             return;
         }
         UserHelper userHelper = new UserHelper();
-        // récupération des utilisateurs sans groupe
-//        if (selectedProject.isEmpty()) {
-//            listeUser = userHelper.getUsersWithoutGroup(connect.getPoolConnexion());            
-//        } else {
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
@@ -199,8 +219,27 @@ public class MyProjectBean implements Serializable {
                 }
             }
         }
-    //    }        
+        listUsersLimitedRoleByGroup();
     }
+    
+     
+    
+    /**
+     * permet de récupérer la liste des utilisateurs et les rôles sur les thésaurus du projet
+     */
+    private void listUsersLimitedRoleByGroup(){
+        if (selectedProject == null || selectedProject.isEmpty()) {
+            return;
+        }
+        UserHelper userHelper = new UserHelper();
+        int idGroup = Integer.parseInt(selectedProject);
+//        setUserRoleOnThisGroup();
+        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(),
+                idGroup);
+    /*    if (listeUserLimitedRole != null) {
+            listeUserLimitedRole.clear(); //cas où on supprime l'utilisateur en cours
+        }*/
+    }    
     
     /**
      * setting du role de l'utilisateur sur le group séléctionné
@@ -309,6 +348,22 @@ public class MyProjectBean implements Serializable {
 
     public void setMyRoleOnThisProject(NodeUserRoleGroup myRoleOnThisProject) {
         this.myRoleOnThisProject = myRoleOnThisProject;
+    }
+
+    public ArrayList<NodeUserRole> getListeUserLimitedRole() {
+        return listeUserLimitedRole;
+    }
+
+    public void setListeUserLimitedRole(ArrayList<NodeUserRole> listeUserLimitedRole) {
+        this.listeUserLimitedRole = listeUserLimitedRole;
+    }
+
+    public String getSelectedIndex() {
+        return selectedIndex;
+    }
+
+    public void setSelectedIndex(String selectedIndex) {
+        this.selectedIndex = selectedIndex;
     }
  
     

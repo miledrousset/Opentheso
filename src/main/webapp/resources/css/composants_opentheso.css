@@ -824,7 +824,6 @@ body .ui-accordion .ui-accordion-header {
     border: 1px solid #226b40;
     border-top: 0 none;
     background: #ecf8f1;
-/*    color: #43B572;*/
     padding: 0.5em;
 }
 
@@ -835,18 +834,16 @@ body .ui-accordion .ui-accordion-header.ui-state-active {
 }
 
 body .ui-accordion .ui-accordion-header:first-child {
-    margin-top: 0;
     border-top: 1px solid #226b40;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
 }
 
-
-
 body .ui-accordion .ui-accordion-content {
     border: 1px solid #226b40;
     background: #fff;
     color: #43B572;
+    padding: 0rem;
 }
 
 body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-leaf-icon {

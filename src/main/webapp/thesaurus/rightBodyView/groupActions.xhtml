@@ -7,21 +7,27 @@
     <div style="width: 100%; display: flex; background-color: #f3f3f3; padding-top: 3px; padding-bottom: 3px; ">
 
         <div style="height: 100%; vertical-align: central; ">
-            <h:panelGroup id="idGroupViewActions" >
-                <p:menuButton icon="pi pi-align-justify" rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                                     or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+            <p:menuButton icon="pi pi-align-justify" rendered="#{currentUser.hasRoleAsManager}">
+                <p:menuitem rendered="#{currentUser.hasRoleAsManager}"
+                            disabled="false"
+                            actionListener="#{modifyGroupBean.init()}"
+                            oncomplete="PF('moveGroupTo').show();"
+                            update="containerIndex:idMoveGroupTo containerIndex:moveGroupToForm" 
+                            value="#{langueBean.getMsg('group.moveTo')}"
+                            icon="fas fa-cut" />
 
-                    <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
-                                disabled="false" id="newArkIdGroup" 
-                                actionListener="#{editConcept.infosArk()}"
-                                oncomplete="PF('generateArkGroup').show();"
-                                update="containerIndex:idGenerateArkGroup containerIndex:generateArkGroupForm" 
-                                value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
-                                icon="fas fa-plus" />
-                </p:menuButton>
-                <p:tooltip for="newArkIdGroup" value="#{langueBean.getMsg('rightbody.concept.tooltip_generate_ark')}" />
-                
-            </h:panelGroup>
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.hasRoleAsManager)}"
+                            disabled="false" id="newArkIdGroup" 
+                            actionListener="#{editConcept.infosArk()}"
+                            oncomplete="PF('generateArkGroup').show();"
+                            update="containerIndex:idGenerateArkGroup containerIndex:generateArkGroupForm" 
+                            value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
+                            icon="fas fa-plus" />
+
+
+
+            </p:menuButton>
+            <p:tooltip for="newArkIdGroup" value="#{langueBean.getMsg('rightbody.concept.tooltip_generate_ark')}" />
         </div>
     </div>
 </ui:fragment>

@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -74,16 +75,44 @@ public class CorpusHelper {
         }
         return nodeCorpuses;
     }
+    
+    public boolean isHaveActiveCorpus(HikariDataSource ds, String idTheso) {
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                String query = "select corpus_name from corpus_link"
+                        + " where id_theso = '" + idTheso + "'"
+                        + " and active = true";
+                stmt.executeQuery(query);
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting Liste of linked corpus : " + idTheso, sqle);
+        }
+        return false;
+    }    
 
     /**
      * permet de mettre à jour un corpus
+     * 
+     * @param ds
+     * @param idTheso
+     * @param oldName
+     * @param nodeCorpus
+     * @return 
      */
     public boolean updateCorpus(HikariDataSource ds, String idTheso, String oldName, NodeCorpus nodeCorpus) {
 
         boolean status = false;
         oldName = new StringPlus().convertString(oldName);
         nodeCorpus.setCorpusName(new StringPlus().convertString(nodeCorpus.getCorpusName()));
-
+        
+        if (StringUtils.isEmpty(nodeCorpus.getUriCount())) 
+            nodeCorpus.setUriCount("");
+        
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE corpus_link set corpus_name = '" + nodeCorpus.getCorpusName()
@@ -101,9 +130,17 @@ public class CorpusHelper {
 
     /**
      * permet de savoir si le nom du corpus exite ou non
+     * 
+     * @param ds
+     * @param idTheso
+     * @param nodeCorpus
+     * @return 
      */
     public boolean addNewCorpus(HikariDataSource ds, String idTheso, NodeCorpus nodeCorpus) {
         boolean status = false;
+        nodeCorpus.setCorpusName(new StringPlus().convertString(nodeCorpus.getCorpusName()));
+        if (StringUtils.isEmpty(nodeCorpus.getUriCount())) 
+            nodeCorpus.setUriCount("");
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("insert into corpus_link (id_theso, corpus_name, uri_count, uri_link, active, only_uri_link) values "

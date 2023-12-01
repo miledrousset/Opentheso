@@ -47,7 +47,7 @@ public class StatisticHelper {
                         " and" +
                         " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
                         " and" +
-                        " concept_group_concept.idgroup = '" + idGroup + "'" +
+                        " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')" +
                         " and" +
                         " concept_group_concept.idthesaurus = '" + idThesaurus + "'" +
                         " and" +
@@ -84,7 +84,7 @@ public class StatisticHelper {
                         " and" +
                         " concept_group_concept.idthesaurus = alignement.internal_id_thesaurus" +
                         " and" +
-                        " concept_group_concept.idgroup = '" + idGroup + "'" +
+                        " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')" +
                         " and" +
                         " concept_group_concept.idthesaurus = '" + idThesaurus + "'");
                 }
@@ -212,7 +212,7 @@ public class StatisticHelper {
                             + " and"
                             + " term.lang = '" + idLang + "'"
                             + " and"
-                            + " concept_group_concept.idgroup = '" + idGroup + "'"
+                            + " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')"
                             + " ORDER BY concept.modified DESC LIMIT " + limit;                    
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -262,7 +262,7 @@ public class StatisticHelper {
         List<ConceptStatisticData> conceptStatisticDatas = new ArrayList<>();
         String groupFilter = null;
         if(idGroup!= null && !idGroup.isEmpty()) {
-            groupFilter = " and concept_group_concept.idgroup = '" + idGroup + "'";
+            groupFilter = " and lower(concept_group_concept.idgroup) = lower('" + idGroup + "')";
         }
         try {
             // Get connection from pool
@@ -491,7 +491,7 @@ public class StatisticHelper {
                     String query = "select count(id_concept) from concept left join concept_group_concept" +
                         " on id_concept = idconcept and id_thesaurus = idthesaurus" +
                         " where id_thesaurus = '" +idThesaurus + "'" +
-                        " and idgroup = '" + idGroup + "'";
+                        " and lower(idgroup) = lower('" + idGroup + "')";
                     
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -524,16 +524,15 @@ public class StatisticHelper {
             try {
                 stmt = conn.createStatement();
                 try {
-                    String query = "SELECT count(non_preferred_term.id_term)" +
-                            " FROM concept_group_concept, preferred_term, non_preferred_term" +
-                            " WHERE" +
-                            " concept_group_concept.idconcept = preferred_term.id_concept" +
-                            " AND concept_group_concept.idthesaurus = preferred_term.id_thesaurus" +
-                            " AND preferred_term.id_term = non_preferred_term.id_term " +
-                            " AND preferred_term.id_thesaurus = non_preferred_term.id_thesaurus " +
-                            " AND non_preferred_term.lang = '" + idLang + "'" +
-                            " AND non_preferred_term.id_thesaurus = '" + idThesaurus + "'" +
-                            " and concept_group_concept.idgroup = '" + idGroup + "'";
+                    String query = "SELECT count(npt.id_term) \n" +
+                        " FROM non_preferred_term npt\n" +
+                        " inner JOIN preferred_term pt on pt.id_term = npt.id_term AND pt.id_thesaurus = npt.id_thesaurus\n" +
+                        " inner JOIN concept_group_concept cgc on cgc.idthesaurus = pt.id_thesaurus AND cgc.idconcept = pt.id_concept\n" +
+                        "\n" +
+                        " WHERE \n" +
+                        " npt.lang = '" + idLang + "'" +
+                        " AND npt.id_thesaurus = '" + idThesaurus + "'" +
+                        " and lower(cgc.idgroup) = lower('" + idGroup + "')";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -621,7 +620,7 @@ public class StatisticHelper {
                         "  concept_group_concept.idthesaurus = preferred_term.id_thesaurus AND" +
                         "  non_preferred_term.lang = '" + langue + "' AND " +
                         "  non_preferred_term.id_thesaurus = '" + idThesaurus + "' AND " +
-                        "  concept_group_concept.idgroup = '" + idGroup + "'";
+                        "  lower(concept_group_concept.idgroup) = lower('" + idGroup + "')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {
@@ -678,7 +677,7 @@ public class StatisticHelper {
                         " and" +
                         " concept.id_concept = concept_group_concept.idconcept" +
                         " and" +
-                        " concept_group_concept.idgroup='" + idGroup + "'" +
+                        " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')" +
                         " and" +
                         " concept.status != 'CA'" +
                         " and" +
@@ -770,7 +769,7 @@ public class StatisticHelper {
                             + " and concept.id_thesaurus = note.id_thesaurus"
                             + " and concept.id_thesaurus = '" + idThesaurus + "'"
                             + " and concept.id_concept IN (SELECT idconcept FROM concept_group_concept"
-                            + " WHERE idgroup = '"+ idGroup + "' and idthesaurus = '" + idThesaurus + "')"
+                            + " WHERE lower(idgroup) = lower('"+ idGroup + "') and idthesaurus = '" + idThesaurus + "')"
                             + " and note.lang = '" + langue + "'";
 
                     stmt.executeQuery(query);
@@ -993,7 +992,7 @@ public class StatisticHelper {
                         " preferred_term.id_thesaurus = concept_group_concept.idthesaurus AND" +
                         " preferred_term.id_concept = concept_group_concept.idconcept AND" +
                         " term.id_thesaurus = '" + idThesaurus + "' AND" +
-                        " idgroup = '" + selectedGroup + "' AND" +
+                        " lower(idgroup) = lower('" + selectedGroup + "') AND" +
                         " term.created <= '" + end + "'" +
                         " AND term.created >= '" + begin + "'" +
                         " AND term.lang = '" + langue + "'" +

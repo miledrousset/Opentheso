@@ -17,6 +17,8 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
+import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeProjectThesoRole;
+import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -63,6 +65,7 @@ public class RoleOnThesoBean implements Serializable {
     private boolean isAdminOnThisTheso = false;
     private boolean isManagerOnThisTheso = false;
     private boolean isContributorOnThisTheso = false;
+    private boolean isNoRole = false;
 
     //liste des thesaurus pour l'utilisateur connecté suivant ses droits, inclus aussi ses thésaurus privés 
     private List<String> authorizedTheso;
@@ -194,6 +197,12 @@ public class RoleOnThesoBean implements Serializable {
             setUserRoleOnThisTheso();
             return;
         }
+        
+        // nouvelle méthode de gestion des droitds
+        currentUser.initUserPermissions();
+        
+        
+        
         authorizedTheso = new ArrayList<>();
         if (currentUser.getNodeUser().isSuperAdmin()) {
             boolean withPrivateTheso = true;
@@ -204,7 +213,25 @@ public class RoleOnThesoBean implements Serializable {
         } else {
             UserHelper currentUserHelper = new UserHelper();
             authorizedTheso = currentUserHelper.getThesaurusOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+
+            // récupération de la liste des thésaurus pour les utilisateurs qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
+            List<String> listThesoTemp = new UserHelper().getListThesoLimitedRoleByUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            for (String idThesoTemp : listThesoTemp) {
+                if(!authorizedTheso.contains(idThesoTemp)) {
+                    authorizedTheso.add(idThesoTemp);
+                }
+            }
+
             authorizedThesoAsAdmin = currentUserHelper.getThesaurusOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());         
+            
+            // récupération de la liste des thésaurus pour les utilisateurs avec les droits admin, mais qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
+            listThesoTemp = new UserHelper().getListThesoLimitedRoleByUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            for (String idThesoTemp : listThesoTemp) {
+                if(!authorizedThesoAsAdmin.contains(idThesoTemp)) {
+                    authorizedThesoAsAdmin.add(idThesoTemp);
+                }
+            }
+            
         }
         addAuthorizedThesoToHM();
         initAuthorizedThesoAsAdmin();
@@ -245,13 +272,17 @@ public class RoleOnThesoBean implements Serializable {
         HashMap<String, String> authorizedThesoAsAdminHM = new LinkedHashMap();
         
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        String title;
-        String lang = connect.getWorkLanguage().toLowerCase();
+     //   String title;
+     //   String lang = connect.getWorkLanguage().toLowerCase();
 
         // ajout de code qui permet de charger une liste de thésaurus avec le nom en utilisant la langue préférée dans les préférences du thésaurus.
         // pour éviter d'afficher des Id quand on a un mélange des thésaurus avec des langues sources différentes.
-        String preferredIdLangOfTheso;
+     
+    /*    String preferredIdLangOfTheso;
         PreferencesHelper preferencesHelper = new PreferencesHelper();
+        
+      */  
+        /*
         for (String idTheso1 : authorizedThesoAsAdmin) {
             preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1);
             if (preferredIdLangOfTheso == null) {
@@ -270,7 +301,32 @@ public class RoleOnThesoBean implements Serializable {
             nodeIdValue.setValue(title);
             nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso1));
             nodeListThesoAsAdmin.add(nodeIdValue);
+        }*/
+        
+        // si c'est superAdmin, on prend tous les thésaurus
+        if(currentUser.getNodeUser().isSuperAdmin()){
+            for (NodeIdValue listTheso1 : currentUser.getUserPermissions().getListThesos()) {
+                NodeIdValue nodeIdValue = new NodeIdValue();
+                nodeIdValue.setId(listTheso1.getId());
+                nodeIdValue.setValue(listTheso1.getValue());
+                nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), listTheso1.getId()));
+                nodeListThesoAsAdmin.add(nodeIdValue);                
+            }
+        } else { // sinon, on prend les thésaurus où l'utilisateur a un role Admin 
+            for (NodeProjectThesoRole nodeProjectsWithThesosRole : currentUser.getUserPermissions().getNodeProjectsWithThesosRoles()) {
+                for (NodeThesoRole nodeThesoRole : nodeProjectsWithThesosRole.getNodeThesoRoles()) {
+                    if(nodeThesoRole.getIdRole() == 2 || nodeThesoRole.getIdRole() == 1) {
+                        NodeIdValue nodeIdValue = new NodeIdValue();
+                        nodeIdValue.setId(nodeThesoRole.getIdTheso());
+                        nodeIdValue.setValue(nodeThesoRole.getThesoName());
+                        nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), nodeThesoRole.getIdTheso()));
+                        nodeListThesoAsAdmin.add(nodeIdValue);
+                    }
+                }
+            }
         }
+        
+        
                
         this.listThesoAsAdmin = authorizedThesoAsAdminHM;
     }    
@@ -283,7 +339,6 @@ public class RoleOnThesoBean implements Serializable {
         }
 
         nodeListTheso = new ArrayList<>();
-        HashMap<String, String> authorizedThesoHM = new LinkedHashMap();
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
 
         // ajout de code qui permet de charger une liste de thésaurus avec le nom en utilisant la langue préférée dans les préférences du thésaurus.
@@ -304,10 +359,8 @@ public class RoleOnThesoBean implements Serializable {
             String title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso1, preferredIdLangOfTheso);
             if (StringUtils.isEmpty(title)) {
                 thesoModel.setNom("(" + idTheso1 + ")");
-                authorizedThesoHM.put(thesoModel.nom, idTheso1);
             } else {
                 thesoModel.setNom(title + " (" + idTheso1 + ")");
-                authorizedThesoHM.put(thesoModel.nom, idTheso1);
             }
 
             thesoModel.setDefaultLang(preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1));
@@ -366,6 +419,7 @@ public class RoleOnThesoBean implements Serializable {
      *
      */
     public void setPublicThesos() {
+        currentUser.initAllTheso();
         authorizedTheso = new ThesaurusHelper().getAllIdOfThesaurus(connect.getPoolConnexion(), false);
         addAuthorizedThesoToHM();
         setUserRoleOnThisTheso();
@@ -413,25 +467,33 @@ public class RoleOnThesoBean implements Serializable {
             isAdminOnThisTheso = false;
             return;
         }
-
+        int idGroup = new UserHelper().getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserRoleGroup = getUserRoleOnThisGroup(-1); // cas de superadmin, on a accès à tous les groupes
             setRole();
         } else {
-            int idGroup = new UserHelper().getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+
             nodeUserRoleGroup = getUserRoleOnThisGroup(idGroup);
         }
 
         if (ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
             setRole();
         } else {
-            isAdminOnThisTheso = false;
+            nodeUserRoleGroup = new UserHelper().getUserRoleOnThisTheso(connect.getPoolConnexion(),
+                    currentUser.getNodeUser().getIdUser(), idGroup, selectedTheso.getCurrentIdTheso());
+            if(ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
+                setRole();
+            } else
+                isAdminOnThisTheso = false;
         }
     }
 
     private void setRole() {
 
         switch(nodeUserRoleGroup.getIdRole()) {
+            case -1:
+                isNoRole = true;
+                break;
             case 1:
                 isSuperAdmin = true;
                 break;

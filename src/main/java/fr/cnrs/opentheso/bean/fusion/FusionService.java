@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.AddConceptsStruct;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
@@ -36,9 +35,6 @@ public class FusionService implements Serializable {
 
     @Inject
     private Connect connect;
-
-    @Inject
-    private SelectedTheso selectedTheso;
 
     @Inject
     private CurrentUser currentUser;
@@ -323,21 +319,12 @@ public class FusionService implements Serializable {
                 && (nodeEMimport.getLang().equalsIgnoreCase(existingNodeEM.getLang()))) {
                 return true;
             }
-        }        
-        /*
-        for(NodeEM node : concept.getNodeEM()){
-            if (node.getLang().equals(nodeEM.getLang()) && node.getLexical_value().equals(nodeEM.getLexical_value())) {
-                return true;
-            }
-        }*/
+        }
         return false;
     }
 
     public void importTheso(FileUploadEvent event) {
-
         try (InputStream is = event.getFile().getInputStream()) {
-            //ReadRdf4j readRdf4j = new ReadRdf4j(is, 0, false, connect.getWorkLanguage());
-            //sourceSkos = readRdf4j.getsKOSXmlDocument();
             sourceSkos = new ReadRDF4JNewGen().readRdfFlux(is, RDFFormat.RDFXML, connect.getWorkLanguage());
             total = sourceSkos.getConceptList().size();
             uri = sourceSkos.getTitle();

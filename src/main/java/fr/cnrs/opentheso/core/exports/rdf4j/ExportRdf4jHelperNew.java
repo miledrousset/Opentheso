@@ -133,14 +133,14 @@ public class ExportRdf4jHelperNew {
         sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
         
 
-        ArrayList<String> first = new ArrayList<>();
+    /*    ArrayList<String> first = new ArrayList<>();
         first.add(idConcept);
         ArrayList<ArrayList<String>> paths = new ArrayList<>();
             
         paths = new ConceptHelper().getPathOfConceptWithoutGroup(ds, idConcept, idTheso, first, paths);
         ArrayList<String> pathFromArray = getPathFromArray(paths);
         if(!pathFromArray.isEmpty())
-            sKOSResource.setPaths(pathFromArray);
+            sKOSResource.setPaths(pathFromArray);*/
         skosXmlDocument.addconcept(sKOSResource);
     }        
     
@@ -458,7 +458,7 @@ public class ExportRdf4jHelperNew {
             }
         }
 
-        ArrayList<String> first = new ArrayList<>();
+    /*    ArrayList<String> first = new ArrayList<>();
         first.add(idConcept);
         ArrayList<ArrayList<String>> paths = new ArrayList<>();
 
@@ -467,6 +467,7 @@ public class ExportRdf4jHelperNew {
         if (!pathFromArray.isEmpty()) {
             sKOSResource.setPaths(pathFromArray);
         }
+        */
         
         // les images
         if(nodeConcept.getNodeImages() != null || (!nodeConcept.getNodeImages().isEmpty())) {
@@ -599,23 +600,17 @@ public class ExportRdf4jHelperNew {
         }
     }
 
-    //TODO MILTI GPS
-    private void addGPSGiven(NodeGps gps, SKOSResource resource) {
+    private void addGPSGiven(List<NodeGps> gps, SKOSResource resource) {
         if (gps == null) {
             return;
         }
-        double lat = gps.getLatitude();
-        double lon = gps.getLongitude();
-        resource.setGpsCoordinates(new SKOSGPSCoordinates(lat, lon));
-
-            /*
         if (CollectionUtils.isNotEmpty(gps)) {
             List<SKOSGPSCoordinates> elements = new ArrayList<>();
             for (NodeGps element : gps) {
                 elements.add(new SKOSGPSCoordinates(element.getLatitude(), element.getLongitude()));
             }
             resource.setGpsCoordinates(elements);
-        }*/
+        }
     }
 
 

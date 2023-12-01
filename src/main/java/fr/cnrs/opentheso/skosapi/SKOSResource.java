@@ -43,10 +43,7 @@ public class SKOSResource {
     private ArrayList<SKOSDocumentation> documentationsList;
     private ArrayList<SKOSDate> dateList;
     private ArrayList<SKOSAgent> agentList;
-
-    //TODO MILTI GPS
-    //private List<SKOSGPSCoordinates> gpsCoordinates;
-    private SKOSGPSCoordinates gpsCoordinates;
+    private List<SKOSGPSCoordinates> gpsCoordinates;
     private ArrayList<SKOSNotation> notationList;
     private ArrayList<SKOSMatch> matchList;
     
@@ -76,7 +73,7 @@ public class SKOSResource {
         dateList = new ArrayList<>();
         agentList = new ArrayList<>();
         //psCoordinates = new ArrayList<>();
-        gpsCoordinates = new SKOSGPSCoordinates();
+        gpsCoordinates = new ArrayList<>();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
         nodeImages = new ArrayList<>();
@@ -99,7 +96,7 @@ public class SKOSResource {
         documentationsList = new ArrayList<>();
         dateList = new ArrayList<>();
         agentList = new ArrayList<>();
-        gpsCoordinates = new SKOSGPSCoordinates();
+        gpsCoordinates = new ArrayList<>();
         notationList = new ArrayList<>();
         matchList = new ArrayList<>();
         nodeImages = new ArrayList<>();
@@ -208,7 +205,7 @@ public class SKOSResource {
         agentList.add(new SKOSAgent(agent, prop));
     }    
 
-    public SKOSGPSCoordinates getGpsCoordinates() {
+    public List<SKOSGPSCoordinates> getGpsCoordinates() {
         return gpsCoordinates;
     }
 
@@ -420,7 +417,7 @@ public class SKOSResource {
         }
     }
 
-    public void setGpsCoordinates(SKOSGPSCoordinates gpsCoordinates) {
+    public void setGpsCoordinates(List<SKOSGPSCoordinates> gpsCoordinates) {
         this.gpsCoordinates = gpsCoordinates;
     }
 
@@ -546,7 +543,7 @@ public class SKOSResource {
      */
     public static Comparator<SKOSResource> sortForHiera(HikariDataSource hikariDataSource, boolean isTrad, String langCode,
             String langCode2, HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId, HashMap<String, ArrayList<String>> idToDocumentation,
-            HashMap<String, ArrayList<String>> idToMatch, HashMap<String, String> idToGPS,
+            HashMap<String, ArrayList<String>> idToMatch, HashMap<String, List<String>> idToGPS,
             HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
             HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
         return new HieraComparator(hikariDataSource, isTrad, langCode, langCode2, idToNameHashMap,
@@ -561,7 +558,7 @@ public class SKOSResource {
         HashMap<String, List<String>> idToChildId;
         HashMap<String, ArrayList<String>> idToDocumentation;
         HashMap<String, ArrayList<String>> idToMatch;
-        HashMap<String, String> idToGPS;
+        HashMap<String, List<String>> idToGPS;
         HashMap<String, ArrayList<NodeImage>> idToImg;
         boolean isTrad;
         ArrayList<String> resourceChecked;
@@ -571,7 +568,7 @@ public class SKOSResource {
         public HieraComparator(HikariDataSource hikariDataSource, boolean isTrad, String langCode, String langCode2,
                 HashMap<String, String> idToNameHashMap, HashMap<String, List<String>> idToChildId,
                 HashMap<String, ArrayList<String>> idToDocumentation, HashMap<String, ArrayList<String>> idToMatch,
-                HashMap<String, String> idToGPS, HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
+                HashMap<String, List<String>> idToGPS, HashMap<String, ArrayList<NodeImage>> idToImg, ArrayList<String> resourceChecked,
                 HashMap<String, ArrayList<Integer>> idToIsTradDiff) {
 
             this.hikariDataSource = hikariDataSource;
@@ -663,25 +660,14 @@ public class SKOSResource {
             return r1_name.compareTo(r2_name);
 
         }
-        //TODO MILTI GPS
+
         private void writeIdToGPS(SKOSResource resource) {
-            String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
-            SKOSGPSCoordinates gps = resource.getGpsCoordinates();
-            String lat = gps.getLat();
-            String lon = gps.getLon();
-
-            if (lat != null && lon != null) {
-                idToGPS.put(key, "gps : lat =" + lat + " long =" + lon);
-            }
-
-            /*
             if (CollectionUtils.isNotEmpty(resource.getGpsCoordinates())) {
                 idToGPS.put(resource.getIdentifier(),
                         resource.getGpsCoordinates().stream()
-                                .map(element -> "gps : lat =" + element.getLat() + " long =" + element.getLon())
+                                .map(element -> element.getLat() + " " + element.getLon())
                                 .collect(Collectors.toList()));
             }
-             */
         }
 
         private void writeIdToImg(SKOSResource resource) {

@@ -159,6 +159,7 @@ public class ConcepThesoSearchController {
     
     private String getDatasForWidget(String idTheso, String idLang, String[] groups, String value, String format, boolean match) {
         String datas;
+
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
                 return null;
@@ -168,6 +169,10 @@ public class ConcepThesoSearchController {
 
             return datas;
         }
+        catch (Exception e) {
+            System.out.print(e.getMessage());
+                }
+        return null;
     }
 
     private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {

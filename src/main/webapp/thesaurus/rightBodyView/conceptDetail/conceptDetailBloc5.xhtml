@@ -20,9 +20,7 @@
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                 <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;"
-                                              rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso()
-                                                          or roleOnTheso.isSuperAdmin())}">
+                                              rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}" 
                                                 actionListener="#{alignmentManualBean.reset()}" oncomplete="PF('addManualAlignment').show();"
@@ -49,8 +47,7 @@
                                 <h:panelGroup rendered="#{conceptView.nodeConcept.nodeAlignments.size() != 0}">
                                     <ui:repeat var="align" value="#{conceptView.nodeConcept.nodeAlignments}" varStatus="aligStatus" >
 
-                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                                  or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                             <p:spacer width="3" rendered="#{aligStatus.first}" />
                                             <p:spacer width="40" rendered="#{!aligStatus.first}" />
                                         </h:panelGroup>
@@ -73,39 +70,40 @@
             </div>
         </div>
     </h:panelGroup>
-
+    
     <!-- bloc des identifiants -->
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
-            <!-- Notation -->            
-            <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
-                <div class="row" style="margin-left: 0px;">
-                    <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
-                        <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notation')}" 
-                                      title="#{langueBean.getMsg('rightbody.concept.notation')}"
-                                      style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
-                    </div>
-                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                        
-                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
-                                      icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 13px;">
-                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_notation')}" 
-                                        action="#{notationBean.reset()}" update="containerIndex:idSetNotation" icon="fas fa-edit"
-                                        oncomplete="PF('setNotation').show();"  />
-                        </p:menuButton> 
-                        <h:panelGroup rendered="#{(conceptView.nodeConcept.concept.notation == null) or (conceptView.nodeConcept.concept.notation == '') }">
-                            <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 13px; color: grey; font-style: italic " />
-                        </h:panelGroup>
+            <!-- Notation -->
+            <h:panelGroup rendered="#{currentUser.hasRoleAsManager or (conceptView.nodeConcept.concept.notation != null and conceptView.nodeConcept.concept.notation != '')}">            
+                <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
+                    <div class="row" style="margin-left: 0px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                            <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notation')}" 
+                                          title="#{langueBean.getMsg('rightbody.concept.notation')}"
+                                          style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
+                        </div>
+                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                        
+                            <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
+                                          icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 13px;">
+                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_notation')}" 
+                                            action="#{notationBean.reset()}" update="containerIndex:idSetNotation" icon="fas fa-edit"
+                                            oncomplete="PF('setNotation').show();"  />
+                            </p:menuButton> 
+                            <h:panelGroup rendered="#{(conceptView.nodeConcept.concept.notation == null) or (conceptView.nodeConcept.concept.notation == '') }">
+                                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 13px; color: grey; font-style: italic " />
+                            </h:panelGroup>
 
-                        <h:panelGroup rendered="#{(conceptView.nodeConcept.concept.notation != null) and (conceptView.nodeConcept.concept.notation != '') }">
-                            <h:outputText value="#{conceptView.nodeConcept.concept.notation}" style="font-size: 13px; color: #666666"/>
-                        </h:panelGroup>
+                            <h:panelGroup rendered="#{(conceptView.nodeConcept.concept.notation != null) and (conceptView.nodeConcept.concept.notation != '') }">
+                                <h:outputText value="#{conceptView.nodeConcept.concept.notation}" style="font-size: 13px; color: #666666"/>
+                            </h:panelGroup>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <p:spacer height="1px" width="98%" style="margin-left: 10px; margin-top: 5px;
-                      margin-bottom: -5px; background-color: #CBD1DC; font-weight: 100"  />
-
+                <p:spacer height="1px" width="98%" style="margin-left: 10px; margin-top: 5px;
+                          margin-bottom: -5px; background-color: #CBD1DC; font-weight: 100"  />
+            </h:panelGroup>  
+            
             <h:form>
                 <div class="list-group-item list-group-item-action" style="margin-top: 10px;">
                     <div class="row">

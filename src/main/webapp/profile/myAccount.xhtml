@@ -166,17 +166,28 @@
                                             </div>
                                             <div class="row" style="margin-left: 20px; margin-right: 20px"> 
                                                 <h:panelGroup rendered="#{!myAccountBean.nodeUser.isSuperAdmin()}">
+                        
                                                     <div class="col-12">
-                                                        <p:dataTable id="tabUser" value="#{myAccountBean.allMyRoleProject}" var="allRoleProject" 
+                                                        <p:dataTable id="tabUserProject" value="#{currentUser.userPermissions.nodeProjectsWithThesosRoles}" var="allProject" 
                                                                      scrollable="true" resizableColumns="true" scrollHeight="450" lazy="false">
-                                                            <p:column width="30%" headerText="#{langueBean.getMsg('profile.role')}">
-                                                                <h:outputText value="#{allRoleProject.roleName}" style="font-size: 12px;" />
-                                                            </p:column>
-                                                            <p:column width="70%" headerText="#{langueBean.getMsg('profile.project')}" >
-                                                                <h:outputText value="#{allRoleProject.groupName}" style="font-size: 12px;" />
-                                                            </p:column>                              
-                                                        </p:dataTable>  
-                                                    </div>                          
+                                                            <p:column width="40%" headerText="#{langueBean.getMsg('profile.project')}" >
+                                                                <h:outputText value="#{allProject.projectName}" style="font-size: 12px;" />
+                                                            </p:column>   
+                                                            <p:column width="60%" >
+                                                                <p:dataTable id="tabUserTheso" value="#{allProject.nodeThesoRoles}" var="allTheso" 
+                                                                             scrollable="true" resizableColumns="true" scrollHeight="450" lazy="false" >
+                                                                    <p:column width="70%" headerText="#{langueBean.getMsg('menu.thesaurus')}" >
+                                                                        <h:outputText value="#{allTheso.thesoName} (#{allTheso.idTheso})" style="font-size: 12px;" />
+                                                                    </p:column> 
+                                                                    <p:column width="30%" headerText="#{langueBean.getMsg('profile.role')}" >
+                                                                        <h:outputText value="#{allTheso.roleName}" style="font-size: 12px;" />
+                                                                    </p:column>  
+                                                                    
+                                                                </p:dataTable>
+                                                            </p:column>                                                              
+                                                        </p:dataTable>                                                         
+                                                    </div>
+                                                     
                                                 </h:panelGroup>
                                                 <h:panelGroup rendered="#{myAccountBean.nodeUser.isSuperAdmin()}">
                                                     <div class="col-12">

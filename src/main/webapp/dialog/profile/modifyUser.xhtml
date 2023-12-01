@@ -85,7 +85,7 @@
 
             <div class="row" style="margin-top: 5px;">
                 <div class="col-12" style="text-align: right" >
-                    <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex messageIndex"
+                    <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex:tabViewRoles messageIndex"
                                      icon="fa-regular fa-floppy-disk"
                                      styleClass="ui-button-success" oncomplete="PF('modifyUser').hide();"
                                      actionListener="#{modifyUSerBean.updatePassword()}">

@@ -43,7 +43,7 @@ public class GpsBean implements Serializable {
                 selectedTheso.getCurrentIdTheso()));
 
         conceptView.createMap(conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
+                selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Coordonnée GPS ajoutée avec succèe");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -90,7 +90,7 @@ public class GpsBean implements Serializable {
         gpsRepository.removeGps(gps);
 
         conceptView.createMap(conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
+                selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Suppression des coordonnées GPS réussie");
         FacesContext.getCurrentInstance().addMessage(null, msg);

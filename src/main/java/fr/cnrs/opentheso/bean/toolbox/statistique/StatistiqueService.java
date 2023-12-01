@@ -23,6 +23,8 @@ public class StatistiqueService {
         List<GenericStatistiqueData> result = new ArrayList<>();
         GroupHelper groupHelper = new GroupHelper();
         StatisticHelper statisticHelper = new StatisticHelper();
+        ConceptHelper conceptHelper = new ConceptHelper();
+        NoteHelper noteHelper = new NoteHelper();
         
         ArrayList<NodeGroup> listGroup = groupHelper.getListConceptGroup(connect.getPoolConnexion(), idTheso, idLang);
 
@@ -31,13 +33,13 @@ public class StatistiqueService {
             data.setIdCollection(group.getConceptGroup().getIdgroup());
             data.setCollection(group.getLexicalValue());
 
-            data.setNotesNbr(new NoteHelper().getNbrNoteByGroup(connect.getPoolConnexion(),
+            data.setNotesNbr(noteHelper.getNbrNoteByGroup(connect.getPoolConnexion(),
                     group.getConceptGroup().getIdgroup(), idTheso, idLang));
 
             data.setSynonymesNbr(statisticHelper.getNbSynonymesByGroup(connect.getPoolConnexion(), idTheso,
                     group.getConceptGroup().getIdgroup(), idLang));
 
-            data.setConceptsNbr(new ConceptHelper().getCountOfConceptsOfGroup(connect.getPoolConnexion(), idTheso,
+            data.setConceptsNbr(conceptHelper.getCountOfConceptsOfGroup(connect.getPoolConnexion(), idTheso,
                     group.getConceptGroup().getIdgroup()));
 
             data.setTermesNonTraduitsNbr(
@@ -57,10 +59,10 @@ public class StatistiqueService {
         // Ajout de la dernier ligne réservé aux concepts sans collection
         GenericStatistiqueData data = new GenericStatistiqueData();
         data.setCollection("Sans collection");
-        data.setConceptsNbr(new ConceptHelper().getCountOfConceptsSansGroup(connect.getPoolConnexion(), idTheso));
-        data.setNotesNbr(new NoteHelper().getNbrNoteSansGroup(connect.getPoolConnexion(), idTheso, idLang));
-        data.setSynonymesNbr(new StatisticHelper().getNbDesSynonimeSansGroup(connect.getPoolConnexion(), idTheso, idLang));
-        data.setTermesNonTraduitsNbr(data.getConceptsNbr() - new StatisticHelper().getNbTradWithoutGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setConceptsNbr(conceptHelper.getCountOfConceptsSansGroup(connect.getPoolConnexion(), idTheso));
+        data.setNotesNbr(noteHelper.getNbrNoteSansGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setSynonymesNbr(statisticHelper.getNbDesSynonimeSansGroup(connect.getPoolConnexion(), idTheso, idLang));
+        data.setTermesNonTraduitsNbr(data.getConceptsNbr() - statisticHelper.getNbTradWithoutGroup(connect.getPoolConnexion(), idTheso, idLang));
         
         data.setWikidataAlignNbr(statisticHelper.getNbAlignWikidata(connect.getPoolConnexion(), idTheso, null));  
         data.setTotalAlignment(statisticHelper.getNbAlign(connect.getPoolConnexion(), idTheso, null));          

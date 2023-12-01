@@ -54,7 +54,7 @@
                                  actionListener="PF('addCustomRelation').hide();" update="containerIndex:idAddCustomRelation"/>
 
                 <p:commandButton id="addCustomRelationBtn" update="messageIndex containerIndex:idAddCustomRelation containerIndex:formRightTab"
-                                 oncomplete="PF('addCustomRelation').show();" value="#{langueBean.getMsg('btnValidate')}"
+                                 oncomplete="PF('addCustomRelation').hide();" value="#{langueBean.getMsg('btnValidate')}"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{relatedBean.addNewCustomRelationship(nodeUser.idUser)}" />
             </div>            

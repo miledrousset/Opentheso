@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.core.imports.csv;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
@@ -20,12 +15,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
+import lombok.Data;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
-//import org.apache.commons.csv.CSVFormat;
-//import org.apache.commons.csv.CSVRecord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -860,8 +854,7 @@ public class CsvReadHelper {
                 conceptObject = getAlignments(conceptObject, record, readEmptyData);
 
                 // on récupère la localisation
-                //TODO MILTI GPS
-                //conceptObject = getGps(conceptObject, record);
+                conceptObject = getGps(conceptObject, record);
                 conceptObject = getGeoLocalisation(conceptObject, record, readEmptyData);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
@@ -945,9 +938,8 @@ public class CsvReadHelper {
                 conceptObject = getAlignments(conceptObject, record, false);
 
                 // on récupère la localisation
-                //TODO MILTI GPS
-                //conceptObject = getGps(conceptObject, record);
-                conceptObject = getGeoLocalisation(conceptObject, record, false);
+                conceptObject = getGps(conceptObject, record);
+                //conceptObject = getGeoLocalisation(conceptObject, record, false);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
                 conceptObject = getMembers(conceptObject, record);
@@ -972,12 +964,10 @@ public class CsvReadHelper {
      * @param record
      * @return
      */
-    /*
     private ConceptObject getGps(ConceptObject conceptObject, CSVRecord record) {
 
-        String value;
         try {
-            value = record.get("geo:gps");
+            String value = record.get("geo:gps");
             if (!value.isEmpty()) {
                 conceptObject.setGps(value.trim());
             }
@@ -985,7 +975,7 @@ public class CsvReadHelper {
             //System.err.println("");
         }
         return conceptObject;
-    }*/
+    }
 
     /**
      * permet de récupérer l'identifiant d'près une URI
@@ -1865,6 +1855,7 @@ public class CsvReadHelper {
         return conceptObject;
     }
 
+    @Data
     public class ConceptObject {
 
         private String idConcept;
@@ -1910,10 +1901,9 @@ public class CsvReadHelper {
 
         // géolocalisation
         // geo:lat  geo:long
-        //TODO MILTI GPS
         private String latitude;
         private String longitude;
-        //private String gps;
+        private String gps;
 
         // skos:member, l'appartenance du concept à un groupe ou collection ...
         private ArrayList<String> members;
@@ -2022,280 +2012,8 @@ public class CsvReadHelper {
                 alignments.clear();
             }
             conceptType = null;
+            gps = null;
         }
-
-        public ArrayList<NodeImage> getImages() {
-            return images;
-        }
-
-        public void setImages(ArrayList<NodeImage> images) {
-            this.images = images;
-        }
-
-        public String getIdConcept() {
-            return idConcept;
-        }
-
-        public void setIdConcept(String idConcept) {
-            this.idConcept = idConcept;
-        }
-
-        public String getArkId() {
-            return arkId;
-        }
-
-        public void setArkId(String arkId) {
-            this.arkId = arkId;
-        }
-
-        public String getUri() {
-            return uri;
-        }
-
-        public void setUri(String uri) {
-            this.uri = uri;
-        }
-
-        public String getLocalId() {
-            return localId;
-        }
-
-        public void setLocalId(String localId) {
-            this.localId = localId;
-        }
-
-        public String getIdTerm() {
-            return idTerm;
-        }
-
-        public void setIdTerm(String idTerm) {
-            this.idTerm = idTerm;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getConceptType() {
-            return conceptType;
-        }
-
-        public void setConceptType(String conceptType) {
-            this.conceptType = conceptType;
-        }
-
-        public String getNotation() {
-            return notation;
-        }
-
-        public void setNotation(String notation) {
-            this.notation = notation;
-        }
-
-        public ArrayList<Label> getPrefLabels() {
-            return prefLabels;
-        }
-
-        public void setPrefLabels(ArrayList<Label> prefLabels) {
-            this.prefLabels = prefLabels;
-        }
-
-        public ArrayList<Label> getAltLabels() {
-            return altLabels;
-        }
-
-        public void setAltLabels(ArrayList<Label> altLabels) {
-            this.altLabels = altLabels;
-        }
-
-        public ArrayList<Label> getHiddenLabels() {
-            return hiddenLabels;
-        }
-
-        public void setHiddenLabels(ArrayList<Label> hiddenLabels) {
-            this.hiddenLabels = hiddenLabels;
-        }
-
-        public ArrayList<Label> getNote() {
-            return note;
-        }
-
-        public void setNote(ArrayList<Label> note) {
-            this.note = note;
-        }
-
-        public ArrayList<Label> getDefinitions() {
-            return definitions;
-        }
-
-        public void setDefinitions(ArrayList<Label> definitions) {
-            this.definitions = definitions;
-        }
-
-        public ArrayList<Label> getScopeNotes() {
-            return scopeNotes;
-        }
-
-        public void setScopeNotes(ArrayList<Label> scopeNotes) {
-            this.scopeNotes = scopeNotes;
-        }
-
-        public ArrayList<Label> getExamples() {
-            return examples;
-        }
-
-        public void setExamples(ArrayList<Label> examples) {
-            this.examples = examples;
-        }
-
-        public ArrayList<Label> getHistoryNotes() {
-            return historyNotes;
-        }
-
-        public void setHistoryNotes(ArrayList<Label> historyNotes) {
-            this.historyNotes = historyNotes;
-        }
-
-        public ArrayList<Label> getChangeNotes() {
-            return changeNotes;
-        }
-
-        public void setChangeNotes(ArrayList<Label> changeNotes) {
-            this.changeNotes = changeNotes;
-        }
-
-        public ArrayList<Label> getEditorialNotes() {
-            return editorialNotes;
-        }
-
-        public void setEditorialNotes(ArrayList<Label> editorialNotes) {
-            this.editorialNotes = editorialNotes;
-        }
-
-        public ArrayList<String> getBroaders() {
-            return broaders;
-        }
-
-        public void setBroaders(ArrayList<String> broaders) {
-            this.broaders = broaders;
-        }
-
-        public ArrayList<String> getNarrowers() {
-            return narrowers;
-        }
-
-        public void setNarrowers(ArrayList<String> narrowers) {
-            this.narrowers = narrowers;
-        }
-
-        public ArrayList<String> getRelateds() {
-            return relateds;
-        }
-
-        public void setRelateds(ArrayList<String> relateds) {
-            this.relateds = relateds;
-        }
-
-        public ArrayList<NodeIdValue> getCustomRelations() {
-            return customRelations;
-        }
-
-        public void setCustomRelations(ArrayList<NodeIdValue> customRelations) {
-            this.customRelations = customRelations;
-        }
-
-        public ArrayList<String> getExactMatchs() {
-            return exactMatchs;
-        }
-
-        public void setExactMatchs(ArrayList<String> exactMatchs) {
-            this.exactMatchs = exactMatchs;
-        }
-
-        public ArrayList<String> getCloseMatchs() {
-            return closeMatchs;
-        }
-
-        public void setCloseMatchs(ArrayList<String> closeMatchs) {
-            this.closeMatchs = closeMatchs;
-        }
-
-        public ArrayList<String> getBroadMatchs() {
-            return broadMatchs;
-        }
-
-        public void setBroadMatchs(ArrayList<String> broadMatchs) {
-            this.broadMatchs = broadMatchs;
-        }
-
-        public ArrayList<String> getNarrowMatchs() {
-            return narrowMatchs;
-        }
-
-        public void setNarrowMatchs(ArrayList<String> narrowMatchs) {
-            this.narrowMatchs = narrowMatchs;
-        }
-
-        public ArrayList<String> getRelatedMatchs() {
-            return relatedMatchs;
-        }
-
-        public void setRelatedMatchs(ArrayList<String> relatedMatchs) {
-            this.relatedMatchs = relatedMatchs;
-        }
-
-        public String getLatitude() {
-            return latitude;
-        }
-
-        public void setLatitude(String latitude) {
-            this.latitude = latitude;
-        }
-
-        public String getLongitude() {
-            return longitude;
-        }
-
-        public void setLongitude(String longitude) {
-            this.longitude = longitude;
-        }
-
-        public ArrayList<String> getMembers() {
-            return members;
-        }
-
-        public void setMembers(ArrayList<String> members) {
-            this.members = members;
-        }
-
-        public String getCreated() {
-            return created;
-        }
-
-        public void setCreated(String created) {
-            this.created = created;
-        }
-
-        public String getModified() {
-            return modified;
-        }
-
-        public void setModified(String modified) {
-            this.modified = modified;
-        }
-
-        public ArrayList<NodeIdValue> getAlignments() {
-            return alignments;
-        }
-
-        public void setAlignments(ArrayList<NodeIdValue> alignments) {
-            this.alignments = alignments;
-        }
-
     }
 
     public class Label {

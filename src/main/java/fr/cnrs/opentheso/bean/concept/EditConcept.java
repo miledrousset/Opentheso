@@ -506,7 +506,7 @@ public class EditConcept implements Serializable {
         if (roleOnThesoBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
-            FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
@@ -519,14 +519,19 @@ public class EditConcept implements Serializable {
                     idTheso,
                     idUser)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué !!");
-                FacesContext.getCurrentInstance().addMessage("containerIndex:formRightTab:viewTabConcept:deleteConceptForm:currentPrefLabelToDelete", msg);
+                FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         } else {
             /// suppression d'une branche
-            conceptHelper.deleteBranchConcept(connect.getPoolConnexion(),
+            if(!conceptHelper.deleteBranchConcept(connect.getPoolConnexion(),
                     conceptView.getNodeConcept().getConcept().getIdConcept(),
-                    idTheso, idUser);
+                    idTheso, idUser)){
+                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression a échoué, vérifier la poly-hiérarchie pour le concept : " 
+                        + conceptHelper.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;                
+            }
         }
 
         // mise à jour

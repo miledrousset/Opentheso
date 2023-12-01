@@ -39,6 +39,59 @@ public class TermHelper {
      * /**************************************************************
      * /*************************************************************
      */
+    
+    
+    /**
+     * Cette fonction permet de récupérer les termes synonymes pour un
+     * concept sous forme de classe NodeEM
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @return
+     * #MR
+     */
+    public ArrayList<NodeEM> getNonPreferredTerms(HikariDataSource ds,
+            String idConcept, String idThesaurus, String idLang) {
+
+        ArrayList<NodeEM> nodeEMList = null;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery( "SELECT lexical_value, created, modified, source, status, hiden " +
+                        " FROM non_preferred_term, preferred_term \n" +
+                        " WHERE " +
+                        " non_preferred_term.id_term = preferred_term.id_term" +
+                        " and" +
+                        " non_preferred_term.id_thesaurus = preferred_term.id_thesaurus" +
+                        " and" +
+                        " preferred_term.id_concept = '" + idConcept + "'" +
+                        " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'" +
+                        " and non_preferred_term.lang ='" + idLang + "'" +
+                        " order by lexical_value ASC");
+                try (ResultSet resultSet = stmt.getResultSet()){
+                        nodeEMList = new ArrayList<>();
+                        while (resultSet.next()) {
+                            NodeEM nodeEM = new NodeEM();
+                            nodeEM.setLexical_value(resultSet.getString("lexical_value"));
+                            nodeEM.setCreated(resultSet.getDate("created"));
+                            nodeEM.setModified(resultSet.getDate("modified"));
+                            nodeEM.setSource(resultSet.getString("source"));
+                            nodeEM.setStatus(resultSet.getString("status"));
+                            nodeEM.setHiden(resultSet.getBoolean("hiden"));
+                            nodeEM.setLang(idLang);
+                            nodeEMList.add(nodeEM);
+                        }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting NonPreferedTerm of Term : " + idConcept, sqle);
+        }
+        return nodeEMList;
+    }    
+    
+    
     /**
      * Cette fonction permet de savoir si le terme est un parfait doublon ou non
      */
@@ -1483,70 +1536,6 @@ public class TermHelper {
             log.error("Error while getting idTerm of idConcept : " + idConcept, sqle);
             return null;
         }
-    }
-
-    /**
-     * Cette fonction permet de récupérer les termes synonymes suivant un
-     * id_term et son thésaurus et sa langue sous forme de classe NodeEM
-     *
-     * @param ds
-     * @param idTerm
-     * @param idThesaurus
-     * @param idLang
-     * @return Objet class Concept
-     */
-    public ArrayList<NodeEM> getNonPreferredTerms(HikariDataSource ds,
-            String idTerm, String idThesaurus, String idLang) {
-
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        ArrayList<NodeEM> nodeEMList = null;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    stmt.executeQuery("SELECT lexical_value, created, modified,"
-                            + " source, status, hiden"
-                            + " FROM non_preferred_term"
-                            + " WHERE non_preferred_term.id_term = '" + idTerm + "'"
-                            + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                            + " and non_preferred_term.lang ='" + idLang + "'"
-                            + " order by lexical_value ASC");
-                    resultSet = stmt.getResultSet();
-                    if (resultSet != null) {
-                        nodeEMList = new ArrayList<>();
-                        while (resultSet.next()) {
-                            NodeEM nodeEM = new NodeEM();
-                            nodeEM.setLexical_value(resultSet.getString("lexical_value"));
-                            nodeEM.setCreated(resultSet.getDate("created"));
-                            nodeEM.setModified(resultSet.getDate("modified"));
-                            nodeEM.setSource(resultSet.getString("source"));
-                            nodeEM.setStatus(resultSet.getString("status"));
-                            nodeEM.setHiden(resultSet.getBoolean("hiden"));
-                            nodeEM.setLang(idLang);
-                            nodeEMList.add(nodeEM);
-                        }
-                    }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting NonPreferedTerm of Term : " + idTerm, sqle);
-        }
-
-        return nodeEMList;
     }
 
     /**

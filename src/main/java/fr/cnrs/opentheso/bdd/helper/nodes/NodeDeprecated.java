@@ -1,11 +1,14 @@
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
 import java.text.Normalizer;
-
+import java.util.Date;
+import lombok.Data;
 /**
  *
  * @author miledrousset
  */
+
+@Data
 public class NodeDeprecated implements Comparable {
 
     private String deprecatedId;
@@ -14,56 +17,10 @@ public class NodeDeprecated implements Comparable {
     private String replacedByLabel;
     private String note;
     private String noteLang;
+    private Date modified;
+    private String userName;
     
     public NodeDeprecated() {
-    }
-
-    public String getDeprecatedId() {
-        return deprecatedId;
-    }
-
-    public void setDeprecatedId(String deprecatedId) {
-        this.deprecatedId = deprecatedId;
-    }
-
-    public String getDeprecatedLabel() {
-        return deprecatedLabel;
-    }
-
-    public void setDeprecatedLabel(String deprecatedLabel) {
-        this.deprecatedLabel = deprecatedLabel;
-    }
-
-    public String getReplacedById() {
-        return replacedById;
-    }
-
-    public void setReplacedById(String replacedById) {
-        this.replacedById = replacedById;
-    }
-
-    public String getReplacedByLabel() {
-        return replacedByLabel;
-    }
-
-    public void setReplacedByLabel(String replacedByLabel) {
-        this.replacedByLabel = replacedByLabel;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getNoteLang() {
-        return noteLang;
-    }
-
-    public void setNoteLang(String noteLang) {
-        this.noteLang = noteLang;
     }
     
     

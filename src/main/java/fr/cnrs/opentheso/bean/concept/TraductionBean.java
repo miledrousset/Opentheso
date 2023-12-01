@@ -12,6 +12,7 @@ import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -40,7 +41,8 @@ public class TraductionBean implements Serializable {
     @Inject private PropositionBean propositionBean;
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;    
+    @Inject private CurrentUser currentUser;   
+    @Inject private LanguageBean languageBean;
 
     private String selectedLang;
     private ArrayList<NodeLangTheso> nodeLangs;
@@ -162,7 +164,7 @@ public class TraductionBean implements Serializable {
     }
 
     public void infoNoTraductionToAdd() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " Le concept est traduit déjà dans toutes les langues du thésaurus !!!");
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", languageBean.getMsg("concept.translate.isTranslatedIntoAllLang"));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
@@ -218,7 +220,7 @@ public class TraductionBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 
         
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "traduction ajoutée avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", languageBean.getMsg("concept.translate.success"));
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         reset();

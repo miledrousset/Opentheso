@@ -79,6 +79,7 @@ public class TreeGroups implements Serializable {
         dataService = null;
         selectedNode = null;
         rightBodySetting.init();
+        groupView.clear();
     }
 
     public void initialise(String idTheso, String idLang) {

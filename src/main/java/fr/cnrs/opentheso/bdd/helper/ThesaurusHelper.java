@@ -69,35 +69,25 @@ public class ThesaurusHelper {
     }  
     
     /**
-     * Retourne la liste de tous les thésaurus dans la langue sélectionnée
+     * Retourne la liste de tous les thésaurus dans la langue source de chaque thésaurus
+     * avec l'option de récupération de thésaurus privés ou pas.
      * @param ds
-     * @param idLang
+     * @param withPrivateTheso
      * @return 
      */
-    public ArrayList<NodeIdValue> getAllTheso(HikariDataSource ds, String idLang) {
+    public ArrayList<NodeIdValue> getAllTheso(HikariDataSource ds, boolean withPrivateTheso) {
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        boolean withPrivateTheso = true;
-        List<String> tabIdThesaurus = getAllIdOfThesaurus(ds, withPrivateTheso);
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                for (String idTheso : tabIdThesaurus) {
-                    NodeIdValue nodeIdValue = new NodeIdValue();
-                    nodeIdValue.setId(idTheso);
-                    nodeIdValue.setValue("");
-                    stmt.executeQuery("select title from thesaurus_label where id_thesaurus = '"
-                            + idTheso + "'" + " and lang = '" + idLang + "'");
-                    try ( ResultSet resultSet = stmt.getResultSet()) {
-                        if (resultSet.next()) {
-                            nodeIdValue.setValue(resultSet.getString("title"));
-                        }
-                        nodeIdValues.add(nodeIdValue);
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting all thesaurus : ", sqle);
+        List<String> tabIdThesaurus = getAllIdOfThesaurus(ds, withPrivateTheso);
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        String idLang;
+        for (String idTheso : tabIdThesaurus) {
+            idLang = preferencesHelper.getWorkLanguageOfTheso(ds, idTheso);
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            nodeIdValue.setId(idTheso);
+            nodeIdValue.setValue(getTitleOfThesaurus(ds, idTheso, idLang));
+            nodeIdValues.add(nodeIdValue);
         }
         return nodeIdValues;
     }
@@ -329,7 +319,7 @@ public class ThesaurusHelper {
      * @return 
      */
     public String getTitleOfThesaurus(HikariDataSource ds, String idThesaurus, String idLang) {
-        String title = null;
+        String title = "";
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select title from thesaurus_label where id_thesaurus = '"

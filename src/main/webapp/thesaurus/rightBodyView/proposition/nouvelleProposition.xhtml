@@ -93,6 +93,17 @@
             </h:panelGroup>
         </h:panelGroup>
 
+        
+
+        <!-- valider ou refuser une propostion -->
+        <h:panelGroup rendered="#{propositionBean.isSameUser()}">
+            <div class="row" style="margin-left: 15px; margin-right: 15px">
+                <div class="col-12">
+                    <h:outputText value="#{langueBean.getMsg('proposition.alertSameUser')} !! " style="font-size: 14px; font-weight: bold;color: #D32F2F"/>
+                </div>
+            </div>
+        </h:panelGroup>        
+        
         <h:panelGroup rendered="#{propositionBean.isCanMakeAction()}">
             <div class="card mb-4 py-3 border-left-success" style="margin: 10px;">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
@@ -189,7 +200,7 @@
         <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
             <p:commandButton value="#{langueBean.getMsg('candidat.close')}" icon="fas fa-undo-alt"
                              styleClass="ui-button-secondary button" style="margin-right: 10px"
-                             update="confirmDialogId" actionListener="PF('confirmDialog').hide();"
+                             update="confirmDialogId" oncomplete="PF('confirmDialog').hide();"
                              ajax="true" process="@this"/>
 
             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success"

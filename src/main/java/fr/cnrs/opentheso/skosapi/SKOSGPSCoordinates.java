@@ -5,18 +5,19 @@
  */
 package fr.cnrs.opentheso.skosapi;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  *
  * @author Quincy
  */
+@Data
+@NoArgsConstructor
 public class SKOSGPSCoordinates {
     
     String lat;
     String lon;
-
-    public SKOSGPSCoordinates() {
-        
-    }
     
     public SKOSGPSCoordinates(String lat,String lon) {
         this.lat = lat;
@@ -24,38 +25,15 @@ public class SKOSGPSCoordinates {
     }
     
     public SKOSGPSCoordinates(double lat,double lon) {
-        String la = null;
-        String lo=null;        
         try{
-            la = Double.toString(lat);
-            lo = Double.toString(lon);
-        }catch(Exception e){
-            return;
-        }
-        
-        
-        this.lat = la;
-        this.lon = lo;
+            this.lat = Double.toString(lat);
+            this.lon = Double.toString(lon);
+        }catch(Exception e){}
     }
 
-    public String getLat() {
-        return lat;
-    }
 
-    public void setLat(String lat) {
-        this.lat = lat;
+    @Override
+    public String toString() {
+        return lat + " " + lon;
     }
-
-    public String getLon() {
-        return lon;
-    }
-
-    public void setLon(String lon) {
-        this.lon = lon;
-    }
-    
-    
-    
-    
-    
 }

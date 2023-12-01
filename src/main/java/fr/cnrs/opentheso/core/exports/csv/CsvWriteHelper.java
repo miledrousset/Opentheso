@@ -132,10 +132,9 @@ public class CsvWriteHelper {
                 header.add("relatedId");
                 header.add("skos:exactMatch");
                 header.add("skos:closeMatch");
-                //TODO MILTI GPS
-                //header.add("geo:gps");
                 header.add("geo:lat");
                 header.add("geo:long");
+                header.add("geo:gps");
                 header.add("skos:member");
                 header.add("dct:created");
                 header.add("dct:modified");
@@ -278,12 +277,23 @@ public class CsvWriteHelper {
         //closeMatch
         record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch));
 
-        //geo:lat
-        //TODO MILTI GPS
-        record.add(getLatValue(skosResource.getGpsCoordinates()));
-        //geo:long
-        record.add(getLongValue(skosResource.getGpsCoordinates()));
-        //record.add(getGpsValue(skosResource.getGpsCoordinates()));
+        if (CollectionUtils.isNotEmpty(skosResource.getGpsCoordinates()) && skosResource.getGpsCoordinates().size() == 1) {
+            //geo:lat
+            record.add(getLatValue(skosResource.getGpsCoordinates().get(0)));
+            //geo:long
+            record.add(getLongValue(skosResource.getGpsCoordinates().get(0)));
+        } else {
+            //geo:lat
+            record.add("");
+            //geo:long
+            record.add("");
+        }
+        //GPS
+        if (CollectionUtils.isNotEmpty(skosResource.getGpsCoordinates()) && skosResource.getGpsCoordinates().size() > 1) {
+            record.add(getGpsValue(skosResource.getGpsCoordinates()));
+        } else {
+            record.add("");
+        }
         //skos:member
         record.add(getMemberValue(skosResource.getRelationsList()));
         //sdct:created
@@ -370,13 +380,18 @@ public class CsvWriteHelper {
                 .map(alignment -> alignment.getValue())
                 .collect(Collectors.joining(delim_multi_datas));
     }
-    //TODO MILTI GPS
-/*
-    private String getGpsValue(SKOSGPSCoordinates gpsList) {
-        return gpsList.stream()
-                .map(element -> element.getLat() + "@@" + element.getLon())
-                .collect(Collectors.joining(delim_multi_datas));
-    }*/
+
+    private String getGpsValue(List<SKOSGPSCoordinates> gpsList) {
+        if (CollectionUtils.isNotEmpty(gpsList)) {
+            StringBuilder resultat = new StringBuilder();
+            for (SKOSGPSCoordinates gps : gpsList) {
+                resultat.append(gps.toString()).append(", ");
+            }
+            return "(" + resultat.substring(0, resultat.length() - 2) + ")";
+        } else {
+            return "";
+        }
+    }
 
     public String getNotation(List<SKOSNotation> notations) {
         if (!CollectionUtils.isEmpty(notations)) {
@@ -783,7 +798,9 @@ public class CsvWriteHelper {
                 header.add("deprecatedLabel");
                 header.add("replacedBy");
                 header.add("replacedByLabel");
-
+                header.add("lastModification");
+                header.add("userName");                
+                
                 csvFilePrinter.printRecord(header);
 
                 ConceptHelper conceptHelper = new ConceptHelper();
@@ -814,6 +831,8 @@ public class CsvWriteHelper {
                         record.add(nodeDeprecated.getDeprecatedLabel());
                         record.add(nodeDeprecated.getReplacedById());
                         record.add(nodeDeprecated.getReplacedByLabel());
+                        record.add(nodeDeprecated.getModified());
+                        record.add(nodeDeprecated.getUserName());
                         csvFilePrinter.printRecord(record);
                         record.clear();
                     } catch (IOException e) {

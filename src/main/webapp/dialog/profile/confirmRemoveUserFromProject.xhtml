@@ -36,7 +36,7 @@
 
                 <p:commandButton value="#{langueBean.getMsg('profile.remove')}" styleClass="ui-button-success" 
                                  ajax="true" process="@this" icon="pi pi-check" 
-                                 update="messageIndex containerIndex"                            
+                                 update="messageIndex containerIndex:tabViewRoles"                            
                                  oncomplete="PF('confirmRemoveUserFromProject').hide();"
                                  actionListener="#{modifyRoleBean.removeUserFromProject()}" />
             </div>

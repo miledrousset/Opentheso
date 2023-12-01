@@ -7,13 +7,10 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -22,14 +19,12 @@ import java.util.logging.Logger;
 
 public class SearchCorpus implements Callable<NodeCorpus> {
 
-    private boolean haveCorpus;
     private NodeCorpus nodeCorpus;
     private NodeConcept nodeConcept;
 
     public SearchCorpus(NodeCorpus nodeCorpus, NodeConcept nodeConcept) {
         this.nodeCorpus = nodeCorpus;
         this.nodeConcept = nodeConcept;
-        haveCorpus = false;
     }
 
     @Override
@@ -38,15 +33,12 @@ public class SearchCorpus implements Callable<NodeCorpus> {
         if (nodeCorpus.isIsOnlyUriLink()) {
             if (nodeCorpus.getUriLink().contains("##id##")) {
                 nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
-                haveCorpus = true;
             }
             if (nodeCorpus.getUriLink().contains("##value##")) {
                 nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
-                haveCorpus = true;
             }
         } else {
             // recherche par Id
-
             /// pour le count par Id interne
             if (nodeCorpus.getUriCount().contains("##id##")) {
                 if (nodeCorpus.getUriCount() != null && !nodeCorpus.getUriCount().isEmpty()) {
@@ -97,16 +89,11 @@ public class SearchCorpus implements Callable<NodeCorpus> {
         if (jsonText == null) {
             return -1;
         }
-        JsonObject jsonObject;
+
         try {
             JsonReader reader = Json.createReader(new StringReader(jsonText));
-            jsonObject = reader.readObject();
-            //         System.err.println(jsonText + " #### " + nodeConcept.getConcept().getIdConcept());
-            int count = jsonObject.getInt("count");
-            if (count > 0) {
-                haveCorpus = true;
-            }
-            return count;
+            JsonObject jsonObject = reader.readObject();
+            return jsonObject.getInt("count");
         } catch (Exception e) {
             System.err.println(e + " " + jsonText + " " + nodeConcept.getConcept().getIdConcept());
             return -1;
@@ -114,8 +101,6 @@ public class SearchCorpus implements Callable<NodeCorpus> {
     }
 
     private int getCountOfResourcesFromHttp(String uri) {
-        String output;
-        String json = "";
 
         // récupération du total des notices
         try {
@@ -127,28 +112,23 @@ public class SearchCorpus implements Callable<NodeCorpus> {
             conn.setUseCaches(false);
             conn.setDoInput(true);
             conn.setDoOutput(true);
+            conn.setConnectTimeout(2000); 
             int status = conn.getResponseCode();
             if (status != 200) {
                 return -1;
             }
             InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String json = "";
+            String output;
             while ((output = br.readLine()) != null) {
                 json += output;
             }
             br.close();
             return getCountFromJson(json);
-
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
-        } catch (IOException ex) {
-            Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
         } catch (Exception ex) {
             Logger.getLogger(ConceptView.class.getName()).log(Level.SEVERE, null, ex + " " + uri);
+            return -1;
         }
-        return -1;
     }
 }

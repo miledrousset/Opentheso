@@ -8,7 +8,7 @@
 
     <context-param>
         <param-name>version</param-name>
-        <param-value>23.09.05</param-value>
+        <param-value>23.12.00</param-value>
     </context-param>
 
     <!-- thème de Primefaces omega (n'est plus supporté dans la version 10 de primefaces) -->
@@ -98,7 +98,7 @@
     -->
     <session-config>
         <session-timeout>
-            30
+            80
         </session-timeout>
     </session-config>
 

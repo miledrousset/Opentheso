@@ -1,53 +1,60 @@
-<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idSetGps" header="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}" 
-              widgetVar="setGps" width="450" showEffect="fade" modal="true" resizable="false" 
+    <p:dialog id="idSetGps" header="#{langueBean.getMsg('rightbody.concept.gps_coordinates')}"
+              widgetVar="setGps" width="450" showEffect="fade" modal="true" resizable="false"
               position="top" style="margin-top: 30px" >
-        <h:form>
+        <h:form id="form">
 
-            <p:defaultCommand target="addGpsBtn" />
-            
-            <div class="row">
-                <div class="col-12" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/> 
-                </div>
-            </div>
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Ajouter" icon="pi pi-plus" actionListener="#{conceptView.addNewGps()}"
+                                     update="containerIndex:form" ajax="true" process="@this" styleClass="ui-button-success" style="margin-right: .5rem" />
+                </p:toolbarGroup>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="Export" icon="pi pi-upload" styleClass="ui-button-help" ajax="false" />
+                </p:toolbarGroup>
+            </p:toolbar>
 
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5">
-                    <h:outputText value="Latitude : " /> 
-                </div>
-                <div class="col-7">
-                    <p:inputText value="#{gpsBean.gpsSelected.latitude}" style="width: 100%;"/>
-                </div>
-            </div>
+            <p:dataTable var="gps" value="#{conceptView.nodeConcept.nodeGps}" editable="true"
+                         style="margin-bottom:20px">
 
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5">
-                    <h:outputText value="Longitude : " /> 
-                </div>
-                <div class="col-7">
-                    <p:inputText value="#{gpsBean.gpsSelected.longitude}" style="width: 100%;"/>
-                </div>
-            </div>
+                <p:ajax event="rowEdit" listener="#{conceptView.onRowEdit}" update="messageIndex"/>
+                <p:ajax event="rowEditCancel" listener="#{conceptView.onRowCancel}" update="messageIndex"/>
 
-            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" 
-                                 styleClass="ui-button-secondary button" style="margin-right: 10px"
-                                 ajax="true" process="@form" icon="fas fa-undo-alt"                              
-                                 actionListener="PF('setGps').hide();" update="containerIndex:idSetGps"/>
+                <p:column headerText="Position">
+                    <h:outputText value="#{gps.position}"/>
+                </p:column>
 
-                <p:commandButton id="addGpsBtn" value="#{langueBean.getMsg('btnValidate')}"
-                                 update="containerIndex:formRightTab messageIndex"
-                                 ajax="true" process="@form" icon="pi pi-check" 
-                                 styleClass="ui-button-success" oncomplete="PF('setGps').hide();"
-                                 actionListener="#{gpsBean.addNewCoordinateGps()}" />
-            </div>
+                <p:column headerText="Latitude">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{gps.latitude}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:inputText id="modelInput" value="#{gps.latitude}" style="width:100%"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Longitude">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{gps.longitude}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:inputText value="#{gps.longitude}" style="width:100%" label="Name"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column style="width:6rem">
+                    <p:rowEditor editTitle="Edit Row" cancelTitle="Cancel Edit" saveTitle="Save Row"/>
+                </p:column>
+            </p:dataTable>
         </h:form>
-    </p:dialog>     
+    </p:dialog>
 </ui:fragment>

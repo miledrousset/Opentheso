@@ -71,7 +71,7 @@ public class ViewExportBean implements Serializable {
     public void clear() {
         nodePreference = null;    
         nodeIdValueOfTheso = null;            
-        csvDelimiter = null;  
+        csvDelimiter = ";";  
         formatFile = null;  
         typeSelected = null;  
         selectedExportFormat = null;  

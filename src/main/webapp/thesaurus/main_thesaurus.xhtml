@@ -7,7 +7,7 @@
 
     <div class="container-fluid col-xl-12 col-lg-12">
         <div class="card shadow mb-4">
-            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.nodeUser.isSuperAdmin())}">
+            <h:panelGroup rendered="#{currentUser.hasRoleAsSuperAdmin}">
                 <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
                     <div style="width: 90%; text-align: right;">
                         <p:column style="text-align: right">
@@ -85,7 +85,7 @@
                                              update="containerIndex" style="font-size: 14px; margin-right: 20px;"
                                              actionListener="#{viewEditorHomeBean.reset()}"/>
                             
-                            <p:commandButton value="#{langueBean.getMsg('btnValidate')}"
+                            <p:commandButton value="#{langueBean.getMsg('btnValidate')}" 
                                              update="containerIndex" styleClass="ui-button-success" icon="pi pi-check"
                                              style="font-size: 14px; margin-right: 10px;" 
                                              actionListener="#{viewEditorHomeBean.updateHomePage()}" />                                        

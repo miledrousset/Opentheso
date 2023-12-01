@@ -37,7 +37,7 @@
                                                  background-color: #{msg.getMessageColor()}; margin-bottom: 5px; text-align: justify;
                                                  text-justify: inter-word; margin-left: 5px; margin-right: 5px">
                                     <div class="col-10">
-                                        <h:outputText value="#{msg.msg}"/>
+                                        <h:outputText value="#{msg.msg}" escape="false"/>
                                     </div>
                                 </div>
                             </ui:repeat>
@@ -45,31 +45,32 @@
                     </div>
                 </div>
 
-                <div class="row" id="rowValue" style="background-color: #FFFFFF; height: 80px; margin-top: 2px; margin-left: 10px; margin-right: 10px; border: #FAFAFA">
+                <div class="row" id="rowValue" style="background-color: #FFFFFF; height: 80px; margin-top: 2px; margin-left: 5px; margin-right: 5px; border: #FAFAFA">
                     <div class="col-12">
-                        <p:inputTextarea id="float-input" value="#{candidatBean.message}"
-                                         placeholder="#{langueBean.getMsg('candidat.write_here')}"
-                                         style="width: 100%; height: 80px; resize: none; padding: 5px"/>
+                        <p:textEditor id="float-input" widgetVar="ChatCandidateEditor" value="#{candidatBean.message}" allowLinks="true" secure="false" height="80"
+                                      placeholder="#{langueBean.getMsg('candidat.write_here')}"
+                                       style="width: 100%; height: 100%; "/>                           
                     </div>
                 </div>
 
-                <div class="row" style="background-color: #FFFFFF; margin-bottom: 5px; border: #FAFAFA; margin-left: 10px; margin-right: 10px">
-                    <div class="col-12">
-                        <p:commandButton value="#{langueBean.getMsg('candidat.send')}"
-                                         style="background: #FFFFFF; color: #43B572; border-color: #43B572; float: right;"
-                                         update="tabViewCandidat:containerIndexCandidat:idDiscussion"
-                                         actionListener="#{discussionService.sendMessage()}"/>
-                    </div>
-                </div>
-
-                <div class="row" style="margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 30px ">
-                    <div class="col-6">
+                <div class="row" style="margin-top: 4.5rem; background-color: #FFFFFF; margin-bottom: 25px; border: #FAFAFA; margin-left: 15px; margin-right: 15px">
+                    
+                    <div class="col-6" style="text-align: left">
                         <p:commandButton value="#{langueBean.getMsg('candidat.show_participants')}" styleClass="ui-button-success"
                                          icon="fa-solid fa-user" update="idParticipantsList"
                                          actionListener="#{discussionService.getParticipantsInConversation()}" />
                     </div>
+                    
+                    <div class="col-3 offset-3" style=" text-align: right">
+                        <p:commandButton value="#{langueBean.getMsg('candidat.send')}"
+                                         styleClass="ui-button-success" icon="fa-solid fa-paper-plane"
+                                         update="tabViewCandidat:containerIndexCandidat:idDiscussion"
+                                         actionListener="#{discussionService.sendMessage()}"/>
+                    </div>
+
+
                     <div class="col-6" style="text-align: right">
-                        <p:commandButton disabled="true"
+                        <p:commandButton rendered="zzz" disabled="true"
                                          value="#{langueBean.getMsg('candidat.send_invitation')}" styleClass="ui-button-success" icon="fa-solid fa-paper-plane"
                                          update="idSendChatInvitation" ajax="true"
                                          oncomplete="PF('sendChatInvitation').show();" />
