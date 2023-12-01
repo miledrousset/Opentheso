@@ -6,6 +6,7 @@
 package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
@@ -17,10 +18,12 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import liquibase.util.StringUtil;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -42,7 +45,11 @@ public class NewUSerBean implements Serializable {
     private ArrayList<NodeUserRoleGroup> nodeAllRoles; 
     
     private String name;
-
+    private boolean limitOnTheso;
+    private ArrayList<NodeIdValue> listThesoOfProject;
+    private List<String> selectedThesos;
+    
+    
     @PreDestroy
     public void destroy(){
         clear();
@@ -52,7 +59,9 @@ public class NewUSerBean implements Serializable {
         passWord1 = null;
         passWord2 = null;
         selectedProject = null;
-        selectedRole = null;        
+        selectedRole = null;    
+        limitOnTheso = false;    
+        selectedThesos = null;
     }
     
     
@@ -67,6 +76,9 @@ public class NewUSerBean implements Serializable {
         passWord2 = null;
         this.selectedProject = selectedProject;
         selectedRole = null;
+        limitOnTheso = false; 
+        listThesoOfProject = null;
+        selectedThesos = null;
     }   
     
     public void initForSuperAdmin() {
@@ -76,7 +88,16 @@ public class NewUSerBean implements Serializable {
         UserHelper userHelper = new UserHelper();
         nodeAllProjects = userHelper.getAllProject(connect.getPoolConnexion());
         nodeAllRoles = userHelper.getAllRole(connect.getPoolConnexion());
-        selectedRole = null;
+        
+        if(nodeAllProjects != null && !nodeAllProjects.isEmpty())
+            selectedProject = "" + nodeAllProjects.get(0).getIdGroup();
+        else
+            selectedProject = null;
+        setSelectedRole(null);
+        selectedRole = null; 
+        limitOnTheso = false; 
+        listThesoOfProject = null;
+        selectedThesos = null;
     }       
     
     public void addNewUserBySuperAdmin(){
@@ -123,14 +144,19 @@ public class NewUSerBean implements Serializable {
             return;             
         }        
         
-        try {
-            int role = Integer.parseInt(selectedRole);
-            if(role == 1)
-                nodeUser.setSuperAdmin(true);
-        } catch (Exception e) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
+        if(StringUtil.isEmpty(selectedRole)) {
+            nodeUser.setSuperAdmin(false);
+            selectedProject = null;
+        } else {
+            try {
+                int role = Integer.parseInt(selectedRole);
+                if(role == 1)
+                    nodeUser.setSuperAdmin(true);
+            } catch (Exception e) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
         }
 
 
@@ -154,14 +180,22 @@ public class NewUSerBean implements Serializable {
 
         if( (selectedProject != null) && (!selectedProject.isEmpty()) ){
             if((selectedRole != null) && (!selectedRole.isEmpty()))
-                if(!userHelper.addUserRoleOnGroup(
-                        connect.getPoolConnexion(),
-                        idUser,
-                        Integer.parseInt(selectedRole),
-                        Integer.parseInt(selectedProject))) {
-                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant l'ajout des droits !!!");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    return;                       
+                
+                // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
+                if(limitOnTheso) {
+                    if(!userHelper.addUserRoleOnTheso(connect.getPoolConnexion(), idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
+                        return;
+                    }
+                } else {
+                    if(!userHelper.addUserRoleOnGroup(
+                            connect.getPoolConnexion(),
+                            idUser,
+                            Integer.parseInt(selectedRole),
+                            Integer.parseInt(selectedProject))) {
+                        msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant l'ajout des droits !!!");
+                        FacesContext.getCurrentInstance().addMessage(null, msg);
+                        return;                       
+                    }
                 }
         }
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Utilisateur créé avec succès !!!");
@@ -178,7 +212,21 @@ public class NewUSerBean implements Serializable {
             
         }
 
-    }      
+    }     
+    
+    public void toogleLimitTheso(){
+        if(!limitOnTheso) return;
+        /// récupérer la liste des thésaurus d'un projet
+        int idProject = -1;
+        try {
+            idProject = Integer.parseInt(selectedProject);
+        } catch (Exception e) {
+            return;
+        }
+        if(idProject == -1) return;
+        UserHelper userHelper = new UserHelper();
+        listThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idProject, connect.getWorkLanguage());
+    }
     
     public void addUser(){
         FacesMessage msg;
@@ -224,13 +272,27 @@ public class NewUSerBean implements Serializable {
             return;             
         }        
         
+        if(StringUtil.isEmpty(selectedRole)) {
+            nodeUser.setSuperAdmin(false);
+            selectedProject = null;
+        } else {
+            try {
+                int role = Integer.parseInt(selectedRole);
+                if(role == 1)
+                    nodeUser.setSuperAdmin(true);
+            } catch (Exception e) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+        }        
         
         if(!userHelper.addUser(
                 connect.getPoolConnexion(),
                 nodeUser.getName(),
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
-                false,
+                 nodeUser.isSuperAdmin(),
                 nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -245,14 +307,22 @@ public class NewUSerBean implements Serializable {
 
         if( (selectedProject != null) && (!selectedProject.isEmpty()) ){
             if((selectedRole != null) && (!selectedRole.isEmpty()))
-                if(!userHelper.addUserRoleOnGroup(
-                        connect.getPoolConnexion(),
-                        idUser,
-                        Integer.parseInt(selectedRole),
-                        Integer.parseInt(selectedProject))) {
-                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant l'ajout des droits !!!");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    return;                       
+                
+                // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
+                if(limitOnTheso) {
+                    if(!userHelper.addUserRoleOnTheso(connect.getPoolConnexion(), idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
+                        return;
+                    }
+                } else {                
+                    if(!userHelper.addUserRoleOnGroup(
+                            connect.getPoolConnexion(),
+                            idUser,
+                            Integer.parseInt(selectedRole),
+                            Integer.parseInt(selectedProject))) {
+                        msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant l'ajout des droits !!!");
+                        FacesContext.getCurrentInstance().addMessage(null, msg);
+                        return;                       
+                    }
                 }
         }
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Utilisateur créé avec succès !!!");
@@ -265,8 +335,6 @@ public class NewUSerBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex");
-            
         }
     }      
 
@@ -335,6 +403,30 @@ public class NewUSerBean implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isLimitOnTheso() {
+        return limitOnTheso;
+    }
+
+    public void setLimitOnTheso(boolean limitOnTheso) {
+        this.limitOnTheso = limitOnTheso;
+    }
+
+    public ArrayList<NodeIdValue> getListThesoOfProject() {
+        return listThesoOfProject;
+    }
+
+    public void setListThesoOfProject(ArrayList<NodeIdValue> listThesoOfProject) {
+        this.listThesoOfProject = listThesoOfProject;
+    }
+
+    public List<String> getSelectedThesos() {
+        return selectedThesos;
+    }
+
+    public void setSelectedThesos(List<String> selectedThesos) {
+        this.selectedThesos = selectedThesos;
     }
 
     

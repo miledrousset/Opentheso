@@ -28,11 +28,11 @@
                         </div>
                     </f:facet>
 
-                    <p:column width="90" headerText="URI">
+                    <p:column width="90" headerText="#{langueBean.getMsg('rightbody.conceptdialog.uri_externalresource')}">
                         <h:outputText value="#{resources.uri} (#{resources.imageName})" style="color: #43B572; font-size: 14px;"/>           
                     </p:column>
 
-                    <p:column width="10" style="color: black">
+                    <p:column width="10" style="color: black" headerText="#{langueBean.getMsg('profile.action')}">
                         <p:commandLink style="color: #FF7979" ajax="true" process="@form" 
                                        action="#{externalResources.deleteExternalResource(resources, currentUser.nodeUser.idUser)}"
                                        update="containerIndex:formRightTab containerIndex:idDeleteExternalResource messageIndex">

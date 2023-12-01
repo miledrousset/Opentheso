@@ -8,6 +8,7 @@ package fr.cnrs.opentheso.bean.group;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
+import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -19,6 +20,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -126,6 +128,10 @@ public class AddGroupBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "","Erreur interne"));
             return;
         }
+        if(roleOnThesoBean.getNodePreference().isUseArkLocal()) {
+            generateArkGroup(idGroup, titleGroup, idTheso);
+        }
+        
         treeGroups.addNewGroupToTree(idGroup, idTheso, idLang);
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
@@ -142,6 +148,39 @@ public class AddGroupBean implements Serializable {
         }
     }
 
+    /**
+     * permet de générer l'identifiant Ark, s'il n'existe pas, il sera créé,
+     * sinon, il sera mis à jour.
+     * @param idGroup
+     * @param groupLabel
+     * @param idTheso
+     */
+    public void generateArkGroup(String idGroup, String groupLabel, String idTheso) {
+        FacesMessage msg;
+        if(StringUtils.isEmpty(idGroup) || StringUtils.isEmpty(idTheso)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Pas de groupe séléctionné !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        
+        GroupHelper groupHelper = new GroupHelper();
+        groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
+        
+        if(!groupHelper.addIdArkGroup(connect.getPoolConnexion(), idTheso, idGroup, groupLabel)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", groupHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;            
+        }
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La génération de Ark a réussi !!");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("messageIndex");
+        }
+        
+    }    
+    
     
     /**
      * permet d'ajouter un sous groupe avec un type défini, le groupe père doit

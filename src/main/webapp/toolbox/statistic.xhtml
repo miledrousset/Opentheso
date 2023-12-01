@@ -33,7 +33,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected() and currentUser.hasRoleAsManager}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -54,21 +54,22 @@
                         <div class="col-12" style="height: 100%">
                             <div class="card shadow mb-4" style="height: 100%; padding: 20px; color: #000">
                                 <div class="row">
-                                    <div class="col-4" style="text-align: right; margin-top: 5px">
+                                    <div class="col-4" style="text-align: right; ">
                                         <h:outputText style="font-size: 13px; color: #000;" value="#{langueBean.getMsg('statistique.choix_mode')}"/>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-4" >
                                         <p:selectOneMenu value="#{statistiqueBean.selectedStatistiqueTypeCode}"
                                                          style="font-size: 15px; background: white; border-color: #43B572; width: 100%">
                                             <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.general')}" itemValue="0" />
                                             <f:selectItem itemLabel="#{langueBean.getMsg('statistique.mode.par_concept')}" itemValue="1" />
+                                            <p:ajax event="change" update="containerIndex" listener="#{statistiqueBean.init()}" />
                                         </p:selectOneMenu>
                                     </div>
                                     <div class="col-4" />
                                 </div>
 
                                 <div class="row" style="margin-top: 5px">
-                                    <div class="col-4" style="text-align: right; margin-top: 5px">
+                                    <div class="col-4" style="text-align: right;">
                                         <h:outputText class="control-label" style="font-size: 13px; color: #000;" 
                                                       value="#{langueBean.getMsg('statistique.choix_lang')}"/>
                                     </div>
@@ -80,7 +81,8 @@
                                         </p:selectOneMenu>
                                     </div>
                                     <div class="col-4">
-                                        <p:commandButton title="Valider" styleClass="btn btn-primary" style="height: 33px"
+                                        <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check" 
+                                                         style="height: 33px; margin-top: -15px;"
                                                          update="containerIndex:bloc1 containerIndex:bloc2 resultat2"
                                                          actionListener="#{statistiqueBean.onSelectLanguageType()}" />
                                     </div>        
@@ -88,6 +90,107 @@
                             </div>
                         </div>
 
+                            
+                    <!-- Vue résultat général -->                      
+                        <h:panelGroup id="bloc2" rendered="#{statistiqueBean.genericTypeVisible}">
+                            <div class="col-12" style="height: 100%">
+                                <div class="card shadow mb-4" style="height: 100%; padding: 20px; color: #000">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.thesaurus.name')} :"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <h:outputText style="float: left;" value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 5px">
+                                        <div class="col-6">
+                                            <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.concept.nbr')}"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <h:outputText style="float: left;" value="#{statistiqueBean.nbrCanceptByThes}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 5px">
+                                        <div class="col-6">
+                                            <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.last_modification')}"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <h:outputText style="float: left;" value="#{statistiqueBean.derniereModification}"/>
+                                        </div>
+                                    </div>
+
+                                    <p:dataTable id="resultat2" var="stat" value="#{statistiqueBean.genericStatistiques}" 
+                                                 style="margin-top: 10px" paginator="true" rows="10"
+                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
+                                                 rowsPerPageTemplate="5,10,{ShowAll|'Tous'}" lazy="false">
+
+                                        <p:column width="30" headerText="#{langueBean.getMsg('statistique.collection')}">
+                                            <h:outputText value="#{stat.collection} (#{stat.idCollection})"/>
+                                        </p:column>
+
+                                        <p:column width="10" headerText="#{langueBean.getMsg('statistique.concepts')}" style="text-align: center">
+                                            <h:outputText value="#{stat.conceptsNbr}"/>
+                                        </p:column> 
+
+                                        <p:column width="10" headerText="#{langueBean.getMsg('statistique.untranslated_terms')}" style="text-align: center">
+                                            <h:outputText value="#{stat.termesNonTraduitsNbr}"/>
+                                        </p:column> 
+
+                                        <p:column width="10" headerText="#{langueBean.getMsg('statistique.notes')}" style="text-align: center">
+                                            <h:outputText value="#{stat.notesNbr}"/>
+                                        </p:column> 
+
+                                        <p:column width="10" headerText="#{langueBean.getMsg('statistic.alignmentWikidata')}" style="text-align: center">
+                                            <h:outputText value="#{stat.wikidataAlignNbr}"/>
+                                        </p:column>
+
+                                        <p:column width="10" headerText="#{langueBean.getMsg('statistic.totalAlignment')}" style="text-align: center">
+                                            <h:outputText value="#{stat.totalAlignment}"/>
+                                        </p:column>
+
+                                        <f:facet name="footer">
+                                            <span class="p-text-bold">
+                                                <h:outputText value="#{langueBean.getMsg('graph')} : "/>
+                                                <p:commandLink onclick="PF('conceptChart').show();" 
+                                                               value="#{langueBean.getMsg('statistique.concepts')}"
+                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
+
+                                                <p:commandLink onclick="PF('termChart').show();" 
+                                                               value="#{langueBean.getMsg('statistique.untranslated_terms')}"
+                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
+
+                                                <p:commandLink onclick="PF('synonymChart').show();" 
+                                                               value="#{langueBean.getMsg('statistique.synonyms')}"
+                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
+
+                                                <p:commandLink onclick="PF('noteChart').show();" 
+                                                               value="#{langueBean.getMsg('statistique.notes')}"
+                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold;" />
+                                            </span>
+                                        </f:facet>
+                                    </p:dataTable>
+                                    <div class="row" style="margin-top: 20px">
+                                        <div class="col-12" style="text-align: right;">
+                                            <p:commandButton rendered="#{statistiqueBean.genericStatistiques.size() != 0}"
+                                                icon="pi pi-download" value="#{langueBean.getMsg('download')}" styleClass="ui-button-success"
+                                                             title="#{langueBean.getMsg('statistique.exporter_csv')}"
+                                                             update="containerIndex:bloc1 containerIndex:bloc2" style=" height: 33px;" >
+                                                <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
+                                            </p:commandButton>                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>                            
+                            
+                            
+                            
+                            
+                    <!-- Vue résultat par concept -->        
                         <h:panelGroup id="bloc1" rendered="#{statistiqueBean.conceptTypeVisible}">
                             <div class="col-12" style="height: 100%">
                                 <div class="card shadow mb-4" style="height: 100%; padding: 20px; color: #000">
@@ -136,11 +239,13 @@
 
                                     <div class="row" style="margin-top: 10px">
                                         <div class="col-12" style="text-align: right">
-                                            <p:commandButton title="Initialiser" update="containerIndex:filterParams" styleClass="btn btn-secondary"
+                                            <p:commandButton value="#{langueBean.getMsg('init')}" styleClass="ui-button-secondary button" icon="fas fa-arrows-rotate"
+                                                             update="containerIndex:filterParams"
                                                              actionListener="#{statistiqueBean.clearFilter()}" style="margin-right: 5px" />
 
-                                            <p:commandButton title="#{langueBean.getMsg('statistique.validate')}"
-                                                             update="containerIndex:resultat" styleClass="btn btn-primary"
+                                            <p:commandButton 
+                                                             value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check" 
+                                                             update="containerIndex:resultat containerIndex:commandExport containerIndex:bloc1"
                                                              actionListener="#{statistiqueBean.getStatisticByConcept()}"/>
                                         </div>
                                     </div>
@@ -180,117 +285,28 @@
                                                 icon="fa-solid fa-circle-info" styleClass="rounded-button ui-button-outlined"
                                                 update="containerIndex:idConceptStat containerIndex:conceptDdetailForm"
                                                              actionListener="#{statistiqueBean.setConceptSelected(stat)}"
-                                                             oncomplete="PF('conceptDdetail').show()" process="@this"
-                                                             />
+                                                             oncomplete="PF('conceptDdetail').show()" process="@this"/>
                                         </p:column>
                                     </p:dataTable>
 
                                     <div class="row">
-                                        <div class="col-12">
-                                            <p:commandButton title="#{langueBean.getMsg('statistique.exporter_csv')}"
-                                                             icon="fas fa-download" styleClass="btn btn-primary"
-                                                             update="containerIndex:bloc1 containerIndex:bloc2" >
+                                        <div class="col-12" style="text-align: right; margin-top: 20px;">
+                                            <p:commandButton id="commandExport" rendered="#{statistiqueBean.canceptStatistiques.size() != 0}" 
+                                                            icon="pi pi-download" value="#{langueBean.getMsg('download')}" styleClass="ui-button-success"
+                                                             title="#{langueBean.getMsg('statistique.exporter_csv')}"
+                                                             update="containerIndex:bloc1 containerIndex:bloc2" style=" height: 33px;" >
                                                 <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
-                                            </p:commandButton>
+                                            </p:commandButton>                                               
+                                            
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </h:panelGroup>
 
-                        <h:panelGroup id="bloc2" rendered="#{statistiqueBean.genericTypeVisible}">
-                            <div class="col-12" style="height: 100%">
-                                <div class="card shadow mb-4" style="height: 100%; padding: 20px; color: #000">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.thesaurus.name')}"/>
-                                        </div>
-                                        <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})"/>
-                                        </div>
-                                    </div>
-
-                                    <div class="row" style="margin-top: 5px">
-                                        <div class="col-6">
-                                            <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.concept.nbr')}"/>
-                                        </div>
-                                        <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{statistiqueBean.nbrCanceptByThes}"/>
-                                        </div>
-                                    </div>
-
-                                    <div class="row" style="margin-top: 5px">
-                                        <div class="col-6">
-                                            <h:outputText style="float: right; font-weight: bold;" value="#{langueBean.getMsg('statistique.last_modification')}"/>
-                                        </div>
-                                        <div class="col-6">
-                                            <h:outputText style="float: left;" value="#{statistiqueBean.derniereModification}"/>
-                                        </div>
-                                    </div>
-
-                                    <p:dataTable id="resultat2" var="stat" value="#{statistiqueBean.genericStatistiques}" 
-                                                 style="margin-top: 10px" paginator="true" rows="10"
-                                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} enregistrement"
-                                                 rowsPerPageTemplate="5,10,{ShowAll|'Tous'}" lazy="false">
-
-                                        <p:column width="30%" headerText="#{langueBean.getMsg('statistique.collection')}">
-                                            <h:outputText value="#{stat.collection} (#{stat.idCollection})"/>
-                                        </p:column>
-
-                                        <p:column width="30%" headerText="#{langueBean.getMsg('statistique.concepts')}">
-                                            <h:outputText value="#{stat.conceptsNbr}"/>
-                                        </p:column> 
-
-                                        <p:column width="10%" headerText="#{langueBean.getMsg('statistique.untranslated_terms')}">
-                                            <h:outputText value="#{stat.termesNonTraduitsNbr}"/>
-                                        </p:column> 
-
-                                        <p:column width="10%" headerText="#{langueBean.getMsg('statistique.notes')}">
-                                            <h:outputText value="#{stat.notesNbr}"/>
-                                        </p:column> 
-
-                                        <p:column width="10%" headerText="Align Wikidata">
-                                            <h:outputText value="#{stat.wikidataAlignNbr}"/>
-                                        </p:column>
-
-                                        <p:column width="10%" headerText="Total alignement">
-                                            <h:outputText value="#{stat.totalAlignment}"/>
-                                        </p:column>
-
-                                        <f:facet name="footer">
-                                            <span class="p-text-bold">
-                                                <h:outputText value="Graphe : "/>
-                                                <p:commandLink onclick="PF('conceptChart').show();" 
-                                                               value="#{langueBean.getMsg('statistique.concepts')}"
-                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
-
-                                                <p:commandLink onclick="PF('termChart').show();" 
-                                                               value="#{langueBean.getMsg('statistique.untranslated_terms')}"
-                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
-
-                                                <p:commandLink onclick="PF('synonymChart').show();" 
-                                                               value="#{langueBean.getMsg('statistique.synonyms')}"
-                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold" />
-
-                                                <p:commandLink onclick="PF('noteChart').show();" 
-                                                               value="#{langueBean.getMsg('statistique.notes')}"
-                                                               style="color: #f47b2a; margin-left: 10px; font-weight: bold;" />
-                                            </span>
-                                        </f:facet>
-                                    </p:dataTable>
-
-                                    <p:commandButton icon="fa fa-fw fa-download" styleClass="btn btn-success"
-                                                     update="containerIndex:bloc1 containerIndex:bloc2" style="margin-top: 10px" >
-                                        <p:fileDownload value="#{statistiqueBean.exportStatiqituque()}" />
-                                    </p:commandButton>
-                                </div>
-                            </div>
-                        </h:panelGroup>
                     </div>
 
                     <ui:include src="../commun/footer.xhtml" />
-
                     <p:dialog id="noteChartID" widgetVar="noteChart" modal="true" resizable="false" 
                               position="top" width="600" style="margin-top: 50px" header="Diagramme des notes" >
                         <div class="card">

@@ -327,7 +327,7 @@ public class CandidatService implements Serializable {
                     candidatSelected.getLang()));
 
             candidatSelected.setEmployePourList(termeDao.getEmployePour(connection,
-                    candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus(),
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
                     candidatSelected.getLang()));
              
             candidatSelected.setNodeNotes(noteDao.getNotesCandidat(connection, candidatSelected.getIdConcepte(),
@@ -345,7 +345,7 @@ public class CandidatService implements Serializable {
             candidatSelected.setTraductions(new TermHelper().getTraductionsOfConcept(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
                     term -> new TraductionDto(term.getLang(),
-                            term.getLexicalValue())).collect(Collectors.toList()));
+                            term.getLexicalValue(), term.getCodePays())).collect(Collectors.toList()));
 
             candidatSelected.setMessages(messageDao.getAllMessagesByCandidat(connection, candidatSelected.getIdConcepte(),
                     candidatSelected.getIdThesaurus(), candidatSelected.getUserId()));

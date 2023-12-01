@@ -65,7 +65,7 @@ public class RelationsHelper {
                 stmt.executeQuery("select * from concept_type"
                         + " where "
                         + " code = '" + conceptType + "'" 
-                        + " and id_theso = '" +  idTheso + "'"
+                        + " and id_theso in ('" + idTheso + "', 'all')"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
@@ -930,37 +930,21 @@ public class RelationsHelper {
     public ArrayList<String[]> getListIdAndRoleOfRT(HikariDataSource ds,
             String idConcept, String idThesaurus) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         ArrayList<String[]> list = new ArrayList<>();
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select id_concept2,role from hierarchical_relationship"
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select id_concept2,role from hierarchical_relationship"
                             + " where id_thesaurus = '" + idThesaurus + "'"
                             + " and id_concept1 = '" + idConcept + "'"
                             + " and (role = '" + "RT" + "'"
-                            + " or role = 'RHP' or role = 'RPO')";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+                            + " or role = 'RHP' or role = 'RPO')");
+                try (ResultSet resultSet = stmt.getResultSet()){
                     while (resultSet.next()) {
                         String tab[] = {resultSet.getString("id_concept2"), resultSet.getString("role")};
                         list.add(tab);
                     }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -2238,52 +2222,37 @@ public class RelationsHelper {
     public ArrayList<String> getListIdBT(HikariDataSource ds,
             String idConcept, String idThesaurus) {
 
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
         ArrayList<String> listIdBT = null;
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select id_concept2,role from hierarchical_relationship"
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeQuery("select id_concept2,role from hierarchical_relationship"
                             + " where id_thesaurus = '" + idThesaurus + "'"
                             + " and id_concept1 = '" + idConcept + "'"
-                            + " and role LIKE 'BT%'";
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
+                            + " and role LIKE 'BT%'");
+
+                try (ResultSet resultSet = stmt.getResultSet()){
                     if (resultSet != null) {
                         listIdBT = new ArrayList<>();
                         while (resultSet.next()) {
                             listIdBT.add(resultSet.getString("id_concept2"));
                         }
                     }
-                } catch (Exception ex) {
-                    log.error("Error while getting Liste ID of BT Concept : " + idConcept, ex);
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
+                  /*  if (listIdBT != null) {
+                        if (listIdBT.contains(idConcept)) {
+                            /// relation en boucle à supprimer
+                            deleteThisRelation(ds, idConcept, idThesaurus, "BT", idConcept);
+                            deleteThisRelation(ds, idConcept, idThesaurus, "NT", idConcept);
+                            getListBT(ds, idConcept, idThesaurus);
+                        }
+                    }*/                    
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while getting Liste ID of BT Concept : " + idConcept, sqle);
         }
-        if (listIdBT != null) {
-            if (listIdBT.contains(idConcept)) {
-                /// relation en boucle à supprimer
-                deleteThisRelation(ds, idConcept, idThesaurus, "BT", idConcept);
-                deleteThisRelation(ds, idConcept, idThesaurus, "NT", idConcept);
-                getListBT(ds, idConcept, idThesaurus);
-            }
-        }
+
         return listIdBT;
     }
 
@@ -2928,6 +2897,40 @@ public class RelationsHelper {
         }
         return existe;
     }
+    
+    /**
+     * Cette fonction permet de savoir si le Concept au moins 2 relations BT (terme
+     * générique)
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return Objet class Concept
+     */
+    public boolean isConceptHaveManyRelationBT(HikariDataSource ds,
+            String idConcept, String idThesaurus) {
+
+        boolean existe = false;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select count(id_concept1)" +
+                        " from hierarchical_relationship" +
+                        " where id_thesaurus = '" + idThesaurus + "'" +
+                        " and id_concept1 = '" + idConcept + "'" +
+                        " and role LIKE 'BT%'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        if(resultSet.getInt("count") > 1)
+                            existe = true;
+                    }
+                }
+            } 
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while asking if relation BT exist of Concept : " + idConcept, sqle);
+        }
+        return existe;
+    }    
 
     /**
      * Cette fonction permet de savoir si le Concept1 a une relation NT avec le

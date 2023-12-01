@@ -51,6 +51,11 @@ import org.eclipse.rdf4j.rio.Rio;
  */
 public class RestRDFHelper {
 
+    private enum Choix {
+            CONCEPT,
+            GROUP,
+            THESO
+        };
     /**
      * permet de retourner l'URL Opentheso depui un Identifiant ARK
      * ceci pour remplacer la redirection faite par le serveur ARK
@@ -65,32 +70,67 @@ public class RestRDFHelper {
         }
         
         ConceptHelper conceptHelper = new ConceptHelper();
-        
+        Choix choix;
+        // récupération de l'IdTheso d'après la table Concept
         String idTheso = conceptHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);
-       
-        if(StringUtils.isEmpty(idTheso)){
+        choix = Choix.CONCEPT;
+        
+        if(StringUtils.isEmpty(idTheso)) {
             // cas où c'est l'identifiant d'un thésaurus
             ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-            idTheso = thesaurusHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);  
-            if(StringUtils.isEmpty(idTheso)){    
-                return null;
-            }
-            NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
-            if (nodePreference == null) {
-                return null;
-            }
-            return nodePreference.getCheminSite() + "?idt=" + idTheso;
-        } else {
-            String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk, idTheso);    
-            if(StringUtils.isEmpty(idConcept)){    
-                return null;
-            }     
-            NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
-            if (nodePreference == null) {
-                return null;
-            }
-            return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;            
+            idTheso = thesaurusHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);
+            choix = Choix.THESO;
         }
+        
+        if(StringUtils.isEmpty(idTheso)) {
+            // cas où c'est l'identifiant d'un groupe
+            GroupHelper groupHelper = new GroupHelper();
+            idTheso = groupHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);  
+            choix = Choix.GROUP;
+        }        
+        if(StringUtils.isEmpty(idTheso)){
+            return null;
+        }
+        
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        switch (choix) {
+            case CONCEPT:
+                String idConcept = conceptHelper.getIdConceptFromArkId(ds, naan + "/" + idArk, idTheso);    
+                if(StringUtils.isEmpty(idConcept)){    
+                    return null;
+                }     
+                if (nodePreference == null) {
+                    return null;
+                }
+                return nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idTheso;                  
+
+            case GROUP:
+                GroupHelper groupHelper = new GroupHelper();
+                String idGroup = groupHelper.getIdGroupFromArkId(ds, naan + "/" + idArk, idTheso);    
+                if(StringUtils.isEmpty(idGroup)){    
+                    return null;
+                }     
+                if (nodePreference == null) {
+                    return null;
+                }
+                return nodePreference.getCheminSite() + "?idg=" + idGroup + "&idt=" + idTheso;                  
+            case THESO:
+                // cas où c'est l'identifiant d'un thésaurus
+                ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+                idTheso = thesaurusHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);  
+                if(StringUtils.isEmpty(idTheso)){    
+                    return null;
+                }
+
+                if (nodePreference == null) {
+                    return null;
+                }
+                return nodePreference.getCheminSite() + "?idt=" + idTheso;                
+              
+            default:
+                return null;
+        }
+
     }
     
     public String getAllLinkedConceptsWithOntome__(HikariDataSource ds, String idTheso) {
@@ -1073,7 +1113,7 @@ public class RestRDFHelper {
             // construire le tableau JSON avec le chemin vers la racine pour chaque Id
 
 
-            paths = pathHelper.getPathOfConcept2(ds, idConcept, idTheso);
+            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
                 pathHelper.getPathWithLabelAsJson(ds,
                         paths,
@@ -1166,7 +1206,7 @@ public class RestRDFHelper {
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
         for (String idConcept : nodeIds) {
-            paths = pathHelper.getPathOfConcept2(ds, idConcept, idTheso);
+            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
                 pathHelper.getPathWithLabelAsJson(ds,
                         paths,
@@ -1419,7 +1459,7 @@ public class RestRDFHelper {
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
         for (String idConcept : branchs) {
-            paths = pathHelper.getPathOfConcept2(ds, idConcept, idTheso);
+            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
                 pathHelper.getPathWithLabelAsJson(ds,
                         paths,

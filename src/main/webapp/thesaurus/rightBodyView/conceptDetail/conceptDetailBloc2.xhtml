@@ -18,8 +18,7 @@
                         <i class="fas fa-level-up-alt" style="color: #78261f; margin-right: 10px"/>
                     </div>    
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                        
-                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                  or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                        <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_generic_relation')}"
@@ -75,8 +74,8 @@
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: end">
                         <i class="fas fa-level-down-alt" style="color: #78261f; margin-right: 10px"/>
                     </div>
-                    <div class="col-xl-9 col-lg-7 col-md-7 col-sm-7" style="margin-left: -10px">
-                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                    <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                        <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_narrower_relation')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_add_narrower_relation')}"
@@ -155,7 +154,7 @@
                         <i class="fas fa-arrows-alt-h" style="color: #78261f; margin-right: 10px"/>
                     </div>
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
-                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                        <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_related_relation')}" 
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_add_related_relation')}"
@@ -207,7 +206,7 @@
                             </div>
 
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                
-                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addCustomRelation')}" 
                                                 title="#{langueBean.getMsg('rightbody.concept.addCustomRelation')}"
@@ -228,8 +227,7 @@
 
                                 <h:panelGroup rendered="#{conceptView.nodeConcept.nodeCustomRelations.size() != 0}" > 
                                     <ui:repeat var="customRelation" value="#{conceptView.nodeConcept.nodeCustomRelations}" varStatus="status2">
-                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                                  or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                                        <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                                             <p:spacer width="1" rendered="#{status2.first}" />
                                             <p:spacer width="39" rendered="#{!status2.first}" />
                                         </h:panelGroup>
@@ -255,8 +253,7 @@
 
     </h:panelGroup>
 
-
-    <!-- Pour afficher les realtions réciproques pour les relations personnalisées -->
+    <!-- Pour afficher les relations réciproques pour les relations personnalisées -->
     <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeConcept.concept.conceptType != 'concept' and conceptView.nodeCustomRelationReciprocals != null}" >
 
         <!-- Custom relation  -->
@@ -272,8 +269,7 @@
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                
                                 <h:panelGroup rendered="#{conceptView.nodeCustomRelationReciprocals.size() != 0}" > 
                                     <ui:repeat var="customRelation" value="#{conceptView.nodeConcept.nodeCustomRelations}" varStatus="status2">
-                                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                                  or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                                        <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                                             <p:spacer width="1" rendered="#{status2.first}" />
                                             <p:spacer width="39" rendered="#{!status2.first}" />
                                         </h:panelGroup>
@@ -305,8 +301,6 @@
 
 
 
-
-
     <!-- ligne Traductions -->  
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
@@ -321,11 +315,11 @@
                         <i class="fa fa-language" style="color: #78261f; margin-right: 10px" />
                     </div>  
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                    
-                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                  or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                        <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
                                       icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;">
 
-                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" actionListener="#{traductionBean.reset()}"
+                            <p:menuitem 
+                                        value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" actionListener="#{traductionBean.reset()}"
                                         action="#{traductionBean.setLangWithNoTraduction()}"
                                         oncomplete="PF('addTraduction').show();" update="containerIndex:idAddTraduction" icon="fas fa-plus" />
 
@@ -345,8 +339,7 @@
 
                         <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}" > 
                             <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
-                                <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                                <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                                     <p:spacer width="3" rendered="#{status2.first}" />
                                     <p:spacer width="41" rendered="#{!status2.first}" />
                                 </h:panelGroup>

@@ -14,7 +14,7 @@
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f !important;"/>
                     </div> 
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                        <h:panelGroup rendered="#{currentUser.isCanModify()}">
+                        <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                             <p:menuButton 
                                 icon="fas fa-cog" style="margin-top: -4px; font-size: 10px !important; color: #f47b2a">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.rename_concept')}"
@@ -58,7 +58,7 @@
                                           style="font-size: 14px; color: white; background-color: #C63632;"/> 
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">     
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                            <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
                                           icon="fas fa-cog" style="background: none; border: none; color: #000; box-shadow: none;">
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.replace_with2')}" update="containerIndex:idReplaceBy"
@@ -101,7 +101,7 @@
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_replace')}"
-                                          style="font-size: 14px; margin-right: 10px; color: white; background-color: #f47b2a;"/>
+                                          styleClass="mr-2" style="color: white; background-color: #f47b2a; padding: 0.3rem; border-style:dashed" />
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
                             <ui:repeat var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
@@ -131,7 +131,7 @@
                                       style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                     </div>
                     <div class="col-xl-8 col-lg-7 col-md-5 col-sm-5" style="margin-left: -10px">
-                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
+                        <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                             <p:menuButton icon="fas fa-cog" style="margin-top: -4px;">
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_synonym')}"
@@ -197,10 +197,8 @@
                                       style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 10px"/>
                     </div>
                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
-                                          icon="fas fa-cog" style="margin-top: -4px">
-
+                        <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
+                            <p:menuButton icon="fas fa-cog" style="margin-top: -4px">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_to_group')}" 
                                             action="#{addConceptToGroupBean.init()}" icon="fas fa-plus"
                                             oncomplete="PF('addConceptToGroup').show();" 
@@ -211,16 +209,16 @@
                                             oncomplete="PF('removeConceptFromGroup').show();"
                                             update="containerIndex:idRemoveConceptFromGroup" icon="fas fa-minus"
                                             disabled="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}"/>
-
+                                <p:separator style="height: 10px;"/>
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_concept_to_group')}" 
                                             action="#{removeConceptAndChildFromGroupBean.init()}"
                                             oncomplete="PF('addConceptAndChildToGroup').show();"
-                                            update="containerIndex:idAddConceptAndChildToGroup" icon="fas fa-plus" />
+                                            update="containerIndex:idAddConceptAndChildToGroup" icon="fa-regular fa-square-plus" />
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.remove_concept_fom_group')}" 
                                             action="#{removeConceptAndChildFromGroupBean.init()}"
                                             oncomplete="PF('removeConceptAndChildFromGroup').show();"
-                                            update="containerIndex:idRemoveConceptAndChildFromGroup" icon="fas fa-minus"
+                                            update="containerIndex:idRemoveConceptAndChildFromGroup" icon="fa-regular fa-square-minus"
                                             disabled="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}" />
                             </p:menuButton>
                         </h:panelGroup>
@@ -259,10 +257,8 @@
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 10px"/>
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                            <h:panelGroup rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                      or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}">
-                                <p:menuButton rendered="#{currentUser.nodeUser != null and (roleOnTheso.isManagerOnThisTheso()
-                                                          or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                            <h:panelGroup >
+                                <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
                                               icon="fas fa-cog" style="margin-top: -4px">
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addConceptTofacet')}"
@@ -283,9 +279,11 @@
                             <h:panelGroup rendered="#{conceptView.nodeFacets.size() != 0}" > 
                                 <ui:repeat var="facets" value="#{conceptView.nodeFacets}" varStatus="status">
                                     <p:commandLink id="commandFacets" rendered="#{facets.value != ''}"
+                                                   action="#{tree.selectThisFacet(facets.id)}"
                                                    value="#{facets.value}" ajax="true"
                                                    update="containerIndex indexTitle"/>
                                     <p:commandLink rendered="#{facets.value == ''}"
+                                                   action="#{tree.selectThisFacet(facets.id)}"
                                                    value="(#{facets.id})" ajax="true"
                                                    update="containerIndex indexTitle" />                                        
                                     <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
@@ -329,19 +327,19 @@
             </div>     
 
             <!-- ligne Corpus liés --> 
-            <h:panelGroup rendered="#{conceptView.nodeCorpuses != null and conceptView.haveCorpus}">
+            <h:panelGroup id="corpusView" rendered="#{conceptView.thesoHaveActiveCorpus()}">
                 <div class="list-group-item list-group-item-action" style="padding-top: 5px; margin-bottom: -5px">
                     <div class="row" style="vertical-align: central; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value=" #{langueBean.getMsg('rightbody.concept.linked_corpus')}" 
-                                          title="#{langueBean.getMsg('rightbody.concept.linked_corpus')}"
-                                          style="font-size: 14px; font-weight: bold; color: #8f8f8f; margin-right: 10px"/>
+                            <p:commandButton styleClass="mr-2" value="#{langueBean.getMsg('rightbody.concept.showLinked_corpus')}" style="background-color: #f47b2a" 
+                                             actionListener="#{conceptView.searchCorpus()}"     
+                                        update="containerIndex:rightTab:corpusView" >
+                                
+                            </p:commandButton>
 
-                            <p:commandButton rendered="#{user.nodeUser != null}" icon="fas fa-cog fa-xs" 
-                                             style="color: #F7A269; font-size: 14px; margin-left: 6px; margin-right: 6px" />
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                            <h:panelGroup rendered="#{conceptView.nodeCorpuses.size() != 0}">
+                            <h:panelGroup rendered="#{conceptView.haveCorpus}">
                                 <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
                                     <h:panelGroup rendered="#{(corpus.count != 0 and corpus.count!= -1) or (corpus.isOnlyUriLink)}">
                                         <div class="row">
@@ -366,6 +364,10 @@
                                     </h:panelGroup> 
                                 </ui:repeat>
                             </h:panelGroup> 
+                            <h:panelGroup rendered="#{!conceptView.haveCorpus}">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.no_value')}" 
+                                              style="font-size: 14px; color: grey; font-style: italic " />                            
+                            </h:panelGroup>
                         </div>
                     </div>
                 </div>

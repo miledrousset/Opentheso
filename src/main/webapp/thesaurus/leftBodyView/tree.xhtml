@@ -37,10 +37,10 @@
                                 oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
                                 process="@this"
                                 rendered="#{(currentUser.nodeUser != null) and 
-                                            (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"/>
+                                            (currentUser.hasRoleAsManager)}"/>
                     
                     <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
-                                            and (roleOnTheso.isManagerOnThisTheso()or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
+                                            and (currentUser.hasRoleAsManager)}"
                                 value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
                                 update="containerIndex messageIndex" icon="far fa-window-close" />
 

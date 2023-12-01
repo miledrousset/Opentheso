@@ -33,7 +33,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected() and currentUser.hasRoleAsAdmin}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -180,7 +180,7 @@
                                     <p:panel style="border-color: transparent">
                                         <div class="row" style="height: 32px; background: #ECF8F1 !important; margin-left: 5px; margin-right: 5px">
                                             <div class="col-6" style="padding-top: 3px">
-                                                <h:outputText value="#{langueBean.getMsg('setting.localArkServer')}" style="font-size: 14px; font-weight: bold; color: #f47b2a !important;"
+                                                <h:outputText value="#{langueBean.getMsg('setting.localArkServer')} *" style="font-size: 14px; font-weight: bold; color: #f47b2a !important;"
                                                               title="#{langueBean.getMsg('setting.localArkServerTooltip')}"/>
                                             </div>
                                             <div class="col-6" style="text-align: right; padding-top: 3px">
@@ -250,8 +250,21 @@
                                                         <p:toggleSwitch value="#{preferenceBean.nodePreference.uppercase_for_ark}" style="font-size: 12px;" />
                                                     </div>
                                                 </div>
-                                            </div>                                            
-
+                                            </div>            
+                                            <div class="list-group-item list-group-item-action">
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-9 offset-3" style=" margin-top: 2px;">
+                                                        <h:outputText value="(*) #{langueBean.getMsg('setting.localArkInfo')}"
+                                                                      style="font-style: italic" />
+                                                    </div>
+                                                </div>
+                                            </div>    
+                                            <div class="row" style="padding: 3px;">
+                                                <div class="col-9 offset-3" style="text-align: left;">
+                                                    <p:graphicImage value="/resources/img/local_ark_info.png" alt="/resources/img/local_ark_info.png"  
+                                                                    style="height: 150px; " />
+                                                </div>                                              
+                                            </div>
                                             <!-- size of Id Ark -->
                                             <div class="row" style="padding: 3px;">
                                                 <div class="col-11" style="text-align: right; margin-top: 2px;">

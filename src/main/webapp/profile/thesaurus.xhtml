@@ -33,7 +33,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected() and currentUser.hasRoleAsSuperAdmin}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -69,19 +69,24 @@
                                         </div>
                                     </f:facet>
 
-                                    <p:column width="100px" headerText="Id" sortBy="#{listTheso.idThesaurus}" >
+                                    <p:column width="10" headerText="Id" sortBy="#{listTheso.idThesaurus}" >
                                         <h:outputText value="#{listTheso.idThesaurus}" style="font-weight: bold"/>
                                     </p:column>
 
-                                    <p:column headerText="#{langueBean.getMsg('profile.name')}" sortBy="#{listTheso.thesaurusName}" >
-                                        <h:outputText value="#{listTheso.thesaurusName}"/>
+                                    <p:column width="40" headerText="#{langueBean.getMsg('menu.thesaurus')}" sortBy="#{listTheso.thesaurusName}" >
+                                        <h:outputText rendered="#{!listTheso.privateTheso}" value="#{listTheso.thesaurusName}"/>
+                                        <h:outputText rendered="#{listTheso.privateTheso}" value="#{listTheso.thesaurusName}" style="color: red; font-style: italic"/>
                                     </p:column>
 
-                                    <p:column width="250px" headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
+                                    <p:column width="50" headerText="#{langueBean.getMsg('profile.project')}" sortBy="#{listTheso.groupName}">
                                         <h:outputText value="#{listTheso.groupName}"/>
                                     </p:column>
+                                    
+                                    <p:column width="10" headerText="#{langueBean.getMsg('toolbox.publicPrivate')}">
+                                        <p:toggleSwitch disabled="true" value="#{listTheso.privateTheso}"/>
+                                    </p:column>                                    
 
-                                    <p:column width="60px" headerText="Action"> 
+                                    <p:column width="1" headerText="Action" style="text-align: center"> 
 
                                         <p:commandButton rendered="#{currentUser.nodeUser.idUser != listUser.idUser}"
                                                          icon="fas fa-people-carry" styleClass="edit-button rounded-button"

@@ -21,7 +21,7 @@
         }
     </style>
 
-    <p:toolbar style="margin: 20px">
+    <p:toolbar style="margin-left: 20px; margin-right: 20px;">
         <p:toolbarGroup align="center">
             <p:commandButton value="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" 
                              icon="fa-solid fa-gear" styleClass="ui-button-success"
@@ -45,9 +45,10 @@
         </p:toolbarGroup>
     </p:toolbar>
 
+    
+    <!-- interface de visualisation des concepts à aligner -->    
     <h:panelGroup rendered="#{alignmentBean.isAllAlignementVisible()}">
-        <div class="card mb-4 py-3 border-left-success" style="margin: 20px; border-color: #43B572">
-
+        <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; margin-left: 20px; margin-right: 20px; border-color: #43B572">
             <p:dataTable var="alignement" value="#{alignmentBean.allignementsList}"
                          filteredValue="#{alignmentBean.filteredAlignement}" size="small"
                          widgetVar="datatable" styleClass="products-table .ui-datatable-hor-scroll"
@@ -75,8 +76,8 @@
                 </f:facet>
 
                 <p:headerRow field="idConceptOrig" expandable="true" expanded="true">
-                    <p:column colspan="6" style="background-color: #ecf8f1; border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
-                        <h:outputText styleClass="ml-2" value="#{alignement.labelConceptOrig}"/>
+                    <p:column colspan="6" style=" border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                        <h:outputText styleClass="ml-2" value="#{alignement.labelConceptOrig} (#{alignement.idConceptOrig})"/>
                     </p:column>
                 </p:headerRow>
 
@@ -141,7 +142,7 @@
                 </p:summaryRow>
 
                 <f:facet name="footer">
-                    <span class="p-text-bold">
+                    <span class="p-text-bold" >
                         <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
                         <h:outputText value="#{alignmentBean.getTotalAlignements()}" style="font-size: 16px; color: #f47b2a"/>
                     </span>
@@ -150,6 +151,9 @@
         </div>
     </h:panelGroup>
 
+    
+    
+    <!-- interface de validation pour l'alignement automatique -->
     <h:panelGroup rendered="#{alignmentBean.isPropositionAlignementVisible()}">
         <div class="card mb-4 py-3 border-left-success" style="margin: 20px; border-color: #43B572">
             <p:dataTable id="checkboxDT" var="alignement" value="#{alignmentBean.allAlignementFound}"
@@ -198,7 +202,7 @@
                         <h:outputText value="#{langueBean.getMsg('alignment.totalFoundFor')} (#{alignement.concept_target}) : #{alignmentBean.getTotalCount(alignement.internal_id_concept)}"/>
                     </p:column>
                     <p:column  style="background-color: #ecf8f1; border-top: 1px solid #43B572;border-bottom: 1px solid #43B572; color: #143a1e; text-align: right">
-                        <p:commandButton value="Valider"
+                        <p:commandButton value="#{langueBean.getMsg('statistique.validate')}"
                                          update=":containerIndex:addAlignementID"
                                          actionListener="#{alignmentBean.addAlignementByConcept(alignement)}"
                                          styleClass="rounded-button ui-button-outlined"

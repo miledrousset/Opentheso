@@ -333,6 +333,21 @@
                             </p:selectOneMenu>
                         </div>
                     </div>
+                    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+                        <div class="col-3" style="text-align: right">
+                            <h:outputText value="Délimiteur Csv" style="color: #000" />
+                        </div>
+                        <div class="col-5">
+                            <p:selectOneMenu value="#{viewExportBean.csvDelimiter}"
+                                             styleClass="selectOneMenu_custom" panelStyleClass="selectOneMenu_panelStyle_custom"
+                                             style="width: 100%; background: none;  box-shadow: none; ">
+                                <f:selectItem itemLabel=";" itemValue=";" />
+                                <f:selectItem itemLabel="," itemValue="," />
+                                <f:selectItem itemLabel="\t" itemValue="\t" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>                    
+                    
                 </h:panelGroup>
 
                 
@@ -382,6 +397,9 @@
                                          icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                          actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
                                          update="containerIndex"/>
+                        
+                        
+                      
                         
                         <p:commandButton value="#{langueBean.getMsg('candidat.export')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"

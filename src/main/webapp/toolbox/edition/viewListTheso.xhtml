@@ -43,6 +43,7 @@
                              resizableColumns="true" scrollHeight="450" reflow="true"
                              paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom"
                              emptyMessage="#{langueBean.getMsg('toolbox.noThesaurus')}"
+                             
                              stripedRows="true"
                              style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
@@ -52,10 +53,10 @@
                         </div>
                     </f:facet>
 
-                    <p:column width="10" headerText="Id" filterBy="#{listTheso.id}" sortBy="#{listTheso.id}">
+                    <p:column width="10" headerText="Id" filterBy="#{listTheso.id}" sortBy="#{listTheso.id}" filterMatchMode="contains">
                         <h:outputText value="#{listTheso.id}" style="font-size: 14px"/>
                     </p:column>                                
-                    <p:column width="60" headerText="#{langueBean.getMsg('statistique.thesaurus.name')}" filterBy="#{listTheso.value}" sortBy="#{listTheso.value}">
+                    <p:column width="60" headerText="#{langueBean.getMsg('statistique.thesaurus.name')}" filterBy="#{listTheso.value}" sortBy="#{listTheso.value}" filterMatchMode="contains">
                         <h:outputText value="#{listTheso.value}" style="font-size: 14px"/>
                     </p:column>
 
@@ -95,14 +96,14 @@
                         </p:menuButton>
                     </p:column>
 
-                    <p:column width="10" headerText="#{langueBean.getMsg('candidat.edit')}" style="margin-top: 5px" >
+                    <p:column width="5" headerText="#{langueBean.getMsg('candidat.edit')}" style="margin-top: 5px" >
                         <p:commandButton icon="fa-solid fa-pencil" styleClass="rounded-button ui-button-outlined"
                                          update="containerIndex" ajax="true" process="@this" style="color: #f47b2a"
                                          actionListener="#{editThesoBean.init(listTheso)}"
                                          action="#{viewEditionBean.setIsViewModifyTheso(true)}"/>
                     </p:column>
 
-                    <p:column width="10" headerText="#{langueBean.getMsg('candidat.remove')}" style="margin-top: 5px">
+                    <p:column width="5" headerText="#{langueBean.getMsg('candidat.remove')}" style="margin-top: 5px">
                         <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger" 
                                          update="idConfirmDelete" process="@this" ajax="true" 
                                          actionListener="#{deleteThesoBean.confirmDelete(listTheso, selectedTheso.currentIdTheso)}"

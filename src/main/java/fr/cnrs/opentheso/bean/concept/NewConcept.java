@@ -275,8 +275,6 @@ public class NewConcept implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le top concept a bien été ajouté");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-  //      PrimeFaces.current().executeScript("PF('addTopConcept').hide();");
-
         tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang, notation);
         tree.expandTreeToPath(idNewConcept, idTheso, idLang);
 

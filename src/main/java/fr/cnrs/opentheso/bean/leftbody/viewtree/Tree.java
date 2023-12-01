@@ -30,10 +30,12 @@ import java.util.List;
 import javax.annotation.PreDestroy;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.protocol.RequestContent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
@@ -147,7 +149,7 @@ public class Tree implements Serializable {
     private boolean addFirstNodes() {
         ConceptHelper conceptHelper = new ConceptHelper();
         TreeNodeData data;
-
+        FacetHelper facetHelper = new FacetHelper();
         // la liste est triée par alphabétique ou notation
         ArrayList<NodeConceptTree> nodeConceptTrees
                 = conceptHelper.getListOfTopConcepts(connect.getPoolConnexion(),
@@ -168,11 +170,27 @@ public class Tree implements Serializable {
                     true,//isTopConcept
                     "topTerm"
             );
-            if (nodeConceptTree.isHaveChildren()) {
-                dataService.addNodeWithChild("concept", data, root);
-            } else {
-                dataService.addNodeWithoutChild("file", data, root);
+            if (conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso,
+                    nodeConceptTree.getIdConcept())) {
+                if(nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep"))                 
+                    dataService.addNodeWithChild("deprecated", data, root);
+                else
+                    dataService.addNodeWithChild("concept", data, root);
+                continue;
+            }            
+            
+            if (facetHelper.isConceptHaveFacet(connect.getPoolConnexion(), nodeConceptTree.getIdConcept(), idTheso)) {
+                if(nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) 
+                    dataService.addNodeWithChild("deprecated", data, root);
+                else
+                    dataService.addNodeWithChild("concept", data, root);
+                continue;
             }
+            
+            if(nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) 
+                dataService.addNodeWithoutChild("deprecated", data, root);
+            else
+                dataService.addNodeWithoutChild("file", data, root);          
         }
 
         return true;
@@ -640,7 +658,7 @@ public class Tree implements Serializable {
      */
     public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
 
-        List<Path> paths = new PathHelper().getPathOfConcept2(
+        List<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
 
         if (root == null) {
@@ -698,7 +716,7 @@ public class Tree implements Serializable {
 
     public void expandTreeToPath2(String idConcept, String idTheso, String idLang, String idFacette) {
 
-        List<Path> paths = new PathHelper().getPathOfConcept2(
+        List<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
         paths.get(0).getPath().add(idFacette);
 
@@ -769,7 +787,7 @@ public class Tree implements Serializable {
             String idTheso,
             String idLang) {
 
-        List<Path> paths = new PathHelper().getPathOfConcept2(
+        List<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
 
         initialise(idTheso, idLang);

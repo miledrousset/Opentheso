@@ -29,11 +29,8 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class MyAccountBean implements Serializable {
 
-    @Inject
-    private Connect connect;
-
-    @Inject
-    private CurrentUser currentUser;
+    @Inject private Connect connect;
+    @Inject private CurrentUser currentUser;
 
     private NodeUser nodeUser;
     private String passWord1;

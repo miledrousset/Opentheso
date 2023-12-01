@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -331,9 +330,10 @@ public class ExportFileBean implements Serializable {
         ///////////////////////////////////
 
         /// autres exports
+        System.out.println("commence");
         SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
                 viewExportBean.getSelectedIdGroups());
-
+        System.out.println("fini");
         if (skosxd == null) {
             return null;
         }
@@ -522,14 +522,13 @@ public class ExportFileBean implements Serializable {
         ///////////////////////////////////
         /// export des concepts avec Id, label
         if ("CSV_id".equalsIgnoreCase(viewExportBean.getFormat())) {
-            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
             byte[] datas;
             if (viewExportBean.isToogleFilterByGroup()) {
-                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
+                datas = new CsvWriteHelper().writeCsvById(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
                         viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups(), viewExportBean.getCsvDelimiterChar());
             } else {
-                datas = csvWriteHelper.writeCsvById(connect.getPoolConnexion(),
+                datas = new CsvWriteHelper().writeCsvById(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
                         viewExportBean.getSelectedIdLangTheso(), null, viewExportBean.getCsvDelimiterChar());
             }
@@ -551,7 +550,6 @@ public class ExportFileBean implements Serializable {
         }
 
         SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId());
-
         if (skosxd == null) {
             return null;
         }
@@ -582,11 +580,8 @@ public class ExportFileBean implements Serializable {
             }
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-            
-            CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
-            byte[] str = csvWriteHelper.writeCsv(skosxd,
-                        viewExportBean.getSelectedLanguages(),
-                        viewExportBean.getCsvDelimiterChar());               
+
+            byte[] str = new CsvWriteHelper().writeCsv(skosxd, viewExportBean.getSelectedLanguages(), viewExportBean.getCsvDelimiterChar());
 
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
                 
@@ -845,7 +840,12 @@ public class ExportFileBean implements Serializable {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
             FacesContext.getCurrentInstance().addMessage(null, message);
             return null;
-        }        
+        }   
+        if (StringUtils.isEmpty(roleOnThesoBean.getNodePreference().getOriginalUri())) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "preference", "Manque l'URL du site, veuillez paramétrer les préférences du thésaurus!");
+            FacesContext.getCurrentInstance().addMessage(null, message);
+            return null;
+        }          
 
         ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
         exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());

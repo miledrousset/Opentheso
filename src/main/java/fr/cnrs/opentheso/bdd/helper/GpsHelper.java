@@ -117,7 +117,7 @@ public class GpsHelper {
      * @param id_theso
      * @return 
      */
-    //TODO MILTI GPS
+    /*
     public NodeGps getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
         NodeGps coordonnees = null;
         try (Connection conn = ds.getConnection()) {
@@ -136,8 +136,8 @@ public class GpsHelper {
             log.error("Error while Add coordonnes : " + id_concept, sqle);
         }
         return coordonnees;
-    }
-    /*
+    }*/
+
     public List<NodeGps> getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
         List<NodeGps> coordonnees = null;
         try ( Connection conn = ds.getConnection()) {
@@ -158,7 +158,7 @@ public class GpsHelper {
             log.error("Error while Add coordonnes : " + id_concept, sqle);
         }
         return coordonnees;
-    }*/
+    }
 
     /**
      * fonction qui permet de supprimer les coordonnées GPS d'un Concept

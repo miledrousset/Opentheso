@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -54,6 +55,76 @@ public class GroupHelper {
     ////////////////// Nouvelles fonctions #MR//////////////////////////////
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////    
+
+    
+    /**
+     * permet de savoir si le group à déplacer est vers un descendant, c'est interdit
+     * @param ds
+     * @param idGroup
+     * @param toIdGroup
+     * @param idTheso
+     * @return 
+     */
+    public boolean isMoveToDescending(HikariDataSource ds,
+            String idGroup, String toIdGroup, String idTheso){
+        ArrayList<String> idGroupDescending = getAllGroupDescending(ds, idGroup, idTheso);
+        return idGroupDescending.contains(toIdGroup);
+    }
+    
+    /**
+     * récupération des IdGroup fils par récurcivité
+     * @param ds
+     * @param idGroup
+     * @param idTheso
+     * @return 
+     */
+    public ArrayList<String> getAllGroupDescending(HikariDataSource ds,
+            String idGroup, String idTheso) {
+        ArrayList<String> allIdGroup = new ArrayList<>();
+        return getDescendingId_(ds, idGroup, idTheso, allIdGroup);         
+    }
+    
+    private ArrayList<String> getDescendingId_(HikariDataSource ds,
+            String idGroup, String idTheso, ArrayList<String> allIdGroup) {
+        
+        allIdGroup.add(idGroup);
+        ArrayList<String> listIds = getListGroupChildIdOfGroup(ds, idGroup, idTheso);
+        for (String idGroupFils : listIds) {
+            getDescendingId_(ds, idGroupFils, idTheso, allIdGroup);
+        }
+        return allIdGroup;
+    }    
+    
+    /**
+     * Permet de retirer le groupe du parent
+     * @param ds
+     * @param idGroup
+     * @param idParent
+     * @param idTheso
+     * @return 
+     */
+    public boolean removeGroupFromGroup(HikariDataSource ds,
+            String idGroup, String idParent, String idTheso){
+        boolean status = false;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from relation_group where"
+                            + " LOWER(id_group2)= '" + idGroup.toLowerCase() + "'"
+                            + " and "
+                            + " LOWER(id_group1)='" + idParent.toLowerCase() + "'"
+                            + " AND id_thesaurus='" + idTheso + "'");
+
+                    status = true;
+                    updateModifiedDate(ds, idGroup, idTheso);
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while updating groupType : " + idGroup, sqle);
+        }
+        return status;        
+    }
+    
+    
     /**
      * permet de mettre à jour le Type de groupe
      *
@@ -231,6 +302,10 @@ public class GroupHelper {
             String idGroup,
             String labelGroup) {
         if (nodePreference != null) {
+            if (nodePreference.isUseArkLocal()) {
+                generateArkIdLocal(ds, idTheso, idGroup);
+                return true;
+            }            
             
             ArkHelper2 arkHelper2 = new ArkHelper2(nodePreference);
             if (!arkHelper2.login()) {
@@ -293,6 +368,34 @@ public class GroupHelper {
         }
         return false;
     }
+    
+    /**
+     * Cette fonction permet de générer les idArk en local
+     *
+     * @param ds
+     * @param idTheso
+     * @param idGroup
+     * @return
+     */
+    public boolean generateArkIdLocal(HikariDataSource ds, String idTheso, String idGroup) {
+        if (nodePreference == null) {
+            return false;
+        }
+        if (!nodePreference.isUseArkLocal()) {
+            return false;
+        }
+
+        ToolsHelper toolsHelper = new ToolsHelper();
+        String idArk;
+        GroupHelper groupHelper = new GroupHelper();
+        idArk = groupHelper.getIdArkOfGroup(ds, idGroup, idTheso);
+        
+        if(StringUtils.isEmpty(idArk)) {
+            idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
+            idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
+        }
+        return updateArkIdOfGroup(ds, idGroup, idTheso, idArk);
+    }    
 
     /**
      * Permet d'ajouter le Groupe par défaut pour les concepts qui sont
@@ -414,6 +517,7 @@ public class GroupHelper {
                         return null;
                     }
                 }
+               
                 // création de l'identifiant Handle
                 if (nodePreference.isUseHandle()) {
                     if (!addIdHandle(conn,
@@ -861,6 +965,35 @@ public class GroupHelper {
         }
         return status;
     }
+    
+    /**
+     * Cette fonction permet de mettre à jour l'identifiant Ark d'un group
+     * existant
+     *
+     * @param ds
+     * @param idGroup
+     * @param idTheso
+     * @param idArk
+     * @return
+     */
+    public boolean updateArkIdOfGroup(HikariDataSource ds, String idGroup,
+            String idTheso, String idArk) {
+
+        boolean status = false;
+        try (Connection conn = ds.getConnection()) {
+            try(Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept_group "
+                            + "set id_ark='" + idArk + "'"
+                            + " WHERE LOWER(idgroup) ='" + idGroup.toLowerCase() + "'"
+                            + " AND idthesaurus='" + idTheso + "'");
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while updating or adding ArkId of Group : " + idGroup, sqle);
+        }
+        return status;
+    }    
 
     /**
      * Cette fonction permet de mettre à jour l'identifiant Handle d'un group
@@ -1283,21 +1416,18 @@ public class GroupHelper {
                             + " AND idthesaurus = '" + idThesaurus + "'"
                             + " AND lang = '" + idLang + "'");
                     try (ResultSet resultSet = stmt.getResultSet()){
+                        nodeConceptGroup = new NodeGroup();
                         if (resultSet.next()) {                    
-                            nodeConceptGroup = new NodeGroup();
-                            if (resultSet.getRow() == 0) {
-                                // cas du Group non traduit
-                                nodeConceptGroup.setLexicalValue("");
-                                nodeConceptGroup.setIdLang(idLang);
-
-                            } else {
-                                nodeConceptGroup.setLexicalValue(resultSet.getString("lexicalvalue"));
-                                nodeConceptGroup.setIdLang(idLang);
-                                nodeConceptGroup.setCreated(resultSet.getDate("created"));
-                                nodeConceptGroup.setModified(resultSet.getDate("modified"));
-                            }
-                            nodeConceptGroup.setConceptGroup(conceptGroup);
+                            nodeConceptGroup.setLexicalValue(resultSet.getString("lexicalvalue"));
+                            nodeConceptGroup.setIdLang(idLang);
+                            nodeConceptGroup.setCreated(resultSet.getDate("created"));
+                            nodeConceptGroup.setModified(resultSet.getDate("modified"));
+                            
+                        } else {
+                            nodeConceptGroup.setLexicalValue("");
+                            nodeConceptGroup.setIdLang(idLang);
                         }
+                        nodeConceptGroup.setConceptGroup(conceptGroup);
                     }
                 } 
             } 
@@ -2503,14 +2633,14 @@ public class GroupHelper {
             String idThesaurus, String idLang) {
 
         ArrayList<NodeGroup> nodeConceptGroupList;
-        ArrayList tabIdConceptGroup = getListIdOfGroup(ds, idThesaurus);
+        ArrayList<String> tabIdConceptGroup = getListIdOfGroup(ds, idThesaurus);
 
         nodeConceptGroupList = new ArrayList<>();
-        for (Object tabIdGroup1 : tabIdConceptGroup) {
+        for (String tabIdGroup1 : tabIdConceptGroup) {
             NodeGroup nodeConceptGroup;
-            nodeConceptGroup = getThisConceptGroup(ds, tabIdGroup1.toString(), idThesaurus, idLang);
+            nodeConceptGroup = getThisConceptGroup(ds, tabIdGroup1, idThesaurus, idLang);
             if (nodeConceptGroup == null) {
-                return null;
+                continue;
             }
             nodeConceptGroupList.add(nodeConceptGroup);
         }
@@ -3800,7 +3930,7 @@ public class GroupHelper {
         }
         return subGroup;
     }
-
+    
     /**
      * Change l'id d'un group dans la table concept_group
      *

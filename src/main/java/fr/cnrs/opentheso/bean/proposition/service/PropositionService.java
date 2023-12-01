@@ -395,45 +395,13 @@ public class PropositionService implements Serializable {
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
         //return true;
+        if(currentUser.getNodeUser() != null){
+            if(currentUser.getNodeUser().isAlertMail())
+                return mailBean.sendMail(emailDestination, subject,  contentFile);
+            else 
+                return true;
+        } 
         return mailBean.sendMail(emailDestination, subject,  contentFile);
-  
-
-
-
-
-
-
-
-
-        //showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail!");
-        
-        /// désactivé par #MR Miled pour utiliser la méthode officielle d'envoie de Mail
-        /*
-        ResourceBundle resourceBundle = getBundlePool();
-        if (resourceBundle == null) {
-            return;
-        }
-
-        Email from = new Email(resourceBundle.getString("mailbox.from"));
-        Email to = new Email(emailDestination);
-
-        Content content = new Content("text/html", contentFile);
-
-        Mail mail = new Mail(from, subject, to, content);
-
-        SendGrid sg = new SendGrid(resourceBundle.getString("mailbox.key"));
-        Request request = new Request();
-
-        request.setMethod(Method.POST);
-        request.setEndpoint("mail/send");
-        request.setBody(mail.build());
-
-        Response response = sg.api(request);
-
-     /*   System.out.println(response.getStatusCode());
-        System.out.println(response.getHeaders());
-        System.out.println(response.getBody());
-        sg.api(request);*/
     }
 
 

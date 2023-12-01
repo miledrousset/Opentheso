@@ -7,7 +7,7 @@
 
     <div class="container-fluid col-xl-12 col-lg-12" style="margin-top: 30px">
         <div class="card shadow mb-4">
-            <h:panelGroup rendered="#{currentUser.nodeUser != null and currentUser.nodeUser.isSuperAdmin() and projectBean.buttonEnable}">
+            <h:panelGroup rendered="#{currentUser.nodeUser != null and (currentUser.nodeUser.isSuperAdmin() )  and projectBean.buttonEnable}">
                 <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
                     <div style="width: 100%; text-align: right;">
                         <p:commandButton value="Modifier" ajax="true" process="@this"
@@ -20,7 +20,7 @@
 
             <h:panelGroup rendered="#{projectBean.isListThesoVisible()}">
                 <div class="card-header py-3" style="width: 100%; display: flex;">
-                    <ul aria-label="Liste des thésaurus:">
+                    <ul aria-label="#{langueBean.getMsg('profile.list_of_thesauri')} :">
                         <ui:repeat value="#{projectBean.getListeThesoOfProject()}" var="theso">
                             <li>#{projectBean.getLabel(theso)}</li>
                         </ui:repeat>
@@ -30,10 +30,9 @@
 
             <h:panelGroup rendered="#{!projectBean.isListThesoVisible()}">
                 <div class="card-header py-3" style="width: 100%; text-align: center; padding: 10px">
-                    <h:outputLabel value="Aucune thésaurus existe dans le projet sélectionné !" />
+                    <h:outputLabel value="#{langueBean.getMsg('toolbox.noThesaurus')} !" />
                 </div>
             </h:panelGroup>
-
             <div style="padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 10px">
                 <!-- vue Page d'accueil -->
                 <h:panelGroup rendered="#{projectBean.projectDescription}">
@@ -48,7 +47,7 @@
                                              panelStyle="border: none; box-shadow: none; max-width: 300px" >
 
                                 <p:ajax event="change" listener="#{projectBean.changeProjectDescription()}" update="containerIndex messageIndex"  />
-                                <f:selectItems  value="#{projectBean.allLangs}" var="lang" itemValue="#{lang.id_iso639_1}"
+                                <f:selectItems  value="#{projectBean.selectedLangs}" var="lang" itemValue="#{lang.id_iso639_1}"
                                                 itemLabel="#{lang.id_iso639_1} _ #{lang.french_name} (#{lang.english_name})"/>
                             </p:selectOneMenu>
 
@@ -65,6 +64,22 @@
                             </div>
                         </div>
                     </div>
+
+                    <h:panelGroup rendered="#{currentUser.nodeUser != null and currentUser.nodeUser.isSuperAdmin() and projectBean.buttonEnable}">
+                        <div class="row" style="margin-top: 15px">
+                            <div class="col-4 offset-8" style="text-align: right">
+                                <p:commandButton value="Supprimer" action="#{projectBean.deleteDescription()}" ajax="true"  process="@this"
+                                                 update="containerIndex" styleClass="ui-button-success ui-button-danger" icon="pi pi-trash">
+                                    <p:confirm header="Confirmation" message="Est ce que vous êtes sûr de vouloir supprimer cette description ?" icon="pi pi-info-circle"/>
+                                </p:commandButton>
+
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                    <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                    <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" />
+                                </p:confirmDialog>
+                            </div>
+                        </div>
+                    </h:panelGroup>
                 </h:panelGroup>
 
                 <!-- vue connectée pour édition -->
@@ -96,7 +111,7 @@
                             <p:commandButton value="#{langueBean.getMsg('btnCancel')}"
                                              styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
                                              update="containerIndex" style="font-size: 14px; margin-right: 20px;"
-                                             actionListener="#{projectBean.init()}"/>
+                                             actionListener="#{projectBean.back()}"/>
 
                             <p:commandButton value="#{langueBean.getMsg('btnValidate')}"
                                              update="containerIndex" styleClass="ui-button-success" icon="pi pi-check"

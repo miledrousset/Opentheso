@@ -830,6 +830,7 @@ public class SearchBean implements Serializable {
         selectedTheso.setSelectedLang(idLang);
         try {
             selectedTheso.setSelectedThesoForSearch();
+       //      selectedTheso.setSelectedTheso();
         } catch (IOException ex) {
             Logger.getLogger(SearchBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -837,7 +838,6 @@ public class SearchBean implements Serializable {
         roleOnThesoBean.setSelectedThesoForSearch(roleOnThesoBean.getSelectedThesoForSearch().stream()
                 .filter(theso -> theso.contains(idTheso))
                 .collect(Collectors.toList()));
-
         conceptBean.getConcept(idTheso, idConcept, idLang);
         rightBodySetting.setIndex("0");
         

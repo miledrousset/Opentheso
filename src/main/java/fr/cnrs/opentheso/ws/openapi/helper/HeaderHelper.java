@@ -9,6 +9,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -43,6 +44,8 @@ public class HeaderHelper {
      * @return Le type de donnée en minuscule sans la précision du charset
      */
     public static String removeCharset(String contentType) {
+        if(StringUtils.isEmpty(contentType)) return null;
+        
         contentType = contentType.toLowerCase();
         int indexCharset = contentType.indexOf(";charset=");
         if (indexCharset == -1) {

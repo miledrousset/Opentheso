@@ -14,6 +14,7 @@ public class NodeUserGroupThesaurus {
     private String thesaurusName;
     private int idGroup;
     private String groupName;
+    private boolean privateTheso;
 
     public NodeUserGroupThesaurus() {
     }
@@ -48,6 +49,14 @@ public class NodeUserGroupThesaurus {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public boolean isPrivateTheso() {
+        return privateTheso;
+    }
+
+    public void setPrivateTheso(boolean privateTheso) {
+        this.privateTheso = privateTheso;
     }
 
 

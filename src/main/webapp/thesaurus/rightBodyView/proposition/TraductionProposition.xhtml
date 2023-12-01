@@ -14,7 +14,7 @@
                         <p:selectBooleanCheckbox value="#{propositionBean.traductionAccepted}" title="Accepter cette proposition"
                                                  rendered="#{propositionBean.isConsultation
                                                             and currentUser.nodeUser != null
-                                                            and (roleOnTheso.isManagerOnThisTheso() or roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())
+                                                            and (currentUser.hasRoleAsManager)
                                                             and propositionBean.showButtonAction()}"/>
 
                         <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" title="#{langueBean.getMsg('rightbody.concept.traduction')}"

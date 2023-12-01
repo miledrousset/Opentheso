@@ -33,7 +33,7 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected() and currentUser.hasRoleAsAdmin}" id="wrapper" style="height: 100%" >
 
             <ui:include src="../commun/menu.xhtml" />
 
@@ -74,7 +74,7 @@
                                     <p:toolbar>
                                         <p:toolbarGroup align="left" />
                                         <p:toolbarGroup align="right">
-                                            <p:commandButton rendered="#{currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso()}"
+                                            <p:commandButton rendered="#{currentUser.hasRoleAsAdmin}"
                                                              actionListener="#{corpusBean.init()}" action="#{corpusBean.setCorpusForNew()}"
                                                              styleClass="ui-button-success" icon="pi pi-check"
                                                              value="#{langueBean.getMsg('setting.newCorpus')}" 
@@ -106,11 +106,10 @@
                                         </p:column>
 
                                         <p:column exportable="false">
-                                            <p:commandButton icon="pi pi-pencil" update=":containerIndex:manage-product-content"
+                                            <p:commandButton icon="pi pi-pencil" update="containerIndex:idEditCorpus containerIndex:editCorpusForm"
                                                              oncomplete="PF('editCorpus').show()" style="margin-right: 10px"
                                                              actionListener="#{corpusBean.setCorpusForEdit(corpus)}" process="@this"
                                                              styleClass="rounded-button" >
-                                                <p:resetInput target=":containerIndex:manage-product-content"/>
                                             </p:commandButton>
 
                                             <p:commandButton class="ui-button-danger rounded-button" icon="pi pi-trash" process="@this"
