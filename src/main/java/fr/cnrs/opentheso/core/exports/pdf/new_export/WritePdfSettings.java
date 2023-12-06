@@ -30,11 +30,11 @@ public class WritePdfSettings {
 
     public String getCodeRelation(int codeRelation) {
         switch (codeRelation) {
-            case SKOSProperty.broader:
+            case SKOSProperty.BROADER:
                 return "BT";
-            case SKOSProperty.narrower:
+            case SKOSProperty.NARROWER:
                 return "NT";
-            case SKOSProperty.related:
+            case SKOSProperty.RELATED:
                 return "RT";
             case SKOSProperty.relatedHasPart:
                 return "RHP";

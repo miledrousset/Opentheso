@@ -33,7 +33,7 @@ public class ConceptData {
 
             //readRelationships    
             case "broader":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.broader);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.BROADER);
                 break;
             case "broaderGeneric":
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.broaderGeneric);
@@ -45,7 +45,7 @@ public class ConceptData {
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.broaderPartitive);
                 break;
             case "narrower":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.narrower);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.NARROWER);
                 break;
             case "narrowerGeneric":
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.narrowerGeneric);
@@ -57,7 +57,7 @@ public class ConceptData {
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.narrowerPartitive);
                 break;
             case "related":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.related);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.RELATED);
                 break;
             case "relatedHasPart":
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.relatedHasPart);
@@ -66,13 +66,13 @@ public class ConceptData {
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.relatedPartOf);
                 break;
             case "hasTopConcept":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.hasTopConcept);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.HASTOPCONCEPT);
                 break;
             case "inScheme":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.inScheme);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.INSCHEME);
                 break;
             case "member":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.member);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.MEMBER);
                 break;
             case "topConceptOf":
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.topConceptOf);

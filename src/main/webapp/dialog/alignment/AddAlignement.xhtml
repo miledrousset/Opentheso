@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog header="Ajouter alignement" widgetVar="addAlignement" modal="true"
+    <p:dialog header="#{langueBean.getMsg('rightbody.concept.alignment')}" widgetVar="addAlignement" modal="true"
               resizable="true" position="top" width="600" style="margin-top: 50px" >
         <h:form id="addAlignementID">
             <div class="row">
@@ -15,38 +15,36 @@
                 </div>
             </div>
 
-            <p:accordionPanel multiple="true" widgetVar="multiple" style="margin-top: 20px">
-                <p:tab title="Traductions" disabled="#{alignmentBean.alignementSelect.selectedTraductionsList.size() == 0}">
+            <p:accordionPanel multiple="true" widgetVar="multiple" style="margin-top: 20px" activeIndex="0,1,2">
+                <p:tab title="#{langueBean.getMsg('candidat.traductions')}" disabled="#{alignmentBean.alignementSelect.selectedTraductionsList.size() == 0}">
                     <p class="m-0">
-                        <p:dataTable size="small" var="traduction" value="#{alignmentBean.alignementSelect.selectedTraductionsList}"
+                        <p:dataTable  size="small" var="traduction" value="#{alignmentBean.alignementSelect.selectedTraductionsList}"
                                      widgetVar="listSourceTable" styleClass="products-table"
-                                     style="margin-bottom: -32px; margin-top: -20px; overflow: auto; max-height: 400px;
-                                            margin-left: -15px; margin-right: -15px;" lazy="false" >
+                                     style="overflow: auto; max-height: 400px;" lazy="false" >
 
                             <p:column width="20px">
                                 <p:selectBooleanCheckbox value="#{traduction.selected}"/>
                             </p:column>
 
-                            <p:column width="40px" headerText="Langue">
+                            <p:column width="40px" headerText="#{langueBean.getMsg('candidat.language')}">
                                 <img src="#{conceptView.getDrapeauImgLocal(traduction.idLang)}" width="27" height="22" />
                             </p:column>
 
-                            <p:column width="150px" headerText="Nom">
+                            <p:column width="150px" headerText="#{langueBean.getMsg('rightbody.conceptdialog.local_value')}">
                                 <h:outputLabel value="#{traduction.localValue}" />
                             </p:column>
 
-                            <p:column width="150px" headerText="Nom complet">
+                            <p:column width="150px" headerText="#{langueBean.getMsg('statistique.label')}">
                                 <h:outputLabel value="#{traduction.gettedValue}" />
                             </p:column>
                         </p:dataTable>
                     </p>
                 </p:tab>
-                <p:tab title="Définitions" disabled="#{alignmentBean.alignementSelect.selectedDefinitionsList.size() == 0}">
+                <p:tab title="#{langueBean.getMsg('rightbody.concept.definition')}" disabled="#{alignmentBean.alignementSelect.selectedDefinitionsList.size() == 0}">
                     <p class="m-0">
                         <p:dataTable size="small" var="definition" value="#{alignmentBean.alignementSelect.selectedDefinitionsList}"
                                      widgetVar="listSourceTable" styleClass="products-table"
-                                     style="margin-bottom: -32px; margin-top: -20px; overflow: auto; max-height: 400px;
-                                            margin-left: -15px; margin-right: -15px;" lazy="false" >
+                                     style="overflow: auto; max-height: 400px;" lazy="false" >
 
                             <p:column width="20px">
                                 <p:selectBooleanCheckbox value="#{definition.selected}"/>
@@ -56,27 +54,26 @@
                                 <img src="#{conceptView.getDrapeauImgLocal(definition.idLang)}" width="27" height="22" />
                             </p:column>
 
-                            <p:column width="150px" headerText="Valeur">
+                            <p:column width="150px" headerText="#{langueBean.getMsg('candidat.value')}">
                                 <h:outputLabel value="#{definition.gettedValue}" />
                             </p:column>
                         </p:dataTable>
                     </p>
                 </p:tab>
-                <p:tab title="Images" disabled="#{alignmentBean.alignementSelect.selectedImagesList.size() == 0}">
+                <p:tab title="#{langueBean.getMsg('rightbody.concept.images')}" disabled="#{alignmentBean.alignementSelect.selectedImagesList.size() == 0}">
                     <p:dataTable size="small" var="image" value="#{alignmentBean.alignementSelect.selectedImagesList}"
                                  widgetVar="listSourceTable" styleClass="products-table"
-                                 style="margin-bottom: -32px; margin-top: -20px; overflow: auto; max-height: 400px;
-                                            margin-left: -15px; margin-right: -15px;" lazy="false" >
+                                 style="overflow: auto; max-height: 400px;" lazy="false" >
 
                         <p:column width="20px">
                             <p:selectBooleanCheckbox value="#{image.selected}"/>
                         </p:column>
 
-                        <p:column width="150px" headerText="Vleur">
+                        <p:column width="150px" headerText="#{langueBean.getMsg('candidat.value')}">
                             <p:outputLabel value="#{image.gettedValue}"  />
                         </p:column>
 
-                        <p:column width="150px" headerText="Image">
+                        <p:column width="150px" headerText="#{langueBean.getMsg('rightbody.concept.image')}">
                             <p:graphicImage value="#{image.gettedValue}" width="100px" height="100px" />
                         </p:column>
                     </p:dataTable>

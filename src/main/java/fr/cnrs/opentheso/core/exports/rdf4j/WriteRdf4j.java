@@ -572,10 +572,10 @@ public class WriteRdf4j {
 
         for (SKOSRelation relation : resource.getRelationsList()) {
             switch (relation.getProperty()) {
-                case SKOSProperty.member:
+                case SKOSProperty.MEMBER:
                     builder.add(SKOS.MEMBER, vf.createIRI(relation.getTargetUri()));
                     break;
-                case SKOSProperty.broader:
+                case SKOSProperty.BROADER:
                     builder.add(SKOS.BROADER, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.broaderGeneric:
@@ -587,7 +587,7 @@ public class WriteRdf4j {
                 case SKOSProperty.broaderPartitive:
                     builder.add("iso-thes:broaderPartitive", vf.createIRI(relation.getTargetUri()));
                     break;
-                case SKOSProperty.narrower:
+                case SKOSProperty.NARROWER:
                     builder.add(SKOS.NARROWER, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.narrowerGeneric:
@@ -599,7 +599,7 @@ public class WriteRdf4j {
                 case SKOSProperty.narrowerPartitive:
                     builder.add("iso-thes:narrowerPartitive", vf.createIRI(relation.getTargetUri()));
                     break;
-                case SKOSProperty.related:
+                case SKOSProperty.RELATED:
                     builder.add(SKOS.RELATED, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.relatedHasPart:
@@ -608,10 +608,10 @@ public class WriteRdf4j {
                 case SKOSProperty.relatedPartOf:
                     builder.add("iso-thes:relatedPartOf", vf.createIRI(relation.getTargetUri()));
                     break;
-                case SKOSProperty.hasTopConcept:
+                case SKOSProperty.HASTOPCONCEPT:
                     builder.add(SKOS.HAS_TOP_CONCEPT, vf.createIRI(relation.getTargetUri()));
                     break;
-                case SKOSProperty.inScheme:
+                case SKOSProperty.INSCHEME:
                     builder.add(SKOS.IN_SCHEME, vf.createIRI(relation.getTargetUri()));
                     break;
                 case SKOSProperty.topConceptOf:

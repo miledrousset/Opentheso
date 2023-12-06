@@ -53,7 +53,7 @@ public class ExportHelper {
                         for (String idConcept : members) {
                             NodeUri nodeUri = new ConceptHelper().getNodeUriOfConcept(ds, idConcept, idTheso);
                             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(idTheso, originalUri, 
-                                    idConcept, nodePreference, nodeUri),  SKOSProperty.member);
+                                    idConcept, nodePreference, nodeUri),  SKOSProperty.MEMBER);
                         }
         
                         sKOSResource.addLabel(resultSet.getString("lexical_value"), resultSet.getString("lang"), SKOSProperty.prefLabel);
@@ -146,7 +146,7 @@ public class ExportHelper {
                             addRelationsGiven(resultSet.getString("broader"), sKOSResource);
                         }
 
-                        sKOSResource.addRelation(idTheso, getUriThesoFromId(idTheso, originalUri, nodePreference), SKOSProperty.inScheme);
+                        sKOSResource.addRelation(idTheso, getUriThesoFromId(idTheso, originalUri, nodePreference), SKOSProperty.INSCHEME);
                         
                         addReplaced(resultSet.getString("replaces"), sKOSResource, SKOSProperty.replaces);
                         
@@ -364,7 +364,7 @@ public class ExportHelper {
             case "RPO":
                 return SKOSProperty.relatedPartOf;
             case "RT":
-                return SKOSProperty.related;
+                return SKOSProperty.RELATED;
             case "NTG":
                 return SKOSProperty.narrowerGeneric;
             case "NTP":
@@ -372,7 +372,7 @@ public class ExportHelper {
             case "NTI":
                 return SKOSProperty.narrowerInstantial;
             case "NT":
-                return SKOSProperty.narrower;
+                return SKOSProperty.NARROWER;
             case "BTG":
                 return SKOSProperty.broaderGeneric;
             case "BTP":
@@ -380,7 +380,7 @@ public class ExportHelper {
             case "BTI":
                 return SKOSProperty.broaderInstantial;
             default:
-                return SKOSProperty.broader;
+                return SKOSProperty.BROADER;
         }
     }
 

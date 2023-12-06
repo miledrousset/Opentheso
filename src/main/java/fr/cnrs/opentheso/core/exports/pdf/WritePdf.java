@@ -464,13 +464,13 @@ public class WritePdf {
             String codeRelation;
 
             switch (prop) {
-                case SKOSProperty.broader:
+                case SKOSProperty.BROADER:
                     codeRelation = "BT";
                     break;
-                case SKOSProperty.narrower:
+                case SKOSProperty.NARROWER:
                     codeRelation = "NT";
                     break;
-                case SKOSProperty.related:
+                case SKOSProperty.RELATED:
                     codeRelation = "RT";
                     break;
                 case SKOSProperty.relatedHasPart:

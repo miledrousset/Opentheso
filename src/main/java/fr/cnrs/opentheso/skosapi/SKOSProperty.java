@@ -8,12 +8,12 @@ package fr.cnrs.opentheso.skosapi;
 public interface SKOSProperty {
 
     //Semantic Relationships
-    public static final int broader = 0;
-    public static final int narrower = 1;
-    public static final int related = 2;
-    public static final int hasTopConcept = 3;
-    public static final int inScheme = 4;
-    public static final int member = 5;
+    public static final int BROADER = 0;
+    public static final int NARROWER = 1;
+    public static final int RELATED = 2;
+    public static final int HASTOPCONCEPT = 3;
+    public static final int INSCHEME = 4;
+    public static final int MEMBER = 5;
     public static final int topConceptOf = 6;
     public static final int microThesaurusOf = 7;
     public static final int subGroup = 8;

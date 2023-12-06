@@ -1882,7 +1882,7 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
 
-                if (nodeReplaceValueByValue.getSKOSProperty() == SKOSProperty.broader) {
+                if (nodeReplaceValueByValue.getSKOSProperty() == SKOSProperty.BROADER) {
                     String oldBt = null;
                     if (!StringUtils.isEmpty(nodeReplaceValueByValue.getOldValue())) {
                         oldBt = getIdConcept(nodeReplaceValueByValue.getOldValue(), idTheso);

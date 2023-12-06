@@ -101,7 +101,8 @@ public class CandidatDao {
 
         try (Connection conn = hikariDataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery("SELECT concept.id_concept, concept.created, candidat_status.id_user, candidat_status.message" +
+                stmt.executeQuery("SELECT concept.id_concept, concept.created,concept.modified," +
+                        " candidat_status.id_user, candidat_status.id_user_admin, candidat_status.message" +
                         " FROM concept, candidat_status" +
                         " WHERE concept.id_concept = candidat_status.id_concept" +
                         " AND concept.id_thesaurus = candidat_status.id_thesaurus" +
@@ -114,8 +115,10 @@ public class CandidatDao {
                         CandidatDto candidatDto = new CandidatDto();
                         candidatDto.setIdConcepte(resultSet.getString("id_concept"));
                         candidatDto.setCreationDate(resultSet.getDate("created"));
+                        candidatDto.setInsertionDate(resultSet.getDate("modified"));                        
                         candidatDto.setStatut("" + etat);
                         candidatDto.setCreatedById(resultSet.getInt("id_user"));
+                        candidatDto.setCreatedByIdAdmin(resultSet.getInt("id_user_admin"));
                         candidatDto.setIdThesaurus(idTheso);
                         candidatDto.setAdminMessage(resultSet.getString("message"));
                         candidatDtos.add(candidatDto);
@@ -126,6 +129,7 @@ public class CandidatDao {
         UserHelper userHelper = new UserHelper();
         candidatDtos.forEach(candidatDto -> {
             candidatDto.setCreatedBy(userHelper.getNameUser(hikariDataSource, candidatDto.getCreatedById()));
+            candidatDto.setCreatedByAdmin(userHelper.getNameUser(hikariDataSource, candidatDto.getCreatedByIdAdmin()));
         });
     }
     

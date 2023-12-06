@@ -47,16 +47,16 @@ public class SKOSRelation implements SKOSProperty {
         String propertyName = new String();
         String xmlTag;
         switch (property) {
-            case SKOSProperty.related:
+            case SKOSProperty.RELATED:
                 propertyName = "related";
                 break;
-            case SKOSProperty.narrower:
+            case SKOSProperty.NARROWER:
                 propertyName = "narrower";
                 break;
-            case SKOSProperty.broader:
+            case SKOSProperty.BROADER:
                 propertyName = "broader";
                 break;
-            case SKOSProperty.inScheme:
+            case SKOSProperty.INSCHEME:
                 propertyName = "inScheme";
                 break;
             default:

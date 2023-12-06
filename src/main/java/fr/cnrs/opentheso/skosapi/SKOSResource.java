@@ -784,7 +784,7 @@ public class SKOSResource {
 
             String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
             for (SKOSRelation relation : resource.getRelationsList()) {
-                if (relation.getProperty() == SKOSProperty.narrower
+                if (relation.getProperty() == SKOSProperty.NARROWER
                         || relation.getProperty() == SKOSProperty.narrowerGeneric
                         || relation.getProperty() == SKOSProperty.narrowerInstantial
                         || relation.getProperty() == SKOSProperty.narrowerPartitive) {

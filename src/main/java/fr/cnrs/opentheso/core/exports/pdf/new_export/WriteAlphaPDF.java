@@ -147,17 +147,17 @@ public class WriteAlphaPDF {
             relations.stream()
                     .forEach(relation -> {
                         switch (relation.getProperty()) {
-                    case SKOSProperty.inScheme:
+                    case SKOSProperty.INSCHEME:
                         break;
                     case SKOSProperty.topConceptOf:
                         break;
-                    case SKOSProperty.narrower:
+                    case SKOSProperty.NARROWER:
                         appendRelation(paragraphs, relation);
                         break;
-                    case SKOSProperty.broader:
+                    case SKOSProperty.BROADER:
                         appendRelation(paragraphs, relation);
                         break;
-                    case SKOSProperty.related:
+                    case SKOSProperty.RELATED:
                         appendRelation(paragraphs, relation);
                         break;                        
                     default:

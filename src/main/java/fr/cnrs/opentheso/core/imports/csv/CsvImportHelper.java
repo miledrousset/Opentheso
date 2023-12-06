@@ -1138,7 +1138,7 @@ public class CsvImportHelper {
                 
                 
             /*    Action dangereuse, à activer plus tard */
-            case SKOSProperty.broader:
+            case SKOSProperty.BROADER:
                 if (!updateBroader(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
                     addMessage("Erreur : ", nodeReplaceValueByValue);
                 }

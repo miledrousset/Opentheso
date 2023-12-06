@@ -721,7 +721,7 @@ public class CsvReadHelper {
             value = record.get("new_skos:broader");
             if(value != null && !value.isEmpty()) {
                 nodeReplaceValueByValue.setNewValue(value);
-                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.broader);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.BROADER);
             } else {
                 return null;
             }

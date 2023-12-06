@@ -101,14 +101,14 @@
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_replace')}"
-                                          styleClass="mr-2" style="color: white; background-color: #f47b2a; padding: 0.3rem; border-style:dashed" />
+                                          styleClass="mr-2" style="color: #8f8f8f; border-color: #f47b2a; padding: 0.3rem; border-style:dotted" />
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
                             <ui:repeat var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
                                 <p:commandLink rendered="#{replaces.value != ''}" value="#{replaces.value}"
                                                title="#{replaces.id}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
-                                               update="containerIndex:formRightTab indexTitle" style="color: #C63632; background-color: #FAEDE5"
+                                               update="containerIndex:formRightTab indexTitle" style="color: #C63632;font-weight: bold;font-style: italic;"
                                                />
                                 <p:commandLink rendered="#{replaces.value == ''}" value="(#{replaces.id})"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"

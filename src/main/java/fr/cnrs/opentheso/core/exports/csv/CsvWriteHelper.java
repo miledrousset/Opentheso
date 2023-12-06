@@ -23,6 +23,7 @@ import fr.cnrs.opentheso.skosapi.SKOSMatch;
 import fr.cnrs.opentheso.skosapi.SKOSNotation;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
+import fr.cnrs.opentheso.skosapi.SKOSReplaces;
 import fr.cnrs.opentheso.skosapi.SKOSResource;
 import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
 import java.io.ByteArrayOutputStream;
@@ -136,6 +137,19 @@ public class CsvWriteHelper {
                 header.add("geo:long");
                 header.add("geo:gps");
                 header.add("skos:member");
+                
+                // pour gérer les sous_collections
+                header.add("iso-thes:subGroup"); 
+                
+                // pour les Facettes qui appartiennent au concept 
+                header.add("iso-thes:subordinateArray");            
+                
+                // pour signaler que le concept est déprécié
+                header.add("owl:deprecated");
+                // pour signaler que le concept est remplacé par un autre concept
+                header.add("dcterms:isReplacedBy");
+                
+                
                 header.add("dct:created");
                 header.add("dct:modified");
                 csvFilePrinter.printRecord(header);
@@ -149,6 +163,14 @@ public class CsvWriteHelper {
                         System.err.println(e.toString());
                     }
                 });
+                // write Facettes
+                xmlDocument.getFacetList().forEach(facet -> {
+                    try {
+                        writeResource(record, csvFilePrinter, facet, "skos-thes:ThesaurusArray", langs);
+                    } catch (IOException e) {
+                        System.err.println(e.toString());
+                    }
+                });                
                 // write all concepts
                 xmlDocument.getConceptList().forEach(concept -> {
                     try {
@@ -260,17 +282,17 @@ public class CsvWriteHelper {
         record.add(getNotation(skosResource.getNotationList()));
 
         //narrower 
-        record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.narrower));
+        record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.NARROWER));
         //narrowerId
-        record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.narrower));
+        record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.NARROWER));
         //broader
-        record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.broader));
+        record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.BROADER));
         //broaderId 
-        record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.broader));
+        record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.BROADER));
         //related
-        record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.related));
+        record.add(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.RELATED));
         //relatedId 
-        record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.related));
+        record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.RELATED));
 
         //exactMatch
         record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.exactMatch));
@@ -294,8 +316,26 @@ public class CsvWriteHelper {
         } else {
             record.add("");
         }
-        //skos:member
+        
+        //skos:member (pour les concepts pour ajouter l'info de l'appartenance du concept à une collection)
+        //skos:member (pour les Facettes et collections pour ajouter qui sont les membres)        
         record.add(getMemberValue(skosResource.getRelationsList()));
+          
+        // iso-thes:subGroup pour référencer l'URI des sous groupes 
+        record.add(getSubGroup(skosResource.getRelationsList()));        
+        
+        // iso-thes:subordinateArray pour référencer les Facettes du Concept
+        record.add(getFacettesOfConcept(skosResource.getRelationsList()));           
+        
+        // owl:deprecated pour les concepts dépréciés
+        if(skosResource.getStatus() == SKOSProperty.deprecated)
+            record.add("true");
+        else
+            record.add("false");
+        // dcterms:isReplacedBy pour référencer les concepts qui remplacent celui qui est déprécié 
+        record.add(getReplaceBy(skosResource.getsKOSReplaces()));    
+        
+        
         //sdct:created
         record.add(getDateValue(skosResource.getDateList(), SKOSProperty.created));
         //dct:modified
@@ -304,6 +344,28 @@ public class CsvWriteHelper {
         csvFilePrinter.printRecord(record);
         record.clear();
     }
+    
+
+    private String getReplaceBy(ArrayList<SKOSReplaces> sKOSReplaceses) {
+        return sKOSReplaceses.stream()
+                .filter(sKOSReplace -> (sKOSReplace.getProperty() == SKOSProperty.isReplacedBy))
+                .map(sKOSReplace -> sKOSReplace.getTargetUri())
+                .collect(Collectors.joining(delim_multi_datas));
+    }                
+    
+    private String getFacettesOfConcept(ArrayList<SKOSRelation> sKOSRelations) {
+        return sKOSRelations.stream()
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.subordinateArray))
+                .map(sKOSRelation -> sKOSRelation.getTargetUri())
+                .collect(Collectors.joining(delim_multi_datas));
+    }    
+    
+    private String getSubGroup(ArrayList<SKOSRelation> sKOSRelations) {
+        return sKOSRelations.stream()
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.subGroup))
+                .map(sKOSRelation -> sKOSRelation.getTargetUri())
+                .collect(Collectors.joining(delim_multi_datas));
+    }    
 
     private String getPrefLabelValue(List<SKOSLabel> labels, String lang, int propertie) {
         String value = "";
@@ -353,12 +415,19 @@ public class CsvWriteHelper {
     }
 
     private String getMemberValue(ArrayList<SKOSRelation> sKOSRelations) {
+        return sKOSRelations.stream()
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.memberOf) || (sKOSRelation.getProperty() == SKOSProperty.MEMBER))
+                .map(sKOSRelation -> sKOSRelation.getTargetUri())
+                .collect(Collectors.joining(delim_multi_datas));
+    }    
+    
+/*    private String getMemberOfValue(ArrayList<SKOSRelation> sKOSRelations) {
 
         return sKOSRelations.stream()
                 .filter(sKOSRelation -> sKOSRelation.getProperty() == SKOSProperty.memberOf)
                 .map(sKOSRelation -> sKOSRelation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
-    }
+    }*/
 
     private String getRelationGivenValue(List<SKOSRelation> relations, int propertie) {
         return relations.stream()

@@ -46,7 +46,7 @@ public class SKOSLabel implements SKOSProperty{
 			case SKOSProperty.hiddenLabel :
 				propertyName = "hiddenLabel";
 				break;
-			case SKOSProperty.inScheme :
+			case SKOSProperty.INSCHEME :
 				propertyName = "inScheme";
 				break;
 			default:

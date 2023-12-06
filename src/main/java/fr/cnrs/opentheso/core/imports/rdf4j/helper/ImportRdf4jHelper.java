@@ -298,7 +298,7 @@ public class ImportRdf4jHelper {
                 }
             }
             for (SKOSRelation member : facetSKOSResource.getRelationsList()) {
-                if (member.getProperty() == SKOSProperty.member) {
+                if (member.getProperty() == SKOSProperty.MEMBER) {
                     facetHelper.addConceptToFacet(ds,
                             idFacet, idTheso, getOriginalId(member.getTargetUri()));
                 }
@@ -408,7 +408,7 @@ public class ImportRdf4jHelper {
                         idSubGroup = getIdFromUri(relation.getTargetUri());
                         groupHelper.addSubGroup(ds, idGroup, idSubGroup, idTheso);
                         break;
-                    case SKOSProperty.member:
+                    case SKOSProperty.MEMBER:
                         // Récupération de l'Id d'origine sauvegardé à l'import (idArk -> identifier)
                         idSubConcept = getOriginalId(relation.getTargetUri());
                         groupSubGroup.put(idSubConcept, idGroup);
@@ -615,7 +615,7 @@ public class ImportRdf4jHelper {
             for (SKOSRelation relation : conceptResource.getRelationsList()) {
                 String role;
                 switch (relation.getProperty()) {
-                    case SKOSProperty.narrower:
+                    case SKOSProperty.NARROWER:
                         role = "NT";
                         break;
                     case SKOSProperty.narrowerGeneric:
@@ -627,7 +627,7 @@ public class ImportRdf4jHelper {
                     case SKOSProperty.narrowerInstantial:
                         role = "NTI";
                         break;
-                    case SKOSProperty.broader:
+                    case SKOSProperty.BROADER:
                         isTopConcept = false;
                         role = "BT";
                         break;
@@ -643,7 +643,7 @@ public class ImportRdf4jHelper {
                         isTopConcept = false;
                         role = "BTP";
                         break;
-                    case SKOSProperty.related:
+                    case SKOSProperty.RELATED:
                         role = "RT";
                         break;
                     case SKOSProperty.relatedHasPart:
@@ -918,7 +918,7 @@ public class ImportRdf4jHelper {
             if (CollectionUtils.isNotEmpty(facetSKOSResource.getRelationsList())) {
                 membres = "";
                 for (SKOSRelation member : facetSKOSResource.getRelationsList()) {
-                    if (member.getProperty() == SKOSProperty.member) {
+                    if (member.getProperty() == SKOSProperty.MEMBER) {
                         membres = membres + SEPERATEUR + getOriginalId(member.getTargetUri());
                     }
                 }
@@ -1562,7 +1562,7 @@ public class ImportRdf4jHelper {
             String role;
 
             switch (prop) {
-                case SKOSProperty.narrower:
+                case SKOSProperty.NARROWER:
                     role = "NT";
                     break;
                 case SKOSProperty.narrowerGeneric:
@@ -1574,7 +1574,7 @@ public class ImportRdf4jHelper {
                 case SKOSProperty.narrowerInstantial:
                     role = "NTI";
                     break;
-                case SKOSProperty.broader:
+                case SKOSProperty.BROADER:
                     acs.isTopConcept = false;
                     role = "BT";
                     break;
@@ -1590,7 +1590,7 @@ public class ImportRdf4jHelper {
                     acs.isTopConcept = false;
                     role = "BTP";
                     break;
-                case SKOSProperty.related:
+                case SKOSProperty.RELATED:
                     role = "RT";
                     break;
                 case SKOSProperty.relatedHasPart:
@@ -1610,7 +1610,7 @@ public class ImportRdf4jHelper {
                 hierarchicalRelationship.setRole(role);
                 acs.hierarchicalRelationships.add(hierarchicalRelationship);
 
-            } else if (prop == SKOSProperty.inScheme) {
+            } else if (prop == SKOSProperty.INSCHEME) {
 
             } else if (prop == SKOSProperty.topConceptOf) {
                 acs.isTopConcept = true;

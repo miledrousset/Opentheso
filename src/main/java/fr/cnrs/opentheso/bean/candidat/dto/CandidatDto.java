@@ -22,13 +22,18 @@ public class CandidatDto implements Serializable {
     
     private String createdBy;
     private int createdById;
+
+    private String createdByAdmin;
+    private int createdByIdAdmin;
     
     private String user;
     private int userId;
-
+    
     private String domaine;
     private String nomPref;
     private Date creationDate;
+    private Date insertionDate;
+    
     private String statut;
     private int nbrDemande;
     private int nbrParticipant;

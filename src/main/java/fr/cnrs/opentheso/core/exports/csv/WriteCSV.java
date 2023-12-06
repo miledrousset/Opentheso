@@ -226,14 +226,14 @@ public class WriteCSV {
         stringBuffer
                 .append(getNotation(skosResource.getNotationList())).append(seperate) //notation
 
-                .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.narrower)).append(seperate) //narrower
-                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.narrower)).append(seperate) //narrowerId
+                .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.NARROWER)).append(seperate) //narrower
+                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.NARROWER)).append(seperate) //narrowerId
 
-                .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.broader)).append(seperate) //broader
-                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.broader)).append(seperate) //broaderId      
+                .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.BROADER)).append(seperate) //broader
+                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.BROADER)).append(seperate) //broaderId      
 
-                .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.related)).append(seperate) //related      
-                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.related)).append(seperate) //relatedId                
+                .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.RELATED)).append(seperate) //related      
+                .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.RELATED)).append(seperate) //relatedId                
 
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.exactMatch)).append(seperate) //exactMatch
                 .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch)).append(seperate) //closeMatch

@@ -683,7 +683,7 @@ public class ExportFileBean implements Serializable {
             exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
         }
 
-        exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
+    //    exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
 
         return exportRdf4jHelperNew.getSkosXmlDocument();
     }

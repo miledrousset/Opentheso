@@ -32,7 +32,7 @@
             <h:outputText value="#{candidat.idConcepte}" />
         </p:column>  
 
-        <p:column rendered="#{candidat.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
+        <p:column rendered="#{candidat.nomPref == ''}" width="60" headerText="#{langueBean.getMsg('candidat.titre')}">
             <p:commandLink value="#{candidat.idConcepte}" ajax="true" update="tabViewCandidat" style="color: #43B572"
                            process="@this" actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
         </p:column>  
@@ -48,8 +48,16 @@
         <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
             <h:outputText value="#{candidat.creationDate}" />
         </p:column>  
+        
+        <p:column width="30" headerText="insérer par ">
+            <h:outputText value="#{candidat.createdByAdmin}" style="font-size: 13px;"/>
+        </p:column>        
+        
+        <p:column width="30" headerText="date d'insertion">
+            <h:outputText value="#{candidat.insertionDate}" />
+        </p:column>          
 
-        <p:column width="30" headerText="Votes">
+        <p:column width="20" headerText="Votes">
             <h:outputText value="#{candidat.nbrVote}" />
         </p:column>  
 

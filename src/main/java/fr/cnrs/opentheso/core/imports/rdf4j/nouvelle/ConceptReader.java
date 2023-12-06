@@ -186,7 +186,7 @@ public class ConceptReader {
 
             //readRelationships    
             case "broader":
-                skosConcept.addRelation("", value.stringValue(), SKOSProperty.broader);
+                skosConcept.addRelation("", value.stringValue(), SKOSProperty.BROADER);
                 break;
             case "broaderGeneric":
                 skosConcept.addRelation("", value.stringValue(), SKOSProperty.broaderGeneric);
@@ -198,7 +198,7 @@ public class ConceptReader {
                 skosConcept.addRelation("", value.stringValue(), SKOSProperty.broaderPartitive);
                 break;
             case "narrower":
-                skosConcept.addRelation("", value.stringValue(), SKOSProperty.narrower);
+                skosConcept.addRelation("", value.stringValue(), SKOSProperty.NARROWER);
                 break;
             case "narrowerGeneric":
                 skosConcept.addRelation("", value.stringValue(), SKOSProperty.narrowerGeneric);
@@ -210,7 +210,7 @@ public class ConceptReader {
                 skosConcept.addRelation("", value.stringValue(), SKOSProperty.narrowerPartitive);
                 break;
             case "related":
-                skosConcept.addRelation("", value.stringValue(), SKOSProperty.related);
+                skosConcept.addRelation("", value.stringValue(), SKOSProperty.RELATED);
                 break;
             case "relatedHasPart":
                 skosConcept.addRelation("", value.stringValue(), SKOSProperty.relatedHasPart);
@@ -219,13 +219,13 @@ public class ConceptReader {
                 skosConcept.addRelation("", value.stringValue(), SKOSProperty.relatedPartOf);
                 break;
             case "hasTopConcept":
-                skosConcept.addRelation("", value.stringValue(), SKOSProperty.hasTopConcept);
+                skosConcept.addRelation("", value.stringValue(), SKOSProperty.HASTOPCONCEPT);
                 break;
             case "inScheme":
-                skosConcept.addRelation("", value.stringValue(), SKOSProperty.inScheme);
+                skosConcept.addRelation("", value.stringValue(), SKOSProperty.INSCHEME);
                 break;
             case "member":
-                skosConcept.addRelation("", value.stringValue(), SKOSProperty.member);
+                skosConcept.addRelation("", value.stringValue(), SKOSProperty.MEMBER);
                 break;
             case "topConceptOf":
                 skosConcept.addRelation("", value.stringValue(), SKOSProperty.topConceptOf);

@@ -1,6 +1,2 @@
-Note de version
+Note de version v24.01
 
-- Intégration d'une nouvelle méthode de Gestion des permissions
-- possibilité de gérer les permissions par thésaurus 
-- Accélération de l'export des thésaurus x30
-- export des concepts dépréciés amélioré 
