@@ -1,4 +1,4 @@
-URI,rdf:type,skos:prefLabel@fr,skos:prefLabel@en,skos:altLabel@fr,skos:altLabel@en,skos:hiddenLabel@fr,skos:definition@fr,skos:definition@en,skos:scopeNote@fr,skos:notation,skos:narrower,skos:broader,skos:related,skos:exactMatch,skos:closeMatch,geo:lat,geo:long,skos:member,dct:created,dct:modified
+URI,rdf:type,skos:prefLabel@fr,skos:prefLabel@en,skos:altLabel@fr,skos:altLabel@en,skos:hiddenLabel@fr,skos:definition@fr,skos:definition@en,skos:scopeNote@fr,skos:notation,skos:narrower,skos:broader,skos:related,skos:exactMatch,skos:closeMatch,geo:lat,geo:long,skos:member,dcterms:created,dcterms:modified
 http://mondomaine.fr/G768,skos:Collection,collection1,,,,,,,,I,,,,,,,,,2019-06-14,2019-06-14
 http://mondomaine.fr/G770,skos:Collection,collection2,,,,,,,,II,,,,,,,,,2019-06-14,2019-06-14
 http://mondomaine.fr/14316,skos:Concept,topTerm1,,,,,,,,1,http://mondomaine.fr/14320,,http://mondomaine.fr/14321,,,,,http://mondomaine.fr/G768,2019-06-14,2019-06-14

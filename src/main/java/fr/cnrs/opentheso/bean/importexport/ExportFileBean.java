@@ -663,9 +663,9 @@ public class ExportFileBean implements Serializable {
             for (String idGroup : viewExportBean.getSelectedIdGroups()) {
                 NodeGroupLabel nodeGroupLabel = new GroupHelper().getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
                 SKOSResource sKOSResource = new SKOSResource(
-                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
+                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
                 sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
-                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
                 exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
 
                 concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(),

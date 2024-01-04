@@ -37,4 +37,13 @@
     <changeSet id="23.12.002" author="Miled">
         <sqlFile path="../changelog/v23.12/23-12_002.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>    
+    <changeSet id="23.12.003" author="Miled">
+        <sqlFile path="../changelog/v23.12/23-12_003.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>        
+    <include file="/changelog/v23.12/23-12_004.xml"/> 
+    
+    <changeSet id="23.12.005" author="Miled">
+        <sqlFile path="../changelog/v23.12/23-12_005.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>      
+     
 </databaseChangeLog>

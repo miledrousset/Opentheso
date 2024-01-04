@@ -28,8 +28,8 @@ public class SKOSdc implements SKOSProperty {
     public String toString() {
         String xmlTag = new String();
         switch (property) {
-            case SKOSProperty.identifier:
-                xmlTag = "<dcterms:identifier>" + identifier + "</dcterms:identifier>\n";
+            case SKOSProperty.IDENTIFIER:
+                xmlTag = "<dcterms:identifier>" + IDENTIFIER + "</dcterms:identifier>\n";
                 break;
             default:
                 break;

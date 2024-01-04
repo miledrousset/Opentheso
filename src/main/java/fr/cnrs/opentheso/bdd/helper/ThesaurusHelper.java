@@ -866,7 +866,6 @@ public class ThesaurusHelper {
                         + "delete from node_label where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from concept where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from concept_historique where id_thesaurus = '" + idThesaurus + "';"
-                        + "delete from images where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from preferred_term where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from non_preferred_term where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from non_preferred_term_historique where id_thesaurus = '" + idThesaurus + "';"

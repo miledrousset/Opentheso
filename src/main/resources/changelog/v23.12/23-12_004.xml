@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet author="Miled" id="23.12.004">
+        <dropPrimaryKey tableName="external_images"/>
+        <addColumn tableName="external_images">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </addColumn>        
+        <addUniqueConstraint tableName="external_images" 
+                       columnNames="id_concept,id_thesaurus,external_uri"
+                       constraintName="external_images_unique"/>          
+    </changeSet>        
+        
+    <changeSet author="Miled" id="23.12.005">
+        <dropPrimaryKey tableName="non_preferred_term"/>
+        <addColumn tableName="non_preferred_term">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </addColumn>        
+        <addUniqueConstraint tableName="non_preferred_term" 
+                       columnNames="id_term, lexical_value, lang, id_thesaurus"
+                       constraintName="non_prefered_term_unique"/>          
+    </changeSet>        
+       
+</databaseChangeLog>

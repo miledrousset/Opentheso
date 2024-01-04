@@ -12,9 +12,12 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.skosapi.SKOSDate;
 import fr.cnrs.opentheso.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
@@ -142,16 +145,19 @@ public class CsvWriteHelper {
                 header.add("iso-thes:subGroup"); 
                 
                 // pour les Facettes qui appartiennent au concept 
-                header.add("iso-thes:subordinateArray");            
+                header.add("iso-thes:superOrdinate");            
                 
                 // pour signaler que le concept est déprécié
                 header.add("owl:deprecated");
                 // pour signaler que le concept est remplacé par un autre concept
                 header.add("dcterms:isReplacedBy");
                 
+                // pour les images
+                header.add("foaf:Image");                
                 
-                header.add("dct:created");
-                header.add("dct:modified");
+                header.add("dcterms:source");                
+                header.add("dcterms:created");
+                header.add("dcterms:modified");
                 csvFilePrinter.printRecord(header);
 
                 ArrayList<Object> record = new ArrayList<>();
@@ -198,8 +204,8 @@ public class CsvWriteHelper {
         record.add(skosResource.getLocalUri());
 
         // identifier and arkId
-        if (skosResource.getSdc() != null && skosResource.getSdc().getIdentifier() != null) {
-            record.add(skosResource.getSdc().getIdentifier());
+        if (StringUtils.isNoneEmpty(skosResource.getIdentifier())) {
+            record.add(skosResource.getIdentifier());
         } else {
             record.add("");
         }
@@ -212,22 +218,22 @@ public class CsvWriteHelper {
 
         //skos:prefLabel
         for (String lang : langs) {
-            record.add(getPrefLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.prefLabel));
+            record.add(getPrefLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.PREF_LABEL));
         }
 
         //skos:altLabel
         for (String lang : langs) {
-            record.add(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.altLabel));
+            record.add(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.ALT_LABEL));
         }
 
         //skos:hiddenLabel
         for (String lang : langs) {
-            record.add(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.hiddenLabel));
+            record.add(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.HIDDEN_LABEL));
         }
 
         //skos:definition
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.definition);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.DEFINITION);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             record.add(def);
@@ -235,7 +241,7 @@ public class CsvWriteHelper {
 
         //skos:scopeNote
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.scopeNote);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.SCOPE_NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             record.add(def);
@@ -243,7 +249,7 @@ public class CsvWriteHelper {
 
         //skos:note
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.note);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             record.add(def);
@@ -251,28 +257,28 @@ public class CsvWriteHelper {
 
         //skos:historyNote
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.historyNote);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.HISTORY_NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             record.add(def);
         }
         //skos:editorialNote
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.editorialNote);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.EDITORIAL_NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             record.add(def);
         }
         //skos:changeNote
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.changeNote);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.CHANGE_NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             record.add(def);
         }
         //skos:example
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.example);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.EXAMPLE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             record.add(def);
@@ -295,9 +301,9 @@ public class CsvWriteHelper {
         record.add(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.RELATED));
 
         //exactMatch
-        record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.exactMatch));
+        record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.EXACT_MATCH));
         //closeMatch
-        record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch));
+        record.add(getAlligementValue(skosResource.getMatchList(), SKOSProperty.CLOSE_MATCH));
 
         if (CollectionUtils.isNotEmpty(skosResource.getGpsCoordinates()) && skosResource.getGpsCoordinates().size() == 1) {
             //geo:lat
@@ -324,45 +330,85 @@ public class CsvWriteHelper {
         // iso-thes:subGroup pour référencer l'URI des sous groupes 
         record.add(getSubGroup(skosResource.getRelationsList()));        
         
-        // iso-thes:subordinateArray pour référencer les Facettes du Concept
+        // iso-thes:superOrdinate pour référencer les Facettes du Concept
         record.add(getFacettesOfConcept(skosResource.getRelationsList()));           
         
         // owl:deprecated pour les concepts dépréciés
-        if(skosResource.getStatus() == SKOSProperty.deprecated)
+        if(skosResource.getStatus() == SKOSProperty.DEPRECATED)
             record.add("true");
         else
             record.add("false");
         // dcterms:isReplacedBy pour référencer les concepts qui remplacent celui qui est déprécié 
         record.add(getReplaceBy(skosResource.getsKOSReplaces()));    
         
+        // foaf:Image pour les images
+        record.add(getImages(skosResource.getNodeImage()));          
+        
+        //dcterms:source
+        if (CollectionUtils.isNotEmpty(skosResource.getExternalResources())) {
+            record.add(getExternalReources(skosResource.getExternalResources()));
+        } else {
+            record.add("");
+        }        
+        
         
         //sdct:created
-        record.add(getDateValue(skosResource.getDateList(), SKOSProperty.created));
+        record.add(getDateValue(skosResource.getDateList(), SKOSProperty.CREATED));
         //dct:modified
-        record.add(getDateValue(skosResource.getDateList(), SKOSProperty.modified));
+        record.add(getDateValue(skosResource.getDateList(), SKOSProperty.MODIFIED));
 
         csvFilePrinter.printRecord(record);
         record.clear();
     }
     
+    private String getExternalReources(ArrayList<String> externalResources) {
+        if(externalResources == null) return null;
+        String value = "";
+        for (String externalImage : externalResources) {
+            if(StringUtils.isEmpty(value)){
+                value = externalImage;
+            } else {
+                value = value + delim_multi_datas +  externalImage;
+            }
+        }
+        return value;
+    }       
+    
+    private String getImages(ArrayList<NodeImage> nodeImages) {
+        String value = "";
+        for (NodeImage nodeImage : nodeImages) {
+            if(StringUtils.isEmpty(value)){
+                value = "rdf:about=" + nodeImage.getUri();
+            } else {
+                value = value + delim_multi_datas +  "rdf:about=" + nodeImage.getUri();
+            }
+            if(!StringUtils.isEmpty(nodeImage.getCopyRight())) {
+                value = value + "@@dcterms:rights=" +  nodeImage.getCopyRight();
+            }      
+            if(!StringUtils.isEmpty(nodeImage.getImageName())) {
+                value = value + "@@dcterms:title=" +  nodeImage.getImageName();
+            }             
+        }
+        return value;
+    }     
 
     private String getReplaceBy(ArrayList<SKOSReplaces> sKOSReplaceses) {
         return sKOSReplaceses.stream()
-                .filter(sKOSReplace -> (sKOSReplace.getProperty() == SKOSProperty.isReplacedBy))
+                .filter(sKOSReplace -> (sKOSReplace.getProperty() == SKOSProperty.IS_REPLACED_BY))
                 .map(sKOSReplace -> sKOSReplace.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
     }                
     
     private String getFacettesOfConcept(ArrayList<SKOSRelation> sKOSRelations) {
         return sKOSRelations.stream()
-                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.subordinateArray))
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.SUPER_ORDINATE))
                 .map(sKOSRelation -> sKOSRelation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
     }    
     
     private String getSubGroup(ArrayList<SKOSRelation> sKOSRelations) {
         return sKOSRelations.stream()
-                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.subGroup))
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.SUBGROUP))
                 .map(sKOSRelation -> sKOSRelation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
     }    
@@ -416,7 +462,7 @@ public class CsvWriteHelper {
 
     private String getMemberValue(ArrayList<SKOSRelation> sKOSRelations) {
         return sKOSRelations.stream()
-                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.memberOf) || (sKOSRelation.getProperty() == SKOSProperty.MEMBER))
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.MEMBER_OF) || (sKOSRelation.getProperty() == SKOSProperty.MEMBER))
                 .map(sKOSRelation -> sKOSRelation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
     }    
@@ -479,7 +525,7 @@ public class CsvWriteHelper {
         }
         return value;
     }
-
+    
     /**
      * Export des données limitées en CSV
      *
@@ -583,6 +629,65 @@ public class CsvWriteHelper {
                     }
                 }
 
+            }
+            return os.toByteArray();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+            return null;
+        }
+    }    
+
+    /**
+     * Export des données des candidats insérés ou refusés en CSV* 
+     *
+     * @param candidatDtos
+     * @param delimiter
+     * @return
+     */
+    public byte[] writeProcessedCandidates( List<CandidatDto> candidatDtos, char delimiter) {
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().setDelimiter(delimiter).build())) {
+                /// écriture des headers
+                ArrayList<String> header = new ArrayList<>();
+                header.add("Id");
+                header.add("Candidat");
+                header.add("Créé par");
+                header.add("Date de création");
+                header.add("Traité par");
+                header.add("Date de traitement");
+                header.add("Message de l'admin");                
+                header.add("Votes");
+                header.add("Votes de notes");
+                header.add("Nombre de participants");
+                
+                csvFilePrinter.printRecord(header);
+
+                if (candidatDtos == null || candidatDtos.isEmpty()) {
+                    return null;
+                }
+
+                /// écritures des données
+                ArrayList<Object> record = new ArrayList<>();
+                for (CandidatDto candidatDto : candidatDtos) {
+                    try {
+                        record.add(candidatDto.getIdConcepte());
+                        record.add(candidatDto.getNomPref());
+                        record.add(candidatDto.getCreatedBy());
+                        record.add(candidatDto.getCreationDate());
+                        record.add(candidatDto.getCreatedByAdmin());
+                        record.add(candidatDto.getInsertionDate());
+                        record.add(candidatDto.getAdminMessage());
+                        record.add(candidatDto.getNbrVote());
+                        record.add(candidatDto.getNbrNoteVote());
+                        record.add(candidatDto.getNbrParticipant());
+
+                        csvFilePrinter.printRecord(record);
+                        record.clear();
+                    } catch (IOException e) {
+                        System.err.println(e.toString());
+                    }
+                }
             }
             return os.toByteArray();
         } catch (IOException e) {

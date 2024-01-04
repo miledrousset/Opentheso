@@ -117,8 +117,8 @@ public class WriteCSV {
                     .append("geo:long").append(seperate)
                     .append("geo:gps").append(seperate)
                     .append("skos:member").append(seperate)
-                    .append("dct:created").append(seperate)
-                    .append("dct:modified");
+                    .append("dcterms:created").append(seperate)
+                    .append("dcterms:modified");
 
             writer.write(header.toString());
             writer.newLine();
@@ -171,22 +171,22 @@ public class WriteCSV {
 
         //skos:prefLabel
         for (String lang : langs) {
-            stringBuffer.append(getPrefLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.prefLabel)).append(seperate); //skos:prefLabel
+            stringBuffer.append(getPrefLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.PREF_LABEL)).append(seperate); //skos:prefLabel
         }
 
         //skos:altLabel
         for (String lang : langs) {
-            stringBuffer.append(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.altLabel)).append(seperate);  //skos:altLabel
+            stringBuffer.append(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.ALT_LABEL)).append(seperate);  //skos:altLabel
         }
 
         //skos:hiddenLabel
         for (String lang : langs) {
-            stringBuffer.append(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.hiddenLabel)).append(seperate);//hiddenLabel
+            stringBuffer.append(getAltLabelValue(skosResource.getLabelsList(), lang, SKOSProperty.HIDDEN_LABEL)).append(seperate);//hiddenLabel
         }
 
         //skos:definition
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.definition);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.DEFINITION);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             stringBuffer.append(def).append(seperate);//definition
@@ -194,7 +194,7 @@ public class WriteCSV {
 
         //skos:scopeNote
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.scopeNote);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.SCOPE_NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             stringBuffer.append(def).append(seperate);//scopeNote
@@ -202,7 +202,7 @@ public class WriteCSV {
 
         //skos:note
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.note);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             stringBuffer.append(def).append(seperate);//note
@@ -210,14 +210,14 @@ public class WriteCSV {
 
         //skos:historyNote
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.historyNote);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.HISTORY_NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             stringBuffer.append(def).append(seperate);//historyNote
         }
         //skos:editorialNote
         for (String lang : langs) {
-            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.editorialNote);
+            String def = getDocumentationValue(skosResource.getDocumentationsList(), lang, SKOSProperty.EDITORIAL_NOTE);
             def = def.replaceAll("amp;", "");
             def = def.replaceAll(";", ",");
             stringBuffer.append(def).append(seperate);//editorialNote
@@ -235,14 +235,14 @@ public class WriteCSV {
                 .append(getRelationGivenValue(skosResource.getRelationsList(), SKOSProperty.RELATED)).append(seperate) //related      
                 .append(getRelationGivenValueId(skosResource.getRelationsList(), SKOSProperty.RELATED)).append(seperate) //relatedId                
 
-                .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.exactMatch)).append(seperate) //exactMatch
-                .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.closeMatch)).append(seperate) //closeMatch
+                .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.EXACT_MATCH)).append(seperate) //exactMatch
+                .append(getAlligementValue(skosResource.getMatchList(), SKOSProperty.CLOSE_MATCH)).append(seperate) //closeMatch
                 .append(getLatValue(skosResource.getGpsCoordinates())).append(seperate)//geo:lat
                 .append(getLongValue(skosResource.getGpsCoordinates())).append(seperate)//geo:long
                 .append(getGps(skosResource.getGpsCoordinates())).append(seperate)//gps
                 .append(getMemberValue(skosResource.getRelationsList())).append(seperate)//skos:member
-                .append(getDateValue(skosResource.getDateList(), SKOSProperty.created)).append(seperate)//sdct:created
-                .append(getDateValue(skosResource.getDateList(), SKOSProperty.modified));//dct:modified
+                .append(getDateValue(skosResource.getDateList(), SKOSProperty.CREATED)).append(seperate)//sdct:created
+                .append(getDateValue(skosResource.getDateList(), SKOSProperty.MODIFIED));//dct:modified
         writer.write(stringBuffer.toString());
         writer.newLine();
     }
@@ -299,7 +299,7 @@ public class WriteCSV {
     private String getMemberValue(ArrayList<SKOSRelation> sKOSRelations) {
 
         return sKOSRelations.stream()
-                .filter(sKOSRelation -> sKOSRelation.getProperty() == SKOSProperty.memberOf)
+                .filter(sKOSRelation -> sKOSRelation.getProperty() == SKOSProperty.MEMBER_OF)
                 .map(sKOSRelation -> sKOSRelation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
     }

@@ -619,7 +619,7 @@ public class SKOSResource {
             writeIdToDocumentation(r2);
 
             for (SKOSLabel label : r1.getLabelsList()) {
-                if (label.getProperty() == SKOSProperty.prefLabel && label.getLanguage().equals(langCode)) {
+                if (label.getProperty() == SKOSProperty.PREF_LABEL && label.getLanguage().equals(langCode)) {
 
                     r1_name = label.getLabel();
                     idToNameHashMap.put(id1, r1_name);
@@ -628,7 +628,7 @@ public class SKOSResource {
             }
 
             for (SKOSLabel label2 : r2.getLabelsList()) {
-                if (label2.getProperty() == SKOSProperty.prefLabel && label2.getLanguage().equals(langCode)) {
+                if (label2.getProperty() == SKOSProperty.PREF_LABEL && label2.getLanguage().equals(langCode)) {
                     r2_name = label2.getLabel();
 
                     idToNameHashMap.put(id2, r2_name);
@@ -684,19 +684,19 @@ public class SKOSResource {
                 String matchTypeName = null;
                 int prop = match.getProperty();
                 switch (prop) {
-                    case SKOSProperty.exactMatch:
+                    case SKOSProperty.EXACT_MATCH:
                         matchTypeName = "exactMatch";
                         break;
-                    case SKOSProperty.closeMatch:
+                    case SKOSProperty.CLOSE_MATCH:
                         matchTypeName = "closeMatch";
                         break;
-                    case SKOSProperty.broadMatch:
+                    case SKOSProperty.BROAD_MATCH:
                         matchTypeName = "broadMatch";
                         break;
-                    case SKOSProperty.relatedMatch:
+                    case SKOSProperty.RELATED_MATCH:
                         matchTypeName = "relatedMatch";
                         break;
-                    case SKOSProperty.narrowMatch:
+                    case SKOSProperty.NARROWER_MATCH:
                         matchTypeName = "narrowMatch";
                         break;
                 }
@@ -733,25 +733,25 @@ public class SKOSResource {
                 int prop = documentation.getProperty();
 
                 switch (prop) {
-                    case SKOSProperty.definition:
+                    case SKOSProperty.DEFINITION:
                         docTypeName = "definition";
                         break;
-                    case SKOSProperty.scopeNote:
+                    case SKOSProperty.SCOPE_NOTE:
                         docTypeName = "scopeNote";
                         break;
-                    case SKOSProperty.example:
+                    case SKOSProperty.EXAMPLE:
                         docTypeName = "example";
                         break;
-                    case SKOSProperty.historyNote:
+                    case SKOSProperty.HISTORY_NOTE:
                         docTypeName = "historyNote";
                         break;
-                    case SKOSProperty.editorialNote:
+                    case SKOSProperty.EDITORIAL_NOTE:
                         docTypeName = "editorialNote";
                         break;
-                    case SKOSProperty.changeNote:
+                    case SKOSProperty.CHANGE_NOTE:
                         docTypeName = "changeNote";
                         break;
-                    case SKOSProperty.note:
+                    case SKOSProperty.NOTE:
                         docTypeName = "note";
                         break;
                     default:
@@ -785,9 +785,9 @@ public class SKOSResource {
             String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
             for (SKOSRelation relation : resource.getRelationsList()) {
                 if (relation.getProperty() == SKOSProperty.NARROWER
-                        || relation.getProperty() == SKOSProperty.narrowerGeneric
-                        || relation.getProperty() == SKOSProperty.narrowerInstantial
-                        || relation.getProperty() == SKOSProperty.narrowerPartitive) {
+                        || relation.getProperty() == SKOSProperty.NARROWER_GENERIC
+                        || relation.getProperty() == SKOSProperty.NARROWER_INSTANTIAL
+                        || relation.getProperty() == SKOSProperty.NARROWER_PARTITIVE) {
 
                     if (idToChildId.get(key) == null) {
                         ArrayList<String> temp = new ArrayList<>();
@@ -867,7 +867,7 @@ public class SKOSResource {
                 ArrayList<Integer> newIsTrad = new ArrayList<>();
 
                 for (int i = 0; i < diff; i++) {
-                    newIsTrad.add(SKOSProperty.note);
+                    newIsTrad.add(SKOSProperty.NOTE);
                 }
                 idToIsTradDiff.put(key, newIsTrad);
             }
@@ -914,14 +914,14 @@ public class SKOSResource {
             }
 
             for (SKOSLabel label : r1.getLabelsList()) {
-                if (label.getProperty() == SKOSProperty.prefLabel && label.getLanguage().equals(langCode)) { // to test
+                if (label.getProperty() == SKOSProperty.PREF_LABEL && label.getLanguage().equals(langCode)) { // to test
                     r1_name = label.getLabel();
                     idToNameHashMap.put(id1, r1_name);
 
                 }
             }
             for (SKOSLabel label2 : r2.getLabelsList()) {
-                if (label2.getProperty() == SKOSProperty.prefLabel && label2.getLanguage().equals(langCode)) {
+                if (label2.getProperty() == SKOSProperty.PREF_LABEL && label2.getLanguage().equals(langCode)) {
                     r2_name = label2.getLabel();
                     idToNameHashMap.put(id2, r2_name);
 
@@ -965,10 +965,10 @@ public class SKOSResource {
 
             //prefLabel
             for (SKOSLabel label : resource.getLabelsList()) {
-                if (label.getLanguage().equals(langCode) && label.getProperty() == SKOSProperty.prefLabel) {
+                if (label.getLanguage().equals(langCode) && label.getProperty() == SKOSProperty.PREF_LABEL) {
                     lang1Pref++;
                 }
-                if (label.getLanguage().equals(langCode2) && label.getProperty() == SKOSProperty.prefLabel) {
+                if (label.getLanguage().equals(langCode2) && label.getProperty() == SKOSProperty.PREF_LABEL) {
                     lang2Pref++;
                 }
 
@@ -980,20 +980,20 @@ public class SKOSResource {
                     ArrayList<Integer> trad = idToIsTrad.get(key);
                     if (trad == null) {
                         ArrayList<Integer> newIsTrad = new ArrayList<>();
-                        newIsTrad.add(SKOSProperty.prefLabel);
+                        newIsTrad.add(SKOSProperty.PREF_LABEL);
                         idToIsTrad.put(key, newIsTrad);
                     } else {
-                        trad.add(SKOSProperty.prefLabel);
+                        trad.add(SKOSProperty.PREF_LABEL);
                     }
                 }
             }
             //altLabel
             for (SKOSLabel label : resource.getLabelsList()) {
 
-                if (label.getLanguage().equals(langCode) && label.getProperty() == SKOSProperty.altLabel) {
+                if (label.getLanguage().equals(langCode) && label.getProperty() == SKOSProperty.ALT_LABEL) {
                     lang1Alt++;
                 }
-                if (label.getLanguage().equals(langCode2) && label.getProperty() == SKOSProperty.altLabel) {
+                if (label.getLanguage().equals(langCode2) && label.getProperty() == SKOSProperty.ALT_LABEL) {
                     lang2Alt++;
                 }
 
@@ -1005,10 +1005,10 @@ public class SKOSResource {
                     ArrayList<Integer> trad = idToIsTrad.get(key);
                     if (trad == null) {
                         ArrayList<Integer> newIsTrad = new ArrayList<>();
-                        newIsTrad.add(SKOSProperty.altLabel);
+                        newIsTrad.add(SKOSProperty.ALT_LABEL);
                         idToIsTrad.put(key, newIsTrad);
                     } else {
-                        trad.add(SKOSProperty.altLabel);
+                        trad.add(SKOSProperty.ALT_LABEL);
                     }
                 }
 
@@ -1031,10 +1031,10 @@ public class SKOSResource {
                     ArrayList<Integer> trad = idToIsTrad.get(key);
                     if (trad == null) {
                         ArrayList<Integer> newIsTrad = new ArrayList<>();
-                        newIsTrad.add(SKOSProperty.note);
+                        newIsTrad.add(SKOSProperty.NOTE);
                         idToIsTrad.put(key, newIsTrad);
                     } else {
-                        trad.add(SKOSProperty.note);
+                        trad.add(SKOSProperty.NOTE);
                     }
                 }
 

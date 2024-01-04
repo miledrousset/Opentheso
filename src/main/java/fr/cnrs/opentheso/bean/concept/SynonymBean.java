@@ -80,8 +80,6 @@ public class SynonymBean implements Serializable {
     }
 
     public void reset() {
-
-        
         isHidden = false;
         selectedLang = conceptBean.getSelectedLang();
         nodeLangs = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(connect.getPoolConnexion(), 
@@ -103,7 +101,7 @@ public class SynonymBean implements Serializable {
         duplicate = false;
         this.nodeEM = null;
     }
-
+   
     public void prepareNodeEMForEdit() {
         nodeEMsForEdit = new ArrayList<>();
         for (NodeEM nodeEM1 : conceptBean.getNodeConcept().getNodeEM()) {

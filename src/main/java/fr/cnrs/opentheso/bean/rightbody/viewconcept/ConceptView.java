@@ -107,6 +107,7 @@ public class ConceptView implements Serializable {
 
     // pour savoir si le concept a des relations vers des corpus
     private boolean haveCorpus;
+    private boolean searchedForCorpus;
 
     /// Notes concept
     private ArrayList<NodeNote> notes;
@@ -178,6 +179,7 @@ public class ConceptView implements Serializable {
         nodeCorpuses = null;
         countOfBranch = 0;
         haveCorpus = false;
+        searchedForCorpus = false;
         nodeCustomRelationReciprocals = null;
 
         responsiveOptions = new ArrayList<>();
@@ -194,15 +196,6 @@ public class ConceptView implements Serializable {
         editorialNotes = new ArrayList<>();
         examples = new ArrayList<>();
         historyNotes = new ArrayList<>();
-    }
-
-    public String getDrapeauImg(String codePays) {
-        if (StringUtils.isEmpty(codePays)) {
-            return FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequestContextPath() + "/resources/img/nu.svg";
-        }
-
-        return "https://countryflagsapi.com/png/" + codePays;
     }
 
     public String getDrapeauImgLocal(String codePays) {
@@ -255,6 +248,10 @@ public class ConceptView implements Serializable {
         if (nodeConcept == null) {
             return;
         }
+        
+        searchedForCorpus = false;
+        
+        
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
@@ -268,7 +265,7 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         nodeCorpuses = null;
-        haveCorpus = true;
+    //    haveCorpus = true;
 
 
         createMap(idConcept, idTheso, Boolean.TRUE);
@@ -316,35 +313,17 @@ public class ConceptView implements Serializable {
         countOfBranch = 0;
     }
 
-    public boolean thesoHaveActiveCorpus(){
-        return new CorpusHelper().isHaveActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-    }
 
     public void searchCorpus() {
-         ArrayList<NodeCorpus> nodeCorpusesTemp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-        if(nodeCorpusesTemp == null || nodeCorpusesTemp.isEmpty()) return;
-        nodeCorpuses = new ArrayList<>();
-        ExecutorService executor = Executors.newFixedThreadPool(nodeCorpusesTemp.size());
-        List<Callable<NodeCorpus>> callables = new ArrayList<>();
-
-        for (NodeCorpus nodeCorpus : nodeCorpusesTemp) {
-            callables.add(new SearchCorpus(nodeCorpus, nodeConcept));
-        }
-
-        try {
-            List<Future<NodeCorpus>> futures = executor.invokeAll(callables);
-            for (Future<NodeCorpus> future : futures) {
-                nodeCorpuses.add(future.get());
-            }
-            haveCorpus = nodeCorpuses.stream().filter(element -> element.isIsOnlyUriLink()
-                    || !element.isIsOnlyUriLink() && element.getCount() > 0).findFirst().isPresent();
-            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if(!haveCorpus)
+        searchedForCorpus = true;
+        SearchCorpus2 searchCorpus2 = new SearchCorpus2();
+        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());     
+        nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeConcept);
+        haveCorpus = searchCorpus2.isHaveCorpus();
+        if(!haveCorpus) {
             nodeCorpuses = null;
-        executor.shutdown();
+            nodeCorpuses = null;
+        }
     }
 
     public void createMap(String idConcept, String idTheso, Boolean isFirstTime) {
@@ -393,7 +372,7 @@ public class ConceptView implements Serializable {
         offset = 0;
         nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) return;
-
+        
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
@@ -417,7 +396,8 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         nodeCorpuses = null;
-        haveCorpus = true;
+        haveCorpus = false;
+        searchedForCorpus = false;
       //  nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
 
         setRoles();

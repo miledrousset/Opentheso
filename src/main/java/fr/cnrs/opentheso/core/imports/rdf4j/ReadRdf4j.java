@@ -88,7 +88,7 @@ public class ReadRdf4j {
                         lang = readStruct.literal.getLanguage().get();
                     }
 
-                    if (SKOSProperty.ConceptScheme == readStruct.resource.getProperty()) {
+                    if (SKOSProperty.CONCEPT_SCHEME == readStruct.resource.getProperty()) {
                         setThesaurusData(readStruct, lang);
                     } else {
                         setLabels(readStruct, lang);
@@ -133,7 +133,7 @@ public class ReadRdf4j {
     private void readCandidateData(ReadStruct readStruct) {
         if (null == readStruct.literal.getLanguage().get()) {
             String lang = readStruct.literal.getLanguage().get();
-            readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.note);
+            readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.NOTE);
         } else {
             switch (readStruct.literal.getLanguage().get()) {
                 case WriteRdf4j.STATUS_TAG:
@@ -147,7 +147,7 @@ public class ReadRdf4j {
                     break;
                 default:
                     String lang = readStruct.literal.getLanguage().get();
-                    readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.note);
+                    readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.NOTE);
                     break;
             }
         }
@@ -162,25 +162,25 @@ public class ReadRdf4j {
     private boolean readDocumentation(ReadStruct readStruct, String lang) {
         switch (readStruct.property.getLocalName()) {
             case "definition":
-                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.definition);
+                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.DEFINITION);
                 return false;
             case "scopeNote":
-                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.scopeNote);
+                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.SCOPE_NOTE);
                 return false;
             case "example":
-                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.example);
+                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.EXAMPLE);
                 return false;
             case "historyNote":
-                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.historyNote);
+                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.HISTORY_NOTE);
                 return false;
             case "editorialNote":
-                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.editorialNote);
+                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.EDITORIAL_NOTE);
                 return false;
             case "changeNote":
-                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.changeNote);
+                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.CHANGE_NOTE);
                 return false;
             case "note":
-                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.note);
+                readStruct.resource.addDocumentation(readStruct.literal.getLabel(), lang, SKOSProperty.NOTE);
                 return false;
             default:
                 return true;
@@ -191,13 +191,13 @@ public class ReadRdf4j {
     private boolean setLabels(ReadStruct readStruct, String lang) {
         switch (readStruct.property.getLocalName()) {
             case "prefLabel":
-                readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.prefLabel);
+                readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.PREF_LABEL);
                 return true;
             case "altLabel":
-                readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.altLabel);
+                readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.ALT_LABEL);
                 return true;
             case "hiddenLabel":
-                readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.hiddenLabel);
+                readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.HIDDEN_LABEL);
                 return true;
             default:
                 return false;
@@ -208,7 +208,7 @@ public class ReadRdf4j {
         switch (readStruct.property.getLocalName()) {
             case "title":
                 readStruct.resource.getThesaurus().setTitle(readStruct.literal.getLabel());
-                readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.prefLabel);
+                readStruct.resource.addLabel(readStruct.literal.getLabel(), lang, SKOSProperty.PREF_LABEL);
                 return true;
             case "creator":
                 readStruct.resource.getThesaurus().setCreator(readStruct.literal.getLabel());

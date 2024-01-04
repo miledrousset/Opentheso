@@ -11,7 +11,9 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.AccessThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
@@ -29,6 +31,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -556,6 +559,21 @@ public class RoleOnThesoBean implements Serializable {
             selectedTheso.setSelectedTheso();
         } else
             selectedTheso.redirectToTheso();
+    }
+    
+    
+    public void showInfosOfTheso(String idTheso) {
+        StatisticHelper statisticHelper = new StatisticHelper();
+        int conceptsCount = statisticHelper.getNbCpt(connect.getPoolConnexion(), idTheso);
+        int candidatesCount = statisticHelper.getNbCandidate(connect.getPoolConnexion(), idTheso);        
+        int deprecatedsCount = statisticHelper.getNbOfDeprecatedConcepts(connect.getPoolConnexion(), idTheso);        
+        
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info"),
+                languageBean.getMsg("candidat.total_concepts") + " = " + conceptsCount + "\n" 
+                + languageBean.getMsg("candidat.titre") + " = " + candidatesCount + "\n"
+                + languageBean.getMsg("search.deprecated") + " = " + deprecatedsCount);
+        
+        PrimeFaces.current().dialog().showMessageDynamic(message);
     }
     
     ////////////////////////////////////////////////////////////////////

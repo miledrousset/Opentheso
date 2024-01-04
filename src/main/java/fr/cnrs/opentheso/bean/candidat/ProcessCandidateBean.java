@@ -12,9 +12,13 @@ import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
+import fr.cnrs.opentheso.core.exports.csv.StatistiquesRapportCSV;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PreDestroy;
@@ -24,6 +28,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -55,12 +61,42 @@ public class ProcessCandidateBean implements Serializable {
 
     public ProcessCandidateBean() {
     }
+    
+    public void action(){
+    }
 
     public void reset(CandidatDto candidatSelected) {
         this.selectedCandidate = candidatSelected;
         adminMessage = null;
     }
 
+    public StreamedContent exportProcessedCandidates(List<CandidatDto> candidatDtos) {
+        CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+        byte[] datas;
+        
+        datas = csvWriteHelper.writeProcessedCandidates(candidatDtos, ';');
+
+        if (datas == null) {
+            return null;
+        }
+
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+
+        try ( ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
+            return DefaultStreamedContent.builder()
+                    .contentType("text/csv")
+                    .name(selectedTheso.getThesoName() + "_candidats" + ".csv")
+                    .stream(() -> input)
+                    .build();
+        } catch (IOException ex) {
+        }
+        PrimeFaces.current().executeScript("PF('waitDialog').hide();");
+        return new DefaultStreamedContent();
+
+    }    
+    
+    
+    
     public void insertCandidat(int idUser, NodePreference nodePreference) {
         if (selectedCandidate == null) {
             printErreur("Pas de candidat sélectionné");
@@ -231,9 +267,11 @@ public class ProcessCandidateBean implements Serializable {
             return;
         }
         CandidatService candidatService = new CandidatService();
-
+        ConceptHelper conceptHelper = new ConceptHelper();
+        DcElementHelper dcElmentHelper = new DcElementHelper();          
         // envoie de mail au créateur du candidat si l'option mail est activée
         UserHelper userHelper = new UserHelper();
+        
         NodeUser nodeUser;
         
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
@@ -244,7 +282,14 @@ public class ProcessCandidateBean implements Serializable {
             }
             nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
-                sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);               
+                sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);    
+            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate1.getIdThesaurus(),
+                    selectedCandidate1.getIdConcepte(), idUser); 
+            ///// insert DcTermsData to add contributor
+            dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+                    new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                    selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
+            ///////////////               
         }
 
         printMessage("Candidats insérés avec succès");

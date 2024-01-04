@@ -22,7 +22,6 @@ delete from concept_term_candidat;
 delete from gps;
 delete from hierarchical_relationship;
 delete from hierarchical_relationship_historique;
-delete from images;
 delete from external_images;
 delete from non_preferred_term;
 delete from non_preferred_term_historique;

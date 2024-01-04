@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
+import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
@@ -1307,6 +1308,8 @@ public class ImportFileBean implements Serializable {
         }
         csvImportHelper.setNodePreference(preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idNewTheso));
         csvImportHelper.setFormatDate(formatDate);
+        GroupHelper groupHelper = new GroupHelper();
+        
         // ajout des concepts et collections
         total = 0;
         for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
@@ -1321,7 +1324,18 @@ public class ImportFileBean implements Serializable {
                 case "skos:collection":
                     // ajout de groupe
                     csvImportHelper.addGroup(connect.getPoolConnexion(), idNewTheso, conceptObject);
+
+                    // ajout des liens pour les sous groupes
+                    for (String subGroup : conceptObject.getSubGroups()) {
+                        groupHelper.addSubGroup(connect.getPoolConnexion(), conceptObject.getIdConcept(), subGroup, idNewTheso);
+                    }                    
                     break;
+                    
+                case "skos-thes:thesaurusarray":
+                    // ajout dde facettes
+                    csvImportHelper.addFacets(connect.getPoolConnexion(), conceptObject, idNewTheso);
+           //         csvImportHelper.addGroup(connect.getPoolConnexion(), idNewTheso, conceptObject);
+                    break;                    
                 default:
                     break;
             }
@@ -2678,7 +2692,12 @@ public class ImportFileBean implements Serializable {
                             }
                         }
                         csvImportHelper.addGroup(connect.getPoolConnexion(), idTheso, conceptObject);
-                        total ++;
+                        
+                        // ajout des liens pour les sous groupes
+                        for (String subGroup : conceptObject.getSubGroups()) {
+                            groupHelper.addSubGroup(connect.getPoolConnexion(), conceptObject.getIdConcept(), subGroup, idTheso);
+                        }
+                        
                         break;
                     default:
                         if (conceptObject.getIdConcept() == null || conceptObject.getIdConcept().isEmpty()) {
@@ -2983,7 +3002,7 @@ public class ImportFileBean implements Serializable {
 
     public void addSkosThesoToBDDV2() throws SQLException {
 
-        long tempsDebut = System.currentTimeMillis();
+  //     long tempsDebut = System.currentTimeMillis();
 
         if (StringUtils.isEmpty(selectedLang)) {
             selectedLang = connect.getWorkLanguage();
@@ -3034,9 +3053,9 @@ public class ImportFileBean implements Serializable {
                 "Le thesaurus " + idTheso + " est correctement ajouté !", "import réussi"));
         PrimeFaces.current().ajax().update("messageIndex");
 
-        long tempsFin = System.currentTimeMillis();
+    /*    long tempsFin = System.currentTimeMillis();
         double seconds = (tempsFin - tempsDebut) / 1000F;
-        System.out.println("Nouvelle méthode : Opération effectuée en: " + seconds + " secondes.");
+        System.out.println("Nouvelle méthode : Opération effectuée en: " + seconds + " secondes.");*/
     }
 
     /**

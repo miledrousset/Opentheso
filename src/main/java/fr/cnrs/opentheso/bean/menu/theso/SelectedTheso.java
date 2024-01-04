@@ -1,7 +1,9 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
+import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -103,6 +105,7 @@ public class SelectedTheso implements Serializable {
     private List<UserGroupLabel> projectsList;
     private List<ResultatAlignement> resultAlignementList;
 
+    private boolean haveActiveCorpus;
 
     @PreDestroy
     public void destroy(){
@@ -195,6 +198,10 @@ public class SelectedTheso implements Serializable {
         }
     }
 
+    private void thesoHaveActiveCorpus(){
+        haveActiveCorpus = new CorpusHelper().isHaveActiveCorpus(connect.getPoolConnexion(), getSelectedIdTheso());
+    }    
+    
     /**
      * Permet de charger le thésaurus sélectionné C'est le point d'entrée de
      * l'application
@@ -206,6 +213,8 @@ public class SelectedTheso implements Serializable {
         connect.setLocalUri(localUri);
         
       //  currentUser.getUserPermissions();
+        
+        thesoHaveActiveCorpus();
         
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
@@ -591,6 +600,7 @@ public class SelectedTheso implements Serializable {
         // gestion de l'accès par thésaurus d'un identifiant différent 
         if (!idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (isValidTheso(idThesoFromUri)) {
+                currentUser.resetUserPermissionsForThisTheso();
                 /// chargement du thésaurus
                 selectedIdTheso = idThesoFromUri;
                 roleOnThesoBean.initNodePref(selectedIdTheso);
@@ -618,6 +628,7 @@ public class SelectedTheso implements Serializable {
                 return;
             }
         }
+        currentUser.initUserPermissionsForThisTheso(selectedIdTheso);
         initIdsFromUri();
     }
 
@@ -938,5 +949,11 @@ public class SelectedTheso implements Serializable {
         this.resultAlignementList = resultAlignementList;
     }
 
+    public boolean isHaveActiveCorpus() {
+        return haveActiveCorpus;
+    }
 
+    public void setHaveActiveCorpus(boolean haveActiveCorpus) {
+        this.haveActiveCorpus = haveActiveCorpus;
+    }
 }

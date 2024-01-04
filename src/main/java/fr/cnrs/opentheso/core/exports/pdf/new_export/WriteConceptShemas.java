@@ -32,7 +32,7 @@ public class WriteConceptShemas {
 
         xmlDocument.getConceptScheme().getLabelsList()
                 .stream()
-                .filter(label -> label.getProperty() == SKOSProperty.prefLabel)
+                .filter(label -> label.getProperty() == SKOSProperty.PREF_LABEL)
                 .forEach(label -> {
                     if (label.getLanguage().equals(codeLang)) {
                         cell1.addElement(createTitle(xmlDocument, label, codeLang, writePdfSettings));

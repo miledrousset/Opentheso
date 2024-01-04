@@ -18,11 +18,11 @@ public class GenericReader {
 
         switch (predicate.getLocalName()) {
             case "prefLabel":
-                skosConcept.addLabel(literal.getLabel(), lang, SKOSProperty.prefLabel);
+                skosConcept.addLabel(literal.getLabel(), lang, SKOSProperty.PREF_LABEL);
                 break;
             case "title":
                 skosConcept.getThesaurus().setTitle(literal.getLabel());
-                skosConcept.addLabel(literal.getLabel(), lang, SKOSProperty.prefLabel);
+                skosConcept.addLabel(literal.getLabel(), lang, SKOSProperty.PREF_LABEL);
                 break;
             case "creator":
                 skosConcept.getThesaurus().setCreator(literal.getLabel());

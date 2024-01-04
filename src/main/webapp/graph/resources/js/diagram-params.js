@@ -45,10 +45,14 @@ tailleSelected.addEventListener('change', function () {
       //  console.log("Taille GRANDE");
         this.width  = 2400 - margin.right - margin.left;
         this.height = 2400 - margin.top - margin.bottom;
-    } else {
+    } else if (indexTaille === 3) {
       //  console.log("Taille très GRANDE");
         this.width  = 4000 - margin.right - margin.left;
         this.height = 6000 - margin.top - margin.bottom;
+    } else {
+      //  console.log("Taille très GRANDE");
+        this.width  = 10000 - margin.right - margin.left;
+        this.height = 80000 - margin.top - margin.bottom;
     }
 
     tree = d3.layout.tree().size([this.height, this.width]);

@@ -53,7 +53,7 @@ public class GraphD3js {
         for (int i = 0; i < 3; i++) {
             childrens.add(getNode(i));
         }
-        nodeDatas.setChildren(childrens);  
+        nodeDatas.setChildrens(childrens);
 
         return nodeDatas;
     }
@@ -74,7 +74,7 @@ public class GraphD3js {
         ArrayList<NodeDatas> childrens = new ArrayList<>();
         if(i==0) {
             childrens.add(getNode(3 + i++));
-            nodeDatas.setChildren(childrens);
+            nodeDatas.setChildrens(childrens);
         }
         return nodeDatas;
     }    

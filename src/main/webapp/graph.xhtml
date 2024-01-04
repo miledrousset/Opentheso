@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <link href="resources/img/icon_opentheso2.png" rel="icon" />
+
+        <link rel="stylesheet" type="text/css" href="resources/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="resources/css/theme_general.css" />
+        <link rel="stylesheet" type="text/css" href="resources/css/theme_opentheso.css" />
+        <link rel="stylesheet" type="text/css" href="resources/css/composants_opentheso.css" />
+
+        <script type="text/javascript" src="resources/js/scrollToSelectedScript.js"></script>
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/all.css"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.0/css/v4-shims.css"/>
+
+        <h:outputText value="#{preferenceBean.googleAnalytics}" escape="false"/>
+
+        <h:panelGroup id="indexTitle" >
+            <title>
+                <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexical_value != ''}"
+                              value="#{conceptView.nodeConcept.term.lexical_value}"/>
+                <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexical_value == ''}"
+                              value="Opentheso"/>
+            </title>
+            <meta name="description" content="#{langueBean.getMsg('index.Opentheso_info')}"/>
+        </h:panelGroup>
+        
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+    </h:head>
+
+    <h:body >
+
+        <style>
+           .ui-diagram-element {
+               width: 5em;
+               height: 5em;
+               line-height: 5em;
+               text-align: center;
+               box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
+               border-radius: 5em;
+               border: 1px solid #404a4e;
+               background-color: #FAEDE5;
+               color: #0d5aa7;
+               user-select: none;
+           }
+
+           .ui-diagram-element:hover {
+               background-color: #20282b;
+               color: #FAEDE5;
+           }
+       </style>
+
+       <div class="card">
+           <p:diagram value="#{diagramHierarchicalView.model}" style="height:600px" styleClass="ui-widget-content"/>
+       </div>
+        
+    </h:body>
+</html>

@@ -274,7 +274,7 @@ public class WritePdf {
 
         if (tradList != null) {
             for (int lab : tradList) {
-                if (lab == SKOSProperty.note) {
+                if (lab == SKOSProperty.NOTE) {
                     docCount++;
                 }
             }
@@ -349,7 +349,7 @@ public class WritePdf {
             for (SKOSLabel label : thesaurus.getLabelsList()) {
                 if (label.getLanguage().equals(codeLang)) {
                     String labelValue = label.getLabel();
-                    if (label.getProperty() == SKOSProperty.prefLabel) {
+                    if (label.getProperty() == SKOSProperty.PREF_LABEL) {
 
                         Paragraph paragraph = new Paragraph();
                         Anchor anchor = new Anchor(labelValue + " (" + codeLang + ")", titleFont);
@@ -367,7 +367,7 @@ public class WritePdf {
                 for (SKOSLabel label : thesaurus.getLabelsList()) {
                     if (label.getLanguage().equals(codeLang2)) {
                         String labelValue = label.getLabel();
-                        if (label.getProperty() == SKOSProperty.prefLabel) {
+                        if (label.getProperty() == SKOSProperty.PREF_LABEL) {
 
                             Paragraph paragraph = new Paragraph();
                             Anchor anchor = new Anchor(labelValue + " (" + codeLang2 + ")", titleFont);
@@ -407,7 +407,7 @@ public class WritePdf {
         ArrayList<Integer> tradList = idToIsTrad.get(id);
         if (tradList != null) {
             for (int lab : tradList) {
-                if (lab == SKOSProperty.altLabel) {
+                if (lab == SKOSProperty.ALT_LABEL) {
                     altLabelCount++;
                 }
             }
@@ -425,10 +425,10 @@ public class WritePdf {
                     labelValue = label.getLabel();
                 } else {
                     if (tradList != null) {
-                        if (tradList.contains(SKOSProperty.prefLabel) && label.getProperty() == SKOSProperty.prefLabel) {
+                        if (tradList.contains(SKOSProperty.PREF_LABEL) && label.getProperty() == SKOSProperty.PREF_LABEL) {
                             prefIsTrad = true;
                         }
-                        if (tradList.contains(SKOSProperty.altLabel) && label.getProperty() == SKOSProperty.altLabel) {
+                        if (tradList.contains(SKOSProperty.ALT_LABEL) && label.getProperty() == SKOSProperty.ALT_LABEL) {
 
                             if (altLabelCount > altLabelWrite) {
                                 altIsTrad = true;
@@ -441,7 +441,7 @@ public class WritePdf {
 
                 }
 
-                if (label.getProperty() == SKOSProperty.prefLabel && !prefIsTrad) {
+                if (label.getProperty() == SKOSProperty.PREF_LABEL && !prefIsTrad) {
                     
                     Paragraph paragraph = new Paragraph();
                     Anchor anchor = new Anchor(labelValue, termFont);
@@ -449,7 +449,7 @@ public class WritePdf {
                     paragraph.add(anchor);
                     paragraphs.add(paragraph);
 
-                } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {
+                } else if (label.getProperty() == SKOSProperty.ALT_LABEL && !altIsTrad) {
                     paragraphs.add(new Paragraph("    USE: " + labelValue, textFont));
                 }
             }
@@ -473,28 +473,28 @@ public class WritePdf {
                 case SKOSProperty.RELATED:
                     codeRelation = "RT";
                     break;
-                case SKOSProperty.relatedHasPart:
+                case SKOSProperty.RELATED_HAS_PART:
                     codeRelation = "RHP";
                     break;
-                case SKOSProperty.relatedPartOf:
+                case SKOSProperty.RELATED_PART_OF:
                     codeRelation = "RPO";
                     break;
-                case SKOSProperty.narrowerGeneric:
+                case SKOSProperty.NARROWER_GENERIC:
                     codeRelation = "NTG";
                     break;
-                case SKOSProperty.narrowerInstantial:
+                case SKOSProperty.NARROWER_INSTANTIAL:
                     codeRelation = "NTI";
                     break;
-                case SKOSProperty.narrowerPartitive:
+                case SKOSProperty.NARROWER_PARTITIVE:
                     codeRelation = "NTP";
                     break;
-                case SKOSProperty.broaderGeneric:
+                case SKOSProperty.BROADER_GENERIC:
                     codeRelation = "BTG";
                     break;
-                case SKOSProperty.broaderInstantial:
+                case SKOSProperty.BROADER_INSTANTIAL:
                     codeRelation = "BTI";
                     break;
-                case SKOSProperty.broaderPartitive:
+                case SKOSProperty.BROADER_PARTITIVE:
                     codeRelation = "BTP";
                     break;
 
@@ -523,7 +523,7 @@ public class WritePdf {
 
             if (tradList != null) {
                 for (int lab : tradList) {
-                    if (lab == SKOSProperty.note) {
+                    if (lab == SKOSProperty.NOTE) {
                         docCount++;
                     }
                 }
@@ -533,25 +533,25 @@ public class WritePdf {
             int prop = doc.getProperty();
             String docTypeName;
             switch (prop) {
-                case SKOSProperty.definition:
+                case SKOSProperty.DEFINITION:
                     docTypeName = "definition";
                     break;
-                case SKOSProperty.scopeNote:
+                case SKOSProperty.SCOPE_NOTE:
                     docTypeName = "scopeNote";
                     break;
-                case SKOSProperty.example:
+                case SKOSProperty.EXAMPLE:
                     docTypeName = "example";
                     break;
-                case SKOSProperty.historyNote:
+                case SKOSProperty.HISTORY_NOTE:
                     docTypeName = "historyNote";
                     break;
-                case SKOSProperty.editorialNote:
+                case SKOSProperty.EDITORIAL_NOTE:
                     docTypeName = "editorialNote";
                     break;
-                case SKOSProperty.changeNote:
+                case SKOSProperty.CHANGE_NOTE:
                     docTypeName = "changeNote";
                     break;
-                case SKOSProperty.note:
+                case SKOSProperty.NOTE:
                     docTypeName = "note";
                     break;
                 default:
@@ -565,7 +565,7 @@ public class WritePdf {
                 docText = doc.getText();
             } else {
 
-                if (tradList != null && tradList.contains(SKOSProperty.note)) {
+                if (tradList != null && tradList.contains(SKOSProperty.NOTE)) {
 
                     if (docCount > docWrite) {
                         docIsTrad = true;
@@ -584,19 +584,19 @@ public class WritePdf {
             int prop = match.getProperty();
             String matchTypeName = null;
             switch (prop) {
-                case SKOSProperty.exactMatch:
+                case SKOSProperty.EXACT_MATCH:
                     matchTypeName = "exactMatch";
                     break;
-                case SKOSProperty.closeMatch:
+                case SKOSProperty.CLOSE_MATCH:
                     matchTypeName = "closeMatch";
                     break;
-                case SKOSProperty.broadMatch:
+                case SKOSProperty.BROAD_MATCH:
                     matchTypeName = "broadMatch";
                     break;
-                case SKOSProperty.relatedMatch:
+                case SKOSProperty.RELATED_MATCH:
                     matchTypeName = "relatedMatch";
                     break;
-                case SKOSProperty.narrowMatch:
+                case SKOSProperty.NARROWER_MATCH:
                     matchTypeName = "narrowMatch";
                     break;
             }

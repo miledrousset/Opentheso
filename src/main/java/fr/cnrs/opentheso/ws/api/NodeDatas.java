@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.ws.api;
 
-import java.util.ArrayList;
-
+import java.util.List;
+import lombok.Data;
 /**
  *
  * @author miledrousset
@@ -14,65 +9,18 @@ import java.util.ArrayList;
 /**
  * Class pour regrouper les datas pour un noeud
  */
+@Data
 public class NodeDatas {
 
     private String name;
     private String type;
     private String url;
-    private ArrayList<String> definition;
-    private ArrayList<String> synonym;
+    private List<String> definition;
+    private List<String> synonym;
 
-    private ArrayList<NodeDatas> childrens;
+    private List<NodeDatas> childrens;
 
     public NodeDatas() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public ArrayList<String> getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(ArrayList<String> definition) {
-        this.definition = definition;
-    }
-
-    public ArrayList<String> getSynonym() {
-        return synonym;
-    }
-
-    public void setSynonym(ArrayList<String> synonym) {
-        this.synonym = synonym;
-    }
-
-    public ArrayList<NodeDatas> getChildrens() {
-        return childrens;
-    }
-
-    public void setChildren(ArrayList<NodeDatas> childrens) {
-        this.childrens = childrens;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
 }

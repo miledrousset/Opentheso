@@ -132,9 +132,9 @@ public class ImportRdf4jHelper {
         String contributor = "";
 
         for (SKOSAgent agent : conceptScheme.getAgentList()) {
-            if (agent.getProperty() == SKOSProperty.creator) {
+            if (agent.getProperty() == SKOSProperty.CREATOR) {
                 creator = agent.getAgent();
-            } else if (agent.getProperty() == SKOSProperty.contributor) {
+            } else if (agent.getProperty() == SKOSProperty.CONTRIBUTOR) {
                 contributor = agent.getAgent();
             }
         }
@@ -272,7 +272,7 @@ public class ImportRdf4jHelper {
                 continue;
             }
             for (SKOSRelation relation : facetSKOSResource.getRelationsList()) {
-                if (relation.getProperty() == SKOSProperty.superOrdinate) {
+                if (relation.getProperty() == SKOSProperty.SUPER_ORDINATE) {
                     idConceptParent = getOriginalId(relation.getTargetUri());
                 }
             }
@@ -342,17 +342,17 @@ public class ImportRdf4jHelper {
             }
 
             switch (group.getProperty()) {
-                case SKOSProperty.Collection:
+                case SKOSProperty.COLLECTION:
                     type = "C";
                     break;
-                case SKOSProperty.ConceptGroup:
+                case SKOSProperty.CONCEPT_GROUP:
                     type = "G";
                     break;
-                case SKOSProperty.MicroThesaurus:
+                case SKOSProperty.MICROTHESAURUS:
                 default:
                     type = "MT";
                     break;
-                case SKOSProperty.Theme:
+                case SKOSProperty.THEME:
                     type = "T";
                     break;
             }
@@ -385,10 +385,10 @@ public class ImportRdf4jHelper {
             for (SKOSDate sKOSDate : group.getDateList()) {
                 try {
                     if(!StringUtils.isEmpty(sKOSDate.getDate())) {
-                        if(sKOSDate.getProperty() == SKOSProperty.created){
+                        if(sKOSDate.getProperty() == SKOSProperty.CREATED){
                             created = simpleDateFormat.parse(sKOSDate.getDate());
                         }
-                        if(sKOSDate.getProperty() == SKOSProperty.modified){
+                        if(sKOSDate.getProperty() == SKOSProperty.MODIFIED){
                             modified = simpleDateFormat.parse(sKOSDate.getDate());
                         }                        
                     }
@@ -404,7 +404,7 @@ public class ImportRdf4jHelper {
             for (SKOSRelation relation : group.getRelationsList()) {
                 int prop = relation.getProperty();
                 switch (prop) {
-                    case SKOSProperty.subGroup:
+                    case SKOSProperty.SUBGROUP:
                         idSubGroup = getIdFromUri(relation.getTargetUri());
                         groupHelper.addSubGroup(ds, idGroup, idSubGroup, idTheso);
                         break;
@@ -482,7 +482,7 @@ public class ImportRdf4jHelper {
         String conceptStatus = "";
         
        
-        if (conceptResource.getStatus() == SKOSProperty.deprecated) {
+        if (conceptResource.getStatus() == SKOSProperty.DEPRECATED) {
             conceptStatus = "dep";
         }
         
@@ -527,19 +527,19 @@ public class ImportRdf4jHelper {
             for (SKOSMatch match : conceptResource.getMatchList()) {
                 int id_type = -1;
                 switch (match.getProperty()) {
-                    case SKOSProperty.closeMatch:
+                    case SKOSProperty.CLOSE_MATCH:
                         id_type = 2;
                         break;
-                    case SKOSProperty.exactMatch:
+                    case SKOSProperty.EXACT_MATCH:
                         id_type = 1;
                         break;
-                    case SKOSProperty.broadMatch:
+                    case SKOSProperty.BROAD_MATCH:
                         id_type = 3;
                         break;
-                    case SKOSProperty.narrowMatch:
+                    case SKOSProperty.NARROWER_MATCH:
                         id_type = 5;
                         break;
-                    case SKOSProperty.relatedMatch:
+                    case SKOSProperty.RELATED_MATCH:
                         id_type = 4;
                         break;
                 }
@@ -577,14 +577,14 @@ public class ImportRdf4jHelper {
             nonPrefTerm = "";
             prefTerm = "";
             for (SKOSLabel label : conceptResource.getLabelsList()) {
-                if (label.getProperty() == SKOSProperty.prefLabel) {
+                if (label.getProperty() == SKOSProperty.PREF_LABEL) {
                     prefTerm += SEPERATEUR + label.getLabel() + SOUS_SEPERATEUR + label.getLanguage();
                 } else {
                     String status = null;
                     boolean hiden = false;
-                    if (label.getProperty() == SKOSProperty.altLabel) {
+                    if (label.getProperty() == SKOSProperty.ALT_LABEL) {
                         status = "USE";
-                    } else if (label.getProperty() == SKOSProperty.hiddenLabel) {
+                    } else if (label.getProperty() == SKOSProperty.HIDDEN_LABEL) {
                         status = "Hidden";
                         hiden = true;
                     }
@@ -618,38 +618,38 @@ public class ImportRdf4jHelper {
                     case SKOSProperty.NARROWER:
                         role = "NT";
                         break;
-                    case SKOSProperty.narrowerGeneric:
+                    case SKOSProperty.NARROWER_GENERIC:
                         role = "NTG";
                         break;
-                    case SKOSProperty.narrowerPartitive:
+                    case SKOSProperty.NARROWER_PARTITIVE:
                         role = "NTP";
                         break;
-                    case SKOSProperty.narrowerInstantial:
+                    case SKOSProperty.NARROWER_INSTANTIAL:
                         role = "NTI";
                         break;
                     case SKOSProperty.BROADER:
                         isTopConcept = false;
                         role = "BT";
                         break;
-                    case SKOSProperty.broaderGeneric:
+                    case SKOSProperty.BROADER_GENERIC:
                         isTopConcept = false;
                         role = "BTG";
                         break;
-                    case SKOSProperty.broaderInstantial:
+                    case SKOSProperty.BROADER_INSTANTIAL:
                         isTopConcept = false;
                         role = "BTI";
                         break;
-                    case SKOSProperty.broaderPartitive:
+                    case SKOSProperty.BROADER_PARTITIVE:
                         isTopConcept = false;
                         role = "BTP";
                         break;
                     case SKOSProperty.RELATED:
                         role = "RT";
                         break;
-                    case SKOSProperty.relatedHasPart:
+                    case SKOSProperty.RELATED_HAS_PART:
                         role = "RHP";
                         break;
-                    case SKOSProperty.relatedPartOf:
+                    case SKOSProperty.RELATED_PART_OF:
                         role = "RPO";
                         break;
                     default:
@@ -658,7 +658,7 @@ public class ImportRdf4jHelper {
 
                 if (!role.equals("")) {
                     relations = relations + SEPERATEUR + idConcept + SOUS_SEPERATEUR + role + SOUS_SEPERATEUR + getOriginalId(relation.getTargetUri());
-                } else if (relation.getProperty() == SKOSProperty.memberOf) {
+                } else if (relation.getProperty() == SKOSProperty.MEMBER_OF) {
                     collectionToAdd = getIdFromUri(relation.getTargetUri());
                 }
 
@@ -682,25 +682,25 @@ public class ImportRdf4jHelper {
             for (SKOSDocumentation documentation : conceptResource.getDocumentationsList()) {
                 String noteTypeCode = "";
                 switch (documentation.getProperty()) {
-                    case SKOSProperty.definition:
+                    case SKOSProperty.DEFINITION:
                         noteTypeCode = "definition";
                         break;
-                    case SKOSProperty.scopeNote:
+                    case SKOSProperty.SCOPE_NOTE:
                         noteTypeCode = "scopeNote";
                         break;
-                    case SKOSProperty.example:
+                    case SKOSProperty.EXAMPLE:
                         noteTypeCode = "example";
                         break;
-                    case SKOSProperty.historyNote:
+                    case SKOSProperty.HISTORY_NOTE:
                         noteTypeCode = "historyNote";
                         break;
-                    case SKOSProperty.editorialNote:
+                    case SKOSProperty.EDITORIAL_NOTE:
                         noteTypeCode = "editorialNote";
                         break;
-                    case SKOSProperty.changeNote:
+                    case SKOSProperty.CHANGE_NOTE:
                         noteTypeCode = "changeNote";
                         break;
-                    case SKOSProperty.note:
+                    case SKOSProperty.NOTE:
                         noteTypeCode = "note";
                         break;
                 }
@@ -734,7 +734,7 @@ public class ImportRdf4jHelper {
         String isReplacedBy = null;
         if (CollectionUtils.isNotEmpty(conceptResource.getsKOSReplaces())) {
             for (SKOSReplaces replace : conceptResource.getsKOSReplaces()) {
-                if (SKOSProperty.isReplacedBy == replace.getProperty()) {
+                if (SKOSProperty.IS_REPLACED_BY == replace.getProperty()) {
                     if (isReplacedBy == null) isReplacedBy = "";
                     isReplacedBy = isReplacedBy + SEPERATEUR + getOriginalId(replace.getTargetUri());
                 }
@@ -754,10 +754,10 @@ public class ImportRdf4jHelper {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);
             for (SKOSDate date : conceptResource.getDateList()) {
                 if(date.getDate() != null && !date.getDate().isEmpty()) {
-                    if (date.getProperty() == SKOSProperty.created) {
+                    if (date.getProperty() == SKOSProperty.CREATED) {
                         created = simpleDateFormat.parse(date.getDate());
                     } 
-                    if ((date.getProperty() == SKOSProperty.modified)) {
+                    if ((date.getProperty() == SKOSProperty.MODIFIED)) {
                         modified = simpleDateFormat.parse(date.getDate());
                     }
                 }
@@ -769,13 +769,13 @@ public class ImportRdf4jHelper {
         String dcterms = null;
         for (SKOSAgent agent : conceptResource.getAgentList()) {
             switch (agent.getProperty()) {
-                case SKOSProperty.creator:
+                case SKOSProperty.CREATOR:
                     if(StringUtils.isEmpty(dcterms)) {
                         dcterms= "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;
                     } else
                         dcterms= dcterms + "##" + "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
                     break;
-                case SKOSProperty.contributor:
+                case SKOSProperty.CONTRIBUTOR:
                     if(StringUtils.isEmpty(dcterms)) {
                         dcterms= "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;
                     } else
@@ -897,7 +897,7 @@ public class ImportRdf4jHelper {
 
             String idConceptParent = null;
             for (SKOSRelation relation : facetSKOSResource.getRelationsList()) {
-                if (relation.getProperty() == SKOSProperty.superOrdinate) {
+                if (relation.getProperty() == SKOSProperty.SUPER_ORDINATE) {
                     idConceptParent = getOriginalId(relation.getTargetUri());
                     break;
                 }
@@ -952,7 +952,7 @@ public class ImportRdf4jHelper {
 
         String idConcept = getOriginalId(conceptResource.getUri());
         acs.concept.setIdConcept(idConcept);
-        if (conceptResource.getStatus() == SKOSProperty.deprecated) {
+        if (conceptResource.getStatus() == SKOSProperty.DEPRECATED) {
             acs.conceptStatus = "dep";
         }
 
@@ -978,11 +978,11 @@ public class ImportRdf4jHelper {
         addReplaces(acs);
 
         for (SKOSAgent agent : conceptResource.getAgentList()) {
-            if (agent.getProperty() == SKOSProperty.creator) {
+            if (agent.getProperty() == SKOSProperty.CREATOR) {
                 acs.concept.setCreatorName(agent.getAgent());
             }
 
-            if (agent.getProperty() == SKOSProperty.contributor) {
+            if (agent.getProperty() == SKOSProperty.CONTRIBUTOR) {
                 acs.concept.setContributorName(agent.getAgent());
             }
         }
@@ -1343,19 +1343,19 @@ public class ImportRdf4jHelper {
             prop = match.getProperty();
             nodeAlignment = new NodeAlignment();
             switch (prop) {
-                case SKOSProperty.closeMatch:
+                case SKOSProperty.CLOSE_MATCH:
                     id_type = 2;
                     break;
-                case SKOSProperty.exactMatch:
+                case SKOSProperty.EXACT_MATCH:
                     id_type = 1;
                     break;
-                case SKOSProperty.broadMatch:
+                case SKOSProperty.BROAD_MATCH:
                     id_type = 3;
                     break;
-                case SKOSProperty.narrowMatch:
+                case SKOSProperty.NARROWER_MATCH:
                     id_type = 5;
                     break;
-                case SKOSProperty.relatedMatch:
+                case SKOSProperty.RELATED_MATCH:
                     id_type = 4;
                     break;
             }
@@ -1436,7 +1436,7 @@ public class ImportRdf4jHelper {
         NodeTermTraduction nodeTermTraduction;
 
         for (SKOSLabel label : acs.conceptResource.getLabelsList()) {
-            if (label.getProperty() == SKOSProperty.prefLabel) {
+            if (label.getProperty() == SKOSProperty.PREF_LABEL) {
                 nodeTermTraduction = new NodeTermTraduction();
                 nodeTermTraduction.setLexicalValue(label.getLabel());
                 nodeTermTraduction.setLang(label.getLanguage());
@@ -1445,10 +1445,10 @@ public class ImportRdf4jHelper {
                 NodeEM nodeEM = new NodeEM();
                 String status = "";
                 boolean hiden = false;
-                if (label.getProperty() == SKOSProperty.altLabel) {
+                if (label.getProperty() == SKOSProperty.ALT_LABEL) {
                     status = "USE";
 
-                } else if (label.getProperty() == SKOSProperty.hiddenLabel) {
+                } else if (label.getProperty() == SKOSProperty.HIDDEN_LABEL) {
                     status = "Hidden";
                     hiden = true;
                 }
@@ -1481,25 +1481,25 @@ public class ImportRdf4jHelper {
             int prop = documentation.getProperty();
             nodeNote = new NodeNote();
             switch (prop) {
-                case SKOSProperty.definition:
+                case SKOSProperty.DEFINITION:
                     noteTypeCode = "definition";
                     break;
-                case SKOSProperty.scopeNote:
+                case SKOSProperty.SCOPE_NOTE:
                     noteTypeCode = "scopeNote";
                     break;
-                case SKOSProperty.example:
+                case SKOSProperty.EXAMPLE:
                     noteTypeCode = "example";
                     break;
-                case SKOSProperty.historyNote:
+                case SKOSProperty.HISTORY_NOTE:
                     noteTypeCode = "historyNote";
                     break;
-                case SKOSProperty.editorialNote:
+                case SKOSProperty.EDITORIAL_NOTE:
                     noteTypeCode = "editorialNote";
                     break;
-                case SKOSProperty.changeNote:
+                case SKOSProperty.CHANGE_NOTE:
                     noteTypeCode = "changeNote";
                     break;
-                case SKOSProperty.note:
+                case SKOSProperty.NOTE:
                     noteTypeCode = "note";
                     break;
             }
@@ -1518,9 +1518,9 @@ public class ImportRdf4jHelper {
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);
             for (SKOSDate date : acs.conceptResource.getDateList()) {
-                if (date.getProperty() == SKOSProperty.created) {
+                if (date.getProperty() == SKOSProperty.CREATED) {
                     acs.concept.setCreated(simpleDateFormat.parse(date.getDate()));
-                } else if ((date.getProperty() == SKOSProperty.modified)) {
+                } else if ((date.getProperty() == SKOSProperty.MODIFIED)) {
                     acs.concept.setModified(simpleDateFormat.parse(date.getDate()));
                 }
             }
@@ -1534,12 +1534,12 @@ public class ImportRdf4jHelper {
         for (SKOSReplaces replace : acs.conceptResource.getsKOSReplaces()) {
             prop = replace.getProperty();
             switch (prop) {
-                case SKOSProperty.isReplacedBy:
+                case SKOSProperty.IS_REPLACED_BY:
                     NodeIdValue nodeIdValue = new NodeIdValue();
                     nodeIdValue.setId(getOriginalId(replace.getTargetUri()));
                     acs.replacedBy.add(nodeIdValue);
                     break;
-                case SKOSProperty.replaces:
+                case SKOSProperty.REPLACES:
                     NodeIdValue nodeIdValue2 = new NodeIdValue();
                     nodeIdValue2.setId(getOriginalId(replace.getTargetUri()));
                     acs.replaces.add(nodeIdValue2);
@@ -1565,38 +1565,38 @@ public class ImportRdf4jHelper {
                 case SKOSProperty.NARROWER:
                     role = "NT";
                     break;
-                case SKOSProperty.narrowerGeneric:
+                case SKOSProperty.NARROWER_GENERIC:
                     role = "NTG";
                     break;
-                case SKOSProperty.narrowerPartitive:
+                case SKOSProperty.NARROWER_PARTITIVE:
                     role = "NTP";
                     break;
-                case SKOSProperty.narrowerInstantial:
+                case SKOSProperty.NARROWER_INSTANTIAL:
                     role = "NTI";
                     break;
                 case SKOSProperty.BROADER:
                     acs.isTopConcept = false;
                     role = "BT";
                     break;
-                case SKOSProperty.broaderGeneric:
+                case SKOSProperty.BROADER_GENERIC:
                     acs.isTopConcept = false;
                     role = "BTG";
                     break;
-                case SKOSProperty.broaderInstantial:
+                case SKOSProperty.BROADER_INSTANTIAL:
                     acs.isTopConcept = false;
                     role = "BTI";
                     break;
-                case SKOSProperty.broaderPartitive:
+                case SKOSProperty.BROADER_PARTITIVE:
                     acs.isTopConcept = false;
                     role = "BTP";
                     break;
                 case SKOSProperty.RELATED:
                     role = "RT";
                     break;
-                case SKOSProperty.relatedHasPart:
+                case SKOSProperty.RELATED_HAS_PART:
                     role = "RHP";
                     break;
-                case SKOSProperty.relatedPartOf:
+                case SKOSProperty.RELATED_PART_OF:
                     role = "RPO";
                     break;
                 default:
@@ -1612,9 +1612,9 @@ public class ImportRdf4jHelper {
 
             } else if (prop == SKOSProperty.INSCHEME) {
 
-            } else if (prop == SKOSProperty.topConceptOf) {
+            } else if (prop == SKOSProperty.TOP_CONCEPT_OF) {
                 acs.isTopConcept = true;
-            } else if (prop == SKOSProperty.memberOf) {
+            } else if (prop == SKOSProperty.MEMBER_OF) {
                 acs.collectionToAdd = getIdFromUri(relation.getTargetUri());
             }
             if (hasTopConcceptList.contains(acs.conceptResource.getUri())) {

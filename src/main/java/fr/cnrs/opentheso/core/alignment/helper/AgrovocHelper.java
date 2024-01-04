@@ -247,7 +247,7 @@ public class AgrovocHelper {
 
             for (SKOSResource resource : sxd.getConceptList()) {
                 for(SKOSLabel label : resource.getLabelsList()) {
-                    if (SKOSProperty.prefLabel == label.getProperty()) {
+                    if (SKOSProperty.PREF_LABEL == label.getProperty()) {
                         if(label.getLanguage() == null || label.getLabel() == null
                                 || label.getLanguage().isEmpty() || label.getLabel().isEmpty())  continue;
 
@@ -260,7 +260,7 @@ public class AgrovocHelper {
                     }
                 }
                 for(SKOSDocumentation sd : resource.getDocumentationsList()) {
-                    if(sd.getProperty() == SKOSProperty.definition) {
+                    if(sd.getProperty() == SKOSProperty.DEFINITION) {
                         if(sd.getLanguage() == null || sd.getText() == null || sd.getLanguage().isEmpty()
                                 || sd.getText().isEmpty())  continue;
 

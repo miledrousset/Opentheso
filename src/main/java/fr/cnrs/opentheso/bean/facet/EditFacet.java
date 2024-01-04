@@ -193,7 +193,7 @@ public class EditFacet implements Serializable {
                 nodeFacet.getLang());
 
         initDataAfterAction();
-        showMessage(FacesMessage.SEVERITY_INFO, "Traduction suprimée avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Traduction suprimée avec succès !");
 
     }
 
@@ -217,7 +217,7 @@ public class EditFacet implements Serializable {
         }
 
         initDataAfterAction();
-        showMessage(FacesMessage.SEVERITY_INFO, "Traduction modifiée avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Traduction modifiée avec succès !");
 
     }
 
@@ -237,7 +237,7 @@ public class EditFacet implements Serializable {
         initDataAfterAction();
         setLangListForTraduction();
 //        PrimeFaces.current().executeScript("PF('addFacetTraduction').hide();");
-        showMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Traduction ajoutée avec succès !");
 
         traductionValue = "";
     }
@@ -456,7 +456,7 @@ public class EditFacet implements Serializable {
 
         facetSelected.setIdConceptParent(termeParentAssocie.getId());
 
-        showMessage(FacesMessage.SEVERITY_INFO, "Concept parent modifié avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Concept parent modifié avec succès !");
 
         tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
         tree.expandTreeToPath2(facetSelected.getIdConceptParent(),
@@ -498,7 +498,7 @@ public class EditFacet implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la création de la Facette !");
             return;
         }
-        showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette enregistrée avec succès !");
         
         tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");
 
@@ -525,17 +525,18 @@ public class EditFacet implements Serializable {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Erreur interne BDD!");
                 return;
             }
-        } else
-        if(!facetHelper.addFacetTraduction(connect.getPoolConnexion(),
-                facetSelected.getIdFacet(),
-                selectedTheso.getCurrentIdTheso(),
-                newFacetName,
-                selectedTheso.getCurrentLang())){
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur interne BDD!");
-            return;
+        } else {
+            if(!facetHelper.addFacetTraduction(connect.getPoolConnexion(),
+                    facetSelected.getIdFacet(),
+                    selectedTheso.getCurrentIdTheso(),
+                    newFacetName,
+                    selectedTheso.getCurrentLang())){
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur interne BDD!");
+                return;
+            }
         }
 
-        showMessage(FacesMessage.SEVERITY_INFO, "Facette modifiée avec sucée !");
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette modifiée avec succès !");
         ((TreeNodeData) tree.getSelectedNode().getData()).setName(newFacetName);
         //((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(newFacetName);
 

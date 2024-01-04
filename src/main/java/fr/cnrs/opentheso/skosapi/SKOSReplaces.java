@@ -30,10 +30,10 @@ public class SKOSReplaces implements SKOSProperty{
 	public String toString(){
 		String xmlTag = new String();
 		switch(property){
-			case SKOSProperty.isReplacedBy :
+			case SKOSProperty.IS_REPLACED_BY :
 				xmlTag = "<dcterms:isReplacedBy>rdf:resource=\"" + targetUri + "\"</dcterms:isReplacedBy>\n";
 				break;
-			case SKOSProperty.replaces :
+			case SKOSProperty.REPLACES :
 				xmlTag = "<dcterms:replaces>rdf:resource=\"" + targetUri + "\"</dcterms:replaces>\n";
 				break;
 			default:

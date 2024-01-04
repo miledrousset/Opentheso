@@ -14,22 +14,22 @@ public class ThesaurusManager {
         skosResource.setProperty(prop);
 
         switch (prop) {
-            case SKOSProperty.ConceptScheme:
+            case SKOSProperty.CONCEPT_SCHEME:
                 sKOSXmlDocument.setConceptScheme(skosResource);
                 break;
             case SKOSProperty.FACET:
                 sKOSXmlDocument.addFacet(skosResource);
                 break;
-            case SKOSProperty.ConceptGroup:
-            case SKOSProperty.Collection:
-            case SKOSProperty.Theme:
-            case SKOSProperty.MicroThesaurus:
+            case SKOSProperty.CONCEPT_GROUP:
+            case SKOSProperty.COLLECTION:
+            case SKOSProperty.THEME:
+            case SKOSProperty.MICROTHESAURUS:
                 sKOSXmlDocument.addGroup(skosResource);
                 break;
-            case SKOSProperty.Concept:
+            case SKOSProperty.CONCEPT:
                 sKOSXmlDocument.addconcept(skosResource);
                 break;
-            case SKOSProperty.FoafImage:
+            case SKOSProperty.FOAF_IMAGE:
                 sKOSXmlDocument.addFoafImage(skosResource);
                 break;
         }

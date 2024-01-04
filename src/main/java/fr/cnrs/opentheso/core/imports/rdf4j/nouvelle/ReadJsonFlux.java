@@ -109,19 +109,19 @@ public class ReadJsonFlux extends AbstractRDFHandler {
         if (isConceptScheme) {
             isConceptScheme = false;
             skosXmlDocument.setTitle(subject.stringValue());
-            fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.ConceptScheme);
+            fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.CONCEPT_SCHEME);
         } else if (isFacet) {
             isFacet = false;
             fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.FACET);
         } else if (isConcept) {
             isConcept = false;
-            fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.Concept);
+            fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.CONCEPT);
         } else  if (isCollection) {
             isCollection = false;
-            fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.Collection);
+            fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.COLLECTION);
         } else  if (isImage) {
             isImage = false;
-            fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.FoafImage);
+            fileManager.addStructData(skosResource, subject, skosXmlDocument, SKOSProperty.FOAF_IMAGE);
         }
     }
 }

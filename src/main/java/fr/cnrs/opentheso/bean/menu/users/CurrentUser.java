@@ -236,7 +236,7 @@ public class CurrentUser implements Serializable {
         if ("index".equals(menuBean.getActivePageName())) {
             menuBean.setNotificationPannelVisible(true);
         }
-    //    initUserPermissions();
+      //  initUserPermissions();
         setInfos();
         //// Nouvelle gestion des droits pour l'utilisateur avec l'Objet UserPermissions
 

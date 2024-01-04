@@ -1683,8 +1683,8 @@ public class GroupHelper {
             nodeConceptTree.setTitle(getLexicalValueOfGroup(ds, idGroup, idThesaurus, idLang));
             nodeConceptTree.setStatusConcept("");
             nodeConceptTree.setHaveChildren(true);
-            nodeConceptTree.setIsGroup(false);
-            nodeConceptTree.setIsSubGroup(true);
+            nodeConceptTree.setGroup(false);
+            nodeConceptTree.setSubGroup(true);
             nodeConceptTrees.add(nodeConceptTree);
         }
         return nodeConceptTrees;

@@ -22,13 +22,13 @@ public class ConceptData {
 
             //readDate    
             case "created":
-                readStruct.resource.addDate(readStruct.literal.getLabel(), SKOSProperty.created);
+                readStruct.resource.addDate(readStruct.literal.getLabel(), SKOSProperty.CREATED);
                 break;
             case "modified":
-                readStruct.resource.addDate(readStruct.literal.getLabel(), SKOSProperty.modified);
+                readStruct.resource.addDate(readStruct.literal.getLabel(), SKOSProperty.MODIFIED);
                 break;
             case "date":
-                readStruct.resource.addDate(readStruct.literal.getLabel(), SKOSProperty.date);
+                readStruct.resource.addDate(readStruct.literal.getLabel(), SKOSProperty.DATE);
                 break;
 
             //readRelationships    
@@ -36,37 +36,37 @@ public class ConceptData {
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.BROADER);
                 break;
             case "broaderGeneric":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.broaderGeneric);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.BROADER_GENERIC);
                 break;
             case "broaderInstantial":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.broaderInstantial);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.BROADER_INSTANTIAL);
                 break;
             case "broaderPartitive":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.broaderPartitive);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.BROADER_PARTITIVE);
                 break;
             case "narrower":
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.NARROWER);
                 break;
             case "narrowerGeneric":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.narrowerGeneric);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.NARROWER_GENERIC);
                 break;
             case "narrowerInstantial":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.narrowerInstantial);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.NARROWER_INSTANTIAL);
                 break;
             case "narrowerPartitive":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.narrowerPartitive);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.NARROWER_PARTITIVE);
                 break;
             case "related":
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.RELATED);
                 break;
             case "relatedHasPart":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.relatedHasPart);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.RELATED_HAS_PART);
                 break;
             case "relatedPartOf":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.relatedPartOf);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.RELATED_PART_OF);
                 break;
             case "hasTopConcept":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.HASTOPCONCEPT);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.HAS_TOP_CONCEPT);
                 break;
             case "inScheme":
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.INSCHEME);
@@ -75,36 +75,36 @@ public class ConceptData {
                 readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.MEMBER);
                 break;
             case "topConceptOf":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.topConceptOf);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.TOP_CONCEPT_OF);
                 break;
             case "microThesaurusOf":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.microThesaurusOf);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.MICROTHESAURUS_OF);
                 break;
             case "subGroup":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.subGroup);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.SUBGROUP);
                 break;
             case "superGroup":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.superGroup);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.SUPERGROUP);
                 break;
             case "hasMainConcept":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.hasMainConcept);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.HAS_MAIN_CONCEPT);
                 break;
             case "memberOf":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.memberOf);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.MEMBER_OF);
                 break;
             case "mainConceptOf":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.mainConceptOf);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.MAIN_CONCEPT_OF);
                 break;
             case "superOrdinate":
-                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.superOrdinate);
+                readStruct.resource.addRelation("", readStruct.value.toString(), SKOSProperty.SUPER_ORDINATE);
                 break;
 
             //Creator
             case "creator":
-                readStruct.resource.addAgent(readStruct.literal.getLabel(), SKOSProperty.creator);
+                readStruct.resource.addAgent(readStruct.literal.getLabel(), SKOSProperty.CREATOR);
                 break;
             case "contributor":
-                readStruct.resource.addAgent(readStruct.literal.getLabel(), SKOSProperty.contributor);
+                readStruct.resource.addAgent(readStruct.literal.getLabel(), SKOSProperty.CONTRIBUTOR);
                 break;
 
             //GPSCoordinates
@@ -155,19 +155,19 @@ public class ConceptData {
 
             //Match 
             case "exactMatch":
-                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.exactMatch);
+                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.EXACT_MATCH);
                 break;
             case "closeMatch":
-                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.closeMatch);
+                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.CLOSE_MATCH);
                 break;
             case "broadMatch":
-                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.broadMatch);
+                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.BROAD_MATCH);
                 break;
             case "relatedMatch":
-                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.relatedMatch);
+                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.RELATED_MATCH);
                 break;
             case "narrowMatch":
-                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.narrowMatch);
+                readStruct.resource.addMatch(readStruct.value.toString(), SKOSProperty.NARROWER_MATCH);
                 break;
 
             //Image
@@ -181,15 +181,15 @@ public class ConceptData {
 
             //Replaces
             case "replaces":
-                readStruct.resource.addReplaces(readStruct.value.toString(), SKOSProperty.replaces);
+                readStruct.resource.addReplaces(readStruct.value.toString(), SKOSProperty.REPLACES);
                 break;
             case "isReplacedBy":
-                readStruct.resource.addReplaces(readStruct.value.toString(), SKOSProperty.isReplacedBy);
+                readStruct.resource.addReplaces(readStruct.value.toString(), SKOSProperty.IS_REPLACED_BY);
                 break;
 
             //deprecated    
             case "deprecated":
-                readStruct.resource.setStatus(SKOSProperty.deprecated);
+                readStruct.resource.setStatus(SKOSProperty.DEPRECATED);
                 break;
 
             //DcSource
@@ -212,21 +212,21 @@ public class ConceptData {
         
         if (readStruct.value.toString().toUpperCase().contains("CONCEPTSCHEME")) {
             sKOSXmlDocument.setTitle(statement.getSubject().stringValue());
-            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.ConceptScheme);
+            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.CONCEPT_SCHEME);
         } else if (readStruct.value.toString().toUpperCase().contains("CONCEPTGROUP")) {
-            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.ConceptGroup);
+            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.CONCEPT_GROUP);
         } else if (readStruct.value.toString().toUpperCase().contains("THESAURUSARRAY")) {
             addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.FACET);
         } else if (readStruct.value.toString().toUpperCase().contains("THEME")) {
-            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.Theme);
+            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.THEME);
         } else if (readStruct.value.toString().toUpperCase().contains("MICROTHESAURUS")) {
-            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.MicroThesaurus);
+            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.MICROTHESAURUS);
         } else if (readStruct.value.toString().toUpperCase().contains("COLLECTION")) {
-            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.Collection);
+            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.COLLECTION);
         } else if (readStruct.value.toString().toUpperCase().contains("CONCEPT")) {
-            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.Concept);
+            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.CONCEPT);
         } else if (readStruct.value.toString().toUpperCase().contains("IMAGE")) {
-            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.FoafImage);
+            addStructData(readStruct, statement, sKOSXmlDocument, SKOSProperty.FOAF_IMAGE);
         }
     }
     
@@ -241,22 +241,22 @@ public class ConceptData {
         }
 
         switch (prop) {
-            case SKOSProperty.ConceptScheme:
+            case SKOSProperty.CONCEPT_SCHEME:
                 sKOSXmlDocument.setConceptScheme(readStruct.resource);
                 break;
             case SKOSProperty.FACET:
                 sKOSXmlDocument.addFacet(readStruct.resource);
                 break;
-            case SKOSProperty.ConceptGroup:
-            case SKOSProperty.Collection:
-            case SKOSProperty.Theme:
-            case SKOSProperty.MicroThesaurus:
+            case SKOSProperty.CONCEPT_GROUP:
+            case SKOSProperty.COLLECTION:
+            case SKOSProperty.THEME:
+            case SKOSProperty.MICROTHESAURUS:
                 sKOSXmlDocument.addGroup(readStruct.resource);
                 break;
-            case SKOSProperty.Concept:
+            case SKOSProperty.CONCEPT:
                 sKOSXmlDocument.addconcept(readStruct.resource);
                 break;
-            case SKOSProperty.FoafImage:
+            case SKOSProperty.FOAF_IMAGE:
                 sKOSXmlDocument.addFoafImage(readStruct.resource);
                 break;
         }

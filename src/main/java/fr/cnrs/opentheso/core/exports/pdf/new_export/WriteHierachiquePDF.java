@@ -170,7 +170,7 @@ public class WriteHierachiquePDF {
 
         int docCount = 0;
         if (CollectionUtils.isNotEmpty(idTradDiff)) {
-            docCount = (int) idTradDiff.stream().filter(traduction -> traduction == SKOSProperty.note).count();
+            docCount = (int) idTradDiff.stream().filter(traduction -> traduction == SKOSProperty.NOTE).count();
         }
 
         AtomicInteger docWrite = new AtomicInteger();

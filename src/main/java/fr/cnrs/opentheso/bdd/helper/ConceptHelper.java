@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptArkId;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
@@ -494,7 +495,7 @@ public class ConceptHelper {
 
                             nodeConceptTree1.setIdThesaurus(idThesaurus);
                             nodeConceptTree1.setIdLang(idLang);
-                            nodeConceptTree1.setIsTerm(true);
+                            nodeConceptTree1.setTerm(true);
                             nodeConceptTree.add(nodeConceptTree1);
                         }
                     }
@@ -621,7 +622,7 @@ public class ConceptHelper {
 
                             nodeConceptTree1.setIdThesaurus(idThesaurus);
                             nodeConceptTree1.setIdLang(idLang);
-                            nodeConceptTree1.setIsTerm(true);
+                            nodeConceptTree1.setTerm(true);
                             nodeConceptTree.add(nodeConceptTree1);
                         }
                     }
@@ -1015,7 +1016,7 @@ public class ConceptHelper {
                         nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
                         nodeConceptTree1.setIdThesaurus(idThesaurus);
                         nodeConceptTree1.setIdLang(idLang);
-                        nodeConceptTree1.setIsTopTerm(true);
+                        nodeConceptTree1.setTopTerm(true);
                         nodeConceptTree.add(nodeConceptTree1);
                     }
                     for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
@@ -5113,7 +5114,7 @@ public class ConceptHelper {
                     nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
                     nodeConceptTree1.setIdThesaurus(idThesaurus);
                     nodeConceptTree1.setIdLang(idLang);
-                    nodeConceptTree1.setIsTopTerm(true);
+                    nodeConceptTree1.setTopTerm(true);
                     nodeConceptTree.add(nodeConceptTree1);
                 }
                 for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
@@ -5316,9 +5317,28 @@ public class ConceptHelper {
      * @return
      */
     public ArrayList<NodeIdValue> getListChildrenOfConceptSorted(HikariDataSource ds, String idConcept, String idLang, String idThesaurus) {
-        ArrayList<String> listIdsOfConcept = getListChildrenOfConcept(ds, idConcept, idThesaurus);
+        
+     //   ArrayList<String> listIdsOfConcept = getListChildrenOfConcept(ds, idConcept, idThesaurus);
+        
+        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
+        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(ds, idThesaurus, idConcept, idLang, false);
+        
         ArrayList<NodeIdValue> listIdsTemp = new ArrayList<>();
 
+        for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            if (StringUtils.isEmpty(nodeConceptTree.getTitle())) {
+                nodeIdValue.setId(nodeConceptTree.getIdConcept());
+                nodeIdValue.setValue(nodeConceptTree.getIdConcept());
+            } else {
+                nodeIdValue.setId(nodeConceptTree.getIdConcept());
+                nodeIdValue.setValue(nodeConceptTree.getTitle());
+            }
+            listIdsTemp.add(nodeIdValue);            
+        }
+        return listIdsTemp;        
+        
+        /*
         String label;
         for (String idC : listIdsOfConcept) {
             label = getLexicalValueOfConcept(ds, idC, idThesaurus, idLang);
@@ -5334,7 +5354,7 @@ public class ConceptHelper {
             listIdsTemp.add(nodeIdValue);
         }
         Collections.sort(listIdsTemp);
-        return listIdsTemp;
+        return listIdsTemp;*/
     }
 
     /**
@@ -5812,14 +5832,18 @@ public class ConceptHelper {
      * Cette fonction permet de savoir si un concept a des fils ou non suivant
      * l'id du Concept et l'id du thésaurus sous forme de classe Concept (sans
      * les relations)
-     */
+    * @param ds
+    * @param idThesaurus
+    * @param idConcept
+    * @return 
+    */
     public boolean haveChildren(HikariDataSource ds, String idThesaurus, String idConcept) {
 
         boolean children = false;
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select count(*)  from hierarchical_relationship, concept where "
+                stmt.executeQuery("select count(id_concept2)  from hierarchical_relationship, concept where "
                         + " hierarchical_relationship.id_concept2 = concept.id_concept and"
                         + " hierarchical_relationship.id_thesaurus = concept.id_thesaurus"
                         + " and hierarchical_relationship.id_thesaurus='" + idThesaurus + "'"
@@ -5830,6 +5854,22 @@ public class ConceptHelper {
                             children = true;
                         }
                     }
+                }
+                // s'il n'a pas d'enfant, on regarde s'il n'a pas de facette également
+                if(!children) {
+                    stmt.executeQuery("SELECT count(id_facet) FROM thesaurus_array" +
+                                " WHERE " +
+                                " id_concept_parent = '" + idConcept + "'" +
+                                " and " +
+                                " id_thesaurus = '" + idThesaurus + "'");
+                    try (ResultSet resultSet = stmt.getResultSet()) {
+                        if (resultSet.next()) {
+                            if (resultSet.getInt(1) != 0) {
+                                children = true;
+                            }
+                        }
+                    }                    
+                    
                 }
             }
         } catch (SQLException sqle) {

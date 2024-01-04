@@ -1,2 +1,7 @@
 Note de version v24.01
 
+- Export/import csv avec prise en charge des images + multi-GPS + resourcesExternes
+  + Facettes + concepts dépréciés
+ 
+- Ajout des commandes Plpgsql pour récupérer les concepts (gain de temps x100)
+
