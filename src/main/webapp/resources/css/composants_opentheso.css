@@ -166,21 +166,21 @@ body .ui-selectonemenu.ui-state-focus {
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item {
-    padding: 0.3rem 0.5rem;
+ /*   padding: 0.3rem 0.5rem;*/
     font-size: 12px;
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-highlight {
     background: #F47B2A;
     color: #FFF;
-    overflow: auto;
+  /*  overflow: auto;*/
 /*    font-weight: bold;*/
 }
 
 body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-hover {
     background: #ECF8F1;
     color: #143a1e;
-    overflow: auto;
+ /*   overflow: auto;*/
 }
 
 /**********************************************************************/

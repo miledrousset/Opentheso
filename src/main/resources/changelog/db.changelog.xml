@@ -44,6 +44,10 @@
     
     <changeSet id="23.12.005" author="Miled">
         <sqlFile path="../changelog/v23.12/23-12_005.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>      
+    </changeSet>     
+    
+    <changeSet id="24.01.001" author="Miled">
+        <sqlFile path="../changelog/v24.01/24-01_001.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>       
      
 </databaseChangeLog>

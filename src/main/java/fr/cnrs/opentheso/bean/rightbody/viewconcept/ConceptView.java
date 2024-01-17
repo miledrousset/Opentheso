@@ -95,6 +95,9 @@ public class ConceptView implements Serializable {
     private GpsMode gpsModeSelected;
     private ArrayList<NodeCorpus> nodeCorpuses;
     private ArrayList<NodePath> pathLabel;
+    
+    private List<List<NodePath>> pathLabel2;    
+    
     private ArrayList<NodeIdValue> nodeFacets;
 
     /// pagination
@@ -138,6 +141,7 @@ public class ConceptView implements Serializable {
     public void clear() {
         nodeCorpuses = new ArrayList<>();
         pathLabel = new ArrayList<>();
+        pathLabel2 = new ArrayList<>();
         notes = new ArrayList<>();
         scopeNotes = new ArrayList<>();
         changeNotes = new ArrayList<>();
@@ -295,7 +299,7 @@ public class ConceptView implements Serializable {
         // deployement de l'arbre si l'option est true
         if (roleOnThesoBean.getNodePreference() != null) {
             if (roleOnThesoBean.getNodePreference().isBreadcrumb())
-                pathOfConcept(idTheso, idConcept, idLang);
+                pathOfConcept2(idTheso, idConcept, idLang);
 
             if (roleOnThesoBean.getNodePreference().isAuto_expand_tree()) {
                 tree.expandTreeToPath(
@@ -331,7 +335,7 @@ public class ConceptView implements Serializable {
         if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
             gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
             gpsList = formatCoordonnees(nodeConcept.getNodeGps());
-            if (isFirstTime) {
+            if (mapModel == null) {
                 mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsModeSelected,
                         ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
             } else {
@@ -381,7 +385,7 @@ public class ConceptView implements Serializable {
         }
 
         if (roleOnThesoBean.getNodePreference().isBreadcrumb())
-            pathOfConcept(idTheso, idConcept, idLang);
+            pathOfConcept2(idTheso, idConcept, idLang);
 
         if (toggleSwitchAltLabelLang) {
             getAltLabelWithAllLanguages();
@@ -516,7 +520,7 @@ public class ConceptView implements Serializable {
         }
     }
 
-    private void pathOfConcept(String idTheso, String idConcept, String idLang) {
+/*    private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
         List<Path> paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
@@ -532,8 +536,34 @@ public class ConceptView implements Serializable {
             return;
         }
         pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
-    }
+    }*/
 
+    /**
+     * méthode pour construire le graphe pour représenter tous les chemins vers la racine
+     * @param idTheso
+     * @param idConcept
+     * @param idLang 
+     * #MR
+     */
+    private void pathOfConcept2(String idTheso, String idConcept, String idLang) {
+        PathHelper pathHelper = new PathHelper();
+        List<String> graphPaths = pathHelper.getGraphOfConcept(
+                connect.getPoolConnexion(), idConcept, idTheso);
+        /*if (pathHelper.getMessage() != null) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }*/
+        /*if (paths == null) {
+            System.out.println("Erreur de path pour le concept :" + idConcept);
+            if (pathLabel != null) {
+                pathLabel.clear();
+            }
+            return;
+        }*/
+        List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);        
+        pathLabel2 = pathHelper.getPathWithLabel2(connect.getPoolConnexion(), paths, idTheso, idLang);
+    }    
+    
     private void setRoles() {
         contributors = null;
         creator = null;

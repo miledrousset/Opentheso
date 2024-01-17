@@ -25,6 +25,72 @@ public class DaoResourceHelper {
     private final static String SEPARATEUR = "##";
     private final static String SUB_SEPARATEUR = "@@";
 
+    
+    /**
+     * retourne la liste de Top termes pour un thesaurus concept trié par alpha
+     * la liste des champs retournés sont :
+     * idConcept, notation, status, label, havechildren, uri, definitions, synonymes
+     * @param ds
+     * @param idTheso
+
+     * @param idLang
+     * @return 
+     */
+    public List<NodeConceptGraph> getConceptsTTForGraph(HikariDataSource ds, String idTheso, String idLang) {
+
+        // on récupère les concepts fils et les facettes
+        List<NodeConceptGraph> nodeConceptGraphs = new ArrayList<>();
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select * from opentheso_get_list_topterm_forgraph"
+                        + "('" + idTheso + "', '" + idLang + "') "
+                        + " as x(idconcept Character varying, local_uri text, status Character varying,  label VARCHAR, altlabel VARCHAR, definition text, havechildren boolean);"
+                );
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeConceptGraph nodeConceptGraph = new NodeConceptGraph();
+                        nodeConceptGraph.setIdConcept(resultSet.getString("idconcept"));
+
+                        nodeConceptGraph.setIdThesaurus(idTheso);
+                        nodeConceptGraph.setIdLang(idLang);
+                        nodeConceptGraph.setTerm(true);
+                        
+                        nodeConceptGraph.setUri(resultSet.getString("local_uri"));
+                        nodeConceptGraph.setStatusConcept(resultSet.getString("status"));                        
+                        
+                        if(StringUtils.isEmpty(resultSet.getString("label"))) {
+                            nodeConceptGraph.setPrefLabel("");
+                        } else {
+                            nodeConceptGraph.setPrefLabel(resultSet.getString("label"));
+                        }
+                        
+                        if(StringUtils.isEmpty(resultSet.getString("altlabel"))) {
+                            nodeConceptGraph.setAltLabels(null);
+                        } else {
+                            nodeConceptGraph.setAltLabels(getLabelsWithoutSub(resultSet.getString("altlabel")));
+                        }       
+                        
+                        if(StringUtils.isEmpty(resultSet.getString("definition"))) {
+                            nodeConceptGraph.setDefinitions(null);
+                        } else {
+                            nodeConceptGraph.setDefinitions(getLabelsWithoutSub(resultSet.getString("definition")));
+                        }                          
+                        
+                        nodeConceptGraph.setHaveChildren(resultSet.getBoolean("havechildren"));
+
+                        nodeConceptGraphs.add(nodeConceptGraph);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Collections.sort(nodeConceptGraphs);
+        return nodeConceptGraphs;
+    }       
+    
+    
     /**
      * retourne la liste de fils pour un concept trié par alpha
      * la liste des champs retournés sont :

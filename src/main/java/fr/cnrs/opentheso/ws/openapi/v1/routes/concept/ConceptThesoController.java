@@ -137,6 +137,35 @@ public class ConceptThesoController {
             }
         }
     }
+    
+    @Path("/thesoGraph/")
+    @GET
+    @Produces({APPLICATION_JSON_LD_UTF_8})
+    @Operation(
+            summary = "${getDatasForGraphByTheso.summary}$",
+            description = "${getDatasForGraph.description}$",
+            tags = {"Concept"},
+            responses = {
+                @ApiResponse(responseCode = "200", description = "${getDatasForGraph.200.description}$", content = {
+            @Content(mediaType = APPLICATION_JSON_LD_UTF_8)
+        }),
+                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$")
+            }
+    )
+    public Response getDatasForGraphForThisTheso(
+            @Parameter(name = "idTheso", description = "${getDatasForGraph.idTheso.description}$", required = true) @PathParam("idTheso") String idThesaurus,
+            @Parameter(name = "lang", description = "${getDatasForGraph.lang.description}$", required = true) @QueryParam("lang") String lang
+    ) {
+        String datas;
+        try (HikariDataSource ds = connect()) {
+            datas = new D3jsHelper().findDatasForGraph__(ds, null, idThesaurus, lang);
+            if (datas == null) {
+                return ResponseHelper.response(Response.Status.NOT_FOUND, emptyMessage(APPLICATION_JSON_LD_UTF_8), APPLICATION_JSON_LD_UTF_8);
+            } else {
+                return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_LD_UTF_8);
+            }
+        }
+    }    
 
     @Path("/{idConcept}/expansion")
     @GET

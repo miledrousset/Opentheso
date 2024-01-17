@@ -681,14 +681,18 @@ public class Tree implements Serializable {
      * @param idLang #MR
      */
     public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
-
-        List<Path> paths = new PathHelper().getPathOfConcept(
+        PathHelper pathHelper = new PathHelper();
+        List<String> graphPaths = pathHelper.getGraphOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
+        List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);  
 
         if (root == null) {
             initialise(idTheso, idLang);
         }
-
+        if (paths == null || paths.isEmpty()) {
+            return;
+        }
+        
         // deselectionner et fermer toutes les noeds de l'arbres
 //        initialiserEtatNoeuds(root);
         // cas de changement de langue pendant la navigation dans les concepts
@@ -705,35 +709,28 @@ public class Tree implements Serializable {
             if (selectedNode != null) {
                 selectedNode.setSelected(false);
             }
-            /*
-            if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
-                for (TreeNode treeNode : clickselectedNodes) {
-                    treeNode.setSelected(false);
-                }
-            }*/
             selectedNodes.clear();
         }
 
         TreeNode treeNodeParent = root;
         treeNodeParent.setExpanded(true);
-        for (Path thisPath : paths) {
-            for (String idC : thisPath.getPath()) {
+        for (List<String> path : paths) {
+            for (String idC : path) {
                 treeNodeParent = selectChildNode(treeNodeParent, idC);
                 if (treeNodeParent == null) {
                     // erreur de cohérence
                     return;
                 }
                 // compare le dernier élément au concept en cours, si oui, on expand pas, sinon, erreur ...
-                if (!((TreeNodeData) treeNodeParent.getData()).getNodeId().equalsIgnoreCase(thisPath.getPath().get(thisPath.getPath().size() - 1))) {
+                if (!((TreeNodeData) treeNodeParent.getData()).getNodeId().equalsIgnoreCase(path.get(path.size() - 1))) {
                     treeNodeParent.setExpanded(true);
-                }
+                }                
             }
             treeNodeParent.setSelected(true);
             selectedNodes.add(treeNodeParent);
             selectedNode = treeNodeParent;
-            treeNodeParent = root;
+            treeNodeParent = root;            
         }
-
         PrimeFaces.current().executeScript("srollToSelected();");
     }
 
@@ -741,6 +738,7 @@ public class Tree implements Serializable {
 
         List<Path> paths = new PathHelper().getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
+        
         paths.get(0).getPath().add(idFacette);
 
         if (root == null) {

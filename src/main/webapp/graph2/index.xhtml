@@ -67,14 +67,13 @@
             </h:form>
             <script type="text/javascript">
                 var idTheso = document.getElementById("formId:id_theso").value;
-                var idConcept = document.getElementById("formId:id_concept").value;
                 var language = document.getElementById("formId:langue").value;
                 var baseUrl = document.getElementById("formId:base_url").value;
                 
             //    window.alert(baseUrl + 'api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language);
                 
                 dataLoading({
-                    url: baseUrl + 'api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language
+                    url: baseUrl + 'openapi/v1/concept/' + idTheso + '/thesoGraph?lang=' + language
                 });
             </script>
             

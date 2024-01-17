@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Composant Autocomplete V2</title>
-    <link rel="icon" href="../resources/img/icon_opentheso.png" type="image/icon type">
+    <link rel="icon" href="../resources/img/icon_opentheso.png" type="image/icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
@@ -34,21 +34,21 @@
         </div>
         <div class="fs-subtitle" style=" display: flex; margin-top: -2px; margin-bottom: -2px;">
           <input type="checkbox" id="searchInAllCollections" name="searchInAllCollections" class="fs-subtitle" style="width: 30px" checked />
-          <label for="searchInAllCollections" style="margin-top: 8px;" >Rechercher dans tous les thésaurus</label>
+          <label for="searchInAllCollections" style="margin-top: 8px;" >Rechercher dans tout le thésaurus</label>
         </div>
         <select id="collection-select" multiple>
           <option value="all">--Sélectionner une collection--</option>
         </select>
 
         <div style="text-align: left;">
-          <Label class="fs-subtitle">Les langues :</Label>
+          <Label class="fs-subtitle">Les langues du thésaurus :</Label>
         </div>
         <select id="language-select">
           <option value="all">--Sélectionner une langue--</option>
         </select>
 
         <div style="text-align: left;">
-          <Label class="fs-subtitle">Mots clés :</Label>
+          <Label class="fs-subtitle">Chercher un concept :</Label>
         </div>
         <div style="position: relative; display: inline-block; width: 100%">
           <input id="demoAutoComplete" type="text" placeholder="Rechercher ..." />
@@ -60,7 +60,7 @@
 
       <fieldset>
         <h2 class="fs-title">Configuration du composant</h2>
-        <h4 id="errorConfigMessage" class="fs-subtitle">Veuillez configurer votre thèsaurus</h4>
+        <h4 id="errorConfigMessage" class="fs-subtitle">Veuillez configurer votre thésaurus</h4>
 
         <div style="width: 300px; display: table;">
           <div style="display: table-cell; width: 100%;">
@@ -72,18 +72,27 @@
           </div>
         </div>
 
+        
+        <div style="text-align: left; font-style: italic">
+          <Label class="fs-subtitle">Sélectionner un thésaurus :</Label>
+        </div>        
         <select id="thesaurus-select" disabled
                 onfocus='this.size=10;' onblur='this.size=1;'
                 onchange='this.size=1; this.blur();'>
           <option value="">--Sélectionner un thesaurus--</option>
         </select>
-
-        <Label class="fs-subtitle">Liste des collections</Label>
+        
+        <div style="text-align: left; font-style: italic">
+          <Label class="fs-subtitle">Sélectionner les collections :</Label>
+        </div>              
+        
         <select id="collections-select" multiple disabled>
           <option value="">--Sélectionner une collection--</option>
         </select>
 
-        <Label class="fs-subtitle">Liste des langues</Label>
+        <div style="text-align: left; font-style: italic">
+          <Label class="fs-subtitle">Sélectionner les langues :</Label>
+        </div>             
         <select id="languages-select" multiple multiselect-search="true" disabled>
           <option value="">--Sélectionner une langue--</option>
         </select>
@@ -92,6 +101,5 @@
         <input type="button" class="save action-button" value="Valider" />
       </fieldset>
     </form>
-  </body>
   </body>
 </html>

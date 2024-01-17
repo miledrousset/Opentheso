@@ -1091,7 +1091,7 @@ public class ConceptHelper {
         //récupération des termes associés
         nodeConceptSerach.setNodeRT(relationsHelper.getListRT(ds, idConcept, idThesaurus, idLang));
 
-        String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
+    //    String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
 
         //récupération des Non Prefered Term
         nodeConceptSerach.setNodeEM(termHelper.getNonPreferredTerms(ds, idConcept, idThesaurus, idLang));

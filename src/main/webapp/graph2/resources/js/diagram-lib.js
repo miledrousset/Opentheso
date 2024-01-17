@@ -42,13 +42,19 @@ function searchDatas(url) {
             },
             204: function(responseObject, textStatus, errorThrown) {
                 erreur("La recherche n'a rien trouvée !");
+                document.getElementById("loader-annel").style.display = "none";
+                document.getElementById("myDiv").style.display = "block";                
             },
             500: function(responseObject, textStatus, errorThrown) {
                 erreur("Erreur technique pendant la recherche des données, veuillez réessayer ultérieurement...");
+                document.getElementById("loader-annel").style.display = "none";
+                document.getElementById("myDiv").style.display = "block";                
             }
         },
         error: function (resultat, statut, erreur) {
             erreur("Erreur pendant la recherche des données, veuillez réessayer ultérieurement...");
+            document.getElementById("loader-annel").style.display = "none";
+            document.getElementById("myDiv").style.display = "block";            
         }
     });
 }
@@ -82,7 +88,7 @@ function initGraphe() {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     update(root);
-  /*  collapseAll();*/
+ /*   collapseAll();*/
 }
 
 function update(source) {
