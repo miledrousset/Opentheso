@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,39 @@ public class DaoResourceHelper {
     private final static String SEPARATEUR = "##";
     private final static String SUB_SEPARATEUR = "@@";
 
+    /**
+     * retourne la liste de Top termes pour un thesaurus concept trié par alpha
+     * la liste des champs retournés sont :
+     * idConcept, notation, status, label, havechildren, uri, definitions, synonymes
+     * @param ds
+     * @param idTheso
+     * @param idBT
+
+     * @return 
+     */
+    public List<String> getConceptsTT(HikariDataSource ds, String idTheso, String idBT) {
+
+        // on récupère les concepts fils et les facettes
+        List<String> listIds = new ArrayList<>();
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select * from opentheso_get_narrowers_ignorefacet"
+                        + "('" + idTheso + "','" + idBT + "'); "
+                        //+ " as x(notation character varying, status character varying,  idConcept character varying);"
+                );
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        listIds.add(resultSet.getString("idconcept2"));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listIds;
+    }         
+    
     
     /**
      * retourne la liste de Top termes pour un thesaurus concept trié par alpha
@@ -215,7 +249,13 @@ public class DaoResourceHelper {
                         nodeConceptTree.setIdThesaurus(idTheso);
                         nodeConceptTree.setIdLang(idLang);
                         nodeConceptTree.setFacet(true);
-                        nodeConceptTree.setTitle(resultSet.getString("libelle"));
+                        
+                        if(StringUtils.isEmpty(resultSet.getString("libelle"))) {
+                            nodeConceptTree.setTitle("");
+                        } else {
+                            nodeConceptTree.setTitle(resultSet.getString("libelle"));
+                        }                        
+                        
                         nodeConceptTree.setHaveChildren(resultSet.getBoolean("have_members"));
                         nodeConceptTree.setStatusConcept("");
                         nodeConceptTrees.add(nodeConceptTree);
@@ -226,7 +266,16 @@ public class DaoResourceHelper {
             Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         if(!isSortByNotation) {
-            Collections.sort(nodeConceptTrees);
+            try {
+                // on tente un tri naturel, en cas d'erreur, on applique un tri classique
+                Collections.sort(nodeConceptTrees);
+            } catch (Exception e) {
+                // tri classique
+                try {
+                    Collections.sort(nodeConceptTrees, Comparator.comparing(p -> p.getTitle()));
+                } catch (Exception ex) {
+                }
+            }
         }
         return nodeConceptTrees;
     }

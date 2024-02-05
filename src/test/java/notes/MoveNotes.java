@@ -32,13 +32,13 @@ public class MoveNotes {
         
         String idThesaurus = "24";
 
-        NoteHelper noteHelper = new NoteHelper();
+/*        NoteHelper noteHelper = new NoteHelper();
         ArrayList<NodeIdConceptIdTerm> nodeIdConceptIdTerms = noteHelper.getAllNotesByType(ds, idThesaurus, "note", true);
         nodeIdConceptIdTerms.forEach(nodeIdConceptIdTerm -> {
             noteHelper.moveConceptNoteToTermNote(ds, nodeIdConceptIdTerm.getIdConcept(), nodeIdConceptIdTerm.getIdTerm(),
                     idThesaurus, "definition", 1);
         });
-        
+  */      
     
     }
 }

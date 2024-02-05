@@ -731,7 +731,7 @@ public class EditConcept implements Serializable {
                     connect.getPoolConnexion(),
                     value,
                     conceptBean.getSelectedLang(),
-                    selectedTheso.getCurrentIdTheso());
+                    selectedTheso.getCurrentIdTheso(), false);
         }
         return liste;
     }      

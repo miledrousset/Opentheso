@@ -590,6 +590,7 @@ public class SelectedTheso implements Serializable {
                 currentLang = idLang;
                 selectedLang = idLang;
             }
+            thesoHaveActiveCorpus();
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang);
             actionFromConceptToOn();
             initIdsFromUri();
@@ -608,7 +609,7 @@ public class SelectedTheso implements Serializable {
                 indexSetting.setIsSelectedTheso(true);
                 indexSetting.setIsThesoActive(true);
                 rightBodySetting.setIndex("0");  
-                
+                thesoHaveActiveCorpus();
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     // chargement du concept puisqu'il est renseigné
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
@@ -628,6 +629,7 @@ public class SelectedTheso implements Serializable {
                 return;
             }
         }
+        thesoHaveActiveCorpus();
         currentUser.initUserPermissionsForThisTheso(selectedIdTheso);
         initIdsFromUri();
     }

@@ -49,7 +49,6 @@
                         <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_users')}</span></h1>
                         </div>
-
                         <div class="card shadow mb-4" style="height: 100%;"> 
                                 <p:dataTable rendered="#{superAdminBean.allProjects != null}"
                                              value="#{superAdminBean.nodeUserGroupUsers}" var="listUserRole" size="small"
@@ -78,7 +77,7 @@
                                             </div>                                            
                                         </div>
                                     </f:facet>
-
+                                                       
                                     <p:column width="10" headerText="Id">
                                         <h:outputText  value="#{listUserRole.idUser}" />
                                     </p:column>
@@ -141,7 +140,7 @@
                 <div class="row"> 
                     <!-- Nom Pseudo -->
                     <div class="col-5" style="text-align: right">
-                        <h:outputText value="#{langueBean.getMsg('profile.pseudo')} : " title="#{langueBean.getMsg('profile.tootltip_user')}"/>  
+                        <h:outputText value="#{langueBean.getMsg('profile.pseudo')} * " title="#{langueBean.getMsg('profile.tootltip_user')}"/>  
                     </div>
 
                     <div class="col-7">
@@ -152,7 +151,7 @@
                 <!-- Email -->
                 <div class="row" style="margin-top: 5px;">
                     <div class="col-5" style="text-align: right">
-                        <h:outputText value="#{langueBean.getMsg('profile.email')} : "/>
+                        <h:outputText value="#{langueBean.getMsg('profile.email')} * "/>
                     </div>
                     <div class="col-7">
                         <p:inputText value="#{newUSerBean.nodeUser.mail}" style="width: 100%" autocomplete="off">
@@ -164,7 +163,7 @@
                 <!-- passe de l'utilisateur -->
                 <div class="row" style="margin-top: 5px;">
                     <div class="col-5" style="text-align: right" > 
-                        <h:outputText value="#{langueBean.getMsg('menu.password')} : " />
+                        <h:outputText value="#{langueBean.getMsg('menu.password')} * " />
                     </div>
                     <div class="col-7">
                         <p:password value="#{newUSerBean.passWord1}" style="width: 100%" autocomplete="off"/>
@@ -173,7 +172,7 @@
 
                 <div class="row" style="margin-top: 5px;">
                     <div class="col-5" style="text-align: right">
-                        <h:outputText value="#{langueBean.getMsg('profile.confirmation')} #{langueBean.getMsg('menu.password')} : " />
+                        <h:outputText value="#{langueBean.getMsg('profile.confirmation')} #{langueBean.getMsg('menu.password')} * " />
                     </div>
                     <div class="col-7">
                         <p:password value="#{newUSerBean.passWord2}" style="width: 100%" autocomplete="off"/>
@@ -183,7 +182,7 @@
                 <!-- Pour les alertes par mail -->
                 <div class="row" style="margin-top: 5px;">
                     <div class="col-5" style="text-align: right">
-                        <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} : " title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
+                        <h:outputText value="#{langueBean.getMsg('profile.alert_by_email')} " title="#{langueBean.getMsg('profile.alert_by_emailTooltip')}"/>
                     </div>
                     <div class="col-7">
                         <p:toggleSwitch id="isAlertMail" value="#{newUSerBean.nodeUser.alertMail}" onIcon="pi pi-times" offIcon="pi pi-check"/>
@@ -196,7 +195,7 @@
                 <h:panelGroup id="userRoleDef">
                     <div class="row" style="margin-top: 5px;">
                         <div class="col-5" style="text-align: right">
-                            <h:outputText value="#{langueBean.getMsg('profile.role')} : " /> 
+                            <h:outputText value="#{langueBean.getMsg('profile.role')} " /> 
                         </div>
                         <div class="col-7">                       
                             <p:selectOneMenu value="#{newUSerBean.selectedRole}"
@@ -212,7 +211,7 @@
                     <h:panelGroup rendered="#{(newUSerBean.selectedRole != '1') and (newUSerBean.selectedRole != '') and (newUSerBean.selectedRole != null)}">                
                         <div class="row" style="margin-top: 5px;">
                             <div class="col-5" style="text-align: right">
-                                <h:outputText value="#{langueBean.getMsg('profile.project')} : "  style="font-size: 12px;"/>
+                                <h:outputText value="#{langueBean.getMsg('profile.project')} "  style="font-size: 12px;"/>
                             </div>
                             <div class="col-7">
                                 <p:selectOneMenu value="#{newUSerBean.selectedProject}"
@@ -228,7 +227,7 @@
                         <!-- Pour limiter les droits à un ou plusieurs thésaurus du projet -->
                         <div class="row" style="margin-top: 5px;">
                             <div class="col-5" style="text-align: right">
-                                <h:outputText value="#{langueBean.getMsg('profile.limitRoleOnTheso')} : " title="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}"/>
+                                <h:outputText value="#{langueBean.getMsg('profile.limitRoleOnTheso')} " title="#{langueBean.getMsg('profile.limitRoleOnThesoTooltip')}"/>
                             </div>
                             <div class="col-7">
                                 <p:toggleSwitch id="limitToThesaurus" value="#{newUSerBean.limitOnTheso}" onIcon="pi pi-times" offIcon="pi pi-check">
@@ -241,7 +240,7 @@
                         <h:panelGroup rendered="#{newUSerBean.limitOnTheso}">
                             <div class="row" style="margin-top: 5px;">
                                 <div class="col-5" style="text-align: right">
-                                    <h:outputText value="#{langueBean.getMsg('profile.list_of_thesauri')} : "  style="font-size: 12px;"/>
+                                    <h:outputText value="#{langueBean.getMsg('profile.list_of_thesauri')} "  style="font-size: 12px;"/>
                                 </div>
                                 <div class="col-7">
                                     <p:selectManyMenu value="#{newUSerBean.selectedThesos}"

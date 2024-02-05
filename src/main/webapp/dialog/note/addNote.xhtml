@@ -13,13 +13,19 @@
             
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/>
-                    
-                    <p:commandLink style="font-size: 17px; color: #FF7979" action="#{noteBean.infos}" 
-                                   update="messageIndex" ajax="true" process="@form">
-                        <i class="pi pi-exclamation-circle" />
-                    </p:commandLink>
+                    <h:panelGroup rendered="#{noteBean.isFacetNote}">
+                        <h:outputText value="#{langueBean.getMsg('leftbody.facet')} : " /> 
+                        <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="color: #C63632;"/>
+                    </h:panelGroup>     
+                    <h:panelGroup rendered="#{noteBean.isGroupNote}">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.group')} : " /> 
+                        <h:outputText value="#{groupView.nodeGroup.lexicalValue}" style="color: #C63632;"/>
+                    </h:panelGroup>                      
+                    <h:panelGroup rendered="#{!noteBean.isFacetNote and !noteBean.isGroupNote}">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;"/>
+                    </h:panelGroup>                        
+                   
                 </div>
             </div>
 

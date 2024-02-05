@@ -145,9 +145,9 @@ public class ImportRdf4jHelper {
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         thesaurusHelper.setIdentifierType("2");
         DcElementHelper dcElementHelper = new DcElementHelper();
-        
+
         String idTheso1;
-        try ( Connection conn = ds.getConnection()) {
+        try (Connection conn = ds.getConnection()) {
 
             conn.setAutoCommit(false);
             if (thesaurus.getLanguage() == null) {
@@ -168,12 +168,12 @@ public class ImportRdf4jHelper {
                 }
             }
             thesaurus.setId_thesaurus(idTheso1);
-            
+
             // intégration des métadonnées DC
             for (DcElement dcElement : skosXmlDocument.getConceptScheme().getThesaurus().getDcElement()) {
                 dcElementHelper.addDcElementThesaurus(ds, dcElement, idTheso1);
             }
-            
+
             // boucler pour les traductions
             for (SKOSLabel label : skosXmlDocument.getConceptScheme().getLabelsList()) {
                 thesaurus.setTitle(label.getLabel());
@@ -228,7 +228,7 @@ public class ImportRdf4jHelper {
                 nodePreference.setOriginalUriIsDoi(true);
             }
             preferencesHelper.updateAllPreferenceUser(ds, nodePreference, idTheso);
-   
+
         } else {
             nodePreference.setCheminSite(uri);
             nodePreference.setSourceLang(langueSource);
@@ -374,7 +374,7 @@ public class ImportRdf4jHelper {
             if (idArkHandle == null) {
                 idArkHandle = "";
             }
-            
+
             if (StringUtils.isEmpty(formatDate)) {
                 formatDate = "dd-mm-yyyy";
             }
@@ -384,19 +384,18 @@ public class ImportRdf4jHelper {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);
             for (SKOSDate sKOSDate : group.getDateList()) {
                 try {
-                    if(!StringUtils.isEmpty(sKOSDate.getDate())) {
-                        if(sKOSDate.getProperty() == SKOSProperty.CREATED){
+                    if (!StringUtils.isEmpty(sKOSDate.getDate())) {
+                        if (sKOSDate.getProperty() == SKOSProperty.CREATED) {
                             created = simpleDateFormat.parse(sKOSDate.getDate());
                         }
-                        if(sKOSDate.getProperty() == SKOSProperty.MODIFIED){
+                        if (sKOSDate.getProperty() == SKOSProperty.MODIFIED) {
                             modified = simpleDateFormat.parse(sKOSDate.getDate());
-                        }                        
+                        }
                     }
                 } catch (ParseException ex) {
                     Logger.getLogger(ImportRdf4jHelper.class.getName()).log(Level.SEVERE, null, ex);
-                }                  
+                }
             }
-            
 
             groupHelper.insertGroup(ds, idGroup, idTheso, idArkHandle, type, notationValue, "", false, created, modified, idUser);
 
@@ -428,6 +427,38 @@ public class ImportRdf4jHelper {
                 conceptGroupLabel.setLexicalvalue(label.getLabel());
 
                 groupHelper.addGroupTraduction(ds, conceptGroupLabel, idUser);
+            }
+
+            NoteHelper noteHelper = new NoteHelper();
+            for (SKOSDocumentation documentation : group.getDocumentationsList()) {
+                String noteTypeCode = "";
+                int prop = documentation.getProperty();
+                switch (prop) {
+                    case SKOSProperty.DEFINITION:
+                        noteTypeCode = "definition";
+                        break;
+                    case SKOSProperty.SCOPE_NOTE:
+                        noteTypeCode = "scopeNote";
+                        break;
+                    case SKOSProperty.EXAMPLE:
+                        noteTypeCode = "example";
+                        break;
+                    case SKOSProperty.HISTORY_NOTE:
+                        noteTypeCode = "historyNote";
+                        break;
+                    case SKOSProperty.EDITORIAL_NOTE:
+                        noteTypeCode = "editorialNote";
+                        break;
+                    case SKOSProperty.CHANGE_NOTE:
+                        noteTypeCode = "changeNote";
+                        break;
+                    case SKOSProperty.NOTE:
+                        noteTypeCode = "note";
+                        break;
+                }
+
+                noteHelper.addNote(ds, idGroup, documentation.getLanguage(),
+                        idTheso, documentation.getText(), noteTypeCode, "", idUser);
             }
         }
         addGroupConceptGroup(idTheso);
@@ -473,19 +504,18 @@ public class ImportRdf4jHelper {
 
     public void addConceptV2(SKOSResource conceptResource, String idTheso) throws SQLException {
         String idConcept;
-        if(StringUtils.isEmpty(conceptResource.getIdentifier())){
+        if (StringUtils.isEmpty(conceptResource.getIdentifier())) {
             idConcept = getOriginalId(conceptResource.getUri());
-        } else
+        } else {
             idConcept = conceptResource.getIdentifier();
-
+        }
 
         String conceptStatus = "";
-        
-       
+
         if (conceptResource.getStatus() == SKOSProperty.DEPRECATED) {
             conceptStatus = "dep";
         }
-        
+
         // option cochée
         String idArk = "";
         if ("ark".equalsIgnoreCase(selectedIdentifier)) {
@@ -588,11 +618,11 @@ public class ImportRdf4jHelper {
                         status = "Hidden";
                         hiden = true;
                     }
-                    nonPrefTerm += SEPERATEUR + idConcept 
+                    nonPrefTerm += SEPERATEUR + idConcept
                             + SOUS_SEPERATEUR + label.getLabel()
-                            + SOUS_SEPERATEUR + label.getLanguage() 
+                            + SOUS_SEPERATEUR + label.getLanguage()
                             + SOUS_SEPERATEUR + idTheso
-                            + SOUS_SEPERATEUR + idUser 
+                            + SOUS_SEPERATEUR + idUser
                             + SOUS_SEPERATEUR + status
                             + SOUS_SEPERATEUR + hiden;
                 }
@@ -673,7 +703,7 @@ public class ImportRdf4jHelper {
 
         //CustomRelation
         String customRelations = null;
-        
+
         //Notes
         //-- 'value@typeCode@lang@id_term'
         String notes = null;
@@ -705,9 +735,9 @@ public class ImportRdf4jHelper {
                         break;
                 }
 
-                notes += SEPERATEUR + documentation.getText() 
-                        + SOUS_SEPERATEUR + noteTypeCode 
-                        + SOUS_SEPERATEUR + documentation.getLanguage() 
+                notes += SEPERATEUR + documentation.getText()
+                        + SOUS_SEPERATEUR + noteTypeCode
+                        + SOUS_SEPERATEUR + documentation.getLanguage()
                         + SOUS_SEPERATEUR + idConcept;
             }
             if (notes.length() > 0) {
@@ -735,7 +765,9 @@ public class ImportRdf4jHelper {
         if (CollectionUtils.isNotEmpty(conceptResource.getsKOSReplaces())) {
             for (SKOSReplaces replace : conceptResource.getsKOSReplaces()) {
                 if (SKOSProperty.IS_REPLACED_BY == replace.getProperty()) {
-                    if (isReplacedBy == null) isReplacedBy = "";
+                    if (isReplacedBy == null) {
+                        isReplacedBy = "";
+                    }
                     isReplacedBy = isReplacedBy + SEPERATEUR + getOriginalId(replace.getTargetUri());
                 }
             }
@@ -746,17 +778,17 @@ public class ImportRdf4jHelper {
 
         Date created = null;
         Date modified = null;
-        
+
         if (StringUtils.isEmpty(formatDate)) {
             formatDate = "dd-mm-yyyy";
         }
-        try {                
+        try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(formatDate);
             for (SKOSDate date : conceptResource.getDateList()) {
-                if(date.getDate() != null && !date.getDate().isEmpty()) {
+                if (date.getDate() != null && !date.getDate().isEmpty()) {
                     if (date.getProperty() == SKOSProperty.CREATED) {
                         created = simpleDateFormat.parse(date.getDate());
-                    } 
+                    }
                     if ((date.getProperty() == SKOSProperty.MODIFIED)) {
                         modified = simpleDateFormat.parse(date.getDate());
                     }
@@ -764,23 +796,25 @@ public class ImportRdf4jHelper {
             }
         } catch (ParseException ex) {
             Logger.getLogger(ImportRdf4jHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
 
         String dcterms = null;
         for (SKOSAgent agent : conceptResource.getAgentList()) {
             switch (agent.getProperty()) {
                 case SKOSProperty.CREATOR:
-                    if(StringUtils.isEmpty(dcterms)) {
-                        dcterms= "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;
-                    } else
-                        dcterms= dcterms + "##" + "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    if (StringUtils.isEmpty(dcterms)) {
+                        dcterms = "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;
+                    } else {
+                        dcterms = dcterms + "##" + "creator@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    }
                     break;
                 case SKOSProperty.CONTRIBUTOR:
-                    if(StringUtils.isEmpty(dcterms)) {
-                        dcterms= "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;
-                    } else
-                        dcterms= dcterms + "##" + "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
-                    break;                    
+                    if (StringUtils.isEmpty(dcterms)) {
+                        dcterms = "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;
+                    } else {
+                        dcterms = dcterms + "##" + "contributor@@" + agent.getAgent() + "@@fr";//agent.getLang;                    
+                    }
+                    break;
                 default:
                     break;
             }
@@ -795,24 +829,23 @@ public class ImportRdf4jHelper {
 
             gps = gps.substring(SEPERATEUR.length());
         }
-        
-        
+
         String sql = "";
-        try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection(); Statement stmt = conn.createStatement()) {
             sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
                     + "'" + idConcept + "', "
                     + idUser + ", "
                     + "'" + conceptStatus + "', "
                     + "'concept', "
                     + (notationConcept == null ? null : "'" + notationConcept + "'") + ""
-                    + ", " 
-                    + (idArk == null ? "''":  "'" + idArk + "'") + ", "
+                    + ", "
+                    + (idArk == null ? "''" : "'" + idArk + "'") + ", "
                     + isTopConcept + ", "
                     + "'" + idHandle + "', "
                     + "'" + idDoi + "', "
                     + (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'") + ", "
                     + (relations == null ? null : "'" + relations + "'") + ", "
-                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "    
+                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "
                     + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'") + ", "
                     + (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'") + ", "
                     + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
@@ -822,32 +855,32 @@ public class ImportRdf4jHelper {
                     + (gps == null ? null : "'" + gps + "'") + ", "
                     //+ "'" + created + "', "
                     + (created == null ? null : "'" + created + "'") + ", "
-
                     //+ "'" + modified + "'"
-                    + (modified== null ? null : "'" + modified + "'") + ", "
-                    + (dcterms == null ? null : "'" + dcterms + "'") +
-                    ")";
+                    + (modified == null ? null : "'" + modified + "'") + ", "
+                    + (dcterms == null ? null : "'" + dcterms + "'")
+                    + ")";
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);
             System.out.println(e.getMessage());
             System.out.println("--------------------------------");
         }
-        
-        addExternalResources(idTheso,idConcept, conceptResource.getDcRelations());
+
+        addExternalResources(idTheso, idConcept, conceptResource.getDcRelations());
     }
+
     private void addExternalResources(String idTheso, String idConcept, ArrayList<String> externalRelations) {
-        StringPlus stringPlus = new StringPlus();        
-        ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();        
-        
+        StringPlus stringPlus = new StringPlus();
+        ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();
+
         for (String externalRelation : externalRelations) {
-            if(externalRelation == null || externalRelation.isEmpty()) {
+            if (externalRelation == null || externalRelation.isEmpty()) {
                 return;
             }
-            if(!stringPlus.urlValidator(externalRelation)){
-                return;            
+            if (!stringPlus.urlValidator(externalRelation)) {
+                return;
             }
-            if(!externalResourcesHelper.addExternalResource(
+            if (!externalResourcesHelper.addExternalResource(
                     ds,
                     idConcept,
                     idTheso,
@@ -858,30 +891,34 @@ public class ImportRdf4jHelper {
         }
     }
 
-    public void addFoafImages(ArrayList<SKOSResource> foafImages, String idTheso){
-        String images;        
+    public void addFoafImages(ArrayList<SKOSResource> foafImages, String idTheso) {
+        String images;
         for (SKOSResource sKOSResource : foafImages) {
             FoafImage foafImage = sKOSResource.getFoafImage();
-            if(foafImage == null) return;
+            if (foafImage == null) {
+                return;
+            }
             images = foafImage.getImageName() + SOUS_SEPERATEUR + foafImage.getCopyRight() + SOUS_SEPERATEUR + sKOSResource.getUri();
-            if(StringUtils.isEmpty(images)) return;
+            if (StringUtils.isEmpty(images)) {
+                return;
+            }
             String sql = "";
-            try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
+            try (Connection conn = ds.getConnection(); Statement stmt = conn.createStatement()) {
                 sql = "CALL opentheso_add_external_images("
-                    + "'" + idTheso + "',"
-                    + "'" + sKOSResource.getIdentifier() + "',"
-                    + idUser
-                    + ",'" + images + "'" 
-                    + ")";
+                        + "'" + idTheso + "',"
+                        + "'" + sKOSResource.getIdentifier() + "',"
+                        + idUser
+                        + ",'" + images + "'"
+                        + ")";
                 stmt.executeUpdate(sql);
             } catch (SQLException e) {
                 System.out.println("SQL : " + sql);
                 System.out.println(e.getMessage());
                 System.out.println("--------------------------------");
-            }  
+            }
         }
     }
-    
+
     public void addFacetsV2(ArrayList<SKOSResource> facetResources, String idTheso) {
 
         for (SKOSResource facetSKOSResource : facetResources) {
@@ -927,13 +964,57 @@ public class ImportRdf4jHelper {
                 }
             }
 
+            //Notes
+            //-- 'value@typeCode@lang@id_term'
+            String notes = null;
+            if (CollectionUtils.isNotEmpty(facetSKOSResource.getDocumentationsList())) {
+                notes = "";
+                for (SKOSDocumentation documentation : facetSKOSResource.getDocumentationsList()) {
+                    String noteTypeCode = "";
+                    switch (documentation.getProperty()) {
+                        case SKOSProperty.DEFINITION:
+                            noteTypeCode = "definition";
+                            break;
+                        case SKOSProperty.SCOPE_NOTE:
+                            noteTypeCode = "scopeNote";
+                            break;
+                        case SKOSProperty.EXAMPLE:
+                            noteTypeCode = "example";
+                            break;
+                        case SKOSProperty.HISTORY_NOTE:
+                            noteTypeCode = "historyNote";
+                            break;
+                        case SKOSProperty.EDITORIAL_NOTE:
+                            noteTypeCode = "editorialNote";
+                            break;
+                        case SKOSProperty.CHANGE_NOTE:
+                            noteTypeCode = "changeNote";
+                            break;
+                        case SKOSProperty.NOTE:
+                            noteTypeCode = "note";
+                            break;
+                    }
+
+                    notes += SEPERATEUR + documentation.getText()
+                            + SOUS_SEPERATEUR + noteTypeCode
+                            + SOUS_SEPERATEUR + documentation.getLanguage()
+                            + SOUS_SEPERATEUR + idFacet;
+                }
+                if (notes.length() > 0) {
+                    notes = notes.substring(SEPERATEUR.length(), notes.length());
+                }
+            }
+
             String sql = "";
-            try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
-                sql = "CALL opentheso_add_facet('" + idFacet + "', '"
-                    + idTheso + "', '"
-                    + idConceptParent + "', '"
-                    + labels.replaceAll("'", "''") + "', "
-                    + (membres == null ? null : "'" + membres + "'") + ")";
+            try (Connection conn = ds.getConnection(); Statement stmt = conn.createStatement()) {
+                sql = "CALL opentheso_add_facet('" + idFacet + "', "
+                        + idUser + ", '"
+                        + idTheso + "', '"
+                        + idConceptParent + "', '"
+                        + labels.replaceAll("'", "''") + "', "
+                        + (membres == null ? null : "'" + membres + "'") + ", "
+                        + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'")
+                        + ")";
                 stmt.executeUpdate(sql);
             } catch (SQLException e) {
                 System.out.println("SQL : " + sql);
@@ -1207,21 +1288,8 @@ public class ImportRdf4jHelper {
         }
 
         for (NodeNote nodeNoteList1 : acs.nodeNotes) {
-
-            if (nodeNoteList1.getNotetypecode().equals("customnote") || nodeNoteList1.getNotetypecode().equals("scopeNote") || nodeNoteList1.getNotetypecode().equals("note")) {
-                acs.noteHelper.addConceptNote(ds, acs.concept.getIdConcept(), nodeNoteList1.getLang(),
-                        idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(),"", idUser);
-            }
-
-            if (nodeNoteList1.getNotetypecode().equals("definition")
-                    || nodeNoteList1.getNotetypecode().equals("historyNote")
-                    || nodeNoteList1.getNotetypecode().equals("editorialNote")
-                    || nodeNoteList1.getNotetypecode().equals("changeNote")
-                    || nodeNoteList1.getNotetypecode().equals("example")) {
-                acs.noteHelper.addTermNote(ds, acs.nodeTerm.getIdTerm(), nodeNoteList1.getLang(),
-                        idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(),"", idUser);
-            }
-
+            acs.noteHelper.addNote(ds, acs.concept.getIdConcept(), nodeNoteList1.getLang(),
+                    idTheso, nodeNoteList1.getLexicalvalue(), nodeNoteList1.getNotetypecode(), "", idUser);
         }
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
@@ -1257,7 +1325,7 @@ public class ImportRdf4jHelper {
 
         // ajout des images externes URI
         for (NodeImage nodeImage : acs.nodeImages) {
-            acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight() ,nodeImage.getUri(), idUser);
+            acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), idUser);
         }
 
         DeprecateHelper deprecateHelper = new DeprecateHelper();
@@ -1268,8 +1336,8 @@ public class ImportRdf4jHelper {
         for (NodeIdValue nodeIdValue : acs.replacedBy) {
             deprecateHelper.addReplacedBy(ds, acs.concept.getIdConcept(), idTheso, nodeIdValue.getId(), idUser);
         }
-        if(isCandidatImport) {
-            new CandidatDao().setStatutForCandidat(ds, 1, acs.concept.getIdConcept(), idTheso, ""+ idUser);
+        if (isCandidatImport) {
+            new CandidatDao().setStatutForCandidat(ds, 1, acs.concept.getIdConcept(), idTheso, "" + idUser);
         }
 
         // initialisation des variables
@@ -1476,7 +1544,9 @@ public class ImportRdf4jHelper {
     private void addDocumentation(AddConceptsStruct acs) {
         NodeNote nodeNote;
         for (SKOSDocumentation documentation : acs.conceptResource.getDocumentationsList()) {
-            if("status".equalsIgnoreCase(documentation.getLanguage()) || "vote".equalsIgnoreCase(documentation.getLanguage()) || "message".equalsIgnoreCase(documentation.getLanguage())) continue;
+            if ("status".equalsIgnoreCase(documentation.getLanguage()) || "vote".equalsIgnoreCase(documentation.getLanguage()) || "message".equalsIgnoreCase(documentation.getLanguage())) {
+                continue;
+            }
             String noteTypeCode = "";
             int prop = documentation.getProperty();
             nodeNote = new NodeNote();

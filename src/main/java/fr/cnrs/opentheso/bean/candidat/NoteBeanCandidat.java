@@ -23,7 +23,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -129,52 +129,10 @@ public class NoteBeanCandidat implements Serializable {
         noteValue = removeParagraphTags(noteValue);
         noteValue = StringEscapeUtils.unescapeXml(noteValue);
 
-        switch (selectedTypeNote) {
-            case "note":
-                if (!addConceptNote(idUser)) {
-                    printErreur();
-                    return;
-                }
-                break;
-            case "definition":
-                if (!addtermNote(idUser)) {
-                    printErreur();
-                    return;
-                }
-                break;
-            case "scopeNote":
-                if (!addConceptNote(idUser)) {
-                    printErreur();
-                    return;
-                }
-                break;
-            case "example":
-                if (!addtermNote(idUser)) {
-                    printErreur();
-                    return;
-                }
-                break;
-            case "historyNote":
-                if (!addtermNote(idUser)) {
-                    printErreur();
-                    return;
-                }
-                break;
-            case "editorialNote":
-                if (!addtermNote(idUser)) {
-                    printErreur();
-                    return;
-                }
-                break;
-            case "changeNote":
-                if (!addtermNote(idUser)) {
-                    printErreur();
-                    return;
-                }
-                break;
-            default:
-                break;
-        }
+        if (!addNote(idUser)) {
+            printErreur();
+            return;
+        }        
         reset();
 
         try {          
@@ -198,33 +156,18 @@ public class NoteBeanCandidat implements Serializable {
         NoteHelper noteHelper = new NoteHelper();
      
         FacesMessage msg;        
-        if (selectedNodeNote.getNotetypecode().equalsIgnoreCase("note") ||
-                selectedNodeNote.getNotetypecode().equalsIgnoreCase("scopeNote")) {
-            if (!noteHelper.updateConceptNote(connect.getPoolConnexion(),
-                    selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                    selectedNodeNote.getId_concept(),
-                    selectedNodeNote.getLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedNodeNote.getLexicalvalue(),
-                    selectedNodeNote.getNotetypecode(),
-                    idUser)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
-        } else {
-            if (!noteHelper.updateTermNote(connect.getPoolConnexion(),
-                    selectedNodeNote.getId_note(),
-                    selectedNodeNote.getId_term(),
-                    selectedNodeNote.getLang(),                    
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedNodeNote.getLexicalvalue(),
-                    selectedNodeNote.getNotetypecode(),
-                    idUser)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
+
+        if (!noteHelper.updateNote(connect.getPoolConnexion(),
+                selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
+                selectedNodeNote.getId_concept(),
+                selectedNodeNote.getLang(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedNodeNote.getLexicalvalue(),
+                selectedNodeNote.getNotetypecode(),
+                idUser)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
         reset();
         setVisible(false);
@@ -243,30 +186,16 @@ public class NoteBeanCandidat implements Serializable {
         NoteHelper noteHelper = new NoteHelper();
         FacesMessage msg;
 
-        if (selectedNodeNote.getNotetypecode().equalsIgnoreCase("note") || selectedNodeNote.getNotetypecode().equalsIgnoreCase("scopeNote") || selectedNodeNote.getNotetypecode().equalsIgnoreCase("historyNote")) {
-            if (!noteHelper.deletethisNoteOfConcept(connect.getPoolConnexion(),
-                    selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                    selectedNodeNote.getId_concept(),
-                    selectedNodeNote.getLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedNodeNote.getNotetypecode(),
-                    noteValueToChange, idUser)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
-        } else {
-            if (!noteHelper.deleteThisNoteOfTerm(connect.getPoolConnexion(),
-                    selectedNodeNote.getId_note(),
-                    selectedNodeNote.getId_term(),
-                    selectedNodeNote.getLang(),                    
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedNodeNote.getNotetypecode(),
-                    noteValueToChange, idUser)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
+        if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
+                selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
+                selectedNodeNote.getId_concept(),
+                selectedNodeNote.getLang(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedNodeNote.getNotetypecode(),
+                noteValueToChange, idUser)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
         }
 
         noteHelper.deleteVoteByNoteId(connect.getPoolConnexion(), selectedNodeNote.getId_note(), selectedTheso.getCurrentIdTheso(),
@@ -291,24 +220,11 @@ public class NoteBeanCandidat implements Serializable {
         }
     }
 
-    private boolean addConceptNote(int idUser) {
+    private boolean addNote(int idUser) {
         NoteHelper noteHelper = new NoteHelper();
-        return noteHelper.addConceptNote(
+        return noteHelper.addNote(
                 connect.getPoolConnexion(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
-                selectedLang,
-                selectedTheso.getCurrentIdTheso(),
-                noteValue,
-                selectedTypeNote,
-                "",
-                idUser);
-    }
-
-    private boolean addtermNote(int idUser) {
-        NoteHelper noteHelper = new NoteHelper();
-        return noteHelper.addTermNote(
-                connect.getPoolConnexion(),
-                candidatBean.getCandidatSelected().getIdTerm(),
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
                 noteValue,

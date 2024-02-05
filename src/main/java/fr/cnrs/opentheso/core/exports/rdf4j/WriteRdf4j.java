@@ -144,6 +144,7 @@ public class WriteRdf4j {
             writeRelation(facet);
             writeLabel(facet);
             writeDate(facet);
+            writeDocumentation(facet);
         }
     }
 

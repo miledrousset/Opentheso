@@ -109,7 +109,7 @@ public class BroaderBean implements Serializable {
                     connect.getPoolConnexion(),
                     value,
                     conceptBean.getSelectedLang(),
-                    selectedTheso.getCurrentIdTheso());
+                    selectedTheso.getCurrentIdTheso(), true);
         }
         return liste;
     }

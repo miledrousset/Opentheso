@@ -176,16 +176,16 @@ public class FusionService implements Serializable {
                     // OK validé par #MR
                     //Definition
                     if (!CollectionUtils.isEmpty(acs.nodeNotes)) {
-                        nodeNotesLocal = noteHelper.getListNotesTermAllLang(connect.getPoolConnexion(), acs.nodeTerm.getIdTerm(), conceptFound.getConcept().getIdThesaurus());
+                        nodeNotesLocal = noteHelper.getListNotesAllLang(connect.getPoolConnexion(), acs.concept.getIdConcept(), conceptFound.getConcept().getIdThesaurus());
                         for (NodeNote nodeNote : acs.nodeNotes) {
                             /// détecter le type de note avant 
                             if (nodeNote.getNotetypecode().equalsIgnoreCase("definition")) {
-                                if (!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(),
-                                        conceptFound.getTerm().getId_term(), 
+                                if (!noteHelper.isNoteExist(connect.getPoolConnexion(),
+                                        acs.concept.getIdConcept(), 
                                         conceptFound.getConcept().getIdThesaurus(),
                                         nodeNote.getLang(), nodeNote.getLexicalvalue(), "definition")) {
-                                    noteHelper.addTermNote(connect.getPoolConnexion(),
-                                            conceptFound.getTerm().getId_term(),
+                                    noteHelper.addNote(connect.getPoolConnexion(),
+                                            acs.concept.getIdConcept(),
                                             nodeNote.getLang(),
                                             conceptFound.getConcept().getIdThesaurus(),
                                             nodeNote.getLexicalvalue(),

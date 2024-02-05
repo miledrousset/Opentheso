@@ -97,14 +97,14 @@ public class ExportRdf4jHelperNew {
             }
         }
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
-        for (NodeNote nodeNote : nodeConcept.getNodeNoteConcept()) {
+        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
             if(nodeNote.getLang().equalsIgnoreCase(idLang))
                 nodeNotes.add(nodeNote);
         }
-        for (NodeNote nodeNote : nodeConcept.getNodeNoteTerm()) {
+/*        for (NodeNote nodeNote : nodeConcept.getNodeNoteTerm()) {
             if(nodeNote.getLang().equalsIgnoreCase(idLang))
                 nodeNotes.add(nodeNote);
-        }        
+        }        */
         addNoteGiven(nodeNotes, sKOSResource);
         addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
         addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
@@ -364,6 +364,12 @@ public class ExportRdf4jHelperNew {
             if(!nodeGroupLabel.getNotation().isEmpty())
                 sKOSResource.addNotation(nodeGroupLabel.getNotation());
         }
+        
+        /// Ajout des notes
+        NoteHelper noteHelper = new NoteHelper();
+        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesAllLang(ds, idOfGroupChild, idTheso);
+        addNoteGiven(nodeNotes, sKOSResource);
+        
         skosXmlDocument.addGroup(sKOSResource);
     }
 
@@ -426,9 +432,11 @@ public class ExportRdf4jHelperNew {
                 sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.ALT_LABEL);
             }
         }
-        ArrayList<NodeNote> nodeNotes = new ArrayList<>();//nodeConcept.getNodeNoteConcept();
-        nodeNotes.addAll(nodeConcept.getNodeNoteTerm());
-        nodeNotes.addAll(nodeConcept.getNodeNoteConcept());        
+        //ArrayList<NodeNote> nodeNotes = new ArrayList<>();//nodeConcept.getNodeNoteConcept();
+        
+        ArrayList<NodeNote> nodeNotes = nodeConcept.getNodeNotes();
+//        nodeNotes.addAll(nodeConcept.getNodeNoteTerm());
+//        nodeNotes.addAll(nodeConcept.getNodeNoteConcept());        
         addNoteGiven(nodeNotes, sKOSResource);
         addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
         addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);

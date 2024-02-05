@@ -134,13 +134,7 @@ public class WriteIdentifier {
                 }
 
                 // Definition
-                idTerme = termHelper.getIdTermOfConcept(ds, idConcept, idTheso);
-                if(idTerme == null) {
-                    message.append("idTerm null pour le concept :");
-                    message.append(idConcept);
-                    message.append("\n");
-                }
-                nodeNote = noteHelper.getListNotesTerm(ds, idTerme, idTheso, idLang);
+                nodeNote = noteHelper.getListNotes(ds, idConcept, idTheso, idLang);
                 if (nodeNote != null) {
                     for (NodeNote nodeNote1 : nodeNote) {
                         if (nodeNote1.getNotetypecode().equalsIgnoreCase("definition")) {
@@ -297,13 +291,7 @@ public class WriteIdentifier {
                     }
 
                     // Definition
-                    idTerme = termHelper.getIdTermOfConcept(ds, idConcept, idTheso);
-                    if (idTerme == null) {
-                        message.append("idTerm null pour le concept :");
-                        message.append(idConcept);
-                        message.append("\n");
-                    }
-                    nodeNote = noteHelper.getListNotesTerm(ds, idTerme, idTheso, idLang);
+                    nodeNote = noteHelper.getListNotes(ds, idConcept, idTheso, idLang);
                     if (nodeNote != null) {
                         for (NodeNote nodeNote1 : nodeNote) {
                             if (nodeNote1.getNotetypecode().equalsIgnoreCase("definition")) {

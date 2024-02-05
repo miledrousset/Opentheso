@@ -331,7 +331,7 @@ public class CandidatService implements Serializable {
                     candidatSelected.getLang()));
              
             candidatSelected.setNodeNotes(noteDao.getNotesCandidat(connection, candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdTerm(), candidatSelected.getIdThesaurus()));
+                    candidatSelected.getIdThesaurus()));
 
             candidatSelected.getNodeNotes().forEach(note -> {
                 try {

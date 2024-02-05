@@ -106,7 +106,7 @@
                             <p:accordionPanel id="meta" widgetVar="basic" activeIndex="-2" style="font-size: 12px;" >
                                 <p:tab title="#{langueBean.getMsg('thesohome.metadata')}" titleStyle="color: #858796; background-color: #F5F2F2; font-size: 12px; border: none">
                                     <p:dataTable id="metadataTheso" widgetVar="metadataTheso" var="dcElement" value="#{viewEditorThesoHomeBean.meta()}"
-                                                 editable="false" scrollHeight="250" scrollable="true" showGridlines="true">
+                                                 editable="false" scrollHeight="250" scrollable="true" showGridlines="true" lazy="false">
 
                                         <p:column width="20%" headerText="#{langueBean.getMsg('toolbox.metadata_property')}">
                                             <h:outputText value="#{dcElement.name}" />

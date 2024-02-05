@@ -54,6 +54,8 @@ public class NodeConceptExport {
     
     private ArrayList <NodeNote> nodeNoteConcept;
     
+    private ArrayList <NodeNote> nodeNotes;    
+    
     private ArrayList <NodeAlignmentSmall> nodeAlignmentsList;
 
     private List<MessageDto> messages = new ArrayList<>();
@@ -244,6 +246,14 @@ public class NodeConceptExport {
 
     public void setListFacetsOfConcept(List<String> listFacetsOfConcept) {
         this.listFacetsOfConcept = listFacetsOfConcept;
+    }
+
+    public ArrayList<NodeNote> getNodeNotes() {
+        return nodeNotes;
+    }
+
+    public void setNodeNotes(ArrayList<NodeNote> nodeNotes) {
+        this.nodeNotes = nodeNotes;
     }
     
 }

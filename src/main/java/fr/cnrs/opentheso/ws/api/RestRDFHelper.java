@@ -19,6 +19,7 @@ import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
@@ -350,14 +351,16 @@ public class RestRDFHelper {
             String idConcept,
             String idLang) {
 
-        ConceptHelper conceptHelper = new ConceptHelper();
-
+/*        ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConcepts(
                 ds,
                 idConcept,
                 idTheso,
                 idLang,
-                false);
+                false);*/
+        
+        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
+        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(ds, idTheso, idConcept, idLang, false);
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 

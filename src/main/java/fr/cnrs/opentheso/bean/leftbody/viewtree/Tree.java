@@ -491,6 +491,9 @@ public class Tree implements Serializable {
     }
 
     public void addNewFacet(TreeNode parent, String facetName, String idFacet) {
+        if (parent.getChildCount() == 1 && ((TreeNode)parent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
+            return;
+        }        
         TreeNodeData data = new TreeNodeData(
                 idFacet,
                 facetName,

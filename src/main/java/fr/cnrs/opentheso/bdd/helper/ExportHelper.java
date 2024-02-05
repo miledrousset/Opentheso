@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.skosapi.SKOSRelation;
@@ -17,10 +16,8 @@ import java.sql.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
@@ -41,7 +38,10 @@ public class ExportHelper {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * FROM opentheso_get_facettes('" + idTheso + "', '" + baseUrl + "') as (id_facet VARCHAR, "
                         + "lexical_value VARCHAR, created timestamp with time zone, modified timestamp with time zone, "
-                        + "lang VARCHAR, id_concept_parent VARCHAR, uri_value VARCHAR)");
+                        + "lang VARCHAR, id_concept_parent VARCHAR, uri_value VARCHAR, "
+                        + "definition text, example text, editorialNote text, changeNote text, "
+                        + " secopeNote text, note text, historyNote text "
+                        + ")");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         SKOSResource sKOSResource = new SKOSResource(getUriForFacette(resultSet.getString("id_facet"), 
@@ -59,6 +59,14 @@ public class ExportHelper {
                         sKOSResource.addLabel(resultSet.getString("lexical_value"), resultSet.getString("lang"), SKOSProperty.PREF_LABEL);
                         sKOSResource.addDate(resultSet.getString("created"), SKOSProperty.CREATED);
                         sKOSResource.addDate(resultSet.getString("modified"), SKOSProperty.MODIFIED);
+        
+                        addDocumentation(resultSet.getString("definition"), sKOSResource, SKOSProperty.DEFINITION);
+                        addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.NOTE);
+                        addDocumentation(resultSet.getString("editorialNote"), sKOSResource, SKOSProperty.EDITORIAL_NOTE);
+                        addDocumentation(resultSet.getString("secopeNote"), sKOSResource, SKOSProperty.SCOPE_NOTE);
+                        addDocumentation(resultSet.getString("historyNote"), sKOSResource, SKOSProperty.HISTORY_NOTE);
+                        addDocumentation(resultSet.getString("example"), sKOSResource, SKOSProperty.EXAMPLE);
+                        addDocumentation(resultSet.getString("changeNote"), sKOSResource, SKOSProperty.CHANGE_NOTE);                        
                         
                         facettes.add(sKOSResource);
                     }

@@ -1783,7 +1783,7 @@ public class ImportFileBean implements Serializable {
                 }
                 NoteHelper noteHelper = new NoteHelper();
 
-                if (noteHelper.isNoteExistOfConcept(
+                if (noteHelper.isNoteExist(
                         connect.getPoolConnexion(),
                         idConcept,
                         idTheso,
@@ -1791,8 +1791,7 @@ public class ImportFileBean implements Serializable {
                         nodeDeprecated.getNote(),
                         "note")) {
                 } else {
-
-                    noteHelper.addConceptNote(
+                    noteHelper.addNote(
                             connect.getPoolConnexion(),
                             idConcept,
                             nodeDeprecated.getNoteLang(),
@@ -2074,10 +2073,8 @@ public class ImportFileBean implements Serializable {
         progress = 0;
         total = 0;
         NoteHelper noteHelper = new NoteHelper();
-        TermHelper termHelper = new TermHelper();
         ConceptHelper conceptHelper = new ConceptHelper();
         String idConcept = null;
-        String idTerm;
         try {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
                 if (conceptObject == null) {
@@ -2104,15 +2101,10 @@ public class ImportFileBean implements Serializable {
                     continue;
                 }
 
-                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(),
-                        idConcept, selectedTheso.getCurrentIdTheso());
-                if (idTerm == null) {
-                    continue;
-                }
                 if (clearBefore) {
                     try (Connection conn = connect.getPoolConnexion().getConnection()) {
                         conn.setAutoCommit(false);
-                        if (!noteHelper.deleteNotesOfConcept(conn, idConcept, selectedTheso.getCurrentIdTheso())) {
+                        if (!noteHelper.deleteNotes(conn, idConcept, selectedTheso.getCurrentIdTheso())) {
                             conn.rollback();
                         } else {
                             conn.commit();
@@ -2121,65 +2113,54 @@ public class ImportFileBean implements Serializable {
                         error.append("erreur de suppression: ");
                         error.append(idConcept);
                     }
-                    try (Connection conn = connect.getPoolConnexion().getConnection()) {
-                        conn.setAutoCommit(false);
-                        if (!noteHelper.deleteNotesOfTerm(conn, idTerm, selectedTheso.getCurrentIdTheso())) {
-                            conn.rollback();
-                        } else {
-                            conn.commit();
-                        }
-                    } catch (Exception e) {
-                        error.append("erreur de suppression: ");
-                        error.append(idTerm);
-                    }
                 }
 
                 //definition
                 for (CsvReadHelper.Label definition : conceptObject.getDefinitions()) {
-                    if (!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                    if (!noteHelper.isNoteExist(connect.getPoolConnexion(), idConcept,
                             selectedTheso.getCurrentIdTheso(), definition.getLang(),
                             definition.getLabel(), "definition")) {
-                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, definition.getLang(),
+                        noteHelper.addNote(connect.getPoolConnexion(), idConcept, definition.getLang(),
                                 selectedTheso.getCurrentIdTheso(), definition.getLabel(), "definition", "", -1);
                         total++;
                     }
                 }
                 // historyNote
                 for (CsvReadHelper.Label historyNote : conceptObject.getHistoryNotes()) {
-                    if (!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                    if (!noteHelper.isNoteExist(connect.getPoolConnexion(), idConcept,
                             selectedTheso.getCurrentIdTheso(), historyNote.getLang(),
                             historyNote.getLabel(), "historyNote")) {
-                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, historyNote.getLang(),
+                        noteHelper.addNote(connect.getPoolConnexion(), idConcept, historyNote.getLang(),
                                 selectedTheso.getCurrentIdTheso(), historyNote.getLabel(), "historyNote", "", -1);
                         total++;
                     }
                 }
                 // changeNote
                 for (CsvReadHelper.Label changeNote : conceptObject.getChangeNotes()) {
-                    if (!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                    if (!noteHelper.isNoteExist(connect.getPoolConnexion(), idConcept,
                             selectedTheso.getCurrentIdTheso(), changeNote.getLang(),
                             changeNote.getLabel(), "changeNote")) {
-                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, changeNote.getLang(),
+                        noteHelper.addNote(connect.getPoolConnexion(), idConcept, changeNote.getLang(),
                                 selectedTheso.getCurrentIdTheso(), changeNote.getLabel(), "changeNote", "", -1);
                         total++;
                     }
                 }
                 // editorialNote
                 for (CsvReadHelper.Label editorialNote : conceptObject.getEditorialNotes()) {
-                    if (!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                    if (!noteHelper.isNoteExist(connect.getPoolConnexion(), idConcept,
                             selectedTheso.getCurrentIdTheso(), editorialNote.getLang(),
                             editorialNote.getLabel(), "editorialNote")) {
-                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, editorialNote.getLang(),
+                        noteHelper.addNote(connect.getPoolConnexion(), idConcept, editorialNote.getLang(),
                                 selectedTheso.getCurrentIdTheso(), editorialNote.getLabel(), "editorialNote", "", -1);
                         total++;
                     }
                 }
                 // example
                 for (CsvReadHelper.Label example : conceptObject.getExamples()) {
-                    if (!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(), idTerm,
+                    if (!noteHelper.isNoteExist(connect.getPoolConnexion(), idConcept,
                             selectedTheso.getCurrentIdTheso(), example.getLang(),
                             example.getLabel(), "example")) {
-                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, example.getLang(),
+                        noteHelper.addNote(connect.getPoolConnexion(), idConcept, example.getLang(),
                                 selectedTheso.getCurrentIdTheso(), example.getLabel(), "example", "", -1);
                         total++;
                     }
@@ -2188,11 +2169,11 @@ public class ImportFileBean implements Serializable {
                 //pour Concept
                 // note
                 for (CsvReadHelper.Label note : conceptObject.getNote()) {
-                    if (!noteHelper.isNoteExistOfConcept(connect.getPoolConnexion(),
+                    if (!noteHelper.isNoteExist(connect.getPoolConnexion(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso(), note.getLang(),
                             note.getLabel(), "note")) {
-                        noteHelper.addConceptNote(connect.getPoolConnexion(),
+                        noteHelper.addNote(connect.getPoolConnexion(),
                                 idConcept, note.getLang(),
                                 selectedTheso.getCurrentIdTheso(), note.getLabel(), "note", "", -1);
                         total++;
@@ -2200,11 +2181,11 @@ public class ImportFileBean implements Serializable {
                 }
                 // scopeNote
                 for (CsvReadHelper.Label scopeNote : conceptObject.getScopeNotes()) {
-                    if (!noteHelper.isNoteExistOfConcept(connect.getPoolConnexion(),
+                    if (!noteHelper.isNoteExist(connect.getPoolConnexion(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso(), scopeNote.getLang(),
                             scopeNote.getLabel(), "scopeNote")) {
-                        noteHelper.addConceptNote(connect.getPoolConnexion(),
+                        noteHelper.addNote(connect.getPoolConnexion(),
                                 idConcept, scopeNote.getLang(),
                                 selectedTheso.getCurrentIdTheso(), scopeNote.getLabel(), "scopeNote", "", -1);
                         total++;

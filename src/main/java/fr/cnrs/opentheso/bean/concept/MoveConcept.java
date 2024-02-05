@@ -225,7 +225,7 @@ public class MoveConcept implements Serializable {
                     connect.getPoolConnexion(),
                     value,
                     selectedTheso.getCurrentLang(),
-                    idThesoTo);
+                    idThesoTo, true);
         }
         return liste;
     }    

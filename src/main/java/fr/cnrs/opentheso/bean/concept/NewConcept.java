@@ -543,36 +543,6 @@ public class NewConcept implements Serializable {
         return liste;
     }
 
-    /**
-     * permet de retourner les infos en temps réel pour un concept pour afficher
-     * les groupes et les définitions
-     *
-     * @param idConcept
-     * @param idTerm
-     * @return
-     */
-    public String getInfosConcepts(String idConcept, String idTerm) {
-        String infos = "";
-        GroupHelper groupHelper = new GroupHelper();
-        NoteHelper noteHelper = new NoteHelper();
-        ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> idGroups = conceptHelper.getListGroupIdOfConcept(
-                connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso());
-        for (String idGroup1 : idGroups) {
-            infos = groupHelper.getLexicalValueOfGroup(
-                    connect.getPoolConnexion(), idGroup1,
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang());
-        }
-
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesTerm(connect.getPoolConnexion(), idTerm,
-                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        for (NodeNote nodeNote : nodeNotes) {
-            infos = infos + " \n" + nodeNote.getLexicalvalue();
-        }
-        return infos;
-    }
-
     public String getPrefLabel() {
         return prefLabel;
     }

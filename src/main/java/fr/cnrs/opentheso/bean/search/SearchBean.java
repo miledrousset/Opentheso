@@ -190,6 +190,12 @@ public class SearchBean implements Serializable {
                         idLang,
                         selectedTheso.getCurrentIdTheso());
             }
+
+            if (withId) {
+                listResultAutoComplete = searchHelper.searchByAllId(connect.getPoolConnexion(), value,
+                        idLang, selectedTheso.getCurrentIdTheso());
+            }                
+                         
             if (!withId && !withNote && !indexMatch && !exactMatch) {
                 listResultAutoComplete = searchHelper.searchFullTextElastic(connect.getPoolConnexion(),
                         value,

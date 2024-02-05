@@ -423,18 +423,10 @@ public class ConceptView implements Serializable {
     public void getNotesWithAllLanguages() {
         NoteHelper noteHelper = new NoteHelper();
         if (toggleSwitchNotesLang) {
-            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
-                    connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));
-            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
+            nodeConcept.setNodeNotes(noteHelper.getListNotesAllLang(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
         } else {
-            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(
-                    connect.getPoolConnexion(),
-                    nodeConcept.getTerm().getId_term(),
-                    nodeConcept.getConcept().getIdThesaurus(),
-                    selectedLang));
-
-            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConcept(
+            nodeConcept.setNodeNotes(noteHelper.getListNotes(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));
@@ -488,10 +480,11 @@ public class ConceptView implements Serializable {
 
     public void countTheTotalOfBranch() {
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> listIdsOfBranch = conceptHelper.getIdsOfBranch(
+        List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(
                 connect.getPoolConnexion(),
-                nodeConcept.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
+                selectedTheso.getCurrentIdTheso(),
+                nodeConcept.getConcept().getIdConcept()
+                );
         this.countOfBranch = listIdsOfBranch.size();
     }
 
@@ -595,14 +588,15 @@ public class ConceptView implements Serializable {
             return " (" + noteSource + ")";
     }
 
+    
     /////////////////////////////////
-/////////////////////////////////
-// fonctions pour les notes /////    
-/////////////////////////////////
-/////////////////////////////////
+    /////////////////////////////////
+    // fonctions pour les notes /////    
+    /////////////////////////////////
+    /////////////////////////////////
     private void setNotes() {
         clearNotes();
-        for (NodeNote nodeNote : nodeConcept.getNodeNotesConcept()) {
+        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":
                     notes.add(nodeNote);
@@ -610,10 +604,6 @@ public class ConceptView implements Serializable {
                 case "scopeNote":
                     scopeNotes.add(nodeNote);
                     break;
-            }
-        }
-        for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
-            switch (nodeNote.getNotetypecode()) {
                 case "changeNote":
                     changeNotes.add(nodeNote);
                     break;
@@ -789,8 +779,9 @@ public class ConceptView implements Serializable {
         Matcher matcher = Pattern.compile("\\(([^)]+)\\)").matcher(gpsValue);
         while (matcher.find()) {
 
-            Matcher matcher2 = Pattern.compile("([0-9]+[.,][0-9]+) ([0-9]+[.,][0-9]+)").matcher(matcher.group(1));
-
+           // Matcher matcher2 = Pattern.compile("([0-9]+[.,][0-9]+) ([0-9]+[.,][0-9]+)").matcher(matcher.group(1));
+            Matcher matcher2 = Pattern.compile("\\((-?[0-9]+[.,][0-9]+)\\s+(-?[0-9]+[.,][0-9]+)\\)").matcher(gpsValue);
+        
             while (matcher2.find()) {
                 Gps gpsTmp = new Gps();
                 gpsTmp.setIdTheso(idTheso);

@@ -4,7 +4,7 @@
              xmlns:p="http://primefaces.org/ui"
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-        <style>
+    <style>
         body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items {
             padding: 0.5rem 0;
             font-size: 0.8rem;
@@ -29,9 +29,9 @@
             width: 100%;
             padding-left: 2rem;
             height: 2rem;
-        }        
+        }
 
-        
+
     </style>
     <div class="col-12" style="height: 100%">
         <div class="card shadow mb-4" style="height: 100%;">
@@ -53,42 +53,9 @@
                     </div>
 
                 </div>
-                <!-- parties invisibles à revoir -->
-                <p:panel visible="false" header="Liste des langues" toggleable="true" closable="false" toggleSpeed="500"
-                         closeSpeed="500" style="margin-bottom:20px" collapsed="true">
-                    <p:dataTable id="listLangue" var="langue" value="#{viewExportBean.languagesOfTheso}"
-                                 selection="#{viewExportBean.selectedLanguages}" rowKey="#{langue.code}" style="margin-bottom:0" lazy="false">
-                        <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllLangsSelect}" process="@this" partialSubmit="true" />
-                        <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
-                        <p:column headerText="Code" width="60">
-                            <h:outputText value="#{langue.code}" />
-                        </p:column>
-                        <p:column headerText="Langue">
-                            <h:outputText value="#{langue.value}" />
-                        </p:column>
-                    </p:dataTable>
-                </p:panel>
 
-                <p:panel visible="false" header="Liste des groupes" toggleable="true" closable="false" toggleSpeed="500"
-                         closeSpeed="500" style="margin-bottom:20px" collapsed="true">
-                    <p:dataTable id="listGroupe" var="groupOfTheso" value="#{viewExportBean.groupList}" style=";margin-bottom:0"
-                                 selection="#{viewExportBean.selectedGroups}" rowKey="#{groupOfTheso.lexicalValue}" lazy="false">
-                        <p:ajax event="toggleSelect" listener="#{viewExportBean.onAllGroupsSelect}" process="@this" partialSubmit="true" />
 
-                        <p:column selectionMode="multiple" style="width:16px;text-align:center" width="40"/>
-                        <p:column headerText="Id" width="200" styleClass="styleText2">
-                            <h:outputText value="#{groupOfTheso.conceptGroup.idgroup}" />
-                        </p:column>
-                        <p:column headerText="Group" styleClass="styleText2">
-                            <h:outputText value="#{groupOfTheso.lexicalValue}" styleClass="styleText2"/>
-                        </p:column>
-                    </p:dataTable>
-                </p:panel>
-                <!-- Fin de parties invisibles -->
 
-                
-                
-                
                 <!-- export PDF -->
                 <p:panel rendered="#{viewExportBean.isPdfExport()}" toggleable="true" closable="false" toggleSpeed="500"
                          closeSpeed="500" style="margin-bottom:20px;" collapsed="false">
@@ -153,49 +120,72 @@
                     </div>
                 </p:panel>
 
-                
-                
-                
-                <!-- export RDF SKOS -->
+
+
+
+                <!-- export RDF SKOS (RDF, JSON, JSONLD, TURTLE -->
                 <h:panelGroup rendered="#{viewExportBean.isRdfExport()}">
-                    <div class="row">
-                        <div class="col-3" style="text-align: right">
-                            <h:outputText value="Format de sortie SKOS" style="color: #000" />
-                        </div>
-                        <div class="col-5">
-                            <p:selectOneMenu value="#{viewExportBean.selectedExportFormat}"
-                                             style="width: 100%; background: none;  box-shadow: none; color: #000"
-                                             panelStyle="fborder: none; box-shadow: none;">
-                                <f:selectItems  value="#{viewExportBean.exportFormat}" var="format" itemLabel="#{format}" itemValue="#{format}"/>
+                        <div class="row">
+                            <div class="col-3" style="text-align: right">
+                                <h:outputText value="Format de sortie SKOS" style="color: #000" />
+                            </div>
+                            <div class="col-5">
+                                <p:selectOneMenu value="#{viewExportBean.selectedExportFormat}"
+                                                 style="width: 100%; background: none;  box-shadow: none; color: #000"
+                                                 panelStyle="fborder: none; box-shadow: none;">
+                                    <f:selectItems  value="#{viewExportBean.exportFormat}" var="format" itemLabel="#{format}" itemValue="#{format}"/>
 
-                            </p:selectOneMenu>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col-3" style="text-align: right">
-                            <h:outputText value="Filtre par collection/groupe" title="Par défaut, tout est sélectionné !!" style="color: #000"/>
-                        </div>
-
-                        <div class="col-5">
-                            <p:toggleSwitch value="#{viewExportBean.toogleFilterByGroup}" style="font-size: 12px;">
-                                <p:ajax update="containerIndex" />
-                            </p:toggleSwitch>
-                        </div>
-                    </div>
-                    <h:panelGroup id="filerByGroup" rendered="#{viewExportBean.toogleFilterByGroup}" >
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col-3" />
-                            <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
-                                <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="select" style="width: 100%; height: 28px; font-size: 12px;"
-                                                      filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
-                                    <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
-                                </p:selectCheckboxMenu>
+                                </p:selectOneMenu>
                             </div>
                         </div>
-                    </h:panelGroup>
+
+                        <!-- filtre par collection -->
+                        <h:panelGroup id="filerByGroup" >
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('statistique.filtre_collection')}"  style="color: #000 ; margin-right: 10px;"/>
+                                    <i class="fa-regular fa-square-check fa-xl"></i>
+                                </div>
+
+                                <div class="col-5" style="margin-top: -5px;">
+                                    <p:toggleSwitch value="#{viewExportBean.toogleFilterByGroup}" style="font-size: 12px;">
+                                        <p:ajax update="containerIndex:filerByGroup containerIndex:exportByGroup" listener="#{viewExportBean.listenerForToogleFilterByGroup()}"/>
+                                    </p:toggleSwitch>
+                                </div>
+                            </div>
+                            <h:panelGroup rendered="#{viewExportBean.toogleFilterByGroup}" >
+                                <div class="row" >
+                                    <div class="col-3" />
+                                    <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
+                                        <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; height: 28px; font-size: 12px;"
+                                                              filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
+                                            <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>    
+
+                        <!-- export découpé par collection -->
+                        <h:panelGroup id="exportByGroup" >                        
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('export.exportThesaurusByCollection')}"  style="color: #000; margin-right: 10px;"
+                                                  title="#{langueBean.getMsg('export.exportThesaurusByCollectionTooltip')}"/>
+                                    <i class="fa-solid fa-object-ungroup fa-xl"></i> 
+                                </div>
+                                <div class="col-5" style="margin-top: -5px;">
+                                    <p:toggleSwitch id="toggleExportMulti" value="#{viewExportBean.toogleExportByGroup}" style="font-size: 12px;">
+                                        <p:ajax update="containerIndex:filerByGroup containerIndex:exportByGroup" listener="#{viewExportBean.listenerForToogleExportByGroup()}"/>
+                                    </p:toggleSwitch>
+                                </div>
+                            </div>
+                            <p:tooltip value="#{langueBean.getMsg('export.exportThesaurusByCollectionTooltip')}" for="toggleExportMulti"/>
+                        </h:panelGroup>
                 </h:panelGroup>
 
+                
+<!-- Export CSV Structuré -->                
                 <h:panelGroup rendered="#{viewExportBean.isCsvStrucExport()}" >
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-3" style="text-align: right">
@@ -212,10 +202,8 @@
                     </div>
                 </h:panelGroup>
 
-                
-                
-                
-                <!-- Export CSV -->
+
+<!-- Export CSV -->
                 <h:panelGroup rendered="#{viewExportBean.isCsvExport()}">
                     <div class="row">
                         <div class="col-3" style="text-align: right">
@@ -232,33 +220,52 @@
                         </div>
                     </div>
 
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col-3" style="text-align: right">
-                            <h:outputText value="Filtre par collection/groupe" style="color: #000" title="Par défaut, tout est sélectionné !!"/>
-                        </div>
+                        <!-- filtre par collection -->
+                        <h:panelGroup id="filerByGroupCSV" >
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('statistique.filtre_collection')}"  style="color: #000 ; margin-right: 10px;"/>
+                                    <i class="fa-regular fa-square-check fa-xl"></i>
+                                </div>
 
-                        <div class="col-5">
-                            <p:toggleSwitch value="#{viewExportBean.toogleFilterByGroup}" style="font-size: 12px;">
-                                <p:ajax update="containerIndex" />
-                            </p:toggleSwitch>
-                        </div>
-                    </div>
-
-                    <h:panelGroup rendered="#{viewExportBean.toogleFilterByGroup}">
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col-3" />
-
-                            <div class="col-5">
-                                <p:selectCheckboxMenu id="menu" value="#{viewExportBean.selectedIdGroups}" label="select" style="width: 100%; height: 28px; font-size: 12px;"
-                                                      filter="true" filterMatchMode="contains" panelStyle="width: 21rem; font-size: 0.8rem;" scrollHeight="250" >
-                                    <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
-                                </p:selectCheckboxMenu>
+                                <div class="col-5" style="margin-top: -5px;">
+                                    <p:toggleSwitch value="#{viewExportBean.toogleFilterByGroup}" style="font-size: 12px;">
+                                        <p:ajax update="containerIndex:filerByGroupCSV containerIndex:exportByGroupCSV" listener="#{viewExportBean.listenerForToogleFilterByGroup()}"/>
+                                    </p:toggleSwitch>
+                                </div>
                             </div>
-                        </div>
-                    </h:panelGroup>
+                            <h:panelGroup rendered="#{viewExportBean.toogleFilterByGroup}" >
+                                <div class="row" >
+                                    <div class="col-3" />
+                                    <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
+                                        <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; height: 28px; font-size: 12px;"
+                                                              filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
+                                            <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </h:panelGroup>    
+
+                        <!-- export découpé par collection -->
+                        <h:panelGroup id="exportByGroupCSV" >                        
+                            <div class="row" style="margin-top: 20px;">
+                                <div class="col-3" style="text-align: right">
+                                    <h:outputText value="#{langueBean.getMsg('export.exportThesaurusByCollection')}"  style="color: #000; margin-right: 10px;"
+                                                  title="#{langueBean.getMsg('export.exportThesaurusByCollectionTooltip')}"/>
+                                    <i class="fa-solid fa-object-ungroup fa-xl"></i> 
+                                </div>
+                                <div class="col-5" style="margin-top: -5px;">
+                                    <p:toggleSwitch id="toggleExportMultiCSV" value="#{viewExportBean.toogleExportByGroup}" style="font-size: 12px;">
+                                        <p:ajax update="containerIndex:filerByGroupCSV containerIndex:exportByGroupCSV" listener="#{viewExportBean.listenerForToogleExportByGroup()}"/>
+                                    </p:toggleSwitch>
+                                </div>
+                            </div>
+                            <p:tooltip value="#{langueBean.getMsg('export.exportThesaurusByCollectionTooltip')}" for="toggleExportMultiCSV"/>
+                        </h:panelGroup>
                 </h:panelGroup>
-                
-                
+
+
                 <!-- Export CSV Id -->
                 <h:panelGroup rendered="#{viewEditionBean.isViewExportCSV_id}">
                     <div class="row">
@@ -314,9 +321,9 @@
                         </div>
                     </h:panelGroup>
                 </h:panelGroup>                
-                
-                
-                
+
+
+
                 <!-- export des concepts dépréciés -->                
                 <h:panelGroup rendered="#{viewExportBean.isDeprecatedExport()}">
                     <!-- export des concepts dépréciés en CSV -->
@@ -347,10 +354,10 @@
                             </p:selectOneMenu>
                         </div>
                     </div>                    
-                    
+
                 </h:panelGroup>
 
-                
+
                 <!-- export pour Virtuoso -->
                 <p:panel rendered="#{viewEditionBean.isViewImportVirtuoso()}" toggleable="true" closable="false"
                          style="margin-bottom:10px; margin-top: 10px">
@@ -397,10 +404,10 @@
                                          icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                          actionListener="#{viewEditionBean.init()}" action="#{importFileBean.init()}"
                                          update="containerIndex"/>
-                        
-                        
-                      
-                        
+
+
+
+
                         <p:commandButton value="#{langueBean.getMsg('candidat.export')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          rendered="#{!viewEditionBean.isViewImportVirtuoso()}"
@@ -408,7 +415,7 @@
                                          title="#{langueBean.getMsg('toolbox.newExportMethod')}" style="margin-left: 20px">
                             <p:fileDownload value="#{exportFileBean.exportNewGen()}" />
                         </p:commandButton>
-                        
+
                         <p:commandButton value="Exporter vers Vertuoso" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          icon="fa fa-upload" styleClass="ui-button-success"

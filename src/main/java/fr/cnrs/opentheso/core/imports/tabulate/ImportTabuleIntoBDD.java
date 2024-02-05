@@ -185,7 +185,7 @@ public class ImportTabuleIntoBDD {
         NoteHelper noteHelper = new NoteHelper();
 
         for (Note note : tabulateDocument.getNote()) {
-            noteHelper.addConceptNote(ds,
+            noteHelper.addNote(ds,
                     tabulateDocument.getId(),
                     note.getLang(),
                     idThesaurus,
@@ -195,7 +195,7 @@ public class ImportTabuleIntoBDD {
                     idUser);
         }        
         for (Note note : tabulateDocument.getDefinition()) {
-            noteHelper.addTermNote(ds,
+            noteHelper.addNote(ds,
                     tabulateDocument.getId(),
                     note.getLang(),
                     idThesaurus,
@@ -205,7 +205,7 @@ public class ImportTabuleIntoBDD {
                     idUser);
         }
         for (Note note : tabulateDocument.getScopeNote()) {
-            noteHelper.addConceptNote(ds,
+            noteHelper.addNote(ds,
                     tabulateDocument.getId(),
                     note.getLang(),
                     idThesaurus,
@@ -215,7 +215,7 @@ public class ImportTabuleIntoBDD {
                     idUser);
         }
         for (Note note : tabulateDocument.getHistoryNote()) {
-            noteHelper.addTermNote(ds,
+            noteHelper.addNote(ds,
                     tabulateDocument.getId(),
                     note.getLang(),
                     idThesaurus,
@@ -225,7 +225,7 @@ public class ImportTabuleIntoBDD {
                     idUser);
         }        
         for (Note note : tabulateDocument.getEditorialNote()) {
-            noteHelper.addTermNote(ds,
+            noteHelper.addNote(ds,
                     tabulateDocument.getId(),
                     note.getLang(),
                     idThesaurus,

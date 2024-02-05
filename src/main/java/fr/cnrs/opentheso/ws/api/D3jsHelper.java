@@ -11,7 +11,6 @@ import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeConceptGraph;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,7 +178,7 @@ public class D3jsHelper {
             for (String definition : nodeData.getDefinition()) {
                 jsonArrayBuilderDefinition.add(definition);
             }
-            nodeChild.add("definition", jsonArrayBuilderSynonyms.build());              
+            nodeChild.add("definition", jsonArrayBuilderDefinition.build());              
         }
         
         

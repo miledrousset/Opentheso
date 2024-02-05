@@ -53,6 +53,8 @@ public class ViewExportBean implements Serializable {
     private boolean isAllGroupsSelected; 
     private boolean isAllLangsSelected;
     private boolean toogleFilterByGroup;
+    private boolean toogleExportByGroup;
+    
     private String selectedGroup;
     private String selectedIdLangTheso;
     private List<String> selectedIdGroups;
@@ -134,6 +136,7 @@ public class ViewExportBean implements Serializable {
         groupList = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
 
         toogleFilterByGroup = false;
+        toogleExportByGroup = false;
         if(selectedIdGroups == null){
             selectedIdGroups = new ArrayList<>();
         } else
@@ -194,7 +197,18 @@ public class ViewExportBean implements Serializable {
         }
     }
 
-
+    
+    public void listenerForToogleFilterByGroup() {
+        this.toogleFilterByGroup = !this.toogleFilterByGroup;
+        this.toogleExportByGroup = false;
+    }    
+    
+    public void listenerForToogleExportByGroup() {
+        this.toogleExportByGroup = !this.toogleExportByGroup;
+        this.toogleFilterByGroup = false;
+    }      
+    
+    
     public boolean isPdfExport() {
         return "PDF".equals(formatFile);
     }
@@ -406,6 +420,14 @@ public class ViewExportBean implements Serializable {
     }
 
     public void setToogleFilterByGroup(boolean toogleFilterByGroup) {
-        this.toogleFilterByGroup = toogleFilterByGroup;
     }
+
+    public boolean isToogleExportByGroup() {
+        return toogleExportByGroup;
+    }
+
+    public void setToogleExportByGroup(boolean toogleExportByGroup) {
+    }
+    
+    
 }

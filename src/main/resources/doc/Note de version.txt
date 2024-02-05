@@ -1,8 +1,20 @@
-Note de version v24.01
+Note de version v24.02
 
 - Export/import csv avec prise en charge des images + multi-GPS + resourcesExternes
   + Facettes + concepts dépréciés
  
 - Ajout des commandes Plpgsql pour récupérer les concepts (gain de temps x100)
 - Restructuration du fil d'Ariane (prise en charge des boucles à l'infini)
+
+- restructuration des notes : intégration des notes pour les collections et les 
+facettes
+    . intégration dans l'export de ces notes
+    . intégration dans l'import
+
+- Export: ajout de la possibilité d'exporter les collections d'un thésaurus sous
+    forme de thésaurus indépendant, 1 thésaurus par collection, le résultat est 
+    retourner dans un fichier zippé.
+    * formats pris en charge : SKOS et CSV
+
+
 

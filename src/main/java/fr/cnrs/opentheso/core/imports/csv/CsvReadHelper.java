@@ -841,7 +841,7 @@ public class CsvReadHelper {
 
                 // on récupère la localisation
                 conceptObject = getGps(conceptObject, record);
-                //conceptObject = getGeoLocalisation(conceptObject, record, false);
+                conceptObject = getGeoLocalisation(conceptObject, record, false);
 
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
                 conceptObject = getMembers(conceptObject, record);
@@ -2087,13 +2087,13 @@ public class CsvReadHelper {
             lat = record.get("geo:lat");
             longitude = record.get("geo:long");
             if(readEmptyData) {
-                conceptObject.setLatitude(lat.trim());
-                conceptObject.setLongitude(longitude.trim());
+                conceptObject.setLatitude(lat.replaceAll(",", ".").trim());
+                conceptObject.setLongitude(longitude.replaceAll(",", ".").trim());
             } else {
                 if (!lat.isEmpty()) {
                     if (!longitude.isEmpty()) {
-                        conceptObject.setLatitude(lat.trim());
-                        conceptObject.setLongitude(longitude.trim());
+                        conceptObject.setLatitude(lat.replaceAll(",", ".").trim());
+                        conceptObject.setLongitude(longitude.replaceAll(",", ".").trim());
                     }
                 }
             }

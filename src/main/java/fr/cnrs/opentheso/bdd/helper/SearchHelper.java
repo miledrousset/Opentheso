@@ -1079,6 +1079,124 @@ public class SearchHelper {
     }
 
     /**
+     * Permet de chercher les terms par identifiant (idConcept, idArk, idHandle, notation)
+     *
+     * @param ds
+     * @param identifier
+     * @param idLang
+     * @param idTheso
+     * @return
+     */
+    public ArrayList<NodeSearchMini> searchByAllId(HikariDataSource ds,
+            String identifier, String idLang, String idTheso) {
+
+        ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
+        if(StringUtils.isEmpty(identifier)) return nodeSearchMinis;
+        identifier = identifier.trim();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status " +
+                            " from term, preferred_term, concept" +
+                            " where " +
+                            " concept.id_concept = preferred_term.id_concept " +
+                            " and concept.id_thesaurus = preferred_term.id_thesaurus " +
+                            " and preferred_term.id_term = term.id_term " +
+                            " and preferred_term.id_thesaurus = term.id_thesaurus " +
+                            " and concept.id_thesaurus = '" + idTheso + "' " +
+                            " and term.lang = '" + idLang + "' " +
+                            " and concept.status != 'CA' " +
+                            " and (	" +
+                            "	concept.id_concept = '" + identifier + "'" +
+                            "	or	" +
+                            "	concept.id_ark = '" + identifier + "'" +
+                            "	or " +
+                            "	concept.id_handle = '" + identifier + "'" +
+                            "	or concept.notation = '" + identifier + "'" +
+                            " ) " +
+                            " order by unaccent(lower(lexical_value))");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
+
+                        nodeSearchMini.setIsConcept(true);
+                        if (resultSet.getString("status").equalsIgnoreCase("DEP")) {
+                            nodeSearchMini.setIsDeprecated(true);
+                        }
+                        nodeSearchMinis.add(nodeSearchMini);
+                    }
+                }
+            }
+            //// rechercher les collections
+            nodeSearchMinis = searchCollectionsById(conn, idTheso, identifier, idLang, nodeSearchMinis);
+
+            /// rechercher les Facettes
+            nodeSearchMinis = searchFacetsById(conn, idTheso, identifier, idLang, nodeSearchMinis);
+        } catch (SQLException sqle) {
+            log.error("Error while search By Id : " + identifier, sqle);
+        }
+        return nodeSearchMinis;
+    }    
+    private ArrayList<NodeSearchMini> searchCollectionsById(Connection conn,
+            String idTheso, String identifier, String idLang,
+            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeQuery("select idGroup, lexicalvalue from concept_group_label " +
+                        " where" +
+                        " idthesaurus = '" + idTheso + "'" +
+                        " and " +
+                        " lower(idGroup) = lower('" + identifier + "')" +
+                        " and lang = '" + idLang + "'");
+
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                while (resultSet.next()) {
+                    NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                    nodeSearchMini.setIdConcept(resultSet.getString("idGroup"));
+                    nodeSearchMini.setIdTerm("");
+                    nodeSearchMini.setAltLabel("");
+                    nodeSearchMini.setPrefLabel(resultSet.getString("lexicalvalue"));
+                    nodeSearchMini.setIsGroup(true);
+                    nodeSearchMinis.add(nodeSearchMini);
+                }
+            }
+        }
+        return nodeSearchMinis;
+    }    
+    
+    private ArrayList<NodeSearchMini> searchFacetsById(Connection conn,
+            String idTheso, String identifier, String idLang,
+            ArrayList<NodeSearchMini> nodeSearchMinis) throws SQLException {
+        /// rechercher les Facettes
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeQuery("select id_facet, lexical_value from node_label " +
+                        " where " +
+                        " id_thesaurus = '" + idTheso + "'" +
+                        " and " +
+                        " id_facet = '" + identifier + "'" +
+                        " and lang = '" + idLang + "'");
+
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                while (resultSet.next()) {
+                    NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                    nodeSearchMini.setIdConcept(resultSet.getString("id_facet"));
+                    nodeSearchMini.setIdTerm("");
+                    nodeSearchMini.setAltLabel("");
+                    nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
+                    nodeSearchMini.setIsFacet(true);
+                    nodeSearchMinis.add(nodeSearchMini);
+                }
+            }
+        }
+        return nodeSearchMinis;
+    }    
+    
+    
+    
+    /**
      * Permet de chercher les terms exacts avec des règles précises pour trouver
      * par exemple : or, Ur, d'Ur ...
      *
@@ -1491,6 +1609,7 @@ public class SearchHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select concept.id_concept from concept where concept.id_thesaurus = '" + idTheso + "'"
+                        + " and concept.status != 'CA' "
                         + " and concept.id_concept not in ("
                         + " select concept_group_concept.idconcept from concept_group_concept where idthesaurus = '" + idTheso + "') limit 200");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -2426,13 +2545,15 @@ public class SearchHelper {
      * @param value
      * @param idTheso
      * @param idLang
+     * @param includeDeprecated
      * @return #MR
      */
     public List<NodeSearchMini> searchAutoCompletionForRelation(
             HikariDataSource ds,
             String value,
             String idLang,
-            String idTheso) {
+            String idTheso,
+            boolean includeDeprecated) {
 
         Connection conn;
         Statement stmt;
@@ -2443,6 +2564,14 @@ public class SearchHelper {
         value = stringPlus.convertString(value);
         value = stringPlus.unaccentLowerString(value);
 
+        String status;
+        if(includeDeprecated) {
+            status = " and concept.status != 'CA'";
+            
+        } else {
+            status = " and concept.status not in ('CA', 'DEP')";
+        }
+        
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -2461,7 +2590,7 @@ public class SearchHelper {
                             + " AND  term.id_thesaurus = preferred_term.id_thesaurus "
                             + " AND  concept.status != 'hidden' "
                             + " AND term.lang = '" + idLang + "'"
-                            + " and concept.status != 'CA'"
+                            + status
                             + " AND term.id_thesaurus = '" + idTheso + "'"
                             + " AND f_unaccent(lower(term.lexical_value)) LIKE '%" + value + "%' order by term.lexical_value <-> '" + value + "' limit 20";
 
@@ -2495,7 +2624,7 @@ public class SearchHelper {
                             + "  concept.status != 'hidden' AND"
                             + "  non_preferred_term.id_thesaurus = '" + idTheso + "' AND"
                             + "  non_preferred_term.lang = '" + idLang + "'"
-                            + " and concept.status != 'CA'"
+                            + status
                             + " AND"
                             + " f_unaccent(lower(non_preferred_term.lexical_value)) LIKE '%" + value + "%'"
                             + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 20";

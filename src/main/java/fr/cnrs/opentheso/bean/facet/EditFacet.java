@@ -2,16 +2,19 @@ package fr.cnrs.opentheso.bean.facet;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
+import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
@@ -41,6 +44,7 @@ public class EditFacet implements Serializable {
     @Inject private ConceptView conceptView;
     @Inject private Tree tree;
     @Inject private SelectedTheso selectedTheso;
+    @Inject private CurrentUser currentUser;    
 
     private ArrayList<NodeLangTheso> nodeLangs, nodeLangsFiltered;
     private ArrayList<NodeIdValue> conceptList;
@@ -52,7 +56,19 @@ public class EditFacet implements Serializable {
     private NodeFacet facetSelected;
     private NodeIdValue conceptSelected;
     private NodeIdValue facetSelectedAutocomplete;
+    
+    /// première définition à la création 
+    private String definition;
 
+    private ArrayList<NodeNote> notes;
+    private ArrayList<NodeNote> scopeNotes;
+    private ArrayList<NodeNote> changeNotes;
+    private ArrayList<NodeNote> definitions;
+    private ArrayList<NodeNote> editorialNotes;
+    private ArrayList<NodeNote> examples;
+    private ArrayList<NodeNote> historyNotes;    
+    
+    
     @PreDestroy
     public void destroy(){
         clear();
@@ -113,12 +129,12 @@ public class EditFacet implements Serializable {
         facetSelected = null;
         conceptSelected = null;
         facetSelectedAutocomplete = null;
+        definition = null;
     }
 
     public void initEditFacet(String facetId, String idTheso, String idLang) {
 
         FacetHelper facetHelper = new FacetHelper();
-
         facetSelected = facetHelper.getThisFacet(connect.getPoolConnexion(),
                 facetId, idTheso, idLang);
         if(facetSelected == null || facetSelected.getIdFacet() == null) return;
@@ -132,14 +148,62 @@ public class EditFacet implements Serializable {
         facetTraductions = facetHelper.getAllTraductionsFacet(connect.getPoolConnexion(), facetId,
                 idTheso, idLang);
 
+        NoteHelper noteHelper = new NoteHelper();
+        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotes(connect.getPoolConnexion(), facetId, idTheso, idLang);
+        setAllNotes(nodeNotes);
+        
         setListConceptsAssocie();
 
         newFacetName = facetSelected.getLexicalValue();
 
     }
+    
+    /////////////////////////////////
+    /////////////////////////////////
+    // fonctions pour les notes /////    
+    /////////////////////////////////
+    /////////////////////////////////
+    private void setAllNotes(ArrayList<NodeNote> nodeNotes) {
+        clearNotes();
+        for (NodeNote nodeNote : nodeNotes) {
+            switch (nodeNote.getNotetypecode()) {
+                case "note":
+                    notes.add(nodeNote);
+                    break;
+                case "scopeNote":
+                    scopeNotes.add(nodeNote);
+                    break;
+                case "changeNote":
+                    changeNotes.add(nodeNote);
+                    break;
+                case "definition":
+                    definitions.add(nodeNote);
+                    break;
+                case "editorialNote":
+                    editorialNotes.add(nodeNote);
+                    break;
+                case "example":
+                    examples.add(nodeNote);
+                    break;
+                case "historyNote":
+                    historyNotes.add(nodeNote);
+                    break;
+            }
+        }
+    }
+    private void clearNotes() {
+        notes = new ArrayList<>();
+        scopeNotes = new ArrayList<>();
+        changeNotes = new ArrayList<>();
+        definitions = new ArrayList<>();
+        editorialNotes = new ArrayList<>();
+        examples = new ArrayList<>();
+        historyNotes = new ArrayList<>();
+    }    
 
     public void initNewFacet(){
         newFacetName = "";
+        definition = null;
     }
 
     public void supprimerFacette() {
@@ -161,12 +225,7 @@ public class EditFacet implements Serializable {
                 facetSelected.getIdConceptParent(),
                 selectedTheso.getSelectedLang());
         rightBodySetting.setIndex("0");
-
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("formRightTab");
-            pf.ajax().update("formLeftTab:tabTree:tree");
-        }
+        showMessage(FacesMessage.SEVERITY_INFO, "Facette suprimée avec succès !");
     }
 
     private void setListConceptsAssocie() {
@@ -502,6 +561,13 @@ public class EditFacet implements Serializable {
         
         tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");
 
+        // ajout de la définition s'il elle est renseignée
+        if(StringUtils.isNotEmpty(definition)) {
+            NoteHelper noteHelper = new NoteHelper();
+            noteHelper.addNote(connect.getPoolConnexion(), idFacet, selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
+                    definition, "definition", "",  currentUser.getNodeUser().getIdUser());            
+        }
+        
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("formLeftTab:tabTree:tree");
@@ -593,6 +659,14 @@ public class EditFacet implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 
     public NodeFacet getFacetSelected() {
@@ -689,6 +763,62 @@ public class EditFacet implements Serializable {
 
     public void setFacetSelectedAutocomplete(NodeIdValue facetSelectedAutocomplete) {
         this.facetSelectedAutocomplete = facetSelectedAutocomplete;
+    }
+
+    public ArrayList<NodeNote> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(ArrayList<NodeNote> notes) {
+        this.notes = notes;
+    }
+
+    public ArrayList<NodeNote> getScopeNotes() {
+        return scopeNotes;
+    }
+
+    public void setScopeNotes(ArrayList<NodeNote> scopeNotes) {
+        this.scopeNotes = scopeNotes;
+    }
+
+    public ArrayList<NodeNote> getChangeNotes() {
+        return changeNotes;
+    }
+
+    public void setChangeNotes(ArrayList<NodeNote> changeNotes) {
+        this.changeNotes = changeNotes;
+    }
+
+    public ArrayList<NodeNote> getDefinitions() {
+        return definitions;
+    }
+
+    public void setDefinitions(ArrayList<NodeNote> definitions) {
+        this.definitions = definitions;
+    }
+
+    public ArrayList<NodeNote> getEditorialNotes() {
+        return editorialNotes;
+    }
+
+    public void setEditorialNotes(ArrayList<NodeNote> editorialNotes) {
+        this.editorialNotes = editorialNotes;
+    }
+
+    public ArrayList<NodeNote> getExamples() {
+        return examples;
+    }
+
+    public void setExamples(ArrayList<NodeNote> examples) {
+        this.examples = examples;
+    }
+
+    public ArrayList<NodeNote> getHistoryNotes() {
+        return historyNotes;
+    }
+
+    public void setHistoryNotes(ArrayList<NodeNote> historyNotes) {
+        this.historyNotes = historyNotes;
     }
 
 }

@@ -9,8 +9,18 @@
         <h:form id="deleteNoteForm" >
             <div class="row">
                 <div class="col-12">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />
+                    <h:panelGroup rendered="#{noteBean.isFacetNote}">
+                        <h:outputText value="#{langueBean.getMsg('leftbody.facet')} : " />
+                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />                    
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{noteBean.isGroupNote}">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.group')} : " />
+                        <h:outputText value="#{groupView.nodeGroup.lexicalValue}" style="color: #C63632;" />                    
+                    </h:panelGroup>                    
+                    <h:panelGroup rendered="#{!noteBean.isFacetNote and !noteBean.isGroupNote}">
+                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
+                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />                    
+                    </h:panelGroup>                    
                 </div>
             </div>
             
