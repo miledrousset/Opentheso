@@ -26,10 +26,10 @@ public class SKOSDate implements SKOSProperty{
 	public String toString(){
 		String xmlTag = new String();
 		switch(property){
-			case SKOSProperty.created :
+			case SKOSProperty.CREATED :
 				xmlTag = "<dcterms:created>"+sDate+"</dcterms:created>\n";
 				break;
-			case SKOSProperty.modified :
+			case SKOSProperty.MODIFIED :
 				xmlTag = "<dcterms:modified>"+sDate+"</dcterms:modified>\n";
 				break;
 			default:

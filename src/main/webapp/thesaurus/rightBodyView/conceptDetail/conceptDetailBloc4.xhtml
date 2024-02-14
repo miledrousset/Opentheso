@@ -92,7 +92,7 @@
                                 <h:outputText value=" #{langueBean.getMsg('rightbody.concept.image')}"
                                               style="font-size: 14px; font-weight: bold; margin-right: 10px; color: #8f8f8f"/>
                             </div>
-                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6" style="margin-left: -10px">
                                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                     <p:menuButton title="#{langueBean.getMsg('rightbody.concept.tooltip_image')}"
                                                   icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
@@ -131,6 +131,7 @@
                                                     activeIndex="#{galleriaView.activeIndex}"
                                                     responsiveOptions="#{galleriaView.responsiveOptions1}"
                                                     style="max-width: 600px;">    
+                                                                                            
                                             <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}"  style="width: 100%; display: block;" />
                                                 <f:facet name="caption">
                                                     <h4 class="mb-2"><a href="#{photo.uri}" target="_blank" style="color:#F7A269;">#{photo.imageName}</a></h4>
@@ -149,7 +150,6 @@
 
                                             </ui:repeat>
                                         </div>
-
                                     </div>   
                                 </h:panelGroup>
                             </div>
@@ -181,29 +181,16 @@
                                                              actionListener="#{conceptView.formatGpsList()}"
                                                              title="#{langueBean.getMsg('apply')}"
                                                              update="messageIndex containerIndex:rightTab:idConceptGps"/>
+                                            <p:commandButton   
+                                                           icon="fa-solid fa-circle-question" styleClass="rounded-button ui-button-outlined" 
+                                                           style="margin-left: 10px;" title="Aide à l'utilisation du module GPS" 
+                                                           onclick="PF('dlg1').show()"/> 
                                         </div>
                                     </h:panelGroup>
-
                                     <h:panelGroup rendered="#{conceptView.isGpsDisable()}">
                                         <h:outputText value="#{conceptView.gpsList}"/>
                                     </h:panelGroup>
-
                                     <h:panelGroup rendered="#{conceptView.isMapVisible()}">
-                                        <p:toolbar rendered="ee" style="margin-top: 10px">
-                                            <p:toolbarGroup align="right">
-                                                <p:selectOneButton value="#{conceptView.gpsModeSelected}" disabled="true">
-                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.point')}"
-                                                                  itemValue="POINT"/>
-
-                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polyline')}"
-                                                                  itemValue="POLYLINE" />
-
-                                                    <f:selectItem itemLabel="#{langueBean.getMsg('rightbody.concept.gps.polygone')}"
-                                                                  itemValue="POLYGONE"/>
-                                                </p:selectOneButton>
-                                            </p:toolbarGroup>
-                                        </p:toolbar>
-
                                         <div style="margin-top: 10px">
                                             <leaf:mapAdvanced map="#{conceptView.mapModel}" />
                                         </div>
@@ -216,4 +203,37 @@
             </div>
         </div>
     </h:panelGroup>
+    
+    <p:dialog header="#{langueBean.getMsg('help')}" resizable="true" modal="true" widgetVar="dlg1" minHeight="40" width="550" showEffect="fade">
+        <p class="m-0">
+            <h:outputText value="#{langueBean.getMsg('gps.help1')}" /> 
+        </p>       
+        <p/>        
+        <p class="m-0">
+            <h:outputText value="#{langueBean.getMsg('gps.help2')}" style="font-weight: bold"/>
+        </p> 
+        <p class="m-0">
+            <h:outputText value="#{langueBean.getMsg('gps.help3')}" style="font-weight: bold"/>
+        </p>
+        <p class="m-0">
+            <h:outputText value="#{langueBean.getMsg('gps.help4')}" style="font-weight: bold"/>
+        </p>
+        <p/>
+        <p class="m-0">
+            <h:outputText value="#{langueBean.getMsg('gps.help5')}" style="font-weight: bold"/>
+        </p>        
+        <p/>
+        <p class="m-0">
+            <h:outputText value="#{langueBean.getMsg('gps.help6')}" style="font-weight: bold"/>
+        </p>
+        <p class="m-0" style="text-align: right; font-style: italic">
+            <h:outputText value="#{langueBean.getMsg('gps.help7')}"/>
+        </p>
+        <p class="m-0">
+            <p:graphicImage value="/resources/img/gps_help.png" width="100%" style="margin-top: 15px;" />
+        </p>
+        
+        </p:dialog>    
 </ui:fragment>
+
+

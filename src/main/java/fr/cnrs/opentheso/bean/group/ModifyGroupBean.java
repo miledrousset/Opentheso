@@ -245,7 +245,7 @@ public class ModifyGroupBean implements Serializable {
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(), idGroup, groupView.getNodeGroup().getIdLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " Label modifié avec succès !");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", " Libellé modifié avec succès !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
         if (treeGroups.getSelectedNode() != null) {

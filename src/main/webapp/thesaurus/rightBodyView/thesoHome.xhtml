@@ -39,8 +39,11 @@
                                           title="#{langueBean.getMsg('thesohome.totalConcepts')} #{selectedTheso.thesoName}" 
                                           style="font-size: 13px; color: #F47B2A; font-weight: bold;"/>
                             <h:outputText value=" Concepts" style="font-size: 13px; font-weight: bold; color: #858796"/>
-                            <h:outputText value=" #{viewEditorThesoHomeBean.projectName}" style="font-size: 13px; color: #F47B2A;"/>                            
+                            <h:outputText value=" #{viewEditorThesoHomeBean.projectName}" style="font-size: 13px; color: #F47B2A;"/>  
+                            <p:commandButton icon="fa-solid fa-circle-question" styleClass="rounded-button ui-button-flat" style="margin-left: 5px; color: #f47b2a"
+                                             action="#{roleOnTheso.showInfosOfTheso(selectedTheso.currentIdTheso)}"/>                              
                         </div>
+                        
                         <div class="col-6" style="text-align: right">
                             <h:outputText value="#{langueBean.getMsg('thesohome.modified')}: " style="font-size: 13px; color: #858796"/>
                             <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 13px; color: #601e18;"/>
@@ -103,7 +106,7 @@
                             <p:accordionPanel id="meta" widgetVar="basic" activeIndex="-2" style="font-size: 12px;" >
                                 <p:tab title="#{langueBean.getMsg('thesohome.metadata')}" titleStyle="color: #858796; background-color: #F5F2F2; font-size: 12px; border: none">
                                     <p:dataTable id="metadataTheso" widgetVar="metadataTheso" var="dcElement" value="#{viewEditorThesoHomeBean.meta()}"
-                                                 editable="false" scrollHeight="250" scrollable="true" showGridlines="true">
+                                                 editable="false" scrollHeight="250" scrollable="true" showGridlines="true" lazy="false">
 
                                         <p:column width="20%" headerText="#{langueBean.getMsg('toolbox.metadata_property')}">
                                             <h:outputText value="#{dcElement.name}" />

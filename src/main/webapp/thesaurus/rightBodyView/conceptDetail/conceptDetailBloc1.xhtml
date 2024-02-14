@@ -23,9 +23,16 @@
                             </p:menuButton>
                         </h:panelGroup>                        
 
-                        <h:outputText id="textPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
+                        <h:outputText rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
+                                      id="textPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
                                       style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-size: 1.1rem;
                                       letter-spacing: .2px; color: #666666; font-weight: bold; text-shadow: none;" />
+                        
+                        <!-- Cas de concept déprécié -->
+                        <h:outputText rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
+                                      id="textPrefLabelDep" value="#{conceptView.nodeConcept.term.lexical_value}"
+                                      style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-size: 1.1rem;
+                                      letter-spacing: .2px; color: #C63632; font-weight: bold; font-style: italic; text-shadow: none; text-decoration:line-through" />                        
 
                         <h:outputText value=" (#{conceptView.nodeConcept.term.lang})" style="font-size: 1rem; font-weight: 300; "/>
 
@@ -37,6 +44,7 @@
                         </p:tag>
                         
                         <p:tooltip for="textPrefLabel" value="#{conceptView.nodeConcept.concept.idConcept}" showDelay="1000" />
+                        <p:tooltip for="textPrefLabelDep" value="#{conceptView.nodeConcept.concept.idConcept}" showDelay="1000" />
 
                         <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
@@ -48,14 +56,15 @@
                 </div>
             </div>
 
-            <!-- ligne concepts qui remplacent le concept déprécié -->
+            <!-- ligne concepts qui remplacent le concept déprécié (remplacé par) -->
             <h:panelGroup id="idDeprecatedLabel" rendered="#{conceptView.nodeConcept.concept.isDeprecated}">
                 <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
                     <div class="row" style="height: 30px; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace_with')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_replace_with')}" 
-                                          style="font-size: 14px; color: white; background-color: #C63632;"/> 
+                                          styleClass="mr-2" style="font-size: 14px;; color: #8f8f8f; border-color: #42B572; padding: 0.3rem; border-style:dotted"
+                                          /> 
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">     
                             <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
@@ -77,14 +86,14 @@
                             <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() != 0}">
                                 <ui:repeat var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status">
                                     <p:commandLink rendered="#{replace.value != ''}" value="#{replace.value}"
-                                                   title="#{replace.id}"
+                                                   title="#{replace.id}"  style="font-size: 1rem;"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
                                                    update="containerIndex:formRightTab indexTitle" />
 
                                     <p:commandLink rendered="#{replace.value == ''}" value="(#{replace.id})"
                                                    action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
                                                    update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
-                                                   style="color: #C63632;font-size: 14px;" />
+                                                   style="color: #C63632;font-size: 1rem;" />
 
                                     <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
                                 </ui:repeat>
@@ -94,25 +103,26 @@
                 </div>
             </h:panelGroup>
 
-            <!-- ligne qui rappelle les concepts déprécés qui sont remplacés par ce concept -->
+            <!-- ligne qui rappelle les concepts déprécés qui sont remplacés par ce concept (Remplace) -->
             <h:panelGroup rendered="#{conceptView.nodeConcept.replaces.size() > 0}">
                 <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
                     <div class="row" style="height: 30px; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.concept.replace')}" 
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_replace')}"
-                                          styleClass="mr-2" style="color: white; background-color: #f47b2a; padding: 0.3rem; border-style:dashed" />
+                                          styleClass="mr-2" style="color: #8f8f8f; border-color: #f47b2a; padding: 0.3rem; border-style:dotted" />
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
                             <ui:repeat var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
                                 <p:commandLink rendered="#{replaces.value != ''}" value="#{replaces.value}"
                                                title="#{replaces.id}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
-                                               update="containerIndex:formRightTab indexTitle" style="color: #C63632; background-color: #FAEDE5"
+                                               update="containerIndex:formRightTab indexTitle" style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;text-decoration:line-through"
                                                />
                                 <p:commandLink rendered="#{replaces.value == ''}" value="(#{replaces.id})"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
                                                update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
+                                               style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;"
                                                />
 
                                 <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979"/>
@@ -327,7 +337,7 @@
             </div>     
 
             <!-- ligne Corpus liés --> 
-            <h:panelGroup id="corpusView" rendered="#{conceptView.thesoHaveActiveCorpus()}">
+            <h:panelGroup id="corpusView" rendered="#{selectedTheso.haveActiveCorpus}">
                 <div class="list-group-item list-group-item-action" style="padding-top: 5px; margin-bottom: -5px">
                     <div class="row" style="vertical-align: central; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -339,7 +349,7 @@
 
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                            <h:panelGroup rendered="#{conceptView.haveCorpus}">
+                            <h:panelGroup rendered="#{conceptView.nodeCorpuses != null}">
                                 <ui:repeat var="corpus" value="#{conceptView.nodeCorpuses}" >
                                     <h:panelGroup rendered="#{(corpus.count != 0 and corpus.count!= -1) or (corpus.isOnlyUriLink)}">
                                         <div class="row">
@@ -363,8 +373,8 @@
                                         </div>
                                     </h:panelGroup> 
                                 </ui:repeat>
-                            </h:panelGroup> 
-                            <h:panelGroup rendered="#{!conceptView.haveCorpus}">
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!conceptView.haveCorpus and conceptView.searchedForCorpus}">
                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                               style="font-size: 14px; color: grey; font-style: italic " />                            
                             </h:panelGroup>

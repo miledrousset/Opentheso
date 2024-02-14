@@ -60,10 +60,7 @@ public class DiscussionService implements Serializable {
     }
 
     public void getParticipantsInConversation() {
-        nodeUsers = new MessageDao().getParticipantsByCandidat(
-                connect.getPoolConnexion(),
-                candidatBean.getCandidatSelected().getIdConcepte(),
-                candidatBean.getCandidatSelected().getIdThesaurus());
+        setListUsersForMail();
 
         if (CollectionUtils.isEmpty(nodeUsers)) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.send_message.msg8"));
@@ -71,6 +68,15 @@ public class DiscussionService implements Serializable {
             PrimeFaces.current().executeScript("PF('participantsList').show();");
         }
     }
+    
+    private void setListUsersForMail(){
+        nodeUsers = new MessageDao().getParticipantsByCandidat(
+                connect.getPoolConnexion(),
+                candidatBean.getCandidatSelected().getIdConcepte(),
+                candidatBean.getCandidatSelected().getIdThesaurus());        
+    }
+            
+            
 
     public void sendMessage() {
         if (candidatBean.getInitialCandidat() == null) {
@@ -103,6 +109,7 @@ public class DiscussionService implements Serializable {
                 + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
                 + ". Sachez qu’un nouveau message a été posté.";
 
+        setListUsersForMail();
         if(CollectionUtils.isNotEmpty(nodeUsers)) {
             nodeUsers.stream()
                     .filter(NodeUser::isAlertMail)

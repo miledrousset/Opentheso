@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
 import fr.cnrs.opentheso.bdd.helper.GpsHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
@@ -22,18 +23,24 @@ import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.Gps;
+import fr.cnrs.opentheso.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
+import fr.cnrs.opentheso.skosapi.SKOSRelation;
+import fr.cnrs.opentheso.skosapi.SKOSResource;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -405,6 +412,8 @@ public class CsvImportHelper {
             groupHelper.addGroupTraduction(ds, conceptGroupLabel, idUser);
         }
 
+        addNotes(ds, idTheso, conceptObject);
+        
         return true;
     }
 
@@ -460,23 +469,44 @@ public class CsvImportHelper {
         String idDoi = "";
         boolean isTopConcept = true;
         
+        String replacedBy = null;
+        
+        // le status du concept (déprécié ...)
+        if(conceptObject.isDeprecated()) {
+            conceptStatus = "DEP";
+            if (CollectionUtils.isNotEmpty(conceptObject.getReplacedBy())) {
+                for (String replace : conceptObject.getReplacedBy()) {
+                    if(StringUtils.isEmpty(replacedBy)) {
+                        replacedBy = replace;
+                    } else {
+                        replacedBy = replacedBy + SEPERATEUR + replace;
+                    }
+                }
+            }            
+        }
+        else
+            conceptStatus= "D";
+        
         // concept type
         conceptType = conceptObject.getConceptType();
         if(StringUtils.isEmpty(conceptType)) 
             conceptType = "concept";
 
         // IMAGES
-        //-- 'url1##url2'
+        //-- 'name1@@copyright1@@url1##name2@@copyright2@@url2'
         String images = null;
         if (CollectionUtils.isNotEmpty(conceptObject.getImages())) {
             images = "";
-            for (NodeImage image : conceptObject.getImages()) {
-                if (StringUtils.isNotEmpty(image.getUri())) {
-                    images = images + SEPERATEUR + image.getUri();
+            for (NodeImage nodeImage : conceptObject.getImages()) {
+                if(nodeImage == null) continue;
+                if (StringUtils.isEmpty(nodeImage.getUri())) continue;
+                
+                if(StringUtils.isEmpty(images)) {
+                    images = nodeImage.getImageName() + SOUS_SEPERATEUR + nodeImage.getCopyRight() + SOUS_SEPERATEUR + nodeImage.getUri();
                 }
-            }
-            if (images.length() > 0) {
-                images = images.substring(2, images.length());
+                else {    
+                    images = images + SEPERATEUR + nodeImage.getImageName() + SOUS_SEPERATEUR + nodeImage.getCopyRight() + SOUS_SEPERATEUR + nodeImage.getUri();
+                }
             }
         }
 
@@ -662,6 +692,71 @@ public class CsvImportHelper {
 
         //Notes
         //-- 'value@typeCode@lang@id_term'
+        String notes = getNotes(conceptObject);
+
+        String gps = null;
+        if (StringUtils.isNotEmpty(conceptObject.getLatitude())) {
+            gps = conceptObject.getLatitude() + SOUS_SEPERATEUR + conceptObject.getLongitude();
+        }
+        if (StringUtils.isNotEmpty(conceptObject.getGps())) {
+            if (gps == null) {
+                gps = "";
+            } else {
+                gps += gps + SEPERATEUR;
+            }
+            var gpsList = ConceptView.readGps(conceptObject.getGps(), "", "");
+            if (CollectionUtils.isNotEmpty(gpsList)) {
+                for (Gps gpsValue : gpsList) {
+                    gps += SEPERATEUR + gpsValue.getLatitude() + SOUS_SEPERATEUR + gpsValue.getLongitude();
+                }
+            }
+        }
+
+        String dcterms = null;
+        
+        String sql = "";
+        try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
+            sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
+                    + "'" + conceptObject.getIdConcept() + "', "
+                    + idUser + ", "
+                    + "'" + conceptStatus + "', "
+                    + "'" + conceptType + "', "
+                    + (conceptObject.getNotation() == null ? null : "'" + conceptObject.getNotation() + "'") + ""
+                    + ","
+                    + (conceptObject.getArkId() == null ? "''":  "'" + conceptObject.getArkId() + "'") + ", "
+                    + isTopConcept + ", "
+                    + "'" + idHandle + "', "
+                    + "'" + idDoi + "', "
+                    + (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'") + ", "
+                    + (relations == null ? null : "'" + relations + "'") + ", "
+                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "                    
+                    + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'") + ", "
+                    + (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'") + ", "
+                    + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
+                    + (images == null ? null : "'" + images + "'") + ", "
+                    + (replacedBy == null ? null : "'" + replacedBy + "'")  + ", "
+                    + (gps != null) + ", "
+                    + (gps == null ? null : "'" + gps + "'") + ", "
+                    + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
+                    + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ", "
+                    + (dcterms == null ? null : "'" + dcterms + "'") 
+                    + ")";
+
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            System.out.println("SQL : " + sql);
+            System.out.println(e.getMessage());
+            System.out.println("--------------------------------");
+            message = message + "Erreur concept : " + prefTerm + "(" + conceptObject.getIdConcept() +"(\n";
+            return false;
+        }
+        addExternalResources(ds, idTheso, conceptObject.getIdConcept(), conceptObject.getExternalResources());        
+        return true;
+    }
+
+    private String getNotes(CsvReadHelper.ConceptObject conceptObject){
+        //Notes
+        //-- 'value@typeCode@lang@id_term'
         String notes = null;
         if (CollectionUtils.isNotEmpty(conceptObject.getNote())) {
             notes = "";
@@ -740,67 +835,90 @@ public class CsvImportHelper {
         }
         if (notes != null && notes.length() > 0) {
             notes = notes.substring(SEPERATEUR.length(), notes.length());
+        } 
+        return notes;
+    }
+    
+    private void addExternalResources(HikariDataSource ds, String idTheso, String idConcept, ArrayList<String> externalResources) {
+      
+        ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();        
+        StringPlus stringPlus = new StringPlus();
+        
+        for (String externalResource : externalResources) {
+            if(externalResource == null || externalResource.isEmpty()) {
+                return;
+            }
+            if(!stringPlus.urlValidator(externalResource)){
+                return;            
+            }
+            if(!externalResourcesHelper.addExternalResource(
+                    ds,
+                    idConcept,
+                    idTheso,
+                    "",
+                    externalResource,
+                    idUser)) {
+            }
+        }
+    }
+
+    
+    public void addFacets(HikariDataSource ds, CsvReadHelper.ConceptObject conceptObject, String idTheso) {
+        String idFacet = conceptObject.getIdConcept();
+        if (idFacet == null) {
+            return;
+        }
+        if (conceptObject.getPrefLabels().isEmpty()) {
+            return;
         }
 
-        String gps = null;
-        if (StringUtils.isNotEmpty(conceptObject.getLatitude())) {
-            gps = conceptObject.getLatitude() + SOUS_SEPERATEUR + conceptObject.getLongitude();
-        }
-        if (StringUtils.isNotEmpty(conceptObject.getGps())) {
-            if (gps == null) {
-                gps = "";
+        String idConceptParent = conceptObject.getSuperOrdinate();
+        if(StringUtils.isEmpty(idConceptParent)) return;
+
+        String labels = "";
+        for (CsvReadHelper.Label prefLabel : conceptObject.getPrefLabels()) {
+            if(StringUtils.isEmpty(labels)){
+                labels = prefLabel.getLabel() + SOUS_SEPERATEUR + prefLabel.getLang();
             } else {
-                gps += gps + SEPERATEUR;
+                labels = labels + SEPERATEUR + prefLabel.getLabel() + SOUS_SEPERATEUR + prefLabel.getLang();
             }
-            var gpsList = ConceptView.readGps(conceptObject.getGps(), "", "");
-            if (CollectionUtils.isNotEmpty(gpsList)) {
-                for (Gps gpsValue : gpsList) {
-                    gps += SEPERATEUR + gpsValue.getLatitude() + SOUS_SEPERATEUR + gpsValue.getLongitude();
+        }
+
+
+        String membres = null;
+        if (CollectionUtils.isNotEmpty(conceptObject.getMembers())) {
+            membres = "";
+            for (String member : conceptObject.getMembers()) {
+                if(StringUtils.isEmpty(membres)){
+                    membres = member;
+                } else {
+                    membres = membres + SEPERATEUR + member;
                 }
             }
         }
-
-        String dcterms = null;
+        
+        //Notes
+        //-- 'value@typeCode@lang@id_term'
+        String notes = getNotes(conceptObject);
         
         String sql = "";
-        try ( Connection conn = ds.getConnection();  Statement stmt = conn.createStatement()) {
-            sql = "CALL opentheso_add_new_concept('" + idTheso + "', "
-                    + "'" + conceptObject.getIdConcept() + "', "
-                    + idUser + ", "
-                    + "'" + conceptStatus + "', "
-                    + "'" + conceptType + "', "
-                    + (conceptObject.getNotation() == null ? null : "'" + conceptObject.getNotation() + "'") + ""
-                    + ","
-                    + (conceptObject.getArkId() == null ? "''":  "'" + conceptObject.getArkId() + "'") + ", "
-                    + isTopConcept + ", "
-                    + "'" + idHandle + "', "
-                    + "'" + idDoi + "', "
-                    + (prefTerm == null ? null : "'" + prefTerm.replaceAll("'", "''") + "'") + ", "
-                    + (relations == null ? null : "'" + relations + "'") + ", "
-                    + (customRelations == null ? null : "'" + customRelations + "'") + ", "                    
-                    + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'") + ", "
-                    + (nonPrefTerm == null ? null : "'" + nonPrefTerm.replaceAll("'", "''") + "'") + ", "
-                    + (alignements == null ? null : "'" + alignements.replaceAll("'", "''") + "'") + ", "
-                    + (images == null ? null : "'" + images + "'") + ", "
-                    + null + ", "
-                    + (gps != null) + ", "
-                    + (gps == null ? null : "'" + gps + "'") + ", "
-                    + (conceptObject.getCreated()== null ? null : "'" + conceptObject.getCreated() + "'") + ", "
-                    + (conceptObject.getModified()== null ? null : "'" + conceptObject.getModified() + "'") + ", "
-                    + (dcterms == null ? null : "'" + dcterms + "'") 
+        try (Connection conn = ds.getConnection(); Statement stmt = conn.createStatement()) {
+            sql = "CALL opentheso_add_facet('" + idFacet + "', "
+                    + idUser + ", '"
+                    + idTheso + "', '"
+                    + idConceptParent + "', '"
+                    + labels.replaceAll("'", "''") + "', "
+                    + (membres == null ? null : "'" + membres + "'") + ", "
+                    + (notes == null ? null : "'" + notes.replaceAll("'", "''") + "'")
                     + ")";
-
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             System.out.println("SQL : " + sql);
             System.out.println(e.getMessage());
             System.out.println("--------------------------------");
-            message = message + "Erreur concept : " + prefTerm + "(" + conceptObject.getIdConcept() +"(\n";
-            return false;
         }
 
-        return true;
-    }
+    }    
     
     private boolean addPrefLabel(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
@@ -947,31 +1065,31 @@ public class CsvImportHelper {
 
         NoteHelper noteHelper = new NoteHelper();
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
-            noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
+            noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "note","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+            noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "definition","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+            noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "changeNote","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+            noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "editorialNote","", idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+            noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "historyNote", "",idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
-            noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
+            noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "scopeNote", "",idUser);
         }
         for (CsvReadHelper.Label note : conceptObject.getExamples()) {
-            noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+            noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "example", "",idUser);
         }
         return true;
@@ -1070,20 +1188,50 @@ public class CsvImportHelper {
 
     private boolean addGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        if (StringUtils.isEmpty(conceptObject.getGps()) || conceptObject.getGps().length() < 3) {
+        if (StringUtils.isEmpty(conceptObject.getLatitude())) {
+            if (StringUtils.isEmpty(conceptObject.getGps()) || conceptObject.getGps().length() < 3) {
+                return true;
+            }
+
+            String[] values = conceptObject.getGps().split("##");
+            for (String value1 : values) {
+                String[] gps = value1.split("@@");
+                new GpsHelper().insertCoordonees(ds, conceptObject.getIdConcept(), idTheso,
+                        Double.valueOf(gps[1]), Double.valueOf(gps[2]));
+            }
+            return true;
+        } else {
+            return addPointGeoLocalisation(ds, idTheso, conceptObject);
+        }
+    }
+    private boolean addPointGeoLocalisation(
+            HikariDataSource ds,
+            String idTheso,
+            CsvReadHelper.ConceptObject conceptObject) {
+
+        Double latitude;
+        Double longitude;
+
+        if (conceptObject.getLatitude() == null || conceptObject.getLatitude().isEmpty()) {
             return true;
         }
-
-        String[] values = conceptObject.getGps().split("##");
-        for (String value1 : values) {
-            String[] gps = value1.split("@@");
-            new GpsHelper().insertCoordonees(ds, conceptObject.getIdConcept(), idTheso,
-                    Double.valueOf(gps[1]), Double.valueOf(gps[2]));
+        if (conceptObject.getLongitude() == null || conceptObject.getLongitude().isEmpty()) {
+            return true;
         }
-
+        try {
+            latitude = Double.parseDouble(conceptObject.getLatitude());
+            longitude = Double.parseDouble(conceptObject.getLongitude());
+        } catch (Exception e) {
+            return true;
+        }
+        GpsHelper gpsHelper = new GpsHelper();
+        gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(),
+                idTheso,
+                latitude, longitude);
         return true;
     }
-
+    
+    
     private boolean addMembers(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
         if (!conceptObject.getMembers().isEmpty()) {
@@ -1118,19 +1266,19 @@ public class CsvImportHelper {
     public boolean updateConceptValueByNewValue(HikariDataSource ds, String idTheso, NodeReplaceValueByValue nodeReplaceValueByValue, int idUser1) {
         message = "";
         switch (nodeReplaceValueByValue.getSKOSProperty()) {
-            case SKOSProperty.prefLabel:
+            case SKOSProperty.PREF_LABEL:
                 if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
                     if (!updatePrefLabel(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
                         addMessage("Erreur : ", nodeReplaceValueByValue);
                     }
                 }
                 break;
-            case SKOSProperty.altLabel:
+            case SKOSProperty.ALT_LABEL:
                 if (!updateAltLabel(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
                     addMessage("Erreur : ", nodeReplaceValueByValue);
                 }
                 break;    
-            case SKOSProperty.definition:
+            case SKOSProperty.DEFINITION:
                 if (!updateDefinition(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
                     addMessage("Erreur : ", nodeReplaceValueByValue);
                 }
@@ -1138,7 +1286,7 @@ public class CsvImportHelper {
                 
                 
             /*    Action dangereuse, à activer plus tard */
-            case SKOSProperty.broader:
+            case SKOSProperty.BROADER:
                 if (!updateBroader(ds, idTheso, nodeReplaceValueByValue, idUser1)) {
                     addMessage("Erreur : ", nodeReplaceValueByValue);
                 }
@@ -1202,15 +1350,8 @@ public class CsvImportHelper {
             addMessage("concept sans identifiant :", nodeReplaceValueByValue);
             return false;
         }
-        TermHelper termHelper = new TermHelper();
         NoteHelper noteHelper = new NoteHelper();
-        
-        String idTerm = termHelper.getIdTermOfConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
-
-        if (idTerm == null || idTerm.isEmpty()) {
-            return false;
-        }
-        
+       
         // si l'ancienne valeur et la nouvelle valeur sont présente
         if(!StringUtils.isEmpty(nodeReplaceValueByValue.getOldValue())) {
             if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
@@ -1219,19 +1360,19 @@ public class CsvImportHelper {
                         "definition", nodeReplaceValueByValue.getIdLang(), idTheso); 
                 if(idNote != -1){
                     // on remplace la valeur du altLabel par la nouvelle valeur
-                    if(!noteHelper.updateTermNote(ds, idNote, idTerm, nodeReplaceValueByValue.getIdLang(), idTheso, 
+                    if(!noteHelper.updateNote(ds, idNote, nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso, 
                             nodeReplaceValueByValue.getNewValue(), "definition", idUser1)) {
                         addMessage("Rename definition error :", nodeReplaceValueByValue);
                     }                      
                 } else {
-                    if (!noteHelper.isNoteExistOfTerm(
+                    if (!noteHelper.isNoteExist(
                             ds,
-                            idTerm,
+                            nodeReplaceValueByValue.getIdConcept(),
                             idTheso,
                             nodeReplaceValueByValue.getIdLang(),
                             nodeReplaceValueByValue.getNewValue(),
                             "definition")) {                    
-                        if(!noteHelper.addTermNote(ds, idTerm, nodeReplaceValueByValue.getIdLang(), idTheso, 
+                        if(!noteHelper.addNote(ds, nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso, 
                                 nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
                             addMessage("add definition error :", nodeReplaceValueByValue);
                         }
@@ -1241,14 +1382,14 @@ public class CsvImportHelper {
         } else {
             if(!StringUtils.isEmpty(nodeReplaceValueByValue.getNewValue())) {
                 // on ajoute une nouvelle définition
-                if (!noteHelper.isNoteExistOfTerm(
+                if (!noteHelper.isNoteExist(
                         ds,
-                        idTerm,
+                        nodeReplaceValueByValue.getIdConcept(),
                         idTheso,
                         nodeReplaceValueByValue.getIdLang(),
                         nodeReplaceValueByValue.getNewValue(),
                         "definition")) {                 
-                    if(!noteHelper.addTermNote(ds, idTerm, nodeReplaceValueByValue.getIdLang(), idTheso, 
+                    if(!noteHelper.addNote(ds, nodeReplaceValueByValue.getIdConcept(), nodeReplaceValueByValue.getIdLang(), idTheso, 
                             nodeReplaceValueByValue.getNewValue(), "definition", "", idUser1)) {
                         addMessage("add definition error :", nodeReplaceValueByValue);
                     }     
@@ -1308,6 +1449,8 @@ public class CsvImportHelper {
         updateAlignments(ds, idTheso, conceptObject, idUser1);
         updateGeoLocalisation(ds, idTheso, conceptObject);
         updateImages(ds, idTheso, conceptObject, idUser1);
+        
+        addExternalResources(ds, idTheso, conceptObject.getIdConcept(), conceptObject.getExternalResources()); 
         return true;
     }
 
@@ -1416,90 +1559,90 @@ public class CsvImportHelper {
         ArrayList<String> langs = getLangs(conceptObject.getNote());
         for (String lang : langs) {
             //    oldNotes = noteHelper.getListNotesConcept(ds, conceptObject.getIdConcept(), idTheso, lang);
-            if (!noteHelper.deleteNoteOfConceptByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "note")) {
+            if (!noteHelper.deleteNoteByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "note")) {
                 return false;
             }
         }
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addConceptNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                         "note","", idUser1);
             }
         }
         langs = getLangs(conceptObject.getScopeNotes());
         for (String lang : langs) {
-            if (!noteHelper.deleteNoteOfConceptByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "scopeNote")) {
+            if (!noteHelper.deleteNoteByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "scopeNote")) {
                 return false;
             }
         }
         for (CsvReadHelper.Label note : conceptObject.getScopeNotes()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addConceptNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
+                noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                         "scopeNote","", idUser1);
             }
         }
 
         langs = getLangs(conceptObject.getDefinitions());
         for (String lang : langs) {
-            if (!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "definition")) {
+            if (!noteHelper.deleteNoteByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "definition")) {
                 return false;
             }
         }
         for (CsvReadHelper.Label note : conceptObject.getDefinitions()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                         "definition", "",idUser1);
             }
         }
 
         langs = getLangs(conceptObject.getChangeNotes());
         for (String lang : langs) {
-            if (!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "changeNote")) {
+            if (!noteHelper.deleteNoteByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "changeNote")) {
                 return false;
             }
         }
         for (CsvReadHelper.Label note : conceptObject.getChangeNotes()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                         "changeNote", "",idUser1);
             }
         }
 
         langs = getLangs(conceptObject.getEditorialNotes());
         for (String lang : langs) {
-            if (!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "editorialNote")) {
+            if (!noteHelper.deleteNoteByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "editorialNote")) {
                 return false;
             }
         }
         for (CsvReadHelper.Label note : conceptObject.getEditorialNotes()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                         "editorialNote", "",idUser1);
             }
         }
 
         langs = getLangs(conceptObject.getHistoryNotes());
         for (String lang : langs) {
-            if (!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "historyNote")) {
+            if (!noteHelper.deleteNoteByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "historyNote")) {
                 return false;
             }
         }
         for (CsvReadHelper.Label note : conceptObject.getHistoryNotes()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                         "historyNote", "",idUser1);
             }
         }
 
         langs = getLangs(conceptObject.getExamples());
         for (String lang : langs) {
-            if (!noteHelper.deleteNotesOfTermByLang(ds, conceptObject.getIdTerm(), idTheso, lang, "example")) {
+            if (!noteHelper.deleteNoteByLang(ds, conceptObject.getIdConcept(), idTheso, lang, "example")) {
                 return false;
             }
         }
         for (CsvReadHelper.Label note : conceptObject.getExamples()) {
             if (!note.getLabel().isEmpty()) {
-                noteHelper.addTermNote(ds, conceptObject.getIdTerm(), note.getLang(), idTheso, note.getLabel(),
+                noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                         "example", "",idUser1);
             }
         }
@@ -1597,56 +1740,64 @@ public class CsvImportHelper {
 
     private boolean updateGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        Double latitude;
-        Double longitude;
-
         GpsHelper gpsHelper = new GpsHelper();
         if (conceptObject.getLatitude() == null || conceptObject.getLongitude() == null) {
-            return true;
+            if(conceptObject.getGps() == null || conceptObject.getGps().isEmpty())
+                return true;
         }
+
+        // nettoyege des ancienne valeurs
         gpsHelper.deleteGpsCoordinate(ds, conceptObject.getIdConcept(), idTheso);
-        if (conceptObject.getLatitude().isEmpty() || conceptObject.getLongitude().isEmpty()) {
-            return true;
+       
+        
+        String gps = null;
+        List<NodeGps> nodeGpses = new ArrayList<>();
+        
+        if (StringUtils.isNotEmpty(conceptObject.getLatitude())) {
+            NodeGps nodeGps = new NodeGps();
+            try {
+                nodeGps.setLatitude(Double.valueOf(conceptObject.getLatitude()));
+                nodeGps.setLongitude(Double.valueOf(conceptObject.getLongitude()));
+                nodeGps.setPosition(1);
+                nodeGpses.add(nodeGps);
+            } catch (Exception e) {
+                return true;
+            }
+            gpsHelper.addGpsCoordinates(ds, conceptObject.getIdConcept(), idTheso, nodeGpses);
+            
+        } else {
+            if (StringUtils.isNotEmpty(conceptObject.getGps())) {
+                var gpsList = ConceptView.readGps(conceptObject.getGps(), "", "");
+                if (CollectionUtils.isNotEmpty(gpsList)) {
+                    for (Gps gpsValue : gpsList) {
+                        NodeGps nodeGps = new NodeGps();
+                        nodeGps.setLatitude(gpsValue.getLatitude());
+                        nodeGps.setLongitude(gpsValue.getLongitude());
+                        nodeGps.setPosition(gpsValue.getPosition());
+                        nodeGpses.add(nodeGps);                                            
+                    }
+                    gpsHelper.addGpsCoordinates(ds, conceptObject.getIdConcept(), idTheso, nodeGpses);
+                }
+            }
         }
-        try {
-            latitude = Double.valueOf(conceptObject.getLatitude());
-            longitude = Double.valueOf(conceptObject.getLongitude());
-        } catch (Exception e) {
-            return true;
-        }
-        gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
         return true;
-        /*
-        if (StringUtils.isEmpty(conceptObject.getGps()) && conceptObject.getGps().length() < 3) {
-            return true;
-        }
-
-        GpsHelper gpsHelper = new GpsHelper();
-        gpsHelper.deleteGpsCoordinate(ds, conceptObject.getIdConcept(), idTheso);
-
-        String[] values = conceptObject.getGps().split("##");
-        for (String value1 : values) {
-            String[] gps = value1.split("@@");
-            gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso,
-                    Double.valueOf(gps[1]), Double.valueOf(gps[2]));
-        }
-        return true;*/
     }
 
     private boolean updateImages(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
         ImagesHelper imagesHelper = new ImagesHelper();
 
-        if (conceptObject.getImages() == null) {
+        if (conceptObject.getImages() == null || conceptObject.getImages().isEmpty()) {
             return true;
         }
 
         imagesHelper.deleteAllExternalImage(ds, conceptObject.getIdConcept(), idTheso);
-
+        
         for (NodeImage nodeImage : conceptObject.getImages()) {
-            if (!nodeImage.getUri().isEmpty()) {
-                if (imagesHelper.addExternalImage(ds, conceptObject.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), idUser1)) {
-                    return false;
-                }
+            if(nodeImage == null) continue;
+            if (StringUtils.isEmpty(nodeImage.getUri())) continue;            
+
+            if (imagesHelper.addExternalImage(ds, conceptObject.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), idUser1)) {
+                return false;
             }
         }
         return true;

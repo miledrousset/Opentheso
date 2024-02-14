@@ -36,7 +36,7 @@ public class DefinitionBean implements Serializable {
         }
         definition = "";
         
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition modifiée avec sucée");
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition modifiée avec succès");
             
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm");
@@ -57,7 +57,7 @@ public class DefinitionBean implements Serializable {
         candidatBean.getCandidatSelected().getDefenitions().add(definition.replaceAll("(\r\n|\n)", "<br />"));
         definition = "";
         
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition ajoutée avec sucée");
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition ajoutée avec succès");
             
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm");
@@ -78,7 +78,7 @@ public class DefinitionBean implements Serializable {
         }
         definition = "";
         
-        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition supprimée avec sucée");
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, "Définition supprimée avec succès");
             
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("candidatForm");

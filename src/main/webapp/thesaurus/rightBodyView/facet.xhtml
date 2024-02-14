@@ -24,7 +24,7 @@
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}" icon="pi pi-cog"
+                            <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}" icon="fas fa-cog"
                                           style="background: none; border: none; color: #000; box-shadow: none;">
                                 <p:menuitem value="#{langueBean.getMsg('leftbody.renamefacet')}" oncomplete="PF('renameFacet').show();" 
                                             icon="fas fa-pencil-alt" update="containerIndex:idRenameFacet"/>
@@ -37,14 +37,14 @@
 
                 <!-- concept Parent -->
                 <div class="list-group-item list-group-item-action">
-                    <div class="row" style="margin-left: 0px;">
+                    <div class="row" style="margin-left: 0px; margin-top: 10px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
                             <h:outputText value="#{langueBean.getMsg('rightbody.facetdialog.parent_concept')}"
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                        
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
-                                          icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
+                                          icon="fas fa-cog" style="background: none; border: none; color: #000; box-shadow: none;">
 
                                 <p:menuitem value="#{langueBean.getMsg('leftbody.modify_ParentConcept')}" 
                                             oncomplete="PF('addConceptParentToFacet').show();" 
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="list-group-item list-group-item-action">
-                    <div class="row" style="margin-left: 0px;">
+                    <div class="row" style="margin-left: 0px;margin-top: 10px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
                             <h:outputText value="Membres" title="Les concepts membres"
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
@@ -71,7 +71,7 @@
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">    
                             <p:menuButton rendered="#{(currentUser.nodeUser != null)
                                                       and (currentUser.hasRoleAsManager)}"
-                                          icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                          icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.new_concept')}"
                                             actionListener="#{addConcept.resetForFacet(editFacet.facetSelected)}"                    
                                             oncomplete="PF('addNTFacette').show();" icon="fas fa-file-alt"
@@ -114,14 +114,14 @@
                 <!-- ligne Traductions -->
                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeTermTraductions.size() !=0)}">
                     <div class="list-group-item list-group-item-action">
-                        <div class="row" style="margin-left: 0px;">
+                        <div class="row" style="margin-left: 0px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
                                 <h:outputText value="#{langueBean.getMsg('candidat.traduction')}" style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                            
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) 
                                                           and (currentUser.hasRoleAsManager)}"
-                                              icon="pi pi-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                              icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" 
                                                 oncomplete="PF('addFacetTraduction').show();"
@@ -160,9 +160,302 @@
                         </div>
                     </div>
                 </h:panelGroup>
+
+                <p:spacer height="20px" />
+                
+                
+          
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                <p:spacer height="2px" width="98%" style="margin-left: 10px; 
+                          background-color: #CBD1DC; font-weight: 100"  />                
+                
+                
+                <!-- commande des notes -->
+                
+                <div class="row" style="margin-left: 10px; margin-bottom: 5px; margin-top: 5px;">
+                    <h:panelGroup id="notesActions" rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+
+                        <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                                      style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
+
+                        <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
+                                      icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
+
+                            <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_note')}"
+                                        actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}" update="containerIndex:idAddNote"
+                                        oncomplete="PF('addNote').show();" icon="fas fa-plus" />
+                        </p:menuButton>
+                    </h:panelGroup>                          
+                </div>
+                
+          
+                
+                
+                
+
+                <!-- Note -->
+                <h:panelGroup rendered="#{editFacet.notes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.note')}"
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                    action="#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNote').show();"
+                                                    update="containerIndex:idEditNote" icon="fas fa-edit" />                                            
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                    actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}" action="#{noteBean.setSelectedTypeNote('note')}"
+                                                    update="containerIndex:idDeleteNote" oncomplete="PF('deleteNote').show();" icon="fas fa-minus"/>
+                                    </p:menuButton>
+                                </h:panelGroup>                                        
+                                <ui:repeat var="note" value="#{editFacet.notes}" varStatus="status">
+                                    <h:outputText rendered="#{status.first}" value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <br/>
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <!-- ChangeNote -->
+                <h:panelGroup rendered="#{editFacet.changeNotes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.change_note')}"
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                                
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
+                                              icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                              box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('changeNote')}"                                          
+                                                oncomplete="PF('editNote').show();"
+                                                update="containerIndex:idEditNote" icon="fas fa-edit" />                                        
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('changeNote')}" oncomplete="PF('deleteNote').show();"
+                                                update="containerIndex:idDeleteNote" icon="fas fa-minus" />                                        
+                                </p:menuButton>
+                                <ui:repeat var="changeNote" value="#{editFacet.changeNotes}" varStatus="status">
+                                    <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <br/>                                    
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <!-- Definition -->
+                <h:panelGroup rendered="#{editFacet.definitions.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.definition')}"
+                                              style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}" icon="fas fa-cog"
+                                              style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
+                                                oncomplete="PF('editNote').show();"
+                                                update="containerIndex:idEditNote" icon="fas fa-edit"/>
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('definition')}"
+                                                oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote"
+                                                icon="fas fa-minus"/>
+                                </p:menuButton>
+                                <ui:repeat var="def" value="#{editFacet.definitions}" varStatus="status">
+                                    <h:outputText rendered="#{status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <br/>                                    
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <!-- EditorialNote -->
+                <h:panelGroup rendered="#{editFacet.editorialNotes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
+                                              style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
+                                              icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                              box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
+                                                oncomplete="PF('editNote').show();"
+                                                update="containerIndex:idEditNote" icon="fas fa-edit" />
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}" icon="fas fa-minus"
+                                                action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
+                                                oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote" />
+                                </p:menuButton> 
+                                <ui:repeat var="editorialNote" value="#{editFacet.editorialNotes}" varStatus="status">
+                                    <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <br/>                                    
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <!-- Example -->
+                <h:panelGroup rendered="#{editFacet.examples.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.example_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.example_note')}" 
+                                              style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
+                                              icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                              box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('example')}"                                          
+                                                oncomplete="PF('editNote').show();"
+                                                update="containerIndex:idEditNote" icon="fas fa-edit" />
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('example')}"
+                                                oncomplete="PF('deleteNote').show();"
+                                                update="containerIndex:idDeleteNote" icon="fas fa-minus" />
+                                </p:menuButton> 
+                                <ui:repeat var="example" value="#{editFacet.examples}" varStatus="status">
+                                    <h:outputText rendered="#{status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <br/>                                    
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <!-- History -->
+                <h:panelGroup rendered="#{editFacet.historyNotes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >                        
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.history_note')}"
+                                              style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
+                                              icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                              box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
+                                                oncomplete="PF('editNote').show();"
+                                                update="containerIndex:idEditNote" icon="fas fa-edit" />
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('historyNote')}"
+                                                oncomplete="PF('deleteNote').show();"
+                                                update="containerIndex:idDeleteNote" icon="fas fa-minus" />
+                                </p:menuButton> 
+                                <ui:repeat var="historyNote" value="#{editFacet.historyNotes}" varStatus="status">
+                                    <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <br/>                                    
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <!-- ScopeNote -->
+                <h:panelGroup rendered="#{editFacet.scopeNotes.size() != 0}">
+                    <div class="list-group-item list-group-item-action" >
+                        <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
+                                              title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
+                                              style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
+                            </div>
+                            <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
+                                <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
+                                              icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                              box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          
+                                                oncomplete="PF('editNote').show();"
+                                                update="containerIndex:idEditNote" icon="fas fa-edit" />
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
+                                                action = "#{noteBean.setSelectedTypeNote('scopeNote')}"
+                                                oncomplete="PF('deleteNote').show();"
+                                                update="containerIndex:idDeleteNote" icon="fas fa-minus" />
+                                </p:menuButton> 
+                                <ui:repeat var="scopeNote" value="#{editFacet.scopeNotes}" varStatus="status">
+                                    <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <br/>                                    
+                                </ui:repeat>
+                            </div>
+                        </div>
+                    </div>            
+                </h:panelGroup>
+
+
+
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 
                 <p:spacer height="20px" />
                 
+                <p:spacer height="2px" width="98%" style="margin-left: 10px; margin-bottom: 10px;
+                          background-color: #CBD1DC; font-weight: 100"  />
+
                 <!-- ligne Id -->
                 <h:panelGroup >
                     <div class="list-group-item list-group-item-action">
@@ -178,20 +471,31 @@
                         </div>
                     </div>
                 </h:panelGroup>                
-                
-                
+
+
             </div>
         </div>
         <h:form>
             <div class="mb-4 " style="margin-right: 30px">          
                 <div class="row">
                     <div class="col-12" style="text-align: right;">
-                        <p:commandButton title="Supprimer la facette" 
+                        <p:commandButton title="#{langueBean.getMsg('facet.deleteFacet')}" 
+                                         value="#{langueBean.getMsg('facet.deleteFacet')}" styleClass="ui-button-danger"
+
                                          actionListener="#{editFacet.supprimerFacette}"
                                          update="containerIndex messageIndex" 
-                                         class="btn btn-danger" ajax="true" process="@this"
+                                         ajax="true" process="@this"
                                          rendered="#{(currentUser.nodeUser != null) 
-                                                     and (currentUser.hasRoleAsManager)}"/>
+                                                     and (currentUser.hasRoleAsManager)}">
+                            <p:confirm header="#{langueBean.getMsg('profile.confirmation')}" message="#{langueBean.getMsg('facet.confirmDelete')}" icon="pi pi-info-circle"/>
+                        </p:commandButton>    
+
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                            <p:commandButton value="#{langueBean.getMsg('no')}" type="button" icon="fas fa-undo-alt" styleClass="ui-confirmdialog-no ui-button-secondary"/>
+                            <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" icon="pi pi-times" styleClass="ui-confirmdialog-yes ui-button-success" />
+                        </p:confirmDialog>                        
+
                     </div>
                 </div>
             </div>

@@ -32,22 +32,22 @@ public class SKOSDocumentation implements SKOSProperty{
 		String propertyName = new String();
 		String xmlTag;
 		switch(property){
-			case SKOSProperty.definition :
+			case SKOSProperty.DEFINITION :
 				propertyName = "definition";
 				break;
-			case SKOSProperty.scopeNote :
+			case SKOSProperty.SCOPE_NOTE :
 				propertyName = "scopeNote";
 				break;
-			case SKOSProperty.example :
+			case SKOSProperty.EXAMPLE :
 				propertyName = "example";
 				break;
-			case SKOSProperty.historyNote :
+			case SKOSProperty.HISTORY_NOTE :
 				propertyName = "historyNote";
 				break;
-			case SKOSProperty.editorialNote :
+			case SKOSProperty.EDITORIAL_NOTE :
 				propertyName = "editorialNote";
 				break;
-			case SKOSProperty.changeNote :
+			case SKOSProperty.CHANGE_NOTE :
 				propertyName = "changeNote";
 				break;
 			default:

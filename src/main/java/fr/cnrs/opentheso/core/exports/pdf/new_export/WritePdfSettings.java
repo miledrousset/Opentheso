@@ -30,27 +30,27 @@ public class WritePdfSettings {
 
     public String getCodeRelation(int codeRelation) {
         switch (codeRelation) {
-            case SKOSProperty.broader:
+            case SKOSProperty.BROADER:
                 return "BT";
-            case SKOSProperty.narrower:
+            case SKOSProperty.NARROWER:
                 return "NT";
-            case SKOSProperty.related:
+            case SKOSProperty.RELATED:
                 return "RT";
-            case SKOSProperty.relatedHasPart:
+            case SKOSProperty.RELATED_HAS_PART:
                 return "RHP";
-            case SKOSProperty.relatedPartOf:
+            case SKOSProperty.RELATED_PART_OF:
                 return "RPO";
-            case SKOSProperty.narrowerGeneric:
+            case SKOSProperty.NARROWER_GENERIC:
                 return "NTG";
-            case SKOSProperty.narrowerInstantial:
+            case SKOSProperty.NARROWER_INSTANTIAL:
                 return "NTI";
-            case SKOSProperty.narrowerPartitive:
+            case SKOSProperty.NARROWER_PARTITIVE:
                 return "NTP";
-            case SKOSProperty.broaderGeneric:
+            case SKOSProperty.BROADER_GENERIC:
                 return "BTG";
-            case SKOSProperty.broaderInstantial:
+            case SKOSProperty.BROADER_INSTANTIAL:
                 return "BTI";
-            case SKOSProperty.broaderPartitive:
+            case SKOSProperty.BROADER_PARTITIVE:
                 return "BTP";
             default:
                 return "";
@@ -59,19 +59,19 @@ public class WritePdfSettings {
 
     public String getDocTypeName(int property) {
         switch (property) {
-            case SKOSProperty.definition:
+            case SKOSProperty.DEFINITION:
                 return "definition";
-            case SKOSProperty.scopeNote:
+            case SKOSProperty.SCOPE_NOTE:
                 return "scopeNote";
-            case SKOSProperty.example:
+            case SKOSProperty.EXAMPLE:
                 return "example";
-            case SKOSProperty.historyNote:
+            case SKOSProperty.HISTORY_NOTE:
                 return "historyNote";
-            case SKOSProperty.editorialNote:
+            case SKOSProperty.EDITORIAL_NOTE:
                 return "editorialNote";
-            case SKOSProperty.changeNote:
+            case SKOSProperty.CHANGE_NOTE:
                 return "changeNote";
-            case SKOSProperty.note:
+            case SKOSProperty.NOTE:
                 return "note";
             default:
                 return "";
@@ -80,15 +80,15 @@ public class WritePdfSettings {
 
     public String getMatchTypeName(int property) {
         switch (property) {
-            case SKOSProperty.exactMatch:
+            case SKOSProperty.EXACT_MATCH:
                 return "exactMatch";
-            case SKOSProperty.closeMatch:
+            case SKOSProperty.CLOSE_MATCH:
                 return "closeMatch";
-            case SKOSProperty.broadMatch:
+            case SKOSProperty.BROAD_MATCH:
                 return "broadMatch";
-            case SKOSProperty.relatedMatch:
+            case SKOSProperty.RELATED_MATCH:
                 return "relatedMatch";
-            case SKOSProperty.narrowMatch:
+            case SKOSProperty.NARROWER_MATCH:
                 return "narrowMatch";
             default:
                 return "";

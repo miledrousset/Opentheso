@@ -152,12 +152,12 @@ public class OpenthesoHelper {
                 na.setUri_target(resource.getUri());
                 for(SKOSLabel label : resource.getLabelsList()) {
                     switch (label.getProperty()) {
-                        case SKOSProperty.prefLabel:
+                        case SKOSProperty.PREF_LABEL:
                             if(label.getLanguage().equals(idLang)) {
                                 na.setConcept_target(label.getLabel());
                             }
                             break;
-                        case SKOSProperty.altLabel:
+                        case SKOSProperty.ALT_LABEL:
                             if(label.getLanguage().equals(idLang)) {
                                 if(StringUtils.isEmpty(na.getConcept_target_alt())) {
                                     na.setConcept_target_alt(label.getLabel());
@@ -172,7 +172,7 @@ public class OpenthesoHelper {
                 }
 
                 for(SKOSDocumentation sd : resource.getDocumentationsList()) {
-                    if(sd.getProperty() == SKOSProperty.definition && sd.getLanguage().equals(idLang)) {
+                    if(sd.getProperty() == SKOSProperty.DEFINITION && sd.getLanguage().equals(idLang)) {
                         na.setDef_target(sd.getText());
                     }
                 }

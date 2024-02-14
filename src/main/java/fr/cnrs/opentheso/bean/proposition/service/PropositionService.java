@@ -684,95 +684,47 @@ public class PropositionService implements Serializable {
     }
 
     private void deleteNote(NotePropBean notePropBean, String typeNote) {
-        if (typeNote.equalsIgnoreCase("note") || typeNote.equalsIgnoreCase("scopeNote")) {
-            if (!new NoteHelper().deletethisNoteOfConcept(connect.getPoolConnexion(),
-                    notePropBean.getId_note(),
-                    notePropBean.getId_concept(),
-                    notePropBean.getLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    notePropBean.getNotetypecode(),
-                    notePropBean.getLexicalvalue(),
-                    currentUser.getNodeUser().getIdUser())) {
+        if (!new NoteHelper().deleteThisNote(connect.getPoolConnexion(),
+                notePropBean.getId_note(),
+                notePropBean.getId_concept(),
+                notePropBean.getLang(),
+                selectedTheso.getCurrentIdTheso(),
+                notePropBean.getNotetypecode(),
+                notePropBean.getLexicalvalue(),
+                currentUser.getNodeUser().getIdUser())) {
 
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
-        } else {
-            if (!new NoteHelper().deleteThisNoteOfTerm(connect.getPoolConnexion(),
-                    notePropBean.getId_note(),
-                    notePropBean.getId_term(),
-                    notePropBean.getLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    notePropBean.getNotetypecode(),
-                    notePropBean.getLexicalvalue(),
-                    currentUser.getNodeUser().getIdUser())) {
-
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
     }
 
     private void updateNote(NotePropBean notePropBean, String typeNote) {
+        if (!new NoteHelper().updateNote(connect.getPoolConnexion(),
+                notePropBean.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
+                notePropBean.getId_concept(),
+                notePropBean.getLang(),
+                selectedTheso.getCurrentIdTheso(),
+                notePropBean.getLexicalvalue(),
+                notePropBean.getNotetypecode(),
+                currentUser.getNodeUser().getIdUser())) {
 
-        if (typeNote.equalsIgnoreCase("note") || typeNote.equalsIgnoreCase("scopeNote")) {
-            if (!new NoteHelper().updateConceptNote(connect.getPoolConnexion(),
-                    notePropBean.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                    notePropBean.getId_concept(),
-                    notePropBean.getLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    notePropBean.getLexicalvalue(),
-                    notePropBean.getNotetypecode(),
-                    currentUser.getNodeUser().getIdUser())) {
-
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
-        } else {
-            if (!new NoteHelper().updateTermNote(connect.getPoolConnexion(),
-                    notePropBean.getId_note(),
-                    notePropBean.getId_concept(),
-                    notePropBean.getLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    notePropBean.getLexicalvalue(),
-                    notePropBean.getNotetypecode(),
-                    currentUser.getNodeUser().getIdUser())) {
-
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
     }
 
     private void addNewNote(NotePropBean notePropBean, String typeNote, String conceptId) {
+        if (!new NoteHelper().addNote(
+                connect.getPoolConnexion(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                notePropBean.getLang(),
+                selectedTheso.getCurrentIdTheso(),
+                notePropBean.getLexicalvalue(),
+                typeNote, "",
+                currentUser.getNodeUser().getIdUser())) {
 
-        if (typeNote.equalsIgnoreCase("note") || typeNote.equalsIgnoreCase("scopeNote")) {
-            if (!new NoteHelper().addConceptNote(
-                    connect.getPoolConnexion(),
-                    conceptView.getNodeConcept().getConcept().getIdConcept(),
-                    notePropBean.getLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    notePropBean.getLexicalvalue(),
-                    typeNote, "",
-                    currentUser.getNodeUser().getIdUser())) {
-
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
-        } else {
-            if (!new NoteHelper().addTermNote(
-                    connect.getPoolConnexion(),
-                    conceptView.getNodeConcept().getTerm().getId_term(),
-                    notePropBean.getLang(),
-                    selectedTheso.getCurrentIdTheso(),
-                    notePropBean.getLexicalvalue(),
-                    typeNote,"",
-                    currentUser.getNodeUser().getIdUser())) {
-
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-
-            }
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Erreur pendant l'ajout d'une nouvelle note !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
         }
     }
 
@@ -817,7 +769,7 @@ public class PropositionService implements Serializable {
         proposition.setTraductionsProp(toTraductionPropBeans(nodeConcept.getNodeTermTraductions(),
                 nodeConcept.getTerm().getId_term()));
 
-        for (NodeNote nodeNote : nodeConcept.getNodeNotesConcept()) {
+        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":
                     proposition.getNotes().add(toNotePropBean(nodeNote));
@@ -825,10 +777,6 @@ public class PropositionService implements Serializable {
                 case "scopeNote":
                     proposition.getScopeNotes().add(toNotePropBean(nodeNote));
                     break;
-            }
-        }
-        for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
-            switch (nodeNote.getNotetypecode()) {
                 case "changeNote":
                     proposition.getChangeNotes().add(toNotePropBean(nodeNote));
                     break;
@@ -880,7 +828,7 @@ public class PropositionService implements Serializable {
         proposition.setTraductionsProp(toTraductionPropBeans(conceptView.getNodeConcept().getNodeTermTraductions(),
                 conceptView.getNodeConcept().getTerm().getId_term()));
 
-        for (NodeNote nodeNote : conceptView.getNodeConcept().getNodeNotesConcept()) {
+        for (NodeNote nodeNote : conceptView.getNodeConcept().getNodeNotes()) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":
                     proposition.getNotes().add(toNotePropBean(nodeNote));

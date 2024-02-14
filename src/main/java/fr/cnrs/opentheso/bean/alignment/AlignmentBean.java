@@ -610,10 +610,10 @@ public class AlignmentBean implements Serializable {
                 NoteHelper noteHelper = new NoteHelper();
                 // ajout de la note avec prefix de la source (wikidata)
                 for (SelectedResource selectedResource : alignment.getSelectedDefinitionsList()) {
-                    if(!noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(),
-                            idTerm, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
+                    if(!noteHelper.isNoteExist(connect.getPoolConnexion(),
+                            idConcept, idTheso, selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
 
-                        noteHelper.addTermNote(connect.getPoolConnexion(), idTerm, selectedResource.getIdLang(), idTheso,
+                        noteHelper.addNote(connect.getPoolConnexion(), idConcept, selectedResource.getIdLang(), idTheso,
                                 selectedResource.getGettedValue(), "definition", alignementSource.getSource(), idUser);
                     }
                 }
@@ -891,11 +891,8 @@ public class AlignmentBean implements Serializable {
      * @param idTheso
      */
     private void getDefinitionsOfConcept(String idTheso, String idConcept) {
-
-        String idTerm = new TermHelper().getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
-
-        nodeNotes = new NoteHelper().getListNotesTermAllLang(connect.getPoolConnexion(),
-                idTerm, idTheso);
+        nodeNotes = new NoteHelper().getListNotesAllLang(connect.getPoolConnexion(),
+                idConcept, idTheso);
     }
 
     /**
@@ -1860,24 +1857,18 @@ public class AlignmentBean implements Serializable {
 
     private boolean addDefinitions__(String idTheso, String idConcept, int idUser) {
         NoteHelper noteHelper = new NoteHelper();
-        TermHelper termHelper = new TermHelper();
-        String idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
-        if (idTerm == null) {
-            return false;
-        }
-
 
         // ajout de la note avec prefix de la source (wikidata)
         for (SelectedResource selectedResource : descriptionsOfAlignment) {
             if (selectedResource.isSelected()) {
-                if(noteHelper.isNoteExistOfTerm(connect.getPoolConnexion(),
-                        idTerm, idTheso,
+                if(noteHelper.isNoteExist(connect.getPoolConnexion(),
+                        idConcept, idTheso,
                         selectedResource.getIdLang(), selectedResource.getGettedValue(), "definition")) {
                     continue;
                 }
 
-                if (!noteHelper.addTermNote(connect.getPoolConnexion(),
-                        idTerm, selectedResource.getIdLang(),
+                if (!noteHelper.addNote(connect.getPoolConnexion(),
+                        idConcept, selectedResource.getIdLang(),
                         idTheso,
                         selectedResource.getGettedValue(),
                         "definition", selectedAlignement,

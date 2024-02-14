@@ -72,7 +72,7 @@ public class WriteAltLabel  {
             if (!nodeEMs.isEmpty()) {
 
                 term = termHelper.getThisTerm(ds, nodeTab2Levels.getIdConcept(), idTheso, idLang);
-                nodeNotes = noteHelper.getListNotesTerm(ds, nodeTab2Levels.getIdTerm(), idTheso, idLang);
+                nodeNotes = noteHelper.getListNotes(ds, nodeTab2Levels.getIdConcept(), idTheso, idLang);
 
                 // écriture dans le fichier
                 stringBuilder.append(nodeTab2Levels.getIdConcept());

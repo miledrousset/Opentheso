@@ -46,7 +46,7 @@ public class StatistiqueBean implements Serializable {
 
     private boolean genericTypeVisible, conceptTypeVisible;
     private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;
-    private int nbrCanceptByThes;
+    private int nbrCanceptByThes, nbrCandidateByThes, nbrDeprecatedByThes;
     private Date dateDebut, dateFin, derniereModification;
     private String selectedLanguage;
     private ConceptStatisticData canceptStatistiqueSelected;
@@ -228,6 +228,10 @@ public class StatistiqueBean implements Serializable {
             genericStatistiques = new StatistiqueService().searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage);
 
             nbrCanceptByThes = statisticHelper.getNbCpt(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            
+            nbrCandidateByThes = statisticHelper.getNbCandidate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            nbrDeprecatedByThes = statisticHelper.getNbOfDeprecatedConcepts(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            
 
             derniereModification = conceptHelper.getLastModification(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
 
@@ -405,4 +409,22 @@ public class StatistiqueBean implements Serializable {
     public ConceptStatisticData getCanceptStatistiqueSelected() {
         return canceptStatistiqueSelected;
     }
+
+    public int getNbrCandidateByThes() {
+        return nbrCandidateByThes;
+    }
+
+    public void setNbrCandidateByThes(int nbrCandidateByThes) {
+        this.nbrCandidateByThes = nbrCandidateByThes;
+    }
+
+    public int getNbrDeprecatedByThes() {
+        return nbrDeprecatedByThes;
+    }
+
+    public void setNbrDeprecatedByThes(int nbrDeprecatedByThes) {
+        this.nbrDeprecatedByThes = nbrDeprecatedByThes;
+    }
+    
+    
 }

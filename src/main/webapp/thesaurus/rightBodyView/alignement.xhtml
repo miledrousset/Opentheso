@@ -158,7 +158,7 @@
         <div class="card mb-4 py-3 border-left-success" style="margin: 20px; border-color: #43B572">
             <p:dataTable id="checkboxDT" var="alignement" value="#{alignmentBean.allAlignementFound}"
                          selection="#{alignmentBean.selectAlignementForAdd}" rowKey="#{alignement.uri_target}"
-                         style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;">
+                         style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false">
 
                 <f:facet name="header">
                     <div class="products-table-header">

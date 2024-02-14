@@ -237,10 +237,10 @@
         }
 
         function disparaitreAdvanceRecherche() {
-
+            $("#choixPanelDiv").css("visibility", "visible");
             $('#choixPanelDiv').animate({marginTop: '-25px', opacity: 0}, 300, 'swing');
 
-            searchBarAnimated = false;
+            searchBarAnimated = true;
         }
     </script>
 
@@ -286,11 +286,11 @@
                                 title="#{langueBean.getMsg('search.tooltip_deprecated')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.polyhierarchy')}" action="#{searchBean.getAllPolyierarchy()}"
-                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
+                                update="containerIndex:notificationPanel containerIndex:choixPanel messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_polyhierarchy')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.multiGroups')}" action="#{searchBean.searchConceptWithMultiGroup()}"
-                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
+                                update="containerIndex:notificationPanel  messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_multiGroups')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.withoutGroups')}" action="#{searchBean.searchConceptWithoutGroup()}"

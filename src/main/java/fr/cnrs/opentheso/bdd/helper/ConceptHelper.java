@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptArkId;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
@@ -37,6 +38,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
+import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
@@ -340,29 +342,28 @@ public class ConceptHelper {
      * @param ds
      * @param idTheso
      * @param idLang
-     * @return
-     * #MR
+     * @return #MR
      */
     public ArrayList<NodeDeprecated> getAllDeprecatedConceptOfThesaurus(HikariDataSource ds, String idTheso, String idLang) {
         ArrayList<NodeDeprecated> nodeDeprecateds = new ArrayList<>();
         DeprecateHelper deprecateHelper = new DeprecateHelper();
         ArrayList<NodeIdValue> replacesValues;
-        
+
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select concept.id_concept, concept.modified, users.username, term.lexical_value" +
-                    " from term, concept, preferred_term, users" +
-                    " where  " +
-                    " concept.contributor = users.id_user" +
-                    " and" +
-                    " concept.id_concept = preferred_term.id_concept " +
-                    " and concept.id_thesaurus = preferred_term.id_thesaurus " +
-                    " and preferred_term.id_term = term.id_term " +
-                    " and preferred_term.id_thesaurus = term.id_thesaurus " +
-                    " and concept.id_thesaurus = '" + idTheso + "'" +
-                    " and term.lang = '" + idLang + "'" +
-                    " and concept.status = 'DEP'" +
-                    " order by unaccent(lower(lexical_value))");
+                stmt.executeQuery("select concept.id_concept, concept.modified, users.username, term.lexical_value"
+                        + " from term, concept, preferred_term, users"
+                        + " where  "
+                        + " concept.contributor = users.id_user"
+                        + " and"
+                        + " concept.id_concept = preferred_term.id_concept "
+                        + " and concept.id_thesaurus = preferred_term.id_thesaurus "
+                        + " and preferred_term.id_term = term.id_term "
+                        + " and preferred_term.id_thesaurus = term.id_thesaurus "
+                        + " and concept.id_thesaurus = '" + idTheso + "'"
+                        + " and term.lang = '" + idLang + "'"
+                        + " and concept.status = 'DEP'"
+                        + " order by unaccent(lower(lexical_value))");
 
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
@@ -379,12 +380,12 @@ public class ConceptHelper {
                     replacesValues = deprecateHelper.getAllReplacedBy(ds, idTheso, nodeDeprecated.getDeprecatedId(), idLang);
                     boolean first = true;
                     for (NodeIdValue replacesValue : replacesValues) {
-                        if(first) {
+                        if (first) {
                             nodeDeprecated.setReplacedByLabel(replacesValue.getValue());
-                            nodeDeprecated.setReplacedById(replacesValue.getId());                            
+                            nodeDeprecated.setReplacedById(replacesValue.getId());
                         } else {
                             nodeDeprecated.setReplacedByLabel(nodeDeprecated.getDeprecatedLabel() + "##" + replacesValue.getValue());
-                            nodeDeprecated.setReplacedById(nodeDeprecated.getDeprecatedId()+ "##" + replacesValue.getId());                               
+                            nodeDeprecated.setReplacedById(nodeDeprecated.getDeprecatedId() + "##" + replacesValue.getId());
                         }
                         first = false;
                     }
@@ -494,39 +495,41 @@ public class ConceptHelper {
 
                             nodeConceptTree1.setIdThesaurus(idThesaurus);
                             nodeConceptTree1.setIdLang(idLang);
-                            nodeConceptTree1.setIsTerm(true);
+                            nodeConceptTree1.setTerm(true);
                             nodeConceptTree.add(nodeConceptTree1);
                         }
                     }
-                    for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
-                        query = "SELECT term.lexical_value, concept.status"
-                                + " FROM concept, preferred_term, term"
-                                + " WHERE concept.id_concept = preferred_term.id_concept AND"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                                + " preferred_term.id_term = term.id_term AND"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus AND"
-                                + " concept.id_concept = '" + nodeConceptTree1.getIdConcept() + "' AND"
-                                + " term.lang = '" + idLang + "' AND"
-                                + " term.id_thesaurus = '" + idThesaurus + "';";
+                    if (nodeConceptTree != null) {
+                        for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
+                            query = "SELECT term.lexical_value, concept.status"
+                                    + " FROM concept, preferred_term, term"
+                                    + " WHERE concept.id_concept = preferred_term.id_concept AND"
+                                    + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
+                                    + " preferred_term.id_term = term.id_term AND"
+                                    + " preferred_term.id_thesaurus = term.id_thesaurus AND"
+                                    + " concept.id_concept = '" + nodeConceptTree1.getIdConcept() + "' AND"
+                                    + " term.lang = '" + idLang + "' AND"
+                                    + " term.id_thesaurus = '" + idThesaurus + "';";
 
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
-                            resultSet.next();
-                            if (resultSet.getRow() == 0) {
-                                nodeConceptTree1.setTitle("");
-                                nodeConceptTree1.setStatusConcept("");
-                            } else {
-                                nodeConceptTree1.setTitle(resultSet.getString("lexical_value"));
-                                if (resultSet.getString("status") == null) {
+                            stmt.executeQuery(query);
+                            resultSet = stmt.getResultSet();
+                            if (resultSet != null) {
+                                resultSet.next();
+                                if (resultSet.getRow() == 0) {
+                                    nodeConceptTree1.setTitle("");
                                     nodeConceptTree1.setStatusConcept("");
                                 } else {
-                                    nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
+                                    nodeConceptTree1.setTitle(resultSet.getString("lexical_value"));
+                                    if (resultSet.getString("status") == null) {
+                                        nodeConceptTree1.setStatusConcept("");
+                                    } else {
+                                        nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
+                                    }
                                 }
+                                nodeConceptTree1.setHaveChildren(
+                                        haveChildren(ds, idThesaurus, nodeConceptTree1.getIdConcept())
+                                );
                             }
-                            nodeConceptTree1.setHaveChildren(
-                                    haveChildren(ds, idThesaurus, nodeConceptTree1.getIdConcept())
-                            );
                         }
                     }
                 } finally {
@@ -621,7 +624,7 @@ public class ConceptHelper {
 
                             nodeConceptTree1.setIdThesaurus(idThesaurus);
                             nodeConceptTree1.setIdLang(idLang);
-                            nodeConceptTree1.setIsTerm(true);
+                            nodeConceptTree1.setTerm(true);
                             nodeConceptTree.add(nodeConceptTree1);
                         }
                     }
@@ -1015,7 +1018,7 @@ public class ConceptHelper {
                         nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
                         nodeConceptTree1.setIdThesaurus(idThesaurus);
                         nodeConceptTree1.setIdLang(idLang);
-                        nodeConceptTree1.setIsTopTerm(true);
+                        nodeConceptTree1.setTopTerm(true);
                         nodeConceptTree.add(nodeConceptTree1);
                     }
                     for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
@@ -1090,15 +1093,14 @@ public class ConceptHelper {
         //récupération des termes associés
         nodeConceptSerach.setNodeRT(relationsHelper.getListRT(ds, idConcept, idThesaurus, idLang));
 
-        String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
-
+        //    String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
         //récupération des Non Prefered Term
         nodeConceptSerach.setNodeEM(termHelper.getNonPreferredTerms(ds, idConcept, idThesaurus, idLang));
         nodeConceptSerach.setNodeConceptGroup(groupHelper.getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));
 
         return nodeConceptSerach;
     }
-
+ 
     /**
      * permet de trouver les idConcepts en partant d'un label
      *
@@ -1325,7 +1327,7 @@ public class ConceptHelper {
         String idTerm = termHelper.getIdTermOfConcept(ds, conceptId, idThesaurus);
 
         nodeConceptSearch.setNodeEM(termHelper.getNonPreferredTerms(ds, conceptId, idThesaurus, idLang));
-        
+
         nodeConceptSearch.setNodeConceptGroup(groupHelper.getListGroupOfConcept(ds, idThesaurus, conceptId, idLang));
 
         return nodeConceptSearch;
@@ -1897,6 +1899,36 @@ public class ConceptHelper {
             }
         }
         return idsAndValues;
+    }
+
+    ///// nouvelle focntion pour retourner les Ids concepts d'une branche
+    public List<String> getIdsOfBranch2(HikariDataSource ds, String idTheso, String idConceptDeTete) {
+
+        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
+
+        List<String> lisIds = new ArrayList<>();
+
+        lisIds = getIdsOfBranch2__(ds, daoResourceHelper, idTheso, idConceptDeTete, lisIds);
+
+        return lisIds;
+    }
+
+    private List<String> getIdsOfBranch2__(HikariDataSource ds, DaoResourceHelper daoResourceHelper,
+            String idTheso, String idConceptDeTete, List<String> lisIds) {
+
+        // pour éviter les boucles à l'infini
+        if (lisIds.contains(idConceptDeTete)) {
+            return lisIds;
+        }
+
+        lisIds.add(idConceptDeTete);
+
+        List<String> listIdsOfConceptChildren = daoResourceHelper.getConceptsTT(ds, idTheso, idConceptDeTete);
+
+        for (String listIdsOfConceptChildren1 : listIdsOfConceptChildren) {
+            getIdsOfBranch2__(ds, daoResourceHelper, idTheso, listIdsOfConceptChildren1, lisIds);
+        }
+        return lisIds;
     }
 
     /**
@@ -2558,7 +2590,7 @@ public class ConceptHelper {
         ConceptHelper conceptHelper = new ConceptHelper();
         for (String idConcept : idConcepts) {
             idArk = conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso);
-            if(StringUtils.isEmpty(idArk)) {
+            if (StringUtils.isEmpty(idArk)) {
                 idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
                 idArk = nodePreference.getNaanArkLocal() + "/" + nodePreference.getPrefixArkLocal() + idArk;
             }
@@ -2982,13 +3014,7 @@ public class ConceptHelper {
                 return false;
             }
 
-            if (!noteHelper.deleteNotesOfConcept(conn, idConcept, idThesaurus)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-
-            if (!noteHelper.deleteNotesOfTerm(conn, idTerm, idThesaurus)) {
+            if (!noteHelper.deleteNotes(conn, idConcept, idThesaurus)) {
                 conn.rollback();
                 conn.close();
                 return false;
@@ -3081,19 +3107,20 @@ public class ConceptHelper {
         RelationsHelper relationsHelper = new RelationsHelper();
         NoteHelper noteHelper = new NoteHelper();
         AlignmentHelper alignmentHelper = new AlignmentHelper();
-        ArrayList<String> idConcepts = getIdsOfBranch(
+        List<String> idConcepts = getIdsOfBranch2(
                 ds,
-                idConceptTop,
-                idTheso);
+                idTheso,
+                idConceptTop
+        );
 
         // test si les concepts fils ont une poly-hiérarchie, on refuse la suppression (qui peut supprimer plusieurs branches 
         for (String idConcept : idConcepts) {
-            if(relationsHelper.isConceptHaveManyRelationBT(ds, idConcept, idTheso)){
+            if (relationsHelper.isConceptHaveManyRelationBT(ds, idConcept, idTheso)) {
                 message = idConcept;
                 return false;
             }
         }
-        
+
         // supprimer les concepts        
         for (String idConcept : idConcepts) {
             if (!deleteConcept__(ds,
@@ -3212,68 +3239,6 @@ public class ConceptHelper {
             log.error("Error while deleting Concept : " + idConcept, sqle);
         }
         return status;
-    }
-
-    /**
-     * Cette fonction permet de déplacer une Branche vers un concept d'un autre
-     * Groupe
-     */
-    public boolean moveBranchToConceptOtherGroup(Connection conn, String idConcept, String idOldConceptBT,
-            String idNewConceptBT, String idThesaurus, int idUser) {
-        try {
-            if (!new RelationsHelper().deleteRelationBT(conn, idConcept, idThesaurus, idOldConceptBT, idUser)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            if (!new RelationsHelper().addRelationBT(conn, idConcept, idThesaurus, idNewConceptBT, idUser)) {
-                conn.rollback();
-                conn.close();
-                return false;
-            }
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-
-        }
-        return false;
-    }
-
-    /**
-     * Cette fonction permet de déplacer une Branche vers un domaine Le domaine
-     * de destination est le même que la branche (déplamcent dans le même
-     * domaine)
-     */
-    public boolean moveBranchToAnotherMT(Connection conn, String idConcept, String idOldConceptBT,
-            String oldMT, String idNewMT, String idThesaurus, int idUser) {
-        try {
-            RelationsHelper relationsHelper = new RelationsHelper();
-            conn.setAutoCommit(false);
-
-            if (!relationsHelper.deleteRelationBT(conn, idConcept, idThesaurus, idOldConceptBT, idUser)) {
-                return false;
-            }
-            // on attribue la relation TT  au concept qui va passer à la racine d'un autre Group,
-            // mais comme on est en mode Autocommit= false, l'ancien Group du concept ne change pas tant qu'on a pas Commité  
-            return relationsHelper.addRelationTT(conn, idConcept, oldMT, idThesaurus, idUser);
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    public boolean moveTTToAnotherMT(Connection conn, String idConcept, String idOldConceptBT,
-            String oldMT, String idNewMT, String idThesaurus, int idUser) {
-        try {
-            RelationsHelper relationsHelper = new RelationsHelper();
-            conn.setAutoCommit(false);
-            return relationsHelper.setRelationMT(conn, idConcept, idNewMT, idThesaurus);
-        } catch (SQLException ex) {
-            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-
-        }
-        return false;
     }
 
     /**
@@ -5113,7 +5078,7 @@ public class ConceptHelper {
                     nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
                     nodeConceptTree1.setIdThesaurus(idThesaurus);
                     nodeConceptTree1.setIdLang(idLang);
-                    nodeConceptTree1.setIsTopTerm(true);
+                    nodeConceptTree1.setTopTerm(true);
                     nodeConceptTree.add(nodeConceptTree1);
                 }
                 for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
@@ -5316,9 +5281,27 @@ public class ConceptHelper {
      * @return
      */
     public ArrayList<NodeIdValue> getListChildrenOfConceptSorted(HikariDataSource ds, String idConcept, String idLang, String idThesaurus) {
-        ArrayList<String> listIdsOfConcept = getListChildrenOfConcept(ds, idConcept, idThesaurus);
+
+        //   ArrayList<String> listIdsOfConcept = getListChildrenOfConcept(ds, idConcept, idThesaurus);
+        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
+        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(ds, idThesaurus, idConcept, idLang, false);
+
         ArrayList<NodeIdValue> listIdsTemp = new ArrayList<>();
 
+        for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
+            NodeIdValue nodeIdValue = new NodeIdValue();
+            if (StringUtils.isEmpty(nodeConceptTree.getTitle())) {
+                nodeIdValue.setId(nodeConceptTree.getIdConcept());
+                nodeIdValue.setValue(nodeConceptTree.getIdConcept());
+            } else {
+                nodeIdValue.setId(nodeConceptTree.getIdConcept());
+                nodeIdValue.setValue(nodeConceptTree.getTitle());
+            }
+            listIdsTemp.add(nodeIdValue);
+        }
+        return listIdsTemp;
+
+        /*
         String label;
         for (String idC : listIdsOfConcept) {
             label = getLexicalValueOfConcept(ds, idC, idThesaurus, idLang);
@@ -5334,7 +5317,7 @@ public class ConceptHelper {
             listIdsTemp.add(nodeIdValue);
         }
         Collections.sort(listIdsTemp);
-        return listIdsTemp;
+        return listIdsTemp;*/
     }
 
     /**
@@ -5466,9 +5449,9 @@ public class ConceptHelper {
         nodeConceptExport.setNodeListIdsOfConceptGroup(new GroupHelper().getListGroupOfConceptArk(ds, idThesaurus, idConcept));
 
         //récupération des notes du Terme
-        String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
+        //    String idTerm = termHelper.getIdTermOfConcept(ds, idConcept, idThesaurus);
 
-        ArrayList<NodeNote> noteTerm = noteHelper.getListNotesTermAllLang(ds, idTerm, idThesaurus);
+        /*ArrayList<NodeNote> noteTerm = noteHelper.getListNotesAllLang(ds, idTerm, idThesaurus);
         if (isCandidatExport) {
             for (NodeNote note : noteTerm) {
                 String str = formatLinkTag(note.getLexicalvalue());
@@ -5476,15 +5459,15 @@ public class ConceptHelper {
             }
         }
         nodeConceptExport.setNodeNoteTerm(noteTerm);
-
-        ArrayList<NodeNote> noteConcept = noteHelper.getListNotesConceptAllLang(ds, idConcept, idThesaurus);
+         */
+        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesAllLang(ds, idConcept, idThesaurus);
         if (isCandidatExport) {
-            for (NodeNote note : noteConcept) {
+            for (NodeNote note : nodeNotes) {
                 String str = formatLinkTag(note.getLexicalvalue());
                 note.setLexicalvalue(str.replaceAll(htmlTagsRegEx, ""));
             }
         }
-        nodeConceptExport.setNodeNoteConcept(noteConcept);
+        nodeConceptExport.setNodeNotes(nodeNotes);
 
         //récupération des coordonnées GPS
         List<NodeGps> nodeGps = new GpsHelper().getCoordinate(ds, idConcept, idThesaurus);
@@ -5604,12 +5587,8 @@ public class ConceptHelper {
                     idThesaurus);
             nce.setNodeListIdsOfConceptGroup(nodeListIdsOfConceptGroup_Ark);
 
-            //récupération des notes du Terme
-            String idTerm = new TermHelper().getIdTermOfConcept(ds, idConcept, idThesaurus);
-            nce.setNodeNoteTerm(new NoteHelper().getListNotesTermAllLang(ds, idTerm, idThesaurus));
-
-            //récupération des Notes du Concept
-            nce.setNodeNoteConcept(new NoteHelper().getListNotesConceptAllLang(ds, idConcept, idThesaurus));
+            //récupération des notes
+            nce.setNodeNotes(new NoteHelper().getListNotesAllLang(ds, idConcept, idThesaurus));
 
             // récupération des Alignements
             nce.setNodeAlignmentsList(new AlignmentHelper().getAllAlignmentOfConceptNew(ds, idConcept, idThesaurus));
@@ -5668,12 +5647,8 @@ public class ConceptHelper {
                     idThesaurus);
             nce.setNodeListIdsOfConceptGroup(nodeListIdsOfConceptGroup_Ark);
 
-            //récupération des notes du Terme
-            String idTerm = new TermHelper().getIdTermOfConcept(ds, idConcept, idThesaurus);
-            nce.setNodeNoteTerm(new NoteHelper().getListNotesTermAllLang(ds, idTerm, idThesaurus));
-
-            //récupération des Notes du Concept
-            nce.setNodeNoteConcept(new NoteHelper().getListNotesConceptAllLang(ds, idConcept, idThesaurus));
+            //récupération des notes
+            nce.setNodeNotes(new NoteHelper().getListNotesAllLang(ds, idConcept, idThesaurus));
 
             // récupération des Alignements
             nce.setNodeAlignmentsList(new AlignmentHelper().getAllAlignmentOfConceptNew(ds, idConcept, idThesaurus));
@@ -5713,7 +5688,7 @@ public class ConceptHelper {
             concept.setIsDeprecated(true);
         }
         nodeConcept.setConcept(concept);
-        
+
         //récupération du Terme
         Term term = new TermHelper().getThisTerm(ds, idConcept, idThesaurus, idLang);
         nodeConcept.setTerm(term);
@@ -5731,9 +5706,10 @@ public class ConceptHelper {
         nodeConcept.setNodeTermTraductions(new TermHelper().getTraductionsOfConcept(ds, idConcept, idThesaurus, idLang));
 
         //récupération des notes du Concept
-        nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConcept(ds, idConcept, idThesaurus, idLang));
+//        nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConcept(ds, idConcept, idThesaurus, idLang));
         //récupération des notes du term        
-        nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTerm(ds, term.getId_term(), idThesaurus, idLang));
+//        nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTerm(ds, term.getId_term(), idThesaurus, idLang));
+        nodeConcept.setNodeNotes(new NoteHelper().getListNotes(ds, idConcept, idThesaurus, idLang));
 
         nodeConcept.setNodeConceptGroup(new GroupHelper().getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));
 
@@ -5812,6 +5788,11 @@ public class ConceptHelper {
      * Cette fonction permet de savoir si un concept a des fils ou non suivant
      * l'id du Concept et l'id du thésaurus sous forme de classe Concept (sans
      * les relations)
+     *
+     * @param ds
+     * @param idThesaurus
+     * @param idConcept
+     * @return
      */
     public boolean haveChildren(HikariDataSource ds, String idThesaurus, String idConcept) {
 
@@ -5819,7 +5800,7 @@ public class ConceptHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select count(*)  from hierarchical_relationship, concept where "
+                stmt.executeQuery("select count(id_concept2)  from hierarchical_relationship, concept where "
                         + " hierarchical_relationship.id_concept2 = concept.id_concept and"
                         + " hierarchical_relationship.id_thesaurus = concept.id_thesaurus"
                         + " and hierarchical_relationship.id_thesaurus='" + idThesaurus + "'"
@@ -5830,6 +5811,22 @@ public class ConceptHelper {
                             children = true;
                         }
                     }
+                }
+                // s'il n'a pas d'enfant, on regarde s'il n'a pas de facette également
+                if (!children) {
+                    stmt.executeQuery("SELECT count(id_facet) FROM thesaurus_array"
+                            + " WHERE "
+                            + " id_concept_parent = '" + idConcept + "'"
+                            + " and "
+                            + " id_thesaurus = '" + idThesaurus + "'");
+                    try (ResultSet resultSet = stmt.getResultSet()) {
+                        if (resultSet.next()) {
+                            if (resultSet.getInt(1) != 0) {
+                                children = true;
+                            }
+                        }
+                    }
+
                 }
             }
         } catch (SQLException sqle) {

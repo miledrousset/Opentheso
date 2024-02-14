@@ -13,19 +13,17 @@ public class NoteDao extends BasicDao {
      * Permet de récupérer toutes les notes d'un candidat
      * @param hikariDataSource
      * @param idconcept
-     * @param id_term
      * @param idThesaurus
      * @return 
      */
     public List<NodeNote> getNotesCandidat(HikariDataSource hikariDataSource,
-            String idconcept, String id_term, String idThesaurus) {
+            String idconcept, String idThesaurus) {
         
         List<NodeNote> nodeNotes = new ArrayList<>();
         try {
             openDataBase(hikariDataSource);
-            stmt.executeQuery(new StringBuffer("SELECT id, notetypecode, id_term, id_concept, lang, lexicalvalue, id_user FROM note WHERE ")
-                    .append(" (id_concept = '").append(idconcept)
-                    .append("' or id_term = '").append(id_term)
+            stmt.executeQuery(new StringBuffer("SELECT id, notetypecode, identifier, lang, lexicalvalue, id_user FROM note WHERE ")
+                    .append(" (identifier = '").append(idconcept)
                     .append("') AND id_thesaurus = '").append(idThesaurus).append("'")
                     .toString());
             
@@ -34,8 +32,7 @@ public class NoteDao extends BasicDao {
                 NodeNote nodeNote = new NodeNote();
                 nodeNote.setId_note(resultSet.getInt("id"));
                 nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
-                nodeNote.setId_term(resultSet.getString("id_term"));
-                nodeNote.setId_concept(resultSet.getString("id_concept"));                
+                nodeNote.setId_concept(idconcept);                
                 nodeNote.setLang(resultSet.getString("lang"));
                 nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
                 nodeNote.setIdUser(resultSet.getInt("id_user"));

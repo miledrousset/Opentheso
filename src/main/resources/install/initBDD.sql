@@ -22,7 +22,6 @@ delete from concept_term_candidat;
 delete from gps;
 delete from hierarchical_relationship;
 delete from hierarchical_relationship_historique;
-delete from images;
 delete from external_images;
 delete from non_preferred_term;
 delete from non_preferred_term_historique;
@@ -47,7 +46,6 @@ delete from users;
 delete from users_historique;
 delete from relation_group;
 delete from alignement_preferences;
-delete from gps_preferences;
 delete from copyright;
 delete from info;
 delete from thesaurus_alignement_source;
@@ -60,6 +58,16 @@ delete from candidat_messages;
 delete from candidat_status;
 delete from candidat_vote;
 delete from proposition;
+
+delete from concept_dcterms;
+delete from concept_replacedby;
+delete from external_resources;
+delete from homepage;
+delete from thesohomepage;
+delete from proposition_modification;
+delete from proposition_modification_detail;
+delete from thesaurus_dcterms;
+delete from user_role_only_on;
 
 
 -- # initialisation des séquences 

@@ -20,7 +20,16 @@
                 <p:inputText value="#{candidatBean.searchValue2}" style="margin-left: 10px" />
                 <p:commandButton icon="fas fa-search" update="tabViewCandidat" style="height: 31px; margin-left: 5px"
                                  actionListener="#{candidatBean.searchAcceptedCandByTermeAndAuteur()}"/>
+                
+                <p:commandButton id="commandExport" rendered="#{candidatBean.acceptedCadidat.size() != 0}" 
+                                icon="pi pi-download" value="#{langueBean.getMsg('download')}" styleClass="ui-button-success"
+                                 title="#{langueBean.getMsg('statistique.exporter_csv')}"
+                                 update="tabViewCandidat" style=" height: 31px; margin-left: 10px" >
+                    <p:fileDownload value="#{processCandidateBean.exportProcessedCandidates(candidatBean.acceptedCadidat)}" />
+                </p:commandButton>                  
+                
             </p:toolbarGroup>
+            
         </p:toolbar>
     </h:form>
 
@@ -28,11 +37,11 @@
                  selection="#{candidatBean.selectedCandidates}" rowKey="#{listCandidats.idConcepte}"
                  style="margin-top: 10px" emptyMessage="#{langueBean.getMsg('candidat.save.msg10')}" lazy="false">
 
-        <p:column width="20" headerText="ID">
+        <p:column width="20" headerText="#{langueBean.getMsg('statistique.id')}">
             <h:outputText value="#{candidat.idConcepte}" />
         </p:column>  
 
-        <p:column rendered="#{candidat.nomPref == ''}" width="100" headerText="#{langueBean.getMsg('candidat.titre')}">
+        <p:column rendered="#{candidat.nomPref == ''}" width="60" headerText="#{langueBean.getMsg('candidat.titre')}">
             <p:commandLink value="#{candidat.idConcepte}" ajax="true" update="tabViewCandidat" style="color: #43B572"
                            process="@this" actionListener="#{candidatBean.showAcceptedCandidatSelected(candidat)}" />
         </p:column>  
@@ -48,17 +57,26 @@
         <p:column width="30" headerText="#{langueBean.getMsg('candidat.creation_date')}">
             <h:outputText value="#{candidat.creationDate}" />
         </p:column>  
+        
+        <p:column width="30" headerText="#{langueBean.getMsg('candidat.processedBy')}">
+            <h:outputText value="#{candidat.createdByAdmin}" style="font-size: 13px;"/>
+        </p:column>        
+        
+        <p:column width="30" headerText="#{langueBean.getMsg('candidat.processingDate')}" sortBy="#{candidat.insertionDate}">
+            <h:outputText value="#{candidat.insertionDate}" />
+        </p:column>          
 
-        <p:column width="30" headerText="Votes">
+        <p:column width="20" headerText="#{langueBean.getMsg('candidate.vote')}">
             <h:outputText value="#{candidat.nbrVote}" />
         </p:column>  
 
-        <p:column width="20" headerText="Votes Note">
+        <p:column width="20" headerText="#{langueBean.getMsg('candidate.voteForNote')}">
             <h:outputText value="#{candidat.nbrNoteVote}" />
         </p:column>  
 
-        <p:column width="20" headerText="Nbr Participants">
+        <p:column width="20" headerText="#{langueBean.getMsg('candidat.participants')}">
             <h:outputText value="#{candidat.nbrParticipant}" />
         </p:column>  
     </p:dataTable>
+
 </ui:fragment>

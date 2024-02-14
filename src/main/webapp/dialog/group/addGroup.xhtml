@@ -41,6 +41,20 @@
                     <p:inputText placeholder="#{langueBean.getMsg('rightbody.concept.notation')}..." value="#{addGroupBean.notation}" autocomplete="false" style="width: 100%" />
                 </div>
             </div>
+            
+            <div class="row" style="margin-top: 10px">
+                <div class="col-12 md:col-4">
+                    <h:outputText value="#{langueBean.getMsg('candidat.definition')}:" style="font-size: 14px; "/>
+                </div>
+                <div class="col-12 md:col-4">
+                    <div class="ui-inputgroup">
+                        <p:textEditor id="textEditorDef" widgetVar="DefinitionNew"
+                                      value="#{addGroupBean.definition}" allowLinks="true"
+                                      secure="false" height="100" style="font-size: 12px; color: black; border-color: #43B572; width: 100%;"
+                                      placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />
+                    </div>
+                </div>
+            </div>            
 
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary" icon="fas fa-undo-alt" 

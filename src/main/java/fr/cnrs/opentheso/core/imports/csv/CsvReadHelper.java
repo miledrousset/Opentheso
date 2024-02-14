@@ -646,7 +646,7 @@ public class CsvReadHelper {
             if(value != null && !value.isEmpty()) {
                 nodeReplaceValueByValue.setIdLang(idLang);
                 nodeReplaceValueByValue.setNewValue(value);
-                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.prefLabel);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.PREF_LABEL);
             } else {
                 return null;
             }
@@ -671,7 +671,7 @@ public class CsvReadHelper {
             if(value != null && !value.isEmpty()) {
                 nodeReplaceValueByValue.setIdLang(idLang);
                 nodeReplaceValueByValue.setNewValue(value);
-                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.altLabel);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.ALT_LABEL);
             } else {
                 return null;
             }
@@ -697,7 +697,7 @@ public class CsvReadHelper {
             if(value != null && !value.isEmpty()) {
                 nodeReplaceValueByValue.setIdLang(idLang);
                 nodeReplaceValueByValue.setNewValue(value);
-                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.definition);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.DEFINITION);
             } else {
                 return null;
             }
@@ -721,7 +721,7 @@ public class CsvReadHelper {
             value = record.get("new_skos:broader");
             if(value != null && !value.isEmpty()) {
                 nodeReplaceValueByValue.setNewValue(value);
-                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.broader);
+                nodeReplaceValueByValue.setSKOSProperty(SKOSProperty.BROADER);
             } else {
                 return null;
             }
@@ -778,6 +778,87 @@ public class CsvReadHelper {
         return !langs.isEmpty();
     }
 
+    /**
+     * permet de lire une liste en CSV, la première colonne n'est pas
+     * obligatoire pour charger une liste de concepts
+     *
+     * @param in
+     * @return
+     */
+    public boolean readListFile(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);  
+            String uri1 = null;
+            //          boolean first = true;
+
+            for (CSVRecord record : cSVParser) {
+                ConceptObject conceptObject = new ConceptObject();
+
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                // puis on génère un nouvel identifiant
+                try {
+                    uri1 = record.get("URI");
+                    conceptObject.setUri(uri1);
+                } catch (Exception e) {
+                }
+
+                try {
+                    uri1 = record.get("identifier");
+                } catch (Exception e) {
+                }
+
+                try {
+                    if (uri1 == null || uri1.isEmpty()) {
+                        uri1 = record.get("URI");
+                        uri1 = getId(uri1);
+                    }
+                    conceptObject.setIdConcept(uri1);
+                } catch (Exception e) {
+                }
+
+                // on récupère l'id Ark s'il existe
+                conceptObject = getArkId(conceptObject, record);
+
+                // on récupère les labels
+                conceptObject = getLabels(conceptObject, record, false);
+
+                // on récupère les notes
+                conceptObject = getNotes(conceptObject, record, false);
+
+                // on récupère le type
+                conceptObject.setType(getType(record));
+
+                // on récupère la notation
+                conceptObject.setNotation(getNotation(record));
+
+                // on récupère les relations (BT, NT, RT)
+                conceptObject = getRelations(conceptObject, record);
+
+                // on récupère les alignements 
+                conceptObject = getAlignments(conceptObject, record, false);
+
+                // on récupère la localisation
+                conceptObject = getGps(conceptObject, record);
+                conceptObject = getGeoLocalisation(conceptObject, record, false);
+
+                // on récupère les membres (l'appartenance du concept à un groupe, collection ...
+                conceptObject = getMembers(conceptObject, record);
+
+                // on récupère la date
+                conceptObject = getDates(conceptObject, record);
+
+                conceptObjects.add(conceptObject);
+                uri1 = null;
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }    
+    
     /**
      * permet de lire un fichier CSV complet pour charger un thésaurus
      *
@@ -857,14 +938,40 @@ public class CsvReadHelper {
                 conceptObject = getGps(conceptObject, record);
                 conceptObject = getGeoLocalisation(conceptObject, record, readEmptyData);
 
+                
+                
                 // on récupère les membres (l'appartenance du concept à un groupe, collection ...
-                conceptObject = getMembers(conceptObject, record);
-
+                if("skos:Concept".equalsIgnoreCase(conceptObject.getType())){                
+                    conceptObject = getMembers(conceptObject, record);
+                }
+                
+                // récupération des sous groupes
+                if("skos:Collection".equalsIgnoreCase(conceptObject.getType())){
+                    conceptObject = getSubGroups(conceptObject, record);
+                }
+                
+                // récupération des membres d'une Facette
+                if("skos-thes:ThesaurusArray".equalsIgnoreCase(conceptObject.getType())){
+                    conceptObject = getMembersOfFacet(conceptObject, record);
+                    
+                    // récupération du parent de la facette
+                    conceptObject = getSuperOrdinate(conceptObject, record);
+                }                
+                
+                // définir si le concept est déprécié (Obsolète) et s'il a un concept de remplacement 
+                if("skos:Concept".equalsIgnoreCase(conceptObject.getType())){
+                    conceptObject = setDeprecatedConcept(conceptObject, record);
+                }                
+                
+                // récupération des resources Externes
+                conceptObject = getExternalResources(conceptObject, record);
+                
+                
                 // on récupère la date
                 conceptObject = getDates(conceptObject, record);
                 
                 // on récupère les images 
-                conceptObject = getImages(conceptObject, record, readEmptyData);                
+                conceptObject = getFoafImages(conceptObject, record);
 
                 conceptObjects.add(conceptObject);
                 uri1 = null;
@@ -877,85 +984,208 @@ public class CsvReadHelper {
     }
 
     /**
-     * permet de lire une liste en CSV, la première colonne n'est pas
-     * obligatoire pour charger une liste de concepts
+     * permet de récupérer les resources externes
      *
-     * @param in
+     * @param conceptObject
+     * @param record
      * @return
      */
-    public boolean readListFile(Reader in) {
+    private ConceptObject getExternalResources(ConceptObject conceptObject, CSVRecord record) {
+        String value;
+        String values[];
+        
         try {
-            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
-                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
-            CSVParser cSVParser = cSVFormat.parse(in);  
-            String uri1 = null;
-            //          boolean first = true;
-
-            for (CSVRecord record : cSVParser) {
-                ConceptObject conceptObject = new ConceptObject();
-
-                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
-                // puis on génère un nouvel identifiant
-                try {
-                    uri1 = record.get("URI");
-                    conceptObject.setUri(uri1);
-                } catch (Exception e) {
+            value = record.get("dcterms:source");
+            values = value.split("##");
+            for (String value1 : values) {
+                if (!StringUtils.isEmpty(value1)) {
+                    conceptObject.externalResources.add(value1.trim());
                 }
-
-                try {
-                    uri1 = record.get("identifier");
-                } catch (Exception e) {
-                }
-
-                try {
-                    if (uri1 == null || uri1.isEmpty()) {
-                        uri1 = record.get("URI");
-                        uri1 = getId(uri1);
-                    }
-                    conceptObject.setIdConcept(uri1);
-                } catch (Exception e) {
-                }
-
-                // on récupère l'id Ark s'il existe
-                conceptObject = getArkId(conceptObject, record);
-
-                // on récupère les labels
-                conceptObject = getLabels(conceptObject, record, false);
-
-                // on récupère les notes
-                conceptObject = getNotes(conceptObject, record, false);
-
-                // on récupère le type
-                conceptObject.setType(getType(record));
-
-                // on récupère la notation
-                conceptObject.setNotation(getNotation(record));
-
-                // on récupère les relations (BT, NT, RT)
-                conceptObject = getRelations(conceptObject, record);
-
-                // on récupère les alignements 
-                conceptObject = getAlignments(conceptObject, record, false);
-
-                // on récupère la localisation
-                conceptObject = getGps(conceptObject, record);
-                //conceptObject = getGeoLocalisation(conceptObject, record, false);
-
-                // on récupère les membres (l'appartenance du concept à un groupe, collection ...
-                conceptObject = getMembers(conceptObject, record);
-
-                // on récupère la date
-                conceptObject = getDates(conceptObject, record);
-
-                conceptObjects.add(conceptObject);
-                uri1 = null;
             }
-            return true;
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
         }
-        return false;
+        return conceptObject;
+    }    
+    
+    /**
+     * permet de récupérer les URI des images
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getFoafImages(ConceptObject conceptObject, CSVRecord record) {
+        String value;
+        String values[];
+        
+        try {
+            value = record.get("foaf:Image");
+            values = value.split("##");
+            for (String value1 : values) {
+                if (!StringUtils.isEmpty(value1)) {
+                    conceptObject.images.add(getNodeImage(value1.trim()));
+                }
+            }
+        } catch (Exception e) {
+        }
+        return conceptObject;
     }
+    
+    /**
+     * permet de récupérer les URI des images
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private NodeImage getNodeImage(String value) {
+        String values[];
+        
+        NodeImage nodeImage = new NodeImage();
+        try {
+            values = value.split("@@");
+            for (String value1 : values) {
+                if (!StringUtils.isEmpty(value1)) {
+                    if(StringUtils.startsWith(value1, "rdf:about=")){
+                        nodeImage.setUri(StringUtils.substringAfter(value1, "rdf:about="));
+                    }
+                    if(StringUtils.startsWith(value1, "dcterms:rights=")){
+                        nodeImage.setCopyRight(StringUtils.substringAfter(value1, "dcterms:rights="));
+                    }
+                    if(StringUtils.startsWith(value1, "dcterms:title=")){
+                        nodeImage.setImageName(StringUtils.substringAfter(value1, "dcterms:title="));
+                    }                    
+                }
+            }
+        } catch (Exception e) {
+        }
+        if(StringUtils.isEmpty(nodeImage.getUri())) return null;
+        return nodeImage;
+    }   
+    
+    
+    /**
+     * permet de savoir si le concept est déprécié et s'il a des concepts de remplacement
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject setDeprecatedConcept(ConceptObject conceptObject, CSVRecord record) {
+        String value;
+        try {
+            value = record.get("owl:deprecated");
+            if (!StringUtils.isEmpty(value)) {
+                if("true".equalsIgnoreCase(value)) {
+                    conceptObject.setDeprecated(true);
+                    getReplacedByOfDeprecatedConcept(conceptObject, record);
+                }
+                else
+                    conceptObject.setDeprecated(false);
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+
+        return conceptObject;
+    }      
+    
+    /**
+     * permet de récupérer des dcterms:isReplacedBy les concepts de rempalacement
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getReplacedByOfDeprecatedConcept(ConceptObject conceptObject, CSVRecord record) {
+        String value;
+        String values[];
+        try {
+            value = record.get("dcterms:isReplacedBy");
+            values = value.split("##");
+            for (String value1 : values) {
+                if (!value1.isEmpty()) {
+                    conceptObject.replacedBy.add(getId(value1.trim()));
+                }
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+
+        return conceptObject;
+    }      
+    
+    /**
+     * permet de récupérer le parent de la Facette
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getSuperOrdinate(ConceptObject conceptObject, CSVRecord record) {
+        String value;
+        try {
+            value = record.get("iso-thes:superOrdinate");
+            if (StringUtils.isNotEmpty(value)) {
+                conceptObject.superOrdinate = getId(value.trim());
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+
+        return conceptObject;
+    }      
+    
+    
+    /**
+     * permet de récupérer les concepts qui sont membre de cette Facette
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getMembersOfFacet(ConceptObject conceptObject, CSVRecord record) {
+        String value;
+        String values[];
+        try {
+            value = record.get("skos:member");
+            values = value.split("##");
+            for (String value1 : values) {
+                if (!value1.isEmpty()) {
+                    conceptObject.members.add(getId(value1.trim()));
+                }
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+
+        return conceptObject;
+    }       
+    
+    /**
+     * permet de récupérer les sous groupes d'un groupe
+     *
+     * @param conceptObject
+     * @param record
+     * @return
+     */
+    private ConceptObject getSubGroups(ConceptObject conceptObject, CSVRecord record) {
+        String value;
+        String values[];
+        try {
+            value = record.get("iso-thes:subGroup");
+            values = value.split("##");
+            for (String value1 : values) {
+                if (!value1.isEmpty()) {
+                    conceptObject.subGroups.add(getId(value1.trim()));
+                }
+            }
+        } catch (Exception e) {
+            //System.err.println("");
+        }
+
+        return conceptObject;
+    }    
     
     /**
      * permet de charger tous les alignements d'un concept
@@ -989,28 +1219,35 @@ public class CsvReadHelper {
         if (uri == null || uri.isEmpty()) {
             return null;
         }
-
-        if (uri.contains("idg=")) {
+        if (uri.contains("idf=")) {
             if (uri.contains("&")) {
-                id = uri.substring(uri.indexOf("idg=") + 4, uri.indexOf("&"));
+                id = uri.substring(uri.indexOf("idf=") + 4, uri.indexOf("&"));
             } else {
-                id = uri.substring(uri.indexOf("idg=") + 4, uri.length());
+                id = uri.substring(uri.indexOf("idf=") + 4, uri.length());
             }
         } else {
-            if (uri.contains("idc=")) {
+            if (uri.contains("idg=")) {
                 if (uri.contains("&")) {
-                    id = uri.substring(uri.indexOf("idc=") + 4, uri.indexOf("&"));
+                    id = uri.substring(uri.indexOf("idg=") + 4, uri.indexOf("&"));
                 } else {
-                    id = uri.substring(uri.indexOf("idc=") + 4, uri.length());
+                    id = uri.substring(uri.indexOf("idg=") + 4, uri.length());
                 }
             } else {
-                if (uri.contains("#")) {
-                    id = uri.substring(uri.indexOf("#") + 1, uri.length());
+                if (uri.contains("idc=")) {
+                    if (uri.contains("&")) {
+                        id = uri.substring(uri.indexOf("idc=") + 4, uri.indexOf("&"));
+                    } else {
+                        id = uri.substring(uri.indexOf("idc=") + 4, uri.length());
+                    }
                 } else {
-                    if(uri.contains("ark:/")){
-                        id = uri.substring(uri.indexOf("ark:/")+5 , uri.length());
-                    } else 
-                        id = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
+                    if (uri.contains("#")) {
+                        id = uri.substring(uri.indexOf("#") + 1, uri.length());
+                    } else {
+                        if(uri.contains("ark:/")){
+                            id = uri.substring(uri.indexOf("ark:/")+5 , uri.length());
+                        } else 
+                            id = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
+                    }
                 }
             }
         }
@@ -1080,19 +1317,30 @@ public class CsvReadHelper {
         // dct:created
         String value;
         try {
-            value = record.get("dct:created");
+            value = record.get("dcterms:created");
             if (!value.isEmpty()) {
                 conceptObject.setCreated(value.trim());
-            }            
+            } else {
+                value = record.get("dct:created");
+                if (!value.isEmpty()) {
+                    conceptObject.setCreated(value.trim());
+                }
+            }
+            
         } catch (Exception e) {
         }
 
         // dct:modified
         try {
-            value = record.get("dct:modified");
+            value = record.get("dcterms:modified");
             if (!value.isEmpty()) {
                 conceptObject.setModified(value.trim());
-            }            
+            } else {
+                value = record.get("dct:modified");
+                if (!value.isEmpty()) {
+                    conceptObject.setModified(value.trim());
+                }                
+            }           
         } catch (Exception e) {
         }
         return conceptObject;
@@ -1839,13 +2087,13 @@ public class CsvReadHelper {
             lat = record.get("geo:lat");
             longitude = record.get("geo:long");
             if(readEmptyData) {
-                conceptObject.setLatitude(lat.trim());
-                conceptObject.setLongitude(longitude.trim());
+                conceptObject.setLatitude(lat.replaceAll(",", ".").trim());
+                conceptObject.setLongitude(longitude.replaceAll(",", ".").trim());
             } else {
                 if (!lat.isEmpty()) {
                     if (!longitude.isEmpty()) {
-                        conceptObject.setLatitude(lat.trim());
-                        conceptObject.setLongitude(longitude.trim());
+                        conceptObject.setLatitude(lat.replaceAll(",", ".").trim());
+                        conceptObject.setLongitude(longitude.replaceAll(",", ".").trim());
                     }
                 }
             }
@@ -1866,6 +2114,7 @@ public class CsvReadHelper {
         // rdf:type pour distinguer les concepts des collections, groupes ...
         private String type;
         private String conceptType;
+        private boolean deprecated;
 
         // notation
         private String notation;
@@ -1907,9 +2156,17 @@ public class CsvReadHelper {
 
         // skos:member, l'appartenance du concept à un groupe ou collection ...
         private ArrayList<String> members;
+        
+        // les Facettes d'un Concept
+        private String superOrdinate;         
+        
+        // iso-thes:subGroup
+        private ArrayList<String> subGroups;
+        private ArrayList<String> replacedBy;
 
         private ArrayList<NodeImage> images;
-
+        private ArrayList<String> externalResources;
+        
         // dates 
         //dct:created, dct:modified
         private String created;
@@ -1944,6 +2201,12 @@ public class CsvReadHelper {
 
             members = new ArrayList<>();
             alignments = new ArrayList<>();
+            
+            subGroups = new ArrayList<>();
+            replacedBy = new ArrayList<>();
+            images = new ArrayList<>();
+            externalResources = new ArrayList<>();
+                    
             conceptType = null;
         }
 

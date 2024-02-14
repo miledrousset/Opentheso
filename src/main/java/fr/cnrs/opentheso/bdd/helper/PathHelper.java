@@ -29,6 +29,151 @@ import org.apache.commons.lang3.StringUtils;
 public class PathHelper {
     private String message;
     
+    
+    /**
+     * methode pour retrouver tous les chemins vers la racine
+     * exemple de retour 
+     *  9##8 (9 a un BT 8)
+        8##7 (8`a un BT 7)
+        7##5
+        5##4
+        4  (défini le top term)
+        5##6
+        6##18
+        18 (top term)
+        8##5 
+     * 
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @return 
+     * #MR
+     */   
+    public List<String> getGraphOfConcept(HikariDataSource ds,
+            String idConcept, String idThesaurus) {
+        message = null; 
+        List<String> path = new ArrayList<>();
+        getGraph(ds, idConcept, idThesaurus, path);
+        return path;
+    }
+    private void getGraph(HikariDataSource ds,
+            String idConcept, String idThesaurus, List<String> path){
+        RelationsHelper relationsHelper = new RelationsHelper();
+        ArrayList<String> idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
+        if(idBTs == null || idBTs.isEmpty()){
+            if(!path.contains(idConcept)) {
+                path.add(idConcept);
+            }            
+        } else {
+            for (String idBT : idBTs) {
+                if(!path.contains(idConcept + "##" + idBT) && !path.contains(idBT + "##" + idConcept)) {
+                    path.add(idConcept + "##" + idBT);
+                    getGraph(ds, idBT, idThesaurus, path);
+                }
+            }       
+        }
+    }
+    
+    public List<List<String>> getPathFromGraph(List<String> graph){
+        List<String> topTerms = getTopTermsFromGraph(graph);
+        
+        List<List<String>> paths = new ArrayList<>();
+        List<String> savedPath = new ArrayList<>();
+        for (String topTerm : topTerms) {
+            List<String> path = new ArrayList<>();
+            getNT(topTerm, path, savedPath, paths, graph);
+            if(!path.isEmpty()){
+                paths.add(path);
+            }
+        }
+        return paths;
+    }
+    private void getNT(String idConcept, List<String> path, List<String> savedPath, List<List<String>> paths, List<String> graph){
+
+        List<String> idNTs = getListNT(idConcept, graph);
+        path.add(idConcept);
+        
+        if(idNTs != null && idNTs.size() > 1){
+            for (String idC : path) {
+                savedPath.add(idC);
+            }
+        }
+        
+        if(idNTs == null || idNTs.isEmpty()){
+            List<String> pathTemp = new ArrayList<>();
+            for (String path1 : path) {
+                pathTemp.add(path1);
+            }
+            paths.add(pathTemp);
+            path.clear();
+            if(!savedPath.isEmpty()){
+                for (String idC : savedPath) {
+                   path.add(idC);
+                }
+                savedPath.clear();
+            }
+        } else {
+            for (String idNT : idNTs) {
+                getNT(idNT, path, savedPath, paths, graph);
+            }       
+        }        
+    }
+    
+    private List<String> getListNT(String idConcept, List<String> graph){
+        List<String> listNTs = new ArrayList<>();
+        for (String node : graph) {
+            if(StringUtils.contains(node, "##"+idConcept)){
+                listNTs.add(StringUtils.substringBefore(node, "##"));
+            }
+        }
+        return listNTs;
+    }
+    
+    
+    private List<String> getTopTermsFromGraph(List<String> graph){
+        List<String> topTerms = new ArrayList<>();
+        for (String node : graph) {
+            if(!node.contains("##")){
+                topTerms.add(node);
+            }
+        }
+        return topTerms;
+    }
+    
+    public List<List<NodePath>> getPathWithLabel2(HikariDataSource ds, List<List<String>> paths,
+            String idTheso, String idLang) {
+        
+        ArrayList<List<NodePath>> pathLabel1 = new ArrayList<>();
+        boolean isStartNewPath;
+        String label;
+        
+        for (List<String> path : paths) {
+            isStartNewPath = true;
+            List<NodePath> nodePaths = new ArrayList<>();
+            for (String idConcept : path) {
+                NodePath nodePath = new NodePath();
+                nodePath.setIdConcept(idConcept);
+                label = new ConceptHelper().getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
+                if(label.isEmpty())
+                    label = "("+ idConcept+")";
+                nodePath.setTitle(label);
+                nodePath.setIsStartOfPath(isStartNewPath);
+                nodePaths.add(nodePath);
+                isStartNewPath = false;
+            }
+            pathLabel1.add(nodePaths);
+        }
+        return pathLabel1;
+    }    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public ArrayList<NodePath> getPathWithLabel(HikariDataSource ds, List<Path> paths,
             String idTheso, String idLang, String selectedIdConcept) {
         

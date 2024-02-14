@@ -95,6 +95,9 @@ public class ConceptView implements Serializable {
     private GpsMode gpsModeSelected;
     private ArrayList<NodeCorpus> nodeCorpuses;
     private ArrayList<NodePath> pathLabel;
+    
+    private List<List<NodePath>> pathLabel2;    
+    
     private ArrayList<NodeIdValue> nodeFacets;
 
     /// pagination
@@ -107,6 +110,7 @@ public class ConceptView implements Serializable {
 
     // pour savoir si le concept a des relations vers des corpus
     private boolean haveCorpus;
+    private boolean searchedForCorpus;
 
     /// Notes concept
     private ArrayList<NodeNote> notes;
@@ -137,6 +141,7 @@ public class ConceptView implements Serializable {
     public void clear() {
         nodeCorpuses = new ArrayList<>();
         pathLabel = new ArrayList<>();
+        pathLabel2 = new ArrayList<>();
         notes = new ArrayList<>();
         scopeNotes = new ArrayList<>();
         changeNotes = new ArrayList<>();
@@ -178,6 +183,7 @@ public class ConceptView implements Serializable {
         nodeCorpuses = null;
         countOfBranch = 0;
         haveCorpus = false;
+        searchedForCorpus = false;
         nodeCustomRelationReciprocals = null;
 
         responsiveOptions = new ArrayList<>();
@@ -194,15 +200,6 @@ public class ConceptView implements Serializable {
         editorialNotes = new ArrayList<>();
         examples = new ArrayList<>();
         historyNotes = new ArrayList<>();
-    }
-
-    public String getDrapeauImg(String codePays) {
-        if (StringUtils.isEmpty(codePays)) {
-            return FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequestContextPath() + "/resources/img/nu.svg";
-        }
-
-        return "https://countryflagsapi.com/png/" + codePays;
     }
 
     public String getDrapeauImgLocal(String codePays) {
@@ -255,6 +252,10 @@ public class ConceptView implements Serializable {
         if (nodeConcept == null) {
             return;
         }
+        
+        searchedForCorpus = false;
+        
+        
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
@@ -268,7 +269,7 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         nodeCorpuses = null;
-        haveCorpus = true;
+    //    haveCorpus = true;
 
 
         createMap(idConcept, idTheso, Boolean.TRUE);
@@ -298,7 +299,7 @@ public class ConceptView implements Serializable {
         // deployement de l'arbre si l'option est true
         if (roleOnThesoBean.getNodePreference() != null) {
             if (roleOnThesoBean.getNodePreference().isBreadcrumb())
-                pathOfConcept(idTheso, idConcept, idLang);
+                pathOfConcept2(idTheso, idConcept, idLang);
 
             if (roleOnThesoBean.getNodePreference().isAuto_expand_tree()) {
                 tree.expandTreeToPath(
@@ -316,35 +317,17 @@ public class ConceptView implements Serializable {
         countOfBranch = 0;
     }
 
-    public boolean thesoHaveActiveCorpus(){
-        return new CorpusHelper().isHaveActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-    }
 
     public void searchCorpus() {
-         ArrayList<NodeCorpus> nodeCorpusesTemp = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-        if(nodeCorpusesTemp == null || nodeCorpusesTemp.isEmpty()) return;
-        nodeCorpuses = new ArrayList<>();
-        ExecutorService executor = Executors.newFixedThreadPool(nodeCorpusesTemp.size());
-        List<Callable<NodeCorpus>> callables = new ArrayList<>();
-
-        for (NodeCorpus nodeCorpus : nodeCorpusesTemp) {
-            callables.add(new SearchCorpus(nodeCorpus, nodeConcept));
-        }
-
-        try {
-            List<Future<NodeCorpus>> futures = executor.invokeAll(callables);
-            for (Future<NodeCorpus> future : futures) {
-                nodeCorpuses.add(future.get());
-            }
-            haveCorpus = nodeCorpuses.stream().filter(element -> element.isIsOnlyUriLink()
-                    || !element.isIsOnlyUriLink() && element.getCount() > 0).findFirst().isPresent();
-            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if(!haveCorpus)
+        searchedForCorpus = true;
+        SearchCorpus2 searchCorpus2 = new SearchCorpus2();
+        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());     
+        nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeConcept);
+        haveCorpus = searchCorpus2.isHaveCorpus();
+        if(!haveCorpus) {
             nodeCorpuses = null;
-        executor.shutdown();
+            nodeCorpuses = null;
+        }
     }
 
     public void createMap(String idConcept, String idTheso, Boolean isFirstTime) {
@@ -352,7 +335,7 @@ public class ConceptView implements Serializable {
         if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
             gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
             gpsList = formatCoordonnees(nodeConcept.getNodeGps());
-            if (isFirstTime) {
+            if (mapModel == null) {
                 mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsModeSelected,
                         ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
             } else {
@@ -393,7 +376,7 @@ public class ConceptView implements Serializable {
         offset = 0;
         nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) return;
-
+        
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
@@ -402,7 +385,7 @@ public class ConceptView implements Serializable {
         }
 
         if (roleOnThesoBean.getNodePreference().isBreadcrumb())
-            pathOfConcept(idTheso, idConcept, idLang);
+            pathOfConcept2(idTheso, idConcept, idLang);
 
         if (toggleSwitchAltLabelLang) {
             getAltLabelWithAllLanguages();
@@ -417,7 +400,8 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         nodeCorpuses = null;
-        haveCorpus = true;
+        haveCorpus = false;
+        searchedForCorpus = false;
       //  nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
 
         setRoles();
@@ -439,18 +423,10 @@ public class ConceptView implements Serializable {
     public void getNotesWithAllLanguages() {
         NoteHelper noteHelper = new NoteHelper();
         if (toggleSwitchNotesLang) {
-            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTermAllLang(
-                    connect.getPoolConnexion(), nodeConcept.getTerm().getId_term(), nodeConcept.getConcept().getIdThesaurus()));
-            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConceptAllLang(
+            nodeConcept.setNodeNotes(noteHelper.getListNotesAllLang(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
         } else {
-            nodeConcept.setNodeNotesTerm(noteHelper.getListNotesTerm(
-                    connect.getPoolConnexion(),
-                    nodeConcept.getTerm().getId_term(),
-                    nodeConcept.getConcept().getIdThesaurus(),
-                    selectedLang));
-
-            nodeConcept.setNodeNotesConcept(noteHelper.getListNotesConcept(
+            nodeConcept.setNodeNotes(noteHelper.getListNotes(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
                     nodeConcept.getConcept().getIdThesaurus(),
                     selectedLang));
@@ -504,10 +480,11 @@ public class ConceptView implements Serializable {
 
     public void countTheTotalOfBranch() {
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> listIdsOfBranch = conceptHelper.getIdsOfBranch(
+        List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(
                 connect.getPoolConnexion(),
-                nodeConcept.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
+                selectedTheso.getCurrentIdTheso(),
+                nodeConcept.getConcept().getIdConcept()
+                );
         this.countOfBranch = listIdsOfBranch.size();
     }
 
@@ -536,7 +513,7 @@ public class ConceptView implements Serializable {
         }
     }
 
-    private void pathOfConcept(String idTheso, String idConcept, String idLang) {
+/*    private void pathOfConcept(String idTheso, String idConcept, String idLang) {
         PathHelper pathHelper = new PathHelper();
         List<Path> paths = pathHelper.getPathOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
@@ -552,8 +529,34 @@ public class ConceptView implements Serializable {
             return;
         }
         pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
-    }
+    }*/
 
+    /**
+     * méthode pour construire le graphe pour représenter tous les chemins vers la racine
+     * @param idTheso
+     * @param idConcept
+     * @param idLang 
+     * #MR
+     */
+    private void pathOfConcept2(String idTheso, String idConcept, String idLang) {
+        PathHelper pathHelper = new PathHelper();
+        List<String> graphPaths = pathHelper.getGraphOfConcept(
+                connect.getPoolConnexion(), idConcept, idTheso);
+        /*if (pathHelper.getMessage() != null) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }*/
+        /*if (paths == null) {
+            System.out.println("Erreur de path pour le concept :" + idConcept);
+            if (pathLabel != null) {
+                pathLabel.clear();
+            }
+            return;
+        }*/
+        List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);        
+        pathLabel2 = pathHelper.getPathWithLabel2(connect.getPoolConnexion(), paths, idTheso, idLang);
+    }    
+    
     private void setRoles() {
         contributors = null;
         creator = null;
@@ -585,14 +588,15 @@ public class ConceptView implements Serializable {
             return " (" + noteSource + ")";
     }
 
+    
     /////////////////////////////////
-/////////////////////////////////
-// fonctions pour les notes /////    
-/////////////////////////////////
-/////////////////////////////////
+    /////////////////////////////////
+    // fonctions pour les notes /////    
+    /////////////////////////////////
+    /////////////////////////////////
     private void setNotes() {
         clearNotes();
-        for (NodeNote nodeNote : nodeConcept.getNodeNotesConcept()) {
+        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":
                     notes.add(nodeNote);
@@ -600,10 +604,6 @@ public class ConceptView implements Serializable {
                 case "scopeNote":
                     scopeNotes.add(nodeNote);
                     break;
-            }
-        }
-        for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
-            switch (nodeNote.getNotetypecode()) {
                 case "changeNote":
                     changeNotes.add(nodeNote);
                     break;
@@ -779,8 +779,11 @@ public class ConceptView implements Serializable {
         Matcher matcher = Pattern.compile("\\(([^)]+)\\)").matcher(gpsValue);
         while (matcher.find()) {
 
-            Matcher matcher2 = Pattern.compile("([0-9]+[.,][0-9]+) ([0-9]+[.,][0-9]+)").matcher(matcher.group(1));
-
+           // Matcher matcher2 = Pattern.compile("([0-9]+[.,][0-9]+) ([0-9]+[.,][0-9]+)").matcher(matcher.group(1));
+           // Matcher matcher2 = Pattern.compile("\\((-?[0-9]+[.,][0-9]+)\\s+(-?[0-9]+[.,][0-9]+)\\)").matcher(gpsValue);
+            Matcher matcher2 = Pattern.compile("(-?[0-9]+[.,][0-9]+)\\s+(-?[0-9]+[.,][0-9]+)").matcher(gpsValue);
+            
+        
             while (matcher2.find()) {
                 Gps gpsTmp = new Gps();
                 gpsTmp.setIdTheso(idTheso);

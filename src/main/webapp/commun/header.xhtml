@@ -59,7 +59,7 @@
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                 style="margin-top: 30px; margin-right: 10px" id="notificationNewVersion"  >
                 <p:commandLink onclick="PF('newVersionNotificationPanel').show()" rendered="#{newVersionBean.newVersionFound()}"
-                               update="newVersionNotificationId">
+                               update="containerIndex:notificationNewVersion">
                     <p:avatar icon="pi pi-star" shape="circle" styleClass="mr-2"
                               style="background-color:#9c27b0; color:#fff; width: 25px; height: 25px; margin-top: -6px;" />
                 </p:commandLink>

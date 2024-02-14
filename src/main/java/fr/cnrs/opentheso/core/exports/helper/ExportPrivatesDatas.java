@@ -520,41 +520,7 @@ public class ExportPrivatesDatas {
 
 
 
-    public ArrayList<Images> getImages(HikariDataSource ds) {
-        ResultSet resultSet;
-        Connection conn;
-        Statement stmt;
-        ArrayList<Images> listImages = new ArrayList<>();
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT * FROM images";
-                    resultSet = stmt.executeQuery(query);
-                    while (resultSet.next()) {
-                        Images images1 = new Images();
 
-                        images1.setId_concept(resultSet.getString("id_concept"));
-                        images1.setId_thesaururs(resultSet.getString("id_thesaurus"));
-                        images1.setImage_name(resultSet.getString("image_name"));
-                        images1.setImage_copyright(resultSet.getString("image_copyright"));
-                        images1.setId_user(resultSet.getInt("id_user"));
-
-                        listImages.add(images1);
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Table.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return listImages;
-    }
 
     public ArrayList<Concept_Group_Historique> getConceptGroupHist(HikariDataSource ds) {
         ResultSet resultSet;

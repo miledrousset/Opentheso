@@ -2,10 +2,12 @@ package fr.cnrs.opentheso.bean.importexport;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.ExportHelper;
+import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
+import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
@@ -30,6 +32,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -548,7 +554,19 @@ public class ExportFileBean implements Serializable {
             PrimeFaces.current().executeScript("PF('waitDialog').hide();");
             return new DefaultStreamedContent();
         }
-
+        
+        
+        /// permet d'exporter chaque collection sous forme thésaurus indépendant
+        if(viewExportBean.isToogleExportByGroup()){
+            if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
+                return exportEachGroupAsThesaurusCSV(viewExportBean.getNodeIdValueOfTheso().getId());
+            } else {
+                return exportEachGroupAsThesaurusSKOS(viewExportBean.getNodeIdValueOfTheso().getId());
+            }
+        }
+        
+        
+        
         SKOSXmlDocument skosxd = getConcepts(viewExportBean.getNodeIdValueOfTheso().getId());
         if (skosxd == null) {
             return null;
@@ -609,6 +627,259 @@ public class ExportFileBean implements Serializable {
         }
 
     }
+    
+    /**
+     * Export de chaque collection en thésaurus à part, le résultat en renvoyé en Zip
+     * @param idTheso
+     * @return
+     * @throws IOException 
+     */
+    private StreamedContent exportEachGroupAsThesaurusCSV(String idTheso) throws IOException {
+        if(viewExportBean.getGroupList() == null || viewExportBean.getGroupList().isEmpty()) return null;
+        
+        List<ByteArrayInputStream> byteArrayInputStreams = new ArrayList<>();
+        List<String> fileNames = new ArrayList<>();
+        String extension = ".csv";
+        String name;
+        
+        /// export des thésaurus au format byteArrayInputStream, un thésaurus par collection
+        for (NodeGroup nodeGroup : viewExportBean.getGroupList()) {
+            // récupérer le SKOSXmlDocument
+            SKOSXmlDocument skosxd;
+            try {
+                skosxd = getThesoByGroup(idTheso, nodeGroup.getConceptGroup().getIdgroup());
+            } catch (Exception ex) {
+                Logger.getLogger(ExportFileBean.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+            if(skosxd == null) continue;
+            
+            
+            // exporter la collection en thésaurus
+            byte[] str = new CsvWriteHelper().writeCsv(skosxd, viewExportBean.getSelectedLanguages(), viewExportBean.getCsvDelimiterChar());
+            try ( ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(str)) {
+                name = viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + nodeGroup.getLexicalValue() + extension;
+                int i = 1;
+                while (fileNames.contains(name)) {
+                    name = viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + nodeGroup.getLexicalValue() + "_" + i + extension;
+                    i++;
+                }                
+                fileNames.add(name);
+                byteArrayInputStreams.add(byteArrayInputStream);
+            } catch (Exception ex) {
+                return new DefaultStreamedContent();
+            }   
+        }        
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream)) {
+            for (int i = 0; i < byteArrayInputStreams.size(); i++) {
+                // Ajoutez chaque ByteArrayInputStream au zip avec un nom de fichier unique
+                addToZip(zipOut, fileNames.get(i), byteArrayInputStreams.get(i));
+            }
+        }
+        return DefaultStreamedContent.builder()
+                .contentType("application/zip")
+                .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".zip")
+                .stream(() -> new ByteArrayInputStream(byteArrayOutputStream.toByteArray()))
+                .build();          
+    }   
+    
+
+
+
+    
+    
+    /**
+     * Export de chaque collection en thésaurus à part, le résultat en renvoyé en Zip
+     * @param idTheso
+     * @return
+     * @throws IOException 
+     */
+    private StreamedContent exportEachGroupAsThesaurusSKOS(String idTheso) throws IOException {
+        if(viewExportBean.getGroupList() == null || viewExportBean.getGroupList().isEmpty()) return null;
+        
+        List<ByteArrayInputStream> byteArrayInputStreams = new ArrayList<>();
+        List<String> fileNames = new ArrayList<>();
+        String extension = ".rdf";
+        String name;
+        
+        /// export des thésaurus au format byteArrayInputStream, un thésaurus par collection
+        for (NodeGroup nodeGroup : viewExportBean.getGroupList()) {
+            // récupérer le SKOSXmlDocument
+            SKOSXmlDocument skosxd;
+            try {
+                skosxd = getThesoByGroup(idTheso, nodeGroup.getConceptGroup().getIdgroup());
+            } catch (Exception ex) {
+                Logger.getLogger(ExportFileBean.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+            if(skosxd == null) continue;
+            
+            ByteArrayInputStream byteArrayInputStream = null;
+            // exporter la collection en thésaurus
+            switch (viewExportBean.getSelectedExportFormat().toLowerCase()) {
+                case "rdf":
+                    byteArrayInputStream = generateRdfResourcesByteArray(skosxd, RDFFormat.RDFXML);
+                    extension = ".rdf";
+                    break;
+                case "jsonld":
+                    byteArrayInputStream = generateRdfResourcesByteArray(skosxd, RDFFormat.JSONLD);
+                    extension = ".json";
+                    break;
+                case "turtle":
+                    byteArrayInputStream = generateRdfResourcesByteArray(skosxd, RDFFormat.TURTLE);
+                    extension = ".ttl";
+                    break;
+                case "json":
+                    byteArrayInputStream = generateRdfResourcesByteArray(skosxd, RDFFormat.RDFJSON);
+                    extension = ".json";
+                    break;
+                default:
+                    break;
+            }
+            name = viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + nodeGroup.getLexicalValue() + extension;
+            int i = 1;
+            while (fileNames.contains(name)) {
+                name = viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + nodeGroup.getLexicalValue() + "_" + i + extension;
+                i++;
+            }
+            fileNames.add(name);
+            byteArrayInputStreams.add(byteArrayInputStream);
+        }        
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream)) {
+            for (int i = 0; i < byteArrayInputStreams.size(); i++) {
+                // Ajoutez chaque ByteArrayInputStream au zip avec un nom de fichier unique
+                addToZip(zipOut, fileNames.get(i), byteArrayInputStreams.get(i));
+            }
+        }
+        return DefaultStreamedContent.builder()
+                .contentType("application/zip")
+                .name(viewExportBean.getNodeIdValueOfTheso().getValue() + "_" + viewExportBean.getNodeIdValueOfTheso().getId() + ".zip")
+                .stream(() -> new ByteArrayInputStream(byteArrayOutputStream.toByteArray()))
+                .build();          
+    }
+
+    private void addToZip(ZipOutputStream zipOut, String fileName, ByteArrayInputStream inputStream) throws IOException {
+        ZipEntry entry = new ZipEntry(fileName);
+        zipOut.putNextEntry(entry);
+
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = inputStream.read(buffer)) > 0) {
+            zipOut.write(buffer, 0, len);
+        }
+        zipOut.closeEntry();
+    }    
+    
+     private ByteArrayInputStream generateRdfResourcesByteArray(SKOSXmlDocument xmlDocument, RDFFormat format) {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            WriteRdf4j writeRdf4j = new WriteRdf4j(xmlDocument);
+            Rio.write(writeRdf4j.getModel(), out, format);
+            writeRdf4j.closeCache();
+
+            ByteArrayInputStream input = new ByteArrayInputStream(out.toByteArray());
+            return input;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }     
+  
+ 
+    
+
+
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    private SKOSXmlDocument getThesoByGroup(String idTheso, String idGroup) throws Exception {
+        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(),
+                idTheso);
+
+        if (nodePreference == null) {
+            return null;
+        }
+        //controle si l'URL d'origine est vide
+        if(StringUtils.isEmpty(nodePreference.getOriginalUri())) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
+                    "Veuillez ajouter une URI valide dans les préférences du thésaurus !"));  
+            return null;
+        }
+        
+        ExportRdf4jHelperNew exportRdf4jHelperNew = new ExportRdf4jHelperNew();
+        exportRdf4jHelperNew.setInfos(nodePreference);
+        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
+
+        String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
+        String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
+        String protocole = FacesContext.getCurrentInstance().getExternalContext().getRequestScheme();
+        HttpServletRequest request = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+        String baseUrl = protocole + "://" + serverAdress + ":" + request.getLocalPort() + contextPath;
+
+        List<SKOSResource> concepts = new ArrayList<>();
+
+        NodeGroupLabel nodeGroupLabel = new GroupHelper().getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
+        SKOSResource sKOSResource = new SKOSResource(
+                exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
+        sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
+                exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
+        exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
+
+        concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(),
+                idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference));
+
+        // export des facettes filtrées
+        List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), idTheso, baseUrl,
+                nodePreference.getOriginalUri(), nodePreference);
+        FacetHelper facetHelper = new FacetHelper();
+        List<String> groups = new ArrayList<>();
+        groups.add(idGroup);
+        
+        for (SKOSResource facette : facettes) {
+            if(facetHelper.isFacetInGroups(connect.getPoolConnexion(), idTheso, facette.getIdentifier(),  groups)){
+                exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+            }
+        }              
+
+        for (SKOSResource concept : concepts) {
+            exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
+        }
+
+    //    exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
+
+        return exportRdf4jHelperNew.getSkosXmlDocument();
+    }    
+    
 
     private StreamedContent generateRdfResources(SKOSXmlDocument xmlDocument, RDFFormat format, String extension) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -655,35 +926,52 @@ public class ExportFileBean implements Serializable {
 
         List<SKOSResource> concepts = new ArrayList<>();
 
+        // cas d'export pour tout le thésaurus avec les collections et facettes
         if (!viewExportBean.isToogleFilterByGroup()) {
             exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
             concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso,
                     baseUrl, null, nodePreference.getOriginalUri(), nodePreference);
+            
+            // export des facettes
+            List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), idTheso, baseUrl,
+                    nodePreference.getOriginalUri(), nodePreference);
+            for (SKOSResource facette : facettes) {
+                exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+            }            
+            
         } else {
+            /// Export filtré par collection, on filtre également les Facettes qui sont dans les collections sélectionnées
             for (String idGroup : viewExportBean.getSelectedIdGroups()) {
                 NodeGroupLabel nodeGroupLabel = new GroupHelper().getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
                 SKOSResource sKOSResource = new SKOSResource(
-                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
+                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
                 sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
-                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
                 exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
 
                 concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(),
                         idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference));
             }
+            
+            // export des facettes filtrées
+            List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), idTheso, baseUrl,
+                    nodePreference.getOriginalUri(), nodePreference);
+            FacetHelper facetHelper = new FacetHelper();
+            for (SKOSResource facette : facettes) {
+                if(facetHelper.isFacetInGroups(connect.getPoolConnexion(), idTheso, facette.getIdentifier(),  viewExportBean.getSelectedIdGroups())){
+                    exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+                }
+            }              
+            
         }
 
-        List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), idTheso, baseUrl,
-                nodePreference.getOriginalUri(), nodePreference);
-        for (SKOSResource facette : facettes) {
-            exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
-        }
+
 
         for (SKOSResource concept : concepts) {
             exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
         }
 
-        exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
+    //    exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
 
         return exportRdf4jHelperNew.getSkosXmlDocument();
     }

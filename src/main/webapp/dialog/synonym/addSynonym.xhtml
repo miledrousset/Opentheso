@@ -47,7 +47,10 @@
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')}: " /> 
                 </div>
                 <div class="col-7">
-                    <p:inputSwitch value="#{synonymBean.isHidden}" style="margin-top: 10px"/>
+                    <p:toggleSwitch  id="limitToThesaurus" value="#{synonymBean.isHidden}"  onIcon="pi pi-times" offIcon="pi pi-check"
+                                     style="height: 25px; width: 50px;">
+                    </p:toggleSwitch>
+
                 </div>
             </div>
 

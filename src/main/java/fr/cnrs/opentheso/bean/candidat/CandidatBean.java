@@ -589,11 +589,9 @@ public class CandidatBean implements Serializable {
 
             candidatSelected.setIdTerm(candidatService.saveNewTerm(connect, terme,
                     candidatSelected.getIdConcepte(), candidatSelected.getUserId()));
-            if(candidatSelected.getIdTerm() != null) {
-                noteHelper.addTermNote(connect.getPoolConnexion(), candidatSelected.getIdTerm(),
-                        selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
-                        definition, "definition", "", currentUser.getNodeUser().getIdUser());
-            }
+            noteHelper.addNote(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+                    selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
+                    definition, "definition", "", currentUser.getNodeUser().getIdUser());
            
             
             setIsListCandidatsActivate(true);

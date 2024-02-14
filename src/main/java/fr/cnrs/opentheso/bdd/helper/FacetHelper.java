@@ -18,6 +18,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,6 +38,76 @@ public class FacetHelper {
 ///////////////////// Nouvelles méthodes MR //////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////    
+    
+    /**
+     * permet de savoir si le Parent de la Facette est dans ces collections
+     * @param ds
+     * @param idTheso
+     * @param idFacet
+     * @param groups
+     * @return 
+     */
+    public boolean isFacetInGroups(HikariDataSource ds, 
+            String idTheso, String idFacet, List<String> groups){
+        String existId = null;
+        
+        if(groups == null || groups.isEmpty()) return false;
+        
+        String requestGroup = null;//"(";
+        for (String idGroup : groups) {
+            if(StringUtils.isEmpty(requestGroup)){
+                requestGroup = "'" + idGroup.toLowerCase() + "'";
+            } else {
+                requestGroup = requestGroup + ", '" + idGroup.toLowerCase() + "'";
+            }
+        }
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select id_concept_parent from thesaurus_array " +
+                        " where" +
+                        " id_facet = '" + idFacet + "'" +
+                        " and" +
+                        " id_thesaurus = '" + idTheso + "'" +
+                        " and " +
+                        " id_concept_parent in " +
+                        " (select idconcept from concept_group_concept" +
+                        "  where idthesaurus = '" + idTheso + "' " + 
+                        " and " +
+                        " lower(idgroup) in (" + requestGroup + ")" + // (lower('g27'), lower('g26'), lower('g34'))" +
+                        " )");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        existId = resultSet.getString("id_concept_parent");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while asking if facet is in collection : " + groups.toString(), sqle);
+        }
+        return existId != null;
+    }
+    
+    /**
+     * permet de mettre à jour la date du concept quand il y a une modification
+     *
+     * @param ds
+     * @param idTheso
+     * @param idFacet
+     * @param contributor
+     */
+    public void updateDateOfFacet(HikariDataSource ds, String idTheso, String idFacet, int contributor) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE thesaurus_array set modified = current_date, contributor = " + contributor + " WHERE id_facet ='" + idFacet + "'"
+                        + " AND id_thesaurus='" + idTheso + "'");
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating date of facet : " + idFacet, sqle);
+        }
+    }    
+    
+    
     public ArrayList<NodeIdValue> searchFacet(HikariDataSource ds,
             String name, String lang, String idThesaurus) {
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
@@ -927,7 +998,7 @@ public class FacetHelper {
                 stmt = conn.createStatement();
                 try {
                     stmt.executeQuery("SELECT id_facet FROM node_label WHERE lang = '" + lang
-                            + "' AND lexical_value = '" + name + "' AND id_thesaurus = '" + idThesaurus + "'");
+                            + "' AND lower(lexical_value) = lower('" + name + "') AND id_thesaurus = '" + idThesaurus + "'");
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
                         isFound = true;

@@ -123,7 +123,7 @@
                 <div class="row" style="margin-left: 20px; margin-right: 20px;">
                     <div class="col-12">
                         <p:dataTable id="metadataTheso" widgetVar="metadataTheso" var="dcElement" value="#{thesaurusMetadataAdd.dcElements}"
-                                     editable="true" scrollHeight="250" scrollable="true">
+                                     editable="true" scrollHeight="250" scrollable="true" lazy="false">
 
                             <p:ajax event="rowEdit" listener="#{thesaurusMetadataAdd.onRowEdit}" process="@this" update="containerIndex:metadataTheso messageIndex"/>
                             <p:ajax event="rowEditCancel" listener="#{thesaurusMetadataAdd.onRowCancel}" process="@this"  update="containerIndex:metadataTheso messageIndex"/>

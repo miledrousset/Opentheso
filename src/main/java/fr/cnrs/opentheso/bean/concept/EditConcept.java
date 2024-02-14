@@ -731,7 +731,7 @@ public class EditConcept implements Serializable {
                     connect.getPoolConnexion(),
                     value,
                     conceptBean.getSelectedLang(),
-                    selectedTheso.getCurrentIdTheso());
+                    selectedTheso.getCurrentIdTheso(), false);
         }
         return liste;
     }      
@@ -894,7 +894,11 @@ public class EditConcept implements Serializable {
                 idConcepts,
                 selectedTheso.getCurrentLang());
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
+        if(nodeIdValues == null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée avec succès !!");
+        } else {
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
+        }
         FacesContext.getCurrentInstance().addMessage(null, msg);
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("messageIndex");
@@ -908,8 +912,11 @@ public class EditConcept implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 idConcepts,
                 selectedTheso.getCurrentLang());
-
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
+        if(nodeIdValues == null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée avec succès !!");
+        } else {
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "L'opération est terminée, vérifier le fichier de résultat téléchargé !!");
+        }
         FacesContext.getCurrentInstance().addMessage(null, msg);
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("messageIndex");

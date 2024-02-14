@@ -79,32 +79,32 @@ public class ExportRdf4jHelperNew {
         }
 
         sKOSResource.setUri(getUri(nodeConcept));
-        sKOSResource.setProperty(SKOSProperty.Concept);
+        sKOSResource.setProperty(SKOSProperty.CONCEPT);
 
         // prefLabel
         for (NodeTermTraduction traduction : nodeConcept.getNodeTermTraductions()) {
             if(traduction.getLang().equalsIgnoreCase(idLang))
-                sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.prefLabel);
+                sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.PREF_LABEL);
         }
 
         // altLabel
         for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
             if(nodeEM.getLang().equalsIgnoreCase(idLang)) {
                 if(nodeEM.isHiden())
-                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.hiddenLabel);
+                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.HIDDEN_LABEL);
                 else
-                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.altLabel);   
+                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.ALT_LABEL);   
             }
         }
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
-        for (NodeNote nodeNote : nodeConcept.getNodeNoteConcept()) {
+        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
             if(nodeNote.getLang().equalsIgnoreCase(idLang))
                 nodeNotes.add(nodeNote);
         }
-        for (NodeNote nodeNote : nodeConcept.getNodeNoteTerm()) {
+/*        for (NodeNote nodeNote : nodeConcept.getNodeNoteTerm()) {
             if(nodeNote.getLang().equalsIgnoreCase(idLang))
                 nodeNotes.add(nodeNote);
-        }        
+        }        */
         addNoteGiven(nodeNotes, sKOSResource);
         addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
         addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
@@ -121,16 +121,16 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addNotation(notation);
         }
         if (created != null) {
-            sKOSResource.addDate(created, SKOSProperty.created);
+            sKOSResource.addDate(created, SKOSProperty.CREATED);
         }
         if (modified != null) {
-            sKOSResource.addDate(modified, SKOSProperty.modified);
+            sKOSResource.addDate(modified, SKOSProperty.MODIFIED);
         }
-        sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.inScheme);
+        sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.INSCHEME);
         for (NodeUri nodeUri : nodeConcept.getNodeListIdsOfConceptGroup()) {
-            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri,idTheso), SKOSProperty.memberOf);
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri,idTheso), SKOSProperty.MEMBER_OF);
         }           
-        sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
+        sKOSResource.addIdentifier(idConcept, SKOSProperty.IDENTIFIER);
         
 
     /*    ArrayList<String> first = new ArrayList<>();
@@ -150,20 +150,20 @@ public class ExportRdf4jHelperNew {
         nodeGroupLabel = new GroupHelper().getNodeGroupLabel(ds, idGroup, idThesaurus);
         SKOSResource sKOSResource = new SKOSResource();
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
-        sKOSResource.setProperty(SKOSProperty.ConceptGroup);
+        sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);
 
         for (NodeGroupTraductions traduction : nodeGroupLabel.getNodeGroupTraductionses()) {
-            sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.prefLabel);
+            sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.PREF_LABEL);
             //dates
             String created;
             String modified;
             created = traduction.getCreated().toString();
             modified = traduction.getModified().toString();
             if (created != null) {
-                sKOSResource.addDate(created, SKOSProperty.created);
+                sKOSResource.addDate(created, SKOSProperty.CREATED);
             }
             if (modified != null) {
-                sKOSResource.addDate(modified, SKOSProperty.modified);
+                sKOSResource.addDate(modified, SKOSProperty.MODIFIED);
             }
         }
         
@@ -172,16 +172,16 @@ public class ExportRdf4jHelperNew {
         ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idGroup, idThesaurus);
         HashMap<String, String> superGroupHashMapTemp = new HashMap();
         for (String id : childURI) {
-            sKOSResource.addRelation(id, getUriFromId(id), SKOSProperty.subGroup);
+            sKOSResource.addRelation(id, getUriFromId(id), SKOSProperty.SUBGROUP);
             superGroupHashMapTemp.put(id, idGroup);
         }
         String idSuperGroup = superGroupHashMapTemp.get(idGroup);
 
         if (idSuperGroup != null) {
-            sKOSResource.addRelation(idSuperGroup, getUriFromId(idSuperGroup), SKOSProperty.superGroup);
+            sKOSResource.addRelation(idSuperGroup, getUriFromId(idSuperGroup), SKOSProperty.SUPERGROUP);
             superGroupHashMapTemp.remove(idGroup);
         }
-        sKOSResource.addIdentifier(idGroup, SKOSProperty.identifier);
+        sKOSResource.addIdentifier(idGroup, SKOSProperty.IDENTIFIER);
         skosXmlDocument.addGroup(sKOSResource);
     }     
     
@@ -198,27 +198,27 @@ public class ExportRdf4jHelperNew {
         this.nodePreference = nodePreference;
         NodeThesaurus nodeThesaurus = new ThesaurusHelper().getNodeThesaurus(ds, idTheso);
         
-        SKOSResource conceptScheme = new SKOSResource(getUriFromId(nodeThesaurus.getIdThesaurus()), SKOSProperty.ConceptScheme);
+        SKOSResource conceptScheme = new SKOSResource(getUriFromId(nodeThesaurus.getIdThesaurus()), SKOSProperty.CONCEPT_SCHEME);
         
         for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
             
             if (thesaurus.getCreator() != null && !thesaurus.getCreator().equalsIgnoreCase("null")) {
-                conceptScheme.addAgent(thesaurus.getCreator(), SKOSProperty.creator);
+                conceptScheme.addAgent(thesaurus.getCreator(), SKOSProperty.CREATOR);
             }
             if (thesaurus.getContributor() != null && !thesaurus.getContributor().equalsIgnoreCase("null")) {
-                conceptScheme.addAgent(thesaurus.getContributor(), SKOSProperty.contributor);
+                conceptScheme.addAgent(thesaurus.getContributor(), SKOSProperty.CONTRIBUTOR);
             }
             if (thesaurus.getTitle() != null && thesaurus.getLanguage() != null) {
                 conceptScheme.addLabel(thesaurus.getTitle(), 
-                        thesaurus.getLanguage(), SKOSProperty.prefLabel);
+                        thesaurus.getLanguage(), SKOSProperty.PREF_LABEL);
             }
 
             //dates
             if (thesaurus.getCreated().toString() != null) {
-                conceptScheme.addDate(thesaurus.getCreated().toString(), SKOSProperty.created);
+                conceptScheme.addDate(thesaurus.getCreated().toString(), SKOSProperty.CREATED);
             }
             if (thesaurus.getModified().toString() != null) {
-                conceptScheme.addDate(thesaurus.getModified().toString(), SKOSProperty.modified);
+                conceptScheme.addDate(thesaurus.getModified().toString(), SKOSProperty.MODIFIED);
             }
             conceptScheme.setThesaurus(thesaurus);
         }
@@ -231,7 +231,7 @@ public class ExportRdf4jHelperNew {
         nodeTTs = conceptHelper.getAllTopConcepts(ds, idTheso);
 
         nodeTTs.forEach((nodeTT) -> {
-            conceptScheme.addRelation(nodeTT.getIdConcept(), getUriFromNodeUri(nodeTT, idTheso), SKOSProperty.hasTopConcept);
+            conceptScheme.addRelation(nodeTT.getIdConcept(), getUriFromNodeUri(nodeTT, idTheso), SKOSProperty.HAS_TOP_CONCEPT);
         });
         skosXmlDocument.setConceptScheme(conceptScheme);
     }
@@ -241,8 +241,8 @@ public class ExportRdf4jHelperNew {
         NodeGroupLabel nodeGroupLabel;
         for (String idGroup : selectedGroups) {
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
-            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
-            sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
+            sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
             addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
@@ -254,10 +254,10 @@ public class ExportRdf4jHelperNew {
         
         for (NodeFacet facet : facets) {
             SKOSResource sKOSResource =  new SKOSResource(getUriForFacette(facet.getIdFacet(), idTheso), SKOSProperty.FACET);
-            sKOSResource.addRelation(facet.getIdFacet(), getUriFromNodeUri(facet.getNodeUri(), idTheso), SKOSProperty.superOrdinate);
-            sKOSResource.addLabel(facet.getLexicalValue(), facet.getLang(), SKOSProperty.prefLabel);
-            sKOSResource.addDate(facet.getCreated(), SKOSProperty.created);
-            sKOSResource.addDate(facet.getModified(), SKOSProperty.modified);
+            sKOSResource.addRelation(facet.getIdFacet(), getUriFromNodeUri(facet.getNodeUri(), idTheso), SKOSProperty.SUPER_ORDINATE);
+            sKOSResource.addLabel(facet.getLexicalValue(), facet.getLang(), SKOSProperty.PREF_LABEL);
+            sKOSResource.addDate(facet.getCreated(), SKOSProperty.CREATED);
+            sKOSResource.addDate(facet.getModified(), SKOSProperty.MODIFIED);
             addFacetMembers(ds, facetHelper, sKOSResource, facet, idTheso);
             skosXmlDocument.addFacet(sKOSResource);
         }
@@ -269,7 +269,7 @@ public class ExportRdf4jHelperNew {
         List<String> members = facetHelper.getAllMembersOfFacet(ds, nodeFacet.getIdFacet(), idTheso);
         for (String idConcept : members) {
             NodeUri nodeUri = new ConceptHelper().getNodeUriOfConcept(ds, idConcept, idTheso);
-            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
         }
     }
 
@@ -277,8 +277,8 @@ public class ExportRdf4jHelperNew {
         GroupHelper groupHelper = new GroupHelper();
         NodeGroupLabel nodeGroupLabel;
         nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
-        SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
-        sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+        SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
+        sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
         writeGroupInfo(ds, sKOSResource, idTheso, idGroup);
     }    
     
@@ -288,8 +288,9 @@ public class ExportRdf4jHelperNew {
         NodeGroupLabel nodeGroupLabel;
         for (String idGroup : rootGroupList) {
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
-            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.ConceptGroup);
-            sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.microThesaurusOf);
+            SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
+            sKOSResource.setIdentifier(idGroup);
+            sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
             addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
@@ -304,6 +305,7 @@ public class ExportRdf4jHelperNew {
 
         for (String idOfGroupChild : listIdsOfGroupChilds) {
             sKOSResource = new SKOSResource();
+            sKOSResource.setIdentifier(idOfGroupChild);
             addChildsGroupRecursive(ds, idTheso, idOfGroupChild, sKOSResource);
         }
     }
@@ -315,7 +317,8 @@ public class ExportRdf4jHelperNew {
         nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idOfGroupChild, idTheso);
 
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
-        sKOSResource.setProperty(SKOSProperty.ConceptGroup);
+        sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);
+    //    sKOSResource.setIdentifier(idOfGroupChild);
 
         //dates
         String created = null;
@@ -325,25 +328,25 @@ public class ExportRdf4jHelperNew {
         if(nodeGroupLabel.getModified()!=null)
             modified = nodeGroupLabel.getModified().toString();
         if (created != null) {
-            sKOSResource.addDate(created, SKOSProperty.created);
+            sKOSResource.addDate(created, SKOSProperty.CREATED);
         }
         if (modified != null) {
-            sKOSResource.addDate(modified, SKOSProperty.modified);
+            sKOSResource.addDate(modified, SKOSProperty.MODIFIED);
         }
         
         for (NodeGroupTraductions traduction : nodeGroupLabel.getNodeGroupTraductionses()) {
-            sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.prefLabel);
+            sKOSResource.addLabel(traduction.getTitle(), traduction.getIdLang(), SKOSProperty.PREF_LABEL);
         }
 
         ArrayList<NodeUri> childURIs = groupHelper.getListGroupChildOfGroup(ds, idTheso, idOfGroupChild);
         ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
-            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.member);
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
         }
 
         for (NodeUri nodeUri : childURIs) {
-            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.subGroup);
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.SUBGROUP);
             superGroupHashMap.put(nodeUri.getIdConcept(), idOfGroupChild);
         }
 
@@ -351,7 +354,7 @@ public class ExportRdf4jHelperNew {
         if (idSuperGroup != null) {
             NodeUri nodeUri1 = groupHelper.getThisGroupIds(ds, idSuperGroup, idTheso);
             if(nodeUri1 != null){
-                sKOSResource.addRelation(idSuperGroup, getUriGroupFromNodeUri(nodeUri1, idTheso), SKOSProperty.superGroup);
+                sKOSResource.addRelation(idSuperGroup, getUriGroupFromNodeUri(nodeUri1, idTheso), SKOSProperty.SUPERGROUP);
                 superGroupHashMap.remove(idOfGroupChild);
             }
         }
@@ -361,6 +364,12 @@ public class ExportRdf4jHelperNew {
             if(!nodeGroupLabel.getNotation().isEmpty())
                 sKOSResource.addNotation(nodeGroupLabel.getNotation());
         }
+        
+        /// Ajout des notes
+        NoteHelper noteHelper = new NoteHelper();
+        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesAllLang(ds, idOfGroupChild, idTheso);
+        addNoteGiven(nodeNotes, sKOSResource);
+        
         skosXmlDocument.addGroup(sKOSResource);
     }
 
@@ -385,12 +394,12 @@ public class ExportRdf4jHelperNew {
         }
 
         if(nodeConcept.getNodeListOfBT().isEmpty() ){
-            sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.topConceptOf);
+            sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.TOP_CONCEPT_OF);
         }
 
         sKOSResource.setUri(getUri(nodeConcept));
         sKOSResource.setLocalUri(getLocalUri(nodeConcept));
-        sKOSResource.setProperty(SKOSProperty.Concept);
+        sKOSResource.setProperty(SKOSProperty.CONCEPT);
 
         //// définir le status du Concept (CA=candidat, DEP= déprécié, autre= concept)
         setStatusOfConcept(nodeConcept.getConcept().getStatus(), sKOSResource);
@@ -413,19 +422,21 @@ public class ExportRdf4jHelperNew {
 
         // prefLabel
         for (NodeTermTraduction traduction : nodeConcept.getNodeTermTraductions()) {
-            sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.prefLabel);
+            sKOSResource.addLabel(traduction.getLexicalValue(), traduction.getLang(), SKOSProperty.PREF_LABEL);
         }
         // altLabel
         for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
             if (nodeEM.isHiden()) {
-                sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.hiddenLabel);
+                sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.HIDDEN_LABEL);
             } else {
-                sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.altLabel);
+                sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.ALT_LABEL);
             }
         }
-        ArrayList<NodeNote> nodeNotes = new ArrayList<>();//nodeConcept.getNodeNoteConcept();
-        nodeNotes.addAll(nodeConcept.getNodeNoteTerm());
-        nodeNotes.addAll(nodeConcept.getNodeNoteConcept());        
+        //ArrayList<NodeNote> nodeNotes = new ArrayList<>();//nodeConcept.getNodeNoteConcept();
+        
+        ArrayList<NodeNote> nodeNotes = nodeConcept.getNodeNotes();
+//        nodeNotes.addAll(nodeConcept.getNodeNoteTerm());
+//        nodeNotes.addAll(nodeConcept.getNodeNoteConcept());        
         addNoteGiven(nodeNotes, sKOSResource);
         addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
         addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
@@ -439,13 +450,13 @@ public class ExportRdf4jHelperNew {
             sKOSResource.addNotation(nodeConcept.getConcept().getNotation());
         }
 
-        sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.inScheme);
+        sKOSResource.addRelation(idTheso, getUriFromId(idTheso), SKOSProperty.INSCHEME);
 
         for (NodeUri nodeUri : nodeConcept.getNodeListIdsOfConceptGroup()) {
-            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.memberOf);
+            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriGroupFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER_OF);
         }
 
-        sKOSResource.addIdentifier(idConcept, SKOSProperty.identifier);
+        sKOSResource.addIdentifier(idConcept, SKOSProperty.IDENTIFIER);
         if(nodeConcept.getConcept().getIdArk() != null && !nodeConcept.getConcept().getIdArk().isEmpty() ){
            sKOSResource.setArkId(nodeConcept.getConcept().getIdArk());
         }
@@ -453,7 +464,7 @@ public class ExportRdf4jHelperNew {
 
         if(nodeConcept.getListFacetsOfConcept() != null) {
             for (String idFacette : nodeConcept.getListFacetsOfConcept()) {
-                int prop = SKOSProperty.subordinateArray;
+                int prop = SKOSProperty.SUB_ORDINATE_ARRAY;
                 sKOSResource.addRelation(idFacette, getUriForFacette(idFacette, idTheso), prop);
             }
         }
@@ -478,18 +489,18 @@ public class ExportRdf4jHelperNew {
 
         // createur et contributeur
         if (nodeConcept.getConcept().getCreatorName()!= null && !nodeConcept.getConcept().getCreatorName().isEmpty()) {
-            sKOSResource.addAgent(nodeConcept.getConcept().getCreatorName(), SKOSProperty.creator);
+            sKOSResource.addAgent(nodeConcept.getConcept().getCreatorName(), SKOSProperty.CREATOR);
         }
         if (nodeConcept.getConcept().getContributorName()!= null && !nodeConcept.getConcept().getContributorName().isEmpty()) {
-            sKOSResource.addAgent(nodeConcept.getConcept().getContributorName(), SKOSProperty.contributor);
+            sKOSResource.addAgent(nodeConcept.getConcept().getContributorName(), SKOSProperty.CONTRIBUTOR);
         }
 
         // dates
         if (nodeConcept.getConcept().getCreated() != null) {
-            sKOSResource.addDate(nodeConcept.getConcept().getCreated().toString(), SKOSProperty.created);
+            sKOSResource.addDate(nodeConcept.getConcept().getCreated().toString(), SKOSProperty.CREATED);
         }
         if (nodeConcept.getConcept().getModified() != null) {
-            sKOSResource.addDate(nodeConcept.getConcept().getModified().toString(), SKOSProperty.modified);
+            sKOSResource.addDate(nodeConcept.getConcept().getModified().toString(), SKOSProperty.MODIFIED);
         }
 
         skosXmlDocument.addconcept(sKOSResource);
@@ -497,13 +508,13 @@ public class ExportRdf4jHelperNew {
     private void setStatusOfConcept(String status, SKOSResource sKOSResource){
         switch (status.toLowerCase()) {
             case "ca":
-                sKOSResource.setStatus(SKOSProperty.candidate);
+                sKOSResource.setStatus(SKOSProperty.CANDIDATE);
                 break;
             case "dep":
-                sKOSResource.setStatus(SKOSProperty.deprecated);
+                sKOSResource.setStatus(SKOSProperty.DEPRECATED);
                 break;
             default:
-                sKOSResource.setStatus(SKOSProperty.Concept);
+                sKOSResource.setStatus(SKOSProperty.CONCEPT);
                 break;              
         }
         
@@ -540,28 +551,28 @@ public class ExportRdf4jHelperNew {
             int prop;
             switch (note.getNotetypecode()) {
                 case "note":
-                    prop = SKOSProperty.note;
+                    prop = SKOSProperty.NOTE;
                     break;                  
                 case "scopeNote":
-                    prop = SKOSProperty.scopeNote;
+                    prop = SKOSProperty.SCOPE_NOTE;
                     break;
                 case "historyNote":
-                    prop = SKOSProperty.historyNote;
+                    prop = SKOSProperty.HISTORY_NOTE;
                     break;
                 case "example":
-                    prop = SKOSProperty.example;
+                    prop = SKOSProperty.EXAMPLE;
                     break;                    
                 case "definition":
-                    prop = SKOSProperty.definition;
+                    prop = SKOSProperty.DEFINITION;
                     break;
                 case "editorialNote":
-                    prop = SKOSProperty.editorialNote;
+                    prop = SKOSProperty.EDITORIAL_NOTE;
                     break;
                 case "changeNote":
-                    prop = SKOSProperty.changeNote;
+                    prop = SKOSProperty.CHANGE_NOTE;
                     break;             
                 default:
-                    prop = SKOSProperty.note;
+                    prop = SKOSProperty.NOTE;
                     break;
             }
             resource.addDocumentation(note.getLexicalvalue(), note.getLang(), prop);
@@ -621,19 +632,19 @@ public class ExportRdf4jHelperNew {
             switch (alignment.getAlignement_id_type()) {
 
                 case 1:
-                    prop = SKOSProperty.exactMatch;
+                    prop = SKOSProperty.EXACT_MATCH;
                     break;
                 case 2:
-                    prop = SKOSProperty.closeMatch;
+                    prop = SKOSProperty.CLOSE_MATCH;
                     break;
                 case 3:
-                    prop = SKOSProperty.broadMatch;
+                    prop = SKOSProperty.BROAD_MATCH;
                     break;
                 case 4:
-                    prop = SKOSProperty.relatedMatch;
+                    prop = SKOSProperty.RELATED_MATCH;
                     break;
                 case 5:
-                    prop = SKOSProperty.narrowMatch;
+                    prop = SKOSProperty.NARROWER_MATCH;
                     break;
             }
             resource.addMatch(alignment.getUri_target(), prop);
@@ -646,13 +657,13 @@ public class ExportRdf4jHelperNew {
 
             switch (rt.getRole()) {
                 case "RHP":
-                    prop = SKOSProperty.relatedHasPart;
+                    prop = SKOSProperty.RELATED_HAS_PART;
                     break;
                 case "RPO":
-                    prop = SKOSProperty.relatedPartOf;
+                    prop = SKOSProperty.RELATED_PART_OF;
                     break;
                 default:
-                    prop = SKOSProperty.related;
+                    prop = SKOSProperty.RELATED;
             }
             resource.addRelation(rt.getUri().getIdConcept(), getUriFromNodeUri(rt.getUri(), idTheso), prop);
         }
@@ -660,16 +671,16 @@ public class ExportRdf4jHelperNew {
             int prop;
             switch (nt.getRole()) {
                 case "NTG":
-                    prop = SKOSProperty.narrowerGeneric;
+                    prop = SKOSProperty.NARROWER_GENERIC;
                     break;
                 case "NTP":
-                    prop = SKOSProperty.narrowerPartitive;
+                    prop = SKOSProperty.NARROWER_PARTITIVE;
                     break;
                 case "NTI":
-                    prop = SKOSProperty.narrowerInstantial;
+                    prop = SKOSProperty.NARROWER_INSTANTIAL;
                     break;
                 default:
-                    prop = SKOSProperty.narrower;
+                    prop = SKOSProperty.NARROWER;
             }
             resource.addRelation(nt.getUri().getIdConcept(), getUriFromNodeUri(nt.getUri(), idTheso), prop);
         }
@@ -678,16 +689,16 @@ public class ExportRdf4jHelperNew {
             int prop;
             switch (bt.getRole()) {
                 case "BTG":
-                    prop = SKOSProperty.broaderGeneric;
+                    prop = SKOSProperty.BROADER_GENERIC;
                     break;
                 case "BTP":
-                    prop = SKOSProperty.broaderPartitive;
+                    prop = SKOSProperty.BROADER_PARTITIVE;
                     break;
                 case "BTI":
-                    prop = SKOSProperty.broaderInstantial;
+                    prop = SKOSProperty.BROADER_INSTANTIAL;
                     break;
                 default:
-                    prop = SKOSProperty.broader;
+                    prop = SKOSProperty.BROADER;
             }
             resource.addRelation(bt.getUri().getIdConcept(), getUriFromNodeUri(bt.getUri(), idTheso), prop);
         }
@@ -701,10 +712,10 @@ public class ExportRdf4jHelperNew {
 
             switch (uriReplace.getRole()) {
                 case "replacedBy":
-                    prop = SKOSProperty.isReplacedBy;
+                    prop = SKOSProperty.IS_REPLACED_BY;
                     break;
                 case "replace":
-                    prop = SKOSProperty.replaces;
+                    prop = SKOSProperty.REPLACES;
                     break;
                 default:
                     prop = -1;

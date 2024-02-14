@@ -16,6 +16,8 @@ import java.util.List;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
 import fr.cnrs.opentheso.core.alignment.AlignementSource;
 import fr.cnrs.opentheso.core.alignment.GpsPreferences;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,6 +32,34 @@ public class GpsHelper {
     public GpsHelper() {
     }
 
+    
+    /**
+     * permet d'ajouter les coordonnées GPS
+    * 
+    * @param ds
+    * @param idC
+    * @param idTheso
+     * @param nodeGpses
+    * @return 
+    */
+    public boolean addGpsCoordinates(HikariDataSource ds, String idC, String idTheso, List <NodeGps> nodeGpses) {
+        boolean status = false;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                for (NodeGps nodeGpse : nodeGpses) {
+                    stmt.executeUpdate("Insert into gps (id_concept, id_theso, latitude, longitude, position) values('" + idC + "','" + idTheso + "'," 
+                            + nodeGpse.getLatitude() + ","
+                            + nodeGpse.getLongitude() + "," 
+                            + nodeGpse.getPosition() + ")");
+                }
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while Add coordonnes : " + idC, sqle);
+        }
+        return status;
+    }    
+    
     /**
      * permet d'ajouter les coordonnées GPS ou les mettre à jour
      */

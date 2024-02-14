@@ -5,18 +5,18 @@ function chercher() {
     document.getElementById("loader-annel").style.display = "block";
     document.getElementById("myDiv").style.display = "none";
 
-    seatchDatas(inputVal);
+    searchDatas(inputVal);
 }
 
 function dataLoading(option) {
     document.getElementById("url").value = option.url;
  //   window.alert(option.url);    
     $(document).ready(function () {
-        seatchDatas(option.url);
+        searchDatas(option.url);
     });
 }
 
-function seatchDatas(url) {
+function searchDatas(url) {
     $.ajax({
         url: url,
         type: 'GET',
@@ -82,7 +82,7 @@ function initGraphe() {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     update(root);
-    collapseAll();
+  /*  collapseAll();*/
 }
 
 function update(source) {
@@ -265,7 +265,9 @@ function expandAll() {
 }
 
 function collapseAll() {
-    root.children.forEach(collapse);
-    collapse(root);
-    update(root);
+    if (root && root.children) {
+        root.children.forEach(collapse);
+        collapse(root);
+        update(root);
+    }
 }

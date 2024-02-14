@@ -20,7 +20,7 @@
             </p:toolbar>
 
             <p:dataTable var="gps" value="#{conceptView.nodeConcept.nodeGps}" editable="true"
-                         style="margin-bottom:20px">
+                         style="margin-bottom:20px" lazy="false">
 
                 <p:ajax event="rowEdit" listener="#{conceptView.onRowEdit}" update="messageIndex"/>
                 <p:ajax event="rowEditCancel" listener="#{conceptView.onRowCancel}" update="messageIndex"/>

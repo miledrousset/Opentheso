@@ -189,34 +189,38 @@
         </h:panelGroup>
 
         <h:form rendered="#{roleOnTheso.nodePreference.breadcrumb}" style="padding-left: 5px;">
-            <ui:repeat var="path" value="#{conceptView.pathLabel}" varStatus="status">
-                <h:panelGroup rendered="#{path.isStartOfPath}">
-                    <h:panelGroup rendered="#{!status.first}">
-                        <br/>
+            <ui:repeat var="path" value="#{conceptView.pathLabel2}" varStatus="status">
+                <ui:repeat var="subPath" value="#{path}" varStatus="substatus">
+                    <h:panelGroup rendered="#{subPath.isStartOfPath}">
+                        <h:panelGroup rendered="#{!status.first}">
+                            <br/>
+                        </h:panelGroup>
+                        <i class="fas fa-home" size="xs" style="color: #f47b2a; font-size: 15px;"/>
                     </h:panelGroup>
-                    <i class="fas fa-home" size="xs" style="color: #f47b2a; font-size: 15px;"/>
-                </h:panelGroup>
 
-                <p:commandLink rendered="#{path.isIsStartOfPath()}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
-                               value=" #{path.title}" actionListener="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                         path.idConcept, selectedTheso.currentLang)}" update="containerIndex" process="@form" ajax="true" /> 
+                    <p:commandLink rendered="#{subPath.isStartOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
+                                   value=" #{subPath.title}" actionListener="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
+                                             subPath.idConcept, selectedTheso.currentLang)}" update="containerIndex" process="@form" ajax="true" /> 
+                    
 
-                <p:commandLink rendered="#{!path.isStartOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
-                               value="#{path.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, path.idConcept, selectedTheso.currentLang)}"
-                               update="containerIndex" process="@form" ajax="true"/>               
+                        <h:panelGroup rendered="#{!substatus.last}" >
+                            <p:commandLink rendered="#{!subPath.isStartOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
+                                           value="#{subPath.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, subPath.idConcept, selectedTheso.currentLang)}"
+                                           update="containerIndex" process="@form" ajax="true"/>                          
+                            <h:outputText rendered="#{!substatus.last}" value=" > " style="font-size: 13px; font-weight: bold"/>                        
+                        </h:panelGroup>
 
-                <h:outputText value=" > " style="font-size: 13px; font-weight: bold"/>
-
+                        <h:panelGroup rendered="#{substatus.last and !subPath.isStartOfPath}" >
+                            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value != ''}" 
+                                          value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 13px;"/>
+                            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value == ''}" 
+                                          value=" (#{conceptView.nodeConcept.concept.idConcept})" style="font-size: 13px;"/>                        
+                        </h:panelGroup>                     
+                    
+                    
+                   
+                </ui:repeat>                
             </ui:repeat>
-
-            <h:panelGroup rendered="#{conceptView.nodeConcept.concept.topConcept}">
-                <i  class="fas fa-home" size="xs" style="color: #f47b2a; font-size: 15px;"/>
-            </h:panelGroup>
-
-            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value != ''}" 
-                          value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 13px;"/>
-            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value == ''}" 
-                          value=" (#{conceptView.nodeConcept.concept.idConcept})" style="font-size: 13px;"/> 
         </h:form>
     </div>
     <ui:include src="../../../dialog/concept/approveConcept.xhtml" />

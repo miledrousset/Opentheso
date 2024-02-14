@@ -477,6 +477,59 @@ public class StatisticHelper {
         return count;
     }
     
+    /**
+     * Retourne le nombre de candidats
+     * 
+     * @param ds
+     * @param idThesaurus
+     * @return 
+     */
+    public int getNbCandidate(HikariDataSource ds, String idThesaurus) {
+        int count = 0;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery( "SELECT count(id_concept) FROM concept WHERE"
+                            + " id_thesaurus = '" + idThesaurus + "' and status = 'CA'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        count = resultSet.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting count of candidate of thesaurus : " + idThesaurus, sqle);
+        }
+        return count;
+    }    
+    
+    /**
+     * Retourne le nombre de concepts dépréciés
+     * 
+     * @param ds
+     * @param idThesaurus
+     * @return 
+     */
+    public int getNbOfDeprecatedConcepts(HikariDataSource ds, String idThesaurus) {
+        int count = 0;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery( "SELECT count(id_concept) FROM concept WHERE"
+                            + " id_thesaurus = '" + idThesaurus + "' and status = 'DEP'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        count = resultSet.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting count of candidate of thesaurus : " + idThesaurus, sqle);
+        }
+        return count;
+    }     
+    
+    
     public int getNbDescOfGroup(HikariDataSource ds, String idThesaurus, String idGroup) {
         Connection conn;
         Statement stmt;

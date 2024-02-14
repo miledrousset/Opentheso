@@ -11,6 +11,22 @@ public StringPlus() {
     }
     
 
+    public String clearValue(String rawNote) {
+        rawNote = rawNote.replaceAll("<br></p>", "");
+        rawNote = rawNote.replaceAll("<p>", "");
+        rawNote = rawNote.replaceAll("</p>", "</br>");
+        try {
+            if("</br>".equalsIgnoreCase(rawNote.substring(rawNote.length() -5, rawNote.length()))){
+                rawNote = rawNote.substring(0, rawNote.length() -5);
+            }            
+        } catch (Exception e) {
+        }
+       
+        // enlève les code ascii non visibles
+        return rawNote.replace((char) 27, ' ');
+    }
+
+
     /**
      * Permet de vérifier si une URL est valide
      * @param url

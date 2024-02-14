@@ -6,14 +6,16 @@
 package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
-import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
@@ -41,6 +43,16 @@ public class AddGroupBean implements Serializable {
     private String notation;    
     private List<SelectItem> listGroupType;    
     
+    private String definition;
+    
+    private ArrayList<NodeNote> notes;
+    private ArrayList<NodeNote> scopeNotes;
+    private ArrayList<NodeNote> changeNotes;
+    private ArrayList<NodeNote> definitions;
+    private ArrayList<NodeNote> editorialNotes;
+    private ArrayList<NodeNote> examples;
+    private ArrayList<NodeNote> historyNotes;     
+    
     @PreDestroy
     public void destroy(){
         clear();
@@ -61,6 +73,7 @@ public class AddGroupBean implements Serializable {
     public void init() {
         titleGroup = "";
         notation = "";
+        definition = "";
         selectedGroupType = null;
         listGroupType = new GroupHelper().getAllGroupType(connect.getPoolConnexion());
         if (!listGroupType.isEmpty()) {
@@ -131,6 +144,14 @@ public class AddGroupBean implements Serializable {
         if(roleOnThesoBean.getNodePreference().isUseArkLocal()) {
             generateArkGroup(idGroup, titleGroup, idTheso);
         }
+        
+        // ajout de la définition s'il elle est renseignée
+        if(StringUtils.isNotEmpty(definition)) {
+            NoteHelper noteHelper = new NoteHelper();
+            noteHelper.addNote(connect.getPoolConnexion(), idGroup, idLang, idTheso,
+                    definition, "definition", "",  idUser);            
+        }
+
         
         treeGroups.addNewGroupToTree(idGroup, idTheso, idLang);
 
@@ -291,6 +312,70 @@ public class AddGroupBean implements Serializable {
 
     public void setListGroupType(List<SelectItem> listGroupType) {
         this.listGroupType = listGroupType;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
+    }
+
+    public ArrayList<NodeNote> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(ArrayList<NodeNote> notes) {
+        this.notes = notes;
+    }
+
+    public ArrayList<NodeNote> getScopeNotes() {
+        return scopeNotes;
+    }
+
+    public void setScopeNotes(ArrayList<NodeNote> scopeNotes) {
+        this.scopeNotes = scopeNotes;
+    }
+
+    public ArrayList<NodeNote> getChangeNotes() {
+        return changeNotes;
+    }
+
+    public void setChangeNotes(ArrayList<NodeNote> changeNotes) {
+        this.changeNotes = changeNotes;
+    }
+
+    public ArrayList<NodeNote> getDefinitions() {
+        return definitions;
+    }
+
+    public void setDefinitions(ArrayList<NodeNote> definitions) {
+        this.definitions = definitions;
+    }
+
+    public ArrayList<NodeNote> getEditorialNotes() {
+        return editorialNotes;
+    }
+
+    public void setEditorialNotes(ArrayList<NodeNote> editorialNotes) {
+        this.editorialNotes = editorialNotes;
+    }
+
+    public ArrayList<NodeNote> getExamples() {
+        return examples;
+    }
+
+    public void setExamples(ArrayList<NodeNote> examples) {
+        this.examples = examples;
+    }
+
+    public ArrayList<NodeNote> getHistoryNotes() {
+        return historyNotes;
+    }
+
+    public void setHistoryNotes(ArrayList<NodeNote> historyNotes) {
+        this.historyNotes = historyNotes;
     }
 
 

@@ -37,16 +37,16 @@ public class SKOSLabel implements SKOSProperty{
 		String propertyName = new String();
 		String xmlTag;
 		switch(property){
-			case SKOSProperty.prefLabel :
+			case SKOSProperty.PREF_LABEL :
 				propertyName = "prefLabel";
 				break;
-			case SKOSProperty.altLabel :
+			case SKOSProperty.ALT_LABEL :
 				propertyName = "altLabel";
 				break;
-			case SKOSProperty.hiddenLabel :
+			case SKOSProperty.HIDDEN_LABEL :
 				propertyName = "hiddenLabel";
 				break;
-			case SKOSProperty.inScheme :
+			case SKOSProperty.INSCHEME :
 				propertyName = "inScheme";
 				break;
 			default:

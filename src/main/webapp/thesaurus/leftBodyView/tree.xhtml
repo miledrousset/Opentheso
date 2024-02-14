@@ -21,17 +21,10 @@
                 </p:commandLink>
             </div>
 
-            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-2" >
-                <p:link id="graph" href="#{request.contextPath}/graph/index.xhtml"
-                        target="_blank" disabled="#{tree.isGraphNotVisible()}"
-                        style="color: #F47B2A; float: right; margin-top: 2px;"
-                        title="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}">
-                    <i class="pi pi-share-alt" style="font-size: 0.8rem; color: #{tree.getColor()}" />
-                </p:link>
-            </div>
+
             
             <div class="col-xl-1 col-lg-1 col-md-2 col-sm-3" >
-                <p:menuButton style="background-color: transparent" icon="pi pi-align-justify" >
+                <p:menuButton id="graph" style="background-color: transparent" icon="pi pi-align-justify" >
 
                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.addTopTerm')}" actionListener="#{newConcept.reset()}" icon="fas fa-folder-plus"
                                 oncomplete="PF('addTopConcept').show();" update="containerIndex:idAddTopConcept"
@@ -39,14 +32,28 @@
                                 rendered="#{(currentUser.nodeUser != null) and 
                                             (currentUser.hasRoleAsManager)}"/>
                     
+                    <p:separator rendered="#{(currentUser.nodeUser != null) and 
+                                            (currentUser.hasRoleAsManager)}"  style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
+                    
+                    
+                    <p:menuitem id="viewThesoGraph" value="#{langueBean.getMsg('conceptsview.view_theso_as_graph')}" icon="fa-solid fa-diagram-project" url="#{request.contextPath}/graph2/index.xhtml" target="_blank"
+                                title="#{langueBean.getMsg('conceptsview.view_theso_as_graph_tooltip')}" > 
+                    </p:menuitem>                    
+                    
+                    <p:menuitem id="viewBranchGraph" value="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}" icon="fa-solid fa-folder-tree" url="#{request.contextPath}/graph/index.xhtml" target="_blank"
+                                disabled="#{tree.isGraphNotVisible()}" title="#{langueBean.getMsg('conceptsview.view_branch_as_graph_tooltip')}" > 
+                    </p:menuitem>
+                    
+                    <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>                    
+                    
                     <p:menuitem rendered="#{copyAndPasteBetweenTheso.isCopyOn and currentUser.nodeUser != null
                                             and (currentUser.hasRoleAsManager)}"
-                                value="Annuler copie" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
+                                value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}" styleClass="buttonIconOrange" action="#{copyAndPasteBetweenTheso.reset()}" 
                                 update="containerIndex messageIndex" icon="far fa-window-close" />
 
                     <p:menuitem disabled="false" styleClass="buttonIconOrange"
                                 rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                                value="Coller (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) à la racine !!" 
+                                value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.at_the_root')} !!" 
                                 actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
                                 action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
                                 update="containerIndex:idCopyAndPasteBetweenThesoToTop"

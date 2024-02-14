@@ -203,8 +203,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
 
         List<SelectedResource> selectedDefinitionsList = new ArrayList<>();
 
-        String idTerm = new TermHelper().getIdTermOfConcept(connection, idConcept, idTheso);
-        var terms = new NoteHelper().getListNotesTermAllLang(connection, idTerm, idTheso);
+        var terms = new NoteHelper().getListNotesAllLang(connection, idConcept, idTheso);
 
         for (SelectedResource selectedResource : definitionOfAlignmentTemp) {
             boolean added = false;

@@ -96,7 +96,7 @@ public class WriteAlphaPDF {
         boolean added = false;
         int altLabelCount = 0;
         if (CollectionUtils.isNotEmpty(traductions.get(idFromUri))) {
-            altLabelCount = (int) traductions.get(idFromUri).stream().filter(trad -> trad == SKOSProperty.altLabel).count();
+            altLabelCount = (int) traductions.get(idFromUri).stream().filter(trad -> trad == SKOSProperty.ALT_LABEL).count();
         }
 
         int altLabelWrite = 0;
@@ -111,10 +111,10 @@ public class WriteAlphaPDF {
                     labelValue = label.getLabel();
                 } else {
                     if (CollectionUtils.isNotEmpty(traductions.get(idFromUri))) {
-                        if (traductions.get(idFromUri).contains(SKOSProperty.prefLabel) && label.getProperty() == SKOSProperty.prefLabel) {
+                        if (traductions.get(idFromUri).contains(SKOSProperty.PREF_LABEL) && label.getProperty() == SKOSProperty.PREF_LABEL) {
                             prefIsTrad = true;
                         }
-                        if (traductions.get(idFromUri).contains(SKOSProperty.altLabel) && label.getProperty() == SKOSProperty.altLabel) {
+                        if (traductions.get(idFromUri).contains(SKOSProperty.ALT_LABEL) && label.getProperty() == SKOSProperty.ALT_LABEL) {
                             if (altLabelCount > altLabelWrite) {
                                 altIsTrad = true;
                             }
@@ -124,7 +124,7 @@ public class WriteAlphaPDF {
                     labelValue = "-";
                 }
 
-                if (label.getProperty() == SKOSProperty.prefLabel && !prefIsTrad) {
+                if (label.getProperty() == SKOSProperty.PREF_LABEL && !prefIsTrad) {
                     Paragraph paragraph = new Paragraph();
                     Anchor anchor = new Anchor(labelValue, writePdfSettings.termFont);
                     anchor.setReference(uriHelper.getUriForConcept(idFromUri, idArk, idArk));//uri + "&idc=" + idFromUri);
@@ -133,7 +133,7 @@ public class WriteAlphaPDF {
 
                     paragraph.add(anchor);
                     paragraphs.add(paragraph);
-                } else if (label.getProperty() == SKOSProperty.altLabel && !altIsTrad) {
+                } else if (label.getProperty() == SKOSProperty.ALT_LABEL && !altIsTrad) {
                     paragraphs.add(new Paragraph(USE + labelValue, writePdfSettings.textFont));
                 }
             }
@@ -147,17 +147,17 @@ public class WriteAlphaPDF {
             relations.stream()
                     .forEach(relation -> {
                         switch (relation.getProperty()) {
-                    case SKOSProperty.inScheme:
+                    case SKOSProperty.INSCHEME:
                         break;
-                    case SKOSProperty.topConceptOf:
+                    case SKOSProperty.TOP_CONCEPT_OF:
                         break;
-                    case SKOSProperty.narrower:
+                    case SKOSProperty.NARROWER:
                         appendRelation(paragraphs, relation);
                         break;
-                    case SKOSProperty.broader:
+                    case SKOSProperty.BROADER:
                         appendRelation(paragraphs, relation);
                         break;
-                    case SKOSProperty.related:
+                    case SKOSProperty.RELATED:
                         appendRelation(paragraphs, relation);
                         break;                        
                     default:
@@ -192,7 +192,7 @@ public class WriteAlphaPDF {
                     .forEach(document -> {
                         int docCount = 0;
                         if (CollectionUtils.isNotEmpty(tradList)) {
-                            docCount = (int) tradList.stream().filter(traduction -> traduction == SKOSProperty.note).count();
+                            docCount = (int) tradList.stream().filter(traduction -> traduction == SKOSProperty.NOTE).count();
                         }
 
                         String docText = "";
@@ -200,7 +200,7 @@ public class WriteAlphaPDF {
                         if (document.getLanguage().equals(codeLanguage1)) {
                             docText = document.getText();
                         } else {
-                            if (CollectionUtils.isNotEmpty(tradList) && tradList.contains(SKOSProperty.note)) {
+                            if (CollectionUtils.isNotEmpty(tradList) && tradList.contains(SKOSProperty.NOTE)) {
                                 docIsTrad = (docCount > 0);
                             }
                         }

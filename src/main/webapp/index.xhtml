@@ -62,31 +62,6 @@
         <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
         
         
-        <script type="text/javascript">
-            if (document.body) {
-                var larg = (document.body.clientWidth)+ " autre";
-                var haut = (document.body.clientHeight);
-            }
-           <!-- document.write("Cette fenêtre fait " + larg + " de large et "+haut+" de haut");-->
-            
-           <!-- document.write(isSmartphone());-->
-            
-            function isSmartphone() {
-                const userAgent = navigator.userAgent.toLowerCase();
-                const mobileKeywords = ["android", "iphone", "ipad", "ipod", "windows phone", "blackberry", "nokia", "opera mini", "iemobile"];
-
-                for (const keyword of mobileKeywords) {
-                    if (userAgent.includes(keyword)) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        </script>        
-        
-        
-        
         <div id="wrapper" style="height: 100%">
             <ui:include src="commun/menu.xhtml" />
 
@@ -193,7 +168,7 @@
 
             function afficheNotificationBar() {
                 if (animated) {
-                    disparaitre();
+                    afficher();
                 } else {
                     afficher();
                 }

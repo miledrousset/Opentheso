@@ -30,6 +30,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -107,8 +108,10 @@ public class NewConcept implements Serializable {
         notation = null;
         isConceptUnderFacet = false;
         if (conceptBean.getNodeConcept() != null) {
-            for (NodeGroup nodeGroup : conceptBean.getNodeConcept().getNodeConceptGroup()) {
-                idGroup = nodeGroup.getConceptGroup().getIdgroup();
+            if(conceptBean.getNodeConcept().getNodeConceptGroup() != null){
+                for (NodeGroup nodeGroup : conceptBean.getNodeConcept().getNodeConceptGroup()) {
+                    idGroup = nodeGroup.getConceptGroup().getIdgroup();
+                }                
             }
         }
         RelationsHelper relationsHelper = new RelationsHelper();
@@ -541,36 +544,6 @@ public class NewConcept implements Serializable {
         }*/
         nodeSearchMinis = liste;
         return liste;
-    }
-
-    /**
-     * permet de retourner les infos en temps réel pour un concept pour afficher
-     * les groupes et les définitions
-     *
-     * @param idConcept
-     * @param idTerm
-     * @return
-     */
-    public String getInfosConcepts(String idConcept, String idTerm) {
-        String infos = "";
-        GroupHelper groupHelper = new GroupHelper();
-        NoteHelper noteHelper = new NoteHelper();
-        ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> idGroups = conceptHelper.getListGroupIdOfConcept(
-                connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso());
-        for (String idGroup1 : idGroups) {
-            infos = groupHelper.getLexicalValueOfGroup(
-                    connect.getPoolConnexion(), idGroup1,
-                    selectedTheso.getCurrentIdTheso(),
-                    selectedTheso.getCurrentLang());
-        }
-
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesTerm(connect.getPoolConnexion(), idTerm,
-                selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
-        for (NodeNote nodeNote : nodeNotes) {
-            infos = infos + " \n" + nodeNote.getLexicalvalue();
-        }
-        return infos;
     }
 
     public String getPrefLabel() {

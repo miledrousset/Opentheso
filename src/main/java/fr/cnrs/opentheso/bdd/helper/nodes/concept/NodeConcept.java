@@ -47,6 +47,9 @@ public class NodeConcept {
     
         // notes gestion de toutes les notes
     private ArrayList<NodeNote> nodeNotesConcept;
+    
+    // notes gestion de toutes les notes
+    private ArrayList<NodeNote> nodeNotes;    
 
     //images (permet de gérer plusieurs images
     private ArrayList<NodeImage> nodeimages;
@@ -93,6 +96,7 @@ public class NodeConcept {
         if(nodeEM != null) nodeEM.clear();
         if(nodeNotesTerm != null) nodeNotesTerm.clear();
         if(nodeNotesConcept != null) nodeNotesConcept.clear();
+        if(nodeNotes != null) nodeNotes.clear();        
         if(nodeimages != null) nodeimages.clear();
         if(nodeConceptGroup != null) nodeConceptGroup.clear();
         if(nodeTermTraductions != null) nodeTermTraductions.clear();

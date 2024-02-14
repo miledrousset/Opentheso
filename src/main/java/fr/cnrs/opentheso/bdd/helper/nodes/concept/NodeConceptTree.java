@@ -1,7 +1,10 @@
 package fr.cnrs.opentheso.bdd.helper.nodes.concept;
 
 import java.text.Normalizer;
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
+import java.text.Collator;
 
 /**
  * Cette Classe permet de gérer les noeuds de Concept dans l'arbre.
@@ -9,8 +12,8 @@ import java.text.Normalizer;
  * @author miled.rousset
  */
   
-
-public class NodeConceptTree implements Comparable {
+@Data
+public class NodeConceptTree implements Comparable <NodeConceptTree>{
 
 	private String title;
 	private String idConcept;
@@ -23,85 +26,49 @@ public class NodeConceptTree implements Comparable {
         private boolean isSubGroup = false;
         private boolean isTopTerm =false;
         private boolean isTerm =false;
+        private boolean isFacet = false;
         private boolean isDeprecated = false;
-
-    public boolean isIsTopTerm() {
-        return isTopTerm;
-    }
-
-    public void setIsTopTerm(boolean isTopTerm) {
-        this.isTopTerm = isTopTerm;
-    }
-
-    public boolean isIsTerm() {
-        return isTerm;
-    }
-
-    public void setIsTerm(boolean isTerm) {
-        this.isTerm = isTerm;
-    }
-        
-
-        
+       
     public NodeConceptTree() {
         this.title = "";
     }
 
-    public String getTitle() {
-        return title;
-    }
+/*    @Override
+    public int compareTo(NodeConceptTree otherNode) {
+        if (otherNode == null || getClass() != otherNode.getClass()) {
+            throw new ClassCastException("Incompatible types");
+        }            
+        // Utiliser le Collator pour la comparaison naturelle des titres
+        Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.TERTIARY);
 
-    public void setTitle(String title) {
-        this.title = title;
+        return collator.compare(this.title, otherNode.title);
     }
-
-    public String getIdConcept() {
-        return idConcept;
-    }
-
-    public void setIdConcept(String idConcept) {
-        this.idConcept = idConcept;
-    }
-
-    public String getIdThesaurus() {
-        return idThesaurus;
-    }
-
-    public void setIdThesaurus(String idThesaurus) {
-        this.idThesaurus = idThesaurus;
-    }
-
-    public String getIdLang() {
-        return idLang;
-    }
-
-    public void setIdLang(String idLang) {
-        this.idLang = idLang;
-    }
-
-    public boolean isHaveChildren() {
-        return haveChildren;
-    }
-
-    public void setHaveChildren(boolean haveChildren) {
-        this.haveChildren = haveChildren;
-    }
-
-    public boolean isIsDeprecated() {
-        return isDeprecated;
-    }
-
-    public void setIsDeprecated(boolean isDeprecated) {
-        this.isDeprecated = isDeprecated;
-    }
-
+  */  
+   
     @Override
-    public int compareTo(Object o) {
-        String str1, str2;
+    public int compareTo(NodeConceptTree o) {
+        if(StringUtils.isEmpty(o.getTitle())) return 0;
+        if(this.title.equalsIgnoreCase(o.getTitle())) return 0;        
+        
+/*        if (o == null || getClass() != o.getClass()) {
+            throw new ClassCastException("Incompatible types");
+        }        
+        NodeConceptTree other = (NodeConceptTree) o;
+*/
+        String str1 = StringUtils.defaultIfEmpty(this.title, "");
+        String str2 = StringUtils.defaultIfEmpty(o.getTitle(), "");        
+        
+        
+        //String str1, str2;
+        if(StringUtils.isEmpty(this.title)) return 0;
         str1 = Normalizer.normalize(this.title, Normalizer.Form.NFD);
         str1 = str1.replaceAll("[^\\p{ASCII}]", "");
         str2 = Normalizer.normalize(((NodeConceptTree)o).title, Normalizer.Form.NFD);
         str2 = str2.replaceAll("[^\\p{ASCII}]", "");
+         
+      //  int retour = naturalCompare(str1, str2, true);
+     //   System.out.println("str1 :" + str1 + "________" + "str2 :" + str2 + " = " + retour );
         return naturalCompare(str1, str2, true);
         //return str1.toUpperCase().compareTo(str2.toUpperCase());
     }
@@ -156,40 +123,4 @@ public class NodeConceptTree implements Comparable {
         else
             return aLength - bLength;
     }    
-    
-
-    public String getStatusConcept() {
-        return statusConcept;
-    }
-
-    public void setStatusConcept(String statusConcept) {
-        this.statusConcept = statusConcept;
-    }
-
-    public boolean isIsGroup() {
-        return isGroup;
-    }
-
-    public boolean isIsSubGroup() {
-        return isSubGroup;
-    }
-
-    public void setIsSubGroup(boolean isSubGroup) {
-        this.isSubGroup = isSubGroup;
-    }
-
-    public void setIsGroup(boolean isGroup) {
-        this.isGroup = isGroup;
-    }
-
-    public String getNotation() {
-        return notation;
-    }
-
-    public void setNotation(String notation) {
-        this.notation = notation;
-    }
-
-    
-
 }

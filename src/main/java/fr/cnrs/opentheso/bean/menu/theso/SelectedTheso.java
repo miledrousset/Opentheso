@@ -1,7 +1,9 @@
 package fr.cnrs.opentheso.bean.menu.theso;
 
+import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -103,6 +105,7 @@ public class SelectedTheso implements Serializable {
     private List<UserGroupLabel> projectsList;
     private List<ResultatAlignement> resultAlignementList;
 
+    private boolean haveActiveCorpus;
 
     @PreDestroy
     public void destroy(){
@@ -195,6 +198,10 @@ public class SelectedTheso implements Serializable {
         }
     }
 
+    private void thesoHaveActiveCorpus(){
+        haveActiveCorpus = new CorpusHelper().isHaveActiveCorpus(connect.getPoolConnexion(), getSelectedIdTheso());
+    }    
+    
     /**
      * Permet de charger le thésaurus sélectionné C'est le point d'entrée de
      * l'application
@@ -207,6 +214,8 @@ public class SelectedTheso implements Serializable {
         
       //  currentUser.getUserPermissions();
         
+        thesoHaveActiveCorpus();
+        
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
         if (isUriRequest) {
@@ -217,7 +226,6 @@ public class SelectedTheso implements Serializable {
                 searchBean.setBarVisisble(false);
                 PrimeFaces.current().executeScript("disparaitre();");
             }
-            
             menuBean.redirectToThesaurus();
             return;
         }
@@ -232,7 +240,12 @@ public class SelectedTheso implements Serializable {
             init();
             
             indexSetting.setIsSelectedTheso(false);
-            indexSetting.setProjectSelected(true);
+           
+            if ("-1".equals(projectIdSelected)) {
+                indexSetting.setProjectSelected(false); 
+            } else {
+                indexSetting.setProjectSelected(true);                
+            }
             projectBean.init();
 
             roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());
@@ -581,6 +594,7 @@ public class SelectedTheso implements Serializable {
                 currentLang = idLang;
                 selectedLang = idLang;
             }
+            thesoHaveActiveCorpus();
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang);
             actionFromConceptToOn();
             initIdsFromUri();
@@ -591,6 +605,7 @@ public class SelectedTheso implements Serializable {
         // gestion de l'accès par thésaurus d'un identifiant différent 
         if (!idThesoFromUri.equalsIgnoreCase(selectedIdTheso)) {
             if (isValidTheso(idThesoFromUri)) {
+                currentUser.resetUserPermissionsForThisTheso();
                 /// chargement du thésaurus
                 selectedIdTheso = idThesoFromUri;
                 roleOnThesoBean.initNodePref(selectedIdTheso);
@@ -598,7 +613,7 @@ public class SelectedTheso implements Serializable {
                 indexSetting.setIsSelectedTheso(true);
                 indexSetting.setIsThesoActive(true);
                 rightBodySetting.setIndex("0");  
-                
+                thesoHaveActiveCorpus();
                 if (idConceptFromUri != null && !idConceptFromUri.isEmpty()) {
                     // chargement du concept puisqu'il est renseigné
                     conceptBean.getConcept(currentIdTheso, idConceptFromUri, currentLang);
@@ -618,6 +633,8 @@ public class SelectedTheso implements Serializable {
                 return;
             }
         }
+        thesoHaveActiveCorpus();
+        currentUser.initUserPermissionsForThisTheso(selectedIdTheso);
         initIdsFromUri();
     }
 
@@ -938,5 +955,11 @@ public class SelectedTheso implements Serializable {
         this.resultAlignementList = resultAlignementList;
     }
 
+    public boolean isHaveActiveCorpus() {
+        return haveActiveCorpus;
+    }
 
+    public void setHaveActiveCorpus(boolean haveActiveCorpus) {
+        this.haveActiveCorpus = haveActiveCorpus;
+    }
 }
