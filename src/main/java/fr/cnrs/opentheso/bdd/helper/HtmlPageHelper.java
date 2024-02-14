@@ -86,10 +86,10 @@ public class HtmlPageHelper {
     }
 
     private boolean insertHome(HikariDataSource ds, String htmlText, String idLang) {
-
+        
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("insert into homepage (htmlcode, lang) values ('" + htmlText + "', '" + idLang + "')");
+                stmt.executeUpdate("insert into homepage (htmlcode, lang) values ('" + new StringPlus().convertString(htmlText) + "', '" + idLang + "')");
                 return true;
             }
         } catch (SQLException ex) {

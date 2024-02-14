@@ -226,7 +226,6 @@ public class SelectedTheso implements Serializable {
                 searchBean.setBarVisisble(false);
                 PrimeFaces.current().executeScript("disparaitre();");
             }
-            
             menuBean.redirectToThesaurus();
             return;
         }
@@ -241,7 +240,12 @@ public class SelectedTheso implements Serializable {
             init();
             
             indexSetting.setIsSelectedTheso(false);
-            indexSetting.setProjectSelected(true);
+           
+            if ("-1".equals(projectIdSelected)) {
+                indexSetting.setProjectSelected(false); 
+            } else {
+                indexSetting.setProjectSelected(true);                
+            }
             projectBean.init();
 
             roleOnThesoBean.setSelectedThesoForSearch(new ArrayList());

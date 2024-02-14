@@ -30,6 +30,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -107,8 +108,10 @@ public class NewConcept implements Serializable {
         notation = null;
         isConceptUnderFacet = false;
         if (conceptBean.getNodeConcept() != null) {
-            for (NodeGroup nodeGroup : conceptBean.getNodeConcept().getNodeConceptGroup()) {
-                idGroup = nodeGroup.getConceptGroup().getIdgroup();
+            if(conceptBean.getNodeConcept().getNodeConceptGroup() != null){
+                for (NodeGroup nodeGroup : conceptBean.getNodeConcept().getNodeConceptGroup()) {
+                    idGroup = nodeGroup.getConceptGroup().getIdgroup();
+                }                
             }
         }
         RelationsHelper relationsHelper = new RelationsHelper();

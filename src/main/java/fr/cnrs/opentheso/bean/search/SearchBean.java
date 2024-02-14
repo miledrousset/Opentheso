@@ -491,7 +491,7 @@ public class SearchBean implements Serializable {
     }
     
     public void managerSearchBar() {
-        PrimeFaces.current().executeScript("afficheSearchBar();");
+    //    PrimeFaces.current().executeScript("afficheSearchBar();");
     }
 
 
@@ -850,7 +850,7 @@ public class SearchBean implements Serializable {
         PrimeFaces.current().ajax().update("containerIndex:contentConcept");
         PrimeFaces.current().ajax().update("containerIndex:thesoSelect");
 
-        PrimeFaces.current().executeScript("afficheSearchBar()");
+    //    PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
     public NodeSearchMini getSearchSelected() {
@@ -955,15 +955,15 @@ public class SearchBean implements Serializable {
 
     private void afficherResultatRechercheSpecific() {
         if (propositionBean.isPropositionVisibleControle()) {
-            PrimeFaces.current().executeScript("disparaitre();");
-            PrimeFaces.current().executeScript("afficher();");
+    //        PrimeFaces.current().executeScript("disparaitre();");
+        //    PrimeFaces.current().executeScript("afficher();");
             barVisisble = true;
             searchResultVisible = true;
             searchVisibleControle = true;
             propositionBean.setPropositionVisibleControle(false);
         } else if (!barVisisble) {
             searchResultVisible = true;
-            PrimeFaces.current().executeScript("afficher();");
+        //    PrimeFaces.current().executeScript("afficher();");
             barVisisble = true;
             searchVisibleControle = true;
         }

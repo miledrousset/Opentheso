@@ -31,7 +31,7 @@ public class MapUtils {
         String title = StringUtils.isEmpty(term) ? "" : term.replaceAll("'", "_");
 
         if (GpsMode.POINT.equals(gpsMode)) {
-            Pulse pule = new Pulse(true, 10, "#F47B2A");
+            Pulse pule = new Pulse(true, 10, "#0E53FF");
             mapModel.addLayer(new Layer()
                     .setLabel(title).addMarker(new Marker(new LatLong(gpsList.get(0).getLatitude().toString(),
                             gpsList.get(0).getLongitude().toString()), title, pule)));
@@ -42,7 +42,7 @@ public class MapUtils {
                             .addPoint(gpsList.stream()
                                     .map(gps -> new LatLong(gps.getLatitude().toString(), gps.getLongitude().toString()))
                                     .collect(Collectors.toList()))
-                            .setColor("#F47B2A")));
+                            .setColor("#0E53FF")));
         }
 
         return mapModel;
@@ -51,8 +51,11 @@ public class MapUtils {
     public Map updateMap(List<Gps> gpsList, Map mapModel, GpsMode gpsModeSelected, String title) {
         mapModel.getLayers().removeAll(mapModel.getLayers());
         mapModel.setZoom(calculerZoom(gpsList));
+        
+        title = StringUtils.isEmpty(title) ? "" : title.replaceAll("'", "_");        
+        
         if (GpsMode.POINT.equals(gpsModeSelected)) {
-            Pulse pule = new Pulse(true, 10, "#F47B2A");
+            Pulse pule = new Pulse(true, 10, "#0E53FF");
             mapModel.addLayer(new Layer()
                     .setLabel(title)
                     .addMarker(new Marker(new LatLong(gpsList.get(0).getLatitude().toString(),
@@ -64,7 +67,7 @@ public class MapUtils {
                             .addPoint(gpsList.stream()
                                     .map(gps -> new LatLong(gps.getLatitude().toString(), gps.getLongitude().toString()))
                                     .collect(Collectors.toList()))
-                            .setColor("#F47B2A")));
+                            .setColor("#0E53FF")));
         }
 
         mapModel.setCenter(calculerCentrePolyline(gpsList));
