@@ -410,7 +410,7 @@
         <javaee-web-api.version>8.0.1</javaee-web-api.version>
         <javax.faces-api.version>2.3</javax.faces-api.version>
         <jackson-core.version>2.15.0-rc2</jackson-core.version>
-        <commons-compress.version>1.21</commons-compress.version>
+        <commons-compress.version>1.26.0</commons-compress.version>
         <jackson-annotations.version>2.13.3</jackson-annotations.version>
         <cloning.version>1.10.3</cloning.version>
         <swagger.version>2.2.10</swagger.version>
