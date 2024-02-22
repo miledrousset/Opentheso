@@ -1541,7 +1541,7 @@ public class ImportFileBean implements Serializable {
         progress = 0;
         total = 0;
 
-        if (nodeIdValues == null || nodeIdValues.isEmpty()) {
+        if (nodeCompareThesos == null || nodeCompareThesos.isEmpty()) {
             return null;
         }
         if (idTheso == null || idTheso.isEmpty()) {
@@ -1555,21 +1555,27 @@ public class ImportFileBean implements Serializable {
         CsvImportHelper csvImportHelper = new CsvImportHelper();
         String idConcept;
         ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+        
         // mise à jouor des concepts
         try {
-            for (NodeIdValue nodeIdValue : nodeIdValues) {
-                if (nodeIdValue == null) {
+            for (NodeCompareTheso nodeCompareTheso : nodeCompareThesos) {
+                if (nodeCompareTheso == null) {
                     continue;
                 }
-                if (nodeIdValue.getValue() == null || nodeIdValue.getValue().isEmpty()) {
+                if (nodeCompareTheso.getOriginalPrefLabel() == null || nodeCompareTheso.getOriginalPrefLabel().isEmpty()) {
                     continue;
                 }
                 idConcept = conceptHelper.getOneIdConceptFromLabel(connect.getPoolConnexion(),
-                        idTheso, nodeIdValue.getValue(), idLang);
+                        idTheso, nodeCompareTheso.getOriginalPrefLabel(), idLang);
                 if (StringUtils.isEmpty(idConcept)) {
                     continue;
                 }
+                NodeIdValue nodeIdValue = new NodeIdValue();
                 nodeIdValue.setId(idConcept);
+                nodeIdValue.setValue(nodeCompareTheso.getOriginalPrefLabel());
+                
+                nodeIdValues.add(nodeIdValue);
                 total++;
             }
             log.error(csvImportHelper.getMessage());
@@ -2812,7 +2818,8 @@ public class ImportFileBean implements Serializable {
 
             // mise à jour
             PrimeFaces pf = PrimeFaces.current();
-            if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
+            //if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
+            if (tree.getSelectedNode() != null) {
                 tree.initAndExpandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(),
                         nodeConcept.getConcept().getIdThesaurus(),
                         conceptView.getSelectedLang());

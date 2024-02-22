@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    
+    
+    <changeSet author="Miled" id="v24.02.001">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="path_image"/>
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="path_image"/>
+    </changeSet>      
+    <changeSet author="Miled" id="v24.02.002">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="dossier_resize"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="dossier_resize"/>        
+    </changeSet>      
+    <changeSet author="Miled" id="v24.02.003">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="bdd_active"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="bdd_active"/>        
+    </changeSet>   
+    <changeSet author="Miled" id="v24.02.004">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="bdd_use_id"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="bdd_use_id"/>        
+    </changeSet>     
+    
+    <changeSet author="Miled" id="v24.02.005">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="url_bdd"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="url_bdd"/>        
+    </changeSet>      
+    <changeSet author="Miled" id="v24.02.006">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="url_counter_bdd"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="url_counter_bdd"/>        
+    </changeSet>       
+    <changeSet author="Miled" id="v24.02.007">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="z3950actif"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="z3950actif"/>        
+    </changeSet>   
+    
+    <changeSet author="Miled" id="v24.02.008">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="collection_adresse"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="collection_adresse"/>        
+    </changeSet> 
+    <changeSet author="Miled" id="v24.02.009">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="notice_url"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="notice_url"/>        
+    </changeSet>                          
+    <changeSet author="Miled" id="v24.02.010">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="url_encode"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="url_encode"/>        
+    </changeSet>    
+    <changeSet author="Miled" id="v24.02.011">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="path_notice1"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="path_notice1"/>        
+    </changeSet>   
+    <changeSet author="Miled" id="v24.02.012">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="path_notice2"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="path_notice2"/>        
+    </changeSet>      
+    <changeSet author="Miled" id="v24.02.013">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="preferences" columnName="path_notice2"/> 
+        </preConditions>
+        <dropColumn tableName="preferences" columnName="path_notice2"/>        
+    </changeSet>                       
+</databaseChangeLog>

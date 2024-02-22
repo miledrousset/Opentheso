@@ -140,6 +140,7 @@ public class ModifyUSerBean implements Serializable {
             return;              
         }           
         UserHelper userHelper = new UserHelper();
+        nodeUser.setName(nodeUser.getName().trim());
         if(!userHelper.updateUser(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
