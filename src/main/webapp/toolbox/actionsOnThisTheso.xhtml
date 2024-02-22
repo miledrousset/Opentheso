@@ -166,7 +166,7 @@
                         
                         <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>                         
                         
-                        <!-- Récupère les Identifiant d'après un prefLabel -->
+                        <!-- déprécié par Miled, doublon avec la fonction ci-dessous / Récupère les Identifiant d'après un prefLabel  -->
                         <i class="pi pi-upload"></i>
                         <p:commandButton value="#{langueBean.getMsg('actions.getIdFromPrefLabel')}" 
                                          title="#{langueBean.getMsg('actions.getIdFromPrefLabelTooltip')}"
@@ -176,8 +176,9 @@
                                          process="@this" ajax="true"
                                          action="#{importFileBean.init()}"
                                          style="font-size: 12px; color: #601e18" />  
-
                         <br/>
+                        
+                        
                         <!-- Compare une liste de mots avec les termes existants du thésaurus (recherche étendue sur altLabel) -->
                         <i class="pi pi-upload"></i>
                         <p:commandButton value="#{langueBean.getMsg('actions.compareListToTheso')}" 

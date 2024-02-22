@@ -268,6 +268,30 @@
                                                     </div>
                                                 </div>
                                             </div> 
+                                            
+                                            <!-- Activer/ désactiver l'affichage des notes au publique -->
+                                            <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                                <div class="row" style="padding-top: 3px;">
+                                                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                        <h:outputText value="#{langueBean.getMsg('preferences.activateShowHhistoryNote')}"
+                                                                      style="font-size: 14px; font-weight: bold;"/>
+                                                    </div>
+                                                    <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
+                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.showHistoryNote}" style="font-size: 12px;" />
+                                                    </div>
+                                                </div>
+                                            </div>     
+                                            <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                                <div class="row" style="padding-top: 3px;">
+                                                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                        <h:outputText value="#{langueBean.getMsg('preferences.activateShowEditorialNote')}"
+                                                                      style="font-size: 14px; font-weight: bold;"/>
+                                                    </div>
+                                                    <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
+                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.showEditorialNote}" style="font-size: 12px;" />
+                                                    </div>
+                                                </div>
+                                            </div>                                                
 
 
 

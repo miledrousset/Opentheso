@@ -60,4 +60,10 @@
         <sqlFile path="../changelog/v24.01/24-01_007.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>        
  
+ 
+ 
+    <include file="/changelog/v24.02/24-02_001.xml"/>  
+    <include file="/changelog/v24.02/24-02_0014.xml"/>  
+    <include file="/changelog/v24.02/24-02_0015.xml"/>
+ 
 </databaseChangeLog>

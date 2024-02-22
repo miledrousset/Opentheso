@@ -138,6 +138,7 @@ public class NewUSerBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
+        nodeUser.setName(nodeUser.getName().trim());
         if(userHelper.isPseudoExist(connect.getPoolConnexion(), nodeUser.getName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pseudo existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -266,6 +267,7 @@ public class NewUSerBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
+        nodeUser.setName(nodeUser.getName().trim());
         if(userHelper.isPseudoExist(connect.getPoolConnexion(), nodeUser.getName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pseudo existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);

@@ -112,18 +112,7 @@ public class PreferencesHelper {
                         np.setPrefixIdHandle(resultSet.getString("prefix_handle"));
                         np.setPrivatePrefixHandle(resultSet.getString("private_prefix_handle"));
 
-                        np.setPathImage(resultSet.getString("path_image"));
-                        np.setDossierResize(resultSet.getString("dossier_resize"));
-                        np.setBddActive(resultSet.getBoolean("bdd_active"));
-                        np.setBddUseId(resultSet.getBoolean("bdd_use_id"));
-                        np.setUrlBdd(resultSet.getString("url_bdd"));
-                        np.setUrlCounterBdd(resultSet.getString("url_counter_bdd"));
-                        np.setZ3950actif(resultSet.getBoolean("z3950actif"));
-                        np.setCollectionAdresse(resultSet.getString("collection_adresse"));
-                        np.setNoticeUrl(resultSet.getString("notice_url"));
-                        np.setUrlEncode(resultSet.getString("url_encode"));
-                        np.setPathNotice1(resultSet.getString("path_notice1"));
-                        np.setPathNotice2(resultSet.getString("path_notice2"));
+                        
                         np.setCheminSite(resultSet.getString("chemin_site"));
                         np.setWebservices(resultSet.getBoolean("webservices"));
                         np.setOriginalUri(resultSet.getString("original_uri"));
@@ -145,6 +134,9 @@ public class PreferencesHelper {
                         
                         
                         np.setDisplayUserName(resultSet.getBoolean("display_user_name"));
+                        
+                        np.setShowEditorialNote(resultSet.getBoolean("show_editorialnote"));
+                        np.setShowHistoryNote(resultSet.getBoolean("show_historynote"));
                     }
                 }
             }
@@ -305,18 +297,7 @@ public class PreferencesHelper {
                         + ", url_api_handle = '" + np.getUrlApiHandle() + "'"
                         + ", prefix_handle = '" + np.getPrefixIdHandle() + "'"
                         + ", private_prefix_handle = '" + np.getPrivatePrefixHandle() + "'"
-                        + ", path_image='" + stringPlus.convertString(np.getPathImage()) + "'"
-                        + ", dossier_resize='" + stringPlus.convertString(np.getDossierResize()) + "'"
-                        + ", bdd_active='" + np.isBddActive() + "'"
-                        + ", bdd_use_id='" + np.isBddUseId() + "'"
-                        + ", url_bdd='" + stringPlus.convertString(np.getUrlBdd()) + "'"
-                        + ", url_counter_bdd='" + stringPlus.convertString(np.getUrlCounterBdd()) + "'"
-                        + ", z3950actif='" + np.isZ3950actif() + "'"
-                        + ", collection_adresse='" + stringPlus.convertString(np.getCollectionAdresse()) + "'"
-                        + ", notice_url='" + stringPlus.convertString(np.getNoticeUrl()) + "'"
-                        + ", url_encode='" + stringPlus.convertString(np.getUrlEncode()) + "'"
-                        + ", path_notice1='" + stringPlus.convertString(np.getPathNotice1()) + "'"
-                        + ", path_notice2='" + stringPlus.convertString(np.getPathNotice2()) + "'"
+                        
                         + ", chemin_site='" + stringPlus.convertString(np.getCheminSite()) + "'"
                         + ", webservices='" + np.isWebservices() + "'"
                         + ", original_uri='" + stringPlus.convertString(np.getOriginalUri()) + "'"
@@ -336,6 +317,9 @@ public class PreferencesHelper {
                         
                         + ", display_user_name=" + np.isDisplayUserName()
                         
+                        // activation des notes au public
+                        + ", show_historynote=" + np.isShowHistoryNote()
+                        + ", show_editorialnote=" + np.isShowEditorialNote()
 
                         + " WHERE"
                         + " id_thesaurus = '" + idThesaurus + "'";
@@ -364,10 +348,7 @@ public class PreferencesHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "insert into preferences("
-                        + "id_thesaurus, source_lang, identifier_type, path_image,"
-                        + " dossier_resize, bdd_active, bdd_use_id, url_bdd,"
-                        + " url_counter_bdd, z3950actif, collection_adresse,"
-                        + " notice_url, url_encode, path_notice1, path_notice2,"
+                        + "id_thesaurus, source_lang, identifier_type,"
                         + " chemin_site, webservices, use_ark, server_ark, uri_ark,"
                         + " id_naan, prefix_ark, user_ark, pass_ark, generate_handle,"
                         + " use_handle,"
@@ -376,23 +357,13 @@ public class PreferencesHelper {
                         + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
                         + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb,"
                         + " suggestion, use_custom_relation, uppercase_for_ark,"
-                        + " useConceptTree, display_user_name)"
+                        + " useConceptTree, display_user_name, show_historynote, show_editorialnote)"
 
                         + " values('" + idThesaurus + "'"
                         + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
                         + ",'" + np.getIdentifierType() + "'"
-                        + ",'" + stringPlus.convertString(np.getPathImage()) + "'"
-                        + ",'" + stringPlus.convertString(np.getDossierResize()) + "'"
-                        + ",'" + np.isBddActive() + "'"
-                        + ",'" + np.isBddUseId() + "'"
-                        + ",'" + stringPlus.convertString(np.getUrlBdd()) + "'"
-                        + ",'" + stringPlus.convertString(np.getUrlCounterBdd()) + "'"
-                        + ",'" + np.isZ3950actif() + "'"
-                        + ",'" + stringPlus.convertString(np.getCollectionAdresse()) + "'"
-                        + ",'" + stringPlus.convertString(np.getNoticeUrl()) + "'"
-                        + ",'" + stringPlus.convertString(np.getUrlEncode()) + "'"
-                        + ",'" + stringPlus.convertString(np.getPathNotice1()) + "'"
-                        + ",'" + stringPlus.convertString(np.getPathNotice2()) + "'"
+                        
+                        
                         + ",'" + stringPlus.convertString(np.getCheminSite()) + "'"
                         + ",'" + np.isWebservices() + "'"
                         // Ark
@@ -432,6 +403,8 @@ public class PreferencesHelper {
                         + "," + np.isUppercase_for_ark()
                         + "," + np.isUseConceptTree()
                         + "," + np.isDisplayUserName()
+                        + "," + np.isShowHistoryNote()
+                        + "," + np.isShowEditorialNote()
                         + ")";
                 stmt.executeUpdate(query);
                 status = true;
@@ -459,11 +432,6 @@ public class PreferencesHelper {
         if (!nodePreference.getServeurArk().isEmpty()) {
             if (!nodePreference.getServeurArk().substring(nodePreference.getServeurArk().length() - 1, nodePreference.getServeurArk().length()).equalsIgnoreCase("/")) {
                 nodePreference.setServeurArk(nodePreference.getServeurArk() + "/");
-            }
-        }
-        if (!nodePreference.getPathImage().isEmpty()) {
-            if (!nodePreference.getPathImage().substring(nodePreference.getPathImage().length() - 1, nodePreference.getPathImage().length()).equalsIgnoreCase("/")) {
-                nodePreference.setPathImage(nodePreference.getPathImage() + "/");
             }
         }
         return nodePreference;
