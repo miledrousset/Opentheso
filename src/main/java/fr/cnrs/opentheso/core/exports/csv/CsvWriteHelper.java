@@ -387,7 +387,10 @@ public class CsvWriteHelper {
             }      
             if(!StringUtils.isEmpty(nodeImage.getImageName())) {
                 value = value + "@@dcterms:title=" +  nodeImage.getImageName();
-            }             
+            }
+            if(!StringUtils.isEmpty(nodeImage.getCreator())) {
+                value = value + "@@dcterms:creator=" +  nodeImage.getCreator();
+            }              
         }
         return value;
     }     

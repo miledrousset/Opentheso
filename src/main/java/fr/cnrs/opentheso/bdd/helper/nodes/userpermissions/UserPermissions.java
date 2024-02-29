@@ -4,6 +4,7 @@ package fr.cnrs.opentheso.bdd.helper.nodes.userpermissions;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
+import java.io.Serializable;
 import lombok.Data;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @author miledrousset
  */
 @Data
-public class UserPermissions {
+public class UserPermissions implements Serializable{
 
     // chargenement de tous les projets (non connecté) ou après connection
     private List<UserGroupLabel> listProjects;

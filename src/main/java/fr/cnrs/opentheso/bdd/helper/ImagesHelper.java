@@ -32,10 +32,11 @@ public class ImagesHelper {
      * @param copyRight
      * @param uri
      * @param idUser
+     * @param creator
      * @return 
      */
     public boolean addExternalImage(HikariDataSource ds, String idConcept, String idThesausus,
-            String imageName, String copyRight, String uri, int idUser) {
+            String imageName, String copyRight, String uri,String creator, int idUser) {
 
         boolean status = false;
 
@@ -46,9 +47,9 @@ public class ImagesHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into external_images "
-                        + "(id_concept, id_thesaurus, image_name, image_copyright, id_user, external_uri)"
+                        + "(id_concept, id_thesaurus, image_name, image_copyright, id_user, external_uri, image_creator)"
                         + " values ('" + idConcept + "','" + idThesausus + "','" + imageName + "'"
-                        + ",'" + copyRight + "', " + idUser + ",'" + uri + "')");
+                        + ",'" + copyRight + "', " + idUser + ",'" + uri + "','" + creator + "')");
                 status = true;
             }
         } catch (SQLException sqle) {
@@ -63,29 +64,38 @@ public class ImagesHelper {
      * @param ds
      * @param idConcept
      * @param idThesausus
-     * @param oldUri
-     * @param newCopyRight
-     * @param newUri
+     * @param id
+     * @param uri
+     * @param copyRight
+     * @param name
+     * @param creator
      * @param idUser
      * @return
      */
     public boolean updateExternalImage(HikariDataSource ds, String idConcept, String idThesausus,
-            String oldUri, String newUri, String newCopyRight, int idUser) {
+            int id, 
+            String uri, String copyRight, String name, String creator, int idUser) {
 
         boolean status = false;
 
         StringPlus stringPlus = new StringPlus();
-        oldUri = stringPlus.convertString(oldUri);
+        uri = stringPlus.convertString(uri);
 
-        newUri = stringPlus.convertString(newUri);
-        newCopyRight = stringPlus.convertString(newCopyRight);
-        newUri = newUri.trim();
+        name = stringPlus.convertString(name);
+        copyRight = stringPlus.convertString(copyRight);
+        creator = stringPlus.convertString(creator);        
+        uri = uri.trim();
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("UPDATE external_images set image_copyright = '" + newCopyRight
-                        + "', external_uri = '" + newUri + "' WHERE id_concept = '" + idConcept
-                        + "' and id_thesaurus = '" + idThesausus + "' and external_uri = '" + oldUri + "'");
+                stmt.executeUpdate("UPDATE external_images set "
+                        + " image_copyright = '" + copyRight
+                        + "', external_uri = '" + uri + "'"
+                        + ", image_name = '" + name + "'"
+                        + ", image_creator = '" + creator + "'"
+                        + " WHERE id_concept = '" + idConcept + "'"
+                        + " and id_thesaurus = '" + idThesausus + "'"
+                        + " and id = " + id);
                 status = true;
             }
         } catch (SQLException sqle) {
@@ -165,10 +175,12 @@ public class ImagesHelper {
                     nodeImageList = new ArrayList<>();
                     while (resultSet.next()) {
                         NodeImage nodeImage = new NodeImage();
+                        nodeImage.setId(resultSet.getInt("id"));
                         nodeImage.setIdConcept(resultSet.getString("id_concept"));
                         nodeImage.setIdThesaurus(resultSet.getString("id_thesaurus"));
                         nodeImage.setImageName(resultSet.getString("image_name"));
                         nodeImage.setCopyRight(resultSet.getString("image_copyright"));
+                        nodeImage.setCreator(resultSet.getString("image_creator"));                        
                         nodeImage.setUri(resultSet.getString("external_uri"));
                         nodeImageList.add(nodeImage);
                     }

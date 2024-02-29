@@ -3,3 +3,4 @@ Note de version v24.03
 - Possibilité d'afficher ou non les notes (historiques et Editoriales) sur 
   l'interface publique
 
+- ajout d'un champ DCterms (creator) pour les images

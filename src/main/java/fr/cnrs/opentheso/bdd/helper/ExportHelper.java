@@ -308,12 +308,13 @@ public class ExportHelper {
             ArrayList<NodeImage> nodeImages = new ArrayList<>();
             for (String image : images) {
                 String[] imageDetail = image.split(SUB_SEPERATEUR);
-                if(imageDetail.length != 3) return;
+                if(imageDetail.length != 4) return;
                 
                 NodeImage nodeImage = new NodeImage();
                 nodeImage.setImageName(imageDetail[0]);
                 nodeImage.setCopyRight(imageDetail[1]);
                 nodeImage.setUri(imageDetail[2]);
+                nodeImage.setCreator(imageDetail[3]);
                 nodeImages.add(nodeImage);
             }
             resource.setNodeImage(nodeImages);

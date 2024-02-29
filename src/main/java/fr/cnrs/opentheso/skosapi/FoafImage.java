@@ -10,6 +10,7 @@ public class FoafImage {
     private String uri;
     private String identifier;
     private String imageName;
+    private String creator;
     private String copyRight;
 
     /**
@@ -49,6 +50,14 @@ public class FoafImage {
 
     public void setCopyRight(String copyRight) {
         this.copyRight = copyRight;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
 

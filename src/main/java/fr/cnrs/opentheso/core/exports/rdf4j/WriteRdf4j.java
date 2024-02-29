@@ -115,6 +115,9 @@ public class WriteRdf4j {
             if (!StringUtils.isEmpty(nodeImage.getCopyRight())) {
                 builder.add(DCTERMS.RIGHTS, nodeImage.getCopyRight());
             }
+            if (!StringUtils.isEmpty(nodeImage.getCreator())) {
+                builder.add(DCTERMS.CREATOR, nodeImage.getCreator());
+            }            
         }
     }
 

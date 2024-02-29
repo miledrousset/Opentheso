@@ -22,9 +22,19 @@ public class ExternalImagesHelper {
     ////////////////////////////////////////////////////////////////////      
     /**
      * Permet d'ajouter un lien vers une image externe lien de type URI
-     */
+    * 
+    * @param ds
+    * @param idConcept
+    * @param idThesausus
+    * @param imageName
+    * @param copyRight
+    * @param uri
+     * @param creator
+    * @param idUser
+    * @return 
+    */ 
     public boolean addExternalImage(HikariDataSource ds, String idConcept, String idThesausus,
-            String imageName, String copyRight, String uri, int idUser) {
+            String imageName, String copyRight, String uri, String creator, int idUser) {
 
         boolean status = false;
 
@@ -32,9 +42,9 @@ public class ExternalImagesHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into external_images (id_concept, id_thesaurus, image_name, "
-                        + "image_copyright, external_uri) values ('"
+                        + "image_copyright, external_uri, image_creator) values ('"
                         + idConcept + "','" + idThesausus + "','" + imageName + "','"
-                        + copyRight + "','" + uri + "')");
+                        + copyRight + "','" + uri + "','" + creator + "')");
                 status = true;
             }
         } catch (SQLException sqle) {

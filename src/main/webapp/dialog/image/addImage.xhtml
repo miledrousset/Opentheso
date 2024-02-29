@@ -24,14 +24,36 @@
 
             <div class="row" style="margin-top: 10px; text-align: right">
                 <div class="col-3" >
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri_image')}" />              
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri_image')} *" />              
                 </div>
                 <div class="col-9">
                     <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_uri')} ..."  
                                  value="#{imageBean.uri}" style="width: 100%;"/> 
                 </div>
             </div>
+            
+            <!-- Name -->
+            <div class="row" style="margin-top: 10px; text-align: right">
+                <div class="col-3" >
+                    <h:outputText value="#{langueBean.getMsg('statistique.label')}" />              
+                </div>
+                <div class="col-9">
+                    <p:inputText placeholder="..."  
+                                 value="#{imageBean.name}" style="width: 100%;"/> 
+                </div>
+            </div>            
 
+            <!-- creator -->
+            <div class="row" style="margin-top: 10px; text-align: right">
+                <div class="col-3" >
+                    <h:outputText value="#{langueBean.getMsg('dublincore.creator')}" />
+                </div>
+                <div class="col-9">
+                    <p:inputText placeholder="..."  
+                                 value="#{imageBean.creator}" style="width: 100%;"/>
+                </div>
+            </div>
+            
             <div class="row" style="margin-top: 10px; text-align: right">
                 <div class="col-3" >
                     <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.copyright')}" />
@@ -48,8 +70,8 @@
                                  actionListener="PF('addManualAlignment').hide();" update="containerIndex:idAddImage"/>
                 
                 <p:commandButton id="addImageBtn" value="#{langueBean.getMsg('btnValidate')}" 
-                                 update="containerIndex:formRightTab messageIndex"
-                                 oncomplete="PF('addImage').hide();"
+                                 update="containerIndex:formRightTab containerIndex:idAddImage messageIndex"
+                                 oncomplete="PF('addImage').show();"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{imageBean.addNewImage(currentUser.nodeUser.idUser)}" />
             </div>

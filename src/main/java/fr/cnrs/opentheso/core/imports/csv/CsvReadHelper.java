@@ -839,6 +839,9 @@ public class CsvReadHelper {
                 // on récupère les alignements 
                 conceptObject = getAlignments(conceptObject, record, false);
 
+                // on récupère les images
+                conceptObject = getImages(conceptObject, record);
+                
                 // on récupère la localisation
                 conceptObject = getGps(conceptObject, record);
                 conceptObject = getGeoLocalisation(conceptObject, record, false);
@@ -1054,7 +1057,10 @@ public class CsvReadHelper {
                     }
                     if(StringUtils.startsWith(value1, "dcterms:title=")){
                         nodeImage.setImageName(StringUtils.substringAfter(value1, "dcterms:title="));
-                    }                    
+                    }          
+                    if(StringUtils.startsWith(value1, "dcterms:creator=")){
+                        nodeImage.setCreator(StringUtils.substringAfter(value1, "dcterms:creator="));
+                    }                     
                 }
             }
         } catch (Exception e) {
@@ -1945,7 +1951,6 @@ public class CsvReadHelper {
     }
     
     private ConceptObject getImages(ConceptObject conceptObject, CSVRecord record) {
-
         String value;
         String values[];
         ArrayList<NodeImage> nodeImages = new ArrayList<>();
@@ -1954,35 +1959,16 @@ public class CsvReadHelper {
             value = record.get("foaf:image");
             values = value.split("##");
 
-            for (String value1 : values) {
-                if (!value1.isEmpty()) {
-                    NodeImage nodeImage = new NodeImage();
-                    nodeImage.setUri(value1.trim());
-                    nodeImage.setCopyRight("");
+            for (String image : values) {
+                if (!image.isEmpty()) {
+                    NodeImage nodeImage = getNodeImage(image);
                     nodeImages.add(nodeImage);
                 }
             }
-            try {
-                value = record.get("copyright");
-                values = value.split("##");
-                int i = 0;
-                if (nodeImages.size() == values.length) {
-                    for (String value1 : values) {
-                        if (!value1.isEmpty()) {
-                            nodeImages.get(i).setCopyRight(value1);
-                        }
-                        i++;
-                    }
-                }
-            } catch (Exception e) {
-                //System.err.println("");
-            }
-            conceptObject.setImages(nodeImages);
-
+            conceptObject.setImages(nodeImages);            
         } catch (Exception e) {
             //System.err.println("");
         }
-
         return conceptObject;
     }
 

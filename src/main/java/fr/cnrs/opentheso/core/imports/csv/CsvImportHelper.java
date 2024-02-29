@@ -32,10 +32,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.Gps;
-import fr.cnrs.opentheso.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.skosapi.SKOSRelation;
-import fr.cnrs.opentheso.skosapi.SKOSResource;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -249,6 +246,8 @@ public class CsvImportHelper {
 
                     // géolocalisation
                     addGeoLocalisation(ds, idTheso, conceptObject);
+                    
+                    
 
                     first = false;
                 }
@@ -502,10 +501,10 @@ public class CsvImportHelper {
                 if (StringUtils.isEmpty(nodeImage.getUri())) continue;
                 
                 if(StringUtils.isEmpty(images)) {
-                    images = nodeImage.getImageName() + SOUS_SEPERATEUR + nodeImage.getCopyRight() + SOUS_SEPERATEUR + nodeImage.getUri();
+                    images = nodeImage.getImageName() + SOUS_SEPERATEUR + nodeImage.getCopyRight() + SOUS_SEPERATEUR + nodeImage.getUri() + SOUS_SEPERATEUR + nodeImage.getCreator();
                 }
                 else {    
-                    images = images + SEPERATEUR + nodeImage.getImageName() + SOUS_SEPERATEUR + nodeImage.getCopyRight() + SOUS_SEPERATEUR + nodeImage.getUri();
+                    images = images + SEPERATEUR + nodeImage.getImageName() + SOUS_SEPERATEUR + nodeImage.getCopyRight() + SOUS_SEPERATEUR + nodeImage.getUri() + SOUS_SEPERATEUR + nodeImage.getCreator();
                 }
             }
         }
@@ -1796,7 +1795,7 @@ public class CsvImportHelper {
             if(nodeImage == null) continue;
             if (StringUtils.isEmpty(nodeImage.getUri())) continue;            
 
-            if (imagesHelper.addExternalImage(ds, conceptObject.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), idUser1)) {
+            if (imagesHelper.addExternalImage(ds, conceptObject.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser1)) {
                 return false;
             }
         }

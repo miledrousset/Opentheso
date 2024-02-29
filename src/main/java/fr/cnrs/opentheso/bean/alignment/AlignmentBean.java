@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.GpsHelper;
+import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
@@ -623,8 +624,8 @@ public class AlignmentBean implements Serializable {
         //addImages__(idTheso, idConcept, idUser);
         if (CollectionUtils.isNotEmpty(alignment.getSelectedImagesList())) {
             for (SelectedResource selectedResource : alignment.getSelectedImagesList()) {
-                new ExternalImagesHelper().addExternalImage(connect.getPoolConnexion(), idConcept, idTheso, "",
-                        alignementSource.getSource(), selectedResource.getGettedValue(), idUser);
+                new ExternalImagesHelper().addExternalImage(connect.getPoolConnexion(), idConcept, idTheso, selectedResource.getLocalValue(),
+                        alignementSource.getSource(), selectedResource.getGettedValue(), "", idUser);
             }
         }
 
@@ -1883,14 +1884,16 @@ public class AlignmentBean implements Serializable {
     }
 
     private boolean addImages__(String idTheso, String idConcept, int idUser) {
+        
         ExternalImagesHelper imagesHelper = new ExternalImagesHelper();
         for (SelectedResource selectedResource : imagesOfAlignment) {
             if (selectedResource.isSelected()) {
                 if (!imagesHelper.addExternalImage(connect.getPoolConnexion(),
                         idConcept, idTheso,
-                        "",
+                        conceptValueForAlignment,
                         selectedAlignement,
                         selectedResource.getGettedValue(),
+                        "",
                         idUser)) {
                     error = true;
                     alignementResult = alignementResult + ": Erreur dans l'ajout des images";

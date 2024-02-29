@@ -2284,7 +2284,11 @@ public class ImportFileBean implements Serializable {
                     }
                     if (!imagesHelper.addExternalImage(connect.getPoolConnexion(),
                             idConcept, selectedTheso.getCurrentIdTheso(),
-                            "", nodeImage.getCopyRight(), nodeImage.getUri(), currentUser.getNodeUser().getIdUser())) {
+                            nodeImage.getImageName(),
+                            nodeImage.getCopyRight(),
+                            nodeImage.getUri(),
+                            nodeImage.getCreator(),
+                            currentUser.getNodeUser().getIdUser())) {
                         error.append("image non insérée: ");
                         error.append(nodeImage.getUri());
                     }

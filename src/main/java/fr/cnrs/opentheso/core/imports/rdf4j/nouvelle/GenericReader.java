@@ -99,6 +99,9 @@ public class GenericReader {
             case "title":
                 skosResource.getFoafImage().setImageName(literal.getLabel());
                 break;
+            case "creator":
+                skosResource.getFoafImage().setCreator(literal.getLabel());
+                break;                
             case "rights":
                 skosResource.getFoafImage().setCopyRight(literal.getLabel());
                 break;
