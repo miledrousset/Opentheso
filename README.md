@@ -116,8 +116,8 @@ Download the latest version of the WAR example (https://github.com/miledrousset/
      For the virtualHost, it is identical
 
 ### How to run Opentheso2:
---> Apach Tomcat < 10
-1. Launch Apache Tomcat 10
+--> Apach Tomcat 9
+1. Launch Apache Tomcat 9
 2. Move your war in 'webapps' directory
 
 --> Apache Tomcat 10
