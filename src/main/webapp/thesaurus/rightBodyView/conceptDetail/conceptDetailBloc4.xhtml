@@ -134,17 +134,17 @@
                                             <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}"  style="width: 100%; display: block;" />
                                                 <f:facet name="caption">
                                                     <h4 class="mb-2"><a href="#{photo.uri}" target="_blank" style="color:#F7A269;">#{photo.imageName}</a></h4>
-                                                    <i><p:link href="#{photo.uri}" value="#{photo.uri} (#{photo.copyRight})" target="_blank" style="color: white"/></i>
+                                                    <i><p:link href="#{photo.uri}" value="#{photo.uri} (@#{photo.copyRight} _ #{photo.creator})" target="_blank" style="color: white"/></i>
                                                 </f:facet>
                                         </p:galleria>
                                     <div class="row">
                                         <div class="col-12">
                                             <ui:repeat value="#{conceptView.nodeConcept.nodeimages}" var="photo" varStatus="status">
                                                 <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}" style="cursor: pointer; max-height: 200px; max-width: 500px; margin-left: 10px;"
-                                                                onclick="rc([{'name': 'index', 'value': #{status.index}}])" title="#{photo.uri} (#{photo.copyRight})"/>
+                                                                onclick="rc([{'name': 'index', 'value': #{status.index}}])" title="#{photo.uri} (@#{photo.copyRight} _ #{photo.creator})"/>
                                                         <f:facet name="caption">
                                                             <h4 class="mb-2">#{photo.imageName}</h4>
-                                                            <i>#{photo.copyRight}</i>
+                                                            <i>@#{photo.copyRight} _ #{photo.creator}</i>
                                                         </f:facet>                                        
 
                                             </ui:repeat>

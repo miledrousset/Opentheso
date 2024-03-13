@@ -257,6 +257,9 @@ public class ConceptView implements Serializable {
         
         
         // permet de récupérer les qualificatifs
+        if(roleOnThesoBean.getNodePreference() == null){
+            roleOnThesoBean.initNodePref(idTheso);
+        }
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 

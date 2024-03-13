@@ -111,6 +111,10 @@ public class PreferencesHelper {
                         np.setUrlApiHandle(resultSet.getString("url_api_handle"));
                         np.setPrefixIdHandle(resultSet.getString("prefix_handle"));
                         np.setPrivatePrefixHandle(resultSet.getString("private_prefix_handle"));
+                        np.setAdminHandle(resultSet.getString("admin_handle"));
+                        np.setIndexHandle(resultSet.getInt("index_handle"));
+                        
+                        np.setUseHandleWithCertificat(resultSet.getBoolean("use_handle_with_certificat"));
 
                         
                         np.setCheminSite(resultSet.getString("chemin_site"));
@@ -298,6 +302,12 @@ public class PreferencesHelper {
                         + ", prefix_handle = '" + np.getPrefixIdHandle() + "'"
                         + ", private_prefix_handle = '" + np.getPrivatePrefixHandle() + "'"
                         
+                        + ", admin_handle = '" + np.getAdminHandle() + "'"
+                        + ", index_handle = " + np.getIndexHandle()
+                        
+                        + ", use_handle_with_certificat = '" + np.isUseHandleWithCertificat() + "'"
+                        
+                        
                         + ", chemin_site='" + stringPlus.convertString(np.getCheminSite()) + "'"
                         + ", webservices='" + np.isWebservices() + "'"
                         + ", original_uri='" + stringPlus.convertString(np.getOriginalUri()) + "'"
@@ -357,7 +367,7 @@ public class PreferencesHelper {
                         + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
                         + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb,"
                         + " suggestion, use_custom_relation, uppercase_for_ark,"
-                        + " useConceptTree, display_user_name, show_historynote, show_editorialnote)"
+                        + " useConceptTree, display_user_name, show_historynote, show_editorialnote, use_handle_with_certificat, admin_handle, index_handle)"
 
                         + " values('" + idThesaurus + "'"
                         + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
@@ -405,6 +415,9 @@ public class PreferencesHelper {
                         + "," + np.isDisplayUserName()
                         + "," + np.isShowHistoryNote()
                         + "," + np.isShowEditorialNote()
+                        + "," + np.isUseHandleWithCertificat()
+                        + ",'" + np.getAdminHandle() + "'"
+                        + "," + np.getIndexHandle()
                         + ")";
                 stmt.executeUpdate(query);
                 status = true;

@@ -40,14 +40,14 @@
                 <div style="border: 1px solid #43B572; border-radius: 10px; margin-bottom: 20px; padding: 10px">
                     <div class="row" style="margin-bottom: 20px">
                         <div class="col-12">
-                            <h:outputText value="Exportation du thésaurus : " style="color: #000"/>
+                            <h:outputText value="#{langueBean.getMsg('export.thesaurusExport')}: " style="color: #000"/>
                             <h:outputText value="#{viewExportBean.nodeIdValueOfTheso.value} (#{viewExportBean.nodeIdValueOfTheso.id})" style="color: #f47b2a; font-weight: bold;"/>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-12">
-                            <h:outputText value="Format choisi : " style="color: #000"/>
+                            <h:outputText value="#{langueBean.getMsg('candidat.output_format')}: " style="color: #000"/>
                             <h:outputText value="#{viewExportBean.format}" style="color: #f47b2a"/>
                         </div>
                     </div>
@@ -57,20 +57,20 @@
 
 
                 <!-- export PDF -->
-                <p:panel rendered="#{viewExportBean.isPdfExport()}" toggleable="true" closable="false" toggleSpeed="500"
+                <p:panel  rendered="#{viewExportBean.isPdfExport()}" toggleable="true" closable="false" toggleSpeed="500"
                          closeSpeed="500" style="margin-bottom:20px;" collapsed="false">
-                    <h:outputLabel style="color: #000;" value="Types :"/>
+                    <h:outputLabel style="color: #000;" value="#{langueBean.getMsg('statistique.type')}:"/>
                     <p:dataTable id="listType" var="type" value="#{viewExportBean.types}"
                                  selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0" lazy="false">
                         <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
-                        <p:column headerText="Code">
+                        <p:column >
                             <h:outputText value="#{type}" />
                         </p:column>
                     </p:dataTable>
 
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Langue 1" style="color: #000"/>
+                            <h:outputText value="#{langueBean.getMsg('candidat.language')} 1" style="color: #000"/>
                         </div>
                         <div class="col-5" >
                             <p:selectOneMenu value="#{viewExportBean.selectedLang1_PDF}"
@@ -84,7 +84,7 @@
 
                     <div class="row" style="margin-top: 5px">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Langue 2"  style="color: #000"/>
+                            <h:outputText value="#{langueBean.getMsg('candidat.language')} 2"  style="color: #000"/>
                         </div>
                         <div class="col-5" >
                             <p:selectOneMenu value="#{viewExportBean.selectedLang2_PDF}"
@@ -97,27 +97,32 @@
                         </div>
                     </div>
 
-                    <div class="row" style="margin-top: 5px">
-                        <div class="col-3" style="text-align: right">
-                            <h:outputText value="Filtre par collection/groupe" style="color: #000"
-                                          title="Par défaut, tout est sélectionné !!"/>
-                        </div>
+                    <!-- filtre par collection -->
+                    <h:panelGroup id="filerByGroupPdf" >
+                        <div class="row" style="margin-top: 5px">
+                            <div class="col-3" style="text-align: right">
+                                <h:outputText value="#{langueBean.getMsg('statistique.filtre_collection')}" style="color: #000"
+                                              title="#{langueBean.getMsg('eport.allSelectedByDefault')} !!"/>
+                            </div>
 
-                        <div class="col-5">
-                            <p:toggleSwitch id="toggleC" value="#{viewExportBean.toogleFilterByGroup}">
-                                <p:ajax update="toggleC" />
-                            </p:toggleSwitch>
+                            <div class="col-5">
+                                <p:toggleSwitch id="toggleC" value="#{viewExportBean.toogleFilterByGroup}">
+                                    <p:ajax update="containerIndex:filerByGroupPdf " listener="#{viewExportBean.listenerForToogleFilterByGroup()}"/>
+                                </p:toggleSwitch>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row" style="margin-top: 5px">
-                        <div class="col-3" />
-                        <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
-                            <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="select" style="width: 100%; height: 28px; font-size: 12px;"
-                                                  filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
-                                <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
-                            </p:selectCheckboxMenu>
-                        </div>
-                    </div>
+                        <h:panelGroup rendered="#{viewExportBean.toogleFilterByGroup}" >
+                            <div class="row" style="margin-top: 5px">
+                                <div class="col-3" />
+                                <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
+                                    <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; height: 28px; font-size: 12px;"
+                                                          filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
+                                        <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
+                                    </p:selectCheckboxMenu>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
                 </p:panel>
 
 
@@ -127,7 +132,7 @@
                 <h:panelGroup rendered="#{viewExportBean.isRdfExport()}">
                         <div class="row">
                             <div class="col-3" style="text-align: right">
-                                <h:outputText value="Format de sortie SKOS" style="color: #000" />
+                                <h:outputText value="#{langueBean.getMsg('candidat.output_format')} SKOS" style="color: #000" />
                             </div>
                             <div class="col-5">
                                 <p:selectOneMenu value="#{viewExportBean.selectedExportFormat}"
@@ -189,7 +194,7 @@
                 <h:panelGroup rendered="#{viewExportBean.isCsvStrucExport()}" >
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Langue" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:selectOneMenu value="#{viewExportBean.selectedIdLangTheso}"
@@ -207,7 +212,7 @@
                 <h:panelGroup rendered="#{viewExportBean.isCsvExport()}">
                     <div class="row">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Délimiteur Csv" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('actions.csvDdelimiter')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:selectOneMenu value="#{viewExportBean.csvDelimiter}"
@@ -270,7 +275,7 @@
                 <h:panelGroup rendered="#{viewEditionBean.isViewExportCSV_id}">
                     <div class="row">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Délimiteur Csv" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('actions.csvDdelimiter')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:selectOneMenu value="#{viewExportBean.csvDelimiter}"
@@ -285,7 +290,7 @@
 
                     <div class="row" style="text-align: right; margin-top: 10px;">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Langue" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('candidat.language')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:selectOneMenu value="#{viewExportBean.selectedIdLangTheso}"
@@ -298,7 +303,8 @@
                     </div>                    
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Filtre par collection/groupe" style="color: #000" title="Par défaut, tout est sélectionné !!"/>
+                            <h:outputText value="#{langueBean.getMsg('statistique.filtre_collection')}" style="color: #000" 
+                                          title="#{langueBean.getMsg('eport.allSelectedByDefault')} !!"/>
                         </div>
 
                         <div class="col-5">
@@ -313,7 +319,7 @@
                             <div class="col-3" />
 
                             <div class="col-5">
-                                <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="select" style="width: 100%; height: 28px; font-size: 12px;"
+                                <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; height: 28px; font-size: 12px;"
                                                       filter="true" filterMatchMode="contains" panelStyle="width: 21rem; font-size: 0.8rem;" scrollHeight="250" >
                                     <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
                                 </p:selectCheckboxMenu>
@@ -329,7 +335,7 @@
                     <!-- export des concepts dépréciés en CSV -->
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Langue" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:selectOneMenu value="#{viewExportBean.selectedIdLangTheso}"
@@ -342,7 +348,7 @@
                     </div>
                     <div class="row" style="margin-left: 30px; margin-right: 30px;">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Délimiteur Csv" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('actions.csvDdelimiter')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:selectOneMenu value="#{viewExportBean.csvDelimiter}"
@@ -363,7 +369,7 @@
                          style="margin-bottom:10px; margin-top: 10px">
                     <div class="row">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Graphe" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('graph')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:inputText id="graphe" type="text" value="#{viewEditionBean.nomGraphe}" style="width: 100%; color: #000" />
@@ -372,7 +378,7 @@
 
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Adresse" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('server')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:inputText id="adresse" type="text" value="#{viewEditionBean.urlServer}" style="width: 100%; color: #000" />
@@ -381,7 +387,7 @@
 
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Login" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('menu.username')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:inputText id="login" type="text" value="#{viewEditionBean.login}" style="width: 100%; color: #000" />
@@ -390,7 +396,7 @@
 
                     <div class="row" style="margin-top: 10px">
                         <div class="col-3" style="text-align: right">
-                            <h:outputText value="Password" style="color: #000" />
+                            <h:outputText value="#{langueBean.getMsg('menu.password')}" style="color: #000" />
                         </div>
                         <div class="col-5">
                             <p:inputText id="password" type="text" value="#{viewEditionBean.password}" style="width: 100%; color: #000" />
@@ -416,7 +422,7 @@
                             <p:fileDownload value="#{exportFileBean.exportNewGen()}" />
                         </p:commandButton>
 
-                        <p:commandButton value="Exporter vers Vertuoso" ajax="false"
+                        <p:commandButton value="#{langueBean.getMsg('export.toVirtuoso')}" ajax="false"
                                          onclick="PrimeFaces.monitorDownload(start, stop);"
                                          icon="fa fa-upload" styleClass="ui-button-success"
                                          style="margin-left: 20px"
@@ -439,7 +445,7 @@
     </script>
 
 
-    <p:dialog modal="true" widgetVar="statusDialog" header="     Exportation du fichier     " draggable="false" closable="false" resizable="false"
+                                <p:dialog modal="true" widgetVar="statusDialog" header="    #{langueBean.getMsg('candidat.export')}     " draggable="false" closable="false" resizable="false"
               style="width: 400px">
 
         <div id='laodingDiv' class="loader" >Loading...</div>

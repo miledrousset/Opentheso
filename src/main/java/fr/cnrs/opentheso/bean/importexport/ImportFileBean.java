@@ -1555,7 +1555,7 @@ public class ImportFileBean implements Serializable {
         CsvImportHelper csvImportHelper = new CsvImportHelper();
         String idConcept;
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
+    //    ArrayList<NodeIdValue> nodeIdValuesTemp = new ArrayList<>();
         
         // mise à jouor des concepts
         try {
@@ -1571,11 +1571,15 @@ public class ImportFileBean implements Serializable {
                 if (StringUtils.isEmpty(idConcept)) {
                     continue;
                 }
-                NodeIdValue nodeIdValue = new NodeIdValue();
+                nodeCompareTheso.setIdConcept(idConcept);
+                nodeCompareTheso.setPrefLabel(conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang));
+                nodeCompareTheso.setIdArk(conceptHelper.getIdArkOfConcept(connect.getPoolConnexion(), idConcept, idTheso));
+                
+            /*    NodeIdValue nodeIdValue = new NodeIdValue();
                 nodeIdValue.setId(idConcept);
                 nodeIdValue.setValue(nodeCompareTheso.getOriginalPrefLabel());
                 
-                nodeIdValues.add(nodeIdValue);
+                nodeIdValuesTemp.add(nodeIdValue);*/
                 total++;
             }
             log.error(csvImportHelper.getMessage());
@@ -1590,7 +1594,7 @@ public class ImportFileBean implements Serializable {
             error.append(csvImportHelper.getMessage());
 
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
-            byte[] datas = csvWriteHelper.writeCsvIdValue(nodeIdValues, idLang);
+            byte[] datas = csvWriteHelper.writeCsvFromNodeCompareTheso(nodeCompareThesos, idLang);//CsvIdValue(nodeCompareThesos, idLang);
 
             try (ByteArrayInputStream input = new ByteArrayInputStream(datas)) {
                 return DefaultStreamedContent.builder()

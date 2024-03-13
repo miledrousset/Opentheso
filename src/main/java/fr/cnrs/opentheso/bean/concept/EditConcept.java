@@ -27,6 +27,7 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
+import fr.cnrs.opentheso.ws.handlestandard.HandleService;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -37,6 +38,7 @@ import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import net.handle.hdllib.HandleException;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
@@ -1000,24 +1002,42 @@ public class EditConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        HandleHelper handleHelper = new HandleHelper(roleOnThesoBean.getNodePreference());
-
-        if (!handleHelper.deleteIdHandle(
-                conceptView.getNodeConcept().getConcept().getIdHandle(),
-                selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", handleHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            return;
-        }
         ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateHandleIdOfConcept(connect.getPoolConnexion(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                "");
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        
+        if(roleOnThesoBean.getNodePreference().isUseHandleWithCertificat()) {
+            HandleHelper handleHelper = new HandleHelper(roleOnThesoBean.getNodePreference());
+            if (!handleHelper.deleteIdHandle(
+                    conceptView.getNodeConcept().getConcept().getIdHandle(),
+                    selectedTheso.getCurrentIdTheso())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", handleHelper.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return;
+            }
+
+            conceptHelper.updateHandleIdOfConcept(connect.getPoolConnexion(),
+                    conceptView.getNodeConcept().getConcept().getIdConcept(),
+                    selectedTheso.getCurrentIdTheso(),
+                    "");
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);            
+        } else {
+            HandleService hs = HandleService.getInstance();
+            hs.applyNodePreference(roleOnThesoBean.getNodePreference());
+            hs.connectHandle(); 
+            try {
+                hs.deleteHandle(conceptView.getNodeConcept().getConcept().getIdHandle());
+            } catch (HandleException ex) {
+                System.out.println(ex.toString());
+            }    
+            conceptHelper.updateHandleIdOfConcept(connect.getPoolConnexion(),
+                    conceptView.getNodeConcept().getConcept().getIdConcept(),
+                    selectedTheso.getCurrentIdTheso(),
+                    "");            
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La suppression de Handle a réussi !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);                
+        }
     }
 
     /**

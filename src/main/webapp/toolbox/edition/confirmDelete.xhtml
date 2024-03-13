@@ -4,29 +4,40 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core"
              xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="idConfirmDelete" header="Confirmer la suppression" widgetVar="confirmDelete" 
+    <p:dialog id="idConfirmDelete" header="#{langueBean.getMsg('rightbody.conceptdialog.confirmDelete')}" widgetVar="confirmDelete" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
+        <h:form>
         <div class="row">
             <div class="col-12" >
-                <h:outputText value="Voulez-vous supprimer le thésaurus: " style="font-size: 13px; color: black;"/>                    
+                <h:outputText value="#{langueBean.getMsg('edition.confirmDeleteTheso')}: " style="font-size: 13px; color: black;"/>                    
             </div>
         </div>
 
         <div class="row" style="margin-top: 5px">
             <div class="col-12" >
                 <h:outputText value="#{deleteThesoBean.valueOfThesoToDelelete} (#{deleteThesoBean.idThesoToDelete})"
-                              style="font-size: 13px; color: #C63632;"/>
+                              style="font-size: 15px; color: #C63632;"/>
             </div>            
         </div>
 
-        <div class="row" style="margin-top: 5px">
+        <div class="row" style="margin-top: 15px">
             <div class="col-12" >
-                <h:outputText value="La suppression est définitive !!" style="font-size: 13px; color: black;"/> 
+                <h:outputText value="#{langueBean.getMsg('edition.confirmDeleteArkHandle')}: " style="font-size: 13px; color: black;"/> 
+                <p:toggleSwitch value="#{deleteThesoBean.deletePerennialIdentifiers}" onIcon="pi pi-times" offIcon="pi pi-check" style="margin-left: 10px">
+
+                </p:toggleSwitch>
+                     
+            </div>            
+        </div>        
+        
+        
+        <div class="row" style="margin-top: 15px; text-align: center">
+            <div class="col-12" >
+                <h:outputText value="#{langueBean.getMsg('concept.alerteSeleteConcept2')} !!" style="font-size: 20px; color: #C63632;"/> 
             </div>            
         </div>
 
-        <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+        <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
 
             <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
                              icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
@@ -38,5 +49,6 @@
                              actionListener="#{deleteThesoBean.deleteTheso()}"
                              action="#{roleOnTheso.showListTheso()}"/>
         </div> 
+            </h:form>
     </p:dialog>     
 </ui:fragment>

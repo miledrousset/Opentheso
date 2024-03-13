@@ -154,7 +154,7 @@
                     <h:panelGroup id="notesActionsGroup" rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                 <p:spacer height="2px" width="98%" style="margin-left: 0px; margin-bottom: 10px;
                           background-color: #CBD1DC; font-weight: 100"  />   
-                        <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
                                       style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"

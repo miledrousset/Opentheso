@@ -79,7 +79,7 @@ public class AlignmentBean implements Serializable {
     private boolean isViewResult = true;
     private boolean isViewSelection = false;
 
-    private boolean allAlignementVisible, propositionAlignementVisible;
+    private boolean allAlignementVisible, propositionAlignementVisible, manageAlignmentVisible;
     private List<NodeAlignment> allAlignementFound, selectAlignementForAdd;
 
     private boolean viewSetting = false;
@@ -176,11 +176,26 @@ public class AlignmentBean implements Serializable {
     public AlignementElement getAlignementElementSelected() {
         return alignementElementSelected;
     }
+    
+    public void initForManageAlignment(){
+        setAllAlignementVisible(false);
+        setPropositionAlignementVisible(false);
+        setManageAlignmentVisible(true);
+    }
 
+    public void cancelForManageAlignment(){
+        setAllAlignementVisible(true);
+        setPropositionAlignementVisible(false);
+        setManageAlignmentVisible(false);
+    }    
+    
+ 
+    
     public void clear() {
 
         allAlignementVisible = true;
         propositionAlignementVisible = false;
+        manageAlignmentVisible = false;
 
         if (alignementSources != null) {
             alignementSources.clear();
@@ -525,6 +540,7 @@ public class AlignmentBean implements Serializable {
 
         if (CollectionUtils.isNotEmpty(allAlignementFound)) {
             allAlignementVisible = false;
+            manageAlignmentVisible = false;
             propositionAlignementVisible = true;
             PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         } else {
@@ -541,6 +557,7 @@ public class AlignmentBean implements Serializable {
 
         allAlignementVisible = true;
         propositionAlignementVisible = false;
+        manageAlignmentVisible = false;
 
         initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
@@ -558,6 +575,7 @@ public class AlignmentBean implements Serializable {
 
             allAlignementVisible = true;
             propositionAlignementVisible = false;
+            manageAlignmentVisible = false;
 
             initAlignementByStep(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     conceptBean.getSelectedLang());
@@ -654,6 +672,7 @@ public class AlignmentBean implements Serializable {
         if (CollectionUtils.isEmpty(allAlignementFound)) {
             setAllAlignementVisible(true);
             setPropositionAlignementVisible(false);
+            setManageAlignmentVisible(false);
 
             initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -2338,6 +2357,14 @@ public class AlignmentBean implements Serializable {
     public void setPropositionAlignementVisible(boolean propositionAlignementVisible) {
         this.propositionAlignementVisible = propositionAlignementVisible;
     }
+    
+    public boolean isManageAlignmentVisible() {
+        return manageAlignmentVisible;
+    }
+
+    public void setManageAlignmentVisible(boolean manageAlignmentVisible) {
+        this.manageAlignmentVisible = manageAlignmentVisible;
+    }    
 
     public List<NodeAlignment> getAllAlignementFound() {
         return allAlignementFound;
@@ -2454,4 +2481,5 @@ public class AlignmentBean implements Serializable {
     public void setSelectAlignementForAdd(List<NodeAlignment> selectAlignementForAdd) {
         this.selectAlignementForAdd = selectAlignementForAdd;
     }
+    
 }

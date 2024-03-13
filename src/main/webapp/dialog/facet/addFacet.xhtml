@@ -52,8 +52,9 @@
 
                 <p:commandButton id="validateNewFacet" styleClass="ui-button-success" 
                                  value="#{langueBean.getMsg('btnValidate')}" 
-                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex"                                
+                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex containerIndex:idAddFacet"                                
                                  actionListener="#{editFacet.addNewFacet()}"
+                                 oncomplete="PF('addFacet').show();"
                                  icon="pi pi-check" ajax="true" process="@form" />
             </div>
         </h:form>        

@@ -4,3 +4,6 @@ Note de version v24.03
   l'interface publique
 
 - ajout d'un champ DCterms (creator) pour les images
+
+- ajout d'un paramètre pour communiquer avec un serveur Handle standard
+

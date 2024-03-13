@@ -86,6 +86,25 @@ public class PreferenceBean implements Serializable {
 
     }
 
+    public void updateSelectedServer(String selectedServer){
+        switch (selectedServer) {
+            case "ark":
+                nodePreference.setUseArkLocal(false);
+                nodePreference.setUseHandle(false);                
+                break;
+            case "arklocal":
+                nodePreference.setUseArk(false);
+                nodePreference.setUseHandle(false);                
+                break;
+            case "handle":
+                nodePreference.setUseArk(false);
+                nodePreference.setUseArkLocal(false);                
+                break;                
+            default:
+                break;
+        }
+    }
+    
     public String getGoogleAnalytics() {
         PreferencesHelper preferencesHelper = new PreferencesHelper();
         if(connect == null || connect.getPoolConnexion() == null) return "";

@@ -1206,6 +1206,173 @@ public class SearchHelper {
      * @param idTheso
      * @return
      */
+    public ArrayList<NodeSearchMini> searchExactMatchTest(HikariDataSource ds,
+            String value, String idLang, String idTheso) {
+        StringPlus stringPlus = new StringPlus();
+
+        ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
+        value = stringPlus.convertString(value);
+        //    value = stringPlus.unaccentLowerString(value);
+        String lang;
+        if (idLang == null) {
+            lang = "";
+        } else {
+            lang = " and term.lang = '" + idLang + "'";
+        }
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select preferred_term.id_concept, term.lexical_value, term.id_term, concept.status from term, preferred_term, concept where"
+                        + " concept.id_concept = preferred_term.id_concept"
+                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and"
+                        + " preferred_term.id_term = term.id_term"
+                        + " and"
+                        + " preferred_term.id_thesaurus = term.id_thesaurus"
+                        + " and"
+                        + " term.id_thesaurus = '" + idTheso + "'"
+                        + lang
+                        + " and concept.status != 'CA'"
+                        + " and ("
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('" + value + "')"
+                        + "	or"
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('" + value + " %')"
+                        + "	or"
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('% " + value + "')"
+                        + "	or"
+                        // pour les tirets pour trouver victor exp: saint-victor
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('" + value + "-%')"
+                        + "	or"
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('%-" + value + "-%')"
+                        + "	or"
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('%-" + value + "')"
+                        + "	or"
+                        // pour les sous_tirets pour trouver victor exp: saint_victor
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('" + value + "\\_%')"
+                        + "	or"
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('%\\_" + value + "\\_%')"
+                        + "	or"
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('%\\_" + value + "')"
+                        + "	or"
+                        + "	unaccent_text(lexical_value) ILIKE unaccent_text('%''" + value + "')"
+                        // pour les parenthèses pour trouver monstre exp: (monstre)                                
+                        + "     or"
+                        + "     unaccent_text(lexical_value) ILIKE unaccent_text('%(" + value + ")%')"
+                        + "     or"
+                        + "     unaccent_text(lexical_value) ILIKE unaccent_text('" + value + "(%')"        
+                        + "	)"
+                        + " order by lexical_value");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMinis.add(nodeSearchMini);
+                        nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
+
+                        nodeSearchMini.setIsConcept(true);
+                        if (resultSet.getString("status").equalsIgnoreCase("DEP")) {
+                            nodeSearchMini.setIsDeprecated(true);
+                        }
+
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("lexical_value"))) {
+                            nodeSearchMinis.add(0, nodeSearchMini);
+                        } else {
+                            nodeSearchMinis.add(nodeSearchMini);
+                        }
+                    }
+                }
+            }
+
+    /*        try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select preferred_term.id_concept, term.id_term,"
+                        + " non_preferred_term.lexical_value as npt, term.lexical_value as pt, concept.status"
+                        + " from non_preferred_term, term, preferred_term, concept where"
+                        + " concept.id_concept = preferred_term.id_concept"
+                        + " and concept.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and"
+                        + " preferred_term.id_term = term.id_term"
+                        + " and"
+                        + " preferred_term.id_thesaurus = term.id_thesaurus"
+                        + " and"
+                        + " preferred_term.id_term = non_preferred_term.id_term"
+                        + " and"
+                        + " term.lang = non_preferred_term.lang"
+                        + " and"
+                        + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
+                        + " and"
+                        + " term.id_thesaurus = '" + idTheso + "'"
+                        + lang
+                        + " and concept.status != 'CA'"
+                        + " and ("
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + " %'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('% " + value + "'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "-%'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%-" + value + "'))"
+                        + "	or"
+                        // pour les sous_tirets pour trouver victor exp: saint_victor
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('" + value + "\\_%'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "\\_%'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%\\_" + value + "'))"
+                        + "	or"
+                        + "	unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%''" + value + "'))"
+                        + "     or"
+                        + "     unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%(" + value + ")%'))"
+                        + "	)"
+                        + "order by non_preferred_term.lexical_value");
+
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeSearchMini nodeSearchMini = new NodeSearchMini();
+                        nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
+                        nodeSearchMini.setIdTerm(resultSet.getString("id_term"));
+                        nodeSearchMini.setAltLabel(resultSet.getString("npt"));
+                        nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
+
+                        nodeSearchMini.setIsAltLabel(true);
+                        if (resultSet.getString("status").equalsIgnoreCase("DEP")) {
+                            nodeSearchMini.setIsDeprecated(true);
+                        }
+
+                        if (value.trim().equalsIgnoreCase(resultSet.getString("npt"))) {
+                            nodeSearchMinis.add(0, nodeSearchMini);
+                        } else {
+                            nodeSearchMinis.add(nodeSearchMini);
+                        }
+                    }
+                }
+            }*/
+            //// rechercher les collections
+   //         nodeSearchMinis = searchCollections(conn, idTheso, value, idLang, nodeSearchMinis);
+
+            /// rechercher les Facettes
+    //        nodeSearchMinis = searchFacets(conn, idTheso, value, idLang, nodeSearchMinis);
+        } catch (SQLException sqle) {
+            log.error("Error while search excat of value  : " + value, sqle);
+        }
+        return nodeSearchMinis;
+    }    
+    
+    
+    
+    /**
+     * Permet de chercher les terms exacts avec des règles précises pour trouver
+     * par exemple : or, Ur, d'Ur ...
+     *
+     * @param ds
+     * @param value
+     * @param idLang
+     * @param idTheso
+     * @return
+     */
     public ArrayList<NodeSearchMini> searchExactMatch(HikariDataSource ds,
             String value, String idLang, String idTheso) {
         StringPlus stringPlus = new StringPlus();

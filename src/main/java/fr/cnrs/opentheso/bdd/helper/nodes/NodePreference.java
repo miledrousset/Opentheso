@@ -34,6 +34,12 @@ public class NodePreference {
     private String urlApiHandle;
     private String prefixIdHandle;
     private String privatePrefixHandle;    
+    private String adminHandle;
+    private int indexHandle;
+    
+    private boolean useHandleWithCertificat;
+    
+    
     
     private String cheminSite;
     private boolean webservices;

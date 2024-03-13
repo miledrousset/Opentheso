@@ -829,6 +829,7 @@ public class CsvWriteHelper {
                 ArrayList<String> header = new ArrayList<>();
                 header.add("originalPrefLabel@" + idLang);
                 header.add("conceptId");
+                header.add("arkId");
                 header.add("skos:prefLabel@" + idLang);
                 header.add("skos:altLabel@" + idLang);
 
@@ -838,6 +839,7 @@ public class CsvWriteHelper {
                     try {
                         record.add(nodeCompareTheso.getOriginalPrefLabel());
                         record.add(nodeCompareTheso.getIdConcept());
+                        record.add(nodeCompareTheso.getIdArk());
                         record.add(nodeCompareTheso.getPrefLabel());
                         record.add(nodeCompareTheso.getAltLabel());
                         csvFilePrinter.printRecord(record);

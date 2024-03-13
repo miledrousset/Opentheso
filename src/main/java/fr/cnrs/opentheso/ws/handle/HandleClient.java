@@ -324,6 +324,112 @@ public class HandleClient {
         return null;
     }
     
+    public String putHandle2(String pass,
+            String pathKey, String pathCert, 
+            String urlHandle, String idHandle,
+            String jsonData) {
+
+        String output;
+        String xmlRecord = "";
+
+        try {
+            KeyStore clientStore = KeyStore.getInstance("PKCS12");
+            //"motdepasse" = le mot de passe saisie pour la génération des certificats.
+        //    clientStore.load(new FileInputStream("key.p12"), "motdepasse".toCharArray());
+            clientStore.load(this.getClass().getResourceAsStream(pathKey), pass.toCharArray());
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(clientStore, pass.toCharArray());
+            
+            KeyStore trustStore = KeyStore.getInstance("JKS");
+//            trustStore.load(new FileInputStream("cacerts2"), pass.toCharArray());
+            trustStore.load(this.getClass().getResourceAsStream(pathCert), pass.toCharArray());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(trustStore);
+
+            SSLContext sslContext;
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), new SecureRandom());
+
+            //URL url = new URL("https://cchum-isi-handle01.in2p3.fr:8001/api/handles/20.500.11942/opentheso443");
+            // idHandle = 20.500.11942/opentheso443
+            URL url = new URL(urlHandle + idHandle);
+            
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setSSLSocketFactory(sslContext.getSocketFactory());
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "Handle clientCert=\"true\"");
+            conn.setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String arg0, SSLSession arg1) {
+                    return true;
+                }
+            });
+            conn.setUseCaches(false);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            OutputStream os = conn.getOutputStream();
+
+            OutputStreamWriter out = new OutputStreamWriter(os);
+            out.write(jsonData);
+            out.flush();
+
+            int status = conn.getResponseCode();
+            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
+            // status = 201 = création réussie
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            while ((output = br.readLine()) != null) {
+                xmlRecord += output;
+            }
+            byte[] bytes = xmlRecord.getBytes();
+            xmlRecord = new String(bytes, Charset.forName("UTF-8"));
+            br.close();
+            os.close();
+            conn.disconnect();
+            message = message + "\n" + xmlRecord;
+            message = message + "\n" + "status de la réponse : " + status;
+            if(status == 200 || status == 201) {
+                message = "Création du Handle réussie";
+                return getIdHandle(xmlRecord); 
+            }
+            if(status == 100) {
+                message = "Handle n'existe pas";
+                return null;
+            }
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
+        } catch (KeyStoreException ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
+        } catch (CertificateException ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
+        } catch (UnrecoverableKeyException ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
+        } catch (KeyManagementException ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
+        } catch (IOException ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
+        } catch (Exception ex) {
+            Logger.getLogger(HandleClient.class.getName()).log(Level.SEVERE, null, ex);
+            message = message + ex.getMessage();            
+        }        
+        return null;
+    }    
+    
+    
     /**
      * Permet de supprimer l'identifiant Handle d'une resource
      * @param pass
