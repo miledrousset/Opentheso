@@ -39,13 +39,13 @@ public class GroupView implements Serializable {
     private ArrayList<NodeGroupTraductions> nodeGroupTraductions;
     private NodeGroupType nodeGroupType;
     
-    private ArrayList<NodeNote> notes;
-    private ArrayList<NodeNote> scopeNotes;
-    private ArrayList<NodeNote> changeNotes;
-    private ArrayList<NodeNote> definitions;
-    private ArrayList<NodeNote> editorialNotes;
-    private ArrayList<NodeNote> examples;
-    private ArrayList<NodeNote> historyNotes;        
+    private NodeNote note;
+    private NodeNote scopeNote;
+    private NodeNote changeNote;
+    private NodeNote definition;
+    private NodeNote editorialNote;
+    private NodeNote example;
+    private NodeNote historyNote;        
     
     private int count;
 
@@ -116,37 +116,37 @@ public class GroupView implements Serializable {
         for (NodeNote nodeNote : nodeNotes) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":
-                    notes.add(nodeNote);
+                    note  = nodeNote;
                     break;
                 case "scopeNote":
-                    scopeNotes.add(nodeNote);
+                    scopeNote = nodeNote;
                     break;
                 case "changeNote":
-                    changeNotes.add(nodeNote);
+                    changeNote = nodeNote;
                     break;
                 case "definition":
-                    definitions.add(nodeNote);
+                    definition = nodeNote;
                     break;
                 case "editorialNote":
-                    editorialNotes.add(nodeNote);
+                    editorialNote = nodeNote;
                     break;
                 case "example":
-                    examples.add(nodeNote);
+                    example = nodeNote;
                     break;
                 case "historyNote":
-                    historyNotes.add(nodeNote);
+                    historyNote = nodeNote;
                     break;
             }
         }
     }
     private void clearNotes() {
-        notes = new ArrayList<>();
-        scopeNotes = new ArrayList<>();
-        changeNotes = new ArrayList<>();
-        definitions = new ArrayList<>();
-        editorialNotes = new ArrayList<>();
-        examples = new ArrayList<>();
-        historyNotes = new ArrayList<>();
+        note = null;
+        scopeNote = null;
+        changeNote = null;
+        definition = null;
+        editorialNote = null;
+        example = null;
+        historyNote = null;
     }        
 
     public NodeGroup getNodeGroup() {
@@ -181,60 +181,62 @@ public class GroupView implements Serializable {
         this.nodeGroupType = nodeGroupType;
     }
 
-    public ArrayList<NodeNote> getNotes() {
-        return notes;
+    public NodeNote getNote() {
+        return note;
     }
 
-    public void setNotes(ArrayList<NodeNote> notes) {
-        this.notes = notes;
+    public void setNote(NodeNote note) {
+        this.note = note;
     }
 
-    public ArrayList<NodeNote> getScopeNotes() {
-        return scopeNotes;
+    public NodeNote getScopeNote() {
+        return scopeNote;
     }
 
-    public void setScopeNotes(ArrayList<NodeNote> scopeNotes) {
-        this.scopeNotes = scopeNotes;
+    public void setScopeNote(NodeNote scopeNote) {
+        this.scopeNote = scopeNote;
     }
 
-    public ArrayList<NodeNote> getChangeNotes() {
-        return changeNotes;
+    public NodeNote getChangeNote() {
+        return changeNote;
     }
 
-    public void setChangeNotes(ArrayList<NodeNote> changeNotes) {
-        this.changeNotes = changeNotes;
+    public void setChangeNote(NodeNote changeNote) {
+        this.changeNote = changeNote;
     }
 
-    public ArrayList<NodeNote> getDefinitions() {
-        return definitions;
+    public NodeNote getDefinition() {
+        return definition;
     }
 
-    public void setDefinitions(ArrayList<NodeNote> definitions) {
-        this.definitions = definitions;
+    public void setDefinition(NodeNote definition) {
+        this.definition = definition;
     }
 
-    public ArrayList<NodeNote> getEditorialNotes() {
-        return editorialNotes;
+    public NodeNote getEditorialNote() {
+        return editorialNote;
     }
 
-    public void setEditorialNotes(ArrayList<NodeNote> editorialNotes) {
-        this.editorialNotes = editorialNotes;
+    public void setEditorialNote(NodeNote editorialNote) {
+        this.editorialNote = editorialNote;
     }
 
-    public ArrayList<NodeNote> getExamples() {
-        return examples;
+    public NodeNote getExample() {
+        return example;
     }
 
-    public void setExamples(ArrayList<NodeNote> examples) {
-        this.examples = examples;
+    public void setExample(NodeNote example) {
+        this.example = example;
     }
 
-    public ArrayList<NodeNote> getHistoryNotes() {
-        return historyNotes;
+    public NodeNote getHistoryNote() {
+        return historyNote;
     }
 
-    public void setHistoryNotes(ArrayList<NodeNote> historyNotes) {
-        this.historyNotes = historyNotes;
+    public void setHistoryNote(NodeNote historyNote) {
+        this.historyNote = historyNote;
     }
+
+ 
    
 }

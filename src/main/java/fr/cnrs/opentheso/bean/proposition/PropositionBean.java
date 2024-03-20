@@ -33,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
-
 @Data
 @SessionScoped
 @Named(value = "propositionBean")
@@ -65,7 +64,7 @@ public class PropositionBean implements Serializable {
 
     @Inject
     private SearchBean searchBean;
-    
+
     @Inject
     private LanguageBean languageBean;
 
@@ -85,7 +84,7 @@ public class PropositionBean implements Serializable {
             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
             editorialNotesAccepted, examplesAccepted, historyAccepted;
 
-    public void init(){
+    public void init() {
         nom = "";
         email = "";
         commentaire = "";
@@ -94,15 +93,15 @@ public class PropositionBean implements Serializable {
         propositionSelected = null;
         propositions = null;
     }
-    
+
     public void onSelectConcept(PropositionDao propositionDao) throws IOException {
 
         this.propositionSelected = propositionDao;
-        
+
         NodePreference preference = new PreferencesHelper().getThesaurusPreferences(
                 connect.getPoolConnexion(), propositionDao.getIdTheso());
         if (!preference.isSuggestion()) {
-            showMessage(FacesMessage.SEVERITY_WARN, 
+            showMessage(FacesMessage.SEVERITY_WARN,
                     languageBean.getMsg("rightbody.proposal.avertissement"));
             return;
         }
@@ -124,7 +123,7 @@ public class PropositionBean implements Serializable {
         email = propositionDao.getEmail();
         commentaire = propositionDao.getCommentaire();
         commentaireAdmin = propositionDao.getAdminComment();
-        
+
         chercherProposition();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
 
@@ -144,7 +143,7 @@ public class PropositionBean implements Serializable {
         checkSynonymPropositionStatus();
         checkTraductionPropositionStatus();
         checkNotePropositionStatus();
-        
+
         PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
@@ -167,48 +166,48 @@ public class PropositionBean implements Serializable {
     }
 
     public void checkNotePropositionStatus() {
-
-        for (NotePropBean note : proposition.getNotes()) {
-            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+        if (proposition.getNote() != null) {
+            if (proposition.getNote().isToAdd() || proposition.getNote().isToRemove() || proposition.getNote().isToUpdate()) {
                 noteAccepted = true;
             }
         }
 
-        for (NotePropBean note : proposition.getDefinitions()) {
-            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+        if (proposition.getDefinition() != null) {
+            if (proposition.getDefinition().isToAdd() || proposition.getDefinition().isToRemove() || proposition.getDefinition().isToUpdate()) {
                 definitionAccepted = true;
             }
         }
 
-        for (NotePropBean note : proposition.getChangeNotes()) {
-            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+        if (proposition.getChangeNote() != null) {
+            if (proposition.getChangeNote().isToAdd() || proposition.getChangeNote().isToRemove() || proposition.getChangeNote().isToUpdate()) {
                 changeNoteAccepted = true;
             }
         }
 
-        for (NotePropBean note : proposition.getScopeNotes()) {
-            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+        if (proposition.getScopeNote() != null) {
+            if (proposition.getScopeNote().isToAdd() || proposition.getScopeNote().isToRemove() || proposition.getScopeNote().isToUpdate()) {
                 scopeAccepted = true;
             }
         }
 
-        for (NotePropBean note : proposition.getEditorialNotes()) {
-            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+        if (proposition.getEditorialNote() != null) {
+            if (proposition.getEditorialNote().isToAdd() || proposition.getEditorialNote().isToRemove() || proposition.getEditorialNote().isToUpdate()) {
                 editorialNotesAccepted = true;
             }
         }
 
-        for (NotePropBean note : proposition.getExamples()) {
-            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+        if (proposition.getExample() != null) {
+            if (proposition.getExample().isToAdd() || proposition.getExample().isToRemove() || proposition.getExample().isToUpdate()) {
                 examplesAccepted = true;
             }
         }
 
-        for (NotePropBean note : proposition.getHistoryNotes()) {
-            if (note.isToAdd() || note.isToRemove() || note.isToUpdate()) {
+        if (proposition.getHistoryNote() != null) {
+            if (proposition.getHistoryNote().isToAdd() || proposition.getHistoryNote().isToRemove() || proposition.getHistoryNote().isToUpdate()) {
                 historyAccepted = true;
             }
         }
+
     }
 
     public void annuler() {
@@ -235,7 +234,7 @@ public class PropositionBean implements Serializable {
                 propositionVisibleControle = true;
             }
         }
-        
+
         PrimeFaces.current().ajax().update("containerIndex:notificationPanel");
     }
 
@@ -267,26 +266,26 @@ public class PropositionBean implements Serializable {
         actionNom = action;
         switch (actionNom) {
             case "envoyerProposition":
-                message =languageBean.getMsg("rightbody.proposal.confirmSendProposal");
+                message = languageBean.getMsg("rightbody.proposal.confirmSendProposal");
                 break;
             case "approuverProposition":
-                message =languageBean.getMsg("rightbody.proposal.confirmValidateProposal");                
+                message = languageBean.getMsg("rightbody.proposal.confirmValidateProposal");
                 break;
             case "refuserProposition":
-                message =languageBean.getMsg("rightbody.proposal.confirmRejectProposal");                
+                message = languageBean.getMsg("rightbody.proposal.confirmRejectProposal");
                 break;
             case "supprimerProposition":
-                message =languageBean.getMsg("rightbody.proposal.confirmDeleteProposal");                
+                message = languageBean.getMsg("rightbody.proposal.confirmDeleteProposal");
                 break;
             default:
-                message = languageBean.getMsg("rightbody.proposal.confirmCancelProposal");                
+                message = languageBean.getMsg("rightbody.proposal.confirmCancelProposal");
         }
         PrimeFaces.current().executeScript("PF('confirmDialog').show();");
     }
 
     public void executionAction() throws IOException {
         if (null != actionNom) {
-            if(propositionSelected != null) {
+            if (propositionSelected != null) {
                 propositionSelected.setAdminComment(commentaireAdmin);
                 propositionSelected.setThesoName(selectedTheso.getThesoName());
             }
@@ -320,7 +319,7 @@ public class PropositionBean implements Serializable {
                     break;
             }
         }
-        
+
         chercherProposition();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
 
@@ -332,13 +331,14 @@ public class PropositionBean implements Serializable {
 
         isNewProposition = true;
         isRubriqueVisible = true;
-        if(currentUser.getNodeUser() == null)
+        if (currentUser.getNodeUser() == null) {
             rightBodySetting.setIndex("2");
-        else {
-            if(roleOnThesoBean.getNodeUserRoleGroup().isIsContributor())
+        } else {
+            if (roleOnThesoBean.getNodeUserRoleGroup().isIsContributor()) {
                 rightBodySetting.setIndex("2");
-            else
+            } else {
                 rightBodySetting.setIndex("3");
+            }
         }
 
         proposition = propositionService.selectProposition(nodeConcept);
@@ -358,7 +358,7 @@ public class PropositionBean implements Serializable {
         if (StringUtils.isEmpty(proposition.getNomConceptProp())) {
             proposition.setNomConceptProp("");
             proposition.setUpdateNomConcept(false);
-            
+
             showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("rightbody.proposal.alertEmptyLabel"));
         } else {
             if (propositionService.updateNomConcept(proposition.getNomConceptProp())) {
@@ -399,7 +399,7 @@ public class PropositionBean implements Serializable {
         if (StringUtils.isEmpty(commentaire)) {
             showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.send_message.msg1"));
             return;
-        }        
+        }
 
         if (StringUtils.isEmpty(proposition.getNomConceptProp()) && !isSynchroProPresent() && !isTraductionProPresent()
                 && !isNoteProPresent() && !isChangeNoteProPresent() && !isDefinitionProPresent()
@@ -428,77 +428,65 @@ public class PropositionBean implements Serializable {
     }
 
     private boolean isHistoryNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getHistoryNotes())) {
-            for (NotePropBean history : proposition.getHistoryNotes()) {
-                if (history.isToAdd() || history.isToRemove() || history.isToUpdate()) {
-                    return true;
-                }
+        if (proposition.getHistoryNote() != null) {
+            if (proposition.getHistoryNote().isToAdd() || proposition.getHistoryNote().isToRemove() || proposition.getHistoryNote().isToUpdate()) {
+                return true;
             }
         }
         return false;
     }
 
     private boolean isScopeNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getScopeNotes())) {
-            for (NotePropBean scope : proposition.getScopeNotes()) {
-                if (scope.isToAdd() || scope.isToRemove() || scope.isToUpdate()) {
-                    return true;
-                }
+        if (proposition.getScopeNote() != null) {
+            if (proposition.getScopeNote().isToAdd() || proposition.getScopeNote().isToRemove() || proposition.getScopeNote().isToUpdate()) {
+                return true;
             }
         }
+
         return false;
     }
 
     private boolean isExempleNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getExamples())) {
-            for (NotePropBean exemple : proposition.getExamples()) {
-                if (exemple.isToAdd() || exemple.isToRemove() || exemple.isToUpdate()) {
-                    return true;
-                }
+        if (proposition.getExample() != null) {
+            if (proposition.getExample().isToAdd() || proposition.getExample().isToRemove() || proposition.getExample().isToUpdate()) {
+                return true;
             }
         }
         return false;
     }
 
     private boolean isEditorialNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getEditorialNotes())) {
-            for (NotePropBean editorialNote : proposition.getEditorialNotes()) {
-                if (editorialNote.isToAdd() || editorialNote.isToRemove() || editorialNote.isToUpdate()) {
-                    return true;
-                }
+        if (proposition.getEditorialNote() != null) {
+            if (proposition.getEditorialNote().isToAdd() || proposition.getEditorialNote().isToRemove() || proposition.getEditorialNote().isToUpdate()) {
+                return true;
             }
         }
         return false;
     }
 
     private boolean isNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
-            for (NotePropBean notePropBean : proposition.getNotes()) {
-                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
-                    return true;
-                }
+        if (proposition.getNote() != null) {
+            if (proposition.getNote().isToAdd() || proposition.getNote().isToRemove() || proposition.getNote().isToUpdate()) {
+                return true;
             }
         }
         return false;
     }
 
     private boolean isChangeNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
-            for (NotePropBean notePropBean : proposition.getChangeNotes()) {
-                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
-                    return true;
-                }
+        if (proposition.getChangeNote() != null) {
+            if (proposition.getChangeNote().isToAdd() || proposition.getChangeNote().isToRemove() || proposition.getChangeNote().isToUpdate()) {
+                return true;
             }
         }
+
         return false;
     }
 
     private boolean isDefinitionProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
-            for (NotePropBean notePropBean : proposition.getDefinitions()) {
-                if (notePropBean.isToAdd() || notePropBean.isToRemove() || notePropBean.isToUpdate()) {
-                    return true;
-                }
+        if (proposition.getDefinition() != null) {
+            if (proposition.getDefinition().isToAdd() || proposition.getDefinition().isToRemove() || proposition.getDefinition().isToUpdate()) {
+                return true;
             }
         }
         return false;
@@ -531,19 +519,19 @@ public class PropositionBean implements Serializable {
     }
 
     public Boolean isCanMakeAction() {
-        return (currentUser.getNodeUser() !=null && !currentUser.getNodeUser().getMail().equalsIgnoreCase(email))
+        return (currentUser.getNodeUser() != null && !currentUser.getNodeUser().getMail().equalsIgnoreCase(email))
                 && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso());
     }
-    
+
     public boolean isSameUser() {
-        if(currentUser.getNodeUser() != null) {
-            return currentUser.getNodeUser().getMail().equalsIgnoreCase(email); 
+        if (currentUser.getNodeUser() != null) {
+            return currentUser.getNodeUser().getMail().equalsIgnoreCase(email);
         }
-       return false;
+        return false;
     }
 
     public boolean isIsConsultation() {
         return isConsultation;
     }
-    
+
 }

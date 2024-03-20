@@ -24,17 +24,16 @@
                 </div>
             </div> 
             <p:spacer height="20px;"/>
-            <p:panel style=" max-height: 500px; overflow-y:scroll">
+            <p:panel style=" max-height: 500px; overflow-x:hidden">
                 <ui:repeat var="noteToEdit" value="#{noteBean.nodeToEdit()}" >
                     <div class="row" style="margin-bottom: 10px;">
                         <div class="col-10" colXs="9" style="background: #FAFAFA">
                             <p:textEditor value="#{noteToEdit.lexicalvalue}" allowLinks="true" secure="false"
                                           placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />          
                         </div>
-                
 
                         <div class="col-2" style="align-self: center;">  
-                            <img src="#{conceptView.getDrapeauImgLocal(noteToEdit.lang)}" width="25" height="20" style="margin-right: 7px"/>
+                            <img src="#{conceptView.getDrapeauImgLocal(noteToEdit.lang)}" width="25" height="20" style="margin-right: 5px"/>
                             <p:commandButton update="containerIndex:formRightTab containerIndex:idEditNote messageIndex"
                                          action="#{noteBean.updateNote( noteToEdit, currentUser.nodeUser.idUser)}"
                                          icon="pi pi-save" 

@@ -293,6 +293,45 @@
                                                 </div>
                                             </div>                                                
 
+                                            
+                                            <!-- Activer/ désactiver le module Deepl -->
+
+                                            <h:panelGroup id="deepl">
+                                                <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                                    <div class="row" style="padding-top: 3px;">
+                                                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                            <h:outputText value="#{langueBean.getMsg('preferences.activateDeeplTranlation')}"
+                                                                          style="font-size: 14px; font-weight: bold;"/>
+                                                        </div>
+                                                        <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
+                                                            <p:toggleSwitch value="#{preferenceBean.nodePreference.use_deepl_translation}" style="font-size: 12px;" >
+                                                                <p:ajax event="change" update="deepl" />
+                                                            </p:toggleSwitch>
+                                                                
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <h:panelGroup id="deeplApiKey" rendered="#{preferenceBean.nodePreference.use_deepl_translation}">
+                                                    <div class="list-group-item list-group-item-action" style=" margin-top: 5px">
+                                                        <div class="row" style="padding-top: 3px;">
+                                                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6" style="text-align: right; margin-top: 6px">
+                                                                <h:outputText value="#{langueBean.getMsg('preferences.deeplApiKey')}"
+                                                                              style="font-size: 14px; font-weight: bold;"/>
+                                                            </div>
+                                                            <div class="col-xl-6 col-lg-6 col-md-5 col-sm-5">
+                                                                <p:password value="#{preferenceBean.nodePreference.deepl_api_key}" style="width: 100%"/>
+                                                                
+                                                                <h:outputText rendered="#{preferenceBean.nodePreference.deepl_api_key != null and preferenceBean.nodePreference.deepl_api_key != '' }"
+                                                                              value="#{langueBean.getMsg('preferences.actualDeeplApiKey')} = ........#{preferenceBean.nodePreference.deepl_api_key.substring(preferenceBean.nodePreference.deepl_api_key.length()/2)}"/>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>  
+                                                </h:panelGroup>
+    
+                                            </h:panelGroup>
+                                            
+                                            
 
 
                                         </div>        

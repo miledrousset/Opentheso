@@ -9,6 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -20,6 +21,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -87,18 +89,23 @@ public class PreferenceBean implements Serializable {
     }
 
     public void updateSelectedServer(String selectedServer){
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+       
         switch (selectedServer) {
             case "ark":
                 nodePreference.setUseArkLocal(false);
-                nodePreference.setUseHandle(false);                
+                nodePreference.setUseHandle(false);
+                preferencesHelper.setUseArk(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());                
                 break;
             case "arklocal":
                 nodePreference.setUseArk(false);
-                nodePreference.setUseHandle(false);                
+                nodePreference.setUseHandle(false);  
+                preferencesHelper.setUseArkLocal(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());                 
                 break;
             case "handle":
                 nodePreference.setUseArk(false);
-                nodePreference.setUseArkLocal(false);                
+                nodePreference.setUseArkLocal(false);      
+                preferencesHelper.setUseHandle(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());                 
                 break;                
             default:
                 break;
@@ -118,6 +125,7 @@ public class PreferenceBean implements Serializable {
 
         FacesMessage msg;
         PreferencesHelper preferencesHelper = new PreferencesHelper();
+        
         if (!preferencesHelper.updateAllPreferenceUser(connect.getPoolConnexion(),
                 nodePreference, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur d'enregistrement des préférences !!!");

@@ -209,7 +209,7 @@
                 
 
                 <!-- Note -->
-                <h:panelGroup rendered="#{editFacet.notes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.note != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -228,17 +228,16 @@
                                                     update="containerIndex:idDeleteNote" oncomplete="PF('deleteNote').show();" icon="fas fa-minus"/>
                                     </p:menuButton>
                                 </h:panelGroup>                                        
-                                <ui:repeat var="note" value="#{editFacet.notes}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>
-                                </ui:repeat>
+                                
+                                    <h:outputText value="#{editFacet.note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
 
                 <!-- ChangeNote -->
-                <h:panelGroup rendered="#{editFacet.changeNotes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.changeNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -258,7 +257,7 @@
                                                 action = "#{noteBean.setSelectedTypeNote('changeNote')}" oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />                                        
                                 </p:menuButton>
-                                <ui:repeat var="changeNote" value="#{editFacet.changeNotes}" varStatus="status">
+                                <ui:repeat var="changeNote" value="#{editFacet.changeNote}" varStatus="status">
                                     <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
@@ -269,7 +268,7 @@
                 </h:panelGroup>
 
                 <!-- Definition -->
-                <h:panelGroup rendered="#{editFacet.definitions.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.definition != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -289,7 +288,7 @@
                                                 oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote"
                                                 icon="fas fa-minus"/>
                                 </p:menuButton>
-                                <ui:repeat var="def" value="#{editFacet.definitions}" varStatus="status">
+                                <ui:repeat var="def" value="#{editFacet.definition}" varStatus="status">
                                     <h:outputText rendered="#{status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <h:outputText rendered="#{!status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
@@ -300,7 +299,7 @@
                 </h:panelGroup>
 
                 <!-- EditorialNote -->
-                <h:panelGroup rendered="#{editFacet.editorialNotes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.editorialNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -322,7 +321,7 @@
                                                 action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
                                                 oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote" />
                                 </p:menuButton> 
-                                <ui:repeat var="editorialNote" value="#{editFacet.editorialNotes}" varStatus="status">
+                                <ui:repeat var="editorialNote" value="#{editFacet.editorialNote}" varStatus="status">
                                     <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
@@ -333,7 +332,7 @@
                 </h:panelGroup>
 
                 <!-- Example -->
-                <h:panelGroup rendered="#{editFacet.examples.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.example != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -356,7 +355,7 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <ui:repeat var="example" value="#{editFacet.examples}" varStatus="status">
+                                <ui:repeat var="example" value="#{editFacet.example}" varStatus="status">
                                     <h:outputText rendered="#{status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <h:outputText rendered="#{!status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
@@ -367,7 +366,7 @@
                 </h:panelGroup>
 
                 <!-- History -->
-                <h:panelGroup rendered="#{editFacet.historyNotes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.historyNote != null}">
                     <div class="list-group-item list-group-item-action" >                        
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -390,7 +389,7 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <ui:repeat var="historyNote" value="#{editFacet.historyNotes}" varStatus="status">
+                                <ui:repeat var="historyNote" value="#{editFacet.historyNote}" varStatus="status">
                                     <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
@@ -401,7 +400,7 @@
                 </h:panelGroup>
 
                 <!-- ScopeNote -->
-                <h:panelGroup rendered="#{editFacet.scopeNotes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.scopeNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -424,7 +423,7 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <ui:repeat var="scopeNote" value="#{editFacet.scopeNotes}" varStatus="status">
+                                <ui:repeat var="scopeNote" value="#{editFacet.scopeNote}" varStatus="status">
                                     <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    

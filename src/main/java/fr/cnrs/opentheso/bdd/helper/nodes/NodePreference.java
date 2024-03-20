@@ -68,5 +68,9 @@ public class NodePreference {
     /// pour masquer les notes à l'interface publique
     private boolean showHistoryNote;
     private boolean showEditorialNote;
+    
+    // pour gérer le module de traduction via Deepl
+    private boolean use_deepl_translation;
+    private String deepl_api_key;
 
 }

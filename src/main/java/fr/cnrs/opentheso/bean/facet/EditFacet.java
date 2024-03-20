@@ -58,15 +58,16 @@ public class EditFacet implements Serializable {
     private NodeIdValue facetSelectedAutocomplete;
     
     /// première définition à la création 
-    private String definition;
-
-    private ArrayList<NodeNote> notes;
-    private ArrayList<NodeNote> scopeNotes;
-    private ArrayList<NodeNote> changeNotes;
-    private ArrayList<NodeNote> definitions;
-    private ArrayList<NodeNote> editorialNotes;
-    private ArrayList<NodeNote> examples;
-    private ArrayList<NodeNote> historyNotes;    
+    private String definition1;
+    
+    
+    private NodeNote note;
+    private NodeNote scopeNote;
+    private NodeNote changeNote;
+    private NodeNote definition;
+    private NodeNote editorialNote;
+    private NodeNote example;
+    private NodeNote historyNote;    
     
     
     @PreDestroy
@@ -168,37 +169,37 @@ public class EditFacet implements Serializable {
         for (NodeNote nodeNote : nodeNotes) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":
-                    notes.add(nodeNote);
+                    note = nodeNote;
                     break;
                 case "scopeNote":
-                    scopeNotes.add(nodeNote);
+                    scopeNote = nodeNote;
                     break;
                 case "changeNote":
-                    changeNotes.add(nodeNote);
+                    changeNote = nodeNote;
                     break;
                 case "definition":
-                    definitions.add(nodeNote);
+                    definition = nodeNote;
                     break;
                 case "editorialNote":
-                    editorialNotes.add(nodeNote);
+                    editorialNote = nodeNote;
                     break;
                 case "example":
-                    examples.add(nodeNote);
+                    example = nodeNote;
                     break;
                 case "historyNote":
-                    historyNotes.add(nodeNote);
+                    historyNote = nodeNote;
                     break;
             }
         }
     }
     private void clearNotes() {
-        notes = new ArrayList<>();
-        scopeNotes = new ArrayList<>();
-        changeNotes = new ArrayList<>();
-        definitions = new ArrayList<>();
-        editorialNotes = new ArrayList<>();
-        examples = new ArrayList<>();
-        historyNotes = new ArrayList<>();
+        note = null;
+        scopeNote = null;
+        changeNote =  null;
+        definition = null;
+        editorialNote = null;
+        example = null;
+        historyNote = null;
     }    
 
     public void initNewFacet(){
@@ -562,10 +563,10 @@ public class EditFacet implements Serializable {
         tree.addNewFacet(tree.getSelectedNode(), newFacetName, idFacet+"");
 
         // ajout de la définition s'il elle est renseignée
-        if(StringUtils.isNotEmpty(definition)) {
+        if(StringUtils.isNotEmpty(definition1)) {
             NoteHelper noteHelper = new NoteHelper();
             noteHelper.addNote(connect.getPoolConnexion(), idFacet, selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
-                    definition, "definition", "",  currentUser.getNodeUser().getIdUser());            
+                    definition1, "definition", "",  currentUser.getNodeUser().getIdUser());            
         }
         
         PrimeFaces pf = PrimeFaces.current();
@@ -575,7 +576,7 @@ public class EditFacet implements Serializable {
         }
 
         newFacetName = "";
-        definition = "";
+        definition1 = "";
     }
 
     public void updateLabelFacet() {
@@ -662,13 +663,15 @@ public class EditFacet implements Serializable {
         pf.ajax().update("messageIndex");
     }
 
-    public String getDefinition() {
-        return definition;
+    public String getDefinition1() {
+        return definition1;
     }
 
-    public void setDefinition(String definition) {
-        this.definition = definition;
+    public void setDefinition1(String definition1) {
+        this.definition1 = definition1;
     }
+
+
 
     public NodeFacet getFacetSelected() {
         return facetSelected;
@@ -766,60 +769,62 @@ public class EditFacet implements Serializable {
         this.facetSelectedAutocomplete = facetSelectedAutocomplete;
     }
 
-    public ArrayList<NodeNote> getNotes() {
-        return notes;
+    public NodeNote getNote() {
+        return note;
     }
 
-    public void setNotes(ArrayList<NodeNote> notes) {
-        this.notes = notes;
+    public void setNote(NodeNote note) {
+        this.note = note;
     }
 
-    public ArrayList<NodeNote> getScopeNotes() {
-        return scopeNotes;
+    public NodeNote getScopeNote() {
+        return scopeNote;
     }
 
-    public void setScopeNotes(ArrayList<NodeNote> scopeNotes) {
-        this.scopeNotes = scopeNotes;
+    public void setScopeNote(NodeNote scopeNote) {
+        this.scopeNote = scopeNote;
     }
 
-    public ArrayList<NodeNote> getChangeNotes() {
-        return changeNotes;
+    public NodeNote getChangeNote() {
+        return changeNote;
     }
 
-    public void setChangeNotes(ArrayList<NodeNote> changeNotes) {
-        this.changeNotes = changeNotes;
+    public void setChangeNote(NodeNote changeNote) {
+        this.changeNote = changeNote;
     }
 
-    public ArrayList<NodeNote> getDefinitions() {
-        return definitions;
+    public NodeNote getDefinition() {
+        return definition;
     }
 
-    public void setDefinitions(ArrayList<NodeNote> definitions) {
-        this.definitions = definitions;
+    public void setDefinition(NodeNote definition) {
+        this.definition = definition;
     }
 
-    public ArrayList<NodeNote> getEditorialNotes() {
-        return editorialNotes;
+    public NodeNote getEditorialNote() {
+        return editorialNote;
     }
 
-    public void setEditorialNotes(ArrayList<NodeNote> editorialNotes) {
-        this.editorialNotes = editorialNotes;
+    public void setEditorialNote(NodeNote editorialNote) {
+        this.editorialNote = editorialNote;
     }
 
-    public ArrayList<NodeNote> getExamples() {
-        return examples;
+    public NodeNote getExample() {
+        return example;
     }
 
-    public void setExamples(ArrayList<NodeNote> examples) {
-        this.examples = examples;
+    public void setExample(NodeNote example) {
+        this.example = example;
     }
 
-    public ArrayList<NodeNote> getHistoryNotes() {
-        return historyNotes;
+    public NodeNote getHistoryNote() {
+        return historyNote;
     }
 
-    public void setHistoryNotes(ArrayList<NodeNote> historyNotes) {
-        this.historyNotes = historyNotes;
+    public void setHistoryNote(NodeNote historyNote) {
+        this.historyNote = historyNote;
     }
+
+
 
 }

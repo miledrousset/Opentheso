@@ -7,8 +7,10 @@ package deepl;
 import com.deepl.api.Language;
 import com.deepl.api.LanguageType;
 import com.deepl.api.TextResult;
+import com.deepl.api.TextTranslationOptions;
 import com.deepl.api.Translator;
 import com.deepl.api.Usage;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -54,12 +56,12 @@ public class Translate {
         TextResult result =
                 translator.translateText("Cette branche concerne les secteurs d’activité professionnelle ou potentiellement professionnelle socialement et/ou légalement reconnus sur la base de critères d’appartenance, d'efficacité des pratiques employées, de l’adoption de méthodes communes et de la capacité de transfert de connaissances et d’expertise à ce secteur professionnel.", "fr", "en-GB");
         System.out.println(result.getText()); // "Bonjour, le monde !"
-        result =
-                translator.translateText("Activité d'achat et de revente de biens et de services.", "fr", "en-GB");
+        result = translator.translateText("Activité d'achat et de revente de biens et de services.", "fr", "en-GB");
         System.out.println(result.getText()); // "Bonjour, le monde !"      
-        result =
-                translator.translateText("Terme à utiliser dans un sens économique \"distribution, répartition des richesses\"", "fr", "en-GB");
+        result = translator.translateText("voiture", "fr", "en-GB");
         System.out.println(result.getText()); // "Bonjour, le monde !"      
+        
+        
         
     
         /// liste des langues acceptées pour la tradcution 
@@ -74,5 +76,11 @@ public class Translate {
         
         Usage usage = translator.getUsage();
 
+    }
+    
+    @Test
+    public void getDate(){
+                LocalDate currentDate = LocalDate.now();
+                System.out.println("deepl.Translate.getDate()" + currentDate);
     }
 }
