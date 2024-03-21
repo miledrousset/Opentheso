@@ -12,6 +12,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>        
+        
+        <dependency>
             <groupId>net.handle</groupId>
             <artifactId>handle-client</artifactId>
             <version>9.3.1</version>
