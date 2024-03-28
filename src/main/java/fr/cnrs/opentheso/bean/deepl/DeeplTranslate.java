@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
@@ -16,9 +17,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.jena.sparql.function.library.date;
-
-
 
 @Named(value = "deeplTranslate")
 @SessionScoped
@@ -26,35 +24,35 @@ public class DeeplTranslate implements Serializable {
 
     @Inject private Connect connect;
     @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private ConceptView conceptView;
-    @Inject private CurrentUser currentUser;    
+    @Inject private CurrentUser currentUser;
+    @Inject private SelectedTheso selectedTheso;
+    
     
     private DeeplHelper deeplHelper;
 
     private String fromLang;
     private String fromLangLabel;
     private String toLang = "en-GB";
-    
-    
+
     private String textToTranslate;
-    private String existingTranslatedText;  
-    private String sourceTranslatedText;      
-    
+    private String existingTranslatedText;
+    private String sourceTranslatedText;
+
     private NodeNote nodeNote;
-    
+
     private String translatingText;
 
     private List<Language> sourceLangs;
     private List<Language> targetLangs;
-    
+
     public void reset() {
-        
+
     }
 
     public DeeplTranslate() {
     }
-    
-    public void init(){
+
+    public void init() {
         String keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
         deeplHelper = new DeeplHelper(keyApi);
         sourceLangs = deeplHelper.getSourceLanguages();
@@ -62,79 +60,80 @@ public class DeeplTranslate implements Serializable {
 
         translatingText = "";
     }
-    
-    public void setNoteToTranlate(NodeNote nodeNote){
+
+    public void setNoteToTranlate(NodeNote nodeNote) {
         textToTranslate = nodeNote.getLexicalvalue();
         this.nodeNote = nodeNote;
 
         retrieveExistingTranslatedText();
 
-        toLang = "en-GB";
+//        toLang = "en-GB";
         this.fromLang = nodeNote.getLang();
         fromLangLabel = getLanguage(fromLang);
-        
+
     }
-    
-    private String getLanguage(String idLang){
+
+    private String getLanguage(String idLang) {
         for (Language sourceLang : sourceLangs) {
-            if(idLang.equalsIgnoreCase(sourceLang.getCode()))
+            if (idLang.equalsIgnoreCase(sourceLang.getCode())) {
                 return sourceLang.getName();
+            }
         }
         return idLang;
     }
-    
-    public void translate(){
+
+    public void translate() {
         translatingText = deeplHelper.translate(textToTranslate, fromLang, toLang);
     }
-    
-    public void retrieveExistingTranslatedText(){
+
+    public void retrieveExistingTranslatedText() {
         NoteHelper noteHelper = new NoteHelper();
-        switch (nodeNote.getNotetypecode()) {
-            case "definition":
-                existingTranslatedText = noteHelper.getLabelOfNote(connect.getPoolConnexion(), 
-                        conceptView.getNodeConcept().getConcept().getIdConcept(),
-                        conceptView.getNodeConcept().getConcept().getIdThesaurus(), toLang, nodeNote.getNotetypecode());
-                sourceTranslatedText = noteHelper.getSourceOfNote(connect.getPoolConnexion(), 
-                        conceptView.getNodeConcept().getConcept().getIdConcept(),
-                        conceptView.getNodeConcept().getConcept().getIdThesaurus(), toLang, nodeNote.getNotetypecode());
-                break;
-            default:
-                break;
-        }        
+        existingTranslatedText = noteHelper.getLabelOfNote(connect.getPoolConnexion(),
+               // conceptView.getNodeConcept().getConcept().getIdConcept(),
+                nodeNote.getId_concept(),
+                selectedTheso.getCurrentIdTheso(),
+                toLang, nodeNote.getNotetypecode());
+        sourceTranslatedText = noteHelper.getSourceOfNote(connect.getPoolConnexion(),
+                //conceptView.getNodeConcept().getConcept().getIdConcept(),
+                nodeNote.getId_concept(),
+                selectedTheso.getCurrentIdTheso(),
+                toLang, nodeNote.getNotetypecode());
     }
-    
-    public void saveTranslatedText(){
+
+    public void saveTranslatedText() {
         LocalDate currentDate = LocalDate.now();
         String source = "traduit par Deepl le " + currentDate;
-        
+
         NoteHelper noteHelper = new NoteHelper();
-        if(!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getId_concept(), toLang,  conceptView.getNodeConcept().getConcept().getIdThesaurus(),
-                translatingText, nodeNote.getNotetypecode(), 
-                
+        if (!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getId_concept(), toLang,
+                selectedTheso.getCurrentIdTheso(),
+                translatingText, nodeNote.getNotetypecode(),
                 source,//nodeNote.getNoteSource(),
-                
-                currentUser.getNodeUser().getIdUser())){
+
+                currentUser.getNodeUser().getIdUser())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'opération a échouée");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Note ajoutée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);        
-        
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        retrieveExistingTranslatedText();
+        translatingText = "";
     }
-    
-    public void saveExistingTranslatedText(){
+
+    public void saveExistingTranslatedText() {
         NoteHelper noteHelper = new NoteHelper();
-        if(!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getId_concept(), toLang,  conceptView.getNodeConcept().getConcept().getIdThesaurus(),
-                existingTranslatedText, nodeNote.getNotetypecode(), nodeNote.getNoteSource(), currentUser.getNodeUser().getIdUser())){
+        if (!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getId_concept(), toLang,
+                selectedTheso.getCurrentIdTheso(),
+                existingTranslatedText, nodeNote.getNotetypecode(),
+                nodeNote.getNoteSource(), currentUser.getNodeUser().getIdUser())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'opération a échouée");
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
+            FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Note mis à jour avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);        
-    }    
-    
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
 
     public String getTextToTranslate() {
         return textToTranslate;
@@ -207,7 +206,5 @@ public class DeeplTranslate implements Serializable {
     public void setSourceTranslatedText(String sourceTranslatedText) {
         this.sourceTranslatedText = sourceTranslatedText;
     }
-    
-
 
 }

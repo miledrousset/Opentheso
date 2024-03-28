@@ -750,7 +750,6 @@ public class RestRDFHelper {
      */
     public String exportConceptHdl(HikariDataSource ds,
             String handleId, String format) {
-
         RDFFormat rDFFormat = getRDFFormat(format);
         WriteRdf4j writeRdf4j = getConceptFromHandle(ds, handleId);
         if (writeRdf4j == null) {
@@ -809,6 +808,19 @@ public class RestRDFHelper {
             case "application/json":
                 rDFFormat = RDFFormat.RDFJSON;
                 break;
+                
+            case "application/rdf+xml;charset=utf-8":
+                rDFFormat = RDFFormat.RDFXML;
+                break;
+            case "application/ld+json;charset=utf-8":
+                rDFFormat = RDFFormat.JSONLD;
+                break;
+            case "text/turtle;charset=utf-8":
+                rDFFormat = RDFFormat.TURTLE;
+                break;
+            case "application/json;charset=utf-8":
+                rDFFormat = RDFFormat.RDFJSON;
+                break;                
         }
         return rDFFormat;
     }

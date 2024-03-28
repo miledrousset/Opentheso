@@ -206,6 +206,13 @@ public class EditFacet implements Serializable {
         newFacetName = "";
         definition = null;
     }
+    
+    public String getNoteSource(String noteSource) {
+        if (StringUtils.isEmpty(noteSource))
+            return "";
+        else
+            return " (" + noteSource + ")";
+    }    
 
     public void supprimerFacette() {
         new FacetHelper().deleteFacet(connect.getPoolConnexion(),

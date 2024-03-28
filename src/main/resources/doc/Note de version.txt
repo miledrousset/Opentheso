@@ -7,3 +7,4 @@ Note de version v24.03
 
 - ajout d'un paramètre pour communiquer avec un serveur Handle standard
 
+- ajout d'un module de traduction automatique avec DeepL (nécessite une clé d'API payante).

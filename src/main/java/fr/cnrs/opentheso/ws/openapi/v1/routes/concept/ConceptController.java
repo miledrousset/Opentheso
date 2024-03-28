@@ -24,35 +24,10 @@ import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 /**
  * @author julie
  */
-@Path("/concept")
+@Path("/concept/ark/fullpath/search")
 public class ConceptController {
 
-    @Path("/handle/{handle}/{idHandle}")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
-    @Operation(summary = "${getConceptByHandle.summary}$",
-            description = "${getConceptByHandle.description}$",
-            tags = {"Concept"},
-            responses = {
-                @ApiResponse(responseCode = "200", description = "${getConceptByHandle.200.description}$", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8),
-            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-            @Content(mediaType = APPLICATION_TURTLE_UTF_8),
-            @Content(mediaType = APPLICATION_RDF_UTF_8)
-        }),
-                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
-            })
-    public Response getConceptByHandle(
-            @Parameter(name = "handle", description = "${getConceptByHandle.handle.description}$", required = true) @PathParam("handle") String handle,
-            @Parameter(name = "idHandle", description = "${getConceptByHandle.idHandle.description}$", required = true) @PathParam("idHandle") String idHandle,
-            @Context HttpHeaders headers
-    ) {
-        String format = HeaderHelper.getContentTypeFromHeader(headers);
-        return directFetchConcept(handle + "/" + idHandle, format);
-    }
-
-    @Path("/ark/fullpath/search")
+    @Path("/")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "${searchJsonForWidgetArk.summary}$",
