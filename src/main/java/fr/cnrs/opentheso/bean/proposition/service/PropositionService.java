@@ -819,9 +819,24 @@ public class PropositionService implements Serializable {
                 case "scopeNote":
                     proposition.setScopeNote(toNotePropBean(nodeNote));
                     break;
+                case "changeNote":
+                    proposition.setChangeNote(toNotePropBean(nodeNote));
+                    break;
+                case "definition":
+                    proposition.setDefinition(toNotePropBean(nodeNote));
+                    break;
+                case "editorialNote":
+                    proposition.setEditorialNote(toNotePropBean(nodeNote));
+                    break;
+                case "example":
+                    proposition.setExample(toNotePropBean(nodeNote));
+                    break;
+                case "historyNote":
+                    proposition.setHistoryNote(toNotePropBean(nodeNote));
+                    break;                    
             }
         }
-        for (NodeNote nodeNote : conceptView.getNodeConcept().getNodeNotesTerm()) {
+     /*   for (NodeNote nodeNote : conceptView.getNodeConcept().getNodeNotesTerm()) {
             switch (nodeNote.getNotetypecode()) {
                 case "changeNote":
                     proposition.setChangeNote(toNotePropBean(nodeNote));
@@ -839,7 +854,7 @@ public class PropositionService implements Serializable {
                     proposition.setHistoryNote(toNotePropBean(nodeNote));
                     break;
             }
-        }
+        }*/
 
         for (PropositionDetailDao propositionDetailDao : propositionDetails) {
             if (PropositionCategoryEnum.NOM.name().equals(propositionDetailDao.getCategorie())) {

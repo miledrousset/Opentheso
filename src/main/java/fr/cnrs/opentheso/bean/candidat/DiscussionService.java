@@ -107,8 +107,12 @@ public class DiscussionService implements Serializable {
         String message = "Vous avez participé à la discussion pour ce candidat "
                 + candidatBean.getCandidatSelected().getNomPref() + ", " 
                 + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
+//                + " (concept : <a href=\"" + getPath() + "/?idc=" + propositionDao.getIdConcept()
+//                + "&idt=" + propositionDao.getIdTheso() + "\">" + proposition.getNomConcept().getLexical_value() + "</a>)                
+                
+                
                 + ". Sachez qu’un nouveau message a été posté.";
-
+        
         setListUsersForMail();
         if(CollectionUtils.isNotEmpty(nodeUsers)) {
             nodeUsers.stream()
@@ -121,6 +125,7 @@ public class DiscussionService implements Serializable {
         candidatBean.setMessage("");
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, langueBean.getMsg("candidat.send_message.msg2"));
     }
+     
 
     public void reloadMessage() {
         candidatBean.getCandidatSelected().setMessages(new MessageDao().getAllMessagesByCandidat(
