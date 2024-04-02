@@ -51,7 +51,7 @@ public class Translate {
 
     public void Translate() throws Exception {
         Translator translator;
-        String authKey = "f04908ed-e584-4820-8149-c52733506be9";  // Replace with your key
+        String authKey = "";  // Replace with your key
         translator = new Translator(authKey);
         TextResult result =
                 translator.translateText("Cette branche concerne les secteurs d’activité professionnelle ou potentiellement professionnelle socialement et/ou légalement reconnus sur la base de critères d’appartenance, d'efficacité des pratiques employées, de l’adoption de méthodes communes et de la capacité de transfert de connaissances et d’expertise à ce secteur professionnel.", "fr", "en-GB");
