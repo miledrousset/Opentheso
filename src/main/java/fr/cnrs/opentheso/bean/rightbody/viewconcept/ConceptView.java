@@ -112,17 +112,27 @@ public class ConceptView implements Serializable {
     private boolean haveCorpus;
     private boolean searchedForCorpus;
 
-    /// Notes concept
-    private ArrayList<NodeNote> notes;
-    private ArrayList<NodeNote> scopeNotes;
+    /// Notes du concept, un type de note par concept et par langue
+    private NodeNote note;
+    private NodeNote scopeNote;
+    private NodeNote changeNote;
+    private NodeNote definition;
+    private NodeNote editorialNote;
+    private NodeNote example;
+    private NodeNote historyNote;
 
-    //// Notes term    
-    private ArrayList<NodeNote> changeNotes;
-    private ArrayList<NodeNote> definitions;
-    private ArrayList<NodeNote> editorialNotes;
-    private ArrayList<NodeNote> examples;
-    private ArrayList<NodeNote> historyNotes;
-
+    /// Notes du concept pour l'affichage du multilingue
+    private ArrayList<NodeNote> noteAllLang;
+    private ArrayList<NodeNote> scopeNoteAllLang;
+    private ArrayList<NodeNote> changeNoteAllLang;
+    private ArrayList<NodeNote> definitionAllLang;
+    private ArrayList<NodeNote> editorialNoteAllLang;
+    private ArrayList<NodeNote> exampleAllLang;
+    private ArrayList<NodeNote> historyNoteAllLang;    
+    
+    
+    
+    
     private ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals;
 
     private List<ResponsiveOption> responsiveOptions;
@@ -142,13 +152,13 @@ public class ConceptView implements Serializable {
         nodeCorpuses = new ArrayList<>();
         pathLabel = new ArrayList<>();
         pathLabel2 = new ArrayList<>();
-        notes = new ArrayList<>();
-        scopeNotes = new ArrayList<>();
-        changeNotes = new ArrayList<>();
-        definitions = new ArrayList<>();
-        editorialNotes = new ArrayList<>();
-        examples = new ArrayList<>();
-        historyNotes = new ArrayList<>();
+        note = null;
+        scopeNote = null;
+        changeNote = null;
+        definition = null;
+        editorialNote = null;
+        example = null;
+        historyNote = null;
         nodeConcept = new NodeConcept();
         nodeFacets = new ArrayList<>();
 
@@ -193,15 +203,24 @@ public class ConceptView implements Serializable {
     }
 
     private void clearNotes() {
-        notes = new ArrayList<>();
-        scopeNotes = new ArrayList<>();
-        changeNotes = new ArrayList<>();
-        definitions = new ArrayList<>();
-        editorialNotes = new ArrayList<>();
-        examples = new ArrayList<>();
-        historyNotes = new ArrayList<>();
+        note = null;
+        scopeNote = null;
+        changeNote = null;
+        definition = null;
+        editorialNote = null;
+        example = null;
+        historyNote = null;
     }
-
+    private void clearNotesAllLang() {    
+        noteAllLang = new ArrayList<>();
+        scopeNoteAllLang = new ArrayList<>();
+        changeNoteAllLang = new ArrayList<>();
+        definitionAllLang = new ArrayList<>();
+        editorialNoteAllLang = new ArrayList<>();
+        exampleAllLang = new ArrayList<>();
+        historyNoteAllLang = new ArrayList<>();   
+    }
+    
     public String getDrapeauImgLocal(String codePays) {
         if (StringUtils.isEmpty(codePays)) {
             return FacesContext.getCurrentInstance().getExternalContext()
@@ -257,6 +276,9 @@ public class ConceptView implements Serializable {
         
         
         // permet de récupérer les qualificatifs
+        if(roleOnThesoBean.getNodePreference() == null){
+            roleOnThesoBean.initNodePref(idTheso);
+        }
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
@@ -280,9 +302,8 @@ public class ConceptView implements Serializable {
         }
         if (toggleSwitchNotesLang) {
             getNotesWithAllLanguages();
-        } else {
-            setNotes();
-        }
+        } 
+        setNotes();
 
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
@@ -392,9 +413,9 @@ public class ConceptView implements Serializable {
         }
         if (toggleSwitchNotesLang) {
             getNotesWithAllLanguages();
-        } else {
-            setNotes();
         }
+        setNotes();
+
 
         setOffset();
 
@@ -425,16 +446,41 @@ public class ConceptView implements Serializable {
         if (toggleSwitchNotesLang) {
             nodeConcept.setNodeNotes(noteHelper.getListNotesAllLang(
                     connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
-        } else {
-            nodeConcept.setNodeNotes(noteHelper.getListNotes(
-                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
-                    nodeConcept.getConcept().getIdThesaurus(),
-                    selectedLang));
+            setNotesForAllLang();
         }
+        nodeConcept.setNodeNotes(noteHelper.getListNotes(
+                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
+                nodeConcept.getConcept().getIdThesaurus(),
+                selectedLang));
         setNotes();
+        
+        
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
+    
+    public boolean isHaveDefinition(){
+        return !(definition == null && (definitionAllLang == null || definitionAllLang.isEmpty()));
+    }
+    public boolean isHaveNote(){
+        return !(note == null && (noteAllLang == null || noteAllLang.isEmpty()));
+    }    
+    public boolean isHaveChangeNote(){
+        return !(changeNote == null && (changeNoteAllLang == null || changeNoteAllLang.isEmpty()));
+    }  
+    public boolean isHaveEditorialNote(){
+        return !(editorialNote == null && (editorialNoteAllLang == null || editorialNoteAllLang.isEmpty()));
+    }       
+    public boolean isHaveExampleNote(){
+        return !(example == null && (exampleAllLang == null || exampleAllLang.isEmpty()));
+    }      
+    public boolean isHaveHistoryNote(){
+        return !(historyNote == null && (historyNoteAllLang == null || historyNoteAllLang.isEmpty()));
+    }    
+    public boolean isHaveScopeNote(){
+        return !(scopeNote == null && (scopeNoteAllLang == null || scopeNoteAllLang.isEmpty()));
+    }      
+    
 
     public void getAltLabelWithAllLanguages() {
         TermHelper termHelper = new TermHelper();
@@ -599,29 +645,58 @@ public class ConceptView implements Serializable {
         for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":
-                    notes.add(nodeNote);
+                    note = nodeNote;
                     break;
                 case "scopeNote":
-                    scopeNotes.add(nodeNote);
+                    scopeNote = nodeNote;
                     break;
                 case "changeNote":
-                    changeNotes.add(nodeNote);
+                    changeNote = nodeNote;
                     break;
                 case "definition":
-                    definitions.add(nodeNote);
+                    definition = nodeNote;
                     break;
                 case "editorialNote":
-                    editorialNotes.add(nodeNote);
+                    editorialNote = nodeNote;
                     break;
                 case "example":
-                    examples.add(nodeNote);
+                    example = nodeNote;
                     break;
                 case "historyNote":
-                    historyNotes.add(nodeNote);
+                    historyNote = nodeNote;
                     break;
             }
         }
     }
+    
+    private void setNotesForAllLang() {
+        clearNotesAllLang();
+        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
+            switch (nodeNote.getNotetypecode()) {
+                case "note":
+                    noteAllLang.add(nodeNote);
+                    break;
+                case "scopeNote":
+                    scopeNoteAllLang.add(nodeNote);
+                    break;
+                case "changeNote":
+                    changeNoteAllLang.add(nodeNote);
+                    break;
+                case "definition":
+                    definitionAllLang.add(nodeNote);
+                    break;
+                case "editorialNote":
+                    editorialNoteAllLang.add(nodeNote);
+                    break;
+                case "example":
+                    exampleAllLang.add(nodeNote);
+                    break;
+                case "historyNote":
+                    historyNoteAllLang.add(nodeNote);
+                    break;
+            }
+        }
+    }    
 
     public String getColorOfTypeConcept() {
         if ("concept".equalsIgnoreCase(nodeConcept.getConcept().getConceptType()))

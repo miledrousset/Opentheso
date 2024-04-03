@@ -608,6 +608,7 @@ public class Tree implements Serializable {
                 alignmentBean.setAllAlignementFound(new ArrayList<>());
                 alignmentBean.setAllAlignementVisible(true);
                 alignmentBean.setPropositionAlignementVisible(false);
+                alignmentBean.setManageAlignmentVisible(false);
             } else {
                 rightBodySetting.setIndex("0");
             }
@@ -628,6 +629,7 @@ public class Tree implements Serializable {
 
             alignmentBean.setAllAlignementVisible(true);
             alignmentBean.setPropositionAlignementVisible(false);
+            alignmentBean.setManageAlignmentVisible(false);
 
             alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),

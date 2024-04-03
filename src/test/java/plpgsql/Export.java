@@ -7,7 +7,9 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeConceptGraph;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.skosapi.SKOSResource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 /**
@@ -242,6 +245,20 @@ public class Export {
             System.out.println(">> " + sqle.getMessage());
         }
     }     
+    
+    @Test
+    public void addImages() {
+        String image = "nom@@copyright@@https://m.media-amazon.com/images/I/71x9PLXMWOL._AC_UF1000,1000_QL80_.jpg@@";
+                String[] imageDetail = image.split("@@");
+           //     if(imageDetail.length != 4) return;
+                
+                NodeImage nodeImage = new NodeImage();
+                nodeImage.setImageName(imageDetail[0]);
+                nodeImage.setCopyRight(imageDetail[1]);
+                nodeImage.setUri(imageDetail[2]);
+                if(imageDetail.length >= 4)
+                    nodeImage.setCreator(imageDetail[3]);
+    }    
     
     
     @Test

@@ -36,6 +36,8 @@ public class ImageBean implements Serializable {
 
     private String uri;
     private String copyright;
+    private String name;
+    private String creator;
     
     private ArrayList<NodeImage> nodeImages;
     private ArrayList<NodeImage> nodeImagesForEdit;    
@@ -64,16 +66,18 @@ public class ImageBean implements Serializable {
         nodeImages = conceptBean.getNodeConcept().getNodeimages();
         uri = null;
         copyright = null;
+        name = null;
+        creator = null;
 
         prepareImageForEdit();
     }
    
     public void prepareImageForEdit(){
         nodeImagesForEdit = new ArrayList<>();
-        for (NodeImage nodeImage : nodeImages) {
-            nodeImage.setOldUri(nodeImage.getUri());
-            nodeImagesForEdit.add(nodeImage);
-        }
+        ImagesHelper imagesHelper = new ImagesHelper();
+        nodeImagesForEdit = imagesHelper.getExternalImages(connect.getPoolConnexion(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
     }    
     
     public void infos() {
@@ -99,9 +103,10 @@ public class ImageBean implements Serializable {
         if(!imagesHelper.addExternalImage(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getTerm().getLexical_value(),
+                name,
                 copyright,
                 uri,
+                creator,
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendant l'ajout de l'image !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -153,9 +158,11 @@ public class ImageBean implements Serializable {
         if(!imagesHelper.updateExternalImage(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
-                nodeImage.getOldUri(),
+                nodeImage.getId(),
                 nodeImage.getUri(),
                 nodeImage.getCopyRight(),
+                nodeImage.getImageName(),
+                nodeImage.getCreator(),
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendant la modification de l'URI de l'image !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -181,11 +188,6 @@ public class ImageBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image_URI modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
-
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }        
     }       
     
     /**
@@ -269,6 +271,22 @@ public class ImageBean implements Serializable {
 
     public void setNodeImagesForEdit(ArrayList<NodeImage> nodeImagesForEdit) {
         this.nodeImagesForEdit = nodeImagesForEdit;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
 

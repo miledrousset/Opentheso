@@ -6,11 +6,42 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>24.02.04</version>
+    <version>24.04.01</version>
     <packaging>war</packaging>
     <name>opentheso2</name>
 
     <dependencies>
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>        
+        
+        <dependency>
+            <groupId>net.handle</groupId>
+            <artifactId>handle-client</artifactId>
+            <version>9.3.1</version>
+        </dependency> 
+        
+        <dependency>
+          <groupId>co.elastic.clients</groupId>
+          <artifactId>elasticsearch-java</artifactId>
+          <version>8.12.2</version>
+        </dependency>    
+        <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+          <version>2.16.1</version>
+        </dependency>        
+        
+        
+        <dependency>
+          <groupId>com.deepl.api</groupId>
+          <artifactId>deepl-java</artifactId>
+          <version>1.4.0</version>
+        </dependency>        
+                      
+        
         <dependency>
             <groupId>io.nayuki</groupId>
             <artifactId>qrcodegen</artifactId>

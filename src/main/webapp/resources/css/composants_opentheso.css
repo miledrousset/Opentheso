@@ -776,6 +776,25 @@ body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content .ui-treenode-
     font-weight: bold;
 }
 
+/**Button for translate*/
+.ui-button-success-private {
+    background-color: #FFEBCD !important;
+    border-color: #226b40 !important;
+    font-size: 30px !important;
+    padding: 0.5rem 1rem 0.5rem 2rem;
+}
+
+.ui-button-success-private:hover {
+    background-color: #689f38 !important;
+    border-color: #000 !important;
+}
+
+.ui-button-success-private:active {
+    background-color: #226b40 !important;
+    border-color: #FFEBCD !important;
+    font-weight: bold;
+}
+
 .ui-button-danger-private {
     background-color: #D32F2F !important;
     border-color: #D32F2F !important;

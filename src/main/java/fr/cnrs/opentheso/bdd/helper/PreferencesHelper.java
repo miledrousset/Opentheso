@@ -22,6 +22,73 @@ import fr.cnrs.opentheso.bdd.tools.StringPlus;
 public class PreferencesHelper {
 
     /**
+     * Permet de mettre à jour le status de l'utilisation du serveur Ark
+     * 
+     * @param ds
+     * @param idTheso
+     * @param useArk
+     * @return 
+     */
+    public boolean setUseArk(HikariDataSource ds, String idTheso, boolean useArk) {
+        boolean status = false;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update preferences set use_ark = '" + useArk
+                        + "' where id_thesaurus = '" + idTheso + "'");
+                status = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PreferencesHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;
+    }    
+    
+    /**
+     * Permet de mettre à jour le status de l'utilisation du serveur Ark local
+     * 
+     * @param ds
+     * @param idTheso
+     * @param useArk
+     * @return 
+     */
+    public boolean setUseArkLocal(HikariDataSource ds, String idTheso, boolean useArk) {
+        boolean status = false;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update preferences set use_ark_local = '" + useArk
+                        + "' where id_thesaurus = '" + idTheso + "'");
+                status = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PreferencesHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;
+    }      
+    
+    
+    /**
+     * Permet de mettre à jour le status de l'utilisation du serveur Handle
+     * 
+     * @param ds
+     * @param idTheso
+     * @param useHandle
+     * @return 
+     */
+    public boolean setUseHandle(HikariDataSource ds, String idTheso, boolean useHandle) {
+        boolean status = false;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("update preferences set use_handle = '" + useHandle
+                        + "' where id_thesaurus = '" + idTheso + "'");
+                status = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PreferencesHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return status;
+    }     
+    
+    /**
      * permet de retourner le code JavaScript de GoogleAnalytics
     * 
     * @param ds
@@ -111,6 +178,10 @@ public class PreferencesHelper {
                         np.setUrlApiHandle(resultSet.getString("url_api_handle"));
                         np.setPrefixIdHandle(resultSet.getString("prefix_handle"));
                         np.setPrivatePrefixHandle(resultSet.getString("private_prefix_handle"));
+                        np.setAdminHandle(resultSet.getString("admin_handle"));
+                        np.setIndexHandle(resultSet.getInt("index_handle"));
+                        
+                        np.setUseHandleWithCertificat(resultSet.getBoolean("use_handle_with_certificat"));
 
                         
                         np.setCheminSite(resultSet.getString("chemin_site"));
@@ -137,6 +208,9 @@ public class PreferencesHelper {
                         
                         np.setShowEditorialNote(resultSet.getBoolean("show_editorialnote"));
                         np.setShowHistoryNote(resultSet.getBoolean("show_historynote"));
+                        
+                        np.setUse_deepl_translation(resultSet.getBoolean("use_deepl_translation"));
+                        np.setDeepl_api_key(resultSet.getString("deepl_api_key"));
                     }
                 }
             }
@@ -298,6 +372,12 @@ public class PreferencesHelper {
                         + ", prefix_handle = '" + np.getPrefixIdHandle() + "'"
                         + ", private_prefix_handle = '" + np.getPrivatePrefixHandle() + "'"
                         
+                        + ", admin_handle = '" + np.getAdminHandle() + "'"
+                        + ", index_handle = " + np.getIndexHandle()
+                        
+                        + ", use_handle_with_certificat = '" + np.isUseHandleWithCertificat() + "'"
+                        
+                        
                         + ", chemin_site='" + stringPlus.convertString(np.getCheminSite()) + "'"
                         + ", webservices='" + np.isWebservices() + "'"
                         + ", original_uri='" + stringPlus.convertString(np.getOriginalUri()) + "'"
@@ -321,6 +401,10 @@ public class PreferencesHelper {
                         + ", show_historynote=" + np.isShowHistoryNote()
                         + ", show_editorialnote=" + np.isShowEditorialNote()
 
+                        // activation du module Deepl
+                        + ", use_deepl_translation=" + np.isUse_deepl_translation()
+                        + ", deepl_api_key='" + np.getDeepl_api_key() + "'"
+                        
                         + " WHERE"
                         + " id_thesaurus = '" + idThesaurus + "'";
                 stmt.executeUpdate(query);
@@ -357,7 +441,8 @@ public class PreferencesHelper {
                         + " original_uri_is_ark, original_uri_is_handle,original_uri_is_doi, tree_cache, sort_by_notation,"
                         + " use_ark_local, naan_ark_local, prefix_ark_local, sizeid_ark_local, breadcrumb,"
                         + " suggestion, use_custom_relation, uppercase_for_ark,"
-                        + " useConceptTree, display_user_name, show_historynote, show_editorialnote)"
+                        + " useConceptTree, display_user_name, show_historynote, show_editorialnote, use_handle_with_certificat,"
+                        + " admin_handle, index_handle, use_deepl_translation, deepl_api_key)"
 
                         + " values('" + idThesaurus + "'"
                         + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
@@ -405,6 +490,13 @@ public class PreferencesHelper {
                         + "," + np.isDisplayUserName()
                         + "," + np.isShowHistoryNote()
                         + "," + np.isShowEditorialNote()
+                        + "," + np.isUseHandleWithCertificat()
+                        + ",'" + np.getAdminHandle() + "'"
+                        + "," + np.getIndexHandle()
+                        
+                        + "," + np.isUse_deepl_translation()
+                        + ",'" + np.getDeepl_api_key() + "'"                        
+                        
                         + ")";
                 stmt.executeUpdate(query);
                 status = true;

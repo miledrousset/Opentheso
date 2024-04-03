@@ -898,7 +898,7 @@ public class ImportRdf4jHelper {
             if (foafImage == null) {
                 return;
             }
-            images = foafImage.getImageName() + SOUS_SEPERATEUR + foafImage.getCopyRight() + SOUS_SEPERATEUR + sKOSResource.getUri();
+            images = foafImage.getImageName() + SOUS_SEPERATEUR + foafImage.getCopyRight() + SOUS_SEPERATEUR + sKOSResource.getUri() + SOUS_SEPERATEUR + foafImage.getCreator();
             if (StringUtils.isEmpty(images)) {
                 return;
             }
@@ -1325,7 +1325,7 @@ public class ImportRdf4jHelper {
 
         // ajout des images externes URI
         for (NodeImage nodeImage : acs.nodeImages) {
-            acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), idUser);
+            acs.imagesHelper.addExternalImage(ds, acs.concept.getIdConcept(), idTheso, nodeImage.getImageName(), nodeImage.getCopyRight(), nodeImage.getUri(), "", idUser);
         }
 
         DeprecateHelper deprecateHelper = new DeprecateHelper();

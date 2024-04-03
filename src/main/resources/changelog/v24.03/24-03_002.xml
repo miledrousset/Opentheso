@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    
+    <changeSet author="Miled" id="v24.03.002">
+        <addColumn tableName="preferences"> 
+            <column name="use_deepl_translation" type="boolean" defaultValue="false"/>   
+        </addColumn>         
+        <addColumn tableName="preferences"> 
+            <column name="deepl_api_key" type="character varying"/>   
+        </addColumn>   
+    </changeSet>   
+     
+</databaseChangeLog>

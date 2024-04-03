@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.leftbody;
 
+import java.io.Serializable;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -9,7 +10,7 @@ import org.primefaces.model.TreeNode;
  */
 
 
-public class DataService {
+public class DataService implements Serializable{
      
     public TreeNode createRoot() {
         return new DefaultTreeNode(new TreeNodeData("1", "root","1", false, false, false, false, "root"), null);

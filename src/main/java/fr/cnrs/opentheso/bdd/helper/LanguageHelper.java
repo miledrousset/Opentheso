@@ -26,6 +26,20 @@ public class LanguageHelper {
     private final Log log = LogFactory.getLog(ThesaurusHelper.class);
     
     
+    public String normalizeIdLang(String idLang){
+        switch (idLang) {
+            case "en-GB":
+                return "en";
+            case "en-US":
+                return "en";   
+            case "pt-BR":
+                return "pt";     
+            case "pt-PT":
+                return "pt";                  
+        }
+        return idLang;
+    }    
+    
     /**
      * Permet de retourner le code du drapeau d'un pays à partir du code de la langue
      *

@@ -38,7 +38,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
@@ -49,7 +48,9 @@ import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
+import fr.cnrs.opentheso.ws.handlestandard.HandleService;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,6 +60,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
+import net.handle.hdllib.HandleException;
 import org.apache.commons.collections.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -3567,31 +3569,6 @@ public class ConceptHelper {
         return listeConcept;
     }
 
-    /**
-     * Permet de mettre à jour l'identifiant Handle
-     */
-    public boolean updateIdHandle(HikariDataSource ds, String idConcept, String idThesaurus) {
-        if (nodePreference == null) {
-            return false;
-        }
-        if (!nodePreference.isUseHandle()) {
-            return false;
-        }
-        ConceptHelper conceptHelper = new ConceptHelper();
-
-        String idHandle = conceptHelper.getIdHandleOfConcept(ds, idConcept, idThesaurus);
-
-        String privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
-        HandleHelper handleHelper = new HandleHelper(nodePreference);
-        idHandle = handleHelper.updateIdHandle(idHandle, privateUri);
-        if (idHandle == null) {
-            message = handleHelper.getMessage();
-            return false;
-        }
-        return updateHandleIdOfConcept(ds, idConcept,
-                idThesaurus, idHandle);
-    }
-
     public boolean addIdHandle(Connection conn, String idConcept, String idThesaurus) {
         if (nodePreference == null) {
             return false;
@@ -3599,15 +3576,44 @@ public class ConceptHelper {
         if (!nodePreference.isUseHandle()) {
             return false;
         }
-        String privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
-        HandleHelper handleHelper = new HandleHelper(nodePreference);
+        String privateUri;
+        
+        if(nodePreference.isUseHandleWithCertificat()) {        
+            privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
+            HandleHelper handleHelper = new HandleHelper(nodePreference);
 
-        String idHandle = handleHelper.addIdHandle(privateUri);
-        if (idHandle == null) {
-            message = handleHelper.getMessage();
-            return false;
+            String idHandle = handleHelper.addIdHandle(privateUri);
+            if (idHandle == null) {
+                message = handleHelper.getMessage();
+                return false;
+            }
+            return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);            
+        } else {
+            // cas de Handle Standard 
+            ToolsHelper toolsHelper = new ToolsHelper();
+
+            HandleService hs = HandleService.getInstance();
+            hs.applyNodePreference(nodePreference);
+            hs.connectHandle();         
+            privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
+            String idHandle = toolsHelper.getNewId(25, false, false);
+            idHandle = hs.getPrivatePrefix() + idHandle;
+            try {
+                if(!hs.createHandle(idHandle, privateUri)){
+                    message = hs.getMessage();
+                    System.out.println(hs.getResponseMsg());
+                    return false;
+                }
+            } catch (UnsupportedEncodingException | HandleException ex) {
+                System.out.println(ex.getMessage());
+            }
+            idHandle = hs.getPrefix() + "/" + idHandle;                
+            if (!updateHandleIdOfConcept(conn, idConcept,
+                    idThesaurus, idHandle)) {
+                return false;
+            }    
+            return true;
         }
-        return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);
     }
 
     public boolean generateIdHandle(HikariDataSource conn, String idConcept, String idThesaurus) {
@@ -3617,20 +3623,53 @@ public class ConceptHelper {
         if (!nodePreference.isUseHandle()) {
             return false;
         }
-        String privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
-        HandleHelper handleHelper = new HandleHelper(nodePreference);
+        String privateUri;
+            if(nodePreference.isUseHandleWithCertificat()) {   
+            privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
+            HandleHelper handleHelper = new HandleHelper(nodePreference);
 
-        String idHandle = handleHelper.addIdHandle(privateUri);
-        if (idHandle == null) {
-            message = handleHelper.getMessage();
-            return false;
-        }
-        return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);
+            String idHandle = handleHelper.addIdHandle(privateUri);
+            if (idHandle == null) {
+                message = handleHelper.getMessage();
+                return false;
+            }
+            return updateHandleIdOfConcept(conn, idConcept, idThesaurus, idHandle);            
+        } else {
+            // cas de Handle Standard 
+            ToolsHelper toolsHelper = new ToolsHelper();
+
+            HandleService hs = HandleService.getInstance();
+            hs.applyNodePreference(nodePreference);
+            hs.connectHandle();         
+            privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
+            String idHandle = toolsHelper.getNewId(25, false, false);
+            idHandle = hs.getPrivatePrefix() + idHandle;
+            try {
+                if(!hs.createHandle(idHandle, privateUri)){
+                    message = hs.getMessage();
+                    System.out.println(hs.getResponseMsg());
+                    return false;
+                }
+            } catch (UnsupportedEncodingException | HandleException ex) {
+                System.out.println(ex.getMessage());
+            }
+            idHandle = hs.getPrefix() + "/" + idHandle;                
+            if (!updateHandleIdOfConcept(conn, idConcept,
+                    idThesaurus, idHandle)) {
+                return false;
+            }    
+            return true;                
+        }       
     }
 
     /**
      * permet de générer les identifiants Handle des concepts en paramètres
-     */
+    * 
+    * @param conn
+    * @param idConcepts
+    * @param idThesaurus
+    * @return 
+    */
     public boolean generateHandleId(HikariDataSource conn, ArrayList<String> idConcepts, String idThesaurus) {
         if (nodePreference == null) {
             return false;
@@ -3639,21 +3678,53 @@ public class ConceptHelper {
             return false;
         }
         String privateUri;
-        HandleHelper handleHelper = new HandleHelper(nodePreference);
-        String idHandle;
-        for (String idConcept : idConcepts) {
-            privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
-            idHandle = handleHelper.addIdHandle(privateUri);
-            if (idHandle == null) {
-                message = handleHelper.getMessage();
-                return false;
+        
+        if(nodePreference.isUseHandleWithCertificat()) {
+            // cas de chez Huma-Num
+            HandleHelper handleHelper = new HandleHelper(nodePreference);
+            String idHandle;
+            for (String idConcept : idConcepts) {
+                privateUri = "?idc=" + idConcept + "&idt=" + idThesaurus;
+                idHandle = handleHelper.addIdHandle(privateUri);
+                if (idHandle == null) {
+                    message = handleHelper.getMessage();
+                    return false;
+                }
+                if (!updateHandleIdOfConcept(conn, idConcept,
+                        idThesaurus, idHandle)) {
+                    return false;
+                }
             }
-            if (!updateHandleIdOfConcept(conn, idConcept,
-                    idThesaurus, idHandle)) {
-                return false;
+            return true;
+        } else {
+            // cas de Handle Standard 
+            ToolsHelper toolsHelper = new ToolsHelper();
+
+            HandleService hs = HandleService.getInstance();
+            hs.applyNodePreference(nodePreference);
+            hs.connectHandle();            
+            
+            for (String idConcept : idConcepts) {
+                privateUri = nodePreference.getCheminSite() + "?idc=" + idConcept + "&idt=" + idThesaurus;
+                String idHandle = toolsHelper.getNewId(25, false, false);
+                idHandle = hs.getPrivatePrefix() + idHandle;
+                try {
+                    if(!hs.createHandle(idHandle, privateUri)){
+                        message = hs.getMessage();
+                        System.out.println(hs.getResponseMsg());
+                        return false;
+                    }
+                } catch (UnsupportedEncodingException | HandleException ex) {
+                    System.out.println(ex.getMessage());
+                }
+                idHandle = hs.getPrefix() + "/" + idHandle;                
+                if (!updateHandleIdOfConcept(conn, idConcept,
+                        idThesaurus, idHandle)) {
+                    return false;
+                }
             }
+            return true;            
         }
-        return true;
     }
 
     /**
@@ -3667,19 +3738,38 @@ public class ConceptHelper {
         if (!nodePreference.isUseHandle()) {
             return false;
         }
-        HandleHelper handleHelper = new HandleHelper(nodePreference);
-        if (!handleHelper.deleteIdHandle(idHandle, idThesaurus)) {
-            message = handleHelper.getMessage();
-            return false;
+        if(nodePreference.isUseHandleWithCertificat()) {
+            HandleHelper handleHelper = new HandleHelper(nodePreference);
+            if (!handleHelper.deleteIdHandle(idHandle, idThesaurus)) {
+                message = handleHelper.getMessage();
+                return false;
+            }
+            return updateHandleIdOfConcept(conn, idConcept,
+                    idThesaurus, "");            
+        }        
+        else {
+            // cas de Handle Standard 
+
+            HandleService hs = HandleService.getInstance();
+            hs.applyNodePreference(nodePreference);
+            hs.connectHandle(); 
+            try {
+                hs.deleteHandle(idHandle);
+            } catch (HandleException ex) {
+                System.out.println(ex.toString());
+            }    
+            return updateHandleIdOfConcept(conn, idConcept,
+                    idThesaurus, "");             
         }
-        return updateHandleIdOfConcept(conn, idConcept,
-                idThesaurus, "");
     }
 
     /**
      * Permet de supprimer tous les identifiants Handle de la table Concept et
      * de la plateforme (handle.net) via l'API REST pour un thésaurus donné
      * suite à une suppression d'un thésaurus
+     * @param ds
+     * @param idThesaurus
+     * @return 
      */
     public boolean deleteAllIdHandle(HikariDataSource ds,
             String idThesaurus) {
@@ -3690,13 +3780,28 @@ public class ConceptHelper {
             return false;
         }
         ArrayList<String> tabIdHandle = getAllIdHandleOfThesaurus(ds, idThesaurus);
-        HandleHelper handleHelper = new HandleHelper(nodePreference);
-        if (!handleHelper.deleteAllIdHandle(tabIdHandle)) {
+        
+        if(nodePreference.isUseHandleWithCertificat()) {
+            HandleHelper handleHelper = new HandleHelper(nodePreference);
+            if (!handleHelper.deleteAllIdHandle(tabIdHandle)) {
+                message = handleHelper.getMessage();
+                return false;
+            }
             message = handleHelper.getMessage();
-            return false;
+            return true;            
+        } else {
+            HandleService hs = HandleService.getInstance();
+            hs.applyNodePreference(nodePreference);
+            hs.connectHandle(); 
+            for (String idHandle : tabIdHandle) {
+                try {
+                    hs.deleteHandle(idHandle);
+                } catch (HandleException ex) {
+                    System.out.println(ex.toString());
+                }                  
+            }
+            return true;
         }
-        message = handleHelper.getMessage();
-        return true;
     }
 
     /**

@@ -11,32 +11,32 @@
 
                     <div class="row" >
                         <div class="col-12" style="padding-left: 30px; margin-bottom: 30px">
-                            <h:outputText value="Importer un thésaurus en format SKOS" class="h5 mb-0 text-gray-800"/>
+                            <h:outputText value="#{langueBean.getMsg('import.skosFormat')}" class="h5 mb-0 text-gray-800"/>
                         </div>
                     </div>
 
                     <!-- format de date -->
                     <div class="row" style="height: 30px; vertical-align: central">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Format de la date"/>
+                            <h:outputText value="#{langueBean.getMsg('csvExport.dateFormat')}"/>
                         </div>
 
                         <div class="col-9">
                             <p:inputText placeholder="yyyy-MM-dd" value="#{importFileBean.formatDate}"
-                                         title="Pour récuperer la date du concept, il faut préciser le format de la date !!" />
+                                         title="#{langueBean.getMsg('import.dateFormatTooltip')} !!" />
                         </div>
                     </div>
 
                     <!-- Options des identifiants à récupérer  -->  
                     <div class="row" style="margin-top: 20px">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Récupération de l'identifiant pérenne (ARK ou Handle)" />
+                            <h:outputText value="#{langueBean.getMsg('import.getPermanentIdentifier')}" />
                         </div>
 
                         <div class="col-5">
                             <p:selectOneRadio id="customRadio" value="#{importFileBean.selectedIdentifier}" 
                                               layout="custom" styleClass="selected_one_radio_custom" > 
-                                <f:selectItem itemLabel="Sans" itemValue="sans" />
+                                <f:selectItem itemLabel="Sans" itemValue="#{langueBean.getMsg('without')}" />
                                 <f:selectItem itemLabel="Ark" itemValue="ark" />
                                 <f:selectItem itemLabel="Handle" itemValue="handle" />
                                 <p:ajax event="change" listener="#{importFileBean.stateChangeListener}" />
@@ -46,8 +46,8 @@
                                     <p:radioButton id="opt1" for="customRadio" itemIndex="0" />
                                 </p:column>
                                 <p:column class="col-4">
-                                    <h:outputLabel for="opt1" value="Sans" style="margin-left: 5px"
-                                                   title="L'identifiant du concept sera généré à partir de l'URI, aucun identifiant pérenne ne sera récupéré !!"/>
+                                    <h:outputLabel for="opt1" value="#{langueBean.getMsg('without')}" style="margin-left: 5px"
+                                                   title="#{langueBean.getMsg('import.getPermanentIdentifierTooltip')} !!"/>
                                 </p:column>
                                 <p:column class="col-7">
                                     <p:outputLabel value="" />
@@ -60,7 +60,7 @@
                                 </p:column>
                                 <p:column class="col-4">
                                     <h:outputLabel for="opt2" value="Ark" style="margin-left: 5px"
-                                                   title="Permet de récupérer l'identifiant Ark automatiquement, un identifiant interne sera créé en plus !!"/>
+                                                   title="#{langueBean.getMsg('import.retrieveArkIdentifierAutomatically')} !!"/>
                                 </p:column>
                                 <p:column>
                                     <p:outputLabel value="" />
@@ -72,11 +72,11 @@
                                     <p:radioButton id="opt3" for="customRadio" itemIndex="2" />
                                 </p:column>
                                 <p:column  class="col-4">
-                                    <h:outputLabel for="opt3" value="Handle -> préfixe : "  style="margin-left: 5px"/>
+                                    <h:outputLabel for="opt3" value="#{langueBean.getMsg('identifier.handlePrefix')}: "  style="margin-left: 5px"/>
                                 </p:column>
                                 <p:column  class="col-7">
-                                    <p:inputText value="#{importFileBean.prefixHandle}" placeholder="22.600.12859" style="margin-left: 5px"
-                                                 title="Exemple de préfixe: 22.600.12859, Permet de récupérer l'identifiant Handle automatiquement, un identifiant interne sera créé en plus !!"/>
+                                    <p:inputText value="#{importFileBean.prefixHandle}" placeholder="22.600.11111" style="margin-left: 5px"
+                                                 title="#{langueBean.getMsg('import.samplePrefix')}: 22.600.11111, #{langueBean.getMsg('import.retrieveHandleIdentifierAutomatically')} !!"/>
                                 </p:column>
                             </div>
                         </div>
@@ -119,7 +119,7 @@
                     <!-- à quel projet ajouter le thésaurus -->
                     <div class="row" style="margin-top: 5px">
                         <div class="col-3" style="text-align: right;">
-                            <h:outputText value="Projet:" title="A quel projet ajouter le thésaurus à importer"/>
+                            <h:outputText value="#{langueBean.getMsg('profile.project')}:" title="#{langueBean.getMsg('profile.projectTooltip')}"/>
                         </div>
 
                         <div class="col-5">
@@ -179,14 +179,14 @@
                             <div class="row" style="margin-top: 5px">             
                                 <div class="col-12" >
                                     <p:accordionPanel activeIndex="-1">
-                                        <p:tab title="Info" titleStyleClass="infoAcordionPanel" >
+                                        <p:tab title="#{langueBean.getMsg('info')}" titleStyleClass="infoAcordionPanel" >
                                             <p:scrollPanel mode="native" style="height:200px">
                                                 <pre><h:outputText value="#{importFileBean.info}" styleClass="infoAcordionPanel" /></pre>
                                                 <hr/>
                                                 <pre><h:outputText rendered="#{!importFileBean.warningIsEmpty()}" value="Warning : #{importFileBean.warning}" styleClass="warningAcordionPanel" /></pre>
                                             </p:scrollPanel>
                                         </p:tab>
-                                        <p:tab title="Error" titleStyleClass="errorAcordionPanel">
+                                        <p:tab title="#{langueBean.getMsg('error')}" titleStyleClass="errorAcordionPanel">
                                             <p:scrollPanel mode="native" style="height:200px">
                                                 <pre><h:outputText value="#{importFileBean.error}" styleClass="errorAcordionPanel" /></pre>
                                             </p:scrollPanel>
@@ -218,7 +218,7 @@
                                                  actionListener="#{importFileBean.addSkosThesoToBDDV2()}"
                                                  styleClass="ui-button-success" icon="fa fa-download"
                                                  disabled="#{!importFileBean.loadDone}"
-                                                 title="Import rapide" style="margin-left: 20px"/>
+                                                 style="margin-left: 20px"/>
                             </div>
                         </div>
                     </h:panelGroup>

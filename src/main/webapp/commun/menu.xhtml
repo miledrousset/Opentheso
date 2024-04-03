@@ -79,14 +79,14 @@
                                            style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.my_projects_users')}
                             </p:commandLink>
                             <hr class="sidebar-divider">
-                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsAdmin)}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsSuperAdmin)}"
                                                class="collapse-item" actionListener="#{menuBean.redirectToUsersPage()}" 
                                                style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.tooltip_all_users')}
                                 </p:commandLink>
-                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsAdmin)}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsSuperAdmin)}"
                                                class="collapse-item" actionListener="#{menuBean.redirectToProjetsPage()}"
                                                style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.all_projects')}</p:commandLink>
-                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsAdmin)}"
+                                <p:commandLink rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsSuperAdmin)}"
                                                class="collapse-item" actionListener="#{menuBean.redirectToThesorusPage()}"
                                                style="font-size: 12px;" process="@this">#{langueBean.getMsg('profile.all_thesauri')}
                                 </p:commandLink>

@@ -118,24 +118,6 @@
                             oncomplete="PF('generateArk').show();"
                             style="font-size: 12px;" />
 
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
-                            value="#{langueBean.getMsg('rightbody.concept.generate_handle')}" 
-                            disabled="false"                                      
-                            actionListener="#{editConcept.infosHandle()}"
-                            update="idGenerateHandle"
-                            action="#{editConcept.reset('')}"
-                            oncomplete="PF('generateHandle').show();"
-                            style="font-size: 12px;" />
-
-                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
-                            value="#{langueBean.getMsg('rightbody.concept.delete_handle')}" 
-                            disabled="false"                                      
-                            actionListener="#{editConcept.infosDeleteHandle()}"
-                            update="idDeleteHandle"
-                            action="#{editConcept.reset('')}"
-                            oncomplete="PF('deleteHandle').show();"
-                            style="font-size: 12px;"/>
-
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_ark')}"
                             disabled="false"
@@ -156,6 +138,27 @@
                             disabled="false"
                             actionListener="#{editConcept.clear()}"
                             update="idGenerateAllArk generateAllArkForm"/>
+                
+                
+                <!-- gestion de Handle -->
+                
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                            value="#{langueBean.getMsg('rightbody.concept.generate_handle')}" 
+                            disabled="false"                                      
+                            actionListener="#{editConcept.infosHandle()}"
+                            update="idGenerateHandle"
+                            action="#{editConcept.reset('')}"
+                            oncomplete="PF('generateHandle').show();"
+                            style="font-size: 12px;" />
+
+                <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
+                            value="#{langueBean.getMsg('rightbody.concept.delete_handle')}" 
+                            disabled="false"                                      
+                            actionListener="#{editConcept.infosDeleteHandle()}"
+                            update="idDeleteHandle"
+                            action="#{editConcept.reset('')}"
+                            oncomplete="PF('deleteHandle').show();"
+                            style="font-size: 12px;"/>                
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_missing_handle')}" 
@@ -171,6 +174,9 @@
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_handle')}"
                             disabled="false" action="#{editConcept.generateAllHandle()}"
                             update="messageIndex" />
+                
+                <!-- Fin de gestion de Handle -->                
+                
 
                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.import_tabulated_list')}"
                             actionListener="#{editConcept.infosDelete()}" icon="fas fa-file-download"

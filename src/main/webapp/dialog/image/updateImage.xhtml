@@ -34,18 +34,26 @@
                         </div>
                     </f:facet>
 
-                    <p:column width="60%" headerText="URI">
-                        <p:inputText value="#{imageToEdit.uri}" style="width: 100%" />            
+                    <p:column width="60%" headerText="#{langueBean.getMsg('rightbody.conceptdialog.uri_image')} ">
+                        <p:inputText value="#{imageToEdit.uri}" title="#{imageToEdit.uri}" style="width: 100%" />            
                     </p:column>
 
-                    <p:column width="30%" headerText="CopyRight">
+                    <p:column width="20%" headerText="#{langueBean.getMsg('statistique.label')}">
+                        <p:inputText value="#{imageToEdit.imageName}" style="width: 100%"/>
+                    </p:column>
+                    
+                    <p:column width="20%" headerText="#{langueBean.getMsg('dublincore.creator')}">
+                        <p:inputText value="#{imageToEdit.creator}" style="width: 100%"/>
+                    </p:column>                      
+                    
+                    <p:column width="20%" headerText="#{langueBean.getMsg('rightbody.conceptdialog.copyright')}">
                         <p:inputText value="#{imageToEdit.copyRight}" style="width: 100%"/>
                     </p:column>
 
-                    <p:column width="10%" headerText="Action" >                        
+                    <p:column width="10%" headerText="#{langueBean.getMsg('profile.action')}" >                        
                         <p:commandLink title="#{langueBean.getMsg('statistique.validate')}" ajax="true" process="@form" 
                                        action="#{imageBean.updateImage( imageToEdit, currentUser.nodeUser.idUser)}"
-                                       update="containerIndex:formRightTab containerIndex:idUpdateImage messageIndex">
+                                       update="containerIndex:formRightTab  messageIndex">
                             <i class="pi pi-check-circle" style="color: #F47B2A; font-size: 1.2rem; padding-top: 4px;" />
                         </p:commandLink>
                     </p:column>                        

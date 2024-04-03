@@ -35,7 +35,7 @@
                 <div class="col-12 md:col-4">
                     <div class="ui-inputgroup">
                         <p:textEditor id="textEditorDef" widgetVar="DefinitionNew"
-                                      value="#{editFacet.definition}" allowLinks="true"
+                                      value="#{editFacet.definition1}" allowLinks="true"
                                       secure="false" height="100" style="font-size: 12px; color: black; border-color: #43B572; width: 100%;"
                                       placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />
                     </div>
@@ -52,8 +52,9 @@
 
                 <p:commandButton id="validateNewFacet" styleClass="ui-button-success" 
                                  value="#{langueBean.getMsg('btnValidate')}" 
-                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex"                                
+                                 update="containerIndex:formLeftTab containerIndex:formRightTab messageIndex containerIndex:idAddFacet"                                
                                  actionListener="#{editFacet.addNewFacet()}"
+                                 oncomplete="PF('addFacet').show();"
                                  icon="pi pi-check" ajax="true" process="@form" />
             </div>
         </h:form>        

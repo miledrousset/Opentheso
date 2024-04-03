@@ -22,30 +22,41 @@
     </style>
 
     <p:toolbar style="margin-left: 20px; margin-right: 20px;">
-        <p:toolbarGroup align="center">
-            <p:commandButton value="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" 
-                             icon="fa-solid fa-gear" styleClass="ui-button-success"
-                             actionListener="#{setAlignmentSourceBean.init()}" process="@this" ajax="true"
-                             oncomplete="PF('sourceManagement').show();"
-                             update="sourceManagementID"/>
-
-            <p:commandButton value="#{langueBean.getMsg('rightbody.conceptdialog.add_source')}" 
-                             icon="fa-solid fa-plus" styleClass="ui-button-success" 
-                             process="@this" ajax="true" update="addSourceID"
-                             actionListener="#{setAlignmentSourceBean.initAddSource()}" 
-                             oncomplete="PF('addSource').show();" style="margin-left: 10px" />
-        </p:toolbarGroup>
-        <p:toolbarGroup align="right">
-            <p:commandButton value="#{langueBean.getMsg('alignment.automaticSearch')}"
+        <p:toolbarGroup align="left">
+            <p:commandButton disabled="#{alignmentBean.isManageAlignmentVisible()}"
+                             value="#{langueBean.getMsg('alignment.automaticSearch')}"
                              icon="fa-solid fa-magnifying-glass" styleClass="ui-button-success"
                              process="@this" ajax="true"
                              actionListener="#{setAlignmentSourceBean.initAlignementAutomatique()}"
                              update="selectSourceManagementID"
                              style="margin-left: 10px; " />
+        </p:toolbarGroup>        
+
+
+        <p:toolbarGroup align="center">
+            <p:commandButton value="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" 
+                             icon="fa-solid fa-gear" styleClass="ui-button-success"
+                             actionListener="#{setAlignmentSourceBean.initForManage()}" process="@this" ajax="true"
+
+                             update="containerIndex:formRightTab"/>
+
+            <p:commandButton rendered="#{f} " value="#{langueBean.getMsg('rightbody.conceptdialog.add_source')} (Opentheso)" 
+                             icon="fa-solid fa-plus" styleClass="ui-button-success" 
+                             process="@this" ajax="true" update="addSourceID"
+                             actionListener="#{setAlignmentSourceBean.initAddSource()}" 
+                             oncomplete="PF('addSource').show();" style="margin-left: 10px" />
+
+            <p:commandButton rendered="#{f} " disabled="true" value="modifier (Opentheso)" 
+                             icon="fa-solid fa-plus" styleClass="ui-button-success" 
+                             update="idUpdateSource"
+                             actionListener="#{setAlignmentSourceBean.init()}" 
+                             oncomplete="PF('updateSource').show();" style="margin-left: 10px" />            
+
         </p:toolbarGroup>
+
     </p:toolbar>
 
-    
+
     <!-- interface de visualisation des concepts à aligner -->    
     <h:panelGroup rendered="#{alignmentBean.isAllAlignementVisible()}">
         <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; margin-left: 20px; margin-right: 20px; border-color: #43B572">
@@ -136,7 +147,7 @@
                         </p:commandButton>
                     </p:column>
                     <p:column colspan="2" style="text-align:right; text-align:right; background-color: #ecf8f1;
-                            border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
+                              border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
                         <h:outputText value="#{langueBean.getMsg('alignment.totalAlignmentFor')} (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignementParConcept(alignement.idConceptOrig)}"/>
                     </p:column>
                 </p:summaryRow>
@@ -151,8 +162,8 @@
         </div>
     </h:panelGroup>
 
-    
-    
+
+
     <!-- interface de validation pour l'alignement automatique -->
     <h:panelGroup rendered="#{alignmentBean.isPropositionAlignementVisible()}">
         <div class="card mb-4 py-3 border-left-success" style="margin: 20px; border-color: #43B572">
@@ -198,7 +209,7 @@
 
                 <p:summaryRow>
                     <p:column colspan="4" style="background-color: #ecf8f1; border-top: 1px solid #43B572;
-                            border-bottom: 1px solid #43B572; color: #143a1e">
+                              border-bottom: 1px solid #43B572; color: #143a1e">
                         <h:outputText value="#{langueBean.getMsg('alignment.totalFoundFor')} (#{alignement.concept_target}) : #{alignmentBean.getTotalCount(alignement.internal_id_concept)}"/>
                     </p:column>
                     <p:column  style="background-color: #ecf8f1; border-top: 1px solid #43B572;border-bottom: 1px solid #43B572; color: #143a1e; text-align: right">
@@ -228,54 +239,146 @@
         </p:toolbar>
     </h:panelGroup>
 
-    <p:dialog id="sourceManagementID" header="#{langueBean.getMsg('rightbody.conceptdialog.manage_alignment_sources')}" 
-              widgetVar="sourceManagement" modal="true" resizable="true" position="top" 
-              width="500" style="margin-top: 50px" >
-        <h:form>
-            <div class="row">
-                <div class="col-12" style="margin-top: 3px">
-                    <h:outputText value="#{selectedTheso.thesoName} (#{selectedTheso.currentIdTheso})" />
+
+
+
+    <!--Interface de gestion des sources d'alignements  -->
+    <h:panelGroup rendered="#{alignmentBean.isManageAlignmentVisible()}">
+        <!-- gestion des sources -->
+
+        <div class="card mb-4 py-3 border-left-success" style="margin-left: 30px; margin-right: 30px; margin-top: 10px; margin-bottom: 30px; ">
+            <!-- Ajout d'une langue au thésaurus -->
+            <div class="row" style="text-align: right; margin-right: 20px; margin-bottom: 10px;">
+                <div class="col-12"  >
+                    <p:commandButton title="#{langueBean.getMsg('rightbody.conceptdialog.add_source')} (Opentheso)"
+                                     icon="fas fa-plus-circle" styleClass="rounded-button ui-button-outlined"
+                                     actionListener="#{setAlignmentSourceBean.clearValues()}"
+                                     update="containerIndex:rightTab:addSourceID" style="color: #f47b2a; "
+                                     oncomplete="PF('addSource').show();" ajax="true" process="@this"/>
+                </div>
+            </div>      
+
+            <!-- Liste des sources à modifier -->
+            <div class="row" style="margin-left: 20px; margin-right: 20px;">
+                <div class="col-12">
+
+
+                    <p:dataTable id="listAlgnmentSource" value="#{setAlignmentSourceBean.nodeSelectedAlignmentsAll}" var="sourceAlign" scrollable="true" 
+                                 resizableColumns="true" scrollHeight="250" reflow="true" lazy="false" rowSelectMode="none" rowKey="#{sourceAlign.idAlignmnetSource}">
+
+                        <p:column width="5" headerText="#{langueBean.getMsg('activate')}">
+                            <p:toggleSwitch id="isSourceSelected" value="#{sourceAlign.isSelected}" onIcon="pi pi-times" offIcon="pi pi-check"
+                                            style="width: 45px;"/>
+                        </p:column>
+
+                        <p:column width="25" headerText="#{langueBean.getMsg('alignment.source')}">
+                            <h:outputLabel value="#{sourceAlign.sourceLabel}"/>
+                        </p:column>
+
+                        <p:column width="60" headerText="#{langueBean.getMsg('rightbody.conceptdialog.description')}">
+                            <h:outputLabel value="#{sourceAlign.sourceDescription}" style="font-size: 14px; margin-left: 10px;" />
+                        </p:column>
+
+
+                        <p:column width="5" headerText="#{langueBean.getMsg('candidat.edit')}">
+                            <p:commandButton icon="fa-solid fa-pencil" update="containerIndex:rightTab:idUpdateSource "
+                                             oncomplete="PF('updateSource').show()"  style="color: #f47b2a"
+                                             action="#{setAlignmentSourceBean.initForUpdate(sourceAlign.idAlignmnetSource)}"
+                                             styleClass="rounded-button ui-button-outlined" />
+                        </p:column>
+
+                        <p:column width="5" headerText="#{langueBean.getMsg('candidat.remove')}">
+                            <p:commandButton styleClass="ui-button-danger rounded-button" icon="pi pi-trash"
+                                             action="#{setAlignmentSourceBean.initForUpdate(sourceAlign.idAlignmnetSource)}"
+                                             oncomplete="PF('confirmDeleteAlignement').show()"
+                                             update="containerIndex:rightTab:idConfirmDeleteAlignement messageIndex"/>
+                        </p:column>
+                    </p:dataTable>
+
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-11" style="text-align: right">
+                <p:commandButton value="#{langueBean.getMsg('btnCancel')}" 
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
+                                 actionListener="#{alignmentBean.cancelForManageAlignment()}" 
+                                 update="containerIndex:formRightTab" style="margin-right: 10px" />                
+            </div>
+        </div>
+    </h:panelGroup>    
 
-            <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                <p:dataTable size="small" var="alignmentSource" value="#{setAlignmentSourceBean.nodeSelectedAlignmentsAll}"
-                             widgetVar="listSourceTable" styleClass="products-table"
-                             style="margin-bottom: -17px; margin-top: -16px; overflow: auto; max-height: 400px" lazy="false" >
 
-                    <f:facet name="header">
-                        <div class="products-table-header">
-                            <span style="font-weight: bold">
-                                #{langueBean.getMsg('rightbody.alignmentSourceList')}
-                            </span>
-                        </div>
-                    </f:facet>
 
-                    <p:column width="1">
-                        <p:selectBooleanCheckbox value="#{alignmentSource.isSelected}" />          
-                    </p:column>
 
-                    <p:column width="11" headerText="#{langueBean.getMsg('rightbody.conceptdialog.name')}">
-                        <h:outputLabel value="#{alignmentSource.sourceLabel}" />
-                    </p:column>                     
-                </p:dataTable>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- dialogue pour modifier une source de type Opentheso-->
+    <p:dialog id="idUpdateSource" header="#{langueBean.getMsg('rightbody.concept.modifyExternalResource')} Opentheso" 
+              widgetVar="updateSource" modal="true" resizable="true" position="top" 
+              width="650" style="margin-top: 50px" >
+        <h:form id="updateSourceForm">
+            <div class="row">
+                <div class="col-4">
+                    <h:outputText value="#{langueBean.getMsg('statistique.label')} *"/>
+                </div> 
+                <div class="col-8">
+                    <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}"
+                                 style="width: 100%;" value="#{setAlignmentSourceBean.alignementSourceToUpdate.source}"/>
+                </div>                                
+            </div> 
+
+            <div class="row" style="padding-top: 7px">
+                <div class="col-4">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri')} *" title="https://opentheso2.mom.fr/opentheso2"/>
+                </div> 
+                <div class="col-8">
+                    <p:inputTextarea placeholder="#{langueBean.getMsg('rightbody.conceptdialog.uri')}" style="width: 100%;" 
+                                     value="#{setAlignmentSourceBean.alignementSourceToUpdate.requete}"/>
+                </div>             
+            </div>  
+
+            <div class="row" style="padding-top: 7px">
+                <div class="col-4">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.description')}" />
+                </div> 
+                <div class="col-8">
+                    <p:inputText placeholder="#{setAlignmentSourceBean.description}" style="width: 100%;" 
+                                 value="#{setAlignmentSourceBean.alignementSourceToUpdate.description}"/>
+                </div> 
             </div>
 
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
-                <p:commandButton value="#{langueBean.getMsg('btnCancel')}" style="margin-right: 10px"
+
+                <p:commandButton value="#{langueBean.getMsg('btnCancel')}" 
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
                                  actionListener="#{setAlignmentSourceBean.cancel()}" 
-                                 oncomplete="PF('sourceManagement').hide();" update="containerIndex"/>
+                                 oncomplete="PF('updateSource').hide();" 
+                                 update="containerIndex:formRightTab" style="margin-right: 10px" />
 
-                <p:commandButton styleClass="ui-button-success" value="#{langueBean.getMsg('btnValidate')}"
-                                 update="containerIndex messageIndex" oncomplete="PF('sourceManagement').hide();"
-                                 actionListener="#{setAlignmentSourceBean.updateSelectedAlignment()}"
-                                 icon="pi pi-check" ajax="true" process="@form"/>
+                <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex:formRightTab messageIndex"
+                                 oncomplete="PF('updateSource').hide();" 
+                                 process="@form" ajax="true"
+                                 styleClass="ui-button-success" icon="pi pi-check" 
+                                 action="#{setAlignmentSourceBean.updateAlignmentSource()}"/>
             </div>
         </h:form>
-    </p:dialog>
 
-    <p:dialog id="addSourceID" header="#{langueBean.getMsg('rightbody.conceptdialog.add_source')}" 
+    </p:dialog>    
+
+
+    <!-- dialogue pour ajouter une source de type Opentheso-->
+    <p:dialog id="addSourceID" header="#{langueBean.getMsg('rightbody.conceptdialog.add_source')} Opentheso" 
               widgetVar="addSource" modal="true" resizable="true" position="top" 
               width="500" style="margin-top: 50px" >
         <h:form>
@@ -287,7 +390,7 @@
 
             <div class="row">
                 <div class="col-4">
-                    <h:outputText value="#{langueBean.getMsg('statistique.label')}"/>
+                    <h:outputText value="#{langueBean.getMsg('statistique.label')} *"/>
                 </div> 
                 <div class="col-8">
                     <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}"
@@ -297,30 +400,30 @@
 
             <div class="row" style="padding-top: 7px">
                 <div class="col-4">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri')}"/>
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri')} *" title="https://opentheso2.mom.fr/opentheso2"/>
                 </div> 
                 <div class="col-8">
                     <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.uri')}" style="width: 100%;" 
-                                 value="#{setAlignmentSourceBean.sourceUri}"/>
+                                 value="#{setAlignmentSourceBean.sourceUri}" title="https://opentheso2.mom.fr/opentheso2"/>
                 </div>             
             </div>  
 
             <div class="row" style="padding-top: 7px">
                 <div class="col-4">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}"/>
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')} *" title="th680"/>
                 </div> 
                 <div class="col-8">
-                    <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}" 
+                    <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.id_thesaurus')}"  title="th680"
                                  style="width: 100%;" value="#{setAlignmentSourceBean.sourceIdTheso}" />
                 </div>                   
             </div>      
 
             <div class="row" style="padding-top: 7px">
                 <div class="col-4">
-                    <h:outputText value="Description" />
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.description')}" />
                 </div> 
                 <div class="col-8">
-                    <p:inputText placeholder="note" style="width: 100%;" 
+                    <p:inputText placeholder="#{setAlignmentSourceBean.description}" style="width: 100%;" 
                                  value="#{setAlignmentSourceBean.description}"/>
                 </div> 
             </div>
@@ -347,14 +450,14 @@
 
         <div class="row">
             <div class="col-12" >
-                <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.confirmDeleteAlignment')} : " />                    
+                <h:outputText value="#{langueBean.getMsg('alig.delete')} : " />                    
             </div>
         </div>
 
         <div class="row" style="margin-top: 5px; font-size: 12px;">
             <div class="col-12" style="text-align: center" >
-                <h:outputText value="#{alignmentBean.alignementElementSelected.labelConceptOrig} / 
-                              #{alignmentBean.alignementElementSelected.labelConceptCible}"
+                <h:outputText value="#{setAlignmentSourceBean.alignementSourceToUpdate.source} / 
+                              #{setAlignmentSourceBean.alignementSourceToUpdate.description}"
                               style="color: #C63632;"/>
             </div>            
         </div>
@@ -368,7 +471,8 @@
             <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" 
                              styleClass="ui-button-success" icon="pi pi-check"
                              update="containerIndex:formRightTab messageIndex" oncomplete="PF('confirmDeleteAlignement').hide();"
-                             actionListener="#{alignmentBean.deleteAlignemen()}" />
+                             ajax="true" process="@form"
+                             actionListener="#{setAlignmentSourceBean.deleteAlignmentSource()}" />
         </div>
     </p:dialog>
 

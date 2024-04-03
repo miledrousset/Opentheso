@@ -40,7 +40,7 @@
             <div id="content-wrapper" style="width: 100%">
 
                 <h:form id="containerIndex" style="min-height:100%; position:relative;">
-                    
+
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
@@ -62,121 +62,115 @@
 
 
                                 <!-- Ark -->
-                                <div class="card mb-4 py-3 border-left-success" style="margin: 30px; margin-top: 10px;">
+                                <div class="card mb-4 py-3 border-left-success" style="margin-left: 30px; margin-right: 30px; margin-top: 10px;">
                                     <p:panel style="border-color: transparent">
                                         <div class="row" style="height: 32px; background: #ECF8F1 !important; margin-left: 5px; margin-right: 5px">
                                             <div class="col-6" style="padding-top: 3px">
                                                 <h:outputText value="#{langueBean.getMsg('setting.arkServer')}" style="font-weight: bold; color: #f47b2a !important;" />
                                             </div>
                                             <div class="col-6" style="text-align: right; padding-top: 3px">
-                                                <p:badge rendered="#{preferenceBean.nodePreference.useArk}" severity="success"  value="ON" />
-                                                <p:badge rendered="#{!preferenceBean.nodePreference.useArk}" style="background-color:#FFF; color: #818183" value="OFF"  />
+                                                <p:toggleSwitch  value="#{preferenceBean.nodePreference.useArk}" 
+                                                                 onIcon="pi pi-times" offIcon="pi pi-check"
+                                                                 style="height: 25px; width: 50px;">
+                                                    <p:ajax event="change" listener="#{preferenceBean.updateSelectedServer('ark')}" update="containerIndex" />
+                                                </p:toggleSwitch>  
                                             </div>
                                         </div>
 
-                                        <div class="list-group" >
-                                            <!-- Activer / désactiver Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.setOnOffArk')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputSwitch value="#{preferenceBean.nodePreference.useArk}" style="color: #f47b2a" />
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <h:panelGroup rendered="#{preferenceBean.nodePreference.useArk}" >
+                                            <div class="list-group" >
 
-                                            <!-- Serveur Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.arkServer')}" style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="width: 100%;">
-                                                            <p:tooltip value="#{langueBean.getMsg('setting.arkServerTooltip')}" showDelay="500" />
-                                                        </p:inputText>
+                                                <!-- Serveur Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.arkServer')}" style="font-size: 14px; font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.serveurArk}" style="width: 100%;">
+                                                                <p:tooltip value="#{langueBean.getMsg('setting.arkServerTooltip')}" showDelay="500" />
+                                                            </p:inputText>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- Uri Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.uriArk')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.uriArk}" style="width: 100%;">
-                                                            <p:tooltip value="#{langueBean.getMsg('setting.uriArkTooltip')}" showDelay="500" />
-                                                        </p:inputText>
+                                                <!-- Uri Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.uriArk')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.uriArk}" style="width: 100%;">
+                                                                <p:tooltip value="#{langueBean.getMsg('setting.uriArkTooltip')}" showDelay="500" />
+                                                            </p:inputText>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- Naan Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.yourNaan')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.idNaan}" style="width: 100%;"/>
+                                                <!-- Naan Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.yourNaan')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.idNaan}" style="width: 100%;"/>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- Prefixe Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.arkPrefix')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixArk}" style="width: 100%; font-size: 12px;"/>
+                                                <!-- Prefixe Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.arkPrefix')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.prefixArk}" style="width: 100%; font-size: 12px;"/>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- User Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.userArk')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.userArk}" style="width: 100%;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- pass Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.passArk')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:password value="#{preferenceBean.nodePreference.passArk}" style="width: 100%;" toggleMask="false" redisplay="true"/>
+                                                <!-- User Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.userArk')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.userArk}" style="width: 100%;"/>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                                <!-- pass Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.passArk')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:password value="#{preferenceBean.nodePreference.passArk}" style="width: 100%;" toggleMask="false" redisplay="true"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                            <div class="row" style="padding: 3px;">
-                                                <div class="col-11" style="text-align: right; margin-top: 2px;">
-                                                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check" 
-                                                                     update="containerIndex messageIndex"
-                                                                     actionListener="#{preferenceBean.savePreference()}" >
-                                                        <p:tooltip value="#{langueBean.getMsg('candidat.save')}" showDelay="500" />
-                                                    </p:commandButton>
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-11" style="text-align: right; margin-top: 2px;">
+                                                        <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check" 
+                                                                         update="containerIndex messageIndex"
+                                                                         actionListener="#{preferenceBean.savePreference()}" >
+                                                            <p:tooltip value="#{langueBean.getMsg('candidat.save')}" showDelay="500" />
+                                                        </p:commandButton>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </h:panelGroup>
                                     </p:panel>
                                 </div>
- 
+
                                 <!-- Serveur Ark Local -->
-                                <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
+                                <div class="card mb-4 py-3 border-left-success" style="margin-left: 30px; margin-right: 30px;margin-top: 5px;">
                                     <p:panel style="border-color: transparent">
                                         <div class="row" style="height: 32px; background: #ECF8F1 !important; margin-left: 5px; margin-right: 5px">
                                             <div class="col-6" style="padding-top: 3px">
@@ -184,222 +178,275 @@
                                                               title="#{langueBean.getMsg('setting.localArkServerTooltip')}"/>
                                             </div>
                                             <div class="col-6" style="text-align: right; padding-top: 3px">
-                                                <p:badge rendered="#{preferenceBean.nodePreference.useArkLocal}" severity="success"  value="ON"  />
-                                                <p:badge rendered="#{!preferenceBean.nodePreference.useArkLocal}" style="background-color:#FFF; color: #818183" value="OFF"  />
+                                                <p:toggleSwitch  value="#{preferenceBean.nodePreference.useArkLocal}" 
+                                                                 onIcon="pi pi-times" offIcon="pi pi-check"
+                                                                 style="height: 25px; width: 50px;">
+                                                    <p:ajax event="change" listener="#{preferenceBean.updateSelectedServer('arklocal')}" update="containerIndex" />
+                                                </p:toggleSwitch>  
                                             </div>
                                         </div>
+                                        <h:panelGroup rendered="#{preferenceBean.nodePreference.useArkLocal}" >
+                                            <div class="list-group" style="margin-bottom: -10px">
 
-                                         <div class="list-group" style="margin-bottom: -10px">
+                                                <!-- Naan Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.yourNaan')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.naanArkLocal}" style="width: 100%;"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
-                                            <!-- Activer / désactiver Handle -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.setOnOfflocalArk')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputSwitch value="#{preferenceBean.nodePreference.useArkLocal}" style="color: #f47b2a" onLabel="OUI" offLabel="NON" />
+                                                <!-- Prefixe Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.arkPrefix')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.prefixArkLocal}" style="width: 100%;"/>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- Naan Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.yourNaan')}" style="font-weight: bold;" />
+                                                <!-- size of Id Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.sizeOfArkIdentifier')}"
+                                                                          title="#{langueBean.getMsg('setting.sizeOfArkIdentifierTooltip')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.sizeIdArkLocal}" style="width: 100%;"/>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.naanArkLocal}" style="width: 100%;"/>
+                                                </div>
+                                                <!-- size of Id Ark -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('setting.isUpperCaseForArk')}"
+                                                                          title="#{langueBean.getMsg('setting.isUpperCaseForArkTooltip')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:toggleSwitch value="#{preferenceBean.nodePreference.uppercase_for_ark}" style="font-size: 12px;" />
+                                                        </div>
+                                                    </div>
+                                                </div>            
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-9 offset-3" style=" margin-top: 2px;">
+                                                            <h:outputText value="(*) #{langueBean.getMsg('setting.localArkInfo')}"
+                                                                          style="font-style: italic" />
+                                                        </div>
+                                                    </div>
+                                                </div>    
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-9 offset-3" style="text-align: left;">
+                                                        <p:graphicImage value="/resources/img/local_ark_info.png" alt="/resources/img/local_ark_info.png"  
+                                                                        style="height: 150px; " />
+                                                    </div>                                              
+                                                </div>
+                                                <!-- size of Id Ark -->
+                                                <div class="row" style="padding: 3px;">
+                                                    <div class="col-11" style="text-align: right; margin-top: 2px;">
+                                                        <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
+                                                                         actionListener="#{preferenceBean.savePreference()}"
+                                                                         update="containerIndex messageIndex"/>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <!-- Prefixe Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.arkPrefix')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixArkLocal}" style="width: 100%;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- size of Id Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.sizeOfArkIdentifier')}"
-                                                                      title="#{langueBean.getMsg('setting.sizeOfArkIdentifierTooltip')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.sizeIdArkLocal}" style="width: 100%;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- size of Id Ark -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="#{langueBean.getMsg('setting.isUpperCaseForArk')}"
-                                                                      title="#{langueBean.getMsg('setting.isUpperCaseForArkTooltip')}" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:toggleSwitch value="#{preferenceBean.nodePreference.uppercase_for_ark}" style="font-size: 12px;" />
-                                                    </div>
-                                                </div>
-                                            </div>            
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-9 offset-3" style=" margin-top: 2px;">
-                                                        <h:outputText value="(*) #{langueBean.getMsg('setting.localArkInfo')}"
-                                                                      style="font-style: italic" />
-                                                    </div>
-                                                </div>
-                                            </div>    
-                                            <div class="row" style="padding: 3px;">
-                                                <div class="col-9 offset-3" style="text-align: left;">
-                                                    <p:graphicImage value="/resources/img/local_ark_info.png" alt="/resources/img/local_ark_info.png"  
-                                                                    style="height: 150px; " />
-                                                </div>                                              
-                                            </div>
-                                            <!-- size of Id Ark -->
-                                            <div class="row" style="padding: 3px;">
-                                                <div class="col-11" style="text-align: right; margin-top: 2px;">
-                                                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
-                                                                     actionListener="#{preferenceBean.savePreference()}"
-                                                                     update="containerIndex messageIndex"/>
-                                                </div>
-                                            </div>
-                                         </div>
+                                        </h:panelGroup>
                                     </p:panel>
                                 </div>
-                               <!--Serveur Handle-->
-                                <div class="card mb-4 py-3 border-left-success" style="margin: 30px">
+
+
+
+
+
+
+                                <!--Serveur Handle-->
+                                <div class="card mb-4 py-3 border-left-success" style="margin-left: 30px; margin-right: 30px; margin-top: 5px;">
                                     <p:panel style="border-color: transparent">
                                         <div class="row" style="height: 32px; background: #ECF8F1 !important; margin-left: 5px; margin-right: 5px">
                                             <div class="col-6" style="padding-top: 3px">
-                                                <h:outputText value="Serveur Handle " style="font-size: 14px; font-weight: bold; color:#f47b2a  !important;" />
+                                                <h:outputText value="#{langueBean.getMsg('identifier.handleServer')}" style="font-size: 14px; font-weight: bold; color:#f47b2a  !important;" />
                                             </div>
                                             <div class="col-6" style="text-align: right; padding-top: 3px">
-                                                <p:badge rendered="#{preferenceBean.nodePreference.useHandle}" severity="success"  value="ON"/>
-                                                <p:badge rendered="#{!preferenceBean.nodePreference.useHandle}" style="background-color:#FFF; color: #818183" value="OFF"  />
+                                                <p:toggleSwitch  value="#{preferenceBean.nodePreference.useHandle}" 
+                                                                 onIcon="pi pi-times" offIcon="pi pi-check"
+                                                                 style="height: 25px; width: 50px;">
+                                                    <p:ajax event="change" listener="#{preferenceBean.updateSelectedServer('handle')}" update="containerIndex" />
+                                                </p:toggleSwitch>                                                    
                                             </div>
                                         </div>
 
-                                        <div class="list-group" style="margin-bottom: -10px">
 
-                                            <!-- Activer / désactiver Handle -->
-                                            <div class="list-group-item list-group-item-action">
+                                        <h:panelGroup rendered="#{preferenceBean.nodePreference.useHandle}" >
+                                            <div class="list-group" style="margin-bottom: -10px">
+
+                                                <!-- Activer / désactiver Handle avec certificat  -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px; margin-top: 10px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('identifier.useHandleWithCertificate')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputSwitch value="#{preferenceBean.nodePreference.useHandleWithCertificat}" style="color: #f47b2a" onLabel="OUI" offLabel="NON" >
+                                                                <p:ajax event="change" update="containerIndex" />
+                                                            </p:inputSwitch>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                       
+                                                <p:spacer/>                                                
+                                                
+
+
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('identifier.handleServer')}" style="font-weight: bold;" title="exemple: https://handle.mondomaine.fr:8000/api/handles/"/>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.urlApiHandle}" title="exemple: https://handle.mondomaine.fr:8000/api/handles/" 
+                                                                         style="width: 100%;" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Prefixe Handle -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('identifier.handlePrefix')}" style="font-weight: bold;" title="exemple: 20.500.11111"/>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.prefixIdHandle}" style="width: 100%;" 
+                                                                         title="exemple: 20.500.11111"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <h:panelGroup rendered="#{!preferenceBean.nodePreference.useHandleWithCertificat}" style="background-color: #ECF8F1;">
+                                                    <!-- Index Handle -->
+                                                    <div class="list-group-item list-group-item-action">
+                                                        <div class="row" style="padding: 3px;">
+                                                            <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                                <h:outputText value="#{langueBean.getMsg('identifier.handleIndex')}" style="font-weight: bold;"  title="exemple: 300"/>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <p:inputText value="#{preferenceBean.nodePreference.indexHandle}" title="exemple: 300" style="width: 100%;" />
+                                                            </div>
+                                                        </div>
+                                                    </div>  
+
+                                                    <!-- Admin Handle -->
+                                                    <div class="list-group-item list-group-item-action">
+                                                        <div class="row" style="padding: 3px;">
+                                                            <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                                <h:outputText value="#{langueBean.getMsg('identifier.handleAdmin')}" style="font-weight: bold;" title="exemple: 0.NA/20.500.11111"/>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <p:inputText value="#{preferenceBean.nodePreference.adminHandle}" style="width: 100%;" title="exemple: 0.NA/20.500.11111"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>         
+                                                </h:panelGroup>
+
+                                                <!-- Prefixe privé -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('identifier.handlePrivatePrefix')}" title="#{langueBean.getMsg('identifier.handlePrivatePrefixTooltip')}"
+                                                                          style="font-size: 14px; font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:inputText value="#{preferenceBean.nodePreference.privatePrefixHandle}" style="width: 100%;"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- pass Handle -->
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="row" style="padding: 3px;">
+                                                        <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                            <h:outputText value="#{langueBean.getMsg('identifier.handlePass')}" style="font-weight: bold;" />
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p:password value="#{preferenceBean.nodePreference.passHandle}" style="width: 100%;" toggleMask="false" redisplay="true"/>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                    
+
+                                                <p:spacer/>
+
+
+                                                <!-- Serveur Handle standard -->
+                                                <h:panelGroup rendered="#{!preferenceBean.nodePreference.useHandleWithCertificat}" style="background-color: #ECF8F1;">                                                   
+
+                                                    <!-- fichier adminpriv -->
+                                                    <div class="list-group-item list-group-item-action">
+                                                        <div class="row" style="padding: 3px;">
+                                                            <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                                <h:outputText value="#{langueBean.getMsg('identifier.handlePathToKey')}" style="font-weight: bold;" 
+                                                                              title="#{langueBean.getMsg('identifier.handlePathToKeyTooltip')}"/>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <h:outputText value="/certificat/admpriv.bin" style="width: 100%; color: #C34A2C; font-weight: bold" 
+                                                                              title="#{langueBean.getMsg('identifier.handlePathToKeyTooltip')}"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup> 
+
+
+                                                <!-- Serveur Handle chez Huma-Num -->                                                
+                                                <h:panelGroup rendered="#{preferenceBean.nodePreference.useHandleWithCertificat}">
+                                                    <!-- Path Clé Handle -->
+                                                    <div class="list-group-item list-group-item-action">
+                                                        <div class="row" style="padding: 3px;">
+                                                            <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                                <h:outputText value="#{langueBean.getMsg('identifier.handleKey')}" style="font-weight: bold;"
+                                                                              title="#{langueBean.getMsg('identifier.handleKeyTooltip')}"/>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <p:inputText value="#{preferenceBean.nodePreference.pathKeyHandle}" style="width: 100%;"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Path certificat Handle -->
+                                                    <div class="list-group-item list-group-item-action">
+                                                        <div class="row" style="padding: 3px;">
+                                                            <div class="col-3" style="text-align: right; margin-top: 2px;">
+                                                                <h:outputText value="#{langueBean.getMsg('identifier.handleCertificate')}" style="font-weight: bold;"
+                                                                              title="#{langueBean.getMsg('identifier.handleCertificateTooltip')}"/>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <p:inputText value="#{preferenceBean.nodePreference.pathCertHandle}" style="width: 100%;" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </h:panelGroup>                                                
+
+
+                                                <!-- enregistrer les changements -->
                                                 <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Désactiver/Activer le serveur Handle" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputSwitch value="#{preferenceBean.nodePreference.useHandle}" style="color: #f47b2a" onLabel="OUI" offLabel="NON" />
+                                                    <div class="col-11" style="text-align: right; margin-top: 2px;">
+                                                        <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
+                                                                         actionListener="#{preferenceBean.savePreference()}"
+                                                                         update="containerIndex messageIndex"/>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- Serveur Handle -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Serveur Handle" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.urlApiHandle}" style="width: 100%;" />
-                                                    </div>
-                                                </div>
                                             </div>
-
-                                            <!-- Prefixe Handle -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Préfixe Handle" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.prefixIdHandle}" style="width: 100%;" />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Prefixe privé -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Préfixe privé" title="Le préfixe à ajouter avant chaque identifiant"
-                                                                      style="font-size: 14px; font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.privatePrefixHandle}" style="width: 100%;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- User Handle -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="User Handle" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.userHandle}" style="width: 100%;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- pass Handle -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Passe Handle" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:password value="#{preferenceBean.nodePreference.passHandle}" style="width: 100%;" toggleMask="false" redisplay="true"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Path Clé Handle -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Chemin clé Handle" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.pathKeyHandle}" style="width: 100%;"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Path certificat Handle -->
-                                            <div class="list-group-item list-group-item-action">
-                                                <div class="row" style="padding: 3px;">
-                                                    <div class="col-3" style="text-align: right; margin-top: 2px;">
-                                                        <h:outputText value="Chemin certificat Handle" style="font-weight: bold;" />
-                                                    </div>
-                                                    <div class="col-8">
-                                                        <p:inputText value="#{preferenceBean.nodePreference.pathCertHandle}" style="width: 100%;" />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- use generateHAndle -->
-                                            <div class="row" style="padding: 3px;">
-                                                <div class="col-11" style="text-align: right; margin-top: 2px;">
-                                                    <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
-                                                                     actionListener="#{preferenceBean.savePreference()}"
-                                                                     update="containerIndex messageIndex"/>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        </h:panelGroup>                                            
                                     </p:panel>
                                 </div>                                
-                                
+
                             </div>
                         </div>
                     </div>

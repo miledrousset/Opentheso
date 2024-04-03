@@ -387,7 +387,10 @@ public class CsvWriteHelper {
             }      
             if(!StringUtils.isEmpty(nodeImage.getImageName())) {
                 value = value + "@@dcterms:title=" +  nodeImage.getImageName();
-            }             
+            }
+            if(!StringUtils.isEmpty(nodeImage.getCreator())) {
+                value = value + "@@dcterms:creator=" +  nodeImage.getCreator();
+            }              
         }
         return value;
     }     
@@ -826,6 +829,7 @@ public class CsvWriteHelper {
                 ArrayList<String> header = new ArrayList<>();
                 header.add("originalPrefLabel@" + idLang);
                 header.add("conceptId");
+                header.add("arkId");
                 header.add("skos:prefLabel@" + idLang);
                 header.add("skos:altLabel@" + idLang);
 
@@ -835,6 +839,7 @@ public class CsvWriteHelper {
                     try {
                         record.add(nodeCompareTheso.getOriginalPrefLabel());
                         record.add(nodeCompareTheso.getIdConcept());
+                        record.add(nodeCompareTheso.getIdArk());
                         record.add(nodeCompareTheso.getPrefLabel());
                         record.add(nodeCompareTheso.getAltLabel());
                         csvFilePrinter.printRecord(record);

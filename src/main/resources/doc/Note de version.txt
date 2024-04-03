@@ -3,3 +3,8 @@ Note de version v24.03
 - Possibilité d'afficher ou non les notes (historiques et Editoriales) sur 
   l'interface publique
 
+- ajout d'un champ DCterms (creator) pour les images
+
+- ajout d'un paramètre pour communiquer avec un serveur Handle standard
+
+- ajout d'un module de traduction automatique avec DeepL (nécessite une clé d'API payante).

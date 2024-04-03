@@ -11,7 +11,7 @@
             <div class="list-group-item list-group-item-action" style=" margin-top: -5px; margin-bottom: -5px">
                 <div class="row" style="padding: 2px">
                     <div class="col-3" style="margin-left: 10px">
-                        <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
                                       style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
                         <p:menuButton icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;"
@@ -29,7 +29,7 @@
             
             <h:panelGroup style="margin-top: 5px;">
 
-                <h:panelGroup rendered="#{propositionBean.proposition.notes.size() != 0}">
+                <h:panelGroup rendered="#{propositionBean.proposition.note != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -59,7 +59,7 @@
                                               style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
-                                <ui:repeat var="note" value="#{propositionBean.proposition.notes}" varStatus="status">
+                                <ui:repeat var="note" value="#{propositionBean.proposition.note}" varStatus="status">
 
                                     <h:panelGroup rendered="#{!note.toAdd and !note.toRemove and !note.toUpdate}"  >
                                         <h:outputText value="[#{note.lang.toUpperCase()}] " style="color: #666666; font-size: 14px; font-weight: bold"/> 
@@ -91,7 +91,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{propositionBean.proposition.changeNotes.size() != 0}">
+                <h:panelGroup rendered="#{propositionBean.proposition.changeNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -117,7 +117,7 @@
                                               style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                                
-                                <ui:repeat var="changeNote" value="#{propositionBean.proposition.changeNotes}" varStatus="status">
+                                <ui:repeat var="changeNote" value="#{propositionBean.proposition.changeNote}" varStatus="status">
                                     <h:panelGroup rendered="#{!changeNote.toAdd and !changeNote.toRemove and !changeNote.toUpdate}"  >
                                         <h:outputText value="[#{changeNote.lang.toUpperCase()}] " escape="false" 
                                                       style="color: #666666; font-size: 14px; font-weight: bold"/> 
@@ -156,7 +156,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{propositionBean.proposition.definitions.size() != 0}">
+                <h:panelGroup rendered="#{propositionBean.proposition.definition != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
@@ -185,7 +185,7 @@
                                               style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">     
-                                <ui:repeat var="def" value="#{propositionBean.proposition.definitions}" varStatus="status">
+                                <ui:repeat var="def" value="#{propositionBean.proposition.definition}" varStatus="status">
                                     <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                         <h:panelGroup rendered="#{!def.toAdd and !def.toRemove and !def.toUpdate}"  >
                                             <h:outputText value="[#{def.lang.toUpperCase()}] " escape="false" 
@@ -227,7 +227,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{propositionBean.proposition.editorialNotes.size() != 0}">
+                <h:panelGroup rendered="#{propositionBean.proposition.editorialNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
@@ -254,7 +254,7 @@
                                               style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <ui:repeat var="editorialNote" value="#{propositionBean.proposition.editorialNotes}" varStatus="status">
+                                <ui:repeat var="editorialNote" value="#{propositionBean.proposition.editorialNote}" varStatus="status">
                                     <h:panelGroup rendered="#{!editorialNote.toAdd and !editorialNote.toRemove and !editorialNote.toUpdate}"  >
                                         <h:outputText value="[#{editorialNote.lang.toUpperCase()}] " escape="false" 
                                                       style="color: #666666; font-size: 14px; font-weight: bold"/> 
@@ -293,7 +293,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{propositionBean.proposition.examples.size() != 0}">
+                <h:panelGroup rendered="#{propositionBean.proposition.example != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
@@ -322,7 +322,7 @@
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <ui:repeat var="example" value="#{propositionBean.proposition.examples}" varStatus="status">
+                                <ui:repeat var="example" value="#{propositionBean.proposition.example}" varStatus="status">
                                     <h:panelGroup rendered="#{!example.toAdd and !example.toRemove and !example.toUpdate}"  >
                                         <h:outputText value="[#{example.lang.toUpperCase()}] " escape="false" 
                                                       style="color: #666666; font-size: 14px; font-weight: bold"/> 
@@ -361,7 +361,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{propositionBean.proposition.historyNotes.size() != 0}">
+                <h:panelGroup rendered="#{propositionBean.proposition.historyNote != null}">
                     <div class="list-group-item list-group-item-action" >                        
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -389,7 +389,7 @@
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <ui:repeat var="historyNote" value="#{propositionBean.proposition.historyNotes}" varStatus="status">
+                                <ui:repeat var="historyNote" value="#{propositionBean.proposition.historyNote}" varStatus="status">
                                     <h:panelGroup rendered="#{!historyNote.toAdd and !historyNote.toRemove and !historyNote.toUpdate}"  >
                                         <h:outputText value="[#{historyNote.lang.toUpperCase()}] " escape="false" 
                                                       style="color: #666666; font-size: 14px; font-weight: bold"/> 
@@ -428,7 +428,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{propositionBean.proposition.scopeNotes.size() != 0}">
+                <h:panelGroup rendered="#{propositionBean.proposition.scopeNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0">
@@ -457,7 +457,7 @@
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
-                                <ui:repeat var="scopeNote" value="#{propositionBean.proposition.scopeNotes}" varStatus="status">
+                                <ui:repeat var="scopeNote" value="#{propositionBean.proposition.scopeNote}" varStatus="status">
                                     <h:panelGroup rendered="#{!scopeNote.toAdd and !scopeNote.toRemove and !scopeNote.toUpdate}"  >
                                         <h:outputText value="[#{scopeNote.lang.toUpperCase()}] " escape="false" 
                                                       style="color: #666666; font-size: 14px; font-weight: bold"/> 

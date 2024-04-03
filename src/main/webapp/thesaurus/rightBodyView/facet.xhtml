@@ -190,7 +190,7 @@
                 <div class="row" style="margin-left: 10px; margin-bottom: 5px; margin-top: 5px;">
                     <h:panelGroup id="notesActions" rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
 
-                        <h:outputText value=" ++ #{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
                                       style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
@@ -209,7 +209,7 @@
                 
 
                 <!-- Note -->
-                <h:panelGroup rendered="#{editFacet.notes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.note != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -220,6 +220,12 @@
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                        
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                    oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                    action="#{deeplTranslate.setNoteToTranlate(editFacet.note)}"
+                                                    icon="fa-solid fa-language"/>                                          
+                                        
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
                                                     action="#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNote').show();"
                                                     update="containerIndex:idEditNote" icon="fas fa-edit" />                                            
@@ -228,17 +234,15 @@
                                                     update="containerIndex:idDeleteNote" oncomplete="PF('deleteNote').show();" icon="fas fa-minus"/>
                                     </p:menuButton>
                                 </h:panelGroup>                                        
-                                <ui:repeat var="note" value="#{editFacet.notes}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>
-                                </ui:repeat>
+                                <h:outputText value="#{editFacet.note.lexicalvalue} #{editFacet.getNoteSource(editFacet.note.noteSource)}" 
+                                              escape="false" style="font-size: 14px;"/>                                
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
 
                 <!-- ChangeNote -->
-                <h:panelGroup rendered="#{editFacet.changeNotes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.changeNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -250,6 +254,11 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
+                                    
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                action="#{deeplTranslate.setNoteToTranlate(editFacet.changeNote)}"
+                                                icon="fa-solid fa-language"/>                                      
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
                                                 action = "#{noteBean.setSelectedTypeNote('changeNote')}"                                          
                                                 oncomplete="PF('editNote').show();"
@@ -258,18 +267,15 @@
                                                 action = "#{noteBean.setSelectedTypeNote('changeNote')}" oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />                                        
                                 </p:menuButton>
-                                <ui:repeat var="changeNote" value="#{editFacet.changeNotes}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
-                                </ui:repeat>
+                                <h:outputText value="#{editFacet.changeNote.lexicalvalue} #{editFacet.getNoteSource(editFacet.changeNote.noteSource)}" 
+                                              escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
 
                 <!-- Definition -->
-                <h:panelGroup rendered="#{editFacet.definitions.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.definition != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -280,6 +286,11 @@
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}" icon="fas fa-cog"
                                               style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                action="#{deeplTranslate.setNoteToTranlate(editFacet.definition)}"
+                                                icon="fa-solid fa-language"/>                                      
+                                    
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                 actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
                                                 oncomplete="PF('editNote').show();"
@@ -289,18 +300,15 @@
                                                 oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote"
                                                 icon="fas fa-minus"/>
                                 </p:menuButton>
-                                <ui:repeat var="def" value="#{editFacet.definitions}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
-                                </ui:repeat>
+                                <h:outputText value="#{editFacet.definition.lexicalvalue} #{editFacet.getNoteSource(editFacet.definition.noteSource)}" 
+                                              escape="false" style="font-size: 14px;"/>
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
 
                 <!-- EditorialNote -->
-                <h:panelGroup rendered="#{editFacet.editorialNotes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.editorialNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -312,6 +320,11 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
+                                    
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                action="#{deeplTranslate.setNoteToTranlate(editFacet.editorialNote)}"
+                                                icon="fa-solid fa-language"/>                                      
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                 actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
                                                 action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
@@ -322,18 +335,15 @@
                                                 action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
                                                 oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote" />
                                 </p:menuButton> 
-                                <ui:repeat var="editorialNote" value="#{editFacet.editorialNotes}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
-                                </ui:repeat>
+                                <h:outputText value="#{editFacet.editorialNote.lexicalvalue} #{editFacet.getNoteSource(editFacet.editorialNote.noteSource)}" 
+                                              escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
 
                 <!-- Example -->
-                <h:panelGroup rendered="#{editFacet.examples.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.example != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -345,6 +355,10 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                action="#{deeplTranslate.setNoteToTranlate(editFacet.example)}"
+                                                icon="fa-solid fa-language"/>                                     
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                 actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
                                                 action = "#{noteBean.setSelectedTypeNote('example')}"                                          
@@ -356,18 +370,15 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <ui:repeat var="example" value="#{editFacet.examples}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
-                                </ui:repeat>
+                                <h:outputText value="#{editFacet.example.lexicalvalue} #{editFacet.getNoteSource(editFacet.example.noteSource)}" 
+                                              escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
 
                 <!-- History -->
-                <h:panelGroup rendered="#{editFacet.historyNotes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.historyNote != null}">
                     <div class="list-group-item list-group-item-action" >                        
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -379,6 +390,10 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                action="#{deeplTranslate.setNoteToTranlate(editFacet.historyNote)}"
+                                                icon="fa-solid fa-language"/>                                     
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                 actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
                                                 action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
@@ -390,18 +405,15 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <ui:repeat var="historyNote" value="#{editFacet.historyNotes}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
-                                </ui:repeat>
+                                <h:outputText value="#{editFacet.historyNote.lexicalvalue} #{editFacet.getNoteSource(editFacet.historyNote.noteSource)}" 
+                                              escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
                     </div>
                 </h:panelGroup>
 
                 <!-- ScopeNote -->
-                <h:panelGroup rendered="#{editFacet.scopeNotes.size() != 0}">
+                <h:panelGroup rendered="#{editFacet.scopeNote != null}">
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
@@ -413,6 +425,10 @@
                                 <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                               icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                               box-shadow: none; font-size: 12px;">
+                                    <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                action="#{deeplTranslate.setNoteToTranlate(editFacet.scopeNote)}"
+                                                icon="fa-solid fa-language"/>                                     
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                 actionListener="#{noteBean.resetForFacet(editFacet.facetSelected)}"
                                                 action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          
@@ -424,11 +440,8 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <ui:repeat var="scopeNote" value="#{editFacet.scopeNotes}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
-                                </ui:repeat>
+                                <h:outputText value="#{editFacet.scopeNote.lexicalvalue} #{editFacet.getNoteSource(editFacet.scopeNote.noteSource)}" 
+                                              escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
                     </div>            

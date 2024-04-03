@@ -48,6 +48,8 @@ public class DeleteThesoBean implements Serializable {
     private String valueOfThesoToDelelete;
     private boolean isDeleteOn;
     
+    private boolean deletePerennialIdentifiers;
+            
     private String currentIdTheso;
     /**
      * Creates a new instance of DeleteThesoBean
@@ -57,6 +59,7 @@ public class DeleteThesoBean implements Serializable {
         valueOfThesoToDelelete = null;
         isDeleteOn = false;
         currentIdTheso = null;
+        deletePerennialIdentifiers = false;
     }
     
     public void init() {
@@ -64,13 +67,14 @@ public class DeleteThesoBean implements Serializable {
         valueOfThesoToDelelete = null;
         isDeleteOn = false;     
         currentIdTheso = null;
+        deletePerennialIdentifiers = false;
     }
     
     public void confirmDelete(NodeIdValue nodeTheso, String cucurrentIdTheso) throws IOException {
         this.idThesoToDelete = nodeTheso.getId();
         this.valueOfThesoToDelelete = nodeTheso.getValue();
         isDeleteOn = true;
-        
+        deletePerennialIdentifiers = false;
         // récupération de l'idTheso en cours
         this.currentIdTheso = cucurrentIdTheso;
     }
@@ -86,24 +90,26 @@ public class DeleteThesoBean implements Serializable {
             // suppression des Identifiants Handle
             ConceptHelper conceptHelper = new ConceptHelper();
             conceptHelper.setNodePreference(nodePreference);
-            conceptHelper.deleteAllIdHandle(connect.getPoolConnexion(), idThesoToDelete);
+            if(deletePerennialIdentifiers) {
+                conceptHelper.deleteAllIdHandle(connect.getPoolConnexion(), idThesoToDelete);
+            }
         }
         FacesMessage msg;
         
         // supression des droits
         UserHelper userHelper = new UserHelper();
         try {
-            Connection conn = connect.getPoolConnexion().getConnection();
-            conn.setAutoCommit(false);
-            if(!userHelper.deleteThesoFromGroup(conn, idThesoToDelete)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                conn.rollback();
+            try (Connection conn = connect.getPoolConnexion().getConnection()) {
+                conn.setAutoCommit(false);
+                if(!userHelper.deleteThesoFromGroup(conn, idThesoToDelete)) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    conn.rollback();
+                    conn.commit();
+                    return;
+                }
                 conn.commit();
-                return;
             }
-            conn.commit();
-            conn.close();
         } catch (SQLException ex) {
             Logger.getLogger(DeleteThesoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -164,6 +170,16 @@ public class DeleteThesoBean implements Serializable {
     public void setValueOfThesoToDelelete(String valueOfThesoToDelelete) {
         this.valueOfThesoToDelelete = valueOfThesoToDelelete;
     }
+
+    public boolean isDeletePerennialIdentifiers() {
+        return deletePerennialIdentifiers;
+    }
+
+    public void setDeletePerennialIdentifiers(boolean deletePerennialIdentifiers) {
+        this.deletePerennialIdentifiers = deletePerennialIdentifiers;
+    }
+
+
     
     
     

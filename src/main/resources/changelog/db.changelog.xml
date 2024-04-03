@@ -65,5 +65,13 @@
     <include file="/changelog/v24.02/24-02_001.xml"/>  
     <include file="/changelog/v24.02/24-02_0014.xml"/>  
     <include file="/changelog/v24.02/24-02_0015.xml"/>
+    <include file="/changelog/v24.02/24-02_0016.xml"/>    
+    
+    <changeSet id="24.02.017" author="Miled">
+        <sqlFile path="../changelog/v24.02/24-02_017.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>  
+    
+    <include file="/changelog/v24.03/24-03_001.xml"/>      
+    <include file="/changelog/v24.03/24-03_002.xml"/>                 
  
 </databaseChangeLog>

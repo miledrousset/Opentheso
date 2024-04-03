@@ -122,7 +122,7 @@ public class PathHelper {
     private List<String> getListNT(String idConcept, List<String> graph){
         List<String> listNTs = new ArrayList<>();
         for (String node : graph) {
-            if(StringUtils.contains(node, "##"+idConcept)){
+            if(StringUtils.endsWith(node, "##"+idConcept)){
                 listNTs.add(StringUtils.substringBefore(node, "##"));
             }
         }

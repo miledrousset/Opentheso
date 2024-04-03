@@ -130,7 +130,7 @@ public class ViewExportBean implements Serializable {
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);        
 
-        types = Arrays.asList("Hiérarchique", "Alphabétique");
+        types = Arrays.asList(languageBean.getMsg("export.hierarchical"), languageBean.getMsg("export.alphabetical"));//"Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);
 
         groupList = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
