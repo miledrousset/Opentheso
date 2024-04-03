@@ -3,7 +3,7 @@ version: '3.1'
 services:
 
   opentheso2-db:
-    image: miledrousset/opentheso2-postgres
+    image: krummrap/opentheso2-postgres
     restart: always
     ports:
       - 5431:5432
@@ -15,7 +15,7 @@ services:
       - /docker-entrypoint-initdb.d/opentheso2-pgdata
 
   opentheso:
-    image: miledrousset/opentheso2
+    image: krummrap/opentheso2
     restart: always
     depends_on:
       - opentheso2-db
