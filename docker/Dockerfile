@@ -5,8 +5,7 @@ MAINTAINER Evolved Binary
 ADD https://github.com/miledrousset/Opentheso2/releases/download/v24.03.06/opentheso2-24.03.06.war /usr/local/tomcat/webapps/opentheso2.war
 
 RUN mkdir /usr/local/tomcat/webapps/opentheso2 \
-	&& unzip -d /usr/local/tomcat/webapps/opentheso2/ /usr/local/tomcat/webapps/opentheso2.war \
-	&& mkdir -p /var/www/images/resize
+	&& unzip -d /usr/local/tomcat/webapps/opentheso2/ /usr/local/tomcat/webapps/opentheso2.war
 
 
 # Modify the config for Opentheso
