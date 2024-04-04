@@ -12,4 +12,4 @@ RUN mkdir /usr/local/tomcat/webapps/opentheso2 \
 COPY preferences.properties /usr/local/tomcat/webapps/opentheso2/WEB-INF/classes/
 COPY hikari.properties /usr/local/tomcat/webapps/opentheso2/WEB-INF/classes/
 
-COPY hibernate.cfg.xml /usr/local/tomcat/webapps/opentheso/WEB-INF/classes/
+COPY hibernate.cfg.xml /usr/local/tomcat/webapps/opentheso2/WEB-INF/classes/
