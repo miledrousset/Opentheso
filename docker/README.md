@@ -6,7 +6,7 @@ There are two options for running the Docker Containers:
 
 :warning: Pre-requisites :
 1. Docker : last version (see https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository)
-2. Place a copy of `opentheso2-23.09.01.war` in the `opentheso2/docker` directory.
+
 
 
 ## Building the Docker Image
