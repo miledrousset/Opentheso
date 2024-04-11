@@ -13,37 +13,44 @@ There are two options for running the Docker Containers:
 The configuration for two Docker Images are provided; one image for Opentheso2 itself, and the other for a Postgres database which holds the Opentheso2 data. 
 
 ```
-docker image build -t mycontainername/opentheso2-postgres -f Dockerfile-postgres .
+docker image build -t opentheso2-postgres -f Dockerfile-postgres .
 
-docker image build -t mycontainername/opentheso2 .
+docker image build -t opentheso2 .
 ```
 
-## Running via Docker Compose
 
-Simply execute:
-
-```
-cd opentheso2/docker
-
-docker compose up -d
-```
-
-## Running directly with Docker
+## Running with Docker
 
 A Docker Container for the Opentheso2 Posgres database must be started before starting a container for Opentheso22 itself.
 
 ```
 cd opentheso2/docker
 
-docker run --name opentheso2-db --volume opentheso2-pgdata:/pgdata --env POSTGRES_USER=opentheso --env POSTGRES_PASSWORD=opentheso --env PGDATA=/pgdata mycontainername/opentheso2-postgres
+docker run --name opentheso2-db --volume opentheso2-pgdata:/pgdata --env POSTGRES_USER=opentheso --env POSTGRES_PASSWORD=opentheso --env PGDATA=/pgdata opentheso2-postgres
 
-docker run --name opentheso2 --link opentheso2-db --publish 8080:8080 -it mycontainername/opentheso2
+docker run --name opentheso2 --link opentheso2-db --publish 8080:8080 -it opentheso2
 ```
 
 ## Accessing Opentheso2
 
-Once the Docker Containers are running, you can access Opentheso2 in a web-browser by visiting: http://localhost:80/opentheso2
+Once the Docker Containers are running, you can access Opentheso2 in a web-browser by visiting: http://localhost:8080/opentheso2
 
+# Restart Opentheso2
+If you want to restart both containers after their shutdown, you must search the IDs with the docker command
+```
+docker ps -a
+```
+Example response:
+```
+CONTAINER ID   IMAGE                                     COMMAND                  CREATED         STATUS                        PORTS                               NAMES
+0e2229ff80e1   opentheso2                                "catalina.sh run"        9 minutes ago   Exited (143) 33 seconds ago                                       opentheso2
+5334294a3e87   opentheso2-postgres                       "docker-entrypoint.s…"   9 minutes ago   Exited (0) 33 seconds ago                                         opentheso2-db
+```
+
+After you need to restart the containers with the docker command
+```
+docker start xxxxxxx
+```
 
 # Docker Volumes
 
@@ -52,3 +59,4 @@ The docker volume `opentheso2-pgdata` stores the database, if you want to start 
 ```
 docker volume rm opentheso2-pgdata
 ```
+
