@@ -2516,7 +2516,7 @@ public class Rest_new {
 
     /**
      * Pour retourner la liste des langues d'un thésaurus
-     * https://pactols.frantiq.fr/opentheso/api/info/list?theso=TH_1&lang=all
+     * https://pactols.frantiq.fr/opentheso/api/info/listlang?theso=TH_1&lang=all
      *
      * @param uri
      * @return

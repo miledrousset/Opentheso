@@ -437,7 +437,6 @@ public class NoteHelper {
     public ArrayList<NodeNote> getListNotesAllLang(HikariDataSource ds, String identifier, String idThesaurus) {
 
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -452,10 +451,7 @@ public class NoteHelper {
                         nodeNote.setId_term(identifier);
                         nodeNote.setId_note(resultSet.getInt("id"));
                         nodeNote.setLang(resultSet.getString("lang"));
-                        nodeNote.setLexicalvalue(
-                                stringPlus.normalizeStringForXml(
-                                        resultSet.getString("lexicalvalue"))
-                        );
+                        nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));

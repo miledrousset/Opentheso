@@ -917,7 +917,7 @@ $BODY$;
 
 -- FUNCTION: public.opentheso_get_gps(character varying, character varying)
 
--- DROP FUNCTION public.opentheso_get_gps(character varying, character varying);
+DROP FUNCTION public.opentheso_get_gps(character varying, character varying);
 
 CREATE OR REPLACE FUNCTION public.opentheso_get_gps(
 	id_thesorus character varying,
