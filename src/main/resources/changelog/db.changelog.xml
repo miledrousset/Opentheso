@@ -9,7 +9,7 @@
     <changeSet id="script0003" author="Miled">
         <sqlFile path="../install/liquibaseupdate/script0003.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
-    <changeSet id="executeScriptOriginal5" author="Miled">
+    <changeSet id="executeScriptOriginal6" author="Miled">
         <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>    
     
@@ -74,4 +74,8 @@
     <include file="/changelog/v24.03/24-03_001.xml"/>      
     <include file="/changelog/v24.03/24-03_002.xml"/>                 
  
+    <changeSet id="24.04.01" author="Miled">
+        <sqlFile path="../changelog/v24.04/24-04_01.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>      
+    
 </databaseChangeLog>
