@@ -31,9 +31,8 @@ public class NodeAlignment {
     private boolean save;
     
     private String alignmentLabelType;
-    private String alignmentLabelSkosType;    
+    private String alignmentLabelSkosType;
 
-// coordonnées GPS
     private String concept_target_bold;
     private String countryName;
     private String name;
@@ -49,25 +48,9 @@ public class NodeAlignment {
     
     private String uri_target_url;
 
+    private String definitionLocal, labelLocal, uriTargetLocal, alignementTypeLocal, conceptOrigin;
+
     private List<SelectedResource> selectedTraductionsList, selectedDefinitionsList, selectedImagesList;
-
-    public String getDef_target() {
-        if(def_target== null)
-            def_target = "";
-        else
-            def_target = "<i>"+def_target+"</i>";
-        return def_target;
-    }
-
-    public String getUri_target_url() {
-        uri_target_url = "<a href=\"" + uri_target +
-                "\" target=\"_blank\"><font color=\"green\"> url</font> </a>";
-        return uri_target_url;
-    }
-
-    public String getConcept_target_bold() {
-        concept_target_bold = "<b>"+concept_target+"</b>";
-        return concept_target_bold;
-    }
+    private boolean alignementLocalValide;
 
 }

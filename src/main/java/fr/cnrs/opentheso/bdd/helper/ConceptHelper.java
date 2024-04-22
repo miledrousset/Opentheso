@@ -5810,10 +5810,7 @@ public class ConceptHelper {
         //récupération des traductions
         nodeConcept.setNodeTermTraductions(new TermHelper().getTraductionsOfConcept(ds, idConcept, idThesaurus, idLang));
 
-        //récupération des notes du Concept
-//        nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConcept(ds, idConcept, idThesaurus, idLang));
-        //récupération des notes du term        
-//        nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTerm(ds, term.getId_term(), idThesaurus, idLang));
+        //récupération des notes du term
         nodeConcept.setNodeNotes(new NoteHelper().getListNotes(ds, idConcept, idThesaurus, idLang));
 
         nodeConcept.setNodeConceptGroup(new GroupHelper().getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));

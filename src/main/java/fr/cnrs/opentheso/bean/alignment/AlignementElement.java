@@ -18,6 +18,7 @@ public class AlignementElement implements Serializable {
     private String thesaurus_target;
     private String conceptTarget;
     private int alignement_id_type;
+    private boolean valide;
     private int idSource;
 
     @Override

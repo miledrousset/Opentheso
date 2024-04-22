@@ -87,7 +87,7 @@
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                             </f:facet>
-                            <ui:include src="rightBodyView/alignement.xhtml" />
+                            <ui:include src="rightBodyView/alignement/alignement.xhtml" />
                         </p:tab>
 
                         <p:tab rendered="#{roleOnTheso.getNodePreference().isSuggestion()}" disabled="#{!propositionBean.isRubriqueVisible()}" title="#{langueBean.getMsg('rightbody.newSuggest')}" >
@@ -207,5 +207,6 @@
     <ui:include src="../dialog/concept/deprecateConcept.xhtml" />
 
     <ui:include src="../dialog/alignment/AddAlignement.xhtml" />
+    <ui:include src="../dialog/alignment/remplacerAlignement.xhtml" />
 
 </ui:composition>

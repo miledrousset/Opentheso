@@ -475,8 +475,7 @@ public class NoteHelper {
      * @param idThesaurus
      * @return boolean
      */
-    public boolean deleteNotes(Connection conn,
-            String identifier, String idThesaurus) {
+    public boolean deleteNotes(Connection conn, String identifier, String idThesaurus) {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("delete from note"
                     + " where identifier = '" + identifier + "'"
