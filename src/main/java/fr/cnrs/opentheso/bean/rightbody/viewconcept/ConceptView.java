@@ -417,7 +417,6 @@ public class ConceptView implements Serializable {
         nodeCorpuses = null;
         haveCorpus = false;
         searchedForCorpus = false;
-      //  nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
 
         setRoles();
 

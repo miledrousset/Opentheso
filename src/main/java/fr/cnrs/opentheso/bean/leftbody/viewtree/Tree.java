@@ -31,12 +31,10 @@ import java.util.List;
 import javax.annotation.PreDestroy;
 
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.protocol.RequestContent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
@@ -630,6 +628,7 @@ public class Tree implements Serializable {
             alignmentBean.setAllAlignementVisible(true);
             alignmentBean.setPropositionAlignementVisible(false);
             alignmentBean.setManageAlignmentVisible(false);
+            alignmentBean.setComparaisonVisible(false);
 
             alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),

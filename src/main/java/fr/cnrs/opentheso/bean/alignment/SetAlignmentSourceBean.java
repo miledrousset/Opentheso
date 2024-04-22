@@ -12,10 +12,10 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -53,43 +53,10 @@ public class SetAlignmentSourceBean implements Serializable {
     private String sourceIdTheso;
     private String description;
 
-    private AlignementSource selectedAlignementSource;    
+    private AlignementSource selectedAlignementSource;
     private AlignementSource alignementSourceToUpdate;
-    
-    
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
 
-    public void clear() {
-        if (allAlignementSources != null) {
-            allAlignementSources.clear();
-            allAlignementSources = null;
-        }
-        if (selectedAlignmentsOfTheso != null) {
-            selectedAlignmentsOfTheso.clear();
-            selectedAlignmentsOfTheso = null;
-        }
-        if (nodeSelectedAlignmentsAll != null) {
-            nodeSelectedAlignmentsAll.clear();
-            nodeSelectedAlignmentsAll = null;
-        }
-        sourceName = null;
-        sourceUri = null;
-        sourceIdTheso = null;
-        description = null;
-    }
-
-    public SetAlignmentSourceBean() {
-    }
-    
-    public void clearValues(){
-        sourceName = "";
-        sourceUri = "";
-        sourceIdTheso = "";
-        description = "";        
-    }
+    private String sourceSelectedName;
     
 
     public void init() {
@@ -108,14 +75,13 @@ public class SetAlignmentSourceBean implements Serializable {
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         alignementSourceToUpdate= alignmentHelper.getThisAlignementSource(connect.getPoolConnexion(), id);
     }
-    
-    
-    public void initAlignementAutomatique() {
+
+    public void initAlignementAutomatique(String alignementMode) {
 
         initSourcesList();
 
         sourcesSelected = nodeSelectedAlignmentsAll.stream()
-                .filter(source -> source.isIsSelected())
+                .filter(source -> source.isSelected())
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isEmpty(sourcesSelected)) {
@@ -123,11 +89,14 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
+        alignmentBean.setVersion(alignementMode);
+
         if (sourcesSelected.size() == 1) {
             var sourceFound = alignmentBean.getAlignementSources().stream()
-                    .filter(source -> source.getId() == sourcesSelected.get(0).getIdAlignmnetSource())
+                    .filter(source -> source.getId() == sourcesSelected.get(0).getIdAlignmentSource())
                     .findFirst();
             if (sourceFound.isPresent()) {
+                sourceSelectedName = sourceFound.get().getSource();
                 alignmentBean.searchAlignementsForAllConcepts(sourceFound.get());
             } else {
                 showMessage(FacesMessage.SEVERITY_WARN, "Veuillez sélectionner une source !");
@@ -135,16 +104,28 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        sourcesSelected.forEach(source -> source.setIsSelected(false));
+        sourcesSelected.forEach(source -> source.setSelected(false));
         PrimeFaces.current().executeScript("PF('selectSourceManagement').show();");
     }
 
+    public void updateSelectedSource(NodeSelectedAlignment selectedAlignment) throws SQLException {
+
+        if (selectedAlignment.isSelected()) {
+            new AlignmentHelper().addSourceAlignementToTheso(connect.getPoolConnexion(),
+                    selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
+        } else {
+            new AlignmentHelper().deleteSourceAlignementFromTheso(connect.getPoolConnexion().getConnection(),
+                    selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
+        }
+        showMessage(FacesMessage.SEVERITY_INFO, "Source mise à jour !");
+    }
 
     public void startAlignementAutomatique() {
         if (!ObjectUtils.isEmpty(selectedSource)) {
             var sourceFound = alignmentBean.getAlignementSources().stream()
-                    .filter(source -> source.getId() == selectedSource.getIdAlignmnetSource())
+                    .filter(source -> source.getId() == selectedSource.getIdAlignmentSource())
                     .findFirst();
+            sourceSelectedName = sourceFound.get().getSource();
             alignmentBean.searchAlignementsForAllConcepts(sourceFound.get());
             selectedSource = null;
             PrimeFaces.current().executeScript("PF('selectSourceManagement').hide();");
@@ -172,17 +153,17 @@ public class SetAlignmentSourceBean implements Serializable {
         // intégrer les éléments dans un vecteur global pour la modifiation
         for (AlignementSource allAlignementSource : allAlignementSources) {
             NodeSelectedAlignment nodeSelectedAlignment = new NodeSelectedAlignment();
-            nodeSelectedAlignment.setIdAlignmnetSource(allAlignementSource.getId());
+            nodeSelectedAlignment.setIdAlignmentSource(allAlignementSource.getId());
             nodeSelectedAlignment.setSourceLabel(allAlignementSource.getSource());
             nodeSelectedAlignment.setSourceDescription(allAlignementSource.getDescription());
-            nodeSelectedAlignment.setIsSelected(false);
+            nodeSelectedAlignment.setSelected(false);
             nodeSelectedAlignmentsAll.add(nodeSelectedAlignment);
         }
 
         for (NodeSelectedAlignment selectedAlignmentOfTheso : selectedAlignmentsOfTheso) {
             for (NodeSelectedAlignment nodeSelectedAlignment : nodeSelectedAlignmentsAll) {
-                if (nodeSelectedAlignment.getIdAlignmnetSource() == selectedAlignmentOfTheso.getIdAlignmnetSource()) {
-                    nodeSelectedAlignment.setIsSelected(true);
+                if (nodeSelectedAlignment.getIdAlignmentSource() == selectedAlignmentOfTheso.getIdAlignmentSource()) {
+                    nodeSelectedAlignment.setSelected(true);
                 }
             }
         }
@@ -210,20 +191,12 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-
-        FacesMessage msg;
-
-        if (!alignmentHelper.deleteAlignmentSource(
-                connect.getPoolConnexion(),
-                alignementSourceToUpdate.getId())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendant la suppression de la source !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (!new AlignmentHelper().deleteAlignmentSource(connect.getPoolConnexion(), alignementSourceToUpdate.getId())) {
+            showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la suppression de la source !");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Suppression réussie");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_ERROR,"Suppression réussie");
         initForManage();
     }              
             
@@ -233,96 +206,59 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-
-        FacesMessage msg;
-
-        if (!alignmentHelper.updateAlignmentSource(
-                connect.getPoolConnexion(),
-                alignementSourceToUpdate)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendant la mise à jour de la source !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (!new AlignmentHelper().updateAlignmentSource(connect.getPoolConnexion(), alignementSourceToUpdate)) {
+            showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la mise à jour de la source !");
             return;
         }
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Source mise à jour avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        showMessage(FacesMessage.SEVERITY_INFO,"Source mise à jour avec succès");
+
         initForManage();
     }    
     
     /**
-     * permet d'ajouter une source d'alignement et affecter cette source au
-     * thésaurus en cours.
-     *
-     * @param idUser
+     * permet d'ajouter une source d'alignement et affecter cette source au thésaurus en cours.
      */
     public void addAlignmentSource(int idUser) {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();
 
         if (sourceName == null || sourceName.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le nom de la source est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-          //      pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
-                pf.ajax().update("messageIndex");
-            }
+            showMessage(FacesMessage.SEVERITY_ERROR,"Le nom de la source est obligatoire !");
             return;
         }
         if (sourceUri == null || sourceUri.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-          //      pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
-                pf.ajax().update("messageIndex");
-            }
+            showMessage(FacesMessage.SEVERITY_ERROR,"L'URL est obligatoire !");
             return;
         }
         if (sourceIdTheso == null || sourceIdTheso.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'Id. du thésaurus est obligatoire !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            if (pf.isAjaxRequest()) {
-        //        pf.ajax().update("containerIndex:formRightTab:viewTabConcept:addAlignmentForm:panelAddNewSource");
-                pf.ajax().update("messageIndex");
-            }
+            showMessage(FacesMessage.SEVERITY_ERROR, "L'Id. du thésaurus est obligatoire !");
             return;
         }
 
         if (sourceUri.lastIndexOf("/") + 1 == sourceUri.length()) {
             sourceUri = sourceUri.substring(0, sourceUri.length() - 1);
         }
+
+
         if(!testNewSourceAlignment(sourceUri)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Uri du serveur non valide !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);    
+            showMessage(FacesMessage.SEVERITY_ERROR,"Uri du serveur non valide !");
             return;
         }
-        
-        String requete = sourceUri + "/api/search?q=##value##&lang=##lang##&theso=" + sourceIdTheso;
         
         AlignementSource alignementSource = new AlignementSource();
         alignementSource.setAlignement_format("skos");
         alignementSource.setDescription(description);
-        alignementSource.setRequete(requete);
+        alignementSource.setRequete(sourceUri + "/api/search?q=##value##&lang=##lang##&theso=" + sourceIdTheso);
         alignementSource.setSource(sourceName);
         alignementSource.setTypeRequete("REST");
 
-        AlignmentHelper alignementHelper = new AlignmentHelper();
-
-        if (!alignementHelper.addNewAlignmentSource(
-                connect.getPoolConnexion(),
-                alignementSource,
-                idUser, selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur côté base de données !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            alignementHelper.getMessage();
+        if (!new AlignmentHelper().addNewAlignmentSource(connect.getPoolConnexion(), alignementSource, idUser, selectedTheso.getCurrentIdTheso())) {
+            showMessage(FacesMessage.SEVERITY_ERROR,"Erreur côté base de données !");
             return;
         }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", " Source ajoutée avec succès !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        showMessage(FacesMessage.SEVERITY_INFO,"Source ajoutée avec succès !");
+
         initForManage();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }
         alignmentBean.setViewAddNewSource(false);
         alignmentBean.setViewSetting(false);
     }
@@ -341,13 +277,18 @@ public class SetAlignmentSourceBean implements Serializable {
             e.printStackTrace();
         }
         return false;
-    } 
-
-
+    }
 
     public void cancel() {
         alignmentBean.setViewSetting(false);
         alignmentBean.setViewAddNewSource(false);
+    }
+
+    public void clearValues() {
+        sourceName = "";
+        sourceUri = "";
+        sourceIdTheso = "";
+        description = "";
     }
 
 }
