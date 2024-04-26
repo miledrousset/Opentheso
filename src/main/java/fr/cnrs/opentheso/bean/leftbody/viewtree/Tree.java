@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.leftbody.viewtree;
 import com.zaxxer.hikari.HikariDataSource;
 
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
+import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
@@ -25,7 +26,10 @@ import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PreDestroy;
@@ -603,6 +607,10 @@ public class Tree implements Serializable {
                         conceptBean.getSelectedLang());
                 alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
+                for (AlignementElement element : alignmentBean.getAllignementsList()) {
+                    element.setValide(isURLAvailable(element.getTargetUri()));
+                }
+
                 alignmentBean.setAllAlignementFound(new ArrayList<>());
                 alignmentBean.setAllAlignementVisible(true);
                 alignmentBean.setPropositionAlignementVisible(false);
@@ -618,6 +626,22 @@ public class Tree implements Serializable {
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
         PrimeFaces.current().ajax().update("indexTitle");
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");
+    }
+
+    public boolean isURLAvailable(String urlString) {
+        if (StringUtils.isNotEmpty(urlString)) {
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("HEAD");
+                int responseCode = connection.getResponseCode();
+                return responseCode == HttpURLConnection.HTTP_OK;
+            } catch (IOException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     public void onTabConceptChange(TabChangeEvent event) {

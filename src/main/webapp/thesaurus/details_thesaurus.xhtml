@@ -63,8 +63,7 @@
         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12" >
             <div class="card shadow mb-4">
                 <h:panelGroup id="formRightTab">
-                    <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected()}"
-                               style="border-style: none; height: 100%; " >
+                    <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected()}" >
 
                         <p:ajax event="tabChange" listener="#{tree.onTabConceptChange}" update="containerIndex:formRightTab" />
 
