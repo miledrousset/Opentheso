@@ -52,7 +52,13 @@
                     <h:outputLabel value="#{langueBean.getMsg('candidat.my_candidats')}" style="color: #000; margin-left: 10px; margin-top: 5px" />
                 </div>
                 <div class="col-2">
-                    <h:outputText value="#{candidatBean.getCountOfCandidats()} #{langueBean.getMsg('candidat.titre')}(s)" style="color: #601e18; font-size: 14px; " />                    
+                    <p:commandButton  update="tabViewCandidat" ajax="true" 
+                                    icon="fas fa-sync" styleClass="rounded-button ui-button-outlined"
+                                    style="color: #F47B2A"                                     
+                                    actionListener="#{candidatBean.initCandidatModule()}"/>    
+                    <h:outputText value="#{candidatBean.getCountOfCandidats()} #{langueBean.getMsg('candidat.titre')}(s)" 
+                                  style="color: #601e18; font-size: 14px; margin-left: 10px;" />                    
+                    
                 </div>
                 <div class="col-6" style="text-align: right">
                     <h:outputText class="col-md-6 control-label" style="color: #000; height: 34px; margin-top: 7px; text-align: right; vertical-align: central" 

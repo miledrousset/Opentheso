@@ -38,12 +38,17 @@ DECLARE
 BEGIN
     -- on récupère tous les thésaurus 
     FOR theso_rec IN (SELECT id_thesaurus from thesaurus)    
-    LOOP    
+    LOOP   
+
+ 
         -- on récupère toutes les langues d'un thésaurus
         FOR lang_rec IN SELECT * from opentheso_get_all_lang_of_theso(theso_rec.id_thesaurus)
         LOOP
 
-            -- on récupère toutes les notes dans une langue et par concept 
+
+
+
+            -- on récupère toutes les notes en double dans une langue et par concept pour definition
             FOR notes_id IN (select identifier from note  
                             where  
                             id_thesaurus = theso_rec.id_thesaurus  
@@ -53,10 +58,14 @@ BEGIN
                             and identifier in (select id_concept from concept where id_thesaurus = theso_rec.id_thesaurus)  
                             group by identifier having count(*) > 1)
             LOOP
+
+
                 -- définition
                 notes_concat := '';
                 notes_tab := ARRAY[]::character varying[];
                 --RAISE NOTICE 'idTheso : %, idNote : %, type : %', theso_rec.id_thesaurus,  notes_id.identifier, 'definition';
+
+                -- on boucle sur toutes les notes en double pour les concaténer
                 FOR notes_rec IN select * from note where identifier = notes_id.identifier
                     and notetypecode = 'definition' 
                     and id_thesaurus = theso_rec.id_thesaurus 
@@ -68,7 +77,8 @@ BEGIN
                     end if;
                 END LOOP;
 
-              FOREACH notes_temp IN ARRAY notes_tab LOOP
+              FOREACH notes_temp IN ARRAY notes_tab 
+              LOOP
               --RAISE NOTICE '%', notes_concat;
                     if notes_concat = '' THEN
                         notes_concat := notes_temp;
@@ -94,6 +104,21 @@ BEGIN
                         notes_rec.created, notes_rec.modified, 
                         notes_rec.id_user, notes_rec.notesource, notes_rec.identifier);
 
+            -- fin de traitement pour les définitions
+            END LOOP;
+
+
+
+            -- on récupère toutes les notes en double dans une langue et par concept pour note
+            FOR notes_id IN (select identifier from note  
+                            where  
+                            id_thesaurus = theso_rec.id_thesaurus  
+                            and  
+                            lang = lang_rec.id_lang  
+                            and notetypecode = 'note'  
+                            and identifier in (select id_concept from concept where id_thesaurus = theso_rec.id_thesaurus)  
+                            group by identifier having count(*) > 1)
+            LOOP
 
                 -- note
                 notes_concat := '';
@@ -137,6 +162,21 @@ BEGIN
                         notes_rec.id_user, notes_rec.notesource, notes_rec.identifier);
 
 
+            -- fin de traitement pour les notes
+            END LOOP;
+
+
+            -- on récupère toutes les notes en double dans une langue et par concept pour changeNote
+            FOR notes_id IN (select identifier from note  
+                            where  
+                            id_thesaurus = theso_rec.id_thesaurus  
+                            and  
+                            lang = lang_rec.id_lang  
+                            and notetypecode = 'changeNote'  
+                            and identifier in (select id_concept from concept where id_thesaurus = theso_rec.id_thesaurus)  
+                            group by identifier having count(*) > 1)
+            LOOP
+
                 -- changeNote
                 notes_concat := '';
                 notes_tab := ARRAY[]::character varying[];
@@ -178,7 +218,20 @@ BEGIN
                         notes_rec.created, notes_rec.modified, 
                         notes_rec.id_user, notes_rec.notesource, notes_rec.identifier);
 
+            END LOOP;
 
+
+
+            -- on récupère toutes les notes en double dans une langue et par concept pour editorialNote
+            FOR notes_id IN (select identifier from note  
+                            where  
+                            id_thesaurus = theso_rec.id_thesaurus  
+                            and  
+                            lang = lang_rec.id_lang  
+                            and notetypecode = 'editorialNote'  
+                            and identifier in (select id_concept from concept where id_thesaurus = theso_rec.id_thesaurus)  
+                            group by identifier having count(*) > 1)
+            LOOP
                 -- editorialNote
                 notes_concat := '';
                 notes_tab := ARRAY[]::character varying[];
@@ -220,6 +273,20 @@ BEGIN
                         notes_rec.created, notes_rec.modified, 
                         notes_rec.id_user, notes_rec.notesource, notes_rec.identifier);
 
+            END LOOP;
+
+
+
+            -- on récupère toutes les notes en double dans une langue et par concept pour example
+            FOR notes_id IN (select identifier from note  
+                            where  
+                            id_thesaurus = theso_rec.id_thesaurus  
+                            and  
+                            lang = lang_rec.id_lang  
+                            and notetypecode = 'example'  
+                            and identifier in (select id_concept from concept where id_thesaurus = theso_rec.id_thesaurus)  
+                            group by identifier having count(*) > 1)
+            LOOP
 
                 -- example
                 notes_concat := '';
@@ -262,7 +329,20 @@ BEGIN
                         notes_rec.created, notes_rec.modified, 
                         notes_rec.id_user, notes_rec.notesource, notes_rec.identifier);
 
+            END LOOP;
 
+
+
+            -- on récupère toutes les notes en double dans une langue et par concept pour historyNote
+            FOR notes_id IN (select identifier from note  
+                            where  
+                            id_thesaurus = theso_rec.id_thesaurus  
+                            and  
+                            lang = lang_rec.id_lang  
+                            and notetypecode = 'historyNote'  
+                            and identifier in (select id_concept from concept where id_thesaurus = theso_rec.id_thesaurus)  
+                            group by identifier having count(*) > 1)
+            LOOP
                 -- historyNote
                 notes_concat := '';
                 notes_tab := ARRAY[]::character varying[];
@@ -303,8 +383,19 @@ BEGIN
                         notes_rec.lang, notes_concat, 
                         notes_rec.created, notes_rec.modified, 
                         notes_rec.id_user, notes_rec.notesource, notes_rec.identifier);
+            END LOOP;
 
 
+            -- on récupère toutes les notes en double dans une langue et par concept pour scopeNote
+            FOR notes_id IN (select identifier from note  
+                            where  
+                            id_thesaurus = theso_rec.id_thesaurus  
+                            and  
+                            lang = lang_rec.id_lang  
+                            and notetypecode = 'scopeNote'  
+                            and identifier in (select id_concept from concept where id_thesaurus = theso_rec.id_thesaurus)  
+                            group by identifier having count(*) > 1)
+            LOOP
                 -- scopeNote
                 notes_concat := '';
                 notes_tab := ARRAY[]::character varying[];
@@ -345,10 +436,19 @@ BEGIN
                         notes_rec.lang, notes_concat, 
                         notes_rec.created, notes_rec.modified, 
                         notes_rec.id_user, notes_rec.notesource, notes_rec.identifier);
-
-
             END LOOP;
+
+
+
+
+
+        -- fin de loop pour toutes les langues d'un thésaurus
         END LOOP;
+
+
+    -- fin de loop pour tous les thésaurus
     END LOOP;
 END;
 $BODY$;
+
+CALL opentheso_deduplicate_notes();
