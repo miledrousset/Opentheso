@@ -607,6 +607,10 @@ public class Tree implements Serializable {
                         conceptBean.getSelectedLang());
                 alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
+                for (AlignementElement element : alignmentBean.getAllignementsList()) {
+                    element.setValide(isURLAvailable(element.getTargetUri()));
+                }
+
                 alignmentBean.setAllAlignementFound(new ArrayList<>());
                 alignmentBean.setAllAlignementVisible(true);
                 alignmentBean.setPropositionAlignementVisible(false);
