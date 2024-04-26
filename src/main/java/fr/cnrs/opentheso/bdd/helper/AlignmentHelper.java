@@ -357,13 +357,8 @@ public class AlignmentHelper {
                 conn.close();
             }
         } catch (SQLException sqle) {
-            // Log exception
-            if (sqle.getSQLState().equalsIgnoreCase("23505")) {
-                status = true;
-            } else {
-                log.error("Error while adding external alignement with target : " + uriTarget, sqle);
-                return false;
-            }
+            log.error("Error while adding external alignement with target : " + uriTarget, sqle);
+            return false;
         }
         return status;
     }
@@ -421,13 +416,28 @@ public class AlignmentHelper {
         boolean status = false;
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate("delete from alignement "
-                        + " where id = " + idAlignment
-                        + " and internal_id_thesaurus = '" + idThesaurus + "'");
+                stmt.executeUpdate("delete from alignement where id = " + idAlignment + " and internal_id_thesaurus = '" + idThesaurus + "'");
                 status = true;
             }
         } catch (SQLException sqle) {
             log.error("Error while deleting alignment from thesaurus with idAlignment : " + idAlignment, sqle);
+        }
+        return status;
+    }
+
+    /**
+     * Cette focntion permet de supprimer un alignement
+     */
+    public boolean deleteAlignment(HikariDataSource ds, String idConcept, String idThesaurus, String uri) {
+
+        boolean status = false;
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()){
+                stmt.executeUpdate("delete from alignement where internal_id_concept = '" + idConcept + "' and internal_id_thesaurus = '"+idThesaurus+"' and uri_target = '" + uri + "'");
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while deleting alignment from thesaurus with uri : " + uri, sqle);
         }
         return status;
     }

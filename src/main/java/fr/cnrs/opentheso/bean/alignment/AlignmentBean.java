@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.alignment;
 
 import fr.cnrs.opentheso.bdd.datas.DCMIResource;
@@ -154,9 +149,9 @@ public class AlignmentBean implements Serializable {
     /// pour l'alignement manuel en cas de non réponse
     private String manualAlignmentUri;
 
-    public void deleteAlignemen() {
+    public void deleteAlignment(AlignementElement alignement) {
         new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
-                alignementElementSelected.getIdAlignment(),
+                alignement.getIdAlignment(),
                 selectedTheso.getCurrentIdTheso());
 
         getIdsAndValues(selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
@@ -167,24 +162,21 @@ public class AlignmentBean implements Serializable {
 
         getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Erreur !", "Alignement supprimé avec succès !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-        }
+        showMessage(FacesMessage.SEVERITY_INFO, "Alignement supprimé avec succès !");
     }
-    
+
     public void initForManageAlignment(){
-        setAllAlignementVisible(false);
-        setPropositionAlignementVisible(false);
-        setManageAlignmentVisible(true);
+        manageAlignmentVisible = true;
+        allAlignementVisible = false;
+        propositionAlignementVisible = false;
+        comparaisonVisible = false;
     }
 
     public void cancelForManageAlignment(){
-        setAllAlignementVisible(true);
-        setPropositionAlignementVisible(false);
-        setManageAlignmentVisible(false);
+        allAlignementVisible = true;
+        propositionAlignementVisible = false;
+        manageAlignmentVisible = false;
+        comparaisonVisible = false;
     }
 
     public void supprimerPropositionAlignement(NodeAlignment alignment) {
@@ -249,16 +241,18 @@ public class AlignmentBean implements Serializable {
 
         allignementsList = new ArrayList<>();
 
-        for (NodeIdValue idsAndValue : idsAndValues) {
+        for (NodeIdValue concept : idsAndValues) {
+
+            var definitions = new NoteHelper().getListNotes(connect.getPoolConnexion(), concept.getId(), idTheso, idLang);
 
             ArrayList<NodeAlignment> alignements = new AlignmentHelper()
-                    .getAllAlignmentOfConcept(connect.getPoolConnexion(), idsAndValue.getId(), idTheso);
+                    .getAllAlignmentOfConcept(connect.getPoolConnexion(), concept.getId(), idTheso);
 
             if (!CollectionUtils.isEmpty(alignements)) {
                 for (NodeAlignment alignement : alignements) {
                     AlignementElement element = new AlignementElement();
-                    element.setIdConceptOrig(idsAndValue.getId());
-                    element.setLabelConceptOrig(idsAndValue.getValue());
+                    element.setIdConceptOrig(concept.getId());
+                    element.setLabelConceptOrig(concept.getValue());
                     element.setIdAlignment(alignement.getId_alignement());
                     element.setTypeAlignement(alignement.getAlignmentLabelType());
                     element.setLabelConceptCible(alignement.getConcept_target());
@@ -267,14 +261,27 @@ public class AlignmentBean implements Serializable {
                     element.setAlignement_id_type(alignement.getAlignement_id_type());
                     element.setIdSource(alignement.getId_source());
                     element.setConceptTarget(alignement.getConcept_target());
+
+                    var definition = "";
+                    if (CollectionUtils.isNotEmpty(definitions)) {
+                        var tmp = definitions.stream()
+                                .filter(def -> "definition".equalsIgnoreCase(def.getNotetypecode()))
+                                .filter(def -> def.getNoteSource().equalsIgnoreCase(alignement.getThesaurus_target()))
+                                .findFirst();
+                        if (tmp.isPresent()) {
+                            definition = tmp.get().getLexicalvalue();
+                        }
+                    }
+                    element.setDefinitionLocal(definition);
+
                     element.setValide(isURLAvailable(alignement.getUri_target()));
                     allignementsList.add(element);
                 }
             }
 
             AlignementElement element = new AlignementElement();
-            element.setIdConceptOrig(idsAndValue.getId());
-            element.setLabelConceptOrig(idsAndValue.getValue());
+            element.setIdConceptOrig(concept.getId());
+            element.setLabelConceptOrig(concept.getValue());
             allignementsList.add(element);
         }
 
@@ -342,14 +349,13 @@ public class AlignmentBean implements Serializable {
 
         allAlignementFound = new AlignementAutomatique().searchAlignementsAutomatique(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                conceptView.getSelectedLang(),
+                selectedTheso.getSelectedLang(),
                 allignementsList,
                 alignementSource,
                 nom,
                 prenom,
                 version,
-                idsAndValues,
-                conceptView.getDefinition());
+                idsAndValues);
 
         if (CollectionUtils.isNotEmpty(allAlignementFound)) {
             allAlignementVisible = false;
@@ -358,8 +364,6 @@ public class AlignmentBean implements Serializable {
                 propositionAlignementVisible = true;
                 comparaisonVisible = false;
             } else {
-                //TODO Firas valide
-                //allAlignementFound.forEach(element -> element.setAlignementLocalValide(isURLAvailable(element.getUri_target())));
                 propositionAlignementVisible = false;
                 comparaisonVisible = true;
             }
@@ -493,9 +497,14 @@ public class AlignmentBean implements Serializable {
 
         // Mettre à jour la valeur de local libelle et local definition par rapport au nouveau alignement
         allAlignementFound.stream().forEach(element -> {
-            if (element.getConceptOrigin().equalsIgnoreCase(alignementSelect.getConceptOrigin())) {
-                alignementSelect.setLabelLocal(alignementSelect.getConcept_target());
-                alignementSelect.setDefinitionLocal(alignementSelect.getDef_target());
+            if (element.getConceptOrigin().equals(alignementSelect.getConceptOrigin())) {
+                element.setLabelLocal(alignementSelect.getConcept_target());
+                var definitionFound = alignementSelect.getSelectedDefinitionsList().stream()
+                        .filter(definition -> definition.getIdLang().equalsIgnoreCase(selectedTheso.getSelectedLang()))
+                        .findFirst();
+                if (definitionFound.isPresent()) {
+                    element.setDefinitionLocal(definitionFound.get().getGettedValue());
+                }
             }
         });
 
@@ -511,10 +520,15 @@ public class AlignmentBean implements Serializable {
                 conceptView.getDefinition().getId_note() + "",
                 conceptView.getSelectedTheso().getCurrentIdTheso());
 
-        //Supprimer traduction
-        //conceptView.getNodeConcept().getNodeimages()
+        //Supprimer l'alignement
+        new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
+                selectedAlignement.getId_alignement(),
+                conceptView.getSelectedTheso().getCurrentIdTheso());
 
-        //Supprimer Images
+        new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
+                selectedAlignement.getInternal_id_concept(),
+                conceptView.getSelectedTheso().getCurrentIdTheso(),
+                selectedAlignement.getUri_target());
     }
 
     public String getDefinitionFromAlignement(NodeAlignment alignement) {
@@ -627,13 +641,13 @@ public class AlignmentBean implements Serializable {
         alignmentInProgress = false;
         viewSetting = false;
         viewAddNewSource = false;
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
 
-        alignementSources = alignmentHelper.getAlignementSource(connect.getPoolConnexion(), idTheso);
+        alignementSources = new AlignmentHelper().getAlignementSource(connect.getPoolConnexion(), idTheso);
 
         alignmentTypes = new ArrayList<>();
         HashMap<String, String> map = new AlignmentHelper().getAlignmentType(connect.getPoolConnexion());
         alignmentTypes.addAll(map.entrySet());
+
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         thesaurusUsedLanguage = thesaurusHelper.getIsoLanguagesOfThesaurus(connect.getPoolConnexion(), idTheso);
 

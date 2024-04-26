@@ -177,6 +177,7 @@ public class SetAlignmentSourceBean implements Serializable {
         description = null;
 
         alignmentBean.setViewAddNewSource(true);
+        alignmentBean.setComparaisonVisible(false);
         alignmentBean.setViewSetting(false);
     }
 
@@ -186,12 +187,12 @@ public class SetAlignmentSourceBean implements Serializable {
     }
 
     
-    public void deleteAlignmentSource() {
-        if (alignementSourceToUpdate == null) {
+    public void deleteAlignmentSource(NodeSelectedAlignment alignment) {
+        if (alignment == null) {
             return;
         }
 
-        if (!new AlignmentHelper().deleteAlignmentSource(connect.getPoolConnexion(), alignementSourceToUpdate.getId())) {
+        if (!new AlignmentHelper().deleteAlignmentSource(connect.getPoolConnexion(), alignment.getIdAlignmentSource())) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la suppression de la source !");
             return;
         }

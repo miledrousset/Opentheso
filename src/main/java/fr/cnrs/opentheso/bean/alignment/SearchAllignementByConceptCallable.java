@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.alignment;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.core.alignment.AlignementSource;
 import fr.cnrs.opentheso.core.alignment.helper.AgrovocHelper;
 import fr.cnrs.opentheso.core.alignment.helper.GemetHelper;
@@ -22,7 +21,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 
 public class SearchAllignementByConceptCallable implements Callable<List<NodeAlignment>> {
@@ -37,14 +35,15 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
     private final String nom;
     private final String prenom;
     private final NodeAlignment aligementLocal;
-    private final NodeNote definition;
+    private final String definitionLocal;
+    private final String mode;
 
 
     public SearchAllignementByConceptCallable(AlignementSource alignementSource,
                                               HikariDataSource connection, List<String> allLangsTheso,
                                               List<String> thesaurusLangs, String idTheso, NodeIdValue concept,
                                               String idCurrentLang, String nom, String prenom,
-                                              NodeAlignment aligementLocal, NodeNote definition) {
+                                              NodeAlignment aligementLocal, String definitionLocal, String mode) {
 
         this.alignementSource = alignementSource;
         this.connection = connection;
@@ -56,7 +55,8 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
         this.nom = nom;
         this.prenom = prenom;
         this.aligementLocal = aligementLocal;
-        this.definition = definition;
+        this.definitionLocal = definitionLocal;
+        this.mode = mode;
     }
 
     @Override
@@ -66,32 +66,40 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
         List<NodeAlignment> tmp = searchAlignmentsV2(alignementSource, idTheso, concept, idCurrentLang, nom, prenom);
 
         if (CollectionUtils.isNotEmpty(tmp)) {
-            tmp = tmp.stream()
-                    .filter(element -> !element.getUri_target().equalsIgnoreCase(aligementLocal.getUri_target()))
-                    .collect(Collectors.toList());
-        }
-
-        if (CollectionUtils.isNotEmpty(tmp)) {
 
             ExecutorService executor = Executors.newFixedThreadPool(tmp.size());
             List<Callable<NodeAlignment>> callables = new ArrayList<>();
-            int limit = 3;
-            for (NodeAlignment nodeAlignment : tmp) {
-                if (limit == 0) break;
-                callables.add(new SearchSingleAllignementCallable(alignementSource, nodeAlignment,
-                        connection, thesaurusLangs, allLangsTheso, idCurrentLang, idTheso, concept.getId()));
-                limit --;
+
+            if (mode.equalsIgnoreCase("V2")) {
+                int limit = 3;
+                for (NodeAlignment nodeAlignment : tmp) {
+                    if (limit == 0) break;
+                    callables.add(new SearchSingleAllignementCallable(alignementSource, nodeAlignment,
+                            connection, thesaurusLangs, allLangsTheso, idCurrentLang, idTheso, concept.getId()));
+                    limit --;
+                }
+            } else {
+                for (NodeAlignment nodeAlignment : tmp) {
+                    callables.add(new SearchSingleAllignementCallable(alignementSource, nodeAlignment,
+                            connection, thesaurusLangs, allLangsTheso, idCurrentLang, idTheso, concept.getId()));
+                }
             }
 
             try {
                 List<Future<NodeAlignment>> futures = executor.invokeAll(callables);
                 for (Future<NodeAlignment> future : futures) {
                     var nodeAlignment = future.get();
-                    nodeAlignment.setLabelLocal(aligementLocal.getConcept_target());
-                    nodeAlignment.setUriTargetLocal(aligementLocal.getUri_target());
-                    nodeAlignment.setAlignementTypeLocal(aligementLocal.getAlignementTypeLocal());
-                    nodeAlignment.setDefinitionLocal(definition.getLexicalvalue());
-                    nodeAlignment.setConceptOrigin(concept.getValue());
+                    nodeAlignment.setAlignement_id_type(1);
+                    nodeAlignment.setId_source(alignementSource.getId());
+                    nodeAlignment.setDefinitionLocal(definitionLocal);
+                    if (mode.equalsIgnoreCase("V2")) {
+                        nodeAlignment.setId_alignement(aligementLocal.getId_alignement());
+                        nodeAlignment.setLabelLocal(aligementLocal.getConcept_target());
+                        nodeAlignment.setUriTargetLocal(aligementLocal.getUri_target());
+                        nodeAlignment.setAlignementTypeLocal(aligementLocal.getAlignementTypeLocal());
+                        nodeAlignment.setConceptOrigin(concept.getValue());
+                        nodeAlignment.setAlreadyLoaded(nodeAlignment.getUri_target().equalsIgnoreCase(aligementLocal.getUri_target()));
+                    }
                     alignmentFound.add(nodeAlignment);
                 }
             } catch (Exception e) {

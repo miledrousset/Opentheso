@@ -10,32 +10,25 @@
         }
     </style>
 
-    <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; margin-left: 20px; margin-right: 20px; border-color: #43B572">
+    <div class="card mb-4 py-3 border-left-success" style="margin: 20px;">
         <p:dataTable var="alignement" value="#{alignmentBean.allignementsList}"
                      filteredValue="#{alignmentBean.filteredAlignement}" size="small"
                      widgetVar="datatable" styleClass="products-table .ui-datatable-hor-scroll"
                      paginator="true"
                      paginatorPosition="bottom"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                     selectionMode="single"
-                     rowKey="#{alignement.idConceptOrig}"
                      rows="10"
-                     resizableColumns="true"
-                     showGridlines="true"
                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} #{langueBean.getMsg('rightbody.concept.alignment')}"
                      rowsPerPageTemplate="5,10,{ShowAll|'All'}"
-                     scrollHeight="69%"
-                     allowUnsorting="true"
-                     sortMode="single"
-                     style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false"
+                     style="margin-bottom: -17px; margin-top: -16px; font-size: 13px" lazy="false"
                      rowStyleClass="#{alignement.typeAlignement eq null ? 'hidden-row' : null}">
 
-            <p:headerRow field="idConceptOrig" expandable="true" expanded="true" rowStyleClass="#{alignement.typeAlignement eq null ? 'hidden-row' : null}">
-                <p:column colspan="3" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e;">
+            <p:headerRow field="idConceptOrig" expandable="true" expanded="true">
+                <p:column colspan="2" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e;">
                     <h:outputText styleClass="ml-2" value="#{alignement.labelConceptOrig} (#{alignement.idConceptOrig})"/>
                 </p:column>
-                <p:column colspan="3" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e; text-align: right;">
-                    <p:commandButton process="@this" value="Alignement manuel"
+                <p:column colspan="2" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e; text-align: right;">
+                    <p:commandButton process="@this" value="#{langueBean.getMsg('rightbody.concept.alignement.alignment_manual')}"
                                      update=":containerIndex:searchAlignementForm"
                                      actionListener="#{alignmentBean.openEditAlignementWindow(alignement)}"
                                      styleClass="rounded-button ui-button-outlined"
@@ -45,23 +38,9 @@
                 </p:column>
             </p:headerRow>
 
-            <p:column headerText="#{langueBean.getMsg('search.identifier')}">
-                <h:outputText value="#{alignement.idConceptOrig}" />
-            </p:column>
-
-            <p:column headerText="#{langueBean.getMsg('statistique.label')}">
-                <h:outputText value="#{alignement.labelConceptOrig}" />
-            </p:column>
-
-            <p:column headerText="#{langueBean.getMsg('alignment.source')}">
-                <h:outputText value="#{alignement.thesaurus_target}" />
-            </p:column>
-
-            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}">
-                <h:outputText value="#{alignement.typeAlignement}" />
-            </p:column>
-
-            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uriTarget')}" style="text-align: center">
+            <p:column headerText="#{langueBean.getMsg('statistique.label')}"
+                      style="width: 25%; border: 0.5px solid green; word-wrap: break-word;">
+                <h:outputText value="#{alignement.labelConceptCible}" />
                 <h:panelGroup rendered="#{alignement.valide}">
                     <h:outputLink value="#{alignement.targetUri}" target="_blank" >
                         <i class="pi pi-link" style="font-size: 1rem; color: green" />
@@ -72,37 +51,48 @@
                 </h:panelGroup>
             </p:column>
 
-            <p:column headerText="Actions" style="text-align: center"
-                      rowStyleClass="#{alignement.labelConceptOrig eq null ? 'hidden-row' : null}">
-                <div class="row">
-                    <div class="col-5 offset-1">
-                        <p:commandButton process="@this" rendered="#{alignement.targetUri != null}"
-                                         action="#{alignmentManualBean.reset()}"
-                                         actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
-                                         update=":containerIndex:idUpdateSingleAlignment"
-                                         oncomplete="PF('updateSingleAlignment').show();"
-                                         icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
-                                         style="height: 30px; width: 30px; color: #43B572" />
-                    </div>
-                    <div class="col-5">
-                        <p:commandButton process="@this" ajax="true"
-                                         icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
-                                         oncomplete="PF('confirmDeleteAlignement').show()"
-                                         actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
-                                         rendered="#{alignement.targetUri != null}"
-                                         style="height: 30px; width: 30px;" />
-                    </div>
-                </div>
+            <p:column headerText="#{langueBean.getMsg('alignment.source')}"
+                      style="width: 50%; border: 0.5px solid green; word-wrap: break-word;">
+                <h:outputText value="#{alignement.definitionLocal}  (#{alignement.thesaurus_target})" />
             </p:column>
 
-            <p:summaryRow rowStyleClass="#{alignement.typeAlignement eq null ? 'hidden-row' : null}">
-                <p:column colspan="6" style="text-align:right; background-color: #ecf8f1;
+            <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
+                      style="width: 15%; border: 0.5px solid green;">
+                <h:outputText value="#{alignement.typeAlignement}" />
+            </p:column>
+
+            <p:column headerText="Actions" style="text-align: center; width: 10%; border: 0.5px solid green;">
+                <p:commandButton process="@this" rendered="#{alignement.targetUri != null}"
+                                 action="#{alignmentManualBean.reset()}"
+                                 actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
+                                 update=":containerIndex:idUpdateSingleAlignment"
+                                 oncomplete="PF('updateSingleAlignment').show();"
+                                 icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
+                                 style="height: 30px; width: 30px; color: #43B572" />
+
+                <p:commandButton process="@this" ajax="true"
+                                 icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
+                                 actionListener="#{alignmentBean.deleteAlignment(alignement)}"
+                                 rendered="#{alignement.targetUri != null}"
+                                 update="containerIndex"
+                                 style="height: 30px; width: 30px; margin-left: 10px">
+                    <p:confirm type="popup" header="Confirmation" message="Est ce que vous voulez supprimer cet alignement ?" icon="pi pi-info-circle"/>
+                </p:commandButton>
+
+                <p:confirmPopup global="true">
+                    <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+                    <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirm-popup-yes" />
+                </p:confirmPopup>
+            </p:column>
+
+            <p:summaryRow>
+                <p:column colspan="4" style="text-align:right; background-color: #ecf8f1;
               border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
                     <h:outputText value="#{langueBean.getMsg('alignment.totalAlignmentFor')} (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignementParConcept(alignement.idConceptOrig)}"/>
                 </p:column>
             </p:summaryRow>
 
-            <f:facet name="footer" rowStyleClass="#{alignement.typeAlignement eq null ? 'hidden-row' : null}">
+            <f:facet name="footer">
                 <span class="p-text-bold" >
                     <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
                     <h:outputText value="#{alignmentBean.getTotalAlignements()}" style="font-size: 16px; color: #f47b2a"/>

@@ -52,5 +52,6 @@ public class NodeAlignment {
 
     private List<SelectedResource> selectedTraductionsList, selectedDefinitionsList, selectedImagesList;
     private boolean alignementLocalValide;
+    private boolean alreadyLoaded;
 
 }

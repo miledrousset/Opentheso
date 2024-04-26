@@ -15,7 +15,12 @@ import fr.cnrs.opentheso.core.alignment.helper.GemetHelper;
 import fr.cnrs.opentheso.core.alignment.helper.GeoNamesHelper;
 import fr.cnrs.opentheso.core.alignment.helper.WikidataHelper;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -70,10 +75,22 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
                 break;
         }
 
+        nodeAlignment.setAlignementLocalValide(isURLAvailable(nodeAlignment.getUri_target()));
+
         return nodeAlignment;
     }
 
-
+    public boolean isURLAvailable(String urlString) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpHead httpHead = new HttpHead(urlString);
+            try (CloseableHttpResponse response = httpClient.execute(httpHead)) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                return (statusCode == 200);
+            }
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
     private void loadGeoNameDatas(HikariDataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
                                   String idTheso, String idConcept) {

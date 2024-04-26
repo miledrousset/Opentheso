@@ -11,9 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdConceptIdTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import org.apache.commons.logging.Log;
@@ -1295,6 +1294,35 @@ public class NoteHelper {
             log.error("Error while getting definition of concept : " + idConcept, sqle);
         }
         return listDefinitions;
+    }
+
+
+    public String getDefinitionByLangAndSource(HikariDataSource ds, String idConcept, String idThesaurus, String idLang, String source) {
+
+        if("en-GB".equalsIgnoreCase(idLang))
+            idLang = "en";
+
+        List<String> listDefinitions = new ArrayList<>();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT lexicalvalue " +
+                        "FROM note " +
+                        "WHERE note.notetypecode = 'definition' " +
+                        "AND note.id_thesaurus = '" + idThesaurus + "' " +
+                        "AND note.lang = '" + idLang + "' " +
+                        "AND note.identifier = '" + idConcept + "'" +
+                        "AND note.notesource = '"+source+"'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        listDefinitions.add(resultSet.getString("lexicalvalue"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting definition of concept : " + idConcept, sqle);
+        }
+        return listDefinitions.isEmpty() ? "" : listDefinitions.get(0);
     }
     
     /**
