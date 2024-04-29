@@ -449,6 +449,7 @@ public class GroupHelper {
         Connection conn;
         String idArk = "";
         String idHandle = "";
+        int idSequenceConcept = -1;
 
         /*    nodeConceptGroup.setLexicalValue(
                 new StringPlus().convertString(nodeConceptGroup.getLexicalValue()));
@@ -468,15 +469,25 @@ public class GroupHelper {
                 conn.close();
                 return null;
             }
-            // Ajout des informations dans la table de ConceptGroup
-            if (!insertGroup(conn, idGroup, idArk,
-                    nodeConceptGroup.getConceptGroup().getIdthesaurus(),
-                    nodeConceptGroup.getConceptGroup().getIdtypecode(),
-                    nodeConceptGroup.getConceptGroup().getNotation(),
-                    idHandle)) {
-                conn.rollback();
-                conn.close();
+            try {
+                idSequenceConcept = Integer.parseInt(idGroup);
+                idGroup = "g" + idGroup;
+            } catch (Exception e) {
                 return null;
+            }
+            if (idSequenceConcept == -1) {
+                return null;
+            } else {
+                // Ajout des informations dans la table de ConceptGroup
+                if (!insertGroup(conn, idSequenceConcept, idGroup, idArk,
+                        nodeConceptGroup.getConceptGroup().getIdthesaurus(),
+                        nodeConceptGroup.getConceptGroup().getIdtypecode(),
+                        nodeConceptGroup.getConceptGroup().getNotation(),
+                        idHandle)) {
+                    conn.rollback();
+                    conn.close();
+                    return null;
+                }
             }
 
             // ajout de la traduction 
@@ -563,7 +574,7 @@ public class GroupHelper {
 
                 String query = "Insert into concept_group_label "
                         + "(lexicalvalue, created, modified,lang, idthesaurus, idgroup)"
-                        + "values ("
+                        + " values ("
                         + "'" + value + "'"
                         + ",current_date"
                         + ",current_date"
@@ -682,6 +693,7 @@ public class GroupHelper {
      * @return
      */
     private boolean insertGroup(Connection conn,
+            int idSequenceGroup,
             String idGroup, String idArk,
             String idTheso, String idTypeCode,
             String notation, String idHandle) {
@@ -691,13 +703,14 @@ public class GroupHelper {
             stmt = conn.createStatement();
             try {
                 String query = "Insert into concept_group "
-                        + "(idgroup,id_ark,idthesaurus,idtypecode,notation,id_handle)"
+                        + "(idgroup,id_ark,idthesaurus,idtypecode,notation,id, id_handle)"
                         + " values("
                         + "'" + idGroup.toLowerCase() + "'"
                         + ",'" + idArk + "'"
                         + ",'" + idTheso + "'"
                         + ",'" + idTypeCode + "'"
                         + ",'" + notation + "'"
+                        + "," + idSequenceGroup
                         + ",'" + idHandle + "'"
                         + ")";
                 stmt.executeUpdate(query);
@@ -776,13 +789,47 @@ public class GroupHelper {
                 idThesaurus, idHandle);
     }
 
+    
+    /**
+     * Permet de retourner un Id numérique et unique pour le Concept
+     */
+    private String getNewIdGroup(Connection conn) {
+        String idGroup = getNewIdGroup__(conn);
+        while (isIdGroupExiste(conn, "d" + idGroup)) {
+            idGroup = getNewIdGroup__(conn);
+        }
+        return idGroup;
+    }
+
+    /**
+     * Permet de retourner un Id numérique et unique pour le Concept
+     */
+    private String getNewIdGroup__(Connection conn) {
+        String idGroup = null;
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeQuery("select nextval('concept_group__id_seq') from concept_group__id_seq");
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                if (resultSet.next()) {
+                    int idNumerique = resultSet.getInt(1);
+                    idGroup = "" + (idNumerique);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return idGroup;
+    }     
+    
+    
+    
     /**
      * permet de retourner un nouvel id pour le group
      *
      * @param conn
      * @return
+     * ##MR deprecated
      */
-    private String getNewIdGroup(Connection conn) {
+    private String getNewIdGroup1(Connection conn) {
         Statement stmt;
         ResultSet resultSet = null;
         String idgroup = null;
