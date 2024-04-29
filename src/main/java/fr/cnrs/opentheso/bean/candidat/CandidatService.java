@@ -251,7 +251,7 @@ public class CandidatService implements Serializable {
             new DomaineDao().addNewDomaine(
                     connect, collection.getId(),
                     candidatSelected.getIdThesaurus(),
-                    candidatSelected.getIdConcepte());            
+                    candidatSelected.getIdConcepte());
         }
 
         // gestion des relations
