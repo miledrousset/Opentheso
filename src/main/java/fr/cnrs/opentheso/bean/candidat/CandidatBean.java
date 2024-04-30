@@ -52,12 +52,14 @@ import javax.annotation.PreDestroy;
 import javax.faces.context.ExternalContext;
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
 
+@Data
 @SessionScoped
 @Named(value = "candidatBean")
 public class CandidatBean implements Serializable {
@@ -183,26 +185,6 @@ public class CandidatBean implements Serializable {
                 selectedLanguages.add(nodeLang);
             });
         } catch (Exception e) {
-        }
-    }
-
-    public void addSynonyme() {
-
-        if (StringUtils.isNotEmpty(employePour)) {
-            if (candidatSelected.getEmployePourList().contains(employePour)) {
-                showMessage(FacesMessage.SEVERITY_ERROR, "Le mot '" + employePour + "' existe déjà !");
-            } else {
-                candidatSelected.getEmployePourList().add(employePour);
-                employePour = "";
-                PrimeFaces.current().ajax().update("tabViewCandidat");
-            }
-        }
-    }
-
-    public void removeSynonyme(String synonyme) {
-        if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
-            candidatSelected.getEmployePourList().remove(synonyme);
-            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatSynonym");
         }
     }
 
@@ -839,31 +821,58 @@ public class CandidatBean implements Serializable {
 
     public void removeCollection(NodeIdValue collection) {
         if (CollectionUtils.isNotEmpty(candidatSelected.getCollections())) {
-            candidatSelected.getCollections().remove(collection);
-            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
+            try {
+                new DomaineDao().deleteDomaine(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), collection.getId());
+
+                candidatSelected.getCollections().remove(collection);
+                PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
+
+                showMessage(FacesMessage.SEVERITY_INFO, "Collection supprimée avec succès !");
+            } catch(Exception exception) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la suppression de la collection !");
+            }
+        }
+    }
+
+    public void addSynonyme() {
+
+        if (StringUtils.isNotEmpty(employePour)) {
+            if (candidatSelected.getEmployePourList().contains(employePour)) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Le mot '" + employePour + "' existe déjà !");
+            } else {
+                try {
+                    new TermeDao().addNewEmployePour(connect, employePour, candidatSelected.getIdThesaurus(),
+                            candidatSelected.getLang(), candidatSelected.getIdTerm());
+
+                    candidatSelected.getEmployePourList().add(employePour);
+                    employePour = "";
+                    PrimeFaces.current().ajax().update("tabViewCandidat");
+
+                    showMessage(FacesMessage.SEVERITY_INFO, "Synonyme ajouté avec succès !");
+                } catch (Exception ex) {
+                    showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'ajout du nouveau synonyme !");
+                }
+            }
+        }
+    }
+
+    public void removeSynonyme(String synonyme) {
+        if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
+            try {
+                new TermeDao().deleteTermByIdTermAndLangAndValue(connect.getPoolConnexion(), candidatSelected.getIdTerm(),
+                        candidatSelected.getLang(), candidatSelected.getIdThesaurus(), synonyme);
+
+                candidatSelected.getEmployePourList().remove(synonyme);
+                PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatSynonym");
+
+                showMessage(FacesMessage.SEVERITY_INFO, "Synonyme supprimé avec succès !");
+            } catch(Exception ex) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la suppression du synonyme !");
+            }
         }
     }
 
     public void onTraductionGenericSelect(SelectEvent<NodeIdValue> event) {
-        /*
-        Optional<NodeIdValue> elementAdded = allTermesGenerique.stream()
-                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
-                .findFirst();
-        if (elementAdded.isPresent()) {
-            if (candidatSelected.getTermesGenerique().stream()
-                    .filter(element -> element.getValue().equalsIgnoreCase(elementAdded.get().getValue()))
-                    .findFirst().isPresent()) {
-                showMessage(FacesMessage.SEVERITY_WARN, "Le terme generique existe déjà !");
-            } else {*/
-
-                     //   (NodeIdValue)event.getObject());//elementAdded.get());
-           //     allTermesGenerique.remove(elementAdded.get());
-           // }
-         //   termesGeneriqueTmp = Collections.emptyList();
-         //   PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");
-       // }*/
-       //####### Désactivé par Miled, ne prend pas en charge tous les concepts du thésaurus ######
-
         var elementAdded = event.getObject();
         Optional<NodeIdValue> elOptional = Optional.of(elementAdded);
         
@@ -881,22 +890,6 @@ public class CandidatBean implements Serializable {
     }
 
     public void onTraductionAssocieSelect(SelectEvent<NodeIdValue> event) {
-
-    /*    Optional<NodeIdValue> elementAdded = AllTermesAssocies.stream()
-                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
-                .findFirst();
-        if (elementAdded.isPresent()) {
-            if (candidatSelected.getTermesAssocies().stream()
-                    .filter(element -> element.getValue().equalsIgnoreCase(elementAdded.get().getValue()))
-                    .findFirst().isPresent()) {
-                showMessage(FacesMessage.SEVERITY_WARN, "Le terme associé existe déjà !");
-            } else {
-                candidatSelected.getTermesAssocies().add(elementAdded.get());
-                AllTermesAssocies.remove(elementAdded.get());
-            }
-            termesAssociesTmp = Collections.emptyList();
-            PrimeFaces.current().ajax().update("tabViewCandidat");
-        }*/
         NodeIdValue elementAdded = (NodeIdValue)event.getObject();
         Optional<NodeIdValue> elOptional = Optional.of(elementAdded);
         
@@ -910,10 +903,7 @@ public class CandidatBean implements Serializable {
             candidatSelected.getTermesAssocies().add(elementAdded); 
         }
         termesAssociesTmp = Collections.emptyList();
-        PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");     
-    
-    
-    
+        PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");
     }
 
     public void onRelationBTAdded(SelectEvent<NodeIdValue> event) {
@@ -943,171 +933,11 @@ public class CandidatBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<CandidatDto> getCandidatList() {
-        return candidatList;
-    }
-
-    public void setCandidatList(List<CandidatDto> candidatList) {
-        this.candidatList = candidatList;
-    }
-
-    public CandidatDto getInitialCandidat() {
-        return initialCandidat;
-    }
-
-    public Connect getConnect() {
-        return connect;
-    }
-
-    public void setConnect(Connect connect) {
-        this.connect = connect;
-    }
-
-    public boolean isMyCandidatsSelected1() {
-        return myCandidatsSelected1;
-    }
-
-    public void setMyCandidatsSelected1(boolean myCandidatsSelected1) {
-        this.myCandidatsSelected1 = myCandidatsSelected1;
-    }
-
-    public boolean isMyCandidatsSelected2() {
-        return myCandidatsSelected2;
-    }
-
-    public void setMyCandidatsSelected2(boolean myCandidatsSelected2) {
-        this.myCandidatsSelected2 = myCandidatsSelected2;
-    }
-
-    public boolean isMyCandidatsSelected3() {
-        return myCandidatsSelected3;
-    }
-
-    public void setMyCandidatsSelected3(boolean myCandidatsSelected3) {
-        this.myCandidatsSelected3 = myCandidatsSelected3;
-    }
-
-    public String getSearchValue1() {
-        return searchValue1;
-    }
-
-    public void setSearchValue1(String searchValue1) {
-        this.searchValue1 = searchValue1;
-    }
-
-    public String getSearchValue2() {
-        return searchValue2;
-    }
-
-    public void setSearchValue2(String searchValue2) {
-        this.searchValue2 = searchValue2;
-    }
-
-    public String getSearchValue3() {
-        return searchValue3;
-    }
-
-    public void setSearchValue3(String searchValue3) {
-        this.searchValue3 = searchValue3;
-    }
-
-    public CandidatDto getCandidatSelected() {
-        return candidatSelected;
-    }
-
-    public void setCandidatSelected(CandidatDto candidatSelected) {
-        this.candidatSelected = candidatSelected;
-    }
-
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(CurrentUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public List<DomaineDto> getDomaines() {
-        return domaines;
-    }
-
-    public List<CandidatDto> getAllTermes() {
-        return allTermes;
-    }
-
-    public void setAllTermes(List<CandidatDto> allTermes) {
-        this.allTermes = allTermes;
-    }
-
-    public LanguageBean getLanguageBean() {
-        return languageBean;
-    }
-
-    public void setLanguageBean(LanguageBean languageBean) {
-        this.languageBean = languageBean;
-    }
-
-    public ConceptView getConceptView() {
-        return conceptView;
-    }
-
-    public void setConceptView(ConceptView conceptView) {
-        this.conceptView = conceptView;
-    }
-
-    public boolean isListCandidatsActivate() {
-        return isListCandidatsActivate;
-    }
-
     public void setListCandidatsActivate(boolean isListCandidatsActivate) {
         getAllCandidatsByThesoAndLangue();
         this.isListCandidatsActivate = isListCandidatsActivate;
         isImportViewActivate = false;
         isExportViewActivate = false;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-
-    public List<CandidatDto> getRejetCadidat() {
-        return rejetCadidat;
-    }
-
-    public List<CandidatDto> getAcceptedCadidat() {
-        return acceptedCadidat;
-    }
-
-    public void setAcceptedCadidat(List<CandidatDto> acceptedCadidat) {
-        this.acceptedCadidat = acceptedCadidat;
-    }
-
-    public boolean isRejectCandidatsActivate() {
-        return isRejectCandidatsActivate;
-    }
-
-    public int getTabViewIndexSelected() {
-        return tabViewIndexSelected;
-    }
-
-    public void setTabViewIndexSelected(int tabViewIndexSelected) {
-        this.tabViewIndexSelected = tabViewIndexSelected;
-    }
-
-    public boolean isExportViewActivate() {
-        return isExportViewActivate;
     }
 
     public void setExportViewActivate(boolean isExportViewActivate) {
@@ -1116,36 +946,8 @@ public class CandidatBean implements Serializable {
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
 
-        setProgressBarStep(0);
-        setProgressBarValue(0);
-    }
-
-    public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
-        return languagesOfTheso;
-    }
-
-    public List<NodeLangTheso> getSelectedLanguages() {
-        return selectedLanguages;
-    }
-
-    public void setSelectedLanguages(List<NodeLangTheso> selectedLanguages) {
-        this.selectedLanguages = selectedLanguages;
-    }
-
-    public String getSelectedExportFormat() {
-        return selectedExportFormat;
-    }
-
-    public void setSelectedExportFormat(String selectedExportFormat) {
-        this.selectedExportFormat = selectedExportFormat;
-    }
-
-    public List<String> getExportFormat() {
-        return exportFormat;
-    }
-
-    public boolean isImportViewActivate() {
-        return isImportViewActivate;
+        progressBarStep = 0;
+        progressBarValue = 0;
     }
 
     public void setImportViewActivate(boolean isImportViewActivate) {
@@ -1154,36 +956,8 @@ public class CandidatBean implements Serializable {
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
 
-        setProgressBarStep(0);
-        setProgressBarValue(0);
-    }
-
-    public int getProgressBarStep() {
-        return progressBarStep;
-    }
-
-    public void setProgressBarStep(int progressBarStep) {
-        this.progressBarStep = progressBarStep;
-    }
-
-    public int getProgressBarValue() {
-        return progressBarValue;
-    }
-
-    public void setProgressBarValue(int progressBarValue) {
-        this.progressBarValue = progressBarValue;
-    }
-
-    public boolean isAcceptedCandidatsActivate() {
-        return isAcceptedCandidatsActivate;
-    }
-
-    public void setAcceptedCandidatsActivate(boolean isAcceptedCandidatsActivate) {
-        this.isAcceptedCandidatsActivate = isAcceptedCandidatsActivate;
-    }
-
-    public List<CandidatDto> getSelectedCandidates() {
-        return selectedCandidates;
+        progressBarStep = 0;
+        progressBarValue = 0;
     }
     
     public List<String> getSelectedCandidatesAsId() {
@@ -1192,114 +966,6 @@ public class CandidatBean implements Serializable {
             listIdOfConcept.add(selectedCandidate.getIdConcepte());
         }
         return listIdOfConcept;
-    }    
-
-    public void setSelectedCandidates(List<CandidatDto> selectedCandidates) {
-        this.selectedCandidates = selectedCandidates;
-    }
-
-    public boolean isListSelected() {
-        return listSelected;
-    }
-
-    public void setListSelected(boolean listSelected) {
-        this.listSelected = listSelected;
-    }
-
-    public boolean isTraductionVisible() {
-        return traductionVisible;
-    }
-
-    public void setTraductionVisible(boolean traductionVisible) {
-        this.traductionVisible = traductionVisible;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public void setSelectedTheso(SelectedTheso selectedTheso) {
-        this.selectedTheso = selectedTheso;
-    }
-
-    public RoleOnThesoBean getRoleOnThesoBean() {
-        return roleOnThesoBean;
-    }
-
-    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
-        this.roleOnThesoBean = roleOnThesoBean;
-    }
-
-    public CandidatService getCandidatService() {
-        return candidatService;
-    }
-
-    public void setNewCandidatActivate(boolean newCandidatActivate) {
-        isNewCandidatActivate = newCandidatActivate;
-    }
-
-    public void setRejectCandidatsActivate(boolean rejectCandidatsActivate) {
-        isRejectCandidatsActivate = rejectCandidatsActivate;
-    }
-
-    public void setInitialCandidat(CandidatDto initialCandidat) {
-        this.initialCandidat = initialCandidat;
-    }
-
-    public void setExportFormat(List<String> exportFormat) {
-        this.exportFormat = exportFormat;
-    }
-
-    public void setRejetCadidat(List<CandidatDto> rejetCadidat) {
-        this.rejetCadidat = rejetCadidat;
-    }
-
-    public void setDomaines(List<DomaineDto> domaines) {
-        this.domaines = domaines;
-    }
-
-    public void setLanguagesOfTheso(ArrayList<NodeLangTheso> languagesOfTheso) {
-        this.languagesOfTheso = languagesOfTheso;
-    }
-
-    public List<NodeIdValue> getCollectionTemps() {
-        return collectionTemps;
-    }
-
-    public void setCollectionTemps(List<NodeIdValue> collectionTemps) {
-        this.collectionTemps = collectionTemps;
-    }
-
-    public List<NodeIdValue> getTermesGeneriqueTmp() {
-        return termesGeneriqueTmp;
-    }
-
-    public void setTermesGeneriqueTmp(List<NodeIdValue> termesGeneriqueTmp) {
-        this.termesGeneriqueTmp = termesGeneriqueTmp;
-    }
-
-    public List<NodeIdValue> getTermesAssociesTmp() {
-        return termesAssociesTmp;
-    }
-
-    public void setTermesAssociesTmp(List<NodeIdValue> termesAssociesTmp) {
-        this.termesAssociesTmp = termesAssociesTmp;
-    }
-
-    public String getEmployePour() {
-        return employePour;
-    }
-
-    public void setEmployePour(String employePour) {
-        this.employePour = employePour;
-    }
-
-    public NodeAlignment getAlignementSelected() {
-        return alignementSelected;
-    }
-
-    public void setAlignementSelected(NodeAlignment alignementSelected) {
-        this.alignementSelected = alignementSelected;
     }
 
     public void deleteAlignement() {
@@ -1335,7 +1001,7 @@ public class CandidatBean implements Serializable {
 
     public String getCreatedByBtnTitle() {
         var createdBy = (candidatSelected != null && StringUtils.isNotEmpty(candidatSelected.getCreatedBy())) ?
-                " " + languageBean.getMsg("rightbody.concept.createdBy") + candidatSelected.getCreatedBy() : "";
+                " " + languageBean.getMsg("rightbody.concept.createdBy") + candidatSelected.getCreatedBy() + " ": "";
         return languageBean.getMsg("candidat.file") + createdBy;
     }
 }

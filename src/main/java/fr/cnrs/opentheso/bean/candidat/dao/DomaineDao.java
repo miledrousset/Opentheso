@@ -59,11 +59,18 @@ public class DomaineDao extends BasicDao {
         stmt.close();
     }
     
-    public void deleteAllDomaine(Connect connect, String idthesaurus, String idconcept) throws SQLException {
+    public void deleteAllDomaine(Connect connect, String idThesaurus, String idConcept) throws SQLException {
         stmt = connect.getPoolConnexion().getConnection().createStatement();
-        executDeleteRequest(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idconcept+"'  AND idthesaurus = '"+idthesaurus+"'");
+        executDeleteRequest(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idConcept+"'  AND idthesaurus = '"+idThesaurus+"'");
         stmt.close();
-    }    
+    }
+
+    public void deleteDomaine(Connect connect, String idThesaurus, String idConcept, String idGroupe) throws SQLException {
+        stmt = connect.getPoolConnexion().getConnection().createStatement();
+        executDeleteRequest(stmt,"DELETE FROM concept_group_concept " +
+                "WHERE idconcept = '"+idConcept+"' AND idthesaurus = '"+idThesaurus+"' AND idgroup='"+idGroupe+"'");
+        stmt.close();
+    }
 
     public void updateDomaine(Connect connect, String oldIdgroup, String newIdgroup, String idthesaurus, String idconcept) throws SQLException {
 
@@ -94,25 +101,6 @@ public class DomaineDao extends BasicDao {
             nodeIdValues.add(nodeIdValue);
         }
         return nodeIdValues;
-        /*
-        String domaine = null;
-        try {
-            openDataBase(hikariDataSource);
-            stmt.executeQuery(new StringBuffer("SELECT lab.lexicalvalue, lab.lang " +
-                    "FROM concept_group_concept con, concept_group_label lab " +
-                    "WHERE con.idgroup = lab.idgroup " +
-                    "AND con.idthesaurus = '"+idThesaurus+"' " +
-                    "AND idconcept = '"+idconcept+"' " +
-                    "AND lab.lang = '"+lang+"'").toString());
-            resultSet = stmt.getResultSet();
-            while (resultSet.next()) {
-                domaine = resultSet.getString("lexicalvalue");
-            }
-            closeDataBase();
-        } catch (SQLException e) {
-            LOG.error(e);
-        }
-        return domaine;*/
     }
     
 }

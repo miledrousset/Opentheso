@@ -112,6 +112,14 @@ public class TermeDao extends BasicDao {
         }
     }
 
+    public void deleteTermByIdTermAndLangAndValue(HikariDataSource hikariDataSource,
+                                          String idTerm, String lang, String idTheso, String value) throws SQLException {
+        openDataBase(hikariDataSource);
+        stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'"
+                + " and id_thesaurus = '" +  idTheso + "' and lexical_value='"+value+"'");
+        closeDataBase();
+    }
+
     public void deleteTermsByIdTerm(HikariDataSource hikariDataSource,
             String idTerm, String lang, String idTheso) throws SQLException {
         try {

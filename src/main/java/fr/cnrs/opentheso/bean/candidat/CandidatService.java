@@ -234,18 +234,15 @@ public class CandidatService implements Serializable {
         return idTerm;
     }
 
-    public void updateIntitule(Connect connect, String intitule, String idThesaurus,
-            String lang, String idTerm) throws SQLException {
+    public void updateIntitule(Connect connect, String intitule, String idThesaurus, String lang, String idTerm) throws SQLException {
         new TermeDao().updateIntitule(connect.getPoolConnexion(),
                 intitule, idTerm, idThesaurus, lang);
     }
 
-    public void updateDetailsCondidat(Connect connect, CandidatDto candidatSelected, int idUser)
-            throws SQLException {
+    public void updateDetailsCondidat(Connect connect, CandidatDto candidatSelected, int idUser) throws SQLException {
 
         //update domaine
-        DomaineDao domaineDao = new DomaineDao();
-        domaineDao.deleteAllDomaine(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
+        new DomaineDao().deleteAllDomaine(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
         
         for (NodeIdValue collection : candidatSelected.getCollections()) {
             new DomaineDao().addNewDomaine(
