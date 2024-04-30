@@ -266,7 +266,7 @@ public class AlignmentBean implements Serializable {
                     if (CollectionUtils.isNotEmpty(definitions)) {
                         var tmp = definitions.stream()
                                 .filter(def -> "definition".equalsIgnoreCase(def.getNotetypecode()))
-                                .filter(def -> def.getNoteSource().equalsIgnoreCase(alignement.getThesaurus_target()))
+                                .filter(def -> alignement.getThesaurus_target().equalsIgnoreCase(def.getNoteSource()))
                                 .findFirst();
                         if (tmp.isPresent()) {
                             definition = tmp.get().getLexicalvalue();
