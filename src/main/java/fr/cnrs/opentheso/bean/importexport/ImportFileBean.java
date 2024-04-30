@@ -1647,7 +1647,8 @@ public class ImportFileBean implements Serializable {
         CsvImportHelper csvImportHelper = new CsvImportHelper();
         SearchHelper searchHelper = new SearchHelper();
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
         ArrayList<NodeCompareTheso> nodeCompareThesosTemp = new ArrayList<>();
         boolean writtenInfo;
 
@@ -1686,6 +1687,7 @@ public class ImportFileBean implements Serializable {
                         nodeCompareTheso2.setIdConcept(nodeSearchMini.getIdConcept());
                         nodeCompareTheso2.setPrefLabel(nodeSearchMini.getPrefLabel());
                         nodeCompareTheso2.setAltLabel(nodeSearchMini.getAltLabel());
+                        nodeCompareTheso2.setIdArk(conceptHelper.getIdArkOfConcept(connect.getPoolConnexion(), nodeSearchMini.getIdConcept(), idTheso));
                         nodeCompareThesosTemp.add(nodeCompareTheso2);
                     }
                 }
