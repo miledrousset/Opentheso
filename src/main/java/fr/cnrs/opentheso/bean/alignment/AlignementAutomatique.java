@@ -8,6 +8,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.core.alignment.AlignementSource;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,7 +45,8 @@ public class AlignementAutomatique {
                     .peek(element -> {
                         var alignements = new AlignmentHelper().getAllAlignmentOfConcept(connection, element.getId(), idTheso)
                                 .stream()
-                                .filter(alignement -> alignement.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource()))
+                                .filter(alignement -> StringUtils.isEmpty(alignement.getThesaurus_target())
+                                        || alignement.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource()))
                                 .collect(Collectors.toList());
                         element.setAlignements(alignements);
                     })

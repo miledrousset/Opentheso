@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.core.alignment.helper.OntomeHelper;
 import fr.cnrs.opentheso.core.alignment.helper.OpenthesoHelper;
 import fr.cnrs.opentheso.core.alignment.helper.WikidataHelper;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,11 +95,16 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
                     nodeAlignment.setDefinitionLocal(definitionLocal);
                     if (mode.equalsIgnoreCase("V2")) {
                         nodeAlignment.setId_alignement(aligementLocal.getId_alignement());
-                        nodeAlignment.setLabelLocal(aligementLocal.getConcept_target());
                         nodeAlignment.setUriTargetLocal(aligementLocal.getUri_target());
                         nodeAlignment.setAlignementTypeLocal(aligementLocal.getAlignementTypeLocal());
                         nodeAlignment.setConceptOrigin(concept.getValue());
                         nodeAlignment.setAlreadyLoaded(nodeAlignment.getUri_target().equalsIgnoreCase(aligementLocal.getUri_target()));
+
+                        if (StringUtils.isNotEmpty(aligementLocal.getConcept_target())) {
+                            nodeAlignment.setLabelLocal(aligementLocal.getConcept_target());
+                        } else {
+                            nodeAlignment.setLabelLocal(nodeAlignment.getConcept_target());
+                        }
                     }
                     alignmentFound.add(nodeAlignment);
                 }

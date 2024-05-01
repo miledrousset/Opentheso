@@ -631,11 +631,10 @@ public class AlignmentHelper {
                 String query = "SELECT alignement.id, created, modified, author, thesaurus_target, concept_target, uri_target,"
                         + " alignement_id_type, internal_id_thesaurus, internal_id_concept, id_alignement_source,"
                         + " alignement_type.label, alignement_type.label_skos"
-                        + " FROM alignement, alignement_type where "
-                        + " alignement.alignement_id_type = alignement_type.id"
-                        + " and"
-                        + " internal_id_concept = '" + idConcept + "'"
-                        + " and internal_id_thesaurus ='" + idThesaurus + "'";
+                        + " FROM alignement, alignement_type"
+                        + " WHERE alignement.alignement_id_type = alignement_type.id"
+                        + " AND internal_id_concept = '" + idConcept + "'"
+                        + " AND internal_id_thesaurus ='" + idThesaurus + "'";
                 stmt.executeQuery(query);
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     nodeAlignmentList = new ArrayList<>();

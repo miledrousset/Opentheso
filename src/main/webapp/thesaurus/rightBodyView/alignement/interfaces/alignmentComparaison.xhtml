@@ -9,13 +9,31 @@
                      selection="#{alignmentBean.selectAlignementForAdd}" rowKey="#{alignement.uri_target}"
                      style="margin-bottom: -17px; margin-top: -16px; font-size: 13px" lazy="false" >
 
-            <f:facet name="header">
-                <div class="products-table-header">
+            <f:facet name="header" class="products-table-header">
+                <p:column colspan="3">
                     <span style="font-weight: bold">
                         <h:outputText value="Source d'alignement sélectionnée : " />
                         <h:outputText value="#{setAlignmentSourceBean.sourceSelectedName}" style="font-weight: bold" />
                     </span>
-                </div>
+                </p:column>
+                <p:column colspan="2">
+                    <p:commandButton id="checkAlignementUrls" process="@this" value="Vérifier les URLs"
+                                     update="containerIndex"
+                                     actionListener="#{alignmentBean.checkAlignementForCamparaison()}"
+                                     styleClass="rounded-button ui-button-outlined"
+                                     style="color: #f47b2a; margin-right: 10px" >
+                        <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"
+                                   message="Vous voulez lancer la vérification des alignements enregistrés ?
+                                   ce là risque de prendre du temps selon le nombre des alignements"/>
+
+                        <p:tooltip for="checkAlignementUrls" value="Vérifier la disponibilité des alignements enregistrés" showDelay="1000" position="top"/>
+                    </p:commandButton>
+
+                    <p:confirmPopup global="true">
+                        <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+                        <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirm-popup-yes" />
+                    </p:confirmPopup>
+                </p:column>
             </f:facet>
 
             <p:column headerText="#{langueBean.getMsg('rightbody.concept.alignement.local-label')}"

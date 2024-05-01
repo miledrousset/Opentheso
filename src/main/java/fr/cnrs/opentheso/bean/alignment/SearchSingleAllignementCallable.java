@@ -75,7 +75,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
                 break;
         }
 
-        nodeAlignment.setAlignementLocalValide(isURLAvailable(nodeAlignment.getUri_target()));
+        nodeAlignment.setAlignementLocalValide(true);
 
         return nodeAlignment;
     }
