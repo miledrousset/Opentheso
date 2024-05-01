@@ -42,6 +42,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -255,12 +256,15 @@ public class AlignmentBean implements Serializable {
                     element.setLabelConceptOrig(concept.getValue());
                     element.setIdAlignment(alignement.getId_alignement());
                     element.setTypeAlignement(alignement.getAlignmentLabelType());
-                    element.setLabelConceptCible(alignement.getConcept_target());
                     element.setTargetUri(alignement.getUri_target());
                     element.setThesaurus_target(alignement.getThesaurus_target());
                     element.setAlignement_id_type(alignement.getAlignement_id_type());
                     element.setIdSource(alignement.getId_source());
                     element.setConceptTarget(alignement.getConcept_target());
+
+                    var labelConceptCible = StringUtils.isNotEmpty(alignement.getConcept_target()) ?
+                            alignement.getConcept_target() : concept.getValue();
+                    element.setLabelConceptCible(labelConceptCible);
 
                     var definition = "";
                     if (CollectionUtils.isNotEmpty(definitions)) {
@@ -274,7 +278,7 @@ public class AlignmentBean implements Serializable {
                     }
                     element.setDefinitionLocal(definition);
 
-                    element.setValide(isURLAvailable(alignement.getUri_target()));
+                    element.setValide(true);
                     allignementsList.add(element);
                 }
             }
@@ -286,6 +290,36 @@ public class AlignmentBean implements Serializable {
         }
 
         sortDatatableAlignementByColor();
+    }
+
+    public void checkAlignement() {
+        allignementsList.stream().forEach(alignement -> {
+            alignement.setValide(isURLAvailable(alignement.getTargetUri()));
+        });
+
+        if (allignementsList.stream().filter(alignement -> !alignement.isValide()).findFirst().isPresent()) {
+            showMessage(FacesMessage.SEVERITY_WARN, "Il existe au moins un alignement qui n'est plus disponible !");
+        } else {
+            showMessage(FacesMessage.SEVERITY_INFO, "Tous les alignements sont opérationnelles !");
+        }
+    }
+
+    public void checkAlignementForCamparaison() {
+        if (CollectionUtils.isNotEmpty(allAlignementFound)) {
+
+            var alignmentTemps = allAlignementFound.stream()
+                    .collect(Collectors.toMap(NodeAlignment::getUriTargetLocal, obj -> isURLAvailable(obj.getUriTargetLocal()), (existing, replacement) -> existing));
+
+            allAlignementFound.forEach(element -> element.setAlignementLocalValide(alignmentTemps.get(element.getUriTargetLocal())));
+
+            if (allAlignementFound.stream().filter(alignement -> !alignement.isAlignementLocalValide()).findFirst().isPresent()) {
+                showMessage(FacesMessage.SEVERITY_WARN, "Il existe au moins un alignement qui n'est plus disponible !");
+            } else {
+                showMessage(FacesMessage.SEVERITY_INFO, "Tous les alignements sont opérationnelles !");
+            }
+        } else {
+            showMessage(FacesMessage.SEVERITY_INFO, "Aucun alignement à vérifier !");
+        }
     }
 
     public boolean isURLAvailable(String urlString) {
@@ -356,6 +390,10 @@ public class AlignmentBean implements Serializable {
                 prenom,
                 version,
                 idsAndValues);
+
+        allAlignementFound = allAlignementFound.stream()
+                .sorted(Comparator.comparing(NodeAlignment::getLabelLocal))
+                .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(allAlignementFound)) {
             allAlignementVisible = false;
