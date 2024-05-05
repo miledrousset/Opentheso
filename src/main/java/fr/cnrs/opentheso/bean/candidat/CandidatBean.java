@@ -18,7 +18,6 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
@@ -1099,10 +1098,10 @@ public class CandidatBean implements Serializable {
         imageBean.setCreator(null);
     }
 
-    public void deleteImage(NodeImage image) {
+    public void deleteImage(String imageUri) {
 
         new ImagesHelper().deleteExternalImage(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
-                selectedTheso.getSelectedIdTheso(), image.getUri());
+                selectedTheso.getSelectedIdTheso(), imageUri);
 
         candidatSelected.setImages(new ImagesHelper().getExternalImages(connect.getPoolConnexion(),
                 candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
