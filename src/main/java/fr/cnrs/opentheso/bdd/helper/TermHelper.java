@@ -59,7 +59,7 @@ public class TermHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()){
                 stmt.executeQuery( "SELECT lexical_value, created, modified, source, status, hiden " +
-                        " FROM non_preferred_term, preferred_term \n" +
+                        " FROM non_preferred_term, preferred_term " +
                         " WHERE " +
                         " non_preferred_term.id_term = preferred_term.id_term" +
                         " and" +

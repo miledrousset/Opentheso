@@ -26,6 +26,7 @@
             </div>
             <div class="col-6" style="text-align: right">
                 <p:commandButton value="#{candidatBean.getCreatedByBtnTitle()}"
+                                 rendered="#{!candidatBean.isNewCandidatActivate()}"
                                  icon="fas fa-sync" ajax="true" update="tabViewCandidat"
                                  styleClass="ui-button-success" action="#{candidatBean.saveConcept()}"
                                  actionListener="#{candidatBean.showCandidatSelected(candidatBean.candidatSelected)}"/>
@@ -88,7 +89,7 @@
                         <p:commandButton value="#{langueBean.getMsg('candidat.create')}"
                                          icon="pi pi-check"
                                          styleClass="ui-button-success" action="#{candidatBean.saveConcept()}"
-                                         update="containerIndex " />
+                                         update="tabViewCandidat " />
 
                     </div>
                 </div>
@@ -118,7 +119,7 @@
                                     <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
                                         <p:dataView id="collectionList" var="collection"
                                                     value="#{candidatBean.candidatSelected.collections}"
-                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
+                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}">
                                             <p:dataViewListItem>
                                                 <div class="product-list-item" style="display: flex; justify-content: space-between;">
                                                     <div class="product-list-detail">
@@ -148,14 +149,14 @@
                                 <!-- pour les synonymes -->
                                 <div class="grid ui-fluid ui-inputgroup" style="height: 35px; margin-bottom: 3px">
                                     <p:inputText id="enployerPourId" value="#{candidatBean.employePour}" />
-                                    <p:commandButton icon="pi pi-check" styleClass="ui-button-success" style="width: 30px"
+                                    <p:commandButton icon="pi pi-check" style="background-color: #888; border: none; color: #FFF;height: 35px"
                                                      action="#{candidatBean.addSynonyme()}" />
                                 </div>
 
                                 <div class="card mb-4 py-3 border-left-success">
                                     <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
                                         <p:dataView var="synonyme" value="#{candidatBean.candidatSelected.employePourList}"
-                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
+                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}">
                                             <p:dataViewListItem>
                                                 <div class="product-list-item" style="display: flex; justify-content: space-between;">
                                                     <div class="product-list-detail">
@@ -186,10 +187,12 @@
 
                                 <!-- pour les relations BT -->
                                 <p:autoComplete id="autoBroaderLink" value="#{candidatBean.termesGeneriqueTmp}"
-                                                multiple="true" var="values" forceSelection="true" style="width: 100%;"
+                                                multiple="true" var="values" forceSelection="true" style="width: 100%; margin-bottom: 3px"
                                                 completeMethod="#{candidatBean.searchTermeGenerique}" minQueryLength="1" scrollHeight="300"
                                                 itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue">
-                                    <p:ajax event="itemSelect" listener="#{candidatBean.onTraductionGenericSelect}" update="messageIndex"/>
+
+                                    <p:ajax event="itemSelect" listener="#{candidatBean.addTraduction}" update="messageIndex"/>
+
                                     <p:column style="font-size: 12px;">
                                         <h:outputText style="vertical-align: middle; margin-left: .5rem" title="#{values.id}" value="#{values.value}"/>
                                     </p:column>
@@ -198,7 +201,7 @@
                                 <div class="card mb-4 py-3 border-left-success">
                                     <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
                                         <p:dataView var="terme" value="#{candidatBean.candidatSelected.termesGenerique}"
-                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}...">
+                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}">
                                             <p:dataViewListItem>
                                                 <div class="product-list-item" style="display: flex; justify-content: space-between;">
                                                     <div class="product-list-detail">
@@ -225,11 +228,12 @@
                                 <!-- pour les relations RT -->
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.associeted_terms')}" style="font-size: 14px;" /></b>
 
-                                <p:autoComplete id="autoRelatedLink" value="#{candidatBean.termesAssociesTmp}"
+                                <p:autoComplete value="#{candidatBean.termesAssociesTmp}"
                                                 multiple="true" var="values" forceSelection="true" style="width: 100%"
                                                 completeMethod="#{candidatBean.searchTermeAssocie}" minQueryLength="1" scrollHeight="300"
                                                 itemLabel="#{values.value}" itemValue="#{values}" converter="searchConverterIdValue" >
-                                    <p:ajax event="itemSelect" listener="#{candidatBean.onTraductionAssocieSelect}" update="messageIndex"/>
+
+                                    <p:ajax event="itemSelect" listener="#{candidatBean.addTraductionAssocieSelect}" update="messageIndex"/>
                                     <p:column  style="font-size: 12px;">
                                         <h:outputText title="#{values.id}" value="#{values.value}" />
                                     </p:column>
@@ -238,7 +242,7 @@
                                 <div class="card mb-4 py-3 border-left-success">
                                     <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
                                         <p:dataView var="terme" value="#{candidatBean.candidatSelected.termesAssocies}"
-                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')} ...">
+                                                    emptyMessage="#{langueBean.getMsg('rightbody.concept.no_value')}">
                                             <p:dataViewListItem>
                                                 <div class="product-list-item" style="display: flex; justify-content: space-between;">
                                                     <div class="product-list-detail">
@@ -268,12 +272,12 @@
                     <!-- ligne PrefLabel -->
                     <div class="row" style="margin-bottom: 10px">
                         <div class="col-12">
-                            <b>
-                                <p:commandLink value="#{langueBean.getMsg('rightbody.concept.add_note')}" actionListener="#{noteBeanCandidat.reset()}"
-                                               oncomplete="PF('newNote').show();" update="idNewNote" ajax="true" process="@this">
-                                    <a class="fas fa-plus-circle" style="color: #f47b2a"  />
-                                </p:commandLink>
-                            </b>
+                            <p:commandButton value="#{langueBean.getMsg('rightbody.concept.add_note')}"
+                                             actionListener="#{noteBeanCandidat.reset()}"
+                                             oncomplete="PF('newNote').show();"
+                                             update="idNewNote"
+                                             styleClass="rounded-button ui-button-outlined"
+                                             style="color: #f47b2a;" />
                         </div>
                     </div>
 
@@ -320,7 +324,7 @@
                                     <h:outputText value="#{candidatBean.getUserName(note.idUser)}" escape="false" style="font-size: 14px;"/>
                                 </div>
                                 <div class="col-2" >
-                                    <h:outputText value="#{note.notetypecode}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText value="#{candidatBean.getNoteType(note.notetypecode)}" escape="false" style="font-size: 14px;"/>
                                 </div>
                                 <div class="col-2" >
                                     <img src="#{conceptView.getFlagFromCodeLang(note.lang)}" width="25" height="20"/>
@@ -356,17 +360,18 @@
                 </div>
             </div>
 
+            <!-- gestion des traductions -->
             <div class="card mb-4 py-3 border-left-success" style="margin-top: 20px;">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
                     <!-- gestion des traductions -->
                     <div class="row">
                         <div class="col-12">
-                            <b>
-                                <p:commandLink value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" update="idNewTraduction newTraductionForm"
-                                               oncomplete="PF('newTraduction').show();" actionListener="#{traductionService.init()}">
-                                    <a class="fas fa-plus-circle" style="color: #f47b2a" />
-                                </p:commandLink>
-                            </b>
+                            <p:commandButton value="#{langueBean.getMsg('rightbody.concept.add_traduction')}"
+                                             update="idNewTraduction newTraductionForm"
+                                             oncomplete="PF('newTraduction').show();"
+                                             actionListener="#{traductionService.init()}"
+                                             styleClass="rounded-button ui-button-outlined"
+                                             style="color: #f47b2a;" />
                         </div>
                     </div>
 
@@ -380,11 +385,11 @@
 
                     <h:panelGroup rendered="#{candidatBean.candidatSelected.traductions.size() > 0}" style="margin-top: 10px">
                         <div class="row" style="font-size: 12px; color: #601e18; margin-bottom: 5px">
-                            <div class="col-2" style="margin-top: -2px;">
-                                <b><h:outputText value="#{langueBean.getMsg('candidat.language')}"/></b>
-                            </div>
                             <div class="col-6">
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.traduction')}"/></b>
+                            </div>
+                            <div class="col-2" style="margin-top: -2px;">
+                                <b><h:outputText value="#{langueBean.getMsg('candidat.language')}"/></b>
                             </div>
                             <div class="col-2">
                                 <b><h:outputText value="#{langueBean.getMsg('candidat.edit')}"/></b>
@@ -397,13 +402,12 @@
                         <ui:repeat id="listTraduction" var="traduction" value="#{candidatBean.candidatSelected.traductions}">
                             <div class="row" style="background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.traductions.indexOf(traduction))};
                              padding-top: 5px" >
-
+                                <div class="col-6" style="margin-top: -2px;">
+                                    <h:outputText value="#{traduction.traduction}" style="font-size: 14px;"/>
+                                </div>
                                 <div class="col-2" style="margin-top: -2px;">
                                     <img src="#{conceptView.getDrapeauImgLocal(traduction.codePays)}" width="25" height="20"/>
                                     <h:outputLabel value=" (#{traduction.langue})" style="font-size: 14px; margin-left: 10px;" />
-                                </div>
-                                <div class="col-6" style="margin-top: -2px;">
-                                    <h:outputText value="#{traduction.traduction}" style="font-size: 14px;"/>
                                 </div>
                                 <div class="col-2" style="margin-top: -5px">
                                     <p:commandButton icon="fas fa-pen"
@@ -427,17 +431,25 @@
                 </div>
             </div>
 
+            <!-- gestion des alignments -->
             <div class="card mb-4 py-3 border-left-success" style="margin-top: 20px;">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
-                    <!-- gestion des traductions -->
                     <div class="row">
-                        <div class="col-12">
-                            <b>
-                                <p:commandLink value="#{langueBean.getMsg('alignment.addNewAlignment')}" update="idAddManualAlignment"
-                                               oncomplete="PF('addManualAlignment').show();" actionListener="#{alignmentManualBean.reset()}">
-                                    <a class="fas fa-plus-circle" style="color: #f47b2a" />
-                                </p:commandLink>
-                            </b>
+                        <div class="col-12" style="padding: 5px">
+                            <p:commandButton value="#{langueBean.getMsg('alignment.addNewAlignment')}"
+                                             update="idAddManualAlignment" process="@this"
+                                             oncomplete="PF('addManualAlignment').show();"
+                                             actionListener="#{alignmentManualBean.reset()}"
+                                             styleClass="rounded-button ui-button-outlined"
+                                             style="color: #f47b2a;" />
+
+                            <p:commandButton value="#{langueBean.getMsg('alignment.addNewAutoAlignment')}"
+                                             update="tabViewCandidat" process="@this"
+                                             actionListener="#{candidatBean.openAddAlignementWindow()}"
+                                             styleClass="rounded-button ui-button-outlined"
+                                             style="color: #f47b2a; margin-left: 10px" >
+                                <p:resetInput target="searchAlignementForm"/>
+                            </p:commandButton>
                         </div>
                     </div>
 
@@ -479,14 +491,14 @@
                                                      actionListener="#{candidatBean.setAlignementSelected(alignment)}"
                                                      oncomplete="PF('editManualAlignment').show();"
                                                      process="@this"
-                                                     update="tabViewCandidat:containerIndexCandidat:idEditManualAlignment"
+                                                     update="tabViewCandidat"
                                                      styleClass="rounded-button ui-button-outlined" />
                                 </div>
 
                                 <div class="col-2" style="margin-top: -5px">
                                     <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
                                                      actionListener="#{candidatBean.setAlignementSelected(alignment)}"
-                                                     update="tabViewCandidat:containerIndexCandidat:idConfirmDeleteAlignement"
+                                                     update="tabViewCandidat"
                                                      oncomplete="PF('confirmDeleteAlignement').show();" />
                                 </div>
                             </div>
@@ -495,12 +507,96 @@
                 </div>
             </div>
 
+            <!-- gestion des images -->
+            <div class="card mb-4 py-3 border-left-success" style="margin-top: 20px;">
+                <div class="list-group" style="margin-top: -10px; margin-bottom: -10px; margin-left: 12px; margin-right: 12px">
+                    <div class="row">
+                        <div class="col-12">
+                            <p:commandButton value="#{langueBean.getMsg('rightbody.concept.add_image')}"
+                                             actionListener="#{candidatBean.initImageDialog()}" oncomplete="PF('addImage').show();"
+                                             styleClass="rounded-button ui-button-outlined" update="idAddImage"
+                                             style="color: #f47b2a;" />
+                        </div>
+                    </div>
+
+                    <h:panelGroup rendered="#{candidatBean.candidatSelected.images.size() == 0}" style="margin-top: 10px">
+                        <div class="row">
+                            <div class="col-12">
+                                <h:outputText  value="#{langueBean.getMsg('rightbody.concept.no_value')} ..." style="color: grey; font-style: italic " />
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{candidatBean.candidatSelected.images.size() > 0}" style="margin-top: 10px">
+                        <div class="row">
+                            <div class="col-12">
+                                <p:remoteCommand name="rc" actionListener="#{galleriaView.changeActiveIndex}"
+                                                 update="tabViewCandidat" oncomplete="PF('galleria').show()" />
+                                <p:galleria widgetVar="galleria"
+                                            value="#{candidatBean.candidatSelected.images}" var="photo" numVisible="5"
+                                            circular="true"
+                                            fullScreen="true"
+                                            showCaption="true"
+                                            showItemNavigators="true"
+                                            activeIndex="#{galleriaView.activeIndex}"
+                                            responsiveOptions="#{galleriaView.responsiveOptions1}"
+                                            style="max-width: 600px;">
+
+                                    <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}"  style="width: 100%; display: block;" />
+                                    <f:facet name="caption">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h4 class="mb-2"><a href="#{photo.uri}" target="_blank" style="color:#F7A269;">#{photo.imageName}</a></h4>
+                                            </div>
+                                            <div class="col-4" style="text-align: right">
+                                                <p:commandButton value="Supprimer" process="@this" ajax="true"
+                                                                 update="tabViewCandidat"
+                                                                 action="#{candidatBean.deleteImage(photo)}"
+                                                                 styleClass="rounded-button ui-button-outlined"
+                                                                 style="color: #f47b2a" >
+                                                    <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"
+                                                               message="Vous voulez lancer la vérification des alignements enregistrés ?"/>
+                                                </p:commandButton>
+
+                                                <p:confirmPopup global="true" showEffect="fade" hideEffect="fade" responsive="true">
+                                                    <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+                                                    <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirm-popup-yes" />
+                                                </p:confirmPopup>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <i>
+                                                    <p:link href="#{photo.uri}" value="#{photo.uri} (@#{photo.copyRight} _ #{photo.creator})"
+                                                            target="_blank" style="color: white"/>
+                                                </i>
+                                            </div>
+                                        </div>
+                                    </f:facet>
+                                </p:galleria>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <ui:repeat value="#{candidatBean.candidatSelected.images}" var="photo" varStatus="status">
+                                            <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}" style="cursor: pointer; max-height: 200px; max-width: 500px; margin-left: 10px;"
+                                                            onclick="rc([{'name': 'index', 'value': #{status.index}}])" title="#{photo.uri} (@#{photo.copyRight} _ #{photo.creator})"/>
+                                            <f:facet name="caption">
+                                                <h4 class="mb-2">#{photo.imageName}</h4>
+                                                <i>@#{photo.copyRight} _ #{photo.creator}</i>
+                                            </f:facet>
+
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </div>
+
             <ui:include src="../candidat/candidatDiscussion.xhtml" />
         </h:panelGroup>
     </div>
-
-
-
 
 
     <p:dialog id="idEditManualAlignment" header="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}"
@@ -655,5 +751,369 @@
             </div>
         </h:form>
     </p:dialog>
-</ui:fragment>
 
+    <p:dialog id="idAddImage" header="#{langueBean.getMsg('rightbody.conceptdialog.add_image')}" widgetVar="addImage"
+              width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <h:form>
+            <p:defaultCommand target="addImageBtn" />
+
+            <div class="row" style="margin-top: 10px;font-size: 14px;">
+                <div class="col-3" style="text-align: right; ">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')}" />
+                </div>
+                <div class="col-9" style="text-align: left">
+                    <h:outputText value="#{conceptBean.candidatSelected.nomPref}" style="color: #C63632;" />
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 10px; text-align: right">
+                <div class="col-3" >
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.uri_image')} *" />
+                </div>
+                <div class="col-9">
+                    <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_uri')} ..."
+                                 value="#{imageBean.uri}" style="width: 100%;"/>
+                </div>
+            </div>
+
+            <!-- Name -->
+            <div class="row" style="margin-top: 10px; text-align: right">
+                <div class="col-3" >
+                    <h:outputText value="#{langueBean.getMsg('statistique.label')}" />
+                </div>
+                <div class="col-9">
+                    <p:inputText placeholder="..."
+                                 value="#{imageBean.name}" style="width: 100%;"/>
+                </div>
+            </div>
+
+            <!-- creator -->
+            <div class="row" style="margin-top: 10px; text-align: right">
+                <div class="col-3" >
+                    <h:outputText value="#{langueBean.getMsg('dublincore.creator')}" />
+                </div>
+                <div class="col-9">
+                    <p:inputText placeholder="..."
+                                 value="#{imageBean.creator}" style="width: 100%;"/>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 10px; text-align: right">
+                <div class="col-3" >
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.copyright')}" />
+                </div>
+                <div class="col-9">
+                    <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.copyright')} ..."
+                                 value="#{imageBean.copyright}" style="width: 100%;"/>
+                </div>
+            </div>
+
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
+                                 icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                 actionListener="PF('addImage').hide();" update="tabViewCandidat"/>
+
+                <p:commandButton id="addImageBtn" value="#{langueBean.getMsg('btnValidate')}"
+                                 update="tabViewCandidat messageIndex"
+                                 oncomplete="PF('addImage').hide();"
+                                 icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
+                                 actionListener="#{candidatBean.addNewImage(currentUser.nodeUser.idUser)}" />
+            </div>
+        </h:form>
+    </p:dialog>
+
+    <p:dialog id="searchAlignementID" widgetVar="searchAlignement" width="850" minHeight="400" showEffect="fade" modal="true"
+              header="#{langueBean.getMsg('rightbody.conceptdialog.alignment_with_external_thesauri')}"
+              resizable="false" position="top" style="margin-top: 30px" >
+        <h:form id="searchAlignementForm">
+            <p:outputPanel class="ui-fluid">
+
+                <p:defaultCommand target="searchAlignmentBtn" />
+                <div class="row" style="margin-top: 5px; margin-bottom: -10px;">
+                    <h:panelGroup rendered="#{!alignmentBean.isNameAlignment}">
+                        <div class="col-6" style="margin-top: 3px">
+                            <p:inputText value="#{alignmentBean.conceptValueForAlignment}" style="height: 35px; font-size: 14px;"/>
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- nom et prénom pour IdRef -->
+                    <h:panelGroup rendered="#{alignmentBean.isNameAlignment}" >
+                        <div class="col-3" style="margin-top: 3px">
+                            <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.name')}"
+                                         value="#{alignmentBean.nom}" style="height: 35px; font-size: 14px;"/>
+                        </div>
+                        <div class="col-3">
+                            <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.first_name')}"
+                                         value="#{alignmentBean.prenom}" style="height: 35px; font-size: 14px;"/>
+                        </div>
+                    </h:panelGroup>
+
+                    <div class="col-5" style="margin-top: 3px">
+                        <p:selectOneMenu value="#{alignmentBean.selectedAlignement}" style="width: 100%; background: white; border-color: #43B572"
+                                         title="#{alignmentBean.alertWikidata}">
+                            <f:selectItems value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>
+                            <p:ajax event="change" listener="#{alignmentBean.actionChoix()}" update="searchAlignementForm messageIndex"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="col-1">
+                        <p:commandButton id="searchAlignmentBtn" icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
+                                         ajax="true" process="@form"
+                                         actionListener="#{alignmentBean.searchAlignments(
+                                                           selectedTheso.selectedIdTheso,
+                                                           alignmentBean.idConceptSelectedForAlignment,
+                                                           alignmentBean.conceptValueForAlignment,
+                                                           selectedTheso.currentLang)}"
+                                         style="color: #f47b2a; margin-left: 5px"
+                                         update="searchAlignementForm messageIndex" />
+                    </div>
+                </div>
+
+                <p:separator/>
+
+                <h:panelGroup id="columnRightPanelResult" rendered="#{alignmentBean.isViewResult}">
+                    <!-- Ajout d'alignement manuel -->
+                    <p:panel rendered="#{(alignmentBean.listAlignValues.size() == 0)}" style="border: solid 1px; padding: 20px">
+                        <div class="row">
+                            <div class="col-12" style="color: #000;">
+                                <strong style="color: red"> #{langueBean.getMsg('search.noResult')}! </strong>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 5px">
+                            <div class="col-12">
+                                <h:outputText value="#{langueBean.getMsg('alignment.addManualMessage1')}: " style="color: #000;"/>
+                                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #43B572;"/>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 5px">
+                            <div class="col-6">
+                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')}" style="color: #000;"/>
+                            </div>
+                            <div class="col-6">
+                                <p:selectOneMenu value="#{alignmentBean.selectedAlignementType}"
+                                                 title="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
+                                                 style="background: white; border-color: #43B572; font-size: 12px; height: 32px; margin-top: -5px;">
+                                    <f:selectItems value="#{alignmentBean.alignmentTypes}" var="type" itemLabel="#{type.value}" itemValue="#{type.key}" />
+                                </p:selectOneMenu>
+
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 5px">
+                            <div class="col-6">
+                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')}" style="color: #000;"/>
+                            </div>
+                            <div class="col-6">
+                                <p:inputText value="#{alignmentBean.manualAlignmentUri}"/>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 5px">
+                            <div class="col-6">
+                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}"  style="color: #000;"/>
+                            </div>
+                            <div class="col-6">
+                                <p:inputText value="#{alignmentBean.selectedAlignement}" />
+                            </div>
+                        </div>
+                        <p:spacer height="20px" />
+                        <div class="row" style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
+                            <div class="col-3 offset-6">
+                                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
+                                                 style="margin-right: 10px"
+                                                 process="@this" ajax="true" update="tabViewCandidat:containerIndexCandidat:searchAlignementForm"
+                                                 oncomplete="PF('searchAlignement').hide();"
+                                                 actionListener="#{alignmentBean.cancelManualAlignment()}"/>
+                            </div>
+                            <div class="col-3">
+                                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
+                                                 ajax="true" process="@form"
+                                                 update="tabViewCandidat:containerIndexCandidat:searchAlignementForm messageIndex"
+                                                 action="#{alignmentBean.addManualAlignement(selectedTheso.selectedIdTheso,
+                                                           alignmentBean.idConceptSelectedForAlignment,
+                                                           currentUser.nodeUser.idUser)}"
+                                                 oncomplete="PF('searchAlignement').hide();"/>
+                            </div>
+                        </div>
+                    </p:panel>
+                    <!-- Fin Ajout d'alignement manuel -->
+
+                    <h:panelGroup id="alignementChoiceConfStep" rendered="#{alignmentBean.alignementSources == null || alignmentBean.alignementSources.size() == 0}">
+                        <div class="row">
+                            <div class="col-12" style="text-align: center">
+                                <p:outputLabel value="!! #{langueBean.getMsg('alig.NeedToParameter')}" style="color: #D32F2F; font-size: 16px; font-weight: bold"/>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+
+                    <p:panel style="max-height: 600px; color: #000">
+                        <ui:repeat rendered="#{alignmentBean.listAlignValues != null}" value="#{alignmentBean.listAlignValues}" var='nodeAlign'>
+                            <div class="row">
+                                <div class="col-11">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h:outputText value="#{nodeAlign.concept_target}" style="font-weight: bold; font-size: 12px"/>
+                                        </div>
+                                    </div>
+                                    <h:panelGroup rendered="#{nodeAlign.concept_target_alt.trim() != null and nodeAlign.concept_target_alt.trim() != ''}">
+                                        <div class="row">
+                                            <div class="col-12" >
+                                                <h:outputText value="#{langueBean.getMsg('indexview.synonym')} : #{nodeAlign.concept_target_alt}&lt;br/&gt;" escape="false"  style="font-size: 12px"/>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{nodeAlign.def_target.trim() != null and nodeAlign.def_target.trim() != ''}">
+                                        <div class="col-12">
+                                            <h:outputText value="#{nodeAlign.def_target}&lt;br/&gt;" escape="false" style="font-size: 12px"/>
+                                        </div>
+                                    </h:panelGroup>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h:outputLink value="#{nodeAlign.uri_target}" target="_blank" >
+                                                <h:outputText value="#{nodeAlign.uri_target}" style="font-size: 12px"/>
+                                            </h:outputLink>
+                                            <br/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <p:commandLink actionListener="#{alignmentBean.getUriAndOptions(nodeAlign, selectedTheso.selectedIdTheso)}"
+                                                   ajax="true" process="@this"
+                                                   update="tabViewCandidat:containerIndexCandidat:searchAlignementForm">
+                                        <i class="pi pi-cloud-download" style="color: #f47b2a; font-size: 1.5rem; margin-top: 20px;"/>
+                                    </p:commandLink>
+                                </div>
+                            </div>
+                            <p:separator styleClass="separator" style="margin-top: 2px"/>
+                        </ui:repeat>
+                    </p:panel>
+                </h:panelGroup>
+
+                <!-- panel de validation d'un alignement avec les options-->
+                <h:panelGroup rendered="#{alignmentBean.isViewSelection}">
+
+                    <div class="row" style="margin-top: -5px; margin-bottom: -10px;">
+                        <div class="col-3">
+                            <p:outputLabel value="#{alignmentBean.conceptValueForAlignment} " style="color: #000; font-size: 14px; padding-left: 5px;"/>
+                        </div>
+                        <div class="col-3">
+                            <p:selectOneMenu value="#{alignmentBean.selectedAlignementType}"
+                                             title="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
+                                             style="background: white; border-color: #43B572; font-size: 12px; height: 32px; margin-top: -5px;">
+                                <f:selectItems value="#{alignmentBean.alignmentTypes}" var="type" itemLabel="#{type.value}" itemValue="#{type.key}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="col-6">
+                            <h:outputText value=" #{alignmentBean.selectedNodeAlignment.concept_target} (#{alignmentBean.selectedAlignement})"
+                                          title="#{alignmentBean.selectedNodeAlignment.uri_target}" style="color: #000; font-size: 14px;"/>
+                        </div>
+                    </div>
+
+                    <p:separator/>
+
+                    <p:scrollPanel style="width:100%; height:400px">
+                        <!-- langues externes -->
+                        <h:panelGroup rendered="#{(alignmentBean.traductionsOfAlignment != null) and (alignmentBean.traductionsOfAlignment.size() != 0)}">
+                            <p:dataTable var="externalTraductions" value="#{alignmentBean.traductionsOfAlignment}"
+                                         resizableColumns="true" showGridlines="true" size="small" scrollable="true" scrollHeight="350" style="line-height: 12px;" lazy="false">
+
+                                <f:facet name="header">
+                                    <div class="p-d-flex p-jc-between p-ai-center">
+                                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.translations_of')} #{alignmentBean.selectedAlignement}" style="font-size: 14px;"/>
+                                    </div>
+                                </f:facet>
+
+                                <p:column width="7%">
+                                    <p:selectBooleanCheckbox value="#{externalTraductions.selected}" style="font-size: 14px;"/>
+                                </p:column>
+
+                                <p:column headerText="ID lang" width="10%">
+                                    <p:outputLabel value="#{externalTraductions.idLang}" style="font-size: 14px;" />
+                                </p:column>
+
+                                <p:column headerText="Nom" width="30%">
+                                    <h:outputText value="#{externalTraductions.localValue}" style="font-size: 14px;"/>
+                                </p:column>
+
+                                <p:column headerText="Nom complet" width="53%">
+                                    <h:outputText value="#{externalTraductions.gettedValue}" style="font-size: 14px;"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+
+                        <!-- Notes externes -->
+                        <h:panelGroup rendered="#{(alignmentBean.descriptionsOfAlignment != null) and (alignmentBean.descriptionsOfAlignment.size() != 0)}"
+                                      style="margin-top: 10px">
+                            <p:dataTable var="notes" value="#{alignmentBean.descriptionsOfAlignment}"
+                                         resizableColumns="true" showGridlines="true" size="small" scrollable="true" scrollHeight="350" style="line-height: 12px;margin-top: 10px;" lazy="false">
+
+                                <f:facet name="header">
+                                    <div class="p-d-flex p-jc-between p-ai-center">
+                                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.definition_of')} #{alignmentBean.selectedAlignement}" style="font-size: 14px;"/>
+                                    </div>
+                                </f:facet>
+
+                                <p:column width="5%">
+                                    <p:selectBooleanCheckbox value="#{notes.selected}" style="font-size: 14px;"/>
+                                </p:column>
+
+                                <p:column headerText="ID Lang" width="10%">
+                                    <p:outputLabel value="#{notes.idLang}" style="font-size: 14px;"/>
+                                </p:column>
+
+                                <p:column headerText="Nom" width="85%">
+                                    <h:outputText value="#{notes.gettedValue}" style="font-size: 14px;"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+
+                        <!-- images externes -->
+                        <h:panelGroup rendered="#{(alignmentBean.imagesOfAlignment != null) and (alignmentBean.imagesOfAlignment.size() != 0)}">
+                            <p:dataTable var="images" value="#{alignmentBean.imagesOfAlignment}"
+                                         resizableColumns="true" showGridlines="true" size="small" scrollable="true" scrollHeight="350" style="line-height: 12px; margin-top: 10px;" lazy="false">
+
+                                <f:facet name="header">
+                                    <div class="p-d-flex p-jc-between p-ai-center">
+                                        <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.images_of')} #{alignmentBean.selectedAlignement}"  style="font-size: 14px;"/>
+                                    </div>
+                                </f:facet>
+
+                                <p:column width="5%">
+                                    <p:selectBooleanCheckbox value="#{images.selected}" style="font-size: 14px;"/>
+                                </p:column>
+
+                                <p:column headerText="Nom" width="30%">
+                                    <p:outputLabel value="#{images.gettedValue}" style="font-size: 14px;"/>
+                                </p:column>
+
+                                <p:column headerText="Images" width="65%">
+                                    <p:graphicImage value="#{images.gettedValue}" style="height: 50px;font-size: 14px;"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </p:scrollPanel>
+
+                    <div class="row" style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                        <div class="col-3 offset-6">
+                            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
+                                             style="margin-right: 10px"
+                                             actionListener="PF('searchAlignement').hide();" update="tabViewCandidat"/>
+                        </div>
+                        <div class="col-3">
+                            <p:commandButton id="addTraductionBtn" value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
+                                             update="tabViewCandidat"
+                                             oncomplete="PF('searchAlignement').hide();"
+                                             ajax="true" process="@form"
+                                             actionListener="#{candidatBean.searchAlignementAuto()}"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </p:outputPanel>
+        </h:form>
+    </p:dialog>
+
+</ui:fragment>
