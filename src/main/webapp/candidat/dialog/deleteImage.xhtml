@@ -21,21 +21,21 @@
                         </div>
                     </f:facet>
 
-                    <p:column width="70%" headerText="URI">
+                    <p:column width="70%" headerText="#{langueBean.getMsg('candidat.url')}">
                         <h:outputText value="#{imageToEdit.uri}" style="color: #43B572; font-size: 14px;" />
                     </p:column>
 
-                    <p:column width="20%" headerText="Image">
+                    <p:column width="20%" headerText="#{langueBean.getMsg('rightbody.concept.image')}">
                         <p:graphicImage value="#{imageToEdit.uri}" style="width: 80px; height: 40px"/>
                     </p:column>
 
-                    <p:column width="10%" headerText="Action" >
+                    <p:column width="10%" headerText="#{langueBean.getMsg('profile.action')}" >
                         <p:commandLink title="#{langueBean.getMsg('candidat.remove')}" ajax="true" process="@form"
                                        action="#{candidatBean.deleteImage(imageToEdit.uri)}"
                                        update="tabViewCandidat messageIndex">
                             <i class="pi pi-trash" style="color: #C63632; font-size: 1.1rem; padding-top: 4px;"/>
                             <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"
-                                       message="Vous voulez vraiment supprimer cette image ?"/>
+                                       message="#{langueBean.getMsg('candidat.photo.delete_conform')}"/>
                         </p:commandLink>
 
                         <p:confirmPopup global="true" showEffect="fade" hideEffect="fade" responsive="true">

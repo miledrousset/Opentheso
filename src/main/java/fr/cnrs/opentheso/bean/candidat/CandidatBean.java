@@ -168,9 +168,6 @@ public class CandidatBean implements Serializable {
         exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
         selectedExportFormat = "skos";
 
-        allCollections = new GroupHelper().searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang(), "%");
-
         try {
             languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                     connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
@@ -601,14 +598,10 @@ public class CandidatBean implements Serializable {
 
     public List<NodeIdValue> searchCollection(String enteredValue) {
 
-        if (CollectionUtils.isNotEmpty(allCollections)) {
-            if ("%".equals(enteredValue)) {
-                return createCollectionsFiltred(allCollections, candidatSelected.getCollections());
-            } else {
-                return createCollectionsFiltred(allCollections.stream()
-                        .filter(element -> element.getValue().contains(enteredValue))
-                        .collect(Collectors.toList()), candidatSelected.getCollections());
-            }
+        if (StringUtils.isNotEmpty(enteredValue)) {
+            allCollections = new GroupHelper().searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(), enteredValue);
+            return createCollectionsFiltred(allCollections, candidatSelected.getCollections());
         } else {
             return Collections.emptyList();
         }
@@ -616,9 +609,11 @@ public class CandidatBean implements Serializable {
 
     private List<NodeIdValue> createCollectionsFiltred(List<NodeIdValue> collections, List<NodeIdValue> collectionsSelected) {
         List<NodeIdValue> resultat = new ArrayList<>();
-        for (NodeIdValue element : collections) {
-            if (!isExist(collectionsSelected, element)) {
-                resultat.add(element);
+        if (CollectionUtils.isNotEmpty(collections)) {
+            for (NodeIdValue element : collections) {
+                if (!isExist(collectionsSelected, element)) {
+                    resultat.add(element);
+                }
             }
         }
         return resultat;

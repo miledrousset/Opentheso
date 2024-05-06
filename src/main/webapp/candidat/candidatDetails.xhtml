@@ -41,7 +41,7 @@
                     <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
                         <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate() }"
                                      value="#{candidatBean.candidatSelected.nomPref}"/>
-                        <p:tooltip for="inputTextCandidate" value="Ne peut être modifié que par le créateur"
+                        <p:tooltip for="inputTextCandidate" value="#{langueBean.getMsg('candidat.term.no_edit')}"
                                    showDelay="1000" position="top"/>
                     </h:panelGroup>
 
@@ -126,7 +126,7 @@
                                                         <h:outputText value="#{collection.value}" style="font-weight: bold"/>
                                                     </div>
                                                     <div class="product-list-detail">
-                                                        <p:commandLink title="Supprimer la collection : #{collection.value}"
+                                                        <p:commandLink title="#{langueBean.getMsg('candidat.delete_collection')} : #{collection.value}"
                                                                        action="#{candidatBean.removeCollection(collection)}"
                                                                        update="@this" ajax="true" process="@this">
                                                             <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
@@ -163,7 +163,7 @@
                                                         <h:outputText value="#{synonyme}" style="font-weight: bold"/>
                                                     </div>
                                                     <div class="product-list-detail">
-                                                        <p:commandLink title="Supprimer le synonyme : #{synonyme}"
+                                                        <p:commandLink title="#{langueBean.getMsg('candidat.delete_synonym')} : #{synonyme}"
                                                                        process="@this" ajax="true" update="tabViewCandidat:containerIndexCandidat:candidatSynonym"
                                                                        action="#{candidatBean.removeSynonyme(synonyme)}">
                                                             <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
@@ -208,7 +208,7 @@
                                                         <h:outputText value="#{terme.value}" style="font-weight: bold"/>
                                                     </div>
                                                     <div class="product-list-detail">
-                                                        <p:commandLink title="Supprimer le terme : #{terme.value}"
+                                                        <p:commandLink title="#{langueBean.getMsg('candidat.delete_term')} : #{terme.value}"
                                                                        action="#{candidatBean.removeGenericTerm(terme)}"
                                                                        update="tabViewCandidat:containerIndexCandidat:candidatBT" ajax="true" process="@this">
                                                             <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
@@ -249,7 +249,7 @@
                                                         <h:outputText value="#{terme.value}" style="font-weight: bold"/>
                                                     </div>
                                                     <div class="product-list-detail">
-                                                        <p:commandLink title="Supprimer le terme : #{terme.value}"
+                                                        <p:commandLink title="#{langueBean.getMsg('candidat.delete_term')} : #{terme.value}"
                                                                        action="#{candidatBean.removeAssociesTerm(terme)}"
                                                                        update="tabViewCandidat:containerIndexCandidat:candidatRT" ajax="true" process="@this">
                                                             <h:outputText styleClass="ui-icon pi pi-times" style="margin:0 auto;"/>
@@ -285,7 +285,7 @@
                     <h:panelGroup rendered="#{candidatBean.candidatSelected.nodeNotes == null || candidatBean.candidatSelected.nodeNotes.size() == 0}">
                         <div class="row">
                             <div class="col-12">
-                                <h:outputText value="Aucune note pour le moment ..." style="color: grey; font-style: italic"/>
+                                <h:outputText value="#{langueBean.getMsg('candidat.note.no_data')}..." style="color: grey; font-style: italic"/>
                             </div>
                         </div>
                     </h:panelGroup>
@@ -470,13 +470,13 @@
                                 <b><h:outputText value="Type"/></b>
                             </div>
                             <div class="col-5">
-                                <b><h:outputText value="URL"/></b>
+                                <b><h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}"/></b>
                             </div>
                             <div class="col-2">
-                                <b><h:outputText value="Modifier"/></b>
+                                <b><h:outputText value="#{langueBean.getMsg('candidat.edit')}"/></b>
                             </div>
                             <div class="col-2">
-                                <b><h:outputText value="Supprimer"/></b>
+                                <b><h:outputText value="#{langueBean.getMsg('candidat.remove')}"/></b>
                             </div>
                         </div>
 
@@ -522,7 +522,7 @@
                                              styleClass="rounded-button ui-button-outlined" update="idAddImage"
                                              style="color: #f47b2a;" />
 
-                            <p:commandButton value="Supprimer une image" ajax="true" process="@this"
+                            <p:commandButton value="#{langueBean.getMsg('candidat.photo.delete')}" ajax="true" process="@this"
                                              oncomplete="PF('deleteImage').show();"
                                              styleClass="rounded-button ui-button-outlined" update="tabViewCandidat"
                                              style="color: #f47b2a; margin-left: 10px" />
@@ -532,7 +532,7 @@
                     <h:panelGroup rendered="#{candidatBean.candidatSelected.images.size() == 0}" style="margin-top: 10px">
                         <div class="row">
                             <div class="col-12">
-                                <h:outputText  value="#{langueBean.getMsg('rightbody.concept.no_value')} ..." style="color: grey; font-style: italic " />
+                                <h:outputText  value="#{langueBean.getMsg('rightbody.concept.no_value')}..." style="color: grey; font-style: italic " />
                             </div>
                         </div>
                     </h:panelGroup>
@@ -565,13 +565,13 @@
                                                     </h4>
                                                 </div>
                                                 <div class="col-2" style="text-align: right">
-                                                    <p:commandButton value="Supprimer" process="@this" ajax="true"
+                                                    <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" process="@this" ajax="true"
                                                                      update="tabViewCandidat"
                                                                      action="#{candidatBean.deleteImage(photo.uri)}"
                                                                      styleClass="rounded-button ui-button-outlined"
                                                                      style="color: #f47b2a;">
                                                         <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"
-                                                                   message="Vous voulez vraiment supprimer cette image ?"/>
+                                                                   message="#{langueBean.getMsg('candidat.photo.delete_conform')}"/>
                                                     </p:commandButton>
 
                                                     <p:confirmPopup global="true" showEffect="fade" hideEffect="fade" responsive="true">
