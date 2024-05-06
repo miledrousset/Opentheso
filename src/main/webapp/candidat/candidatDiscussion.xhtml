@@ -8,7 +8,8 @@
             <h:panelGroup id="idDiscussion">
                 <div class="row" style="font-weight: bold;">
                     <div class="col-6">
-                        <h:outputLabel value="#{langueBean.getMsg('candidat.discussion')}" style=" margin-left: 10px"/>
+                        <i class="pi pi-send" style="color: #78261f; margin-right: 10px" />
+                        <h:outputLabel value="#{langueBean.getMsg('candidat.discussion')}"/>
                     </div>
                     <div class="col-6" style="text-align: right;">
                         <p:commandButton actionListener="#{discussionService.reloadMessage()}"

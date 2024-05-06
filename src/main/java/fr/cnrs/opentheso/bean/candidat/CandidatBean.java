@@ -1054,7 +1054,6 @@ public class CandidatBean implements Serializable {
         alignmentBean.setListAlignValues(null);
         alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
         alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
-        alignmentBean.setAlignementSources(new AlignmentHelper().getAlignementSourceSAdmin(connect.getPoolConnexion()));
 
         PrimeFaces.current().executeScript("PF('searchAlignement').show();");
     }
