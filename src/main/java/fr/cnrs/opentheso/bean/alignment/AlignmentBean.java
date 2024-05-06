@@ -39,6 +39,7 @@ import javax.enterprise.context.SessionScoped;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ public class AlignmentBean implements Serializable {
     @Inject private AlignmentManualBean alignmentManualBean;
     @Inject private LanguageBean languageBean;
     @Inject private CurrentUser currentUser;
+    @Inject private SetAlignmentSourceBean setAlignmentSourceBean;
 
     private boolean withLang;
     private boolean withNote;
@@ -139,7 +141,7 @@ public class AlignmentBean implements Serializable {
 
     private String alertWikidata;
 
-    private String version;
+    private String mode;
 
     private int alignementResultSize = 3;
 
@@ -266,18 +268,6 @@ public class AlignmentBean implements Serializable {
                             alignement.getConcept_target() : concept.getValue();
                     element.setLabelConceptCible(labelConceptCible);
 
-                    var definition = "";
-                    if (CollectionUtils.isNotEmpty(definitions)) {
-                        var tmp = definitions.stream()
-                                .filter(def -> "definition".equalsIgnoreCase(def.getNotetypecode()))
-                                .filter(def -> alignement.getThesaurus_target().equalsIgnoreCase(def.getNoteSource()))
-                                .findFirst();
-                        if (tmp.isPresent()) {
-                            definition = tmp.get().getLexicalvalue();
-                        }
-                    }
-                    element.setDefinitionLocal(definition);
-
                     element.setValide(true);
                     allignementsList.add(element);
                 }
@@ -388,7 +378,7 @@ public class AlignmentBean implements Serializable {
                 alignementSource,
                 nom,
                 prenom,
-                version,
+                mode,
                 idsAndValues);
 
         allAlignementFound = allAlignementFound.stream()
@@ -398,7 +388,7 @@ public class AlignmentBean implements Serializable {
         if (CollectionUtils.isNotEmpty(allAlignementFound)) {
             allAlignementVisible = false;
             manageAlignmentVisible = false;
-            if ("v1".equalsIgnoreCase(version)) {
+            if ("alignement-auto".equalsIgnoreCase(mode)) {
                 propositionAlignementVisible = true;
                 comparaisonVisible = false;
             } else {
@@ -620,7 +610,7 @@ public class AlignmentBean implements Serializable {
 
         if (alignementToSave.isPresent()) {
             this.alignementSelect = alignementToSave.get();
-            if ("v1".equalsIgnoreCase(version)) {
+            if ("alignement-auto".equalsIgnoreCase(mode)) {
                 PrimeFaces.current().executeScript("PF('addAlignement').show();");
             } else {
                 PrimeFaces.current().executeScript("PF('remplacerAlignement').show();");
@@ -1644,11 +1634,32 @@ public class AlignmentBean implements Serializable {
         }
         if (selectedAlignement.equalsIgnoreCase("wikidata")) {
             alertWikidata = "!!! Attention à la casse !!!!";
-            PrimeFaces pf = PrimeFaces.current();
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "!!! Attention respectez la casse !!!!");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            showMessage(FacesMessage.SEVERITY_WARN, "!!! Attention respectez la casse !!!!");
         } else {
             alertWikidata = "";
+        }
+    }
+
+    public String getSourceAlignement(AlignementElement alignment) {
+        if (StringUtils.isEmpty(alignment.getThesaurus_target())) {
+            if (CollectionUtils.isEmpty(setAlignmentSourceBean.getAllAlignementSources())) {
+                setAlignmentSourceBean.initSourcesList();
+            }
+            var sourceFound = setAlignmentSourceBean.getAllAlignementSources().stream()
+                    .filter(source -> getBaseUrl(source.getRequete()).equalsIgnoreCase(getBaseUrl(alignment.getTargetUri())))
+                    .findFirst();
+            return sourceFound.isPresent() ? sourceFound.get().getSource() : getBaseUrl(alignment.getTargetUri());
+        } else {
+            return alignment.getThesaurus_target();
+        }
+    }
+
+    private String getBaseUrl(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            return url.getHost();
+        } catch (MalformedURLException e) {
+            return "";
         }
     }
     

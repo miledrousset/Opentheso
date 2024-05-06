@@ -27,7 +27,7 @@
                 <p:column colspan="2" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e;">
                     <h:outputText styleClass="ml-2" value="#{alignement.labelConceptOrig} (#{alignement.idConceptOrig})"/>
                 </p:column>
-                <p:column colspan="2" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e; text-align: right;">
+                <p:column colspan="3" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e; text-align: right;">
                     <p:commandButton id="checkUrls" process="@this" value="Vérifier les URLs"
                                      update="containerIndex"
                                      actionListener="#{alignmentBean.checkAlignement()}"
@@ -56,12 +56,17 @@
             </p:headerRow>
 
             <p:column headerText="#{langueBean.getMsg('statistique.label')}"
-                      style="width: 25%; border: 0.5px solid green; word-wrap: break-word;">
+                      style="width: 20%; border: 0.5px solid green; word-wrap: break-word;">
                 <h:outputText value="#{alignement.labelConceptCible}" />
+            </p:column>
+
+            <p:column headerText="#{langueBean.getMsg('alignment.source')}" style="width: 40%; border: 0.5px solid green; word-wrap: break-word;">
+                <h:outputLink value="#{alignement.targetUri}" target="_blank" >
+                    <h:outputText value="#{alignement.targetUri}" />
+                </h:outputLink>
+
                 <h:panelGroup rendered="#{alignement.valide}">
-                    <h:outputLink value="#{alignement.targetUri}" target="_blank" >
-                        <i class="pi pi-link" style="font-size: 1rem; color: green" />
-                    </h:outputLink>
+                    <i class="pi pi-check-circle" style="font-size: 1rem; color: green" />
                 </h:panelGroup>
                 <h:panelGroup rendered="#{!alignement.valide}">
                     <i class="pi pi-times-circle" style="font-size: 1rem; color: red" />
@@ -69,8 +74,8 @@
             </p:column>
 
             <p:column headerText="#{langueBean.getMsg('alignment.source')}"
-                      style="width: 50%; border: 0.5px solid green; word-wrap: break-word;">
-                <h:outputText value="#{alignement.definitionLocal}  (#{alignement.thesaurus_target})" />
+                      style="width: 15%; border: 0.5px solid green;">
+                <h:outputText value="#{alignmentBean.getSourceAlignement(alignement)}" />
             </p:column>
 
             <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
@@ -103,7 +108,7 @@
             </p:column>
 
             <p:summaryRow>
-                <p:column colspan="4" style="text-align:right; background-color: #ecf8f1;
+                <p:column colspan="5" style="text-align:right; background-color: #ecf8f1;
               border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
                     <h:outputText value="#{langueBean.getMsg('alignment.totalAlignmentFor')} (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignementParConcept(alignement.idConceptOrig)}"/>
                 </p:column>

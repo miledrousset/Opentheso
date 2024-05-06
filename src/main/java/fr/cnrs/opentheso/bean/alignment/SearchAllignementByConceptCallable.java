@@ -71,7 +71,7 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
             ExecutorService executor = Executors.newFixedThreadPool(tmp.size());
             List<Callable<NodeAlignment>> callables = new ArrayList<>();
 
-            if (mode.equalsIgnoreCase("V2")) {
+            if (mode.equalsIgnoreCase("alignement-comparaison")) {
                 int limit = 3;
                 for (NodeAlignment nodeAlignment : tmp) {
                     if (limit == 0) break;
@@ -93,17 +93,17 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
                     nodeAlignment.setAlignement_id_type(1);
                     nodeAlignment.setId_source(alignementSource.getId());
                     nodeAlignment.setDefinitionLocal(definitionLocal);
-                    if (mode.equalsIgnoreCase("V2")) {
+                    if (mode.equalsIgnoreCase("alignement-comparaison")) {
                         nodeAlignment.setId_alignement(aligementLocal.getId_alignement());
                         nodeAlignment.setUriTargetLocal(aligementLocal.getUri_target());
                         nodeAlignment.setAlignementTypeLocal(aligementLocal.getAlignementTypeLocal());
                         nodeAlignment.setConceptOrigin(concept.getValue());
                         nodeAlignment.setAlreadyLoaded(nodeAlignment.getUri_target().equalsIgnoreCase(aligementLocal.getUri_target()));
 
-                        if (StringUtils.isNotEmpty(aligementLocal.getConcept_target())) {
-                            nodeAlignment.setLabelLocal(aligementLocal.getConcept_target());
+                        if (StringUtils.isNotEmpty(aligementLocal.getConceptOrigin())) {
+                            nodeAlignment.setLabelLocal(aligementLocal.getConceptOrigin());
                         } else {
-                            nodeAlignment.setLabelLocal(nodeAlignment.getConcept_target());
+                            nodeAlignment.setLabelLocal(nodeAlignment.getConceptOrigin());
                         }
                     }
                     alignmentFound.add(nodeAlignment);

@@ -20,7 +20,6 @@ public class AlignementElement implements Serializable {
     private int alignement_id_type;
     private boolean valide;
     private int idSource;
-    private String definitionLocal;
 
     @Override
     public boolean equals(Object o) {

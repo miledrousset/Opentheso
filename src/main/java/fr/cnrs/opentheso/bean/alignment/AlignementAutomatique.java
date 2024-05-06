@@ -10,6 +10,8 @@ import fr.cnrs.opentheso.core.alignment.AlignementSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +41,7 @@ public class AlignementAutomatique {
         ExecutorService executor = Executors.newFixedThreadPool(listConcepts.size());
         List<Callable<List<NodeAlignment>>> callables = new ArrayList<>();
 
-        if ("V2".equalsIgnoreCase(alignementMode)) {
+        if ("alignement-comparaison".equalsIgnoreCase(alignementMode)) {
             //Supprimer l'alignement déjà ajouté dans la liste des alignements proposés
             idsAndValues = idsAndValues.stream()
                     .peek(element -> {
@@ -54,11 +56,18 @@ public class AlignementAutomatique {
                     .collect(Collectors.toList());
 
             for (NodeIdValue concept : idsAndValues) {
-                var definition = new NoteHelper().getDefinitionByLangAndSource(connection, concept.getId(), idTheso,
-                        idCurrentLang, alignementSource.getSource());
-                for (NodeAlignment alignment : concept.getAlignements()) {
-                    callables.add(new SearchAllignementByConceptCallable(alignementSource, connection, allLangsTheso, thesaurusLangs, idTheso,
-                            concept, idCurrentLang, nom, prenom, alignment, definition, alignementMode));
+                var definitions = new NoteHelper().getDefinition(connection, concept.getId(), idTheso, idCurrentLang);
+                var definition = "";
+                if (CollectionUtils.isNotEmpty(definitions)) {
+                    definition = definitions.get(0);
+                }
+                var alignmentSelected = concept.getAlignements().stream()
+                        .filter(source -> getBaseUrl(alignementSource.getRequete()).equalsIgnoreCase( getBaseUrl(source.getUri_target())))
+                        .findFirst();
+                if (alignmentSelected.isPresent()) {
+                    callables.add(new SearchAllignementByConceptCallable(alignementSource, connection, allLangsTheso,
+                            thesaurusLangs, idTheso, concept, idCurrentLang, nom, prenom, alignmentSelected.get(), definition,
+                            alignementMode));
                 }
             }
         } else {
@@ -81,5 +90,14 @@ public class AlignementAutomatique {
         executor.shutdown();
 
         return allAlignementFound;
+    }
+
+    private String getBaseUrl(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            return url.getHost();
+        } catch (MalformedURLException e) {
+            return "";
+        }
     }
 }
