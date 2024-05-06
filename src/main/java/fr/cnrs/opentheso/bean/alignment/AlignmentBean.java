@@ -246,8 +246,6 @@ public class AlignmentBean implements Serializable {
 
         for (NodeIdValue concept : idsAndValues) {
 
-            var definitions = new NoteHelper().getListNotes(connect.getPoolConnexion(), concept.getId(), idTheso, idLang);
-
             ArrayList<NodeAlignment> alignements = new AlignmentHelper()
                     .getAllAlignmentOfConcept(connect.getPoolConnexion(), concept.getId(), idTheso);
 
@@ -263,12 +261,12 @@ public class AlignmentBean implements Serializable {
                     element.setAlignement_id_type(alignement.getAlignement_id_type());
                     element.setIdSource(alignement.getId_source());
                     element.setConceptTarget(alignement.getConcept_target());
+                    element.setValide(alignement.isAlignementLocalValide());
 
                     var labelConceptCible = StringUtils.isNotEmpty(alignement.getConcept_target()) ?
                             alignement.getConcept_target() : concept.getValue();
                     element.setLabelConceptCible(labelConceptCible);
 
-                    element.setValide(true);
                     allignementsList.add(element);
                 }
             }
@@ -282,12 +280,24 @@ public class AlignmentBean implements Serializable {
         sortDatatableAlignementByColor();
     }
 
-    public void checkAlignement() {
-        allignementsList.stream().forEach(alignement -> {
-            alignement.setValide(isURLAvailable(alignement.getTargetUri()));
-        });
+    public void checkAlignement(String idConceptOrig) {
 
-        if (allignementsList.stream().filter(alignement -> !alignement.isValide()).findFirst().isPresent()) {
+        var alignementHelper = new AlignmentHelper();
+
+        allignementsList.stream()
+                .filter(element -> element.getIdConceptOrig().equalsIgnoreCase(idConceptOrig))
+                .forEach(alignement -> {
+                    var isValide = isURLAvailable(alignement.getTargetUri());
+                    if (isValide != alignement.isValide()) {
+                        alignementHelper.updateAlignmentUrlStatut(connect.getPoolConnexion(), alignement.getIdAlignment(),
+                                isValide, idConceptOrig, selectedTheso.getCurrentIdTheso());
+                        alignement.setValide(isValide);
+                    }
+                });
+
+        if (allignementsList.stream()
+                .filter(element -> element.getIdConceptOrig().equalsIgnoreCase(idConceptOrig))
+                .filter(alignement -> !alignement.isValide()).findFirst().isPresent()) {
             showMessage(FacesMessage.SEVERITY_WARN, "Il existe au moins un alignement qui n'est plus disponible !");
         } else {
             showMessage(FacesMessage.SEVERITY_INFO, "Tous les alignements sont opérationnelles !");

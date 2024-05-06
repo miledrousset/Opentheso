@@ -10,29 +10,11 @@
                      style="margin-bottom: -17px; margin-top: -16px; font-size: 13px" lazy="false" >
 
             <f:facet name="header" class="products-table-header">
-                <p:column colspan="3">
+                <p:column colspan="5">
                     <span style="font-weight: bold">
-                        <h:outputText value="Source d'alignement sélectionnée : " />
+                        <h:outputText value="#{langueBean.getMsg('alignment.selected_source')}" />
                         <h:outputText value="#{setAlignmentSourceBean.sourceSelectedName}" style="font-weight: bold" />
                     </span>
-                </p:column>
-                <p:column colspan="2">
-                    <p:commandButton id="checkAlignementUrls" process="@this" value="Vérifier les URLs"
-                                     update="containerIndex"
-                                     actionListener="#{alignmentBean.checkAlignementForCamparaison()}"
-                                     styleClass="rounded-button ui-button-outlined"
-                                     style="color: #f47b2a; margin-right: 10px" >
-                        <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"
-                                   message="Vous voulez lancer la vérification des alignements enregistrés ?
-                                   ce là risque de prendre du temps selon le nombre des alignements"/>
-
-                        <p:tooltip for="checkAlignementUrls" value="Vérifier la disponibilité des alignements enregistrés" showDelay="1000" position="top"/>
-                    </p:commandButton>
-
-                    <p:confirmPopup global="true">
-                        <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
-                        <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirm-popup-yes" />
-                    </p:confirmPopup>
                 </p:column>
             </f:facet>
 
@@ -79,7 +61,7 @@
                                  update=":containerIndex:remplacerAlignementID"
                                  actionListener="#{alignmentBean.addAlignementByConcept(alignement)}"
                                  style="background: green; border-color: green">
-                    <p:tooltip for="changeAlignmentBtn" value="Remplacer l'alignement existant" showDelay="1000" position="top"/>
+                    <p:tooltip for="changeAlignmentBtn" value="#{langueBean.getMsg('alignment.remplace')}" showDelay="1000" position="top"/>
                 </p:commandButton>
 
                 <p:commandButton id="removeAlignmentBtn" icon="pi pi-times"
@@ -87,10 +69,10 @@
                                  update="containerIndex messageIndex"
                                  style="margin-left: 5px" ajax="true" process="@this"
                                  styleClass="rounded-button ui-button-danger">
-                    <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"
+                    <p:confirm type="popup" header="" icon="pi pi-info-circle"
                                message="#{langueBean.getMsg('rightbody.concept.alignement.delete-confirmation-msg')}"/>
 
-                    <p:tooltip for="removeAlignmentBtn" value="Supprimer l'alignement proposé" showDelay="1000" position="top"/>
+                    <p:tooltip for="removeAlignmentBtn" value="#{langueBean.getMsg('alignment.delete')}" showDelay="1000" position="top"/>
                 </p:commandButton>
 
                 <p:confirmPopup global="true">
