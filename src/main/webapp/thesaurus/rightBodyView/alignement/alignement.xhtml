@@ -9,7 +9,7 @@
                              value="#{langueBean.getMsg('alignment.automaticSearch')}"
                              icon="fa-solid fa-magnifying-glass" styleClass="ui-button-success"
                              process="@this" ajax="true"
-                             actionListener="#{setAlignmentSourceBean.initAlignementAutomatique('v1')}"
+                             actionListener="#{setAlignmentSourceBean.initAlignementAutomatique('alignement-auto')}"
                              update="selectSourceManagementID"
                              style="margin-left: 10px; " />
 
@@ -17,7 +17,7 @@
                              value="#{langueBean.getMsg('rightbody.concept.alignement.comparison')}"
                              icon="pi pi-megaphone" styleClass="ui-button-success"
                              process="@this" ajax="true"
-                             actionListener="#{setAlignmentSourceBean.initAlignementAutomatique('v2')}"
+                             actionListener="#{setAlignmentSourceBean.initAlignementAutomatique('alignement-comparaison')}"
                              update="containerIndex:formRightTab"
                              style="margin-left: 10px; " />
         </p:toolbarGroup>        

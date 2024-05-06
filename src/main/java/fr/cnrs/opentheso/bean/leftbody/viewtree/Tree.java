@@ -595,17 +595,13 @@ public class Tree implements Serializable {
             idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
 
             rightBodySetting.setShowConceptToOn();
+            rightBodySetting.setIndex("0");
             conceptBean.getConceptForTree(idTheso,
                     ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             if (rightBodySetting.getIndex().equalsIgnoreCase("2")) {
                 indexSetting.setIsValueSelected(true);
-
-                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
-                        conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                        conceptBean.getSelectedLang());
-                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
                 for (AlignementElement element : alignmentBean.getAllignementsList()) {
                     element.setValide(isURLAvailable(element.getTargetUri()));
@@ -615,8 +611,7 @@ public class Tree implements Serializable {
                 alignmentBean.setAllAlignementVisible(true);
                 alignmentBean.setPropositionAlignementVisible(false);
                 alignmentBean.setManageAlignmentVisible(false);
-            } else {
-                rightBodySetting.setIndex("0");
+                alignmentBean.setComparaisonVisible(false);
             }
         } else {
             indexSetting.setIsFacetSelected(true);

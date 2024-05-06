@@ -89,7 +89,7 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        alignmentBean.setVersion(alignementMode);
+        alignmentBean.setMode(alignementMode);
 
         if (sourcesSelected.size() == 1) {
             var sourceFound = alignmentBean.getAlignementSources().stream()
@@ -140,7 +140,7 @@ public class SetAlignmentSourceBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
     }
 
-    private void initSourcesList() {
+    public void initSourcesList() {
         AlignmentHelper alignmentHelper = new AlignmentHelper();
 
         // toutes les sources d'alignements

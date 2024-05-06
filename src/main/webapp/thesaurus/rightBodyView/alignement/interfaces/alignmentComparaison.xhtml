@@ -38,10 +38,7 @@
 
             <p:column headerText="#{langueBean.getMsg('rightbody.concept.alignement.local-label')}"
                       style="width: 15%; padding: 5px 5px; text-align: center" groupRow="true">
-
-                <p:tag styleClass="mr-1" severity="success" value="#{alignement.conceptOrigin}" rounded="true"></p:tag>
-                <br/>
-                <h:outputText value="#{alignement.labelLocal}" />
+                <p:tag styleClass="mr-1" severity="success" value="#{alignement.labelLocal}" rounded="true"></p:tag>
                 <h:panelGroup rendered="#{alignement.alignementLocalValide}">
                     <h:outputLink id="uriLocal" value="#{alignement.uriTargetLocal}" target="_blank" >
                         <i class="pi pi-link" style="font-size: 1rem; color: green" />
@@ -62,8 +59,10 @@
 
             <p:column headerText="#{langueBean.getMsg('rightbody.concept.alignement.remote-label')}"
                       style="width: 15%; padding: 5px 5px;">
-                <h:outputLink value="#{alignement.uri_target}" target="_blank" >
-                    <h:outputText value="#{alignement.concept_target}" style="color: #{alignement.alreadyLoaded ? 'orange' : 'black'};" />
+                <h:outputText value="#{alignement.concept_target}" style="color: #{alignement.alreadyLoaded ? 'orange' : 'black'};" />
+                <h:outputLink id="uriTarget" value="#{alignement.uri_target}" target="_blank" >
+                    <i class="pi pi-link" style="font-size: 1rem; color: green" />
+                    <p:tooltip for="uriTarget" value="#{alignement.uri_target}" showDelay="1000" position="top"/>
                 </h:outputLink>
             </p:column>
 
