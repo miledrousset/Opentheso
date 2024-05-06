@@ -630,7 +630,7 @@ public class AlignmentHelper {
             try (Statement stmt = conn.createStatement()) {
                 String query = "SELECT alignement.id, created, modified, author, thesaurus_target, concept_target, uri_target,"
                         + " alignement_id_type, internal_id_thesaurus, internal_id_concept, id_alignement_source,"
-                        + " alignement_type.label, alignement_type.label_skos"
+                        + " alignement_type.label, alignement_type.label_skos, alignement.url_available"
                         + " FROM alignement, alignement_type"
                         + " WHERE alignement.alignement_id_type = alignement_type.id"
                         + " AND internal_id_concept = '" + idConcept + "'"
@@ -653,6 +653,7 @@ public class AlignmentHelper {
                         nodeAlignment.setId_source(resultSet.getInt("id_alignement_source"));
                         nodeAlignment.setAlignmentLabelType(resultSet.getString("label"));
                         nodeAlignment.setAlignmentLabelType(resultSet.getString("label_skos"));
+                        nodeAlignment.setAlignementLocalValide(resultSet.getBoolean("url_available"));
                         nodeAlignmentList.add(nodeAlignment);
                     }
                 }
@@ -1357,6 +1358,26 @@ public class AlignmentHelper {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public boolean updateAlignmentUrlStatut(HikariDataSource ds, int idAlignment, boolean newStatut,
+                                            String idConcept, String idThesaurus) {
+
+        boolean status = false;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                String query = "UPDATE alignement set url_available = " + newStatut
+                        + " WHERE internal_id_thesaurus = '" + idThesaurus + "'"
+                        + " AND internal_id_concept = '" + idConcept + "'"
+                        + " AND id = " + idAlignment;
+
+                stmt.executeUpdate(query);
+                status = true;
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while updating Alignment : " + idAlignment, sqle);
+        }
+        return status;
     }
 
 }
