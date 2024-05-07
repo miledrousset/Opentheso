@@ -270,11 +270,6 @@ public class AlignmentBean implements Serializable {
                     allignementsList.add(element);
                 }
             }
-
-            AlignementElement element = new AlignementElement();
-            element.setIdConceptOrig(concept.getId());
-            element.setLabelConceptOrig(concept.getValue());
-            allignementsList.add(element);
         }
 
         sortDatatableAlignementByColor();
@@ -297,7 +292,8 @@ public class AlignmentBean implements Serializable {
 
         if (allignementsList.stream()
                 .filter(element -> element.getIdConceptOrig().equalsIgnoreCase(idConceptOrig))
-                .filter(alignement -> !alignement.isValide()).findFirst().isPresent()) {
+                .filter(alignement -> !alignement.isValide())
+                .findFirst().isPresent()) {
             showMessage(FacesMessage.SEVERITY_WARN, "Il existe au moins un alignement qui n'est plus disponible !");
         } else {
             showMessage(FacesMessage.SEVERITY_INFO, "Tous les alignements sont opérationnelles !");
