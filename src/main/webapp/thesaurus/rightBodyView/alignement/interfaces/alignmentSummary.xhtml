@@ -27,23 +27,14 @@
                 <p:column colspan="2" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e;">
                     <h:outputText styleClass="ml-2" value="#{alignement.labelConceptOrig} (#{alignement.idConceptOrig})"/>
                 </p:column>
-                <p:column colspan="3" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e; text-align: right;">
+                <p:column colspan="2" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e; text-align: right;">
                     <p:commandButton id="checkUrls" process="@this" value="#{langueBean.getMsg('alignment.check_url')}"
                                      update="containerIndex"
                                      actionListener="#{alignmentBean.checkAlignement(alignement.idConceptOrig)}"
                                      styleClass="rounded-button ui-button-outlined"
                                      style="color: #f47b2a; margin-right: 10px" >
-                        <p:confirm type="popup" header="#{langueBean.getMsg('profile.confirmation')}" icon="pi pi-info-circle"
-                                   message="Vous voulez lancer la vérification des alignements enregistrés ?
-                                   ce là risque de prendre du temps selon le nombre des alignements"/>
-
                         <p:tooltip for="checkUrls" value="#{langueBean.getMsg('alignment.check_alignements')}" showDelay="1000" position="top"/>
                     </p:commandButton>
-
-                    <p:confirmPopup global="true">
-                        <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
-                        <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirm-popup-yes" />
-                    </p:confirmPopup>
 
                     <p:commandButton process="@this" value="#{langueBean.getMsg('rightbody.concept.alignement.alignment_manual')}"
                                      update=":containerIndex:searchAlignementForm"
@@ -54,11 +45,6 @@
                     </p:commandButton>
                 </p:column>
             </p:headerRow>
-
-            <p:column headerText="#{langueBean.getMsg('statistique.label')}"
-                      style="width: 20%; border: 0.5px solid green; word-wrap: break-word;">
-                <h:outputText value="#{alignement.labelConceptCible}" />
-            </p:column>
 
             <p:column headerText="#{langueBean.getMsg('alignment.source')}" style="width: 40%; border: 0.5px solid green; word-wrap: break-word;">
                 <h:outputLink value="#{alignement.targetUri}" target="_blank" >
@@ -108,7 +94,7 @@
             </p:column>
 
             <p:summaryRow>
-                <p:column colspan="5" style="text-align:right; background-color: #ecf8f1;
+                <p:column colspan="4" style="text-align:right; background-color: #ecf8f1;
               border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e">
                     <h:outputText value="#{langueBean.getMsg('alignment.totalAlignmentFor')} (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignementParConcept(alignement.idConceptOrig)}"/>
                 </p:column>

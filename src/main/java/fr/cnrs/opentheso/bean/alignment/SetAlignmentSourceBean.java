@@ -71,9 +71,8 @@ public class SetAlignmentSourceBean implements Serializable {
         initSourcesList();
     }
     
-    public void initForUpdate(int id){
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-        alignementSourceToUpdate= alignmentHelper.getThisAlignementSource(connect.getPoolConnexion(), id);
+    public void initForUpdate(NodeSelectedAlignment nodeSelectedAlignment){
+        alignementSourceToUpdate= new AlignmentHelper().getThisAlignementSource(connect.getPoolConnexion(), nodeSelectedAlignment.getIdAlignmentSource());
     }
 
     public void initAlignementAutomatique(String alignementMode) {

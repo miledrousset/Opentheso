@@ -387,10 +387,6 @@ public class AlignmentBean implements Serializable {
                 mode,
                 idsAndValues);
 
-        allAlignementFound = allAlignementFound.stream()
-                .sorted(Comparator.comparing(NodeAlignment::getLabelLocal))
-                .collect(Collectors.toList());
-
         if (CollectionUtils.isNotEmpty(allAlignementFound)) {
             allAlignementVisible = false;
             manageAlignmentVisible = false;
