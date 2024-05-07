@@ -203,9 +203,10 @@ public class MoveConcept implements Serializable {
         
         authorizedThesoAsAdmin.remove(selectedTheso.getCurrentIdTheso());
         for (String idTheso : authorizedThesoAsAdmin) {
-            NodeIdValue nodeIdValue = new NodeIdValue();
-            nodeIdValue.setId(idTheso);
-            nodeIdValue.setValue(idTheso);
+            var nodeIdValue = NodeIdValue.builder()
+                    .id(idTheso)
+                    .value(idTheso)
+                    .build();
             String idLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso);
             String title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso, idLang);
             if(StringUtils.isEmpty(title))

@@ -629,14 +629,14 @@ public class AlignmentBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
     }
 
-    private void setExistingAlignment(String idConcept, String idTheso) {
+    public void setExistingAlignment(String idConcept, String idTheso) {
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         existingAlignments = alignmentHelper.getAllAlignmentOfConcept(
                 connect.getPoolConnexion(),
                 idConcept, idTheso);
     }
 
-    private void prepareValuesForIdRef() {
+    public void prepareValuesForIdRef() {
         if (isNameAlignment) {
             if (conceptValueForAlignment == null || conceptValueForAlignment.isEmpty()) {
                 return;
@@ -1346,7 +1346,7 @@ public class AlignmentBean implements Serializable {
      * permet d'ajouter l'alignement et les options choisis (traductions,
      * définitions et images) la focntion gère les erreurs en cas de problème
      */
-    public void addAlignment(String idTheso, String idConcept, int idUser) {
+    public void addAlignment(String idTheso, String idConcept, int idUser, boolean fromAlignmentInterface) {
         if (selectedNodeAlignment == null) {
             return;
         }
@@ -1392,16 +1392,18 @@ public class AlignmentBean implements Serializable {
         selectedNodeAlignment = null;
         alignmentInProgress = false;
 
-        updateDateOfConcept(idTheso, idConcept, idUser);
+        if (fromAlignmentInterface) {
+            updateDateOfConcept(idTheso, idConcept, idUser);
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        isViewResult = true;
-        isViewSelection = false;
-        setExistingAlignment(idConcept, idTheso);
+            isViewResult = true;
+            isViewSelection = false;
+            setExistingAlignment(idConcept, idTheso);
 
-        getIdsAndValues2(conceptView.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+            getIdsAndValues2(conceptView.getSelectedLang(), selectedTheso.getCurrentIdTheso());
+        }
 
         resetVariables();
     }

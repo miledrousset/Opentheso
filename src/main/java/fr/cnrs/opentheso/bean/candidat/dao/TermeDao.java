@@ -112,6 +112,14 @@ public class TermeDao extends BasicDao {
         }
     }
 
+    public void deleteTermByIdTermAndLangAndValue(HikariDataSource hikariDataSource,
+                                          String idTerm, String lang, String idTheso, String value) throws SQLException {
+        openDataBase(hikariDataSource);
+        stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'"
+                + " and id_thesaurus = '" +  idTheso + "' and lexical_value='"+value+"'");
+        closeDataBase();
+    }
+
     public void deleteTermsByIdTerm(HikariDataSource hikariDataSource,
             String idTerm, String lang, String idTheso) throws SQLException {
         try {
@@ -226,32 +234,5 @@ public class TermeDao extends BasicDao {
             LOG.error(e);
             closeDataBase();
         }
-    }    
-    
-   
-    /**
-     * déprécié par Miled, remplacé par la classe relationDao
-     * @param connect
-     * @param idConceptSelected
-     * @param idThesaurus
-     * @param role 
-     */
-    /*public void deleteAllTermesByConcepteAndRole(Connect connect, String idConceptSelected, 
-                    String idThesaurus, String role) {
-        try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
-            executDeleteRequest(stmt, "DELETE FROM hierarchical_relationship WHERE id_concept1 = '"+idConceptSelected
-                    +"' AND id_thesaurus = '"+idThesaurus+"' AND role = '"+role+"'");
-            
-            executDeleteRequest(stmt, "DELETE FROM hierarchical_relationship WHERE id_concept1 = '"+idConceptSelected
-                    +"' AND id_thesaurus = '"+idThesaurus+"' AND role = '"+role+"'");            
-            stmt.close();
-        } catch (SQLException e) {
-            LOG.error(e);
-        }
-    }*/
-
- 
-     
-    
+    }
 }

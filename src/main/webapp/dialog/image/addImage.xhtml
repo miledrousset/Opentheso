@@ -67,14 +67,14 @@
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
                                  icon="fas fa-undo-alt" styleClass="ui-button-secondary button" 
-                                 actionListener="PF('addManualAlignment').hide();" update="containerIndex:idAddImage"/>
+                                 actionListener="PF('addManualAlignment').hide();" update="containerIndex"/>
                 
                 <p:commandButton id="addImageBtn" value="#{langueBean.getMsg('btnValidate')}" 
-                                 update="containerIndex:formRightTab containerIndex:idAddImage messageIndex"
+                                 update="containerIndex messageIndex"
                                  oncomplete="PF('addImage').show();"
                                  icon="pi pi-check" styleClass="ui-button-success" ajax="true" process="@form"
                                  actionListener="#{imageBean.addNewImage(currentUser.nodeUser.idUser)}" />
             </div>
         </h:form>
-    </p:dialog>   
+    </p:dialog>
 </ui:fragment>
