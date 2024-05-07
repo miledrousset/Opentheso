@@ -440,7 +440,7 @@
                         <div class="col-12" style="padding: 5px">
                             <i class="pi pi-align-justify" style="color: #78261f; margin-right: 10px; margin-left: 10px" />
                             <p:commandButton value="#{langueBean.getMsg('alignment.addNewAlignment')}"
-                                             update="idAddManualAlignment" process="@this"
+                                             update="idAddManualAlignment" process="@this" ajax="true"
                                              oncomplete="PF('addManualAlignment').show();"
                                              actionListener="#{alignmentManualBean.reset()}"
                                              styleClass="rounded-button ui-button-outlined"
@@ -493,7 +493,7 @@
                                                      style="color: #43B572"
                                                      actionListener="#{candidatBean.setAlignementSelected(alignment)}"
                                                      oncomplete="PF('editManualAlignment').show();"
-                                                     process="@this"
+                                                     process="@this" ajax="true"
                                                      update="tabViewCandidat"
                                                      styleClass="rounded-button ui-button-outlined" />
                                 </div>
@@ -501,7 +501,7 @@
                                 <div class="col-2" style="margin-top: -5px">
                                     <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
                                                      actionListener="#{candidatBean.setAlignementSelected(alignment)}"
-                                                     update="tabViewCandidat"
+                                                     update="tabViewCandidat" process="@this" ajax="true"
                                                      oncomplete="PF('confirmDeleteAlignement').show();" />
                                 </div>
                             </div>
