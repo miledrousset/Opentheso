@@ -316,10 +316,9 @@
                         </div>
 
                         <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
-                            <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}"
-                                 tooltip="Ajouté par #{candidatBean.getUserName(note.idUser)}">
+                            <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}">
                                 <div class="col-3" >
-                                    <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;" title="#{langueBean.getMsg('rightbody.concept.by')} #{candidatBean.getUserName(note.idUser)}"/>
                                 </div>
                                 <div class="col-2" >
                                     <h:outputText value="#{candidatBean.getUserName(note.idUser)}" escape="false" style="font-size: 14px;"/>
@@ -332,14 +331,14 @@
                                     <h:outputLabel value=" (#{note.lang})" style="font-size: 14px; margin-left: 10px;" />
                                 </div>
                                 <div class="col-1" style="margin-top: -5px">
-                                    <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}"
+                                    <p:commandButton rendered="#{(candidatBean.candidatSelected.userId == note.idUser) or (currentUser.hasRoleAsAdmin)}"
                                                      styleClass="rounded-button ui-button-outlined" icon="fas fa-pen" process="@this"
                                                      actionListener="#{noteBeanCandidat.resetEditNode(note)}" update="editNoteForm"
                                                      oncomplete="PF('editNote').show();" style="color: #43B572"/>
 
                                 </div>
                                 <div class="col-1" style="margin-top: -5px">
-                                    <p:commandButton rendered="#{candidatBean.candidatSelected.userId == note.idUser}" icon="pi pi-trash"
+                                    <p:commandButton rendered="#{(candidatBean.candidatSelected.userId == note.idUser) or (currentUser.hasRoleAsAdmin)}" icon="pi pi-trash"
                                                      styleClass="rounded-button ui-button-danger ui-button-outlined" process="@this" ajax="true"
                                                      actionListener="#{noteBeanCandidat.setSelectedNodeNote(note)}" update="idDeleteNote"
                                                      oncomplete="PF('deleteNote').show();" />
@@ -574,7 +573,7 @@
                                                                    message="#{langueBean.getMsg('candidat.photo.delete_conform')}"/>
                                                     </p:commandButton>
 
-                                                    <p:confirmPopup global="true" showEffect="fade" hideEffect="fade" responsive="true">
+                                                    <p:confirmPopup global="true" showEffect="fade" hideEffect="fade">
                                                         <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
                                                         <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirm-popup-yes" />
                                                     </p:confirmPopup>
