@@ -62,7 +62,7 @@ public class AlignementAutomatique {
                     definition = definitions.get(0);
                 }
                 var alignmentSelected = concept.getAlignements().stream()
-                        .filter(source -> getBaseUrl(alignementSource.getRequete()).equalsIgnoreCase( getBaseUrl(source.getUri_target())))
+                        .filter(source -> getBaseUrl(alignementSource.getRequete()).equalsIgnoreCase(getBaseUrl(source.getUri_target())))
                         .findFirst();
                 if (alignmentSelected.isPresent()) {
                     callables.add(new SearchAllignementByConceptCallable(alignementSource, connection, allLangsTheso,

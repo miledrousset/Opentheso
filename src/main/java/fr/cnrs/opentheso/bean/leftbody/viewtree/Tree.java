@@ -595,7 +595,6 @@ public class Tree implements Serializable {
             idConceptParent = ((TreeNodeData) selectedNode.getData()).getNodeId();
 
             rightBodySetting.setShowConceptToOn();
-            rightBodySetting.setIndex("0");
             conceptBean.getConceptForTree(idTheso,
                     ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
 
@@ -603,9 +602,10 @@ public class Tree implements Serializable {
             if (rightBodySetting.getIndex().equalsIgnoreCase("2")) {
                 indexSetting.setIsValueSelected(true);
 
-                for (AlignementElement element : alignmentBean.getAllignementsList()) {
-                    element.setValide(isURLAvailable(element.getTargetUri()));
-                }
+                alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
+                        conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                        conceptBean.getSelectedLang());
+                alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
                 alignmentBean.setAllAlignementFound(new ArrayList<>());
                 alignmentBean.setAllAlignementVisible(true);
