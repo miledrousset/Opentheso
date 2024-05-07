@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,11 +32,11 @@ import org.primefaces.PrimeFaces;
 @Named(value = "noteBeanCandidat")
 @SessionScoped
 public class NoteBeanCandidat implements Serializable {
+
     @Inject private Connect connect;
     @Inject private NoteBeanCandidat noteBeanCandidat;
     @Inject private SelectedTheso selectedTheso;
     @Inject private CandidatBean candidatBean;
-    @Inject private PropositionBean propositionBean;
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
@@ -90,11 +89,6 @@ public class NoteBeanCandidat implements Serializable {
         selectedTypeNote = selectedNodeNote.getLang();
         this.selectedNodeNote = selectedNodeNote;
         isEditMode = true;
-    }
-
-    public void initSelectedNode (NodeNote nodeNote){
-        selectedNodeNote = nodeNote;
-        noteValueToChange = nodeNote.getLexicalvalue();
     }
     
     public void infos() {

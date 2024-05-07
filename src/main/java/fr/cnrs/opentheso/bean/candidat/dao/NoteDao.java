@@ -16,8 +16,7 @@ public class NoteDao extends BasicDao {
      * @param idThesaurus
      * @return 
      */
-    public List<NodeNote> getNotesCandidat(HikariDataSource hikariDataSource,
-            String idconcept, String idThesaurus) {
+    public List<NodeNote> getNotesCandidat(HikariDataSource hikariDataSource, String idconcept, String idThesaurus) {
         
         List<NodeNote> nodeNotes = new ArrayList<>();
         try {

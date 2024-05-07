@@ -58,13 +58,13 @@
                             action="#{editConcept.reset('')}" update="containerIndex:idDeleteConcept"
                             oncomplete="PF('deleteConcept').show();"  />
 
-                <p:menuitem rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
+                <p:menuitem rendered="#{!conceptView.nodeConcept.concept.deprecated}"
                             value="#{langueBean.getMsg('rightbody.concept.deprecate_concept')}"
                             icon="fa fa-times-circle"
                             update="containerIndex:idDeprecateConcept" action="#{editConcept.reset('')}"
                             oncomplete="PF('deprecateConcept').show();"  />                    
 
-                <p:menuitem rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
+                <p:menuitem rendered="#{conceptView.nodeConcept.concept.deprecated}"
                             icon="fa fa-check-circle"
                             value="#{langueBean.getMsg('rightbody.concept.approve_concept')}"
                             update="idApproveConcept" action="#{editConcept.reset('')}"

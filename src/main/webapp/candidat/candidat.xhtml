@@ -64,19 +64,8 @@
 
                                     <h:panelGroup rendered="#{candidatBean.isShowCandidatActivate() || candidatBean.isNewCandidatActivate()}">
                                         <h:form id="containerIndexCandidat">
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <i class="pi pi-arrow-left" style="color: #F47B2A; margin-right: 5px; margin-left: 15px"></i>
-                                                    <p:commandLink value="#{langueBean.getMsg('candidat.return')}"
-                                                                   update="tabViewCandidat" style="color: #F47B2A" ajax="true" process="@this"
-                                                                   action= "#{candidatBean.getAllCandidatsByThesoAndLangue()}"
-                                                                   actionListener="#{candidatBean.setIsListCandidatsActivate(true)}" />
-                                                </div>
-                                            </div>
 
                                             <ui:include src="../candidat/candidatDetails.xhtml" />
-
-
 
                                             <h:panelGroup rendered="#{(currentUser.hasRoleAsAdmin and candidatBean.isShowCandidatActivate())}">
                                                 <div class="row" style="margin-bottom: 20px">
@@ -138,7 +127,7 @@
 
                 <ui:include src="../candidat/dialog/deleteCandidate.xhtml" />       
 
-                <ui:include src="../dialog/login/logout.xhtml" />                
+                <ui:include src="../dialog/login/logout.xhtml" />
             </div>
         </h:panelGroup> 
     </h:body>
