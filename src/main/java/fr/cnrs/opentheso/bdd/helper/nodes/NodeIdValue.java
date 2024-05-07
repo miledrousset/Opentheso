@@ -1,6 +1,10 @@
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.text.Normalizer;
 
@@ -9,6 +13,9 @@ import java.text.Normalizer;
  * @author miled.rousset
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NodeIdValue implements Comparable, Serializable{
 
     private String id;

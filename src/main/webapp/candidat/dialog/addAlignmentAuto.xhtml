@@ -1,11 +1,11 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
-             xmlns:h="http://xmlns.jcp.org/jsf/html"
              xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:f="http://xmlns.jcp.org/jsf/core"
+             xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="searchAlignementID" widgetVar="searchAlignement" width="850" minHeight="400" showEffect="fade" modal="true" 
-              header="#{langueBean.getMsg('rightbody.conceptdialog.alignment_with_external_thesauri')}" 
+    <p:dialog id="searchAlignementID" widgetVar="searchAlignement" width="850" minHeight="400" showEffect="fade" modal="true"
+              header="#{langueBean.getMsg('rightbody.conceptdialog.alignment_with_external_thesauri')}"
               resizable="false" position="top" style="margin-top: 30px" >
         <h:form id="searchAlignementForm">
             <p:outputPanel class="ui-fluid">
@@ -33,21 +33,21 @@
                     <div class="col-5" style="margin-top: 3px">
                         <p:selectOneMenu value="#{alignmentBean.selectedAlignement}" style="width: 100%; background: white; border-color: #43B572"
                                          title="#{alignmentBean.alertWikidata}">
-                            <f:selectItems value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>                    
-                            <p:ajax event="change" listener="#{alignmentBean.actionChoix()}" update=":containerIndex:searchAlignementForm messageIndex"/>
-                        </p:selectOneMenu> 
+                            <f:selectItems value="#{alignmentBean.alignementSources}" var="alig" itemLabel="#{alig.source}" itemValue="#{alig.source}"/>
+                            <p:ajax event="change" listener="#{alignmentBean.actionChoix()}" update="searchAlignementForm messageIndex"/>
+                        </p:selectOneMenu>
                     </div>
 
                     <div class="col-1">
                         <p:commandButton id="searchAlignmentBtn" icon="pi pi-search" styleClass="rounded-button ui-button-outlined"
                                          ajax="true" process="@form"
                                          actionListener="#{alignmentBean.searchAlignments(
-                                                           selectedTheso.selectedIdTheso, 
+                                                           selectedTheso.selectedIdTheso,
                                                            alignmentBean.idConceptSelectedForAlignment,
                                                            alignmentBean.conceptValueForAlignment,
-                                                           conceptView.selectedLang)}"
+                                                           selectedTheso.currentLang)}"
                                          style="color: #f47b2a; margin-left: 5px"
-                                         update=":containerIndex:searchAlignementForm messageIndex" />
+                                         update="searchAlignementForm messageIndex" />
                     </div>
                 </div>
 
@@ -65,27 +65,27 @@
                         <div class="row" style="margin-top: 5px">
                             <div class="col-12">
                                 <h:outputText value="#{langueBean.getMsg('alignment.addManualMessage1')}: " style="color: #000;"/>
-                                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #43B572;"/>  
+                                <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #43B572;"/>
                             </div>
                         </div>
 
                         <div class="row" style="margin-top: 5px">
                             <div class="col-6">
-                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')}" style="color: #000;"/>  
+                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.equivalence_type')}" style="color: #000;"/>
                             </div>
                             <div class="col-6">
                                 <p:selectOneMenu value="#{alignmentBean.selectedAlignementType}"
                                                  title="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
                                                  style="background: white; border-color: #43B572; font-size: 12px; height: 32px; margin-top: -5px;">
                                     <f:selectItems value="#{alignmentBean.alignmentTypes}" var="type" itemLabel="#{type.value}" itemValue="#{type.key}" />
-                                </p:selectOneMenu>                                
-                                
+                                </p:selectOneMenu>
+
                             </div>
                         </div>
 
                         <div class="row" style="margin-top: 5px">
                             <div class="col-6">
-                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')}" style="color: #000;"/>  
+                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.distant_uri')}" style="color: #000;"/>
                             </div>
                             <div class="col-6">
                                 <p:inputText value="#{alignmentBean.manualAlignmentUri}"/>
@@ -94,10 +94,10 @@
 
                         <div class="row" style="margin-top: 5px">
                             <div class="col-6">
-                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}"  style="color: #000;"/>  
+                                <p:outputLabel value="#{langueBean.getMsg('rightbody.conceptdialog.source_name')}"  style="color: #000;"/>
                             </div>
                             <div class="col-6">
-                                <p:inputText value="#{alignmentBean.selectedAlignement}" /> 
+                                <p:inputText value="#{alignmentBean.selectedAlignement}" />
                             </div>
                         </div>
                         <p:spacer height="20px" />
@@ -105,19 +105,19 @@
                             <div class="col-3 offset-6">
                                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
                                                  style="margin-right: 10px"
-                                                 process="@this" ajax="true" update=":containerIndex:searchAlignementForm"
+                                                 process="@this" ajax="true" update="tabViewCandidat:containerIndexCandidat:searchAlignementForm"
                                                  oncomplete="PF('searchAlignement').hide();"
-                                                 actionListener="#{alignmentBean.cancelManualAlignment()}"/>                                
-                                </div>
+                                                 actionListener="#{alignmentBean.cancelManualAlignment()}"/>
+                            </div>
                             <div class="col-3">
                                 <p:commandButton value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
                                                  ajax="true" process="@form"
-                                                 update="containerIndex:searchAlignementForm containerIndex:formRightTab messageIndex"
-                                                 action="#{alignmentBean.addManualAlignement(selectedTheso.selectedIdTheso, 
+                                                 update="tabViewCandidat:containerIndexCandidat:searchAlignementForm messageIndex"
+                                                 action="#{alignmentBean.addManualAlignement(selectedTheso.selectedIdTheso,
                                                            alignmentBean.idConceptSelectedForAlignment,
                                                            currentUser.nodeUser.idUser)}"
-                                                 oncomplete="PF('searchAlignement').hide();"/>                                
-                            </div>                            
+                                                 oncomplete="PF('searchAlignement').hide();"/>
+                            </div>
                         </div>
                     </p:panel>
                     <!-- Fin Ajout d'alignement manuel -->
@@ -129,27 +129,28 @@
                             </div>
                         </div>
                     </h:panelGroup>
+
                     <p:panel style="max-height: 600px; color: #000">
                         <ui:repeat rendered="#{alignmentBean.listAlignValues != null}" value="#{alignmentBean.listAlignValues}" var='nodeAlign'>
                             <div class="row">
                                 <div class="col-11">
                                     <div class="row">
                                         <div class="col-12">
-                                            <h:outputText value="#{nodeAlign.concept_target}" style="font-weight: bold; font-size: 12px"/> 
+                                            <h:outputText value="#{nodeAlign.concept_target}" style="font-weight: bold; font-size: 12px"/>
                                         </div>
                                     </div>
-                                    <h:panelGroup rendered="#{nodeAlign.concept_target_alt.trim() != null and nodeAlign.concept_target_alt.trim() != ''}"> 
+                                    <h:panelGroup rendered="#{nodeAlign.concept_target_alt.trim() != null and nodeAlign.concept_target_alt.trim() != ''}">
                                         <div class="row">
                                             <div class="col-12" >
-                                                <h:outputText value="#{langueBean.getMsg('indexview.synonym')} : #{nodeAlign.concept_target_alt}&lt;br/&gt;" escape="false"  style="font-size: 12px"/> 
+                                                <h:outputText value="#{langueBean.getMsg('indexview.synonym')} : #{nodeAlign.concept_target_alt}&lt;br/&gt;" escape="false"  style="font-size: 12px"/>
                                             </div>
                                         </div>
-                                    </h:panelGroup>                                 
-                                    <h:panelGroup rendered="#{nodeAlign.def_target.trim() != null and nodeAlign.def_target.trim() != ''}">                                 
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{nodeAlign.def_target.trim() != null and nodeAlign.def_target.trim() != ''}">
                                         <div class="col-12">
                                             <h:outputText value="#{nodeAlign.def_target}&lt;br/&gt;" escape="false" style="font-size: 12px"/>
                                         </div>
-                                    </h:panelGroup>                                      
+                                    </h:panelGroup>
                                     <div class="row">
                                         <div class="col-12">
                                             <h:outputLink value="#{nodeAlign.uri_target}" target="_blank" >
@@ -157,16 +158,16 @@
                                             </h:outputLink>
                                             <br/>
                                         </div>
-                                    </div>                                          
+                                    </div>
                                 </div>
                                 <div class="col-1">
                                     <p:commandLink actionListener="#{alignmentBean.getUriAndOptions(nodeAlign, selectedTheso.selectedIdTheso)}"
-                                                   ajax="true" process="@form"
-                                                   update=":containerIndex:searchAlignementForm">
+                                                   ajax="true" process="@this"
+                                                   update="tabViewCandidat:containerIndexCandidat:searchAlignementForm">
                                         <i class="pi pi-cloud-download" style="color: #f47b2a; font-size: 1.5rem; margin-top: 20px;"/>
                                     </p:commandLink>
                                 </div>
-                            </div> 
+                            </div>
                             <p:separator styleClass="separator" style="margin-top: 2px"/>
                         </ui:repeat>
                     </p:panel>
@@ -178,7 +179,7 @@
                     <div class="row" style="margin-top: -5px; margin-bottom: -10px;">
                         <div class="col-3">
                             <p:outputLabel value="#{alignmentBean.conceptValueForAlignment} " style="color: #000; font-size: 14px; padding-left: 5px;"/>
-                        </div> 
+                        </div>
                         <div class="col-3">
                             <p:selectOneMenu value="#{alignmentBean.selectedAlignementType}"
                                              title="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
@@ -190,7 +191,7 @@
                         <div class="col-6">
                             <h:outputText value=" #{alignmentBean.selectedNodeAlignment.concept_target} (#{alignmentBean.selectedAlignement})"
                                           title="#{alignmentBean.selectedNodeAlignment.uri_target}" style="color: #000; font-size: 14px;"/>
-                        </div>                                        
+                        </div>
                     </div>
 
                     <p:separator/>
@@ -279,24 +280,20 @@
 
                     <div class="row" style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
                         <div class="col-3 offset-6">
-                        <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
-                                         style="margin-right: 10px"
-                                         actionListener="PF('searchAlignement').hide();" update="containerIndex:searchAlignementID"/>
+                            <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
+                                             style="margin-right: 10px"
+                                             actionListener="PF('searchAlignement').hide();" update="tabViewCandidat"/>
                         </div>
                         <div class="col-3">
-                        <p:commandButton id="addTraductionBtn" value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
-                                         update=":containerIndex:searchAlignementForm containerIndex:formRightTab messageIndex"
-                                         oncomplete="PF('searchAlignement').hide();"
-                                         ajax="true" process="@form"
-                                         actionListener="#{alignmentBean.addAlignment(
-                                                           selectedTheso.selectedIdTheso, 
-                                                           alignmentBean.idConceptSelectedForAlignment,
-                                                           currentUser.nodeUser.idUser, true)}"/>
+                            <p:commandButton id="addTraductionBtn" value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="pi pi-check"
+                                             update="tabViewCandidat"
+                                             oncomplete="PF('searchAlignement').hide();"
+                                             ajax="true" process="@form"
+                                             actionListener="#{candidatBean.searchAlignementAuto()}"/>
                         </div>
-                    </div> 
+                    </div>
                 </h:panelGroup>
             </p:outputPanel>
         </h:form>
     </p:dialog>
-
 </ui:fragment>

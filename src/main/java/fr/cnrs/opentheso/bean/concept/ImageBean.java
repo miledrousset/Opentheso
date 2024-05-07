@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -19,17 +18,21 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 /**
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "imageBean")
 @SessionScoped
 public class ImageBean implements Serializable {
+
     @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
     @Inject private ConceptView conceptBean;
     @Inject private SelectedTheso selectedTheso;
     @Inject private CurrentUser currentUser;    
@@ -71,14 +74,14 @@ public class ImageBean implements Serializable {
 
         prepareImageForEdit();
     }
-   
+
     public void prepareImageForEdit(){
         nodeImagesForEdit = new ArrayList<>();
         ImagesHelper imagesHelper = new ImagesHelper();
         nodeImagesForEdit = imagesHelper.getExternalImages(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
-    }    
+    }
     
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour images !");
@@ -90,17 +93,13 @@ public class ImageBean implements Serializable {
      * @param idUser 
      */
     public void addNewImage(int idUser) {
-        FacesMessage msg;
-        PrimeFaces pf = PrimeFaces.current();    
         
-        if(uri == null || uri.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+        if(StringUtils.isEmpty(uri)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucune URI insérée !");
             return;
         }
 
-        ImagesHelper imagesHelper = new ImagesHelper();
-        if(!imagesHelper.addExternalImage(connect.getPoolConnexion(),
+        if(!new ImagesHelper().addExternalImage(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 name,
@@ -108,35 +107,30 @@ public class ImageBean implements Serializable {
                 uri,
                 creator,
                 idUser)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendant l'ajout de l'image !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'ajout de l'image !");
             return;
         }
         
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        new ConceptHelper().updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
-        ///// insert DcTermsData to add contributor
-        DcElementHelper dcElmentHelper = new DcElementHelper();                
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+
+        new DcElementHelper().addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-        ///////////////         
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image ajoutée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        reset();
 
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }        
+        showMessage(FacesMessage.SEVERITY_INFO, "Image ajoutée avec succès");
+        reset();
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+    }
+
+    private void showMessage(FacesMessage.Severity severity, String message) {
+        FacesMessage msg = new FacesMessage(severity, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
     }
     
     /**
@@ -239,56 +233,6 @@ public class ImageBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
         }        
-    }    
-
-    public String getUri() {
-        return uri;
     }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public ArrayList<NodeImage> getNodeImages() {
-        return nodeImages;
-    }
-
-    public void setNodeImages(ArrayList<NodeImage> nodeImages) {
-        this.nodeImages = nodeImages;
-    }
-
-    public String getCopyright() {
-        return copyright;
-    }
-
-    public void setCopyright(String copyright) {
-        this.copyright = copyright;
-    }
-
-    public ArrayList<NodeImage> getNodeImagesForEdit() {
-        return nodeImagesForEdit;
-    }
-
-    public void setNodeImagesForEdit(ArrayList<NodeImage> nodeImagesForEdit) {
-        this.nodeImagesForEdit = nodeImagesForEdit;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-
 
 }
