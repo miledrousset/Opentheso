@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>24.04.02</version>
+    <version>24.05.01</version>
     <packaging>war</packaging>
     <name>opentheso2</name>
 
@@ -419,7 +419,11 @@
         <rdf4j.version>4.3.0-M1</rdf4j.version>
         <jdom2.version>2.0.6</jdom2.version>
         <sparql.version>1.2</sparql.version>
+        
+        
         <jersey.version>2.33</jersey.version>
+
+
         <junit.version>4.13.1</junit.version>
         <cdi-api.version>2.0</cdi-api.version>
         <jsf2leaf.version>1.0</jsf2leaf.version>
