@@ -21,6 +21,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
+import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.bean.candidat.dao.DomaineDao;
 import fr.cnrs.opentheso.bean.candidat.dao.NoteDao;
 import fr.cnrs.opentheso.bean.candidat.dao.RelationDao;
@@ -85,6 +86,8 @@ public class CandidatBean implements Serializable {
     private ImageBean imageBean;
     @Inject
     private AlignmentBean alignmentBean;
+    @Inject
+    private AlignmentManualBean alignmentManualBean;
 
     private final CandidatService candidatService = new CandidatService();
 
@@ -420,6 +423,8 @@ public class CandidatBean implements Serializable {
         isShowCandidatActivate = true;
         isNewCandidatActivate = false;
         isListCandidatsActivate = false;
+
+        alignmentManualBean.reset();
     }
     
     public CandidatDto getAllInfosOfCandidate(CandidatDto candidatDto){
@@ -608,15 +613,13 @@ public class CandidatBean implements Serializable {
     }
 
     private List<NodeIdValue> createCollectionsFiltred(List<NodeIdValue> collections, List<NodeIdValue> collectionsSelected) {
-        List<NodeIdValue> resultat = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(collections)) {
-            for (NodeIdValue element : collections) {
-                if (!isExist(collectionsSelected, element)) {
-                    resultat.add(element);
-                }
-            }
+            return collections.stream()
+                    .filter(element -> !isExist(collectionsSelected, element))
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
         }
-        return resultat;
     }
 
     private boolean isExist(List<NodeIdValue> collections, NodeIdValue nodeIdValue) {
@@ -704,14 +707,26 @@ public class CandidatBean implements Serializable {
      * @return
      */
     public List<NodeIdValue> searchTermeGenerique(String value) {
-        return new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
-                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+
+        if (StringUtils.isNotEmpty(value)) {
+            allTermesGenerique = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+                    selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+            return createCollectionsFiltred(allTermesGenerique, candidatSelected.getTermesGenerique());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
 
     public List<NodeIdValue> searchTermeAssocie(String value) {
-        return new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
-                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+
+        if (StringUtils.isNotEmpty(value)) {
+            AllTermesAssocies = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+                    selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+            return createCollectionsFiltred(AllTermesAssocies, candidatSelected.getTermesAssocies());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     public void initialNewCandidat() throws IOException {
