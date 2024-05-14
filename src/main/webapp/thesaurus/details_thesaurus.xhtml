@@ -63,8 +63,7 @@
         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12" >
             <div class="card shadow mb-4">
                 <h:panelGroup id="formRightTab">
-                    <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected()}"
-                               style="border-style: none; height: 100%; " >
+                    <p:tabView id="rightTab" activeIndex="#{rightBodySetting.index}" rendered="#{indexSetting.isValueSelected()}" >
 
                         <p:ajax event="tabChange" listener="#{tree.onTabConceptChange}" update="containerIndex:formRightTab" />
 
@@ -87,7 +86,7 @@
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                             </f:facet>
-                            <ui:include src="rightBodyView/alignement.xhtml" />
+                            <ui:include src="rightBodyView/alignement/alignement.xhtml" />
                         </p:tab>
 
                         <p:tab rendered="#{roleOnTheso.getNodePreference().isSuggestion()}" disabled="#{!propositionBean.isRubriqueVisible()}" title="#{langueBean.getMsg('rightbody.newSuggest')}" >
@@ -207,5 +206,6 @@
     <ui:include src="../dialog/concept/deprecateConcept.xhtml" />
 
     <ui:include src="../dialog/alignment/AddAlignement.xhtml" />
+    <ui:include src="../dialog/alignment/remplacerAlignement.xhtml" />
 
 </ui:composition>

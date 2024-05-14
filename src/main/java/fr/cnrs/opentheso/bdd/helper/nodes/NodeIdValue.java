@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.text.Normalizer;
+import java.util.List;
 
 /**
  *
@@ -23,6 +24,7 @@ public class NodeIdValue implements Comparable, Serializable{
     private boolean Status;
     private String notation;
     private Integer nbrConcepts;
+    private List<NodeAlignment> alignements;
 
     @Override
     public int compareTo(Object o) {
