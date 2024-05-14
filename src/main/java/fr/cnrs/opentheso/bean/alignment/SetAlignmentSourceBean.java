@@ -20,13 +20,11 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
-import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
 
-@Data
 @SessionScoped
 @Named(value = "setAlignmentSourceBean")
 public class SetAlignmentSourceBean implements Serializable {
@@ -291,4 +289,131 @@ public class SetAlignmentSourceBean implements Serializable {
         description = "";
     }
 
+    public ConceptView getConceptView() {
+        return conceptView;
+    }
+
+    public void setConceptView(ConceptView conceptView) {
+        this.conceptView = conceptView;
+    }
+
+    public SelectedTheso getSelectedTheso() {
+        return selectedTheso;
+    }
+
+    public void setSelectedTheso(SelectedTheso selectedTheso) {
+        this.selectedTheso = selectedTheso;
+    }
+
+    public AlignmentBean getAlignmentBean() {
+        return alignmentBean;
+    }
+
+    public void setAlignmentBean(AlignmentBean alignmentBean) {
+        this.alignmentBean = alignmentBean;
+    }
+
+    public ArrayList<AlignementSource> getAllAlignementSources() {
+        return allAlignementSources;
+    }
+
+    public void setAllAlignementSources(ArrayList<AlignementSource> allAlignementSources) {
+        this.allAlignementSources = allAlignementSources;
+    }
+
+    public List<NodeSelectedAlignment> getSelectedAlignments() {
+        return selectedAlignments;
+    }
+
+    public void setSelectedAlignments(List<NodeSelectedAlignment> selectedAlignments) {
+        this.selectedAlignments = selectedAlignments;
+    }
+
+    public ArrayList<NodeSelectedAlignment> getSelectedAlignmentsOfTheso() {
+        return selectedAlignmentsOfTheso;
+    }
+
+    public void setSelectedAlignmentsOfTheso(ArrayList<NodeSelectedAlignment> selectedAlignmentsOfTheso) {
+        this.selectedAlignmentsOfTheso = selectedAlignmentsOfTheso;
+    }
+
+    public NodeSelectedAlignment getSelectedSource() {
+        return selectedSource;
+    }
+
+    public void setSelectedSource(NodeSelectedAlignment selectedSource) {
+        this.selectedSource = selectedSource;
+    }
+
+    public List<NodeSelectedAlignment> getNodeSelectedAlignmentsAll() {
+        return nodeSelectedAlignmentsAll;
+    }
+
+    public void setNodeSelectedAlignmentsAll(List<NodeSelectedAlignment> nodeSelectedAlignmentsAll) {
+        this.nodeSelectedAlignmentsAll = nodeSelectedAlignmentsAll;
+    }
+
+    public List<NodeSelectedAlignment> getSourcesSelected() {
+        return sourcesSelected;
+    }
+
+    public void setSourcesSelected(List<NodeSelectedAlignment> sourcesSelected) {
+        this.sourcesSelected = sourcesSelected;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
+    public String getSourceUri() {
+        return sourceUri;
+    }
+
+    public void setSourceUri(String sourceUri) {
+        this.sourceUri = sourceUri;
+    }
+
+    public String getSourceIdTheso() {
+        return sourceIdTheso;
+    }
+
+    public void setSourceIdTheso(String sourceIdTheso) {
+        this.sourceIdTheso = sourceIdTheso;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public AlignementSource getSelectedAlignementSource() {
+        return selectedAlignementSource;
+    }
+
+    public void setSelectedAlignementSource(AlignementSource selectedAlignementSource) {
+        this.selectedAlignementSource = selectedAlignementSource;
+    }
+
+    public AlignementSource getAlignementSourceToUpdate() {
+        return alignementSourceToUpdate;
+    }
+
+    public void setAlignementSourceToUpdate(AlignementSource alignementSourceToUpdate) {
+        this.alignementSourceToUpdate = alignementSourceToUpdate;
+    }
+
+    public String getSourceSelectedName() {
+        return sourceSelectedName;
+    }
+
+    public void setSourceSelectedName(String sourceSelectedName) {
+        this.sourceSelectedName = sourceSelectedName;
+    }
 }
