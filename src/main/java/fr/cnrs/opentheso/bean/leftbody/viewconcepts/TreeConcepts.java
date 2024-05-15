@@ -72,7 +72,7 @@ public class TreeConcepts implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = new GroupHelper().getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang);
+        List<NodeGroup> racineNode = new GroupHelper().getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang, selectedTheso.isSortByNotation());
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getLexicalValue(),
@@ -112,7 +112,7 @@ public class TreeConcepts implements Serializable {
     private boolean addGroupsChild(TreeNode parent) {
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(connect.getPoolConnexion(),
-                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang);
+                ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, selectedTheso.isSortByNotation());
 
         if (listeSubGroup == null) {
             parent.setType("group");
