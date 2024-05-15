@@ -85,7 +85,7 @@
 
     <p:toolbar style="margin: 20px; margin-top: 10px">
         <p:toolbarGroup align="right">
-            <p:commandButton title="#{langueBean.getMsg('btnBack')}" class="btn btn-secondary" style="margin-right: 10px" ajax="true"
+            <p:commandButton value="#{langueBean.getMsg('btnBack')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" style="margin-right: 10px" ajax="true"
                              actionListener="#{alignmentBean.annulerAlignementAutomatique()}" update="containerIndex"/>
         </p:toolbarGroup>
     </p:toolbar>

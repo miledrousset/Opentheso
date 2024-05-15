@@ -1942,6 +1942,7 @@ public class SearchHelper {
             try {
                 stmt = conn.createStatement();
                 try {
+                    
                     query = "SELECT preferred_term.id_concept, term.lexical_value, "
                             + " preferred_term.id_term"
                             + " FROM term, preferred_term WHERE "
@@ -1953,9 +1954,9 @@ public class SearchHelper {
                             + " order by lexical_value ASC LIMIT 200";
            
            
-                        /*
+                        
                 // Méthode à évoluer pour une recherche filtré par collection    
-           
+           /*
                     query = "SELECT preferred_term.id_concept, term.lexical_value,  preferred_term.id_term \n" +
 "	FROM term, preferred_term, concept_group_concept\n" +
 "	WHERE\n" +
@@ -1968,7 +1969,7 @@ public class SearchHelper {
 "	AND\n" +
 "	preferred_term.id_thesaurus = concept_group_concept.idthesaurus\n" +
 "	and \n" +
-"	concept_group_concept.idgroup = 'G124'\n" +
+"       lower(concept_group_concept.idgroup) = lower('g124')" +  
                             multivaluesTerm +
 
 "	and term.id_thesaurus = '" + idTheso + "' \n" +
@@ -2007,9 +2008,9 @@ public class SearchHelper {
                             + " order by non_preferred_term.lexical_value ASC LIMIT 200";
                     
         
-                /*
-                // Méthode à évoluer pour une recherche filtré par collection 
                 
+                // Méthode à évoluer pour une recherche filtré par collection 
+       /*         
                     query = "SELECT preferred_term.id_concept, term.id_term,  non_preferred_term.lexical_value as npt, term.lexical_value as pt \n" +
 "	FROM non_preferred_term, term, preferred_term, concept_group_concept \n" +
 "	WHERE  \n" +
@@ -2028,9 +2029,10 @@ public class SearchHelper {
 "	and\n" +
 "	preferred_term.id_thesaurus = concept_group_concept.idthesaurus\n" +
 "	and\n" +
-"	concept_group_concept.idgroup = 'G124'\n" +
+"       lower(concept_group_concept.idgroup) = lower('g124')" +                            
+
 "	\n" +
-"	and \n" +
+
                multivaluesSynonyme +             
 "	and \n" +
 "	non_preferred_term.id_thesaurus = '" +idTheso + "' \n" +

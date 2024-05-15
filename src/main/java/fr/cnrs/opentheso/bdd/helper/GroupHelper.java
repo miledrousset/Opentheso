@@ -35,6 +35,7 @@ import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
+import java.util.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1341,10 +1342,11 @@ public class GroupHelper {
      * @param ds
      * @param idTheso
      * @param idLang #MR
+     * @param isSortByNotation
      * @return
      */
     public ArrayList<NodeGroup> getListRootConceptGroup(HikariDataSource ds,
-            String idTheso, String idLang) {
+            String idTheso, String idLang, boolean isSortByNotation) {
 
         ArrayList<NodeGroup> nodeConceptGroupList = new ArrayList<>();
         ArrayList<String> tabIdConceptGroup = getListIdOfRootGroup(ds, idTheso);
@@ -1367,7 +1369,9 @@ public class GroupHelper {
 
             nodeConceptGroupList.add(nodeConceptGroup);
         }
-
+        if (!isSortByNotation) {
+            Collections.sort(nodeConceptGroupList);
+        }
         return nodeConceptGroupList;
 
     }
@@ -1534,10 +1538,11 @@ public class GroupHelper {
      * @param idConceptGroup
      * @param idTheso
      * @param idLang
+     * @param isSortByNotation
      * @return #MR
      */
     public ArrayList<NodeGroup> getListChildsOfGroup(HikariDataSource ds,
-            String idConceptGroup, String idTheso, String idLang) {
+            String idConceptGroup, String idTheso, String idLang, boolean isSortByNotation) {
 
         ArrayList<String> lisIdGroups = getListGroupChildIdOfGroup(ds, idConceptGroup, idTheso);
         if (lisIdGroups == null) {
@@ -1567,6 +1572,10 @@ public class GroupHelper {
             }
             nodeGroups.add(nodeConceptGroup);
         }
+        if (!isSortByNotation) {
+            Collections.sort(nodeGroups);
+        }        
+        
         return nodeGroups;
     }
 

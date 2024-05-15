@@ -27,19 +27,6 @@
                              icon="fa-solid fa-gear" styleClass="ui-button-success"
                              actionListener="#{setAlignmentSourceBean.initForManage()}" process="@this" ajax="true"
                              update="containerIndex:formRightTab"/>
-
-            <p:commandButton rendered="#{f} " value="#{langueBean.getMsg('rightbody.conceptdialog.add_source')} (Opentheso)" 
-                             icon="fa-solid fa-plus" styleClass="ui-button-success" 
-                             process="@this" ajax="true" update="addSourceID"
-                             actionListener="#{setAlignmentSourceBean.initAddSource()}"
-                             oncomplete="PF('addSource').show();" style="margin-left: 10px" />
-
-            <p:commandButton rendered="#{f} " disabled="true" value="modifier (Opentheso)" 
-                             icon="fa-solid fa-plus" styleClass="ui-button-success" 
-                             update="idUpdateSource"
-                             actionListener="#{setAlignmentSourceBean.init()}"
-                             oncomplete="PF('updateSource').show();" style="margin-left: 10px" />            
-
         </p:toolbarGroup>
 
     </p:toolbar>

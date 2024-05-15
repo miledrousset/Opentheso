@@ -31,7 +31,23 @@
                     <p:menuitem disabled="#{((treeGroups.selectedNode == null) or (!treeGroups.isGroupNode) or (treeGroups.isThisGroupHaveSubGroup))}"
                                 value="#{langueBean.getMsg('leftbody.group.deleteGroup')}" actionListener="#{addGroupBean.init()}"  process="@this"
                                 oncomplete="PF('deleteGroup').show();" update="containerIndex:idDeleteGroup"
-                                icon="fas fa-minus"/>                  
+                                icon="fas fa-minus"/>       
+                    
+                    <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>  
+                    
+                    <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
+                                actionListener="#{treeGroups.setSortByNotation(false)}" ajax="true"
+                                action="#{selectedTheso.reloadGroups()}"
+                                process="@this" 
+                                disabled="#{!treeGroups.sortByNotation}"
+                                update="containerIndex menuBar containerIndex:formLeftTab:tabTree:treeGroups" icon="fas fa-sort-alpha-down"/>                    
+                    
+                    <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
+                                actionListener="#{treeGroups.setSortByNotation(true)}" ajax="true"
+                                action="#{selectedTheso.reloadGroups()}"
+                                disabled="#{treeGroups.sortByNotation}" icon="fas fa-sort-numeric-down"
+                                process="@this" update="containerIndex menuBar containerIndex:formLeftTab:tabTree:treeGroups" />                    
+                    
                 </p:menuButton>
             </h:panelGroup>
         </div>

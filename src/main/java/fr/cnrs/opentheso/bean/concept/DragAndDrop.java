@@ -137,6 +137,10 @@ public class DragAndDrop implements Serializable {
         isDropToRoot = false;
         isGroupToCut = false;
     }
+    
+    public void validateCheck(){
+        
+    }
 
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Copy and paste !");
@@ -828,6 +832,10 @@ public class DragAndDrop implements Serializable {
      * permet de déposer la branche copiée précédement par Drag and Drop
      *
      */
+    
+    public void drop2() {
+        int i = 0;
+    }
     public void drop() {
         FacesMessage msg;  
         if(isDropToRoot) {
