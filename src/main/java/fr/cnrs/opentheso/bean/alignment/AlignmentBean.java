@@ -85,6 +85,7 @@ public class AlignmentBean implements Serializable {
 
     private boolean allAlignementVisible, propositionAlignementVisible, manageAlignmentVisible, comparaisonVisible;
     private List<NodeAlignment> allAlignementFound, selectAlignementForAdd;
+    private NodeAlignment selectOneAlignementForAdd;
 
     private boolean viewSetting = false;
     private boolean viewAddNewSource = false;
@@ -585,6 +586,8 @@ public class AlignmentBean implements Serializable {
                 .filter(element -> !element.getUri_target().equals(alignementSelect.getUri_target()))
                 .collect(Collectors.toList());
 
+        selectAlignementForAdd = List.of();
+
         if (CollectionUtils.isEmpty(allAlignementFound)) {
             allAlignementVisible = true;
             propositionAlignementVisible = false;
@@ -604,21 +607,24 @@ public class AlignmentBean implements Serializable {
     }
 
     private String alignementTypeSelected;
-    public void addAlignementByConcept(NodeAlignment alignement) {
-        var alignementToSave = allAlignementFound.stream()
-                .filter(element -> element.getUri_target().equals(alignement.getUri_target()))
-                .findFirst();
+    public void addAlignementByConcept() {
 
-        if (alignementToSave.isPresent()) {
-            this.alignementSelect = alignementToSave.get();
-            if ("alignement-auto".equalsIgnoreCase(mode)) {
-                PrimeFaces.current().executeScript("PF('addAlignement').show();");
+        if (selectOneAlignementForAdd != null) {
+            var alignementToSave = allAlignementFound.stream()
+                    .filter(element -> element.getUri_target().equals(selectOneAlignementForAdd.getUri_target()))
+                    .findFirst();
+
+            if (alignementToSave.isPresent()) {
+                this.alignementSelect = alignementToSave.get();
+                if ("alignement-auto".equalsIgnoreCase(mode)) {
+                    PrimeFaces.current().executeScript("PF('addAlignement').show();");
+                } else {
+                    PrimeFaces.current().executeScript("PF('remplacerAlignement').show();");
+                }
             } else {
-                PrimeFaces.current().executeScript("PF('remplacerAlignement').show();");
+                showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez choisir un seul alignement pour le conception"
+                        + selectOneAlignementForAdd.getConcept_target());
             }
-        } else {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez choisir un seul alignement pour le conception"
-                    + alignement.getConcept_target());
         }
     }
 
