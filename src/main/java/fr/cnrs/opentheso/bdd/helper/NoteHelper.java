@@ -11,9 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdConceptIdTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import org.apache.commons.logging.Log;
@@ -475,8 +473,7 @@ public class NoteHelper {
      * @param idThesaurus
      * @return boolean
      */
-    public boolean deleteNotes(Connection conn,
-            String identifier, String idThesaurus) {
+    public boolean deleteNotes(Connection conn, String identifier, String idThesaurus) {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("delete from note"
                     + " where identifier = '" + identifier + "'"

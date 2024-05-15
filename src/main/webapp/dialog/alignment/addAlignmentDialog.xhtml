@@ -12,14 +12,14 @@
 
                 <p:defaultCommand target="searchAlignmentBtn" />
                 <div class="row" style="margin-top: 5px; margin-bottom: -10px;">
-                    <h:panelGroup rendered="#{!alignmentBean.isNameAlignment}">
+                    <h:panelGroup rendered="#{!alignmentBean.nameAlignment}">
                         <div class="col-6" style="margin-top: 3px">
                             <p:inputText value="#{alignmentBean.conceptValueForAlignment}" style="height: 35px; font-size: 14px;"/>
                         </div>
                     </h:panelGroup>
 
                     <!-- nom et prénom pour IdRef -->
-                    <h:panelGroup rendered="#{alignmentBean.isNameAlignment}" >
+                    <h:panelGroup rendered="#{alignmentBean.nameAlignment}" >
                         <div class="col-3" style="margin-top: 3px">
                             <p:inputText placeholder="#{langueBean.getMsg('rightbody.conceptdialog.name')}"
                                          value="#{alignmentBean.nom}" style="height: 35px; font-size: 14px;"/>
@@ -53,7 +53,7 @@
 
                 <p:separator/>
 
-                <h:panelGroup id="columnRightPanelResult" rendered="#{alignmentBean.isViewResult}">
+                <h:panelGroup id="columnRightPanelResult" rendered="#{alignmentBean.viewResult}">
                     <!-- Ajout d'alignement manuel -->
                     <p:panel rendered="#{(alignmentBean.listAlignValues.size() == 0)}" style="border: solid 1px; padding: 20px">
                         <div class="row">
@@ -173,7 +173,7 @@
                 </h:panelGroup>
 
                 <!-- panel de validation d'un alignement avec les options-->
-                <h:panelGroup rendered="#{alignmentBean.isViewSelection}">
+                <h:panelGroup rendered="#{alignmentBean.viewSelection}">
 
                     <div class="row" style="margin-top: -5px; margin-bottom: -10px;">
                         <div class="col-3">

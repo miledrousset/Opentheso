@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.bean.leftbody.viewtree;
 import com.zaxxer.hikari.HikariDataSource;
 
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
+import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
@@ -25,18 +26,19 @@ import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PreDestroy;
 
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.protocol.RequestContent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
@@ -605,12 +607,15 @@ public class Tree implements Serializable {
                         conceptBean.getSelectedLang());
                 alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
+                for (AlignementElement element : alignmentBean.getAllignementsList()) {
+                    element.setValide(isURLAvailable(element.getTargetUri()));
+                }
+
                 alignmentBean.setAllAlignementFound(new ArrayList<>());
                 alignmentBean.setAllAlignementVisible(true);
                 alignmentBean.setPropositionAlignementVisible(false);
                 alignmentBean.setManageAlignmentVisible(false);
-            } else {
-                rightBodySetting.setIndex("0");
+                alignmentBean.setComparaisonVisible(false);
             }
         } else {
             indexSetting.setIsFacetSelected(true);
@@ -622,6 +627,22 @@ public class Tree implements Serializable {
         PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:graph");
     }
 
+    public boolean isURLAvailable(String urlString) {
+        if (StringUtils.isNotEmpty(urlString)) {
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("HEAD");
+                int responseCode = connection.getResponseCode();
+                return responseCode == HttpURLConnection.HTTP_OK;
+            } catch (IOException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public void onTabConceptChange(TabChangeEvent event) {
         if (event.getTab().getId().equals("viewTabAlignement")) {
             rightBodySetting.setIndex("2");
@@ -630,6 +651,7 @@ public class Tree implements Serializable {
             alignmentBean.setAllAlignementVisible(true);
             alignmentBean.setPropositionAlignementVisible(false);
             alignmentBean.setManageAlignmentVisible(false);
+            alignmentBean.setComparaisonVisible(false);
 
             alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
