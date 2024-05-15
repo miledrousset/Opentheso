@@ -32,15 +32,18 @@
                                      update="containerIndex"
                                      actionListener="#{alignmentBean.checkAlignement(alignement.idConceptOrig)}"
                                      styleClass="rounded-button ui-button-outlined"
-                                     style="color: #f47b2a; margin-right: 10px" >
+                                     style="color: #f47b2a; margin-right: 10px; ui-button-text-private" >
                         <p:tooltip for="checkUrls" value="#{langueBean.getMsg('alignment.check_alignements')}" showDelay="1000" position="top"/>
                     </p:commandButton>
 
-                    <p:commandButton process="@this" value="#{langueBean.getMsg('rightbody.concept.alignement.alignment_manual')}"
+                    <p:commandButton process="@this" value="#{langueBean.getMsg('rightbody.concept.alignment')}"
+                                     title="#{langueBean.getMsg('rightbody.concept.add_alignment_auto')}"
                                      update=":containerIndex:searchAlignementForm"
                                      actionListener="#{alignmentBean.openEditAlignementWindow(alignement)}"
-                                     styleClass="rounded-button ui-button-outlined"
-                                     style="color: #f47b2a; text-align: right;" >
+                                     icon="fa-solid fa-plus"
+                                     style="font-size: 0.8rem;padding-top: 0.3rem; padding-right: 0.8rem;padding-bottom: 0.3rem; background-color: transparent; color: #f47b2a;"
+                                     styleClass="ui-button-secondary rounded-button">
+                        
                         <p:resetInput target=":containerIndex:searchAlignementForm"/>
                     </p:commandButton>
                 </p:column>
@@ -99,7 +102,6 @@
                     <h:outputText value="#{langueBean.getMsg('alignment.totalAlignmentFor')} (#{alignement.getLabelConceptOrig()}) : #{alignmentBean.getTotalAlignementParConcept(alignement.idConceptOrig)}"/>
                 </p:column>
             </p:summaryRow>
-
             <f:facet name="footer">
                 <span class="p-text-bold" >
                     <h:outputText value="#{langueBean.getMsg('rightbody.alignmentNumber')} : " style="font-size: 14px;"/>
