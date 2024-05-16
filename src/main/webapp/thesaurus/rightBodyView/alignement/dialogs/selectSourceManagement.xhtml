@@ -16,8 +16,7 @@
 
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
                 <p:dataTable size="small" var="alignmentSource" value="#{setAlignmentSourceBean.sourcesSelected}"
-                             widgetVar="listSourceTable" styleClass="products-table"
-                             selection="#{setAlignmentSourceBean.selectedSource}" rowKey="#{alignmentSource.idAlignmentSource}"
+                             styleClass="products-table" selection="#{setAlignmentSourceBean.selectedSource}" rowKey="#{alignmentSource.idAlignmentSource}"
                              style="margin-bottom: -17px; margin-top: -16px; overflow: auto; max-height: 400px" lazy="false" >
 
                     <f:facet name="header">

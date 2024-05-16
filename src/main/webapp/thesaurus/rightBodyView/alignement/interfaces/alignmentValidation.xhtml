@@ -6,7 +6,7 @@
 
     <div class="card mb-4 py-3 border-left-success" style="margin: 20px; border-color: #43B572">
         <p:dataTable id="checkboxDT" var="alignement" value="#{alignmentBean.allAlignementFound}"
-                     selection="#{alignmentBean.selectAlignementForAdd}" rowKey="#{alignement.uri_target}"
+                     selection="#{alignmentBean.selectOneAlignementForAdd}" rowKey="#{alignement.uri_target}"
                      style="margin-bottom: -17px; margin-top: -16px; font-size: 13px;" lazy="false">
 
             <f:facet name="header">
@@ -21,7 +21,7 @@
                 </p:column>
             </p:headerRow>
 
-            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+            <p:column selectionMode="single" style="width:16px;text-align:center"/>
 
             <p:column headerText="#{langueBean.getMsg('statistique.label')}" width="20">
                 <h:outputText value="#{alignement.concept_target}" />
@@ -53,7 +53,7 @@
                 <p:column  style="background-color: #ecf8f1; border-top: 1px solid #43B572;border-bottom: 1px solid #43B572; color: #143a1e; text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('statistique.validate')}"
                                      update=":containerIndex:addAlignementID"
-                                     actionListener="#{alignmentBean.addAlignementByConcept(alignement)}"
+                                     actionListener="#{alignmentBean.addAlignementByConcept()}"
                                      styleClass="rounded-button ui-button-outlined"
                                      style="color: #f47b2a" >
                     </p:commandButton>
