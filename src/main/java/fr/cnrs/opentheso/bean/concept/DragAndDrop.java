@@ -833,9 +833,6 @@ public class DragAndDrop implements Serializable {
      *
      */
     
-    public void drop2() {
-        int i = 0;
-    }
     public void drop() {
         FacesMessage msg;  
         if(isDropToRoot) {
@@ -1255,7 +1252,7 @@ public class DragAndDrop implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> allId = conceptHelper.getIdsOfBranch(
                     connect.getPoolConnexion(),
-                    nodeConceptDrop.getConcept().getIdConcept(),
+                    nodeConceptDrag.getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso());
         if( (allId == null) || (allId.isEmpty())) return;         
         

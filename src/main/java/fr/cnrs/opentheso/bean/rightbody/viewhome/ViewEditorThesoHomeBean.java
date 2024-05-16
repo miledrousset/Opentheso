@@ -140,7 +140,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
         UserHelper userHelper = new UserHelper();
         int idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         if(idProject != -1) {
-            return "(" + userHelper.getGroupName(connect.getPoolConnexion(), idProject) + ")";
+            return userHelper.getGroupName(connect.getPoolConnexion(), idProject);
         } else 
             return "";
     }    

@@ -37,9 +37,9 @@
             
             <!-- Pour la poly-hiérarchie -->
             <h:panelGroup rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}">          
-                <div class="row" style="font-size: 12px; color: black">
+                <div class="row" style="font-size: 14px; background-color: #C63632; color: white; font-size: 14px;">
                     <div class="col-11" style="margin-left: 10px;">
-                        <h:outputText value="Poly-hiérarchie à supprimer / garder ? : " title="Cochez la case pour supprimer la relation"/>
+                        <h:outputText value="Poly-hiérarchie à supprimer / garder pour : (#{dragAndDrop.cuttedConcept.term.lexical_value})" title="Cochez la case pour supprimer la relation"/>
                     </div>                  
                 </div>
                 <div class="row">
@@ -52,7 +52,9 @@
                                 <h:outputText value="#{broader.title}" />
                             </p:column>
                             <p:column headerText="à couper" width="80">
-                                <p:selectBooleanCheckbox value="#{broader.isSelected}" />
+                                <p:selectBooleanCheckbox value="#{broader.isSelected}" >
+                                    <p:ajax listener="#{dragAndDrop.validateCheck()}"/>
+                                </p:selectBooleanCheckbox>
                             </p:column>                                 
                         </p:dataTable>
                     </div>            
@@ -65,7 +67,7 @@
             <!-- Pour les collections -->
             <div class="row" style="font-size: 14px; background-color: #C63632; color: white; font-size: 14px;">
                 <div class="col-11" style="margin-left: 10px;">
-                    <h:outputText value="Collections à supprimer ? " title="Cochez la case pour supprimer la relation"/>
+                    <h:outputText value="Collections à supprimer pour (#{dragAndDrop.cuttedConcept.term.lexical_value})"  title="Cochez la case pour supprimer la relation"/>
                 </div>                  
             </div>
             
@@ -93,7 +95,7 @@
 
             <div class="row" style="font-size: 14px; background-color: #54a90a; color: white; font-size: 14px;">
                 <div class="col-11" style="margin-left: 10px;">
-                    <h:outputText value="Collections à ajouter ? " title="Cochez la case pour ajouter la relation"/>
+                    <h:outputText value="Collections à ajouter pour (#{dragAndDrop.cuttedConcept.term.lexical_value})" title="Cochez la case pour ajouter la relation"/>
                 </div>                  
             </div>
 
