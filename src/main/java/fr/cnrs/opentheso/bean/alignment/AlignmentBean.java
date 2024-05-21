@@ -36,11 +36,10 @@ import fr.cnrs.opentheso.core.alignment.helper.WikidataHelper;
 
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +50,11 @@ import java.util.stream.Collectors;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
@@ -282,7 +286,7 @@ public class AlignmentBean implements Serializable {
         allignementsList.stream()
                 .filter(element -> element.getIdConceptOrig().equalsIgnoreCase(idConceptOrig))
                 .forEach(alignement -> {
-                    var isValide = isURLAvailable(alignement.getTargetUri());
+                    var isValide = isReachable(alignement.getTargetUri());
                     if (isValide != alignement.isValide()) {
                         alignementHelper.updateAlignmentUrlStatut(connect.getPoolConnexion(), alignement.getIdAlignment(),
                                 isValide, idConceptOrig, selectedTheso.getCurrentIdTheso());
@@ -300,32 +304,41 @@ public class AlignmentBean implements Serializable {
         }
     }
 
-    public void checkAlignementForCamparaison() {
-        if (CollectionUtils.isNotEmpty(allAlignementFound)) {
-
-            var alignmentTemps = allAlignementFound.stream()
-                    .collect(Collectors.toMap(NodeAlignment::getUriTargetLocal, obj -> isURLAvailable(obj.getUriTargetLocal()), (existing, replacement) -> existing));
-
-            allAlignementFound.forEach(element -> element.setAlignementLocalValide(alignmentTemps.get(element.getUriTargetLocal())));
-
-            if (allAlignementFound.stream().filter(alignement -> !alignement.isAlignementLocalValide()).findFirst().isPresent()) {
-                showMessage(FacesMessage.SEVERITY_WARN, "Il existe au moins un alignement qui n'est plus disponible !");
-            } else {
-                showMessage(FacesMessage.SEVERITY_INFO, "Tous les alignements sont opérationnelles !");
-            }
-        } else {
-            showMessage(FacesMessage.SEVERITY_INFO, "Aucun alignement à vérifier !");
-        }
-    }
-
-    public boolean isURLAvailable(String urlString) {
+    private boolean isReachable(String urlString) {
         try {
-            URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URL url = new URL(urlString.replace("http://", "https://"));
+
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
+
+            // Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = (hostname, session) -> true;
+
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("HEAD");
+            connection.setConnectTimeout(5000);  // Set a timeout for the connection
+            connection.setReadTimeout(5000);
             int responseCode = connection.getResponseCode();
-            return responseCode == HttpURLConnection.HTTP_OK;
-        } catch (IOException e) {
+            return (200 <= responseCode && responseCode <= 399);  // Consider 2xx and 3xx responses as reachable
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -445,6 +458,7 @@ public class AlignmentBean implements Serializable {
     }
 
     public void openEditAlignementWindow(AlignementElement alignement) {
+        alignementSources = new AlignmentHelper().getAlignementSource(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         selectConceptForAlignment(alignement.getIdConceptOrig());
         PrimeFaces.current().executeScript("PF('searchAlignement').show();");
     }
