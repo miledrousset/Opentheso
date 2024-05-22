@@ -274,6 +274,11 @@ public class AlignmentBean implements Serializable {
                     allignementsList.add(element);
                 }
             }
+
+            var element = new AlignementElement();
+            element.setIdConceptOrig(concept.getId());
+            element.setLabelConceptOrig(concept.getValue());
+            allignementsList.add(element);
         }
 
         sortDatatableAlignementByColor();

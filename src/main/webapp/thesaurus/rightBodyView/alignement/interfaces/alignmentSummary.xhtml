@@ -50,50 +50,58 @@
             </p:headerRow>
 
             <p:column headerText="#{langueBean.getMsg('alignment.source')}" style="width: 40%; border: 0.5px solid green; word-wrap: break-word;">
-                <h:outputLink value="#{alignement.targetUri}" target="_blank" >
-                    <h:outputText value="#{alignement.targetUri}" />
-                </h:outputLink>
+                <h:panelGroup rendered="#{alignement.targetUri != null}">
+                    <h:outputLink value="#{alignement.targetUri}" target="_blank" >
+                        <h:outputText value="#{alignement.targetUri}" />
+                    </h:outputLink>
 
-                <h:panelGroup rendered="#{alignement.valide}">
-                    <i class="pi pi-check-circle" style="font-size: 1rem; color: green" />
-                </h:panelGroup>
-                <h:panelGroup rendered="#{!alignement.valide}">
-                    <i class="pi pi-times-circle" style="font-size: 1rem; color: red" />
+                    <h:panelGroup rendered="#{alignement.valide}">
+                        <i class="pi pi-check-circle" style="font-size: 1rem; color: green" />
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!alignement.valide}">
+                        <i class="pi pi-times-circle" style="font-size: 1rem; color: red" />
+                    </h:panelGroup>
                 </h:panelGroup>
             </p:column>
 
             <p:column headerText="#{langueBean.getMsg('alignment.source')}"
                       style="width: 15%; border: 0.5px solid green;">
-                <h:outputText value="#{alignmentBean.getSourceAlignement(alignement)}" />
+                <h:panelGroup rendered="#{alignement.targetUri != null}">
+                    <h:outputText value="#{alignmentBean.getSourceAlignement(alignement)}" />
+                </h:panelGroup>
             </p:column>
 
             <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}"
                       style="width: 15%; border: 0.5px solid green;">
-                <h:outputText value="#{alignement.typeAlignement}" />
+                <h:panelGroup rendered="#{alignement.targetUri != null}">
+                    <h:outputText value="#{alignement.typeAlignement}" />
+                </h:panelGroup>
             </p:column>
 
             <p:column headerText="Actions" style="text-align: center; width: 10%; border: 0.5px solid green;">
-                <p:commandButton process="@this" rendered="#{alignement.targetUri != null}"
-                                 action="#{alignmentManualBean.reset()}"
-                                 actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
-                                 update=":containerIndex:idUpdateSingleAlignment"
-                                 oncomplete="PF('updateSingleAlignment').show();"
-                                 icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
-                                 style="height: 30px; width: 30px; color: #43B572" />
+                <h:panelGroup rendered="#{alignement.targetUri != null}">
+                    <p:commandButton process="@this" rendered="#{alignement.targetUri != null}"
+                                     action="#{alignmentManualBean.reset()}"
+                                     actionListener="#{alignmentBean.setAlignementElementSelected(alignement)}"
+                                     update=":containerIndex:idUpdateSingleAlignment"
+                                     oncomplete="PF('updateSingleAlignment').show();"
+                                     icon="pi pi-pencil" styleClass="rounded-button ui-button-outlined"
+                                     style="height: 30px; width: 30px; color: #43B572" />
 
-                <p:commandButton process="@this" ajax="true"
-                                 icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
-                                 actionListener="#{alignmentBean.deleteAlignment(alignement)}"
-                                 rendered="#{alignement.targetUri != null}"
-                                 update="containerIndex"
-                                 style="height: 30px; width: 30px; margin-left: 10px">
-                    <p:confirm type="popup" header="Confirmation" message="Est ce que vous voulez supprimer cet alignement ?" icon="pi pi-info-circle"/>
-                </p:commandButton>
+                    <p:commandButton process="@this" ajax="true"
+                                     icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-outlined"
+                                     actionListener="#{alignmentBean.deleteAlignment(alignement)}"
+                                     rendered="#{alignement.targetUri != null}"
+                                     update="containerIndex"
+                                     style="height: 30px; width: 30px; margin-left: 10px">
+                        <p:confirm type="popup" header="Confirmation" message="Est ce que vous voulez supprimer cet alignement ?" icon="pi pi-info-circle"/>
+                    </p:commandButton>
 
-                <p:confirmPopup global="true">
-                    <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
-                    <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirm-popup-yes" />
-                </p:confirmPopup>
+                    <p:confirmPopup global="true">
+                        <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+                        <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirm-popup-yes" />
+                    </p:confirmPopup>
+                </h:panelGroup>
             </p:column>
 
             <p:summaryRow>
