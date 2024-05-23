@@ -198,6 +198,37 @@
                                         </div>                                     
                                     </div>
                                 </div>
+                                <!-- Gestion de la clé d'API -->
+                                <div class="card mb-4 py-3 border-left-success" style="margin-top: 5px; vertical-align: central; margin: 30px; margin-top: -10px">
+                                    <div class="list-group-item list-group-item-action">
+                                        <div class="row" style="padding: 3px;">
+                                            <div class="col-3" style="text-align: right; margin-top: 4px;">
+                                                <h:outputText value="#{langueBean.getMsg('profile.apiKey')}" style="font-size: 14px; font-weight: bold;"/>
+                                            </div>
+
+                                            <div class="col-5">
+                                                <p:inputText value="ot_1716464091032w9f62jhm9h5p4l03k76v4jxm96v8lgrvcbv668qv1qjjg29x" style="width: 100%; height: 100%" readonly="true" />
+                                            </div>
+                                            <div class="col-2 align-self-center">
+                                                <h:outputText value="#{langueBean.getMsg('profile.apiKeyExpire')} 2024/12/25 9:21PM" style="font-size: 16px; font-style: italic;"/>
+                                            </div>
+
+                                            <div class="col-1" style="vertical-align: central; margin-top: 3px">
+                                                <p:commandButton action="#{myAccountBean.updateEmail()}" update="containerIndex"
+                                                                 value="#{langueBean.getMsg('profile.regenerateApiKey')}">
+                                                </p:commandButton>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="padding: 3px;">
+                                            <div class="col-3"></div>
+                                            <p:staticMessage severity="info" detail="#{langueBean.getMsg('profile.apiKeyCopyMessage')}" class="col-auto " style="margin-top: 4px;"/>
+                                        </div>
+                                        <div class="row" style="padding: 3px;">
+                                            <div class="col-3"></div>
+                                            <p:staticMessage severity="warn" detail="#{langueBean.getMsg('profile.apiKeyWarningMessage')}" class="col-auto " style="margin-top: 4px;"/>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
