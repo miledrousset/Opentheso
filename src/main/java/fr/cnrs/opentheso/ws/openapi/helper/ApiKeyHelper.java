@@ -4,6 +4,8 @@
  */
 package fr.cnrs.opentheso.ws.openapi.helper;
 
+import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -101,7 +103,21 @@ public class ApiKeyHelper {
         }     
         return false;
     }
-    
-    
+
+    /**
+     * Génère une clé API d'une longueur choisie avec le header voulu
+     * @param header le header de la clé API
+     * @param keyLength la longueur de la clé API
+     * @return la clé API
+     */
+    public String generateApiKey(String header, int keyLength) {
+        final String timestamp = String.valueOf(System.currentTimeMillis());
+        final String randomKey = header.length() + timestamp.length() < keyLength ? new ToolsHelper().getNewId(keyLength-header.length()-timestamp.length(), false, false) : "";
+        String apiKey= header + timestamp + randomKey;
+        if (apiKey.length() > keyLength) {
+            apiKey = apiKey.substring(0, keyLength);
+        }
+        return apiKey;
+    }
     
 }
