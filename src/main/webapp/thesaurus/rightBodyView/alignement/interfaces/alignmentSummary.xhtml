@@ -27,8 +27,9 @@
                 <p:column colspan="2" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e;">
                     <h:outputText styleClass="ml-2" value="#{alignement.labelConceptOrig} (#{alignement.idConceptOrig})"/>
                 </p:column>
+                
                 <p:column colspan="2" style="border-top: 1px solid #43B572; border-bottom: 1px solid #43B572; color: #143a1e; text-align: right;">
-                    <p:commandButton id="checkUrls" process="@this" value="#{langueBean.getMsg('alignment.check_url')}"
+                    <p:commandButton rendered="#{alignement.targetUri != null}" id="checkUrls" process="@this" value="#{langueBean.getMsg('alignment.check_url')}"
                                      update="containerIndex"
                                      actionListener="#{alignmentBean.checkAlignement(alignement.idConceptOrig)}"
                                      styleClass="rounded-button ui-button-outlined"

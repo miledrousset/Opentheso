@@ -57,6 +57,7 @@ public class MyAccountBean implements Serializable {
     }
 
     public void reset() {
+        currentUser.reGetUser();
         nodeUser = currentUser.getNodeUser();
         passWord1 = null;
         passWord2 = null;

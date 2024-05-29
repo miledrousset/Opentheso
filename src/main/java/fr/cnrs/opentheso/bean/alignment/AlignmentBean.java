@@ -302,6 +302,7 @@ public class AlignmentBean implements Serializable {
         if (allignementsList.stream()
                 .filter(element -> element.getIdConceptOrig().equalsIgnoreCase(idConceptOrig))
                 .filter(alignement -> !alignement.isValide())
+                .filter(alignement -> alignement.getTargetUri() != null)
                 .findFirst().isPresent()) {
             showMessage(FacesMessage.SEVERITY_WARN, "Il existe au moins un alignement qui n'est plus disponible !");
         } else {

@@ -856,7 +856,7 @@ public class ExportFileBean implements Serializable {
         exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
 
         concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(),
-                idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference));
+                idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter()));
 
         // export des facettes filtrées
         List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), idTheso, baseUrl,
@@ -930,7 +930,7 @@ public class ExportFileBean implements Serializable {
         if (!viewExportBean.isToogleFilterByGroup()) {
             exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
             concepts = new ExportHelper().getAllConcepts(connect.getPoolConnexion(), idTheso,
-                    baseUrl, null, nodePreference.getOriginalUri(), nodePreference);
+                    baseUrl, null, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter());
             
             // export des facettes
             List<SKOSResource> facettes = new ExportHelper().getAllFacettes(connect.getPoolConnexion(), idTheso, baseUrl,
@@ -950,7 +950,7 @@ public class ExportFileBean implements Serializable {
                 exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
 
                 concepts.addAll(new ExportHelper().getAllConcepts(connect.getPoolConnexion(),
-                        idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference));
+                        idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter()));
             }
             
             // export des facettes filtrées

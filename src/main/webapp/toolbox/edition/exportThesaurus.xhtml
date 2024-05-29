@@ -56,7 +56,7 @@
 
 
 
-                <!-- export PDF -->
+        <!-- export PDF -->
                 <p:panel  rendered="#{viewExportBean.isPdfExport()}" toggleable="true" closable="false" toggleSpeed="500"
                          closeSpeed="500" style="margin-bottom:20px;" collapsed="false">
                     <h:outputLabel style="color: #000;" value="#{langueBean.getMsg('statistique.type')}:"/>
@@ -123,12 +123,25 @@
                             </div>
                         </h:panelGroup>
                     </h:panelGroup>
+                    
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3" style="text-align: right">
+                            <h:outputText value="#{langueBean.getMsg('export.filterHtmlCharacter')}" 
+                                          title="#{langueBean.getMsg('export.filterHtmlCharacterTooltip')} !!"/>
+                        </div>
+
+                        <div class="col-5">
+                            <p:toggleSwitch id="toggleFilter" value="#{viewExportBean.toogleClearHtmlCharacter}">
+                                <p:ajax  listener="#{viewExportBean.listenerForToogleClearHtmlCharacter()}"/>
+                            </p:toggleSwitch>
+                        </div>
+                    </div>                    
                 </p:panel>
 
 
 
 
-                <!-- export RDF SKOS (RDF, JSON, JSONLD, TURTLE -->
+        <!-- export RDF SKOS (RDF, JSON, JSONLD, TURTLE -->
                 <h:panelGroup rendered="#{viewExportBean.isRdfExport()}">
                         <div class="row">
                             <div class="col-3" style="text-align: right">
