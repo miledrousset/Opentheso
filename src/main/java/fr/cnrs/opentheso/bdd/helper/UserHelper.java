@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -322,7 +323,12 @@ public class UserHelper {
                         + "  users.mail,"
                         + "  users.passtomodify,"
                         + "  users.alertmail,"
-                        + "  users.issuperadmin"
+                        + "  users.issuperadmin,"
+                        + "  users.apiKey,"
+                        + "users.key_never_expire,"
+                        + "users.key_expires_at,"
+                        + "users.isservice_account,"
+                        + "users.key_description"
                         + " FROM users"
                         + " WHERE "
                         + " users.id_user = " + idUser);
@@ -336,6 +342,12 @@ public class UserHelper {
                         nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
                         nodeUser.setPasstomodify(resultSet.getBoolean("passtomodify"));
                         nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setApiKey(resultSet.getString("apiKey"));
+                        nodeUser.setKeyNeverExpire(resultSet.getBoolean("key_never_expire"));
+                        nodeUser.setApiKeyExpireDate(resultSet.getDate("key_expires_at") == null ? null : resultSet.getDate("key_expires_at").toLocalDate());
+                        nodeUser.setServiceAccount(resultSet.getBoolean("isservice_account"));
+                        nodeUser.setKeyDescription(resultSet.getString("key_description"));
+
                     }
                 }
             }
@@ -375,6 +387,17 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return projectId;
+    }
+
+    public boolean isApiKeyExpired(NodeUser nodeUser){
+        if (nodeUser.getApiKeyExpireDate()==null){
+            return false;
+        }
+        if(LocalDate.now().isAfter(nodeUser.getApiKeyExpireDate())){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     /**
