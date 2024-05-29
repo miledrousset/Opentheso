@@ -50,7 +50,7 @@ public class ModifyUSerBean implements Serializable {
     
     
     /**
-     * permet de selectionner l'utilisateur dans la liste avec toutes les
+     * Permet de selectionner l'utilisateur dans la liste avec toutes les
      * informations nécessaires pour sa modification
      *
      * @param idUser
@@ -60,8 +60,12 @@ public class ModifyUSerBean implements Serializable {
         nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
         passWord1 = null;
         passWord2 = null;
-    }   
-    
+    }
+
+    /**
+     *
+     * @param idUser
+     */
     public void setUserStringId(String idUser){
         int id = -1;
         FacesMessage msg;
@@ -74,7 +78,10 @@ public class ModifyUSerBean implements Serializable {
         UserHelper userHelper = new UserHelper();
         nodeUser = userHelper.getUser(connect.getPoolConnexion(), id);        
     }
-    
+
+    /**
+     * Permet de supprimer un utilisateur
+     */
     public void deleteUser() {
         UserHelper userHelper = new UserHelper();
         FacesMessage msg;
