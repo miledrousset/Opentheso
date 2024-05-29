@@ -48,7 +48,8 @@ public class AlignementAutomatique {
                         var alignements = new AlignmentHelper().getAllAlignmentOfConcept(connection, element.getId(), idTheso)
                                 .stream()
                                 .filter(alignement -> StringUtils.isEmpty(alignement.getThesaurus_target())
-                                        || alignement.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource()))
+                                        || alignement.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource())
+                                        || getBaseUrl(alignementSource.getRequete()).equalsIgnoreCase(getBaseUrl(alignement.getUri_target())))
                                 .collect(Collectors.toList());
                         element.setAlignements(alignements);
                     })

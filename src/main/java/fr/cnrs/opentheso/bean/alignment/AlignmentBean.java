@@ -529,9 +529,6 @@ public class AlignmentBean implements Serializable {
 
     public void remplacerAlignementSelected() throws SQLException {
 
-
-        //alignementSelect.setAlignement_id_type(Integer.parseInt(alignementTypeSelected));
-
         supprimerAlignementLocal(alignementSelect);
 
         addSingleAlignment(alignementSelect,
@@ -635,14 +632,26 @@ public class AlignmentBean implements Serializable {
 
             if (alignementToSave.isPresent()) {
                 this.alignementSelect = alignementToSave.get();
-                if ("alignement-auto".equalsIgnoreCase(mode)) {
-                    PrimeFaces.current().executeScript("PF('addAlignement').show();");
-                } else {
-                    PrimeFaces.current().executeScript("PF('remplacerAlignement').show();");
-                }
+                PrimeFaces.current().executeScript("PF('remplacerAlignement').show();");
             } else {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez choisir un seul alignement pour le conception"
                         + selectOneAlignementForAdd.getConcept_target());
+            }
+        }
+    }
+
+    public void setAlignementToRemplace(NodeAlignment alignment) {
+
+        if (alignment != null) {
+            var alignementToSave = allAlignementFound.stream()
+                    .filter(element -> element.getUri_target().equals(alignment.getUri_target()))
+                    .findFirst();
+
+            if (alignementToSave.isPresent()) {
+                this.alignementSelect = alignementToSave.get();
+                PrimeFaces.current().executeScript("PF('remplacerAlignement').show();");
+            } else {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Vous devez choisir un seul alignement pour le conception");
             }
         }
     }
