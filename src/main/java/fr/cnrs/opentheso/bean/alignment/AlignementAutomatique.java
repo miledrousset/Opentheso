@@ -49,7 +49,8 @@ public class AlignementAutomatique {
                                 .stream()
                                 .filter(alignement -> StringUtils.isEmpty(alignement.getThesaurus_target())
                                         || alignement.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource())
-                                        || getBaseUrl(alignementSource.getRequete()).equalsIgnoreCase(getBaseUrl(alignement.getUri_target())))
+                                        || getBaseUrl(alignementSource.getRequete()).equalsIgnoreCase(getBaseUrl(alignement.getUri_target()))
+                                        || (alignementSource.getSource().contains("sparql") && alignement.getThesaurus_target().contains("Wikidata")))
                                 .collect(Collectors.toList());
                         element.setAlignements(alignements);
                     })
@@ -64,7 +65,8 @@ public class AlignementAutomatique {
                 }
                 var alignmentSelected = concept.getAlignements().stream()
                         .filter(source -> (getBaseUrl(alignementSource.getRequete()).equalsIgnoreCase(getBaseUrl(source.getUri_target())))
-                                || source.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource()))
+                                || source.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource())
+                                || (alignementSource.getSource().contains("sparql") && source.getThesaurus_target().contains("Wikidata")))
                         .findFirst();
                 if (alignmentSelected.isPresent()) {
                     callables.add(new SearchAllignementByConceptCallable(alignementSource, connection, allLangsTheso,
