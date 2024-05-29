@@ -32,7 +32,6 @@ import javax.ws.rs.ext.Provider;
             @Server(url = "${BASE_SERVER}$")
         }
 )
-@SecurityScheme(name = "CLE-API-EXEMPLE", paramName = "CLE-API-EXEMPLE", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)
+@SecurityScheme(name = "API-KEY", paramName = "API-KEY", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)
 public interface OpenApiConfig {
-
 }
