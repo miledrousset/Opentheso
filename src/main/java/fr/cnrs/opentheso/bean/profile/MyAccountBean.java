@@ -14,14 +14,19 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.PrimeFaces;
+import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 
 /**
+ * Bean pour la gestion des actions de compte utilisateur telles que la mise à jour des informations de profil et des clés API.
+ * Cette classe est à portée de session et gère les paramètres du compte utilisateur.
  *
  * @author miledrousset
  */
@@ -33,16 +38,64 @@ public class MyAccountBean implements Serializable {
     @Inject private CurrentUser currentUser;
 
     private NodeUser nodeUser;
+    private ApiKeyHelper apiKeyHelper = new ApiKeyHelper();
     private String passWord1;
     private String passWord2;
-    // liste des (rôle -> projet) qui existent déjà pour l'utilisateur     
+    private String displayedKey;
+    private LocalDate keyExpireDate;
+    private Boolean isKeyExpired ;
+
+    // liste des (rôle -> projet) qui existent déjà pour l'utilisateur
     ArrayList<NodeUserRoleGroup> allMyRoleProject;
 
+    public MyAccountBean() {
+    }
+
+    /**
+     * Nettoie les ressources avant la destruction.
+     */
     @PreDestroy
     public void destroy() {
         clear();
     }
 
+    /**
+     * Réinitialise les informations de profil de l'utilisateur.
+     */
+    public void reset(){
+        UserHelper userHelper = new UserHelper();
+        currentUser.reGetUser();
+        nodeUser = currentUser.getNodeUser();
+        displayedKey=nodeUser.getApiKey() == null ? null : new String(new char[64]).replace("\0", "*");
+        passWord1 = null;
+        passWord2 = null;
+        initAllMyRoleProject();
+        keyExpireDate = nodeUser.getApiKeyExpireDate();
+        isKeyExpired = userHelper.isApiKeyExpired(nodeUser);
+
+    }
+
+    /**
+     * Met à jour la clé API de l'utilisateur.
+     *
+     * @throws SQLException si une erreur d'accès à la base de données se produit.
+     */
+    public void updateKey() throws SQLException {
+        displayedKey = apiKeyHelper.generateApiKey("ot_", 64);
+        FacesMessage msg;
+        nodeUser.setApiKey(displayedKey);
+        if(apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(displayedKey), nodeUser.getIdUser())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La clé a bien été enregistrée.");
+        } else {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de sauvegarde de la clé.");
+        }
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+    }
+
+    /**
+     * Efface toutes les données utilisateur de la session.
+     */
     public void clear() {
         if (allMyRoleProject != null) {
             allMyRoleProject.clear();
@@ -51,25 +104,14 @@ public class MyAccountBean implements Serializable {
         nodeUser = null;
         passWord1 = null;
         passWord2 = null;
+        displayedKey=null;
     }
 
-    public MyAccountBean() {
-    }
-
-    public void reset() {
-        nodeUser = currentUser.getNodeUser();
-        passWord1 = null;
-        passWord2 = null;
-        initAllMyRoleProject();
-    }
-
-    private void initAllMyRoleProject() {
-        UserHelper userHelper = new UserHelper();
-        allMyRoleProject = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
-    }
-
+    /**
+     * Met à jour le pseudonyme de l'utilisateur.
+     */
     public void updatePseudo() {
-        
+
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
@@ -92,13 +134,16 @@ public class MyAccountBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Pseudo changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
-        
+
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");
         }
     }
 
+    /**
+     * Met à jour la préférence d'alerte email de l'utilisateur.
+     */
     public void updateAlertEmail() {
         FacesMessage msg;
 
@@ -117,6 +162,9 @@ public class MyAccountBean implements Serializable {
         reset();
     }
 
+    /**
+     * Met à jour l'adresse email de l'utilisateur.
+     */
     public void updateEmail() {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
@@ -139,17 +187,20 @@ public class MyAccountBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Email changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
-        
+
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");
         }
     }
 
+    /**
+     * Met à jour le mot de passe de l'utilisateur.
+     */
     public void updatePassword() {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
-        
+
         if (passWord1 == null || passWord1.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -176,11 +227,48 @@ public class MyAccountBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Mot de passe changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
-        
+
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");
         }
+    }
+
+    /**
+     * Initialise la liste des rôles et projets pour l'utilisateur.
+     */
+    private void initAllMyRoleProject() {
+        UserHelper userHelper = new UserHelper();
+        allMyRoleProject = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
+    }
+
+
+
+
+// Getters et Setters
+
+    public ApiKeyHelper getApiKeyHelper() {
+        return apiKeyHelper;
+    }
+
+    public void setApiKeyHelper(ApiKeyHelper apiKeyHelper) {
+        this.apiKeyHelper = apiKeyHelper;
+    }
+
+    public Boolean getKeyExpired() {
+        return isKeyExpired;
+    }
+
+    public void setKeyExpired(Boolean keyExpired) {
+        isKeyExpired = keyExpired;
+    }
+
+    public LocalDate getKeyExpireDate() {
+        return keyExpireDate;
+    }
+
+    public void setKeyExpireDate(LocalDate keyExpireDate) {
+        this.keyExpireDate = keyExpireDate;
     }
 
     public Connect getConnect() {
@@ -223,6 +311,14 @@ public class MyAccountBean implements Serializable {
         this.passWord2 = passWord2;
     }
 
+    public String getDisplayedKey() {
+        return displayedKey;
+    }
+
+    public void setDisplayedKey(String displayedKey) {
+        this.displayedKey = displayedKey;
+    }
+
     public ArrayList<NodeUserRoleGroup> getAllMyRoleProject() {
         return allMyRoleProject;
     }
@@ -230,4 +326,13 @@ public class MyAccountBean implements Serializable {
     public void setAllMyRoleProject(ArrayList<NodeUserRoleGroup> allMyRoleProject) {
         this.allMyRoleProject = allMyRoleProject;
     }
+
+    public boolean isKeyExpired() {
+        return isKeyExpired;
+    }
+
+    public void setKeyExpired(boolean keyExpired) {
+        isKeyExpired = keyExpired;
+    }
 }
+

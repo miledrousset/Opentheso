@@ -4,10 +4,13 @@
  */
 package fr.cnrs.opentheso.ws.openapi.helper;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
+import fr.cnrs.opentheso.bdd.tools.MD5Password;
+import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.Response;
@@ -17,7 +20,8 @@ import javax.ws.rs.core.Response.Status;
  * Helper permettant de vérifier l'existence d'une clé API dans la table useres
  */
 public class ApiKeyHelper {
-    
+
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(ApiKeyHelper.class);
     private static Connection connection = null;
     
     public ApiKeyHelper() {
@@ -29,26 +33,34 @@ public class ApiKeyHelper {
             }
         }
     }
-    
     /**
-     * Vérifie dans la base de donnée si la clé API fournie existe
-     * @param apiKey Clé api
-     * @return une ApiKeyState indiquant l'état de la vérification de la clé API
-     **/
-    public ApiKeyState checkApiKeyExistance(String apiKey) {
-        if (apiKey == null || apiKey.isEmpty()) return ApiKeyState.EMPTY;
-        if (connection == null) return ApiKeyState.DATABASE_UNAVAILABLE;
-        
-        try {
-            boolean keyExist = apiKeyExistInDatabase(apiKey);
-            if (keyExist) {
-                return ApiKeyState.VALID;
-            } else {
-                return ApiKeyState.INVALID;
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(ApiKeyHelper.class.getName()).log(Level.SEVERE, null, e);
-            return ApiKeyState.SQL_ERROR;
+     * Génère une clé API d'une longueur choisie avec le header voulu
+     * @param header le header de la clé API
+     * @param keyLength la longueur de la clé API
+     * @return la clé API
+     */
+    public String generateApiKey(String header, int keyLength) {
+        final String timestamp = String.valueOf(System.currentTimeMillis());
+        final String randomKey = header.length() + timestamp.length() < keyLength ? new ToolsHelper().getNewId(keyLength-header.length()-timestamp.length(), false, false) : "";
+        String apiKey= header + timestamp + randomKey;
+        if (apiKey.length() > keyLength) {
+            apiKey = apiKey.substring(0, keyLength);
+        }
+        return apiKey;
+    }
+
+    /**
+     * @param apiKey Clé d'API à sauvegarder
+     * @param idUser id de l'utilisateur propriétaire de la clé
+     * @return True si la clé a bien été sauvegardé, False sinon
+     * @throws SQLException Appelé quand il y a eu une erreur dans l'exécution de la commande SQL
+     */
+    public boolean saveApiKey(String apiKey, int idUser) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement("UPDATE users SET apikey = ? WHERE id_user = ?")){
+            stmt.setString(1, apiKey);
+            stmt.setInt(2, idUser);
+            int result = stmt.executeUpdate();
+            return result > 0;
         }
     }
 
@@ -77,31 +89,77 @@ public class ApiKeyHelper {
                 code = Response.Status.INTERNAL_SERVER_ERROR;
                 msg = "Server internal error";
                 break;
+            case EXPIRED:
+                code = Response.Status.UNAUTHORIZED;
+                msg = "API key is expired";
+                break;
         }
         
         return ResponseHelper.errorResponse(code, msg, CustomMediaType.APPLICATION_JSON_UTF_8);
     }
 
     /**
-     * Envoie une requête SQL à la base de donnée pour vérifier si la clé API existe dans la table users
-     * @param apiKey Clé API à vérifier
-     * @return True si la clé existe dans la table, False sinon
-     * @throws SQLException Appelé quand il y a eu une erreur dans l'exécution de la commande SQL
+     * Retourne l'id de l'utilisateur propriétaire de la clé
+     * @param apiKey
+     * @return Optional<Integer> Id utilisateur trouvé ou null sinon
+     * @throws SQLException
      */
-    private boolean apiKeyExistInDatabase(String apiKey) throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement("SELECT COUNT(*) AS NB_LINES FROM users WHERE apikey = ?")) {
-           stmt.setString(1, apiKey);
-           ResultSet result = stmt.executeQuery();
-           if (result.next()) {
-               int rowCount = result.getInt("NB_LINES");
-               if (rowCount == 1) {
-                   return true;
-               }  
-           } 
-        }     
-        return false;
+    public Optional<Integer> getIdUser(String apiKey) throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement("SELECT id_user, key_expires_at FROM users WHERE apikey =?")) {
+            stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) {
+                return Optional.of(result.getInt("id_user"));
+            }
+
+        }
+        return null;
     }
-    
-    
+
+    /**
+     * Vérifie si la clé est valide, existe et n'est pas expirée
+     * @param apiKey
+     * @return ApiKeyState Etat de validation de la clé
+     */
+    public ApiKeyState checkApiKey(String apiKey){
+        if (apiKey == null || apiKey.isEmpty()) return ApiKeyState.EMPTY;
+        if (connection == null) return ApiKeyState.DATABASE_UNAVAILABLE;
+        try(PreparedStatement stmt = connection.prepareStatement("SELECT key_expires_at, key_never_expire  FROM users WHERE apikey =?")){
+            stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
+            ResultSet result = stmt.executeQuery();
+            if (!result.next()) {return ApiKeyState.INVALID;}
+            if (!result.getBoolean("key_never_expire")) {
+                if (result.getDate("key_expires_at")==null){return ApiKeyState.INVALID;}
+                if (LocalDate.now().isAfter(result.getDate("key_expires_at").toLocalDate())){return ApiKeyState.EXPIRED;}
+            }
+            return ApiKeyState.VALID;
+
+        } catch (SQLException e){
+            Logger.getLogger(ApiKeyHelper.class.getName()).log(Level.SEVERE, null, e);
+            return ApiKeyState.SQL_ERROR;
+        }
+    }
+
+    /**
+     * Retourne la date d'expiration de la clé ou lève une exception
+     * @param apiKey
+     * @return LocalDate Date d'expiration de la clé
+     * @throws SQLException
+     */
+    private LocalDate getApiKeyExpireDate(String apiKey) throws SQLException{
+            try(PreparedStatement stmt = connection.prepareStatement("SELECT key_expires_at FROM users WHERE apikey = ?")){
+                stmt.setString(1, apiKey);
+                ResultSet result = stmt.executeQuery();
+                return result.getDate("key_expires_at").toLocalDate();
+            }
+    }
+
+
+
+    public static class ApiKeyException extends Exception {
+        public ApiKeyException(String message) {
+            super(message);
+        }
+    }
     
 }
