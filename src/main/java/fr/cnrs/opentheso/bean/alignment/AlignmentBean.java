@@ -632,6 +632,9 @@ public class AlignmentBean implements Serializable {
                     .findFirst();
 
             if (alignementToSave.isPresent()) {
+            //    selectedAlignementSource = alignementSource;
+            //    getUriAndOptions(selectOneAlignementForAdd, selectedTheso.getCurrentIdTheso());
+                
                 this.alignementSelect = alignementToSave.get();
                 PrimeFaces.current().executeScript("PF('remplacerAlignement').show();");
             } else {
@@ -708,9 +711,7 @@ public class AlignmentBean implements Serializable {
 
         alignementSources = new AlignmentHelper().getAlignementSource(connect.getPoolConnexion(), idTheso);
 
-        alignmentTypes = new ArrayList<>();
-        HashMap<String, String> map = new AlignmentHelper().getAlignmentType(connect.getPoolConnexion());
-        alignmentTypes.addAll(map.entrySet());
+        initAlignmentType();
 
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         thesaurusUsedLanguage = thesaurusHelper.getIsoLanguagesOfThesaurus(connect.getPoolConnexion(), idTheso);
@@ -732,7 +733,14 @@ public class AlignmentBean implements Serializable {
         resetAlignmentResult();
         manualAlignmentUri = null;
     }
-
+    
+    public void initAlignmentType(){
+        alignmentTypes = new ArrayList<>();
+        HashMap<String, String> map = new AlignmentHelper().getAlignmentType(connect.getPoolConnexion());
+        alignmentTypes.addAll(map.entrySet());           
+    }
+ 
+    
     private void reset() {
         traductionsOfAlignment = new ArrayList<>();
         descriptionsOfAlignment = new ArrayList<>();
@@ -1313,29 +1321,34 @@ public class AlignmentBean implements Serializable {
      * différente, on l'ajoute à l'objet pour correction
      */
     private void setObjectDefinitions(List<SelectedResource> descriptionsOfAlignmentTemp) {
-        boolean added;
-
+        boolean toIgnore = false;
         if (descriptionsOfAlignmentTemp == null) {
             return;
         }
-        // la liste des traductions de Wikidata
+        // la liste des définitions de Wikidata
         for (SelectedResource selectedResource : descriptionsOfAlignmentTemp) {
-            added = false;
-            // la liste des traductions existantes
+            toIgnore = false;
+            // on compare le texte si équivalent, on l'ignore
             for (NodeNote nodeNote : nodeNotes) {
-                // on compare le texte si équivalent, on l'ignore
-                if (!selectedResource.getGettedValue().trim().equalsIgnoreCase(nodeNote.getLexicalvalue().trim())) {
-                    selectedResource.setLocalValue(nodeNote.getLexicalvalue());
-                    descriptionsOfAlignment.add(selectedResource);
-                    added = true;
-                    break;
-                } else {
-                    added = true;
-                    break;
+                switch (nodeNote.getNotetypecode()) {
+                    case "definition":
+                        if(selectedResource.getIdLang().equalsIgnoreCase(nodeNote.getLang())){
+                            // la def existe dans cette langue
+                            
+                            if (!selectedResource.getGettedValue().trim().equalsIgnoreCase(nodeNote.getLexicalvalue().trim())) {
+                                // la def est diférente, il faut le signaler pour l'accepter ou non 
+                                selectedResource.setLocalValue(nodeNote.getLexicalvalue());
+                        //        descriptionsOfAlignment.add(selectedResource);
+                            } else 
+                                // la def est identique, il faut l'ignorer
+                                toIgnore = true;
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
-            // si on a déjà ajouté la traduction, on l'ignore, sinon, on l'ajoute
-            if (!added) {
+            if(!toIgnore){
                 descriptionsOfAlignment.add(selectedResource);
             }
         }

@@ -123,6 +123,7 @@ public class SetAlignmentSourceBean implements Serializable {
                     .filter(source -> source.getId() == selectedSource.getIdAlignmentSource())
                     .findFirst();
             sourceSelectedName = sourceFound.get().getSource();
+            alignmentBean.initAlignmentType();
             alignmentBean.searchAlignementsForAllConcepts(sourceFound.get());
             selectedSource = null;
             PrimeFaces.current().executeScript("PF('selectSourceManagement').hide();");

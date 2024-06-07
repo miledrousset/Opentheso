@@ -28,6 +28,7 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -35,7 +36,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -92,6 +96,21 @@ public class Rest_new {
     public String testWS(){
         return "pong";
     }
+    
+    @Path("/testput")
+    @PUT
+    @Consumes("application/json;charset=UTF-8")
+    @Produces("application/json;charset=UTF-8")
+    public String addArk(String content) {
+        JsonHelper jsonHelper = new JsonHelper();
+        JsonObject jo;
+        try {
+            jo = jsonHelper.getJsonObject(content);
+            return jo.toString();
+        } catch (Exception e) {
+            return "Erreur";
+        }
+    }    
 
     /**
      * pour produire du RDF-SKOS

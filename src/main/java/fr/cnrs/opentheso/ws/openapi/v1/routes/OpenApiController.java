@@ -5,6 +5,7 @@
  */
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
+import fr.cnrs.opentheso.bdd.tools.MD5Password;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
@@ -32,7 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.QueryParam;
 
 /**
@@ -40,7 +40,7 @@ import javax.ws.rs.QueryParam;
  *
  * @author Julien LINGET
  */
-//general path = /openapi/v1
+
 @Path("/")
 public class OpenApiController extends BaseOpenApiResource {
 
@@ -49,39 +49,40 @@ public class OpenApiController extends BaseOpenApiResource {
 
     @Context
     Application app;
-    
+
     @Path("/{lang}/openapi.{type:json|yaml}")
     @GET
     @Produces({MediaType.APPLICATION_JSON, "application/yaml"})
     @Operation(hidden = true)
+
     public Response getOpenApi(@Context HttpHeaders headers,
             @Context UriInfo uriInfo,
             @PathParam("type") String type,
             @PathParam("lang") String lang,
             @QueryParam("scheme") String scheme) throws Exception {
-        
+
        Map<String, String> types = new HashMap<>();
        types.put("json", CustomMediaType.APPLICATION_JSON_UTF_8);
        types.put("yaml", "application/yaml;charset=utf-8");
-        
+
         LangHelper helper = new LangHelper();
          List<String> languages = helper.availableLang();
-         
+
          if (!languages.contains(lang.toLowerCase())) {
              return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "The lang " + lang + " is not available", types.get(type));
          }
-        
+
          ResourceBundle bundle = ResourceBundle.getBundle("language.openapi", new Locale(lang));
-         
+
         try {
             Response openapi = super.getOpenApi(headers, config, app, uriInfo, type);
-            
+
             String jsonOAS = (String) openapi.getEntity();
             jsonOAS = helper.translate(jsonOAS, bundle);
 
             jsonOAS = jsonOAS.replace("${BASE_SERVER}$", changeURL(uriInfo, scheme));
             Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, changeURL(uriInfo, scheme));
-            
+
             return ResponseHelper.response(Response.Status.OK, jsonOAS, types.get(type));
         } catch (Exception e) {
             Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, e.getMessage());
@@ -89,7 +90,7 @@ public class OpenApiController extends BaseOpenApiResource {
 
         return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", CustomMediaType.APPLICATION_JSON_UTF_8);
     }
-   
+
     @Path("/ping")
     @GET
     @Produces({CustomMediaType.APPLICATION_JSON_UTF_8})
@@ -112,7 +113,9 @@ public class OpenApiController extends BaseOpenApiResource {
                 .build();
     }
 
-    @Path("/testAuth")
+
+
+    @Path("/Auth")
     @GET
     @Produces(CustomMediaType.APPLICATION_JSON_UTF_8)
     @Operation(summary = "${testAuth.summary}$",
@@ -128,25 +131,23 @@ public class OpenApiController extends BaseOpenApiResource {
                 @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             },
             security = {
-                @SecurityRequirement(name = "CLE-API-EXEMPLE")
+                @SecurityRequirement(name = "API-KEY")
             }
     )
-    public Response testAuth(@HeaderParam("CLE-API-EXEMPLE") String cleAPI) {
+    public Response testAuth(@Context HttpHeaders headers)  {
+        String apiKey = headers.getHeaderString("API-KEY");
         ApiKeyHelper helper = new ApiKeyHelper();
-        ApiKeyState keyState = helper.checkApiKeyExistance(cleAPI);
-        if (keyState != ApiKeyState.VALID) {
-            return helper.errorResponse(keyState);
-        }
-
+        ApiKeyState keyState = helper.checkApiKey(apiKey);
+        if (keyState != ApiKeyState.VALID){return helper.errorResponse(keyState);}
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("valid", true);
-        builder.add("key", cleAPI);
-        
+        builder.add("key", apiKey);
+
         Response myResponse = ResponseHelper.response(Response.Status.OK, builder.build().toString(), CustomMediaType.APPLICATION_JSON_UTF_8);
-        
+
         return myResponse;
     }
-    
+
     private String changeURL(UriInfo uriInfo, String scheme) {
         if (scheme == null) return uriInfo.getBaseUri().toString();
         String urlWithoutScheme = uriInfo.getBaseUri().toString().split("://")[1];

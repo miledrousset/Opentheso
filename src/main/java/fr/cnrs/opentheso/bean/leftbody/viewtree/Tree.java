@@ -585,7 +585,7 @@ public class Tree implements Serializable {
      */
     public void onNodeSelectByNode(DefaultTreeNode node) {
 
-        alignmentManualBean.reset();
+//        alignmentManualBean.reset();
         propositionBean.setRubriqueVisible(false);
 
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
@@ -616,6 +616,8 @@ public class Tree implements Serializable {
                 alignmentBean.setPropositionAlignementVisible(false);
                 alignmentBean.setManageAlignmentVisible(false);
                 alignmentBean.setComparaisonVisible(false);
+            } else {
+                rightBodySetting.setIndex("0");
             }
         } else {
             indexSetting.setIsFacetSelected(true);

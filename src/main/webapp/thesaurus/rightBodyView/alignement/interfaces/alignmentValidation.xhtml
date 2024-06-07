@@ -40,8 +40,8 @@
             <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.type_of_alignmnent')}" width="20">
                 <p:selectOneMenu value="#{alignement.alignement_id_type}"
                                  style="font-size: 12px; background: white; border-color: #43B572; width: 100%">
-                    <f:selectItems value="#{alignmentManualBean.nodeAlignmentTypes}" var="types"
-                                   itemLabel="#{types.label} (#{types.labelSkos})" itemValue="#{types.id}"/>
+                    <f:selectItems value="#{alignmentBean.alignmentTypes}" var="types"
+                                   itemLabel="#{types.value}" itemValue="#{types.key}"/>
                 </p:selectOneMenu>
             </p:column>
 
@@ -52,7 +52,7 @@
                 </p:column>
                 <p:column  style="background-color: #ecf8f1; border-top: 1px solid #43B572;border-bottom: 1px solid #43B572; color: #143a1e; text-align: right">
                     <p:commandButton value="#{langueBean.getMsg('statistique.validate')}"
-                                     update=":containerIndex:addAlignementID"
+                                     update=":containerIndex:addAlignementID containerIndex:remplacerAlignementID"
                                      actionListener="#{alignmentBean.addAlignementByConcept()}"
                                      styleClass="rounded-button ui-button-outlined"
                                      style="color: #f47b2a" >
