@@ -56,7 +56,9 @@ public class ModifyUSerBean implements Serializable {
     public ModifyUSerBean() {
     }
 
-    public void test(){}
+    public void toggleHasKey(){
+        setHasKey(!hasKey);
+    }
 
     
     /**

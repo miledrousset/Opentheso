@@ -44,7 +44,6 @@
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
-
                     <div class="container-fluid" style="padding-bottom: 70px">
                         <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_users')}</span></h1>
@@ -383,13 +382,17 @@
                     </div>
                 </div>
 
+                <h:panelGroup id="userKey">
+                    #{modifyUSerBean.hasKey}
                     <div class="col-7">
                         <p:toggleSwitch value="#{modifyUSerBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" >
-                            <p:ajax listener="#{modifyUSerBean.test()}" update="userKey"/>
+                            <p:ajax listener="#{modifyUSerBean.toggleHasKey()}" update="modifyUser2Form:userKey"/>
                         </p:toggleSwitch>
                     </div>
-                <h:panelGroup id="userKey" rendered="#{modifyUSerBean.hasKey}">
-                    <p>test</p>
+
+                    <h:panelGroup rendered="#{modifyUSerBean.hasKey}" >
+                        <p>Test</p>
+                    </h:panelGroup>
                 </h:panelGroup>
 
             </h:form>
