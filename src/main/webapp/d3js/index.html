@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <link rel="stylesheet" href="./style.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+        <script type="module" src="./main.js"></script>
+        <script type="module" src="./graph_generator.js"></script>
+        <title>Vite App</title>
+    </head>
+    <body>
+        <div id="graph"></div>
+        <div
+            style="
+                position: absolute;
+                top: 0;
+                margin: 10px 0 0 10px;
+                background: #aaaaaa;
+                padding: 10px 10px 10px 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            "
+        >
+            <div class="legend-row-container">
+                <label>URL pour récupérer les données: </label>
+                <input id="data-url" type="text" style="width: 500px" />
+                <button id="show-data">Afficher</button>
+            </div>
+            <div class="legend-row-container">
+                <label>Afficher les labels des relations</label>
+                <input id="show-relationships" type="checkbox" />
+                <label class="danger-text">
+                    Activer cette fonctionnalité peut provoquer un
+                    ralentissement de la simulation
+                </label>
+            </div>
+            <div class="legend-row-container">
+                <label>WIP - Relations affichées</label>
+            </div>
+            <div class="legend-row-container">
+                <label>Code de langue:</label>
+                <input
+                    id="language-input"
+                    placeholder="fr, en, es..."
+                    value="fr"
+                    style="width: 75px"
+                />
+            </div>
+            <div class="legend-row-container">
+                <label>Exportation au format SVG: </label>
+                <input
+                    id="download-file-name"
+                    placeholder="Nom du fichier"
+                    style="width: 200px"
+                />
+                <button id="download-svg">Télécharger</button>
+            </div>
+        </div>
+    </body>
+</html>
