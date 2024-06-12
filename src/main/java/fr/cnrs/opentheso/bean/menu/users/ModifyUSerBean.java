@@ -18,6 +18,9 @@ import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
+import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -33,21 +36,28 @@ public class ModifyUSerBean implements Serializable {
     
     private NodeUser nodeUser;
     private String passWord1;
-    private String passWord2;    
+    private String passWord2;;
+    private boolean hasKey;
            
     @PreDestroy
     public void destroy(){
         clear();
-    }  
+    }
+
+
+
     public void clear(){
         nodeUser = null;
         passWord1 = null;
         passWord2 = null;
+
     }       
     
     public ModifyUSerBean() {
     }
-    
+
+    public void test(){}
+
     
     /**
      * Permet de selectionner l'utilisateur dans la liste avec toutes les
@@ -61,6 +71,20 @@ public class ModifyUSerBean implements Serializable {
         passWord1 = null;
         passWord2 = null;
     }
+
+    public boolean hasKey(){
+        if (nodeUser==null){return false;}
+        if (nodeUser.isKeyNeverExpire()){
+            return true;
+        }
+        if (nodeUser.getApiKeyExpireDate()!=null){
+            return true;
+        }
+        if (nodeUser.getApiKey()!=null && nodeUser.getApiKey()!=""){return true;}
+
+        return false;
+    }
+
 
     /**
      *
@@ -76,7 +100,8 @@ public class ModifyUSerBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }            
         UserHelper userHelper = new UserHelper();
-        nodeUser = userHelper.getUser(connect.getPoolConnexion(), id);        
+        nodeUser = userHelper.getUser(connect.getPoolConnexion(), id);
+        hasKey = hasKey();
     }
 
     /**
@@ -220,6 +245,14 @@ public class ModifyUSerBean implements Serializable {
 
     public void setPassWord2(String passWord2) {
         this.passWord2 = passWord2;
+    }
+
+    public boolean isHasKey() {
+        return hasKey;
+    }
+
+    public void setHasKey(boolean hasKey) {
+        this.hasKey = hasKey;
     }
   
     

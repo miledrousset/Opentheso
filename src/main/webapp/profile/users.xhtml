@@ -382,6 +382,16 @@
                         </p:commandButton>
                     </div>
                 </div>
+
+                    <div class="col-7">
+                        <p:toggleSwitch value="#{modifyUSerBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" >
+                            <p:ajax listener="#{modifyUSerBean.test()}" update="userKey"/>
+                        </p:toggleSwitch>
+                    </div>
+                <h:panelGroup id="userKey" rendered="#{modifyUSerBean.hasKey}">
+                    <p>test</p>
+                </h:panelGroup>
+
             </h:form>
         </p:dialog>           
         

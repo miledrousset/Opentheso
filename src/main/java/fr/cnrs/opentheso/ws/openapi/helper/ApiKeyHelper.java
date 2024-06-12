@@ -104,16 +104,16 @@ public class ApiKeyHelper {
      * @return Optional<Integer> Id utilisateur trouvé ou null sinon
      * @throws SQLException
      */
-    public Optional<Integer> getIdUser(String apiKey) throws SQLException {
+    public int getIdUser(String apiKey) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement("SELECT id_user, key_expires_at FROM users WHERE apikey =?")) {
             stmt.setString(1, MD5Password.getEncodedPassword(apiKey));
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
-                return Optional.of(result.getInt("id_user"));
+                return result.getInt("id_user");
             }
 
         }
-        return null;
+        return -1;
     }
 
     /**
@@ -156,10 +156,6 @@ public class ApiKeyHelper {
 
 
 
-    public static class ApiKeyException extends Exception {
-        public ApiKeyException(String message) {
-            super(message);
-        }
-    }
+
     
 }

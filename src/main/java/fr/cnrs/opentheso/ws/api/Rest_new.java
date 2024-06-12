@@ -10,10 +10,7 @@ import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -90,6 +87,14 @@ public class Rest_new {
     @GET
     @Produces("text/text;charset=UTF-8")
     public String testWS(){
+        return "pong";
+    }
+
+
+    @Path("/post")
+    @POST
+    @Produces("text/text;charset=UTF-8")
+    public String testPost(){
         return "pong";
     }
 

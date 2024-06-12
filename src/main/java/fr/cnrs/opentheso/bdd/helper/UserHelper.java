@@ -2,16 +2,10 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +20,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.ws.openapi.helper.DataHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -2260,7 +2255,7 @@ public class UserHelper {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, "erreur", ex);
         }
         return idRole;
     }
@@ -2938,5 +2933,26 @@ public class UserHelper {
     ////////////////////////////////////////////////////////////////////
     //////// fin des nouvelles fontions ////////////////////////////////
     ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////    
+    ////////////////////////////////////////////////////////////////////
+
+
+    public Optional<Integer> getUserGroupId (int userId, String thesoId){
+        DataHelper dataHelper = new DataHelper();
+        try (Connection connection = dataHelper.connect().getConnection()){
+            try( PreparedStatement stmt = connection.prepareStatement("SELECT user_role_group.id_group " +
+                    "FROM user_role_group  " +
+                    "JOIN user_group_thesaurus user_group_thesaurus ON user_role_group.id_group = user_group_thesaurus.id_group " +
+                    "WHERE user_role_group.id_user = ? " +
+                    "AND user_group_thesaurus.id_thesaurus = ? ")){
+                stmt.setInt(1, userId);
+                stmt.setString(2, thesoId);
+                ResultSet rs = stmt.executeQuery();
+                if (!rs.next()) {return Optional.empty();}
+                return Optional.of(rs.getInt("id_group"));
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
