@@ -171,71 +171,7 @@ public class OpenApiController extends BaseOpenApiResource {
     }
 
 
-    /**
-     * Route qui permet d'ajouter un candidat à partir d'un JSON
-     * @param headers
-     * @param candidate
-     * @return
-     */
-    @Path("/addCandidate")
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(
-            summary = "test",
-            description = "oui oui",
-            tags = {"Concept", "Ark"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Allo", content = {
-                            @Content(mediaType = MediaType.APPLICATION_JSON)
-                    }),
-                    @ApiResponse(responseCode = "400", description = "400"),
-                    @ApiResponse(responseCode = "404", description = "404"),
-                    @ApiResponse(responseCode = "503", description = "503")
-            },
-            security = {
-            @SecurityRequirement(name = "API-KEY")
-    }
-    )
-    public Response addCandidate(@Context HttpHeaders headers, String candidate) {
-        CandidateHelper candidateHelper = new CandidateHelper();    // Pour la fonction saveCandidat
-        ApiKeyHelper apiKeyHelper = new ApiKeyHelper();             // Pour l'état de l'APIkey, certaines réponses HTTP et retrouver l'utilisateur propriétaire de la clé
-        UserHelper userHelper = new UserHelper();                   // Pour retrouver le rôle de l'utilisateur sur un théso
-        String apiKey = headers.getHeaderString("API-KEY");
-        ApiKeyState keyState = apiKeyHelper.checkApiKey(apiKey);
-        ObjectMapper objectMapper = new ObjectMapper();
 
-
-
-        if (keyState != ApiKeyState.VALID){return apiKeyHelper.errorResponse(keyState);}
-        try (HikariDataSource ds = connect()) {
-            int userId = apiKeyHelper.getIdUser(apiKey);
-            if (ds == null) {
-                return ResponseHelper.response(Response.Status.NOT_FOUND, null, CustomMediaType.APPLICATION_JSON_UTF_8);
-            }
-
-            int roleId = userHelper.getRoleOnThisTheso(ds, userId, userHelper.getUserGroupId(userId, "th2").orElse(0), "th2" );
-
-            if (roleId == -1) {
-                return ResponseHelper.createStatusResponse(Response.Status.FORBIDDEN, "Unauthorized");
-            } else {
-                Map<String, Object> successResponse = new HashMap<>();
-                try {
-                    boolean saveStatus = candidateHelper.saveCandidat(candidate, userId);
-                    if (!saveStatus){return ResponseHelper.createStatusResponse(Response.Status.BAD_REQUEST, "Bad JSON format.");}
-                    JsonNode candidateJson = objectMapper.readTree(candidate);
-                    successResponse.put("candidate", candidateJson);
-                } catch (IOException e) {
-                    throw new RuntimeException("Error parsing candidate JSON", e);
-                }
-                return ResponseHelper.createJsonResponse(Response.Status.OK, successResponse);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
-    }
 
 
 

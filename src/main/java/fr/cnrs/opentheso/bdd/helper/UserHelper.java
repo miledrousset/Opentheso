@@ -2955,4 +2955,33 @@ public class UserHelper {
             throw new RuntimeException(e);
         }
     }
+
+
+    /**
+     * Sauvegarde en base de donnée les informations concernant la clé d'API
+     * @param userId
+     * @param keyNeverExpire
+     * @param apiKeyExpireDate
+     * @param dataSource
+     */
+    public void updateApiKeyInfos(int userId, Boolean keyNeverExpire, LocalDate apiKeyExpireDate, HikariDataSource dataSource) {
+        String sql = "UPDATE users SET key_never_expire = ?, key_expires_at = ? WHERE id_user = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setBoolean(1, keyNeverExpire);
+            if (apiKeyExpireDate != null) {
+                pstmt.setDate(2, java.sql.Date.valueOf(apiKeyExpireDate));
+            } else {
+                pstmt.setNull(2, java.sql.Types.DATE);
+            }
+            pstmt.setInt(3, userId);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
