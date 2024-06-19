@@ -113,16 +113,16 @@ public class addCandidateController {
 
     public class Candidate {
 
-        @Schema(description = "Title of the candidate", example = "Sample Title")
+        @Schema(description = "Title of the candidate", example = "Sample Title", required = true)
         public String title;
 
-        @Schema(description = "Description or definition of the candidate", example = "Sample Description")
+        @Schema(description = "Description or definition of the candidate", example = "Sample Description", required = true)
         public String description;
 
-        @Schema(description = "Thesaurus ID", example = "th123")
+        @Schema(description = "Thesaurus ID", example = "th123", required = true)
         public String thesoId;
 
-        @Schema(description = "Source of the candidate", example = "Sample Source")
+        @Schema(description = "Source of the candidate", example = "Sample Source", required = false)
         public String source;
     }
 }
