@@ -2057,7 +2057,7 @@ public class ConceptHelper {
     /**
      * Permet de retourner un Id numérique et unique pour le Concept
      */
-    private String getNumericConceptId(Connection conn) {
+    public String getNumericConceptId(Connection conn) {
         String idConcept = getNumericConceptId__(conn);
         while (isIdExiste(conn, idConcept)) {
             idConcept = getNumericConceptId__(conn);

@@ -10,10 +10,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.annotation.PostConstruct;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -23,6 +21,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.ConceptHelper.directFetchConce
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
+import javax.ws.rs.core.MediaType;
 
 @Path("/concept/ark:/{naan}/{ark}")
 public class ConceptArkController {
@@ -120,4 +119,6 @@ public class ConceptArkController {
         ds.close();
         return ResponseHelper.response(Response.Status.OK, Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)), APPLICATION_JSON_UTF_8);
     }
+
+
 }

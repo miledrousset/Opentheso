@@ -14,10 +14,14 @@ import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.time.LocalDate;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+
+import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
+import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -33,21 +37,37 @@ public class ModifyUSerBean implements Serializable {
     
     private NodeUser nodeUser;
     private String passWord1;
-    private String passWord2;    
-           
+    private String passWord2;;
+    private boolean hasKey;
+
+
+
+    private LocalDate apiKeyExpireDate;
+    private boolean keyNeverExpire;
+
     @PreDestroy
     public void destroy(){
         clear();
-    }  
+    }
+
+
+
     public void clear(){
         nodeUser = null;
         passWord1 = null;
         passWord2 = null;
+
     }       
     
     public ModifyUSerBean() {
     }
-    
+
+    public void toggleHasKey(){
+    }
+
+    public void toggleKeyNeverExpire(){
+    }
+
     
     /**
      * Permet de selectionner l'utilisateur dans la liste avec toutes les
@@ -61,6 +81,20 @@ public class ModifyUSerBean implements Serializable {
         passWord1 = null;
         passWord2 = null;
     }
+
+    public boolean hasKey(){
+        if (nodeUser==null){return false;}
+        if (nodeUser.isKeyNeverExpire()){
+            return true;
+        }
+        if (nodeUser.getApiKeyExpireDate()!=null){
+            return true;
+        }
+
+
+        return false;
+    }
+
 
     /**
      *
@@ -76,7 +110,10 @@ public class ModifyUSerBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }            
         UserHelper userHelper = new UserHelper();
-        nodeUser = userHelper.getUser(connect.getPoolConnexion(), id);        
+        nodeUser = userHelper.getUser(connect.getPoolConnexion(), id);
+        hasKey = hasKey();
+        apiKeyExpireDate = nodeUser.getApiKeyExpireDate();
+        keyNeverExpire = nodeUser.isKeyNeverExpire();
     }
 
     /**
@@ -196,7 +233,32 @@ public class ModifyUSerBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Mot de passe changé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         selectUser(nodeUser.getIdUser());        
-    }    
+    }
+
+    /**
+     * Permet de sauvegarder les informations concernant la clé  d'API
+     */
+    public void updateApiKey() {
+        UserHelper userHelper = new UserHelper();
+        Boolean keyNeverExpireValue = nodeUser.isKeyNeverExpire();
+        LocalDate apiKeyExpireDateValue = null;
+
+        if (hasKey) {
+            if (keyNeverExpireValue) {
+                keyNeverExpireValue = true;
+                apiKeyExpireDate = null;
+            } else {
+                keyNeverExpireValue = false;
+                apiKeyExpireDateValue = apiKeyExpireDate;
+            }
+        } else {
+            keyNeverExpireValue = false;
+            apiKeyExpireDate = null;
+        }
+
+        // Mise à jour de l'utilisateur dans la base de données
+        userHelper.updateApiKeyInfos(nodeUser.getIdUser(), keyNeverExpireValue, apiKeyExpireDateValue, connect.getPoolConnexion());
+    }
 
     public NodeUser getNodeUser() {
         return nodeUser;
@@ -221,6 +283,30 @@ public class ModifyUSerBean implements Serializable {
     public void setPassWord2(String passWord2) {
         this.passWord2 = passWord2;
     }
-  
-    
+
+    public boolean isHasKey() {
+        return hasKey;
+    }
+
+    public void setHasKey(boolean hasKey) {
+        this.hasKey = hasKey;
+    }
+
+    public LocalDate getApiKeyExpireDate() {
+        return apiKeyExpireDate;
+    }
+
+    public void setApiKeyExpireDate(LocalDate apiKeyExpireDate) {
+        this.apiKeyExpireDate = apiKeyExpireDate;
+    }
+
+    public boolean isKeyNeverExpire() {
+        return keyNeverExpire;
+    }
+
+    public void setKeyNeverExpire(boolean keyNeverExpire) {
+        this.keyNeverExpire = keyNeverExpire;
+    }
+
+
 }
