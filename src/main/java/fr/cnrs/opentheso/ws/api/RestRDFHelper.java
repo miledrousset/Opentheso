@@ -1648,7 +1648,7 @@ public class RestRDFHelper {
     //System.out.println(">> " + "Export Collections OK ");         
         
         List<SKOSResource> concepts = exportHelper.getAllConcepts(ds, idTheso,
-                    baseUrl, null, nodePreference.getOriginalUri(), nodePreference);
+                    baseUrl, null, nodePreference.getOriginalUri(), nodePreference, false);
         
     //System.out.println(">> " + "Récupération des concepts de la BDD OK");             
         

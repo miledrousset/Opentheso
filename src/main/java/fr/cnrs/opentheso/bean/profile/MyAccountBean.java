@@ -106,10 +106,14 @@ public class MyAccountBean implements Serializable {
         passWord2 = null;
         displayedKey=null;
     }
-
     /**
-     * Met à jour le pseudonyme de l'utilisateur.
+     * Initialise la liste des rôles et projets pour l'utilisateur.
      */
+    private void initAllMyRoleProject() {
+        UserHelper userHelper = new UserHelper();
+        allMyRoleProject = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
+    }
+
     public void updatePseudo() {
 
         FacesMessage msg;
@@ -234,13 +238,7 @@ public class MyAccountBean implements Serializable {
         }
     }
 
-    /**
-     * Initialise la liste des rôles et projets pour l'utilisateur.
-     */
-    private void initAllMyRoleProject() {
-        UserHelper userHelper = new UserHelper();
-        allMyRoleProject = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
-    }
+
 
 
 

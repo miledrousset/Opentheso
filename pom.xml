@@ -6,11 +6,19 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso2</groupId>
     <artifactId>opentheso2</artifactId>
-    <version>24.05.01</version>
+    <version>24.06.01</version>
     <packaging>war</packaging>
     <name>opentheso2</name>
 
     <dependencies>
+        <!-- Pour nettoyer les balises HTML -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.17.2</version>
+        </dependency>        
+        
+        
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>

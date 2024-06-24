@@ -21,6 +21,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.jsoup.Jsoup;
 
 
 public class ExportHelper {
@@ -101,10 +102,12 @@ public class ExportHelper {
      * @throws Exception 
      */
     public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso,
-            String baseUrl, String idGroup, String originalUri, NodePreference nodePreference) throws Exception {
+            String baseUrl, String idGroup, String originalUri, NodePreference nodePreference, boolean filterHtmlCharacter) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
         String [] contributors;
+        String note;
+        
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
@@ -133,14 +136,51 @@ public class ExportHelper {
                         }
 
                         addRelationsGiven(resultSet.getString("related"), sKOSResource);
-
-                        addDocumentation(resultSet.getString("definition"), sKOSResource, SKOSProperty.DEFINITION);
-                        addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.NOTE);
-                        addDocumentation(resultSet.getString("editorialNote"), sKOSResource, SKOSProperty.EDITORIAL_NOTE);
-                        addDocumentation(resultSet.getString("secopeNote"), sKOSResource, SKOSProperty.SCOPE_NOTE);
-                        addDocumentation(resultSet.getString("historyNote"), sKOSResource, SKOSProperty.HISTORY_NOTE);
-                        addDocumentation(resultSet.getString("example"), sKOSResource, SKOSProperty.EXAMPLE);
-                        addDocumentation(resultSet.getString("changeNote"), sKOSResource, SKOSProperty.CHANGE_NOTE);
+                        
+                        note = resultSet.getString("definition");
+                        if(StringUtils.isNotEmpty(note)){
+                            if(filterHtmlCharacter)
+                                note = Jsoup.parse(note).text();
+                            addDocumentation(note, sKOSResource, SKOSProperty.DEFINITION);
+                        }
+                        
+                        note = resultSet.getString("note");
+                        if(StringUtils.isNotEmpty(note)){
+                            if(filterHtmlCharacter)
+                                note = Jsoup.parse(note).text();
+                            addDocumentation(note, sKOSResource, SKOSProperty.NOTE);
+                        }        
+                        
+                        note = resultSet.getString("editorialNote");
+                        if(StringUtils.isNotEmpty(note)){
+                            if(filterHtmlCharacter)
+                                note = Jsoup.parse(note).text();
+                            addDocumentation(note, sKOSResource, SKOSProperty.EDITORIAL_NOTE);
+                        }   
+                        note = resultSet.getString("secopeNote");
+                        if(StringUtils.isNotEmpty(note)){
+                            if(filterHtmlCharacter)
+                                note = Jsoup.parse(note).text();
+                            addDocumentation(note, sKOSResource, SKOSProperty.SCOPE_NOTE);
+                        }           
+                        note = resultSet.getString("historyNote");
+                        if(StringUtils.isNotEmpty(note)){
+                            if(filterHtmlCharacter)
+                                note = Jsoup.parse(note).text();
+                            addDocumentation(note, sKOSResource, SKOSProperty.HISTORY_NOTE);
+                        }   
+                        note = resultSet.getString("example");
+                        if(StringUtils.isNotEmpty(note)){
+                            if(filterHtmlCharacter)
+                                note = Jsoup.parse(note).text();
+                            addDocumentation(note, sKOSResource, SKOSProperty.EXAMPLE);
+                        }         
+                        note = resultSet.getString("changeNote");
+                        if(StringUtils.isNotEmpty(note)){
+                            if(filterHtmlCharacter)
+                                note = Jsoup.parse(note).text();
+                            addDocumentation(note, sKOSResource, SKOSProperty.CHANGE_NOTE);
+                        }                         
 
                         addAlignementGiven(resultSet.getString("broadMatch"), sKOSResource, SKOSProperty.BROAD_MATCH);
                         addAlignementGiven(resultSet.getString("closeMatch"), sKOSResource, SKOSProperty.CLOSE_MATCH);

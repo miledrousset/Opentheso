@@ -98,7 +98,7 @@ public class NoteBean implements Serializable {
      * @param nodeFacet 
      */
     public void resetForFacet(NodeFacet nodeFacet){
-        reset();
+        resetGroup();
         setIsFacetNote();
         this.nodeFacet = nodeFacet;
     }
@@ -108,13 +108,11 @@ public class NoteBean implements Serializable {
      * @param nodeGroup 
      */
     public void resetForGroup(NodeGroup nodeGroup){
-        reset();
+        resetGroup();
         setIsGroupNote();
         this.nodeGroup = nodeGroup;
     }    
-    
-    
-    public void reset() {
+    private void resetGroup() {
         noteTypes = new NoteHelper().getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
@@ -122,7 +120,71 @@ public class NoteBean implements Serializable {
         selectedTypeNote = null;
         isFacetNote = false;
         isConceptNote = false;
-        isGroupNote = false;        
+        isGroupNote = false;    
+    }    
+    
+    
+    public void reset() {
+        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
+        filterNotesByUsage(noteTypes1);
+        nodeLangs = selectedTheso.getNodeLangs();
+        selectedLang = selectedTheso.getSelectedLang();
+        noteValue = "";
+        selectedTypeNote = null;
+        isFacetNote = false;
+        isConceptNote = false;
+        isGroupNote = false;    
+    }
+    
+    private ArrayList<NoteHelper.NoteType> findNoteTypes(){
+        ArrayList<NoteHelper.NoteType> noteTypes1 = new NoteHelper().getNotesType(connect.getPoolConnexion());
+        return noteTypes1;
+    }
+    
+    private void filterNotesByUsage(ArrayList<NoteHelper.NoteType> noteTypes1){
+        noteTypes = new ArrayList<>();
+        for (NoteHelper.NoteType noteType : noteTypes1) {
+            switch (noteType.getCodeNote()) {
+                case "note":
+                    if(conceptBean.getNote() == null || conceptBean.getNote().getLexicalvalue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;
+                case "definition":
+                    if(conceptBean.getDefinition() == null || conceptBean.getDefinition().getLexicalvalue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;     
+                case "scopeNote":
+                    if(conceptBean.getScopeNote()== null || conceptBean.getScopeNote().getLexicalvalue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;  
+                case "example":          
+                    if(conceptBean.getExample() == null || conceptBean.getExample().getLexicalvalue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;                     
+                case "historyNote":
+                    if(conceptBean.getHistoryNote()== null || conceptBean.getHistoryNote().getLexicalvalue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break; 
+                case "editorialNote":
+                    if(conceptBean.getEditorialNote()== null || conceptBean.getEditorialNote().getLexicalvalue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;                      
+                    
+                case "changeNote":
+                    if(conceptBean.getChangeNote() == null || conceptBean.getChangeNote().getLexicalvalue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;                      
+                default:
+                    break;
+            }
+        }
     }
     
     private void setIsFacetNote(){
@@ -200,6 +262,9 @@ public class NoteBean implements Serializable {
                 conceptBean.getSelectedLang());
 
         noteValue = "";
+        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
+        filterNotesByUsage(noteTypes1);
+        
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }

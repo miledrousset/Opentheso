@@ -1890,22 +1890,16 @@ public class NoteHelper {
             try (Statement stmt = conn.createStatement()) {
 
                 // ajouté par Miled pour test et optimisation 
-                stmt.executeQuery("SELECT count (note.id) \n" +
-                    "FROM preferred_term, note, concept_group_concept \n" +
-                    "WHERE \n" +
-                    "preferred_term.id_concept = note.id_concept  \n" +
-                    "AND \n" +
-                    "preferred_term.id_thesaurus = note.id_thesaurus \n" +
-                    "AND\n" +
-                    "concept_group_concept.idthesaurus = preferred_term.id_thesaurus \n" +
-                    "AND\n" +
-                    "concept_group_concept.idconcept = preferred_term.id_concept \n" +
-                    "AND \n" +
-                    "note.id_thesaurus = '" + idThesaurus + "'" +
-                    "AND\n" +
-                    "note.lang = '" + idLang + "'" +
-                    "AND\n" +
-                    "concept_group_concept.idgroup = '" + idGroup + "'");
+                stmt.executeQuery("SELECT count (note.id) " +
+                        " FROM note, concept_group_concept " +
+                        " WHERE " +
+                        " concept_group_concept.idthesaurus = note.id_thesaurus " +
+                        " AND" +
+                        " concept_group_concept.idconcept = note.identifier " +
+                        " AND " +
+                        " note.id_thesaurus = '" + idThesaurus + "' AND" +
+                        " note.lang = '" + idLang + "' AND" +
+                        " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
@@ -2027,8 +2021,8 @@ public class NoteHelper {
      */
     public int getNbrNoteByGroup(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
         int nbrNoteConcepts = getNbrNoteByGroupTypeConcept(ds, idGroup, idThesaurus, idLang);
-        int nbrNoteTerms = getNbrNoteByGroupTypeTerm(ds, idGroup, idThesaurus, idLang);
-        return nbrNoteConcepts + nbrNoteTerms;
+     //   int nbrNoteTerms = getNbrNoteByGroupTypeTerm(ds, idGroup, idThesaurus, idLang);
+        return nbrNoteConcepts; //+ nbrNoteTerms;
     }
 
 }

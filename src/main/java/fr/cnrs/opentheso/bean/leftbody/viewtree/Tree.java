@@ -585,7 +585,7 @@ public class Tree implements Serializable {
      */
     public void onNodeSelectByNode(DefaultTreeNode node) {
 
-        alignmentManualBean.reset();
+//        alignmentManualBean.reset();
         propositionBean.setRubriqueVisible(false);
 
         treeNodeDataSelect = (TreeNodeData) selectedNode.getData();
@@ -607,15 +607,17 @@ public class Tree implements Serializable {
                         conceptBean.getSelectedLang());
                 alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
-                for (AlignementElement element : alignmentBean.getAllignementsList()) {
+            /*    for (AlignementElement element : alignmentBean.getAllignementsList()) {
                     element.setValide(isURLAvailable(element.getTargetUri()));
-                }
+                }*/
 
                 alignmentBean.setAllAlignementFound(new ArrayList<>());
                 alignmentBean.setAllAlignementVisible(true);
                 alignmentBean.setPropositionAlignementVisible(false);
                 alignmentBean.setManageAlignmentVisible(false);
                 alignmentBean.setComparaisonVisible(false);
+            } else {
+                rightBodySetting.setIndex("0");
             }
         } else {
             indexSetting.setIsFacetSelected(true);
