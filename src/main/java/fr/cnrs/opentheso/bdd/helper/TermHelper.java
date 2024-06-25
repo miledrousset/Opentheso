@@ -285,7 +285,7 @@ public class TermHelper {
                 stmt.executeUpdate("delete from non_preferred_term where"
                             + " id_thesaurus = '" + idTheso + "'"
                             + " and id_term  = '" + idTerm + "'"
-                            + " and lexical_value  = '" + lexicalValue + "'"
+                            + " and lexical_value  ilike '" + lexicalValue + "'"
                             + " and lang  = '" + idLang + "'");
 
                 addNonPreferredTermHistorique(conn, idTerm, lexicalValue, idLang, idTheso, "", "", false, "delete", idUser);
@@ -296,6 +296,36 @@ public class TermHelper {
         }
         return isPassed;
     }
+    
+    /**
+     * Cette fonction permet de supprimer un Terme Non descripteur ou synonyme
+     *
+     * @param ds
+     * @param idConcept
+     * @param idTheso
+     * @param idUser
+     * @return
+     */
+    public boolean deleteAllNonPreferedTerm(HikariDataSource ds,
+            String idConcept, String idTheso, int idUser) {
+
+        boolean isPassed = false;
+        try (Connection conn = ds.getConnection()){
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("DELETE FROM non_preferred_term" +
+                        " USING preferred_term" +
+                        " WHERE non_preferred_term.id_thesaurus = preferred_term.id_thesaurus" +
+                        " AND non_preferred_term.id_term = preferred_term.id_term" +
+                        " AND preferred_term.id_concept = '" + idConcept + "'" +
+                        " AND non_preferred_term.id_thesaurus = '" + idTheso + "'");
+
+                isPassed = true;
+            }
+        } catch (SQLException sqle) {
+            Logger.getLogger(TermHelper.class.getName()).log(Level.SEVERE, null, sqle);
+        }
+        return isPassed;
+    }    
 
     /**
      * Cette fonction permet de rajouter des Termes Non descripteurs ou

@@ -3,11 +3,12 @@
     <head>
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-        <link rel="stylesheet" href="./style.css" />
+        <link rel="stylesheet" href="./assets/style.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-        <script type="module" src="./main.js"></script>
-        <script type="module" src="./graph_generator.js"></script>
+        <script type="module" src="./assets/main.js"></script>
+        <script type="module" src="./assets/graph_generator.js"></script>
+        <script src="./assets/multiselect-dropdown.js"></script>
         <title>Vite App</title>
     </head>
     <body>
@@ -38,7 +39,29 @@
                 </label>
             </div>
             <div class="legend-row-container">
-                <label>WIP - Relations affichées</label>
+                <label>Relations affichées: </label>
+                <select id="select-links" multiple style="min-width: 500px">
+                    <option value="skos__broader">Terme générique</option>
+                    <option value="skos__narrower">Terme spécifique</option>
+                    <option value="skos__related">Terme associé</option>
+                    <option value="skos__exactMatch">Alignement exact</option>
+                    <option value="skos__inScheme">Dans thésaurus</option>
+                    <option value="skos__hasTopConcept">Top Concept</option>
+                    <option value="ns0__isReplacedBy">Est replacé par</option>
+                    <option value="ns0__replace">Remplace</option>
+                    <option value="ns2__memberOf">Membre de</option>
+                </select>
+            </div>
+            <div class="legend-row-container">
+                <label>WIP - Noeuds affichés: </label>
+                <select id="select-nodes" multiple style="min-width: 500px">
+                    <option value="skos__Concept" selected>Concept</option>
+                    <option value="skos__Collection">Collection</option>
+                    <option value="skos__ConceptScheme" selected>
+                        Thésaurus
+                    </option>
+                    <option value="Resource" selected>Resource</option>
+                </select>
             </div>
             <div class="legend-row-container">
                 <label>Code de langue:</label>

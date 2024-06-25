@@ -1,6 +1,6 @@
 const DefaultGraphSettings = {
     LINK_FORCE_DISTANCE: 200,
-    CHARGE_FORCE_STRENGTH: -200,
+    CHARGE_FORCE_STRENGTH: -100,
     NODE_RADIUS: 30,
     LINK_CURVATURE: 0.15,
     LINK_NODE_INTERSECTION_OFFSET: -5,
@@ -9,16 +9,14 @@ const DefaultGraphSettings = {
 export class Graph {
     dataNodes;
     dataLinks;
+    filteredNodes;
+    filteredLinks;
     dataThesoLinks;
     nodes;
     links;
     svg;
-    width = window.innerWidth;
-    height = window.innerHeight;
     simulation;
-    color = d3.scaleOrdinal(d3.schemeObservable10);
-//    color = d3.scaleOrdinal(d3.schemeDark2);
-//    color = d3.scaleOrdinal([`#7D2525`, `#006E20`, `#375269`, `#33FF08`, `#FF000B`, `#FCE8E8`, `#E3FCED`, `#FCDBDB`]);
+    color = d3.scaleOrdinal(d3.schemeCategory10);
     linkForceDistance;
     chargeForceStrength;
     nodeRadius;
@@ -26,52 +24,25 @@ export class Graph {
     linkNodeIntersectionOffset;
     language;
 
-    constructor(data, language, params = DefaultGraphSettings) {
+    constructor(data, lang, params = DefaultGraphSettings) {
         //Initialisation des données
-        const relationshipsToInclude = [
-            "skos__narrower",
-    //        "skos__broader",
-    //        "skos__inScheme",
-            "skos__exactMatch",
-            "skos__hasTopConcept"
-        ];
         console.log(data);
         this.dataLinks = data.relationships.filter(
-            (value) =>
-                value.type == "relationship" &&
-                relationshipsToInclude.includes(value.label)
+            (value) => value.type == "relationship"
         );
 
         this.dataLinks.forEach(function (l) {
             l.source = l.start.id;
             l.target = l.end.id;
         });
+
         this.dataNodes = data.nodes.filter((value) => value.type == "node");
 
         this.dataThesoLinks = data.thesaurus.filter(
             (value) => value.type == "relationship"
         );
 
-        this.language = language;
-
-        //Suppression des noeuds liés à un thésaurus (la coloration fait la différence entre thésaurus)
-        const nodesToRemove = [];
-        const linksToRemove = this.dataLinks.filter(
-            (link) => link.label == "skos__inScheme"
-        );
-
-        linksToRemove.forEach((link) => {
-            console.log(link);
-            return nodesToRemove.push(link.end.properties.uri);
-        });
-
-        this.dataNodes = this.dataNodes.filter(
-            (node) => !nodesToRemove.includes(node.properties.uri)
-        );
-
-        this.dataLinks = this.dataLinks.filter(
-            (link) => !linksToRemove.includes(link)
-        );
+        this.language = lang;
 
         console.log(this.dataNodes);
         console.log(this.dataLinks);
@@ -91,6 +62,8 @@ export class Graph {
         this.linkNodeIntersectionOffset = params.LINK_NODE_INTERSECTION_OFFSET
             ? params.LINK_NODE_INTERSECTION_OFFSET
             : DefaultGraphSettings.LINK_NODE_INTERSECTION_OFFSET;
+
+        this.initGraph();
     }
 
     onNodeDragStart = (e) => {
@@ -147,18 +120,18 @@ export class Graph {
 
     //Création du svg de base
     initGraph() {
-        return d3
+        this.svg = d3
             .create("svg")
             .attr("xmlns", "http://www.w3.org/2000/svg")
             .attr("xmlns:xlink", "http://www.w3.org/1999/xlink")
             .attr("viewBox", [
-                -this.width / 2,
-                -this.height / 2,
-                this.width,
-                this.height,
+                -window.innerWidth / 2,
+                -window.innerHeight / 2,
+                window.innerWidth,
+                window.innerHeight,
             ])
-            .attr("width", this.width)
-            .attr("height", this.height)
+            .attr("width", window.innerWidth)
+            .attr("height", window.innerHeight)
             .call(d3.zoom().on("zoom", this.onGraphZoom));
     }
 
@@ -187,7 +160,7 @@ export class Graph {
             .attr("stroke-width", 1.5)
             .attr("style", "z-index:1000")
             .selectAll("g")
-            .data(this.dataNodes)
+            .data(this.filteredNodes)
             .join("g")
             .on("click", (event) =>
                 window
@@ -205,7 +178,7 @@ export class Graph {
             )
 
             .attr("fill", (d) =>
-                d3.color(this.color(this.isInTheso(d))).darker(2)
+                d3.color(this.color(this.isInTheso(d))).brighter(1)
             );
 
         nodes
@@ -227,7 +200,7 @@ export class Graph {
                 }
             })
             .attr("fill", (d) =>
-                d3.color(this.color(this.isInTheso(d))).brighter(1)
+                d3.color(this.color(this.isInTheso(d))).darker(2)
             )
             .attr("stroke", "none")
             .attr("text-anchor", "middle")
@@ -248,7 +221,7 @@ export class Graph {
         const links = parent
             .append("g")
             .selectAll("g")
-            .data(this.dataLinks)
+            .data(this.filteredLinks)
             .join("g");
 
         links
@@ -280,12 +253,13 @@ export class Graph {
 
     //Initialisation de la simulation des forces
     initSimulation() {
-        this.simulation = d3
-            .forceSimulation(this.dataNodes)
+        this.simulation = d3.forceSimulation(this.filteredNodes);
+
+        this.simulation
             .force(
                 "link",
                 d3
-                    .forceLink(this.dataLinks)
+                    .forceLink(this.filteredLinks)
                     .id((d) => d.id)
                     .distance(this.linkForceDistance)
             )
@@ -294,17 +268,21 @@ export class Graph {
                 d3.forceManyBody().strength(this.chargeForceStrength)
             )
             .on("tick", () => {
-                this.links.selectAll("path").attr("d", this.linkArc);
+                if (this.links != undefined) {
+                    this.links.selectAll("path").attr("d", this.linkArc);
+                }
 
-                this.nodes
-                    .selectAll("circle")
-                    .attr("cx", (d) => d.x)
-                    .attr("cy", (d) => d.y);
+                if (this.nodes != undefined) {
+                    this.nodes
+                        .selectAll("circle")
+                        .attr("cx", (d) => d.x)
+                        .attr("cy", (d) => d.y);
 
-                this.nodes
-                    .selectAll("text")
-                    .attr("x", (d) => d.x)
-                    .attr("y", (d) => d.y);
+                    this.nodes
+                        .selectAll("text")
+                        .attr("x", (d) => d.x)
+                        .attr("y", (d) => d.y);
+                }
             });
     }
 
@@ -336,18 +314,55 @@ export class Graph {
         const cx = (x1 + x2) / 2 - this.linkCurvature * dy;
         const cy = (y1 + y2) / 2 + this.linkCurvature * dx;
 
+        if (
+            isNaN(sx2) ||
+            isNaN(sy2) ||
+            isNaN(cx) ||
+            isNaN(cy) ||
+            isNaN(sx1) ||
+            isNaN(sy1)
+        ) {
+            return;
+        }
+
         // Return the SVG path description for a quadratic Bézier curve
         return `M${sx2},${sy2} Q${cx},${cy} ${sx1},${sy1}`;
     };
 
-    getGraphNode() {
-        this.svg = this.initGraph();
-        this.initSimulation();
+    render(selectFilterNodesId, selectFilterLinksId, transform) {
         this.defineLinkArrowHead();
+        const linksFilter = [];
+        const nodesFilter = [];
+        document
+            .querySelectorAll(`#${selectFilterLinksId} option:checked`)
+            .forEach((opt) => linksFilter.push(opt.value));
 
-        const content = this.svg.append("g");
-        this.links = this.createLinks(content);
+        document
+            .querySelectorAll(`#${selectFilterNodesId} option:checked`)
+            .forEach((opt) => nodesFilter.push(opt.value));
+
+        this.filteredLinks = this.dataLinks.filter((d) =>
+            linksFilter.includes(d.label)
+        );
+
+        this.filteredNodes = this.dataNodes;
+
+        const content = this.svg.append("g").attr("id", "graph-content");
+
+        if (transform != undefined && transform != null) {
+            content.attr("transform", transform);
+        }
+        this.links =
+            this.filteredLinks.length == 0
+                ? undefined
+                : this.createLinks(content);
         this.nodes = this.createNodes(content);
+
+        const alpha = this.simulation == undefined ? 1 : 0.1;
+
+        this.initSimulation();
+
+        this.simulation.alpha(alpha);
 
         return this.svg.node();
     }

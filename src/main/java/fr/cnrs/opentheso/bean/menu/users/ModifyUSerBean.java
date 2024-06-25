@@ -71,7 +71,7 @@ public class ModifyUSerBean implements Serializable {
         FacesMessage msg;
         try {
             id = Integer.parseInt(idUser);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }            

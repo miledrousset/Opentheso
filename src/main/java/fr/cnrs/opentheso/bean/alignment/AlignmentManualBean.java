@@ -182,11 +182,11 @@ public class AlignmentManualBean implements Serializable {
     
     public void addManualAlignement(String idConcept, boolean isFromConceptView){
 
-        if(manualAlignmentSource == null || manualAlignmentSource.isEmpty()) {
+    /*    if(manualAlignmentSource == null || manualAlignmentSource.isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Veuillez saisir une valeur !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
-        }
+        }*/
         if(manualAlignmentUri == null || manualAlignmentUri.isEmpty()){
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Veuillez saisir une valeur  !");
             FacesContext.getCurrentInstance().addMessage(null, msg);

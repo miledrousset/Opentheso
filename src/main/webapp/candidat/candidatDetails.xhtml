@@ -40,7 +40,10 @@
                 <div class="grid ui-fluid ui-inputgroup" style="height: 35px; margin-bottom: 3px">
                     <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
                         <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate() }"
-                                     value="#{candidatBean.candidatSelected.nomPref}"/>
+                                     value="#{candidatBean.candidatSelected.nomPref}">
+                            <p:ajax event="change" listener="#{candidatBean.changeStateOfLabel()}"
+                                    update="tabViewCandidat:containerIndexCandidat:vote"/>
+                        </p:inputText> 
                         <p:tooltip for="inputTextCandidate" value="#{langueBean.getMsg('candidat.term.no_edit')}"
                                    showDelay="1000" position="top"/>
                     </h:panelGroup>
@@ -56,6 +59,15 @@
                     <p:commandButton rendered="#{!candidatBean.candidatSelected.voted}"
                                      actionListener="#{candidatBean.addVote()}" update="vote"
                                      icon="fas fa-thumbs-down" style="background-color: #888; border: none; color: #FFF;height: 35px"/>
+                    
+                    
+                    <p:commandButton rendered="#{candidatBean.isMyCandidate() and !candidatBean.isNewCandidatActivate()}"
+                                     disabled="#{!candidatBean.isModifiedLabel}"
+                                     update="vote"
+                                     action="#{candidatBean.updateCandidateLabel()}"
+                                     value="#{langueBean.getMsg('btnValidate')}" styleClass="ui-button-success" icon="fa-solid fa-save"
+                                     ajax="true" process="@this" style="margin-left: 20px"/>                    
+                    
                 </div>
             </h:panelGroup>
 

@@ -1,6 +1,7 @@
 import { Graph } from "./graph_generator.js";
 let generatedGraph;
 
+//Event Bouton pour charger les donnée
 document.querySelector("#show-data").addEventListener("click", (event) => {
     const input = document.querySelector("#data-url");
     if (input.value == "" || input.value == undefined) {
@@ -19,14 +20,28 @@ document.querySelector("#show-data").addEventListener("click", (event) => {
                 alert("Erreur, la langue n'est pas définie");
                 return;
             }
-            //TODO gérer le resize
-            //window.addEventListener("resize", handleResize);
             generatedGraph = new Graph(data, lang);
-            graph.appendChild(generatedGraph.getGraphNode());
+            graph.appendChild(
+                generatedGraph.render("select-nodes", "select-links")
+            );
         })
         .catch((reason) => alert(reason));
 });
 
+//Resize du svg lors du resize de l'ecran
+window.addEventListener("resize", () => {
+    const svg = document.querySelector("#graph").firstChild;
+    svg.setAttribute("viewBox", [
+        -window.innerWidth / 2,
+        -window.innerHeight / 2,
+        window.innerWidth,
+        window.innerHeight,
+    ]);
+    svg.setAttribute("width", window.innerWidth);
+    svg.setAttribute("height", window.innerHeight);
+});
+
+//Event checkbox affichage des labels
 document
     .querySelector("#show-relationships")
     .addEventListener("change", (event) => {
@@ -38,6 +53,7 @@ document
         }
     });
 
+//Event Bouton téléchargement SVG
 document.querySelector("#download-svg").addEventListener("click", () => {
     const svg = document.querySelector("#graph").innerHTML;
     let filename = document.querySelector("#download-file-name").value;
@@ -47,6 +63,28 @@ document.querySelector("#download-svg").addEventListener("click", () => {
     download(svg, "image/svg+xml", `${filename}.svg`);
 });
 
+//Event changement filtre noeuds
+document.querySelector("#select-nodes").addEventListener("change", (event) => {
+    if (generatedGraph != undefined)
+        generatedGraph.render(lang, "select-nodes", "select-links");
+});
+
+//Event changement filtre liens
+document.querySelector("#select-links").addEventListener("change", (event) => {
+    if (generatedGraph != undefined) {
+        const graph = document.querySelector("#graph");
+        const zoom = document
+            .querySelector("#graph-content")
+            .getAttribute("transform");
+
+        graph.firstChild.innerHTML = null;
+        graph.appendChild(
+            generatedGraph.render("select-nodes", "select-links", zoom)
+        );
+    }
+});
+
+//Fonction téléchargement fichier
 function download(content, mimeType, filename) {
     const a = document.createElement("a"); // Create "a" element
     const blob = new Blob([content], { type: mimeType }); // Create a blob (file-like object)

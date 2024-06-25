@@ -199,7 +199,6 @@ public class AlignmentHelper {
      * @param idTypeAlignment
      * @param idConcept
      * @param idThesaurus
-     * @param id_alignement_source
      * @return #MR
      */
     public boolean updateAlignment(HikariDataSource ds,
@@ -290,6 +289,8 @@ public class AlignmentHelper {
             String conceptTarget, String thesaurusTarget,
             String uriTarget, int idTypeAlignment,
             String idConcept, String idThesaurus, int id_alignement_source) {
+        
+        thesaurusTarget = new StringPlus().convertString(thesaurusTarget);
 
         if (!isExistsAlignement(ds, id_alignement_source, idThesaurus, idConcept, idTypeAlignment, uriTarget)) {
             message = "";//"Cet alignement n'exite pas, création en cours <br>";

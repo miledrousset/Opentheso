@@ -56,6 +56,30 @@
                         
                         <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>  
 
+                        <!--Pour importer des synonymes altLabels -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.importAltlabels')}" 
+                                         title="#{langueBean.getMsg('actions.importAltlabelsTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('listAltlabelCsv').show();"
+                                         update="idListAltlabelCsv listAltlabelCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                           
+                        <br/>       
+                        
+                        <!--Pour supprimer des synonymes altLabels -->
+                        <i class="pi pi-download"></i>
+                        <p:commandButton value="#{langueBean.getMsg('actions.deleteAltlabels')}" 
+                                         title="#{langueBean.getMsg('actions.deleteAltlabelsTooltip')}"
+                                         styleClass="ui-button-flat" 
+                                         oncomplete="PF('deleteListAltlabelCsv').show();"
+                                         update="idDeleteListAltlabelCsv deleteListAltlabelCsvForm"
+                                         process="@this" ajax="true"
+                                         action="#{importFileBean.init()}"
+                                         style="font-size: 12px; color: #601e18" />                           
+                        <br/>                            
+                        
                         <!--Pour importer des notes -->
                         <i class="pi pi-download"></i>
                         <p:commandButton value="#{langueBean.getMsg('actions.importNotes')}" 
@@ -198,7 +222,9 @@
     <ui:include src="../dialog/import/listAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/import/deleteListAlignmentCsv.xhtml" />   
     <ui:include src="../dialog/actions/exportAlignment.xhtml" />      
-    <ui:include src="../dialog/import/listNoteCsv.xhtml" />      
+    <ui:include src="../dialog/import/listNoteCsv.xhtml" />     
+    <ui:include src="../dialog/import/listAltlabelCsv.xhtml" />      
+    <ui:include src="../dialog/import/deleteListAltlabelCsv.xhtml" />      
     <ui:include src="../dialog/import/listArkCsv.xhtml" />      
     <ui:include src="../dialog/import/listImageCsv.xhtml" />      
     <ui:include src="../dialog/import/listNotationCsv.xhtml" />  
