@@ -20,6 +20,10 @@ public class NodeUser implements Serializable {
     private String keyDescription;
 
 
+
+
+
+
     public int getIdUser() {
         return idUser;
     }

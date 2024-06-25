@@ -5,35 +5,38 @@
  */
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
-import fr.cnrs.opentheso.bdd.tools.MD5Password;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
-import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
-import fr.cnrs.opentheso.ws.openapi.helper.LangHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.ws.openapi.helper.*;
 import io.swagger.v3.jaxrs2.integration.resources.BaseOpenApiResource;
 import fr.cnrs.opentheso.ws.openapi.v1.OpenApiConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import java.util.HashMap;
-import java.util.List;
+import org.primefaces.shaded.json.JSONObject;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.*;
 
 import javax.servlet.ServletConfig;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.ws.rs.QueryParam;
+
+import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 
 /**
  * REST Web Service
@@ -135,6 +138,8 @@ public class OpenApiController extends BaseOpenApiResource {
             }
     )
     public Response testAuth(@Context HttpHeaders headers)  {
+        DataHelper dataHelper = new DataHelper();
+        UserHelper userHelper = new UserHelper();
         String apiKey = headers.getHeaderString("API-KEY");
         ApiKeyHelper helper = new ApiKeyHelper();
         ApiKeyState keyState = helper.checkApiKey(apiKey);
@@ -142,6 +147,17 @@ public class OpenApiController extends BaseOpenApiResource {
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("valid", true);
         builder.add("key", apiKey);
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return ResponseHelper.response(Response.Status.NOT_FOUND, null, CustomMediaType.APPLICATION_JSON_UTF_8);
+            }
+
+            int roleId = userHelper.getRoleOnThisTheso(ds, helper.getIdUser(apiKey), userHelper.getUserGroupId(helper.getIdUser(apiKey), "th2").orElse(0), "th2" );
+            builder.add("Roles", roleId);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         Response myResponse = ResponseHelper.response(Response.Status.OK, builder.build().toString(), CustomMediaType.APPLICATION_JSON_UTF_8);
 
@@ -153,4 +169,11 @@ public class OpenApiController extends BaseOpenApiResource {
         String urlWithoutScheme = uriInfo.getBaseUri().toString().split("://")[1];
         return scheme + "://" + urlWithoutScheme;
     }
+
+
+
+
+
+
+
 }
