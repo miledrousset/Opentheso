@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
+import javax.json.Json;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -84,26 +85,32 @@ public class addCandidateController {
         if (keyState != ApiKeyState.VALID){return apiKeyHelper.errorResponse(keyState);}
         try (HikariDataSource ds = connect()) {
             int userId = apiKeyHelper.getIdUser(apiKey);
-            if (ds == null) {
-                return ResponseHelper.response(Response.Status.NOT_FOUND, null, CustomMediaType.APPLICATION_JSON_UTF_8);
-            }
-
-            int roleId = userHelper.getRoleOnThisTheso(ds, userId, userHelper.getUserGroupId(userId, "th2").orElse(0), "th2" );
-
-            if (roleId == -1) {
-                return ResponseHelper.createStatusResponse(Response.Status.FORBIDDEN, "Unauthorized");
-            } else {
-                Map<String, Object> successResponse = new HashMap<>();
-                try {
-                    boolean saveStatus = candidateHelper.saveCandidat(candidate, userId);
-                    if (!saveStatus){return ResponseHelper.createStatusResponse(Response.Status.BAD_REQUEST, "Bad JSON format.");}
-                    JsonNode candidateJson = objectMapper.readTree(candidate);
-                    successResponse.put("candidate", candidateJson);
-                } catch (IOException e) {
-                    throw new RuntimeException("Error parsing candidate JSON", e);
+            try{JsonNode candidateJson = objectMapper.readTree(candidate);
+                if (ds == null) {
+                    return ResponseHelper.response(Response.Status.NOT_FOUND, null, CustomMediaType.APPLICATION_JSON_UTF_8);
                 }
-                return ResponseHelper.createJsonResponse(Response.Status.OK, successResponse);
+
+                int roleId = userHelper.getRoleOnThisTheso(ds, userId, userHelper.getUserGroupId(userId, String.valueOf(candidateJson.get("thesoId"))).orElse(0), "th2" );
+
+                if (roleId == -1) {
+                    return ResponseHelper.createStatusResponse(Response.Status.FORBIDDEN, "Unauthorized");
+                } else {
+                    Map<String, Object> successResponse = new HashMap<>();
+                    try {
+                        boolean saveStatus = candidateHelper.saveCandidat(candidate, userId);
+                        if (!saveStatus){return ResponseHelper.createStatusResponse(Response.Status.BAD_REQUEST, "Bad JSON format.");}
+
+                        successResponse.put("candidate", candidateJson);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    return ResponseHelper.createJsonResponse(Response.Status.OK, successResponse);
+                }}
+            catch (IOException e) {
+                throw new RuntimeException("Error parsing candidate JSON", e);
             }
+
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
