@@ -89,7 +89,12 @@ public class addCandidateController {
             }
 
             int roleId = userHelper.getRoleOnThisTheso(ds, userId, userHelper.getUserGroupId(userId, "th2").orElse(0), "th2" );
-
+            
+            try {
+                JsonNode candidateJson = objectMapper.readTree(candidate);
+            } catch (Exception e) {
+            }
+            
             if (roleId == -1) {
                 return ResponseHelper.createStatusResponse(Response.Status.FORBIDDEN, "Unauthorized");
             } else {
