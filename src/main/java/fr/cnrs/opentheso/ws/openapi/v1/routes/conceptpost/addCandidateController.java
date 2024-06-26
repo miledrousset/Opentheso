@@ -82,37 +82,41 @@ public class addCandidateController {
 
 
         if (keyState != ApiKeyState.VALID){return apiKeyHelper.errorResponse(keyState);}
+        
         try (HikariDataSource ds = connect()) {
             int userId = apiKeyHelper.getIdUser(apiKey);
-            if (ds == null) {
-                return ResponseHelper.response(Response.Status.NOT_FOUND, null, CustomMediaType.APPLICATION_JSON_UTF_8);
+            try{JsonNode candidateJson = objectMapper.readTree(candidate);
+                if (ds == null) {
+                    return ResponseHelper.response(Response.Status.NOT_FOUND, null, CustomMediaType.APPLICATION_JSON_UTF_8);
+                }
+
+                int roleId = userHelper.getRoleOnThisTheso(ds, userId, 
+                        userHelper.getUserGroupId(userId, candidateJson.get("thesoId").asText()   )
+                                
+                                .orElse(0), candidateJson.get("thesoId").asText()    );
+
+                if (roleId == -1) {
+                    return ResponseHelper.createStatusResponse(Response.Status.FORBIDDEN, "Unauthorized");
+                } else {
+                    Map<String, Object> successResponse = new HashMap<>();
+                    try {
+                        boolean saveStatus = candidateHelper.saveCandidat(candidate, userId);
+                        if (!saveStatus){return ResponseHelper.createStatusResponse(Response.Status.BAD_REQUEST, "Bad JSON format.");}
+
+                        successResponse.put("candidate", candidateJson);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    return ResponseHelper.createJsonResponse(Response.Status.OK, successResponse);
+                }}
+            catch (IOException e) {
+                throw new RuntimeException("Error parsing candidate JSON", e);
             }
 
-            int roleId = userHelper.getRoleOnThisTheso(ds, userId, userHelper.getUserGroupId(userId, "th2").orElse(0), "th2" );
-            
-            try {
-                JsonNode candidateJson = objectMapper.readTree(candidate);
-            } catch (Exception e) {
-            }
-            
-            if (roleId == -1) {
-                return ResponseHelper.createStatusResponse(Response.Status.FORBIDDEN, "Unauthorized");
-            } else {
-                Map<String, Object> successResponse = new HashMap<>();
-                try {
-                    boolean saveStatus = candidateHelper.saveCandidat(candidate, userId);
-                    if (!saveStatus){return ResponseHelper.createStatusResponse(Response.Status.BAD_REQUEST, "Bad JSON format.");}
-                    JsonNode candidateJson = objectMapper.readTree(candidate);
-                    successResponse.put("candidate", candidateJson);
-                } catch (IOException e) {
-                    throw new RuntimeException("Error parsing candidate JSON", e);
-                }
-                return ResponseHelper.createJsonResponse(Response.Status.OK, successResponse);
-            }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
 
     }
 
