@@ -22,6 +22,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,9 +54,10 @@ public class ThesaurusHelper {
     */
     public String getIdThesaurusFromArkId(HikariDataSource ds, String arkId) {
         String idThesaurus = null;
+      //  arkId = StringUtils.replaceOnce(arkId, "-", "");
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_thesaurus from thesaurus where id_ark = '" + arkId + "'");
+                stmt.executeQuery("select id_thesaurus from thesaurus REPLACE(concept.id_ark, '-', '') = REPLACE('" + arkId + "', '-', '')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idThesaurus = resultSet.getString("id_thesaurus");

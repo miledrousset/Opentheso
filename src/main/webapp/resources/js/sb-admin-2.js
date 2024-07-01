@@ -53,6 +53,15 @@
             if (settingButton2 !== null) {
                 settingButton2.style.display = "block";
             }
+            
+            var graph1 = document.getElementById("graph1");
+            if (graph1 !== null) {
+                graph1.style.display = "none";
+            }
+            var graph2 = document.getElementById("graph2");
+            if (graph2 !== null) {
+                graph2.style.display = "block";
+            }            
         } else {
             document.getElementById("logoOpenTheso").style.display = "none";
 
@@ -100,6 +109,15 @@
             if (settingButton2 !== null) {
                 settingButton2.style.display = "none";
             }
+            var graph1 = document.getElementById("graph1");
+            if (graph1 !== null) {
+                graph1.style.display = "block";
+            }
+            var graph2 = document.getElementById("graph2");
+            if (graph2 !== null) {
+                graph2.style.display = "none";
+            }            
+            
         }
         ;
     });
@@ -204,4 +222,9 @@ function initMenu() {
     if (settingButton1 !== null) {
         settingButton1.style.display = "none";
     }
+    
+    var graph1 = document.getElementById("graph1");
+    if (graph1 !== null) {
+        graph1.style.display = "none";
+    }    
 }

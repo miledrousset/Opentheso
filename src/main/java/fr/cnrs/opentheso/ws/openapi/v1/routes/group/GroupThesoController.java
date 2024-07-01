@@ -120,7 +120,7 @@ public class GroupThesoController {
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
             summary = "${getSubGroupsFromTheso.summary}$",
-            description = "${getSubGroupsFromTheso.description}$",
+            description = "",
             tags = {"Group"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "${getSubGroupsFromTheso.200.description}$", content = {

@@ -3490,7 +3490,7 @@ public class GroupHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "select idthesaurus from concept_group where"
-                            + " id_ark = '" + arkId + "'";
+                           + " REPLACE(concept.id_ark, '-', '') = REPLACE('" + arkId + "', '-', '')";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
 

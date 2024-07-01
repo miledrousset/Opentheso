@@ -122,16 +122,16 @@ public class addCandidateController {
 
     public class Candidate {
 
-        @Schema(description = "Title of the candidate", example = "Sample Title", required = true)
+        @Schema(description = "Title of the candidate", example = "Sample Title", requiredMode = Schema.RequiredMode.REQUIRED)
         public String title;
 
-        @Schema(description = "Description or definition of the candidate", example = "Sample Description", required = true)
+        @Schema(description = "Description or definition of the candidate", example = "Sample Description", requiredMode = Schema.RequiredMode.REQUIRED)
         public String description;
 
-        @Schema(description = "Thesaurus ID", example = "th123", required = true)
+        @Schema(description = "Thesaurus ID", example = "th123", requiredMode = Schema.RequiredMode.REQUIRED)
         public String thesoId;
 
-        @Schema(description = "Source of the candidate", example = "Sample Source", required = false)
+        @Schema(description = "Source of the candidate", example = "Sample Source", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         public String source;
     }
 }

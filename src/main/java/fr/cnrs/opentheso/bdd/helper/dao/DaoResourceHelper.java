@@ -352,24 +352,24 @@ public class DaoResourceHelper {
 
                         // notes
                         nodeFullConcept.setDefinitions(getNotes(resultSet.getString("definition")));
-                        nodeFullConcept.setDefinitions(getNotes(resultSet.getString("example")));
-                        nodeFullConcept.setDefinitions(getNotes(resultSet.getString("editorialNote")));
-                        nodeFullConcept.setDefinitions(getNotes(resultSet.getString("changeNote")));
-                        nodeFullConcept.setDefinitions(getNotes(resultSet.getString("scopeNote")));
-                        nodeFullConcept.setDefinitions(getNotes(resultSet.getString("note")));
-                        nodeFullConcept.setDefinitions(getNotes(resultSet.getString("historyNote")));
+                        nodeFullConcept.setExamples(getNotes(resultSet.getString("example")));
+                        nodeFullConcept.setEditorialNotes(getNotes(resultSet.getString("editorialNote")));
+                        nodeFullConcept.setChangeNotes(getNotes(resultSet.getString("changeNote")));
+                        nodeFullConcept.setScopeNotes(getNotes(resultSet.getString("scopeNote")));
+                        nodeFullConcept.setNotes(getNotes(resultSet.getString("note")));
+                        nodeFullConcept.setHistoryNotes(getNotes(resultSet.getString("historyNote")));
 
                         // relations 
                         nodeFullConcept.setBroaders(getRelations(resultSet.getString("broader")));
-                        nodeFullConcept.setBroaders(getRelations(resultSet.getString("narrower")));
-                        nodeFullConcept.setBroaders(getRelations(resultSet.getString("related")));
+                        nodeFullConcept.setNarrowers(getRelations(resultSet.getString("narrower")));
+                        nodeFullConcept.setRelateds(getRelations(resultSet.getString("related")));
 
                         // alignements
                         nodeFullConcept.setExactMatchs(getAlignments(resultSet.getString("exactMatch")));
                         nodeFullConcept.setCloseMatchs(getAlignments(resultSet.getString("closeMatch")));
-                        nodeFullConcept.setCloseMatchs(getAlignments(resultSet.getString("broadMatch")));
-                        nodeFullConcept.setCloseMatchs(getAlignments(resultSet.getString("relatedMatch")));
-                        nodeFullConcept.setCloseMatchs(getAlignments(resultSet.getString("narrowMatch")));
+                        nodeFullConcept.setBroadMatchs(getAlignments(resultSet.getString("broadMatch")));
+                        nodeFullConcept.setRelatedMatchs(getAlignments(resultSet.getString("relatedMatch")));
+                        nodeFullConcept.setNarrowMatchs(getAlignments(resultSet.getString("narrowMatch")));
 
                         // GPS
                         nodeFullConcept.setGps(getGps(resultSet.getString("gpsData")));
@@ -383,7 +383,7 @@ public class DaoResourceHelper {
                         // replaces
                         nodeFullConcept.setReplaces(getFromIdLabel(resultSet.getString("replaces")));
                         //replaceBy
-                        nodeFullConcept.setReplaces(getFromIdLabel(resultSet.getString("replaced_by")));
+                        nodeFullConcept.setReplacedBy(getFromIdLabel(resultSet.getString("replaced_by")));
 
                         //Facettes
                         nodeFullConcept.setFacets(getFromIdLabel(resultSet.getString("facets")));
