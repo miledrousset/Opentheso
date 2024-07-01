@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+
+    <changeSet id="v24.07.01" author="Jérémy">
+        <createTable tableName="graph_view">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar"/>
+            <column name="description" type="varchar"/>
+            <column name="exported_thesaurus" type="varchar []"/>
+        </createTable>
+        <createTable tableName="graph_view_exported_concept_branch">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="graph_view_id" type="int"/>
+            <column name="top_concept_id" type="varchar"/>
+            <column name="top_concept_thesaurus_id" type="varchar"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

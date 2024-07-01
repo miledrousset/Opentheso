@@ -81,4 +81,6 @@
     <include file="/changelog/v24.04/24-04_02.xml"/>
     <include file="/changelog/v24.05/24-05_01.xml"/>
 
+    <include file="/changelog/v24.07/24-07_01.xml"/>
+
 </databaseChangeLog>
