@@ -4,6 +4,7 @@ package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.ConceptIdLabel;
@@ -12,6 +13,8 @@ import fr.cnrs.opentheso.bdd.helper.dao.ConceptRelation;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
+import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
+import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.core.exports.UriHelper;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
@@ -20,7 +23,6 @@ import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -59,7 +61,7 @@ public class GraphD3jsHelper {
         for (String idC : listIdConcept) {
             NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
-            nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso));
+            nodeGraphD3js.getRelationships().addAll(getRelationship(ds, nodeFullConcept, idTheso, idLang));
         }
     }     
     
@@ -87,7 +89,7 @@ public class GraphD3jsHelper {
         for (String idC : listIdConcept) {
             NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
-            nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso));
+            nodeGraphD3js.getRelationships().addAll(getRelationship(ds, nodeFullConcept, idTheso, idLang));
         }
     }    
     
@@ -129,9 +131,11 @@ public class GraphD3jsHelper {
     
 
     
-    private Node getDatasOfCollection(ConceptIdLabel conceptIdLabel){
+    private Node getDatasOfCollection(HikariDataSource ds, ConceptIdLabel conceptIdLabel, String idTheso){
         Node node = new Node();
-        
+        GroupHelper groupHelper = new GroupHelper();
+        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, conceptIdLabel.getIdentifier(), idTheso);
+ 
         node.setId(conceptIdLabel.getUri());
         List<String> labels = new ArrayList<>();
         labels.add("Resource");
@@ -142,9 +146,13 @@ public class GraphD3jsHelper {
         properties.setUri(conceptIdLabel.getUri());
         properties.setPropertiesLabel("skos__prefLabel");
 
+        
         List<String> prefLabels = new ArrayList<>();
-        prefLabels.add(conceptIdLabel.getLabel() + "@" + defaultLang);
-        properties.setPrefLabels(prefLabels);        
+        
+        for (NodeGroupTraductions nodeGroupTraductionse : nodeGroupLabel.getNodeGroupTraductionses()) {
+            prefLabels.add(nodeGroupTraductionse.getTitle() + "@" + nodeGroupTraductionse.getIdLang());
+        }
+        properties.setPrefLabels(prefLabels);       
         
         node.setProperties(properties);
         return node;
@@ -229,7 +237,7 @@ public class GraphD3jsHelper {
     
     
     
-    private List<Relationship> getRelationship(NodeFullConcept nodeFullConcept, String idTheso){
+    private List<Relationship> getRelationship(HikariDataSource ds, NodeFullConcept nodeFullConcept, String idTheso, String idLang){
         List<Relationship> relationships = new ArrayList<>();
         if(nodeFullConcept.getNarrowers() != null){
             for (ConceptRelation narrower : nodeFullConcept.getNarrowers()) {
@@ -290,7 +298,7 @@ public class GraphD3jsHelper {
                 relationship.setEnd(conceptIdLabel.getUri());
                 relationship.setRelation("ns2__memberOf");
                 relationships.add(relationship);
-                Node node = getDatasOfCollection(conceptIdLabel);
+                Node node = getDatasOfCollection(ds, conceptIdLabel, idTheso);
                 nodeGraphD3js.addNewNode(node);
             }
         }           
