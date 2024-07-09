@@ -191,8 +191,7 @@ public class ExportRdf4jHelperNew {
      *
      * @param ds
      * @param idTheso
-     * @param nodePreference
-     * @return 
+     * @param nodePreference 
      */
     public void exportTheso(HikariDataSource ds, String idTheso, NodePreference nodePreference) {
         this.nodePreference = nodePreference;

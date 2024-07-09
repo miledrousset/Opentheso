@@ -1,10 +1,9 @@
-package graph;
+
+package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 
 import com.zaxxer.hikari.HikariDataSource;
-import connexion.ConnexionTest;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.ConceptIdLabel;
@@ -16,80 +15,30 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.core.exports.UriHelper;
 import fr.cnrs.opentheso.skosapi.SKOSProperty;
-
-import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.Node;
-import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.NodeGraphD3js;
-
-
-import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.Properties;
-import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.Relationship;
 import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
-import org.junit.Test;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
  * @author miledrousset
  */
-public class Graph {
-
-    public Graph() {
-    }
-
+public class GraphD3jsHelper {
     private NodeGraphD3js nodeGraphD3js;
     private String defaultLang;
     private NodePreference nodePreference;
-    private UriHelper uriHelper;
+    private UriHelper uriHelper;    
     
-    @Test
-    public void getDataForGraphD3jsConcept() {
-        String idTheso = "th3";
-        String idConcept = "4";
-        String idLang = "fr";
-        defaultLang = idLang;
-        ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();
-        
-        initGraph();
-        
-        getGraphByConcept(ds, idTheso, idConcept, idLang);
-        
-//        idTheso = "th12";
-//        idConcept = "4";
-//        idLang = "fr";
-//        getGraphByConcept(ds, idTheso, idConcept, idLang);
-        
-        String json = getJsonFromNodeGraphD3js();
-    }
-    
-    @Test
-    public void getDataForGraphD3jsTheso() {
-        String idTheso = "th15";
-        String idLang = "fr";
-        defaultLang = idLang;
-        ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();
-        
-        initGraph();
-        getGraphByTheso(ds, idTheso, idLang);
-        idTheso = "th14";
-        idLang = "fr";        
-        getGraphByTheso(ds, idTheso, idLang);        
-        
-        String json = getJsonFromNodeGraphD3js();
-    }    
-    
-    
-    private void initGraph(){
+    public void initGraph(){
         nodeGraphD3js = new NodeGraphD3js();
         nodeGraphD3js.setNodes(new ArrayList<>());
         nodeGraphD3js.setRelationships(new ArrayList<>()); 
     }
     
-    private void getGraphByTheso(HikariDataSource ds, String idTheso, String idLang){
+    public void getGraphByTheso(HikariDataSource ds, String idTheso, String idLang){
         ConceptHelper conceptHelper = new ConceptHelper();
         nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
         uriHelper = new UriHelper(ds, nodePreference, idTheso);
@@ -97,6 +46,9 @@ public class Graph {
         // récupérer les conceptScheme
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(ds, idTheso);
+        if(nodeThesaurus == null){
+            return;
+        }
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
         
         ArrayList<NodeUri> nodeTTs = conceptHelper.getAllTopConcepts(ds, idTheso);
@@ -106,29 +58,35 @@ public class Graph {
         List<String> listIdConcept = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
         for (String idC : listIdConcept) {
             NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
-            nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept, idTheso));
+            nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso));
         }
-        
-
     }     
     
     
-    private void getGraphByConcept(HikariDataSource ds, String idTheso, String idConcept,
+    public void getGraphByConcept(HikariDataSource ds, String idTheso, String idConcept,
                         String idLang){
         ConceptHelper conceptHelper = new ConceptHelper();
         
-        // récupérer le noeud du thésaurus
-        // récupérer les conceptScheme
+        nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        uriHelper = new UriHelper(ds, nodePreference, idTheso);        
+
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(ds, idTheso);
+        if(nodeThesaurus == null){
+            return;
+        }        
         nodeGraphD3js.addNewNode(getDatasOfThesaurus(nodeThesaurus));
+        
+        if(!conceptHelper.isIdExiste(ds, idConcept)){
+            return;
+        }
         
         /// récupérer les concepts
         List<String> listIdConcept = conceptHelper.getIdsOfBranch2(ds, idTheso, idConcept);
         for (String idC : listIdConcept) {
             NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
-            nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept, idTheso));
+            nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso));
         }
     }    
@@ -168,15 +126,6 @@ public class Graph {
         }
         return relationships;
     }    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 
     
@@ -231,7 +180,7 @@ public class Graph {
      * @param idTheso
      * @return 
      */
-    private Node getDatasOfNode(NodeFullConcept nodeFullConcept, String idTheso){
+    private Node getDatasOfNode(NodeFullConcept nodeFullConcept){
         Node node = new Node();
         node.setId(nodeFullConcept.getUri());//idTheso + "." + nodeFullConcept.getIdentifier());
         node.setLabels(getNodeLabel(nodeFullConcept));
@@ -374,11 +323,10 @@ public class Graph {
     
     
     
-    private String getJsonFromNodeGraphD3js(){
+    public String getJsonFromNodeGraphD3js(){
+        if(nodeGraphD3js == null) return null;
         
         JsonObjectBuilder nodeRoot = Json.createObjectBuilder();
-        
-
         
         JsonArrayBuilder jsonArrayNodes = Json.createArrayBuilder();
         
@@ -430,36 +378,6 @@ public class Graph {
         }
         nodeRoot.add("relationships", jsonArrayRelationships.build());        
         return nodeRoot.build().toString();
-    }         
+    }             
     
-    
-
-
-
-    
-    
-    @Test
-    public void getChildren() {
-        String idTheso = "th5";
-        String idConcept = "31";
-
-        ConnexionTest connexionTest = new ConnexionTest();
-        HikariDataSource ds = connexionTest.getConnexionPool();
-
-        PathHelper pathHelper = new PathHelper();
-
-        List<String> paths = pathHelper.getGraphOfConcept(ds, idConcept, idTheso);
-        for (String path : paths) {
-            System.out.println(path);
-        }
-
-        List<List<String>> allPaths = pathHelper.getPathFromGraph(paths);
-        for (List path : allPaths) {
-            System.out.println(path.toString());
-        }
-    }
-
-
-
 }
-

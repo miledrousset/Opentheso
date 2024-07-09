@@ -24,6 +24,46 @@ public class UriHelper {
     }
     
     
+    /**
+     * Cette fonction permet de retourner l'URI du thesaurus
+     * Choix de l'URI pour l'export : 1 seule URI est possible pour l'export
+     * 
+     * @param idTheso
+     * @param idArk
+     * @param idHandle
+     * @return 
+     */
+    public String getUriForTheso(String idTheso, String idArk, String idHandle) {
+        String uri = "";
+        if (idTheso == null || nodePreference == null) {
+            return uri;
+        }
+        
+        // type Ark
+        if(nodePreference.isOriginalUriIsArk()) { 
+            if (!StringUtils.isEmpty(idArk)) {
+                uri = nodePreference.getOriginalUri()+ "/" + idArk;
+                return uri;
+            }
+        }
+        
+        // type Handle
+        if(nodePreference.isOriginalUriIsHandle()){
+            if (!StringUtils.isEmpty(idHandle)) {
+                uri = "https://hdl.handle.net/" + idHandle;
+                return uri;
+            }
+        }
+
+        // si on ne trouve pas ni Handle, ni Ark
+        //http://localhost/opentheso2/?idt=th17
+        if(!StringUtils.isEmpty(nodePreference.getOriginalUri())) {
+            uri = nodePreference.getOriginalUri() + "/?idt=" + idTheso;
+        } else {
+            uri = getPath() + "/?idt=" + idTheso;
+        }
+        return uri;
+    }      
     
     /**
      * Cette fonction permet de retourner l'URI du groupe

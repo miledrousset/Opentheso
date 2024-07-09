@@ -281,19 +281,15 @@ public class DaoResourceHelper {
     }
 
     /**
-     * pemret de récupérer un concept complet par langue
+     * pemret de récupérer une collection par langue
      *
      * @param ds
      * @param idTheso
-     * @param idConcept
+     * @param idGroup
      * @param idLang
      * @return
      */
-    public NodeFullConcept getFullConcept(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
-        return daoGetFullConcept(ds, idTheso, idConcept, idLang);
-    }
-
-    private NodeFullConcept daoGetFullConcept(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
+/*    public NodeFullConcept getFullCollection(HikariDataSource ds, String idTheso, String idGroup, String idLang) {
         NodeFullConcept nodeFullConcept = null;
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -339,7 +335,120 @@ public class DaoResourceHelper {
                         nodeFullConcept.setContributorName(getContributors(resultSet.getString("contributor")));
 
                         // selected prefLabel (langue en cours)
-                        nodeFullConcept.setPrefLabel((getLabel(resultSet.getString("prefLabel"))));
+                        nodeFullConcept.setPrefLabel((getLabel(resultSet.getString("prefLabel"), idLang)));
+                        // selected altLabel
+                        nodeFullConcept.setAltLabels(getLabels(resultSet.getString("altLabel")));
+                        // selected hiddenLabel
+                        nodeFullConcept.setHiddenLabels(getLabels(resultSet.getString("hidenlabel")));
+
+                        // labels traductions
+                        nodeFullConcept.setPrefLabelsTraduction(getLabelsTraduction(resultSet.getString("prefLabel_trad")));
+                        nodeFullConcept.setAltLabelTraduction(getLabelsTraduction(resultSet.getString("altLabel_trad")));
+                        nodeFullConcept.setHiddenLabelTraduction(getLabelsTraduction(resultSet.getString("hiddenLabel_trad")));
+
+                        // notes
+                        nodeFullConcept.setDefinitions(getNotes(resultSet.getString("definition")));
+                        nodeFullConcept.setExamples(getNotes(resultSet.getString("example")));
+                        nodeFullConcept.setEditorialNotes(getNotes(resultSet.getString("editorialNote")));
+                        nodeFullConcept.setChangeNotes(getNotes(resultSet.getString("changeNote")));
+                        nodeFullConcept.setScopeNotes(getNotes(resultSet.getString("scopeNote")));
+                        nodeFullConcept.setNotes(getNotes(resultSet.getString("note")));
+                        nodeFullConcept.setHistoryNotes(getNotes(resultSet.getString("historyNote")));
+
+                        // relations 
+                        nodeFullConcept.setBroaders(getRelations(resultSet.getString("broader")));
+                        nodeFullConcept.setNarrowers(getRelations(resultSet.getString("narrower")));
+                        nodeFullConcept.setRelateds(getRelations(resultSet.getString("related")));
+
+                        // alignements
+                        nodeFullConcept.setExactMatchs(getAlignments(resultSet.getString("exactMatch")));
+                        nodeFullConcept.setCloseMatchs(getAlignments(resultSet.getString("closeMatch")));
+                        nodeFullConcept.setBroadMatchs(getAlignments(resultSet.getString("broadMatch")));
+                        nodeFullConcept.setRelatedMatchs(getAlignments(resultSet.getString("relatedMatch")));
+                        nodeFullConcept.setNarrowMatchs(getAlignments(resultSet.getString("narrowMatch")));
+
+                        // GPS
+                        nodeFullConcept.setGps(getGps(resultSet.getString("gpsData")));
+
+                        // membres, les collections dont le concept est membre
+                        nodeFullConcept.setMembres(getFromIdLabel(resultSet.getString("membre")));
+
+                        // images 
+                        nodeFullConcept.setImages(getImages(resultSet.getString("images")));
+
+                        // replaces
+                        nodeFullConcept.setReplaces(getFromIdLabel(resultSet.getString("replaces")));
+                        //replaceBy
+                        nodeFullConcept.setReplacedBy(getFromIdLabel(resultSet.getString("replaced_by")));
+
+                        //Facettes
+                        nodeFullConcept.setFacets(getFromIdLabel(resultSet.getString("facets")));
+
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nodeFullConcept;
+    }    */
+    
+    /**
+     * pemret de récupérer un concept complet par langue
+     *
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @param idLang
+     * @return
+     */
+    public NodeFullConcept getFullConcept(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
+        NodeFullConcept nodeFullConcept = null;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "')"
+                        + "as x(URI text, conceptType varchar, localUri text, identifier varchar, permalinkId varchar,"
+                        + "prefLabel varchar, altLabel varchar, hidenlabel varchar,"
+                        + "prefLabel_trad varchar, altLabel_trad varchar, hiddenLabel_trad varchar, definition text, example text, editorialNote text, changeNote text,"
+                        + "scopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
+                        + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, gpsData text,"
+                        + " membre text, created timestamp with time zone, modified timestamp with time zone, images text, creator text, contributor text,"
+                        + "replaces text, replaced_by text, facets text, externalResources text);"
+                );
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        nodeFullConcept = new NodeFullConcept();
+
+                        nodeFullConcept.setUri(resultSet.getString("URI"));
+
+                        // type de concept 
+                        nodeFullConcept.setResourceType(SKOSProperty.CONCEPT);
+
+                        // Status du concept 
+                        nodeFullConcept.setResourceStatus(SKOSProperty.CONCEPT);
+                        if ("DEP".equalsIgnoreCase(resultSet.getString("conceptType"))) {
+                            nodeFullConcept.setResourceStatus(SKOSProperty.DEPRECATED);
+                        }
+                        if ("CA".equalsIgnoreCase(resultSet.getString("conceptType"))) {
+                            nodeFullConcept.setResourceStatus(SKOSProperty.CANDIDATE);
+                        }
+
+                        // identifiants
+                        nodeFullConcept.setIdentifier(resultSet.getString("identifier"));
+                        nodeFullConcept.setPermanentId(resultSet.getString("permalinkId"));
+                        nodeFullConcept.setNotation(resultSet.getString("notation"));
+
+                        // dates
+                        nodeFullConcept.setCreated(resultSet.getString("created"));
+                        nodeFullConcept.setModified(resultSet.getString("modified"));
+
+                        // users
+                        nodeFullConcept.setCreatorName(resultSet.getString("creator"));
+
+                        nodeFullConcept.setContributorName(getContributors(resultSet.getString("contributor")));
+
+                        // selected prefLabel (langue en cours)
+                        nodeFullConcept.setPrefLabel((getLabel(resultSet.getString("prefLabel"), idLang)));
                         // selected altLabel
                         nodeFullConcept.setAltLabels(getLabels(resultSet.getString("altLabel")));
                         // selected hiddenLabel
@@ -551,7 +660,7 @@ public class DaoResourceHelper {
         return null;
     }
 
-    private ConceptLabel getLabel(String labelBrut) {
+    private ConceptLabel getLabel(String labelBrut, String idLang) {
         ConceptLabel conceptLabel = null;
 
         if (StringUtils.isNotEmpty(labelBrut)) {
@@ -561,8 +670,9 @@ public class DaoResourceHelper {
                 try {
                     String[] element = tab.split(SUB_SEPARATEUR);
                     conceptLabel = new ConceptLabel();
-                    conceptLabel.setIdTerm(element[0]);
-                    conceptLabel.setLabel(element[1]);
+                    conceptLabel.setIdLang(idLang);
+                    conceptLabel.setLabel(element[0]);
+                    conceptLabel.setIdTerm(element[1]);
                     conceptLabel.setId(Integer.parseInt(element[2]));
                 } catch (Exception e) {
                 }
