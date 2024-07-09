@@ -12,7 +12,6 @@
             </column>
             <column name="name" type="varchar"/>
             <column name="description" type="varchar"/>
-            <column name="exported_thesaurus" type="varchar []"/>
         </createTable>
         <createTable tableName="graph_view_exported_concept_branch">
             <column name="id" type="int" autoIncrement="true">

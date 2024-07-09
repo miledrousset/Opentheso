@@ -1,6 +1,27 @@
 import { Graph } from "./graph_generator.js";
 let generatedGraph;
 
+const urlParams = new URLSearchParams(window.location.search)
+const dataUrl = urlParams.get("dataUrl")
+document.querySelector("#data-url").value = dataUrl.replace(/\s/, "")
+console.log(dataUrl)
+if(dataUrl !== undefined){
+    const dataUrlParams = new URLSearchParams(dataUrl.split("?")[1])
+    dataUrlParams.forEach((dataUrlParam, index) => console.log(`${index}, ${dataUrlParam}`))
+}
+
+if(urlParams.get("format") === undefined || urlParams.get("format") === "opentheso"){
+    console.log(urlParams.get("format"))
+    document.getElementById("data-format").checked = true
+}
+
+document.querySelector("#settings-button").addEventListener("click", () => {
+    document.querySelector("#settings-panel").classList.toggle("show-settings");
+});
+
+document.querySelector("#back-button").addEventListener("click", () => {
+    history.go(-1)
+});
 //Event Bouton pour charger les donnée
 document.querySelector("#show-data").addEventListener("click", (event) => {
     const input = document.querySelector("#data-url");
@@ -20,7 +41,7 @@ document.querySelector("#show-data").addEventListener("click", (event) => {
                 alert("Erreur, la langue n'est pas définie");
                 return;
             }
-            generatedGraph = new Graph(data, lang);
+            generatedGraph = new Graph(data, lang, document.getElementById("data-format").checked ? "opentheso" : "other");
             graph.appendChild(
                 generatedGraph.render("select-nodes", "select-links")
             );
@@ -31,6 +52,9 @@ document.querySelector("#show-data").addEventListener("click", (event) => {
 //Resize du svg lors du resize de l'ecran
 window.addEventListener("resize", () => {
     const svg = document.querySelector("#graph").firstChild;
+    if(svg === undefined){
+        return
+    }
     svg.setAttribute("viewBox", [
         -window.innerWidth / 2,
         -window.innerHeight / 2,
@@ -65,8 +89,17 @@ document.querySelector("#download-svg").addEventListener("click", () => {
 
 //Event changement filtre noeuds
 document.querySelector("#select-nodes").addEventListener("change", (event) => {
-    if (generatedGraph != undefined)
-        generatedGraph.render(lang, "select-nodes", "select-links");
+    if (generatedGraph != undefined) {
+        const graph = document.querySelector("#graph");
+        const zoom = document
+            .querySelector("#graph-content")
+            .getAttribute("transform");
+
+        graph.firstChild.innerHTML = null;
+        graph.appendChild(
+            generatedGraph.render("select-nodes", "select-links", zoom)
+        );
+    }
 });
 
 //Event changement filtre liens

@@ -28,83 +28,55 @@
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
-        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100%" >
+        <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100vh;" >
 
             <ui:include src="../commun/menu.xhtml" />
 
-            <div id="content-wrapper" style="width: 100%; min-height:100%; position:relative;">
-
-                <h:form id="containerIndex" >             
-
-                </h:form>
+            <div id="content-wrapper" style="width: 100%; height:100%; position:relative; overflow: hidden;">
 
                 <div class="container-fluid">
 
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px; display: flex; justify-content: space-between">
                         <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">#{langueBean.getMsg('graph')}</span></h1>
+                        <p:commandButton value="Nouvelle vue" styleClass="ui-button-success" icon="fa fa-plus" />
                     </div>
 
-                            <div class="product card">
-                                <h:form id="form">
-                                    <p:dataView var="product" value="#{dataGraphView.graphObjetcs}" rows="12" paginator="true"
-                                                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-                                                gridIcon="pi pi-th-large" listIcon="pi pi-bars"
-                                                layout="grid" gridRowStyleClass="lg:col-6 xl:col-4" flex="true">
+                    <p:scrollPanel mode="native" style="height: 82vh">
+                        <h:form id="form">
+                            <p:dataView var="graph_view" value="#{dataGraphView.graphObjects}" rows="9" paginator="true"
+                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" rowsPerPageTemplate="6,12,16"
+                                        gridIcon="pi pi-th-large" listIcon="pi pi-bars"
+                                        layout="grid" gridRowStyleClass="sm:col-2 lg:col-4 xl:col-6">
 
-                                        <p:dataViewGridItem>
-                                            <div class="product-grid-item card border-1">
-                                                <div class="product-grid-item-top">
-                                                    <div>
-                                                        <i class="pi pi-tag product-category-icon"/>
-                                                        <span class="product-category">#{product.category}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="product-grid-item-content">
-                                                    <div class="product-name">#{product.name}</div>
-                                                    <div class="product-description">#{product.description}</div>
-                                                    <p:rating readonly="true" value="#{product.rating}"/>
-                                                </div>
-                                                <div class="product-grid-item-bottom">
-                                                    <h:outputText value="#{product.price}" styleClass="product-price">
-                                                        <f:convertNumber currencySymbol="$" type="currency"/>
-                                                    </h:outputText>
-                                                    <p:commandButton type="button"
-                                                                     value="Add To Cart"
-                                                                     icon="pi pi-shopping-cart"
-                                                                     >
-                                                    </p:commandButton>
-                                                </div>
-                                            </div>
-                                        </p:dataViewGridItem>
-
-                                        <p:dataViewListItem>
-                                            <div class="product-list-item">
-                                                <div class="product-list-detail">
-                                                    <div class="product-name">#{product.name}</div>
-                                                    <div class="product-description">#{product.description}</div>
-                                                    <p:rating readonly="true" value="#{product.rating}"/>
-                                                    <i class="pi pi-tag product-category-icon"/><span
-                                                        class="product-category">#{product.category}</span>
-                                                </div>
-                                                <div class="product-list-action">
-                                                    <h:outputText value="#{product.price}" styleClass="product-price">
-                                                        <f:convertNumber currencySymbol="$" type="currency"/>
-                                                    </h:outputText>
-                                                    <p:commandButton type="button"
-                                                                     value="Add To Cart"
-                                                                     icon="pi pi-shopping-cart"
-                                                                     >
-                                                    </p:commandButton>
-                                                    <span class="product-badge status-#{product.name.toLowerCase()}">#{product.name}</span>
-                                                </div>
-                                            </div>
-                                        </p:dataViewListItem>
-                                    </p:dataView>
-
-                                </h:form>
-
-
-                    </div>
+                                <p:dataViewGridItem>
+                                    <div class="product-grid-item card border-1" style="padding: 10px; margin: 10px">
+                                        <div class="product-grid-item-content" style="height: 250px;">
+                                            <p class="product-name" style="font-weight: bold; font-size: 1.15rem; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">#{graph_view.name}</p>
+                                            <p class="product-description" style="text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 9; overflow: hidden;">#{graph_view.description}</p>
+                                        </div>
+                                        <p:dataList value="#{graph_view.exportedData}" var="export">
+                                            <h:outputText rendered="#{export.right==null}" value="Thésaurus: #{export.left}"/>
+                                            <h:outputText rendered="#{export.right!=null}" value="Branche: #{export.left}, #{export.right}"/>
+                                        </p:dataList>
+                                        <div class="product-grid-item-bottom" style="display: flex; justify-content: space-around">
+                                            <p:commandButton value="Afficher avec D3.js"
+                                                             styleClass="ui-button-success"
+                                                             icon="fa fa-diagram-project"
+                                                             actionListener="#{dataGraphView.redirectToGraphVisualization(graph_view.id)}"
+                                            >
+                                            </p:commandButton>
+                                            <p:commandButton value="Exporter vers Neo4J"
+                                                             styleClass="ui-button-secondary"
+                                                             icon="fa fa-paper-plane"
+                                                             actionListener="#{dataGraphView.exportToNeo4J(graph_view.id)}"
+                                            >
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+                                </p:dataViewGridItem>
+                            </p:dataView>
+                        </h:form>
+                    </p:scrollPanel>
                 </div>
                 <ui:include src="../commun/footer.xhtml" />
             </div>
