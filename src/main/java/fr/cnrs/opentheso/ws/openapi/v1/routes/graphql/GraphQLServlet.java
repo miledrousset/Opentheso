@@ -12,6 +12,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,26 +23,31 @@ import java.util.List;
 import java.util.Map;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 
 @WebServlet(name = "GraphQLServlet", urlPatterns = {"/graphql"})
 public class GraphQLServlet extends HttpServlet {
     private final GraphQL graphQL;
     private final Gson gson;
-    private HikariDataSource ds; // Added data source as a class member
+    private HikariDataSource ds;
 
+
+    // Classe pour avoir la connexion à la BD et exploiter les JSON
     public GraphQLServlet() {
         this.gson = new Gson();
-        this.ds = connect(); // Initialize data source
-
-        // Define your GraphQL schema here
+        this.ds = connect();
         GraphQLSchema schema = buildSchema();
         this.graphQL = GraphQL.newGraphQL(schema).build();
     }
 
     private GraphQLSchema buildSchema() {
-        // Define all the types
+
+        // Type ConceptLabel
         GraphQLObjectType conceptLabelType = GraphQLObjectType.newObject()
                 .name("ConceptLabel")
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("idTerm").type(Scalars.GraphQLString))
@@ -48,6 +57,7 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("codeFlag").type(Scalars.GraphQLString))
                 .build();
 
+        // Type ConceptRelation
         GraphQLObjectType conceptRelationType = GraphQLObjectType.newObject()
                 .name("ConceptRelation")
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("Uri").type(Scalars.GraphQLString))
@@ -57,6 +67,7 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("status").type(Scalars.GraphQLString))
                 .build();
 
+        // Type ConceptNote
         GraphQLObjectType conceptNoteType = GraphQLObjectType.newObject()
                 .name("ConceptNote")
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("idNote").type(Scalars.GraphQLInt))
@@ -64,6 +75,7 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("label").type(Scalars.GraphQLString))
                 .build();
 
+        // Type RessourceGPS
         GraphQLObjectType resourceGPSType = GraphQLObjectType.newObject()
                 .name("ResourceGPS")
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("latitude").type(Scalars.GraphQLFloat))
@@ -71,6 +83,7 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("position").type(Scalars.GraphQLInt))
                 .build();
 
+        // Type ConceptImage
         GraphQLObjectType conceptImageType = GraphQLObjectType.newObject()
                 .name("ConceptImage")
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("id").type(Scalars.GraphQLInt))
@@ -79,6 +92,7 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("uri").type(Scalars.GraphQLString))
                 .build();
 
+        // Type ConceptIdLabel
         GraphQLObjectType conceptIdLabelType = GraphQLObjectType.newObject()
                 .name("ConceptIdLabel")
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("uri").type(Scalars.GraphQLString))
@@ -86,6 +100,7 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("label").type(Scalars.GraphQLString))
                 .build();
 
+        // Type ConceptCustomRelation
         GraphQLObjectType conceptCustomRelationType = GraphQLObjectType.newObject()
                 .name("ConceptCustomRelation")
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("targetConcept").type(Scalars.GraphQLString))
@@ -93,7 +108,7 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("relation").type(Scalars.GraphQLString))
                 .build();
 
-        // Define the main type
+        // Type NodeFullConcept package : fr.cnrs.opentheso.bdd.helper.dao
         GraphQLObjectType nodeFullConceptType = GraphQLObjectType.newObject()
                 .name("NodeFullConcept")
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("uri").type(Scalars.GraphQLString))
@@ -136,18 +151,18 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("nodeCustomRelations").type(new GraphQLList(conceptCustomRelationType)))
                 .build();
 
-        // Define a new type to encapsulate the search results and the count
+        // Type SearchResults pour la recherche de termes
         GraphQLObjectType searchResultsType = GraphQLObjectType.newObject()
                 .name("SearchResults")
-                .field(GraphQLFieldDefinition.newFieldDefinition().name("count").type(Scalars.GraphQLInt))
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("results").type(new GraphQLList(nodeFullConceptType)))
                 .build();
 
+
+        // Déclaration du type Query pour les requêtes
         GraphQLObjectType queryType;
-        // Define the query type
         queryType = GraphQLObjectType.newObject()
                 .name("Query")
-                .field(GraphQLFieldDefinition.newFieldDefinition()
+                .field(GraphQLFieldDefinition.newFieldDefinition() // Query pour récupérer un concept
                         .name("fullConcept")
                         .type(nodeFullConceptType)
                         .argument(GraphQLArgument.newArgument().name("idTheso").type(Scalars.GraphQLString))
@@ -161,9 +176,9 @@ public class GraphQLServlet extends HttpServlet {
                             return daoResourceHelper.getFullConcept(ds, idTheso, idConcept, idLang);
                         })
                 )
-                .field(GraphQLFieldDefinition.newFieldDefinition() // New query for searching concepts
+                .field(GraphQLFieldDefinition.newFieldDefinition() // Query pour la recherche de termes
                         .name("searchConcepts")
-                        .type(searchResultsType)
+                        .type(new GraphQLList(nodeFullConceptType))
                         .argument(GraphQLArgument.newArgument().name("value").type(Scalars.GraphQLString))
                         .argument(GraphQLArgument.newArgument().name("idLang").type(Scalars.GraphQLString))
                         .argument(GraphQLArgument.newArgument().name("idGroups").type(new GraphQLList(Scalars.GraphQLString)))
@@ -181,7 +196,7 @@ public class GraphQLServlet extends HttpServlet {
                             for (String autoCompletion : autoCompletions) {
                                 fullConcepts.add(daoResourceHelper.getFullConcept(ds, idTheso, autoCompletion, idLang));
                             }
-                            return Map.of("count", fullConcepts.size(), "results", fullConcepts);
+                            return(fullConcepts);
                         })
                 )
                 .build();
@@ -191,9 +206,11 @@ public class GraphQLServlet extends HttpServlet {
                 .build();
     }
 
+
+
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Read and parse the JSON request body
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Lecture et parsing du JSON pour récupérer la query
         StringBuilder stringBuilder = new StringBuilder();
         try (BufferedReader reader = req.getReader()) {
             String line;
@@ -202,21 +219,21 @@ public class GraphQLServlet extends HttpServlet {
             }
         }
 
-        // Convert JSON to Map
+        // On converti le JSON en Map pour exploiter comme il faut les données
         Map<String, Object> requestMap = gson.fromJson(stringBuilder.toString(), Map.class);
         String query = (String) requestMap.get("query");
 
-        // Execute GraphQL query
+        // On exécute la requête
         ExecutionInput executionInput = ExecutionInput.newExecutionInput()
                 .query(query)
                 .build();
 
         ExecutionResult executionResult = graphQL.execute(executionInput);
 
-        // Convert execution result to JSON response
+        // On converti le résultat en JSON
         String jsonResponse = gson.toJson(executionResult.toSpecification());
 
-        // Write JSON response back to client
+        // On renvoie la réponse en JSON
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         resp.getWriter().write(jsonResponse);
