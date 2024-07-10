@@ -30,7 +30,6 @@ import javax.json.JsonObjectBuilder;
  */
 public class GraphD3jsHelper {
     private NodeGraphD3js nodeGraphD3js;
-    private String defaultLang;
     private NodePreference nodePreference;
     private UriHelper uriHelper;    
     
@@ -58,6 +57,10 @@ public class GraphD3jsHelper {
         
         /// récupérer les concepts
         List<String> listIdConcept = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
+        if (listIdConcept.size() > 2000) {
+            listIdConcept = listIdConcept.subList(0, 2000);
+        }
+        
         for (String idC : listIdConcept) {
             NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
@@ -86,6 +89,9 @@ public class GraphD3jsHelper {
         
         /// récupérer les concepts
         List<String> listIdConcept = conceptHelper.getIdsOfBranch2(ds, idTheso, idConcept);
+        if (listIdConcept.size() > 2000) {
+            listIdConcept = listIdConcept.subList(0, 2000);
+        }        
         for (String idC : listIdConcept) {
             NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
@@ -98,7 +104,7 @@ public class GraphD3jsHelper {
     private Node getDatasOfThesaurus(NodeThesaurus nodeThesaurus){
         Node node = new Node();
         
-        node.setId(uriHelper.getUriForTheso(nodeThesaurus.getIdThesaurus(), "", ""));
+        node.setId(uriHelper.getUriForTheso(nodeThesaurus.getIdThesaurus(), nodeThesaurus.getIdArk(), ""));
         List<String> labels = new ArrayList<>();
         labels.add("Resource");
         labels.add("skos__ConceptScheme");

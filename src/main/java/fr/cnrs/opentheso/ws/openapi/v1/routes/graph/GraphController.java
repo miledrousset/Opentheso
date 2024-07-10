@@ -1,9 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.graph;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,12 +14,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.util.Objects;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.*;
-import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
-import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getContentTypeFromHeader;
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.GraphD3jsHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.IdValuePair;

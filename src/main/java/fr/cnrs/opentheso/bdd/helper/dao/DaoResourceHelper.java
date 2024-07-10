@@ -407,7 +407,7 @@ public class DaoResourceHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "')"
-                        + "as x(URI text, conceptType varchar, localUri text, identifier varchar, permalinkId varchar,"
+                        + " as x(URI text, conceptType varchar, localUri text, identifier varchar, permalinkId varchar,"
                         + "prefLabel varchar, altLabel varchar, hidenlabel varchar,"
                         + "prefLabel_trad varchar, altLabel_trad varchar, hiddenLabel_trad varchar, definition text, example text, editorialNote text, changeNote text,"
                         + "scopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "

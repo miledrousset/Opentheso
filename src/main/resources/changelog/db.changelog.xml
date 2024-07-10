@@ -83,4 +83,8 @@
 
     <include file="/changelog/v24.07/24-07_01.xml"/>
 
+    <changeSet id="24.07.02" author="Miled">
+        <sqlFile path="../changelog/v24.07/24-07_02.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>      
+    
 </databaseChangeLog>

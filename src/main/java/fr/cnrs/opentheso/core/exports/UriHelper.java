@@ -44,6 +44,9 @@ public class UriHelper {
             if (!StringUtils.isEmpty(idArk)) {
                 uri = nodePreference.getOriginalUri()+ "/" + idArk;
                 return uri;
+            } else {
+                uri = nodePreference.getCheminSite() + "?idt=" + idTheso;
+                return uri;
             }
         }
         
@@ -163,7 +166,17 @@ public class UriHelper {
      */
     private String getPath(){
         if(FacesContext.getCurrentInstance() == null) {
-            return nodePreference.getOriginalUri();
+            if(StringUtils.isNotEmpty(nodePreference.getOriginalUri())){
+                if(nodePreference.getOriginalUri().endsWith("/")) {
+                    return nodePreference.getOriginalUri().substring(0, nodePreference.getOriginalUri().length() - 1);
+                } else 
+                    return nodePreference.getOriginalUri();
+            } else {
+                if(nodePreference.getCheminSite().endsWith("/")) {
+                    return nodePreference.getCheminSite().substring(0, nodePreference.getCheminSite().length() - 1);
+                } else 
+                    return nodePreference.getCheminSite();
+            }
         }
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         return path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
