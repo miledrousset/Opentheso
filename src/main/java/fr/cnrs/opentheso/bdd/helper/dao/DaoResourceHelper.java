@@ -404,6 +404,11 @@ public class DaoResourceHelper {
      */
     public NodeFullConcept getFullConcept(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
         NodeFullConcept nodeFullConcept = null;
+        if (ds.isClosed()) {
+            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, "HikariDataSource is closed.");
+            return null;
+        }
+
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "')"
