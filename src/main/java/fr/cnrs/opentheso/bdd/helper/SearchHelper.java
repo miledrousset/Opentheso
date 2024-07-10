@@ -362,7 +362,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus "
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status != 'CA' "
+                                + " and concept.status not in ('CA', 'DEP') "
                                 + multiValuesPT
                                 + " order by "
                                 + " CASE unaccent(lower(lexical_value)) "
@@ -382,7 +382,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus"
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status != 'CA' "
+                                + " and concept.status not in ('CA', 'DEP') "
                                 + multiValuesPT
                                 + " order by "
                                 + " CASE unaccent(lower(lexical_value)) "
@@ -539,7 +539,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus "
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status != 'CA' "
+                                + " and concept.status not in ('CA', 'DEP') "
                                 + multiValuesPT
                                 + " order by "
                                 + " CASE unaccent(lower(lexical_value)) "
@@ -559,7 +559,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus"
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status != 'CA' "
+                                + " and concept.status not in ('CA', 'DEP') "
                                 + multiValuesPT
                                 + " order by "
                                 + " CASE unaccent(lower(lexical_value)) "

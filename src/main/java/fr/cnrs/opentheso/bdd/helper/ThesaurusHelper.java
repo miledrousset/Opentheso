@@ -351,6 +351,9 @@ public class ThesaurusHelper {
         NodeThesaurus nodeThesaurus = new NodeThesaurus();
         ArrayList<Thesaurus> thesaurusTraductionsList = new ArrayList<>();
 
+        if(!isThesaurusExiste(ds, idThesaurus)){
+            return null;
+        }
         for (int i = 0; i < listLangTheso.size(); i++) {
             Thesaurus thesaurus = getThisThesaurus(ds, idThesaurus, listLangTheso.get(i).getId_iso639_1());
             if (thesaurus != null) {
