@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
@@ -1274,14 +1275,10 @@ public class NoteHelper {
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select lexicalvalue from note" +
-                            " where " +
-                            " note.notetypecode = 'definition' " +
-                            " and" +
-                            " note.id_thesaurus = '" + idThesaurus + "'" +
-                            " and" +
-                            " note.lang = '" + idLang + "'" +
-                            " and" +
-                            " note.identifier = '" + idConcept + "'");
+                            " where note.notetypecode = 'definition' " +
+                            " and note.id_thesaurus = '" + idThesaurus + "'" +
+                            " and note.lang = '" + idLang + "'" +
+                            " and note.identifier = '" + idConcept + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         listDefinitions.add(resultSet.getString("lexicalvalue"));
@@ -1293,6 +1290,32 @@ public class NoteHelper {
             log.error("Error while getting definition of concept : " + idConcept, sqle);
         }
         return listDefinitions;
+    }
+
+    public List<String> getNote(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+
+        if("en-GB".equalsIgnoreCase(idLang))
+            idLang = "en";
+
+        List<String> listNotes = new ArrayList<>();
+        try (Connection conn = ds.getConnection()){
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select lexicalvalue from note" +
+                        " where note.notetypecode = 'note' " +
+                        " and note.id_thesaurus = '" + idThesaurus + "'" +
+                        " and note.lang = '" + idLang + "'" +
+                        " and note.identifier = '" + idConcept + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        listNotes.add(resultSet.getString("lexicalvalue"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting definition of concept : " + idConcept, sqle);
+        }
+        return listNotes;
     }
     
     /**

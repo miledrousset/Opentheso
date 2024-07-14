@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.getDatasFromArk;
-import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getContentTypeFromHeader;
-import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,55 +12,44 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
-/**
- *
- * @author julie
- */
-@Path("/search")
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
+import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.getAutocompleteDatas;
+import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
+
+@Path("/concept/search")
 public class ConceptSearchController {
-    
-    @Path("/ark")
+
     @GET
-    @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "${searchByArkId.summary}$",
-            description = "${searchByArkId.description}$",
-            tags = {"Concept", "Ark"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8)
-                    }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
-            })
-    public Response searchByArkId(@Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchByArkId.q.description}$") @QueryParam("q") String idArk,
-                                  @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchByArkId.lang.description}$") @QueryParam("lang") String lang,
-                                  @Parameter(name = "showLabels", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchByArkId.showLabels.description}$") @QueryParam("showLabels") String showLabelsString,
-                                  @Context HttpHeaders headers) {
+    @Path("/{idThesaurus}/{input}")
+    public Response searchAutocompleteV2(@PathParam("input") String input,
+                                         @PathParam("idThesaurus") String idThesaurus,
+                                         @QueryParam("lang") String lang,
+                                         @QueryParam("group") String idGroup) throws JsonProcessingException {
 
-        if (lang == null) {
-            lang = "";
-        }
-        String format = getContentTypeFromHeader(headers);
-        String datas;
-        boolean showLabels = showLabelsString != null && showLabelsString.equalsIgnoreCase("true");
-
-        if (idArk == null) {
-            return ResponseHelper.response(Response.Status.BAD_REQUEST, "No Ark ID specified", format);
-        }
-
-        datas = getDatasFromArk("", lang, idArk, showLabels);
-        return ResponseHelper.response(Response.Status.OK, Objects.requireNonNullElseGet(datas, () -> emptyMessage(format)), format);
-
+        var concepts = new SearchHelper().searchConceptWSV2(input, lang, idGroup, idThesaurus);
+        return ResponseHelper.response(Response.Status.OK, new ObjectMapper().writeValueAsString(concepts), APPLICATION_JSON_UTF_8);
     }
 
-    
+    @GET
+    @Path("/groups/{idThesaurus}/{idLang}")
+    public Response getGroupsByThesaurus(@PathParam("idThesaurus") String idThesaurus, @PathParam("idLang") String idLang) {
+
+        try (var ds = connect()) {
+            var groups = new GroupHelper().getListRootConceptGroup(ds, idThesaurus, idLang, true);
+            return ResponseHelper.response(Response.Status.OK, new ObjectMapper().writeValueAsString(groups), APPLICATION_JSON_UTF_8);
+        } catch (JsonProcessingException e) {
+            return ResponseHelper.response(Response.Status.OK, List.of(), APPLICATION_JSON_UTF_8);
+        }
+    }
 }

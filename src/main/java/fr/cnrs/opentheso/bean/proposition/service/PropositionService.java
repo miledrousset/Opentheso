@@ -187,188 +187,59 @@ public class PropositionService implements Serializable {
         }
 
         if (proposition.getNote() != null) {
-            if (proposition.getNote().isToAdd() || proposition.getNote().isToUpdate() || proposition.getNote().isToRemove()) {
-                PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                PropositionActionEnum action;
-                if (proposition.getNote().isToAdd()) {
-                    action = PropositionActionEnum.ADD;
-                    propositionDetail.setOldValue(proposition.getNote().getLexicalvalue());
-                } else if (proposition.getNote().isToRemove()) {
-                    action = PropositionActionEnum.DELETE;
-                    propositionDetail.setOldValue(proposition.getNote().getOldValue());
-                } else {
-                    action = PropositionActionEnum.UPDATE;
-                    propositionDetail.setOldValue(proposition.getNote().getOldValue());
-                }
-
-                propositionDetail.setIdProposition(propositionID);
-                propositionDetail.setAction(action.name());
-                propositionDetail.setCategorie(PropositionCategoryEnum.NOTE.name());
-                propositionDetail.setLang(proposition.getNote().getLang());
-                propositionDetail.setValue(proposition.getNote().getLexicalvalue());
-                propositionDetail.setIdTerm(proposition.getNote().getId_term());
-                new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
-            }
-
+            noteManagement(propositionID, proposition.getNote(), PropositionCategoryEnum.NOTE.name());
         }
 
         if (proposition.getChangeNote() != null) {
-            if (proposition.getChangeNote().isToAdd() || proposition.getChangeNote().isToUpdate() || proposition.getChangeNote().isToRemove()) {
-                PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                PropositionActionEnum action;
-                if (proposition.getChangeNote().isToAdd()) {
-                    action = PropositionActionEnum.ADD;
-                    propositionDetail.setOldValue(proposition.getChangeNote().getLexicalvalue());
-                } else if (proposition.getChangeNote().isToRemove()) {
-                    action = PropositionActionEnum.DELETE;
-                    propositionDetail.setOldValue(proposition.getChangeNote().getOldValue());
-                } else {
-                    action = PropositionActionEnum.UPDATE;
-                    propositionDetail.setOldValue(proposition.getChangeNote().getOldValue());
-                }
-
-                propositionDetail.setIdProposition(propositionID);
-                propositionDetail.setAction(action.name());
-                propositionDetail.setCategorie(PropositionCategoryEnum.CHANGE_NOTE.name());
-                propositionDetail.setLang(proposition.getChangeNote().getLang());
-                propositionDetail.setValue(proposition.getChangeNote().getLexicalvalue());
-                propositionDetail.setIdTerm(proposition.getChangeNote().getId_term());
-                new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
-            }
-
+            noteManagement(propositionID, proposition.getChangeNote(), PropositionCategoryEnum.CHANGE_NOTE.name());
         }
 
         if (proposition.getDefinition() != null) {
-            if (proposition.getDefinition().isToAdd() || proposition.getDefinition().isToUpdate() || proposition.getDefinition().isToRemove()) {
-                PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                PropositionActionEnum action;
-                if (proposition.getDefinition().isToAdd()) {
-                    action = PropositionActionEnum.ADD;
-                    propositionDetail.setOldValue(proposition.getDefinition().getLexicalvalue());
-                } else if (proposition.getDefinition().isToRemove()) {
-                    action = PropositionActionEnum.DELETE;
-                    propositionDetail.setOldValue(proposition.getDefinition().getOldValue());
-                } else {
-                    action = PropositionActionEnum.UPDATE;
-                    propositionDetail.setOldValue(proposition.getDefinition().getOldValue());
-                }
-
-                propositionDetail.setIdProposition(propositionID);
-                propositionDetail.setAction(action.name());
-                propositionDetail.setCategorie(PropositionCategoryEnum.DEFINITION.name());
-                propositionDetail.setLang(proposition.getDefinition().getLang());
-                propositionDetail.setValue(proposition.getDefinition().getLexicalvalue());
-                propositionDetail.setIdTerm(proposition.getDefinition().getId_term());
-                new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
-            }
-
+            noteManagement(propositionID, proposition.getDefinition(), PropositionCategoryEnum.DEFINITION.name());
         }
 
         if (proposition.getEditorialNote() != null) {
-            if (proposition.getEditorialNote().isToAdd() || proposition.getEditorialNote().isToUpdate() || proposition.getEditorialNote().isToRemove()) {
-                PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                PropositionActionEnum action;
-                if (proposition.getEditorialNote().isToAdd()) {
-                    action = PropositionActionEnum.ADD;
-                    propositionDetail.setOldValue(proposition.getEditorialNote().getLexicalvalue());
-                } else if (proposition.getEditorialNote().isToRemove()) {
-                    action = PropositionActionEnum.DELETE;
-                    propositionDetail.setOldValue(proposition.getEditorialNote().getOldValue());
-                } else {
-                    action = PropositionActionEnum.UPDATE;
-                    propositionDetail.setOldValue(proposition.getEditorialNote().getOldValue());
-                }
-
-                propositionDetail.setIdProposition(propositionID);
-                propositionDetail.setAction(action.name());
-                propositionDetail.setCategorie(PropositionCategoryEnum.EDITORIAL_NOTE.name());
-                propositionDetail.setLang(proposition.getEditorialNote().getLang());
-                propositionDetail.setValue(proposition.getEditorialNote().getLexicalvalue());
-                propositionDetail.setIdTerm(proposition.getEditorialNote().getId_term());
-                new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
-            }
-
+            noteManagement(propositionID, proposition.getEditorialNote(), PropositionCategoryEnum.EDITORIAL_NOTE.name());
         }
 
         if (proposition.getExample() != null) {
-            if (proposition.getExample().isToAdd() || proposition.getExample().isToUpdate() || proposition.getExample().isToRemove()) {
-                PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                PropositionActionEnum action;
-                if (proposition.getExample().isToAdd()) {
-                    action = PropositionActionEnum.ADD;
-                    propositionDetail.setOldValue(proposition.getExample().getLexicalvalue());
-                } else if (proposition.getExample().isToRemove()) {
-                    action = PropositionActionEnum.DELETE;
-                    propositionDetail.setOldValue(proposition.getExample().getOldValue());
-                } else {
-                    action = PropositionActionEnum.UPDATE;
-                    propositionDetail.setOldValue(proposition.getExample().getOldValue());
-                }
-
-                propositionDetail.setIdProposition(propositionID);
-                propositionDetail.setAction(action.name());
-                propositionDetail.setCategorie(PropositionCategoryEnum.EXAMPLE.name());
-                propositionDetail.setLang(proposition.getExample().getLang());
-                propositionDetail.setValue(proposition.getExample().getLexicalvalue());
-                propositionDetail.setIdTerm(proposition.getExample().getId_term());
-                new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
-            }
-
+            noteManagement(propositionID, proposition.getExample(), PropositionCategoryEnum.EXAMPLE.name());
         }
 
         if (proposition.getHistoryNote() != null) {
-            if (proposition.getHistoryNote().isToAdd() || proposition.getHistoryNote().isToUpdate() || proposition.getHistoryNote().isToRemove()) {
-                PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                PropositionActionEnum action;
-                if (proposition.getHistoryNote().isToAdd()) {
-                    action = PropositionActionEnum.ADD;
-                    propositionDetail.setOldValue(proposition.getHistoryNote().getLexicalvalue());
-                } else if (proposition.getHistoryNote().isToRemove()) {
-                    action = PropositionActionEnum.DELETE;
-                    propositionDetail.setOldValue(proposition.getHistoryNote().getOldValue());
-                } else {
-                    action = PropositionActionEnum.UPDATE;
-                    propositionDetail.setOldValue(proposition.getHistoryNote().getOldValue());
-                }
-
-                propositionDetail.setIdProposition(propositionID);
-                propositionDetail.setAction(action.name());
-                propositionDetail.setCategorie(PropositionCategoryEnum.HISTORY.name());
-                propositionDetail.setLang(proposition.getHistoryNote().getLang());
-                propositionDetail.setValue(proposition.getHistoryNote().getLexicalvalue());
-                propositionDetail.setIdTerm(proposition.getHistoryNote().getId_term());
-                new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
-            }
-
+            noteManagement(propositionID, proposition.getHistoryNote(), PropositionCategoryEnum.HISTORY.name());
         }
 
         if (proposition.getScopeNote() != null) {
-            if (proposition.getScopeNote().isToAdd() || proposition.getScopeNote().isToUpdate() || proposition.getScopeNote().isToRemove()) {
-                PropositionDetailDao propositionDetail = new PropositionDetailDao();
-                PropositionActionEnum action;
-                if (proposition.getScopeNote().isToAdd()) {
-                    action = PropositionActionEnum.ADD;
-                    propositionDetail.setOldValue(proposition.getScopeNote().getLexicalvalue());
-                } else if (proposition.getScopeNote().isToRemove()) {
-                    action = PropositionActionEnum.DELETE;
-                    propositionDetail.setOldValue(proposition.getScopeNote().getOldValue());
-                } else {
-                    action = PropositionActionEnum.UPDATE;
-                    propositionDetail.setOldValue(proposition.getScopeNote().getOldValue());
-                }
-
-                propositionDetail.setIdProposition(propositionID);
-                propositionDetail.setAction(action.name());
-                propositionDetail.setCategorie(PropositionCategoryEnum.SCOPE.name());
-                propositionDetail.setLang(proposition.getScopeNote().getLang());
-                propositionDetail.setValue(proposition.getScopeNote().getLexicalvalue());
-                propositionDetail.setIdTerm(proposition.getScopeNote().getId_term());
-                new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
-            }
-
+            noteManagement(propositionID, proposition.getScopeNote(), PropositionCategoryEnum.SCOPE.name());
         }
 
         return true;
+    }
+
+    private void noteManagement(int propositionID, NotePropBean note, String category) {
+        if (note.isToAdd() || note.isToUpdate() || note.isToRemove()) {
+            var propositionDetail = new PropositionDetailDao();
+            PropositionActionEnum action;
+            if (note.isToAdd()) {
+                action = PropositionActionEnum.ADD;
+                propositionDetail.setOldValue(note.getLexicalvalue());
+            } else if (note.isToRemove()) {
+                action = PropositionActionEnum.DELETE;
+                propositionDetail.setOldValue(note.getOldValue());
+            } else {
+                action = PropositionActionEnum.UPDATE;
+                propositionDetail.setOldValue(note.getOldValue());
+            }
+
+            propositionDetail.setIdProposition(propositionID);
+            propositionDetail.setAction(action.name());
+            propositionDetail.setCategorie(category);
+            propositionDetail.setLang(note.getLang());
+            propositionDetail.setValue(note.getLexicalvalue());
+            propositionDetail.setIdTerm(note.getId_term());
+            new PropositionDetailHelper().createNewPropositionDetail(connect.getPoolConnexion(), propositionDetail);
+        }
     }
 
     private String getPath() {
