@@ -28,24 +28,23 @@ public class GraphController {
 
     @Path("/")
     @GET
-    @Produces({APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
-    @Operation(summary = "${search.summary}$",
-            description = "${search.description}$",
+    @Produces({APPLICATION_JSON_UTF_8})
+    @Operation(summary = "${getDatasForGraphNew.summary}$",
             tags = {"Graph"},
+            description = "http://localhost:8080/opentheso2/openapi/v1/graph/getData?lang=fr&idThesoConcept=th3,4&idThesoConcept=th3",
             responses = {
                     @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
-                            @Content(mediaType = APPLICATION_RDF_UTF_8),
-                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
-                            @Content(mediaType = APPLICATION_TURTLE_UTF_8)
                     }),
                     @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
                     @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
     public Response getGraph(
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @QueryParam("lang") String lang,
-            @Parameter(name = "idThesoConcept", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @QueryParam("idThesoConcept") List<String> idThesoConcepts,
-                           @Context HttpHeaders headers) {
+            @Parameter(name = "lang",example = "fr", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${getDatasForGraphNew.lang.description}$") @QueryParam("lang") String lang,
+            @Parameter(name = "idThesoConcept", in = ParameterIn.QUERY, schema = @Schema(type = "string"),
+                    required = true, example = "th3,4" ,
+                    description = "${getDatasForGraphNew.idTheso.description}$") @QueryParam("idThesoConcept") List<String> idThesoConcepts,
+                    @Context HttpHeaders headers) {
         
         if(StringUtils.isEmpty(lang)) {
             return ResponseHelper.response(Response.Status.BAD_REQUEST, "La langue est requise", APPLICATION_JSON);            
