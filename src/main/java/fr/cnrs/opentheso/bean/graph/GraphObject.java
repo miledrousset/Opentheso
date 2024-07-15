@@ -29,6 +29,12 @@ public class GraphObject implements Serializable {
         this.exported_data = new ArrayList<>(exported_data);
     }
 
+    public GraphObject(String name, String description, List<ImmutablePair<String, String>>  exported_data) {
+        this.name = name;
+        this.description = description;
+        this.exported_data = new ArrayList<>(exported_data);
+    }
+
     public GraphObject(int id, String name, String description) {
         this.id = id;
         this.name = name;

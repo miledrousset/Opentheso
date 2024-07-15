@@ -163,8 +163,8 @@
             </h:panelGroup>
             
             <!-- Affichage module graphe -->
-           <h:panelGroup  rendered="#{currentUser.nodeUser != null}">
-                <li class="nav-item" style="margin-top: 20px;">
+           <h:panelGroup rendered="#{(currentUser.nodeUser != null)}">
+                <li class="nav-item">
                     <span class="nav-link">
                         <p:commandLink id="graph1" class="collapse-item" actionListener="#{menuBean.redirectToGraphPage()}"
                                        style="color: #fff; text-decoration: none; font-size: 14px; display: none" process="@this">
