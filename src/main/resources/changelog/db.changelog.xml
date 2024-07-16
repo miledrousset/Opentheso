@@ -87,4 +87,8 @@
         <sqlFile path="../changelog/v24.07/24-07_02.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>      
     
+    <changeSet id="24.07.03" author="Miled">
+        <sqlFile path="../changelog/v24.07/24-07_03.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>      
+    
 </databaseChangeLog>

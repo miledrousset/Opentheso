@@ -1,0 +1,88 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
+             xmlns:ui="http://java.sun.com/jsf/facelets"
+             xmlns:h="http://xmlns.jcp.org/jsf/html"
+             xmlns:p="http://primefaces.org/ui"
+             xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="idManageView" header="#{langueBean.getMsg('graphdialog.manage_view')}" widgetVar="manageView"
+              width="550" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+
+        <h:form id="manageViewForm" >
+            
+            <p:defaultCommand target="manageViewBtn" />
+            
+            <h:panelGroup >
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-5" style="margin-top: 3px">
+                        <h:outputText value="#{langueBean.getMsg('graphdialog.manage_view.name')} : " />
+                    </div>
+                    <div class="col-7">
+                        <p:inputText placeholder="#{langueBean.getMsg('graphdialog.manage_view.name.placeholder')} ..."
+                                     value="#{dataGraphView.newViewName}"
+                                     style="width: 100%"/>   
+                    </div>
+                </div>
+
+
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-5" style="margin-top: 3px">
+                        <h:outputText value="#{langueBean.getMsg('graphdialog.manage_view.description')} : " />
+                    </div>
+                    <div class="col-7">
+                        <p:inputText value="#{dataGraphView.newViewDescription}"
+                                     placeholder="#{langueBean.getMsg('graphdialog.manage_view.description.placeholder')} ..."
+                                     style="width: 100%"/>
+                    </div>
+                </div>
+
+                <p:commandButton id="manageViewBtn" value="#{langueBean.getMsg('apply')}" styleClass="ui-button-success" icon="fa fa-floppy-disk"
+                                 ajax="true" process="@form"  oncomplete="PF('manageView').show();"
+                                 update="messageIndex idManageView graph-form"
+                                 actionListener="#{dataGraphView.applyView()}" />
+            </h:panelGroup>
+            <p:separator/>
+            <h:panelGroup rendered="#{dataGraphView.selectedViewId != -1}">
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-5" style="margin-top: 3px">
+                        <h:outputText value="#{langueBean.getMsg('graphdialog.manage_view.exported_data')} : " />
+                    </div>
+                    <div class="col-7">
+                        <p:inputText value="#{dataGraphView.newViewDataToAdd}"
+                                     placeholder="#{langueBean.getMsg('graphdialog.manage_view.exported_data.placeholder')} ..."
+                                     style="width: 100%"/>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col-12" style="text-align: right" >
+                        <p:commandButton value="Ajouter"
+                                         icon="fa fa-plus"
+                                         styleClass="ui-button-success"
+                                         update="manageViewForm graph-form"
+                                         actionListener="#{dataGraphView.addDataToNewViewList()}"
+                        />
+                    </div>
+                </div>
+                <p:dataList value="#{dataGraphView.newViewExportedData}" var="viewExportedData" style="margin-top: 10px">
+                    <div style="margin-top: 5px; display: flex; justify-content: space-between; align-items: center;">
+                        <h:outputText rendered="#{viewExportedData.right==null}" value="Thésaurus: #{viewExportedData.left}"/>
+                        <h:outputText rendered="#{viewExportedData.right!=null}" value="Branche: #{viewExportedData.left}, #{viewExportedData.right}"/>
+                        <p:commandButton
+                                icon="fa fa-minus"
+                                styleClass="ui-button-danger rounded-button"
+                                update="manageViewForm graph-form"
+                                actionListener="#{dataGraphView.removeExportedDataRow(viewExportedData.left, viewExportedData.right)}"
+                                style="margin: 0"
+                        />
+                    </div>
+                </p:dataList>
+            </h:panelGroup>
+
+            <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
+                <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
+                                 style="margin-right: 10px"                               
+                                 oncomplete="PF('manageView').hide();"
+                                 update="idManageView"/>
+            </div>
+        </h:form>            
+    </p:dialog>   
+</ui:fragment>
