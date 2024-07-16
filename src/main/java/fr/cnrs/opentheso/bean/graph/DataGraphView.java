@@ -19,6 +19,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.jena.base.Sys;
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.EagerResult;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.QueryConfig;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -158,8 +162,52 @@ public class DataGraphView implements Serializable {
     public void exportToNeo4J(String viewId){
         System.out.println("export "+viewId);
         GraphObject view = graphService.getView(viewId);
-        //todo export vers neo4J
-        //todo message lors de l'export si succès
+        if(view == null) return;
+        /*
+        TODO: Recuperer URL base openAPI
+         */
+
+        String openthesoUrl = "http://localhost:5678/opentheso2";
+        final String dbUri = "neo4j://localhost:7687";
+        final String dbUser = "neo4j";
+        final String dbPassword = "test1234";
+        final String dbName = "testjson"; //TODO mettre Neo4j avant de commit
+
+
+        final String thesaurusImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/thesaurus/%THESO_ID%";
+        final String branchImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/concept/%THESO_ID%/%TOP_CONCEPT_ID%/expansion?way=down";
+
+        try (var driver = GraphDatabase.driver(dbUri, AuthTokens.basic(dbUser, dbPassword))) {
+            driver.verifyConnectivity();
+            System.out.println("Connection estabilished.");
+
+            StringBuilder builder = new StringBuilder();
+            view.getExportedData().forEach((data) -> {
+
+                String importURL;
+                if(data.right == null){
+                    importURL = thesaurusImportURIWithPlaceholder.replace("%THESO_ID%", data.left);
+                } else {
+                    importURL = branchImportURIWithPlaceholder.replace("%THESO_ID%", data.left).replace("%TOP_CONCEPT_ID%", data.right);
+                }
+
+                builder.append("CALL n10s.rdf.import.fetch(\"" + importURL + "\", \"RDF/XML\", {headerParams: { Accept: \"application/rdf+xml;charset=utf-8\"}});\n");
+            });
+
+            System.out.println(builder);
+
+            EagerResult result = driver.executableQuery("CALL apoc.cypher.runMany('" +builder.toString() + "', {}, {statistics:false,timeout:10})")
+                    .withConfig(QueryConfig.builder().withDatabase(dbName).build())
+                    .execute();
+
+            var records = result.records();
+
+            if(!records.isEmpty()){
+                records.forEach(System.out::println);
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void removeView(String viewId){
