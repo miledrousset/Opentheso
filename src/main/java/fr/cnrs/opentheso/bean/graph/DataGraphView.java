@@ -223,13 +223,11 @@ public class DataGraphView implements Serializable {
         }
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
 
-        boolean useOT = true;
-
         String opethesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName()
                 + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
                 + context.getApplicationContextPath();
 
-        final String baseDataURL = useOT ? opethesoUrl + "/openapi/v1/graph/getData " : "http://localhost:3334/getJson";
+        final String baseDataURL = opethesoUrl + "/openapi/v1/graph/getData";
         UriBuilder url = UriBuilder.fromUri(baseDataURL);
         url.queryParam("lang", "fr");
         if (!view.getExportedData().isEmpty()) {
