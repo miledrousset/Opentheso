@@ -5,9 +5,12 @@ const urlParams = new URLSearchParams(window.location.search)
 const dataUrl = urlParams.get("dataUrl")
 document.querySelector("#data-url").value = dataUrl.replace(/\s/, "")
 console.log(dataUrl)
+
+
 if(dataUrl !== undefined){
     const dataUrlParams = new URLSearchParams(dataUrl.split("?")[1])
     dataUrlParams.forEach((dataUrlParam, index) => console.log(`${index}, ${dataUrlParam}`))
+    initGraph()
 }
 
 if(urlParams.get("format") === undefined || urlParams.get("format") === "opentheso"){
@@ -24,6 +27,10 @@ document.querySelector("#back-button").addEventListener("click", () => {
 });
 //Event Bouton pour charger les donnée
 document.querySelector("#show-data").addEventListener("click", (event) => {
+    initGraph()
+});
+
+function initGraph(){
     const input = document.querySelector("#data-url");
     if (input.value == "" || input.value == undefined) {
         alert("Erreur, il faut renseigner une URL avant d'afficher le graphe");
@@ -47,7 +54,7 @@ document.querySelector("#show-data").addEventListener("click", (event) => {
             );
         })
         .catch((reason) => alert(reason));
-});
+}
 
 //Resize du svg lors du resize de l'ecran
 window.addEventListener("resize", () => {
