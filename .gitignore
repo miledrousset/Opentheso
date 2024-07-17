@@ -2,3 +2,5 @@
 /.idea/
 /nbproject/
 /src/test/java/deepl/
+/src/main/resources/hibernate.cfg.xml
+/src/main/resources/hikari.properties
