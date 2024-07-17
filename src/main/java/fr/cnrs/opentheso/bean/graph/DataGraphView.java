@@ -1,4 +1,3 @@
-
 package fr.cnrs.opentheso.bean.graph;
 
 import java.io.IOException;
@@ -29,9 +28,6 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
-
-    
-    
 @Named
 @SessionScoped
 public class DataGraphView implements Serializable {
@@ -39,7 +35,7 @@ public class DataGraphView implements Serializable {
     @Inject
     private Connect connect;
     private List<GraphObject> graphObjects;
-    
+
     private GraphObject selectedGraph;
 
     @Inject
@@ -95,7 +91,7 @@ public class DataGraphView implements Serializable {
         graphObjects = new ArrayList<>(graphService.getViews().values());
     }
 
-    public void initNewViewDialog(){
+    public void initNewViewDialog() {
         selectedViewId = -1;
         newViewName = null;
         newViewDescription = null;
@@ -103,9 +99,11 @@ public class DataGraphView implements Serializable {
         newViewExportedData = new ArrayList<>();
     }
 
-    public void initEditViewDialog(String id){
+    public void initEditViewDialog(String id) {
         GraphObject viewToEdit = graphService.getView(id);
-        if(viewToEdit == null) return;
+        if (viewToEdit == null) {
+            return;
+        }
         selectedViewId = viewToEdit.getId();
         newViewName = viewToEdit.getName();
         newViewDescription = viewToEdit.getDescription();
@@ -136,17 +134,21 @@ public class DataGraphView implements Serializable {
     }
 
     public void redirectToGraphVisualization(String viewId) throws IOException {
-        System.out.println("visualisation "+viewId);
+        System.out.println("visualisation " + viewId);
         GraphObject view = graphService.getView(viewId);
 
-        if(view == null) return;
+        if (view == null) {
+            return;
+        }
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
 
         boolean useOT = true;
 
-        String opethesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName() + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "");
+        String opethesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName()
+                + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
+                + context.getApplicationContextPath();
 
-        final String baseDataURL = useOT ? opethesoUrl +"/opentheso2/openapi/v1/graph/getData ": "http://localhost:3334/getJson";
+        final String baseDataURL = useOT ? opethesoUrl + "/openapi/v1/graph/getData " : "http://localhost:3334/getJson";
         UriBuilder url = UriBuilder.fromUri(baseDataURL);
         url.queryParam("lang", "fr");
         if (!view.getExportedData().isEmpty()) {
@@ -156,23 +158,25 @@ public class DataGraphView implements Serializable {
         }
 
         String urlString = url.build().toString();
-        context.redirect(UriBuilder.fromUri(context.getRequestContextPath()  + "/d3js/index.html").queryParam("dataUrl", urlString).queryParam("format", "opentheso").build().toString());
+        context.redirect(UriBuilder.fromUri(context.getRequestContextPath() + "/d3js/index.html").queryParam("dataUrl", urlString).queryParam("format", "opentheso").build().toString());
     }
 
-    public void exportToNeo4J(String viewId){
-        System.out.println("export "+viewId);
+    public void exportToNeo4J(String viewId) {
+        System.out.println("export " + viewId);
         GraphObject view = graphService.getView(viewId);
-        if(view == null) return;
-        /*
-        TODO: Recuperer URL base openAPI
-         */
+        if (view == null) {
+            return;
+        }
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        //       String openthesoUrl = "http://localhost:8080/opentheso2";
+        String openthesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName()
+                + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
+                + context.getApplicationContextPath();
 
-        String openthesoUrl = "http://localhost:5678/opentheso2";
         final String dbUri = "neo4j://localhost:7687";
         final String dbUser = "neo4j";
-        final String dbPassword = "test1234";
-        final String dbName = "testjson"; //TODO mettre Neo4j avant de commit
-
+        final String dbPassword = "neo4j1234";
+        final String dbName = "neo4j"; //TODO mettre Neo4j avant de commit
 
         final String thesaurusImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/thesaurus/%THESO_ID%";
         final String branchImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/concept/%THESO_ID%/%TOP_CONCEPT_ID%/expansion?way=down";
@@ -185,44 +189,50 @@ public class DataGraphView implements Serializable {
             view.getExportedData().forEach((data) -> {
 
                 String importURL;
-                if(data.right == null){
+                if (data.right == null) {
                     importURL = thesaurusImportURIWithPlaceholder.replace("%THESO_ID%", data.left);
                 } else {
                     importURL = branchImportURIWithPlaceholder.replace("%THESO_ID%", data.left).replace("%TOP_CONCEPT_ID%", data.right);
                 }
 
-                builder.append("CALL n10s.rdf.import.fetch(\"" + importURL + "\", \"RDF/XML\", {headerParams: { Accept: \"application/rdf+xml;charset=utf-8\"}});\n");
+                builder.append("CALL n10s.rdf.import.fetch(\""); 
+                builder.append(importURL);
+                builder.append("\", \"RDF/XML\", {headerParams: { Accept: \"application/rdf+xml;charset=utf-8\"}});\n");
             });
 
             System.out.println(builder);
 
-            EagerResult result = driver.executableQuery("CALL apoc.cypher.runMany('" +builder.toString() + "', {}, {statistics:false,timeout:10})")
+            EagerResult result = driver.executableQuery("CALL apoc.cypher.runMany('" + builder.toString() + "', {}, {statistics:false,timeout:10})")
                     .withConfig(QueryConfig.builder().withDatabase(dbName).build())
                     .execute();
 
-            var records = result.records();
+            List<org.neo4j.driver.Record> records = result.records();
 
-            if(!records.isEmpty()){
+            if (!records.isEmpty()) {
                 records.forEach(System.out::println);
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void removeView(String viewId){
-        System.out.println("suppression "+viewId);
+    public void removeView(String viewId) {
+        System.out.println("suppression " + viewId);
         graphService.deleteView(viewId);
         showMessage(FacesMessage.SEVERITY_INFO, "Vue supprimée avec succès");
         init();
     }
 
-    public void addDataToNewViewList(){
-        if(selectedViewId == -1) return;
+    public void addDataToNewViewList() {
+        if (selectedViewId == -1) {
+            return;
+        }
         String[] splittedData = newViewDataToAdd.split(",");
         ImmutablePair<String, String> tuple;
-        if(splittedData.length == 0) return;
-        if(splittedData.length == 1 || splittedData.length == 2) {
+        if (splittedData.length == 0) {
+            return;
+        }
+        if (splittedData.length == 1 || splittedData.length == 2) {
             tuple = new ImmutablePair<>(splittedData[0], splittedData.length == 2 ? splittedData[1] : null);
             graphService.addDataToView(selectedViewId, tuple);
             newViewExportedData.add(tuple);
@@ -232,11 +242,11 @@ public class DataGraphView implements Serializable {
     }
 
     public void applyView() {
-        if(newViewName.isEmpty() || newViewDescription.isEmpty()){
+        if (newViewName.isEmpty() || newViewDescription.isEmpty()) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Une vue doit possèder un nom et une description");
             return;
         }
-        if(selectedViewId == -1){
+        if (selectedViewId == -1) {
             int newViewId = graphService.createView(new GraphObject(newViewName, newViewDescription, new ArrayList<>()));
             selectedViewId = newViewId;
             showMessage(FacesMessage.SEVERITY_INFO, "Vue créée avec succès");
@@ -247,9 +257,9 @@ public class DataGraphView implements Serializable {
         init();
     }
 
-    public void removeExportedDataRow(String left, String right){
+    public void removeExportedDataRow(String left, String right) {
         Optional<ImmutablePair<String, String>> optTuple = newViewExportedData.stream().filter(data -> {
-            if(data.right == null){
+            if (data.right == null) {
                 return data.left.equals(left);
             } else {
                 return data.right.equals(right) && data.left.equals(left);
@@ -267,10 +277,10 @@ public class DataGraphView implements Serializable {
                 .addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, clientId + " multiview state has been cleared out", null));
     }
+
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageType, "", messageValue));
         PrimeFaces.current().ajax().update("messageIndex");
     }
 
-}    
-
+}
