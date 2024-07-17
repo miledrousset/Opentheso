@@ -1,10 +1,12 @@
 package fr.cnrs.opentheso.bean.graph;
 
+import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -14,10 +16,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.UriBuilder;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.IdValuePair;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.jena.base.Sys;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.EagerResult;
 import org.neo4j.driver.GraphDatabase;
@@ -46,7 +48,84 @@ public class DataGraphView implements Serializable {
     private String newViewDescription;
     private String newViewDataToAdd;
     private List<ImmutablePair<String, String>> newViewExportedData;
+    
+    private String selectedIdTheso;
+    private NodeSearchMini searchSelected;    
 
+    private Properties getPrefOfNeo4j(){
+        ResourceBundle resourceBundle = getBundlePool();
+        if(resourceBundle == null){
+            return null;
+        }
+        Properties props = new Properties();
+        props.setProperty("neo4j.serverName", resourceBundle.getString("neo4j.serverName"));
+        props.setProperty("neo4j.serverPort", resourceBundle.getString("neo4j.serverPort"));
+        props.setProperty("neo4j.user", resourceBundle.getString("neo4j.user"));
+        props.setProperty("neo4j.password", resourceBundle.getString("neo4j.password"));
+        props.setProperty("neo4j.databaseName", resourceBundle.getString("neo4j.databaseName"));        
+        
+        return props;
+        
+    }
+    private ResourceBundle getBundlePool(){
+        FacesContext context = FacesContext.getCurrentInstance();
+        try {
+            ResourceBundle bundlePool = context.getApplication().getResourceBundle(context, "conHikari");
+            return bundlePool;
+        } catch (Exception e) {
+            System.err.println(e.toString());
+        }
+        return null;
+    }    
+    
+    
+    /**
+     * permet de retourner la liste des concepts possibles pour ajouter une
+     * relation NT (en ignorant les relations interdites) on ignore les concepts
+     * de type TT on ignore les concepts de type RT
+     *
+     * @param value
+     * @return
+     */
+    public List<NodeSearchMini> getAutoComplete(String value) {
+        List<NodeSearchMini> liste = new ArrayList<>();
+        SearchHelper searchHelper = new SearchHelper();
+        PreferencesHelper preferencesHelper = new PreferencesHelper();
+        String idLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), selectedIdTheso);
+        
+        if (selectedIdTheso != null && idLang != null) {
+            liste = searchHelper.searchAutoCompletionForRelation(
+                    connect.getPoolConnexion(),
+                    value,
+                    idLang,
+                    selectedIdTheso, true);
+        }
+        return liste;
+    }  
+
+    public String getSelectedIdTheso() {
+        return selectedIdTheso;
+    }
+
+    public void setSelectedIdTheso(String selectedIdTheso) {
+        this.selectedIdTheso = selectedIdTheso;
+    }
+
+    public NodeSearchMini getSearchSelected() {
+        return searchSelected;
+    }
+
+    public void setSearchSelected(NodeSearchMini searchSelected) {
+        this.searchSelected = searchSelected;
+    }
+
+
+    public void actionAjax(){
+    }
+    
+    
+    
+    
     public int getSelectedViewId() {
         return selectedViewId;
     }
@@ -89,6 +168,8 @@ public class DataGraphView implements Serializable {
 
     public void init() {
         graphObjects = new ArrayList<>(graphService.getViews().values());
+        selectedIdTheso = null;
+        searchSelected = null;
     }
 
     public void initNewViewDialog() {
@@ -162,7 +243,15 @@ public class DataGraphView implements Serializable {
     }
 
     public void exportToNeo4J(String viewId) {
-        System.out.println("export " + viewId);
+        
+        Properties properties = getPrefOfNeo4j();
+        if(properties == null){
+            showMessage(FacesMessage.SEVERITY_ERROR, "La base de données Neo4J n'est pas paramétrée, ouvrez hikari.properties et faire le changement !");
+            return;
+        }
+        
+        //System.out.println("export " + viewId);
+        
         GraphObject view = graphService.getView(viewId);
         if (view == null) {
             return;
@@ -173,17 +262,17 @@ public class DataGraphView implements Serializable {
                 + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
                 + context.getApplicationContextPath();
 
-        final String dbUri = "neo4j://localhost:7687";
-        final String dbUser = "neo4j";
-        final String dbPassword = "neo4j1234";
-        final String dbName = "neo4j"; //TODO mettre Neo4j avant de commit
+        final String dbUri = "neo4j://" + properties.getProperty("neo4j.serverName") + ":" + properties.getProperty("neo4j.serverPort"); //"neo4j://localhost:7687";
+        final String dbUser = properties.getProperty("neo4j.user");//"neo4j";
+        final String dbPassword = properties.getProperty("neo4j.password");//"neo4j1234";
+        final String dbName = properties.getProperty("neo4j.databaseName");//"neo4j"; //TODO mettre Neo4j avant de commit
 
         final String thesaurusImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/thesaurus/%THESO_ID%";
         final String branchImportURIWithPlaceholder = openthesoUrl + "/openapi/v1/concept/%THESO_ID%/%TOP_CONCEPT_ID%/expansion?way=down";
 
         try (var driver = GraphDatabase.driver(dbUri, AuthTokens.basic(dbUser, dbPassword))) {
             driver.verifyConnectivity();
-            System.out.println("Connection estabilished.");
+            //System.out.println("Connection estabilished.");
 
             StringBuilder builder = new StringBuilder();
             view.getExportedData().forEach((data) -> {
@@ -200,7 +289,7 @@ public class DataGraphView implements Serializable {
                 builder.append("\", \"RDF/XML\", {headerParams: { Accept: \"application/rdf+xml;charset=utf-8\"}});\n");
             });
 
-            System.out.println(builder);
+           // System.out.println(builder);
 
             EagerResult result = driver.executableQuery("CALL apoc.cypher.runMany('" + builder.toString() + "', {}, {statistics:false,timeout:10})")
                     .withConfig(QueryConfig.builder().withDatabase(dbName).build())
@@ -211,7 +300,9 @@ public class DataGraphView implements Serializable {
             if (!records.isEmpty()) {
                 records.forEach(System.out::println);
             }
+            showMessage(FacesMessage.SEVERITY_INFO, "Export réussi vers Neo4J !");
         } catch (Exception e) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de connexion à la base de données Neo4J !");
             e.printStackTrace();
         }
     }
@@ -227,16 +318,25 @@ public class DataGraphView implements Serializable {
         if (selectedViewId == -1) {
             return;
         }
-        String[] splittedData = newViewDataToAdd.split(",");
+
         ImmutablePair<String, String> tuple;
-        if (splittedData.length == 0) {
+        
+        String idConcept;
+        if(searchSelected == null || StringUtils.isEmpty(searchSelected.getIdConcept())) {
+            idConcept = null;
+        } else {
+            idConcept = searchSelected.getIdConcept();
+        }
+        
+        tuple = new ImmutablePair<>(selectedIdTheso, idConcept);
+        
+        if(graphService.isExistDatas(selectedViewId, selectedIdTheso, idConcept)){
+            showMessage(FacesMessage.SEVERITY_WARN, "Cette combinaison existe déjà !");
             return;
         }
-        if (splittedData.length == 1 || splittedData.length == 2) {
-            tuple = new ImmutablePair<>(splittedData[0], splittedData.length == 2 ? splittedData[1] : null);
-            graphService.addDataToView(selectedViewId, tuple);
-            newViewExportedData.add(tuple);
-        }
+        
+        graphService.addDataToView(selectedViewId, tuple);
+        newViewExportedData.add(tuple);
         newViewDataToAdd = null;
         init();
     }

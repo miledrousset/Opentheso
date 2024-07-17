@@ -2,23 +2,24 @@
 package fr.cnrs.opentheso.bean.graph;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bean.candidat.CandidatService;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jena.base.Sys;
 
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -202,6 +203,40 @@ public class GraphService implements Serializable{
         }
 
         return id;
+    }
+    
+    public boolean isExistDatas(int viewId, String idTheso, String idConcept){
+        try(Connection conn = connect.getPoolConnexion().getConnection()){
+            try(Statement stmt = conn.createStatement()){
+                
+                if(StringUtils.isEmpty(idConcept)){
+                    stmt.executeQuery("select id from graph_view_exported_concept_branch"
+                            + " where "
+                            + " graph_view_id = " + viewId 
+                            + " and"
+                            + " top_concept_id ISNULL"
+                            + " and top_concept_thesaurus_id = '" + idTheso + "'"
+                    );                    
+                } else {
+                    stmt.executeQuery("select id from graph_view_exported_concept_branch"
+                            + " where "
+                            + " graph_view_id = " + viewId 
+                            + " and"                            
+                            + " top_concept_id = '" + idConcept + "'"
+                            + " and top_concept_thesaurus_id = '" + idTheso + "'"
+                    );
+                }
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if(resultSet.next()) {
+                        resultSet.getInt("id");
+                        return true;
+                    }                    
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(GraphService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
     public void removeDataFromView(int selectedViewId, ImmutablePair<String, String> tuple){

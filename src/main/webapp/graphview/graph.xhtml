@@ -76,12 +76,13 @@
                                                              icon="fa fa-paper-plane"
                                                              rendered="#{!graph_view.exportedData.isEmpty()}"
                                                              actionListener="#{dataGraphView.exportToNeo4J(graph_view.id)}"
+                                                             update="messageIndex"
                                             >
                                             </p:commandButton>
                                             <p:commandButton value="Modifier la vue"
                                                              styleClass="ui-button-secondary"
                                                              icon="fa fa-pen"
-                                                             update="idManageView"
+                                                             update="idManageView manageViewForm"
                                                              oncomplete="PF('manageView').show();"
                                                              actionListener="#{dataGraphView.initEditViewDialog(graph_view.id)}"
                                             >
