@@ -45,7 +45,7 @@
             <h:panelGroup id="ViewSelect" rendered="#{dataGraphView.selectedViewId != -1}">
                 <div class="row" style="margin-top: 10px">
                     <div class="col-5" style="margin-top: 3px">
-                        <h:outputText value="Sélectionner un thésaurus: (*)" />
+                        <h:outputText value="#{langueBean.getMsg('menu.select_thesaurus')}: (*)" />
                     </div>
 
                     <div class="col-7" style="margin-top: 3px">                
@@ -60,7 +60,7 @@
                 <h:panelGroup id="viewConcept" rendered="#{dataGraphView.selectedIdTheso != null and dataGraphView.selectedIdTheso != ''}">
                     <div class="row" style="margin-top: 10px">
                         <div class="col-5" style="margin-top: 3px">
-                            <h:outputText value="Sélectionner une branche: " />
+                            <h:outputText value="#{langueBean.getMsg('conceptsview.view_branch_as_graph')}: " />
                         </div>                        
                         <div class="col-7" style="margin-top: 3px">                    
                             <p:autoComplete id="autoBroaderLink" value="#{dataGraphView.searchSelected}"
@@ -86,7 +86,7 @@
 
                 <div class="row" style="margin-top: 10px;">
                     <div class="col-12" style="text-align: right" >
-                        <p:commandButton value="Ajouter"
+                        <p:commandButton value="#{langueBean.getMsg('btnAdd')}"
                                          icon="fa fa-plus"
                                          styleClass="ui-button-success"
                                          update="manageViewForm graph-form"
@@ -95,8 +95,8 @@
                 </div>
                 <p:dataList value="#{dataGraphView.newViewExportedData}" var="viewExportedData" style="margin-top: 10px">
                     <div style="margin-top: 5px; display: flex; justify-content: space-between; align-items: center;">
-                        <h:outputText rendered="#{viewExportedData.right==null}" value="Thésaurus: #{viewExportedData.left}"/>
-                        <h:outputText rendered="#{viewExportedData.right!=null}" value="Branche: #{viewExportedData.left}, #{viewExportedData.right}"/>
+                        <h:outputText rendered="#{viewExportedData.right==null}" value="#{langueBean.getMsg('menu.thesaurus')}: #{viewExportedData.left}"/>
+                        <h:outputText rendered="#{viewExportedData.right!=null}" value="#{langueBean.getMsg('branch')}: #{viewExportedData.left}, #{viewExportedData.right}"/>
                         <p:commandButton
                             icon="fa fa-minus"
                             styleClass="ui-button-danger rounded-button"

@@ -330,6 +330,7 @@ public class DataGraphView implements Serializable {
         
         if(graphService.isExistDatas(selectedViewId, selectedIdTheso, idConcept)){
             showMessage(FacesMessage.SEVERITY_WARN, "Cette combinaison existe déjà !");
+            init();
             return;
         }
         

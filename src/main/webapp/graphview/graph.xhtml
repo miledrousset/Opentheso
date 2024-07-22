@@ -54,7 +54,7 @@
                                           style="color: #F47B2A"
                                           title="recharger la page"
                                           actionListener="#{dataGraphView.init()}"/>   
-                        <p:commandButton value="Nouvelle vue" styleClass="ui-button-success" icon="fa fa-plus"
+                        <p:commandButton value="#{langueBean.getMsg('graphdialog.manage_view.NewView')}" styleClass="ui-button-success" icon="fa fa-plus"
                                          update="idManageView" oncomplete="PF('manageView').show();" actionListener="#{dataGraphView.initNewViewDialog()}"/>
                     </div>
 
@@ -62,41 +62,53 @@
                         <h:form id="graph-form">
                             <p:dataView var="graph_view" value="#{dataGraphView.graphObjects}" rows="6" paginator="true"
                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" rowsPerPageTemplate="6,12,16"
-                                        
+                                        emptyMessage="#{langueBean.getMsg('rightbody.conceptdialog.noRecordFound')}"
                                         layout="grid" gridRowStyleClass="sm:col-2 lg:col-4 xl:col-6">
 
                                 <p:dataViewGridItem>
                                     <div class="row" style="margin-right: 1px; ">
                                         <div class="col-1 offset-11" >
                                             <p:menuButton icon="pi pi-align-justify" >
-                                                <p:menuitem value="Modifier la vue"
+                                                <p:menuitem value="#{langueBean.getMsg('graphdialog.manage_view.modify')}"
                                                             icon="fa fa-pen"
                                                             update="idManageView manageViewForm"
                                                             oncomplete="PF('manageView').show();"
                                                             actionListener="#{dataGraphView.initEditViewDialog(graph_view.id)}"/>  
-                                                <p:menuitem value="Supprimer la vue"
+                                                <p:menuitem value="#{langueBean.getMsg('graphdialog.manage_view.delete')}"
                                                             icon="fa fa-trash"
-                                                            actionListener="#{dataGraphView.removeView(graph_view.id)}"
-                                                            update="graph-form"/>
+                                                            
+                                                            update="graph-form">
+                                                    <p:confirm header="#{langueBean.getMsg('profile.confirmation')}" message="#{langueBean.getMsg('graphdialog.manage_view.deleteconfirm')} ?" icon="pi pi-info-circle"/>
+                                                </p:menuitem>
+                                                            
+                                                
                                             </p:menuButton>
                                         </div>
                                     </div>
+
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                        <p:commandButton value="#{langueBean.getMsg('no')}"  styleClass="ui-confirmdialog-no ui-button-flat" update="graph-form"/>
+                                        <p:commandButton value="#{langueBean.getMsg('yes')}"  styleClass="ui-confirmdialog-yes" actionListener="#{dataGraphView.removeView(graph_view.id)}" update="graph-form"/>
+                                    </p:confirmDialog>
+                                    
+                                    
+                                    
                                     <div class="card border-1" style="padding: 10px; margin: 1px">
-                                            <div style="height: 150px;">
-                                                <p style="font-weight: bold; font-size: 1.15rem; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">#{graph_view.name}</p>
-                                                <p style="text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;">#{graph_view.description}</p>
-                                            </div>
-                                            <p:dataList value="#{graph_view.exportedData}" var="export" type="none" style="height: 100px;">
-                                                <p:chip rendered="#{export.right==null}" label="#{export.left}" styleClass="mr-2" style="color:#601e18; background-color:#ECF8F1 "/>
-                                                <p:chip rendered="#{export.right!=null}" label="#{export.left}, #{export.right}" styleClass="mr-2" style="color:#601e18; background-color:#FAEDE5"/>
-                                            </p:dataList>
-                                        
-                                        
-                                        
+                                        <div style="height: 150px;">
+                                            <p style="font-weight: bold; font-size: 1.15rem; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">#{graph_view.name}</p>
+                                            <p style="text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;">#{graph_view.description}</p>
+                                        </div>
+                                        <p:dataList emptyMessage="#{langueBean.getMsg('rightbody.conceptdialog.noRecordFound')}" value="#{graph_view.exportedData}" var="export" type="none" style="height: 100px;">
+                                            <p:chip rendered="#{export.right==null}" label="#{export.left}" styleClass="mr-2" style="color:#601e18; background-color:#ECF8F1 "/>
+                                            <p:chip rendered="#{export.right!=null}" label="#{export.left}, #{export.right}" styleClass="mr-2" style="color:#601e18; background-color:#FAEDE5"/>
+                                        </p:dataList>
+
+
+
                                         <div class="row">
                                             <div class="col-6">
-                                                <p:graphicImage rendered="#{!graph_view.exportedData.isEmpty()}" value="/resources/img/d3js.png" styleClass="ui-icon-custom" style="margin-right: 5px;"/>                                            
-                                                <p:commandButton value="Afficher avec D3.js"
+
+                                                <p:commandButton value="#{langueBean.getMsg('graphdialog.manage_view.DisplayWithD3')}"
                                                                  styleClass="ui-button-success"
                                                                  icon="fa fa-diagram-project"
                                                                  style="margin-left: 0px; "
@@ -105,10 +117,9 @@
                                                 </p:commandButton>                                                
                                             </div>
 
-                                            <div class="col-6 ">                                            
-                                                <p:graphicImage rendered="#{!graph_view.exportedData.isEmpty()}" value="/resources/img/neo4j.png" styleClass="ui-icon-custom" 
-                                                                style="margin-right: 5px;f"/>                                            
-                                                <p:commandButton value="Exporter vers Neo4J"
+                                            <div class="col-6" style="text-align: right">                                            
+
+                                                <p:commandButton value="#{langueBean.getMsg('graphdialog.manage_view.ExportToNeo4j')}"
                                                                  styleClass="ui-button-secondary"
                                                                  icon="fa fa-paper-plane"
 
