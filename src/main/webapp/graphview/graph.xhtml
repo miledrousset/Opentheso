@@ -21,6 +21,12 @@
 
     <h:body id="page-top" onload="initMenu()">
 
+        <style>
+            .ui-dataview .ui-dataview-header {
+                border-bottom: 0 none;
+                display: none;
+            }
+        </style>
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
@@ -37,20 +43,26 @@
                 <div class="container-fluid">
 
                     <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px; display: flex; justify-content: space-between">
-                        <h1 class="h3 mb-0 text-gray-800"><span style="color: #f47b2a">#{langueBean.getMsg('graph')}</span></h1>
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <span style="color: #f47b2a">
+                                <p:graphicImage value="/resources/img/graph.png"  style="width: 42px; margin-right: 5px;"/> 
+                                #{langueBean.getMsg('graph')}
+                            </span></h1>
+
+                        <p:commandButton  update="graph-form"
+                                          icon="fas fa-sync" styleClass="rounded-button ui-button-outlined"
+                                          style="color: #F47B2A"
+                                          title="recharger la page"
+                                          actionListener="#{dataGraphView.init()}"/>   
                         <p:commandButton value="Nouvelle vue" styleClass="ui-button-success" icon="fa fa-plus"
                                          update="idManageView" oncomplete="PF('manageView').show();" actionListener="#{dataGraphView.initNewViewDialog()}"/>
                     </div>
 
                     <p:scrollPanel mode="native" style="height: 82vh">
                         <h:form id="graph-form">
-                            <p:commandButton  update="graph-form"
-                                              icon="fas fa-sync" styleClass="rounded-button ui-button-outlined"
-                                              style="color: #F47B2A"
-                                              actionListener="#{dataGraphView.init()}"/>
-                            <p:dataView var="graph_view" value="#{dataGraphView.graphObjects}" rows="9" paginator="true"
+                            <p:dataView var="graph_view" value="#{dataGraphView.graphObjects}" rows="6" paginator="true"
                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}" rowsPerPageTemplate="6,12,16"
-                                        gridIcon="pi pi-th-large" listIcon="pi pi-bars"
+                                        
                                         layout="grid" gridRowStyleClass="sm:col-2 lg:col-4 xl:col-6">
 
                                 <p:dataViewGridItem>
@@ -58,52 +70,55 @@
                                         <div class="col-1 offset-11" >
                                             <p:menuButton icon="pi pi-align-justify" >
                                                 <p:menuitem value="Modifier la vue"
-                                                                 icon="fa fa-pen"
-                                                                 update="idManageView manageViewForm"
-                                                                 oncomplete="PF('manageView').show();"
-                                                                 actionListener="#{dataGraphView.initEditViewDialog(graph_view.id)}"/>  
+                                                            icon="fa fa-pen"
+                                                            update="idManageView manageViewForm"
+                                                            oncomplete="PF('manageView').show();"
+                                                            actionListener="#{dataGraphView.initEditViewDialog(graph_view.id)}"/>  
                                                 <p:menuitem value="Supprimer la vue"
-                                                                 
-                                                                 icon="fa fa-trash"
-                                                                 actionListener="#{dataGraphView.removeView(graph_view.id)}"
-                                                                 update="graph-form"/>
+                                                            icon="fa fa-trash"
+                                                            actionListener="#{dataGraphView.removeView(graph_view.id)}"
+                                                            update="graph-form"/>
                                             </p:menuButton>
                                         </div>
                                     </div>
                                     <div class="card border-1" style="padding: 10px; margin: 1px">
-                                        <div style="height: 250px;">
-                                            <p style="font-weight: bold; font-size: 1.15rem; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">#{graph_view.name}</p>
-                                            <p style="text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 9; overflow: hidden;">#{graph_view.description}</p>
-                                        </div>
-                                        <p:dataList value="#{graph_view.exportedData}" var="export" type="none" style="height: 100px;">
-                                            <h:outputText rendered="#{export.right==null}" value="Thésaurus: #{export.left}" style="padding-right: 10px"/>
-                                            <h:outputText rendered="#{export.right!=null}" value="Branche: #{export.left}, #{export.right}" style="padding-right: 10px"/>
-                                        </p:dataList>
+                                            <div style="height: 150px;">
+                                                <p style="font-weight: bold; font-size: 1.15rem; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">#{graph_view.name}</p>
+                                                <p style="text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden;">#{graph_view.description}</p>
+                                            </div>
+                                            <p:dataList value="#{graph_view.exportedData}" var="export" type="none" style="height: 100px;">
+                                                <p:chip rendered="#{export.right==null}" label="#{export.left}" styleClass="mr-2" style="color:#601e18; background-color:#ECF8F1 "/>
+                                                <p:chip rendered="#{export.right!=null}" label="#{export.left}, #{export.right}" styleClass="mr-2" style="color:#601e18; background-color:#FAEDE5"/>
+                                            </p:dataList>
+                                        
+                                        
                                         
                                         <div class="row">
                                             <div class="col-6">
-                                            <p:graphicImage value="/resources/img/d3js.png" styleClass="ui-icon-custom" style="margin-right: 5px;"/>                                            
-                                            <p:commandButton value="Afficher avec D3.js"
-                                                             styleClass="ui-button-success"
-                                                             icon="fa fa-diagram-project"
-                                                             style="margin-left: 0px;"
-                                                             rendered="#{!graph_view.exportedData.isEmpty()}"
-                                                             actionListener="#{dataGraphView.redirectToGraphVisualization(graph_view.id)}" >
-                                            </p:commandButton>                                                
+                                                <p:graphicImage rendered="#{!graph_view.exportedData.isEmpty()}" value="/resources/img/d3js.png" styleClass="ui-icon-custom" style="margin-right: 5px;"/>                                            
+                                                <p:commandButton value="Afficher avec D3.js"
+                                                                 styleClass="ui-button-success"
+                                                                 icon="fa fa-diagram-project"
+                                                                 style="margin-left: 0px; "
+                                                                 rendered="#{!graph_view.exportedData.isEmpty()}"
+                                                                 actionListener="#{dataGraphView.redirectToGraphVisualization(graph_view.id)}" >
+                                                </p:commandButton>                                                
                                             </div>
 
                                             <div class="col-6 ">                                            
-                                            <p:graphicImage value="/resources/img/neo4j.png" styleClass="ui-icon-custom" style="margin-right: 5px;"/>                                            
-                                            <p:commandButton value="Exporter vers Neo4J"
-                                                             styleClass="ui-button-secondary"
-                                                             icon="fa fa-paper-plane"
-                                                             rendered="#{!graph_view.exportedData.isEmpty()}"
-                                                             actionListener="#{dataGraphView.exportToNeo4J(graph_view.id)}"
-                                                             update="messageIndex" >
-                                            </p:commandButton>
+                                                <p:graphicImage rendered="#{!graph_view.exportedData.isEmpty()}" value="/resources/img/neo4j.png" styleClass="ui-icon-custom" 
+                                                                style="margin-right: 5px;f"/>                                            
+                                                <p:commandButton value="Exporter vers Neo4J"
+                                                                 styleClass="ui-button-secondary"
+                                                                 icon="fa fa-paper-plane"
+
+                                                                 rendered="#{!graph_view.exportedData.isEmpty()}"
+                                                                 actionListener="#{dataGraphView.exportToNeo4J(graph_view.id)}"
+                                                                 update="messageIndex" >
+                                                </p:commandButton>
                                             </div>
                                         </div>                                            
-                                        
+
                                     </div>
                                 </p:dataViewGridItem>
                             </p:dataView>

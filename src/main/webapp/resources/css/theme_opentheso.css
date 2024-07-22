@@ -11354,7 +11354,7 @@ body.sidebar-toggled footer.sticky-footer {
 
 .ui-icon-custom {
     /*background: url("#{resource['/resources/img/d3js.png']}") no-repeat center center;*/
-    width: 32px;  /* ajustez en fonction de la taille de votre image */
-    height: 32px;  /* ajustez en fonction de la taille de votre image */
+    width: 28px;  /* ajustez en fonction de la taille de votre image */
+    height: 28px;  /* ajustez en fonction de la taille de votre image */
     display: inline-block;
 }

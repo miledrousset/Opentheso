@@ -4,10 +4,7 @@ package fr.cnrs.opentheso.bean.graph;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

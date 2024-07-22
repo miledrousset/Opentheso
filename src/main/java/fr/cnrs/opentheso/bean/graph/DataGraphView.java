@@ -346,6 +346,11 @@ public class DataGraphView implements Serializable {
         }
         if (selectedViewId == -1) {
             int newViewId = graphService.createView(new GraphObject(newViewName, newViewDescription, new ArrayList<>()));
+            if(newViewId == -1){
+                showMessage(FacesMessage.SEVERITY_ERROR, "La création de la vue a échoué");
+                init();
+                return;
+            }
             selectedViewId = newViewId;
             showMessage(FacesMessage.SEVERITY_INFO, "Vue créée avec succès");
         } else {
