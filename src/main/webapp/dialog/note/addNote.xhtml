@@ -30,18 +30,20 @@
             </div>
 
             <!-- type note -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5">
-                    <h:outputText value="Type : " /> 
+            <h:panelGroup id="listNoteTypes">
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-5">
+                        <h:outputText value="Type : " /> 
+                    </div>
+                    <div class="col-7">
+                        <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" style="width: 100%;"
+                                         value="#{noteBean.selectedTypeNote}">
+                            <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
+                                           itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
+                        </p:selectOneMenu>  
+                    </div>
                 </div>
-                <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" style="width: 100%;"
-                                     value="#{noteBean.selectedTypeNote}">
-                        <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
-                                       itemLabel="#{typeNote.label_fr} (#{typeNote.label_en})" itemValue="#{typeNote.codeNote}"/>
-                    </p:selectOneMenu>  
-                </div>
-            </div>
+            </h:panelGroup>                
 
             <!-- Langue de la note -->
             <div class="row" style="margin-top: 10px">
@@ -56,13 +58,16 @@
                     </p:selectOneMenu>    
                 </div>
             </div>
-
-            <div class="row" style="margin-top: 10px">
-                <div class="col-12">
-                    <p:textEditor widgetVar="NoteEditor2" value="#{noteBean.noteValue}" allowLinks="true" secure="false" height="200"
-                                  placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />   
-                </div>
-            </div>            
+            
+            
+            <h:panelGroup id="groupNoteEditor">
+                <div class="row" style="margin-top: 10px">
+                    <div class="col-12">
+                        <p:textEditor widgetVar="NoteEditor2" value="#{noteBean.noteValue}" allowLinks="true" secure="false" height="200"
+                                      placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />   
+                    </div>
+                </div>            
+            </h:panelGroup>                
 
             <div style="width: 100%; text-align: right; margin-top: 15px; margin-bottom: 5px;">
 
@@ -71,7 +76,7 @@
                                  actionListener="PF('addNote').hide();" update="containerIndex:idAddNote"/>
 
                 <p:commandButton id="addNoteBtn" value="#{langueBean.getMsg('btnValidate')}" icon="pi pi-check" 
-                                 update="containerIndex:formRightTab messageIndex" styleClass="ui-button-success" 
+                                 update="containerIndex:formRightTab listNoteTypes groupNoteEditor messageIndex" styleClass="ui-button-success" 
                                  ajax="true" process="@form"                              
                                  actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
             </div> 

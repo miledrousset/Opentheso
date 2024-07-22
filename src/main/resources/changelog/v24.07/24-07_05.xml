@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+
+    <changeSet id="v24.07.05" author="Miled">
+        <sql>
+            ALTER TABLE graph_view ADD COLUMN id_user integer DEFAULT 1 NOT NULL;
+        </sql>
+    </changeSet>
+     
+</databaseChangeLog>

@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.candidat.dto;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import lombok.Data;
 
@@ -55,11 +56,12 @@ public class CandidatDto implements Serializable {
     private ArrayList<NodeIdValue> collections;
     private List<NodeNote> nodeNotes;    
 
-    private ArrayList<NodeIdValue> termesGenerique;
-    private ArrayList<NodeIdValue> termesAssocies;   
+    private List<NodeIdValue> termesGenerique;
+    private List<NodeIdValue> termesAssocies;
     
     private List<String> employePourList;    
-    private String employePour;    
+    private String employePour;
+    private List<NodeImage> images;
 
     
     public CandidatDto() {

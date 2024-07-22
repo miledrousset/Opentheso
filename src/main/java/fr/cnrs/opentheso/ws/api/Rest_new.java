@@ -10,10 +10,7 @@ import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -28,6 +25,7 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -35,7 +33,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -90,6 +91,29 @@ public class Rest_new {
     @GET
     @Produces("text/text;charset=UTF-8")
     public String testWS(){
+        return "pong";
+    }
+    
+    @Path("/testput")
+    @PUT
+    @Consumes("application/json;charset=UTF-8")
+    @Produces("application/json;charset=UTF-8")
+    public String addArk(String content) {
+        JsonHelper jsonHelper = new JsonHelper();
+        JsonObject jo;
+        try {
+            jo = jsonHelper.getJsonObject(content);
+            return jo.toString();
+        } catch (Exception e) {
+            return "Erreur";
+        }
+    }    
+
+
+    @Path("/post")
+    @POST
+    @Produces("text/text;charset=UTF-8")
+    public String testPost(){
         return "pong";
     }
 
@@ -2516,7 +2540,7 @@ public class Rest_new {
 
     /**
      * Pour retourner la liste des langues d'un thésaurus
-     * https://pactols.frantiq.fr/opentheso/api/info/list?theso=TH_1&lang=all
+     * https://pactols.frantiq.fr/opentheso/api/info/listlang?theso=TH_1&lang=all
      *
      * @param uri
      * @return

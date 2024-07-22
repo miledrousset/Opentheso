@@ -55,6 +55,8 @@ public class ViewExportBean implements Serializable {
     private boolean toogleFilterByGroup;
     private boolean toogleExportByGroup;
     
+    private boolean toogleClearHtmlCharacter;    
+    
     private String selectedGroup;
     private String selectedIdLangTheso;
     private List<String> selectedIdGroups;
@@ -137,6 +139,8 @@ public class ViewExportBean implements Serializable {
 
         toogleFilterByGroup = false;
         toogleExportByGroup = false;
+        toogleClearHtmlCharacter = false;
+        
         if(selectedIdGroups == null){
             selectedIdGroups = new ArrayList<>();
         } else
@@ -207,6 +211,18 @@ public class ViewExportBean implements Serializable {
         this.toogleExportByGroup = !this.toogleExportByGroup;
         this.toogleFilterByGroup = false;
     }      
+    
+    public void listenerForToogleClearHtmlCharacter() {
+
+    }      
+
+    public boolean isToogleClearHtmlCharacter() {
+        return toogleClearHtmlCharacter;
+    }
+
+    public void setToogleClearHtmlCharacter(boolean toogleClearHtmlCharacter) {
+        this.toogleClearHtmlCharacter = toogleClearHtmlCharacter;
+    }
     
     
     public boolean isPdfExport() {

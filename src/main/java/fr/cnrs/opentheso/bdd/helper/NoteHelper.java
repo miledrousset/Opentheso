@@ -11,9 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdConceptIdTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import org.apache.commons.logging.Log;
@@ -437,7 +435,6 @@ public class NoteHelper {
     public ArrayList<NodeNote> getListNotesAllLang(HikariDataSource ds, String identifier, String idThesaurus) {
 
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -452,10 +449,7 @@ public class NoteHelper {
                         nodeNote.setId_term(identifier);
                         nodeNote.setId_note(resultSet.getInt("id"));
                         nodeNote.setLang(resultSet.getString("lang"));
-                        nodeNote.setLexicalvalue(
-                                stringPlus.normalizeStringForXml(
-                                        resultSet.getString("lexicalvalue"))
-                        );
+                        nodeNote.setLexicalvalue(resultSet.getString("lexicalvalue"));
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
@@ -479,8 +473,7 @@ public class NoteHelper {
      * @param idThesaurus
      * @return boolean
      */
-    public boolean deleteNotes(Connection conn,
-            String identifier, String idThesaurus) {
+    public boolean deleteNotes(Connection conn, String identifier, String idThesaurus) {
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("delete from note"
                     + " where identifier = '" + identifier + "'"
@@ -1897,22 +1890,16 @@ public class NoteHelper {
             try (Statement stmt = conn.createStatement()) {
 
                 // ajouté par Miled pour test et optimisation 
-                stmt.executeQuery("SELECT count (note.id) \n" +
-                    "FROM preferred_term, note, concept_group_concept \n" +
-                    "WHERE \n" +
-                    "preferred_term.id_concept = note.id_concept  \n" +
-                    "AND \n" +
-                    "preferred_term.id_thesaurus = note.id_thesaurus \n" +
-                    "AND\n" +
-                    "concept_group_concept.idthesaurus = preferred_term.id_thesaurus \n" +
-                    "AND\n" +
-                    "concept_group_concept.idconcept = preferred_term.id_concept \n" +
-                    "AND \n" +
-                    "note.id_thesaurus = '" + idThesaurus + "'" +
-                    "AND\n" +
-                    "note.lang = '" + idLang + "'" +
-                    "AND\n" +
-                    "concept_group_concept.idgroup = '" + idGroup + "'");
+                stmt.executeQuery("SELECT count (note.id) " +
+                        " FROM note, concept_group_concept " +
+                        " WHERE " +
+                        " concept_group_concept.idthesaurus = note.id_thesaurus " +
+                        " AND" +
+                        " concept_group_concept.idconcept = note.identifier " +
+                        " AND " +
+                        " note.id_thesaurus = '" + idThesaurus + "' AND" +
+                        " note.lang = '" + idLang + "' AND" +
+                        " lower(concept_group_concept.idgroup) = lower('" + idGroup + "')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
@@ -2034,8 +2021,8 @@ public class NoteHelper {
      */
     public int getNbrNoteByGroup(HikariDataSource ds, String idGroup, String idThesaurus, String idLang) {
         int nbrNoteConcepts = getNbrNoteByGroupTypeConcept(ds, idGroup, idThesaurus, idLang);
-        int nbrNoteTerms = getNbrNoteByGroupTypeTerm(ds, idGroup, idThesaurus, idLang);
-        return nbrNoteConcepts + nbrNoteTerms;
+     //   int nbrNoteTerms = getNbrNoteByGroupTypeTerm(ds, idGroup, idThesaurus, idLang);
+        return nbrNoteConcepts; //+ nbrNoteTerms;
     }
 
 }

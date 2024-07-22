@@ -528,6 +528,47 @@ public class CsvReadHelper {
         }
         return null;
     }
+    
+    /**
+     * permet de lire un fichier CSV complet pour importer les altLabels avec option
+     * de vider les notes avant
+     *
+     * @param in
+     * @return
+     */
+    public boolean readFileAltlabel(Reader in) {
+        try {
+            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            CSVParser cSVParser = cSVFormat.parse(in);
+
+            String idConcept;
+            for (CSVRecord record : cSVParser) {
+                ConceptObject conceptObject = new ConceptObject();
+                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
+                try {
+                    idConcept = record.get("localId");
+                    if (idConcept == null || idConcept.isEmpty()) {
+                        continue;
+                    }
+                    conceptObject.setIdConcept(idConcept);
+                } catch (Exception e) {
+                    continue;
+                }
+
+                // on récupère les notes 
+                conceptObject = getLabels(conceptObject, record, false);
+
+                if (conceptObject != null) {
+                    conceptObjects.add(conceptObject);
+                }
+            }
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }    
 
     /**
      * permet de lire un fichier CSV complet pour importer les notes avec option

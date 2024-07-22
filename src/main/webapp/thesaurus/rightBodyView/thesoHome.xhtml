@@ -38,8 +38,10 @@
                             <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" 
                                           title="#{langueBean.getMsg('thesohome.totalConcepts')} #{selectedTheso.thesoName}" 
                                           style="font-size: 13px; color: #F47B2A; font-weight: bold;"/>
-                            <h:outputText value=" Concepts" style="font-size: 13px; font-weight: bold; color: #858796"/>
-                            <h:outputText value=" #{viewEditorThesoHomeBean.projectName}" style="font-size: 13px; color: #F47B2A;"/>  
+                            <h:outputText value=" Concepts" style="font-size: 13px; color: #858796"/>
+                            
+                            <h:outputText value="; #{langueBean.getMsg('profile.project')}:" style="font-size: 13px;"/>
+                            <h:outputText value="  #{viewEditorThesoHomeBean.projectName}" style="font-size: 13px; color: #F47B2A;font-weight: bold"/>  
                             <p:commandButton icon="fa-solid fa-circle-question" styleClass="rounded-button ui-button-flat" style="margin-left: 5px; color: #f47b2a"
                                              action="#{roleOnTheso.showInfosOfTheso(selectedTheso.currentIdTheso)}"/>                              
                         </div>
@@ -49,6 +51,11 @@
                             <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 13px; color: #601e18;"/>
                         </div>
                     </div>
+                    
+                  
+                    
+                    
+                    
                     <div class="row">
                         <div class="col-10" style="margin-top: 3px">
                             <img src="#{request.contextPath}/resources/img/openapi.png" style="width:50px; margin-right: 10px;" />

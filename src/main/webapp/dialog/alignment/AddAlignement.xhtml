@@ -1,8 +1,7 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"  
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:h="http://xmlns.jcp.org/jsf/html"
-             xmlns:p="http://primefaces.org/ui"
-             xmlns:f="http://xmlns.jcp.org/jsf/core">
+             xmlns:p="http://primefaces.org/ui">
 
     <p:dialog header="#{langueBean.getMsg('rightbody.concept.alignment')}" widgetVar="addAlignement" modal="true"
               resizable="true" position="top" width="600" style="margin-top: 50px" >
@@ -18,7 +17,7 @@
             <p:accordionPanel multiple="true" widgetVar="multiple" style="margin-top: 20px" activeIndex="0,1,2">
                 <p:tab title="#{langueBean.getMsg('candidat.traductions')}" disabled="#{alignmentBean.alignementSelect.selectedTraductionsList.size() == 0}">
                     <p class="m-0">
-                        <p:dataTable  size="small" var="traduction" value="#{alignmentBean.alignementSelect.selectedTraductionsList}"
+                        <p:dataTable size="small" var="traduction" value="#{alignmentBean.alignementSelect.selectedTraductionsList}"
                                      widgetVar="listSourceTable" styleClass="products-table"
                                      style="overflow: auto; max-height: 400px;" lazy="false" >
 
@@ -86,7 +85,7 @@
                                  oncomplete="PF('addAlignement').hide();" update="containerIndex"/>
 
                 <p:commandButton styleClass="ui-button-success" value="#{langueBean.getMsg('btnValidate')}"
-                                 update="containerIndex:formRightTab"
+                                 update="containerIndex"
                                  actionListener="#{alignmentBean.addAlignementSelected()}"
                                  icon="pi pi-check" ajax="true" process="@this"/>
             </div>

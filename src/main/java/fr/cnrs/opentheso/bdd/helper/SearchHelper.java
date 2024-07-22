@@ -362,7 +362,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus "
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status != 'CA' "
+                                + " and concept.status not in ('CA', 'DEP') "
                                 + multiValuesPT
                                 + " order by "
                                 + " CASE unaccent(lower(lexical_value)) "
@@ -382,7 +382,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus"
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status != 'CA' "
+                                + " and concept.status not in ('CA', 'DEP') "
                                 + multiValuesPT
                                 + " order by "
                                 + " CASE unaccent(lower(lexical_value)) "
@@ -539,7 +539,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus "
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status != 'CA' "
+                                + " and concept.status not in ('CA', 'DEP') "
                                 + multiValuesPT
                                 + " order by "
                                 + " CASE unaccent(lower(lexical_value)) "
@@ -559,7 +559,7 @@ public class SearchHelper {
                                 + " preferred_term.id_thesaurus = term.id_thesaurus"
                                 + " and"
                                 + " term.id_thesaurus = '" + idTheso + "'"
-                                + " and concept.status != 'CA' "
+                                + " and concept.status not in ('CA', 'DEP') "
                                 + multiValuesPT
                                 + " order by "
                                 + " CASE unaccent(lower(lexical_value)) "
@@ -1942,6 +1942,7 @@ public class SearchHelper {
             try {
                 stmt = conn.createStatement();
                 try {
+                    
                     query = "SELECT preferred_term.id_concept, term.lexical_value, "
                             + " preferred_term.id_term"
                             + " FROM term, preferred_term WHERE "
@@ -1951,6 +1952,31 @@ public class SearchHelper {
                             + " and term.id_thesaurus = '" + idTheso + "'"
                             + lang
                             + " order by lexical_value ASC LIMIT 200";
+           
+           
+                        
+                // Méthode à évoluer pour une recherche filtré par collection    
+           /*
+                    query = "SELECT preferred_term.id_concept, term.lexical_value,  preferred_term.id_term \n" +
+"	FROM term, preferred_term, concept_group_concept\n" +
+"	WHERE\n" +
+"	\n" +
+"	preferred_term.id_term = term.id_term\n" +
+"	AND \n" +
+"	preferred_term.id_thesaurus = term.id_thesaurus \n" +
+"	AND\n" +
+"	preferred_term.id_concept = concept_group_concept.idconcept\n" +
+"	AND\n" +
+"	preferred_term.id_thesaurus = concept_group_concept.idthesaurus\n" +
+"	and \n" +
+"       lower(concept_group_concept.idgroup) = lower('g124')" +  
+                            multivaluesTerm +
+
+"	and term.id_thesaurus = '" + idTheso + "' \n" +
+"	and term.lang ='" + idLang + "' \n" +
+"	order by lexical_value ASC LIMIT 200";
+           */
+           
 
                     resultSet = stmt.executeQuery(query);
                     while (resultSet.next()) {
@@ -1980,6 +2006,40 @@ public class SearchHelper {
                             + " and non_preferred_term.id_thesaurus = '" + idTheso + "'"
                             + langSynonyme
                             + " order by non_preferred_term.lexical_value ASC LIMIT 200";
+                    
+        
+                
+                // Méthode à évoluer pour une recherche filtré par collection 
+       /*         
+                    query = "SELECT preferred_term.id_concept, term.id_term,  non_preferred_term.lexical_value as npt, term.lexical_value as pt \n" +
+"	FROM non_preferred_term, term, preferred_term, concept_group_concept \n" +
+"	WHERE  \n" +
+"	preferred_term.id_term = term.id_term \n" +
+"	AND  \n" +
+"	preferred_term.id_thesaurus = term.id_thesaurus \n" +
+"	AND   \n" +
+"	preferred_term.id_term = non_preferred_term.id_term \n" +
+"	AND   \n" +
+"	term.lang = non_preferred_term.lang \n" +
+"	AND   \n" +
+"	preferred_term.id_thesaurus = non_preferred_term.id_thesaurus \n" +
+"\n" +
+"	and \n" +
+"	preferred_term.id_concept = concept_group_concept.idconcept\n" +
+"	and\n" +
+"	preferred_term.id_thesaurus = concept_group_concept.idthesaurus\n" +
+"	and\n" +
+"       lower(concept_group_concept.idgroup) = lower('g124')" +                            
+
+"	\n" +
+
+               multivaluesSynonyme +             
+"	and \n" +
+"	non_preferred_term.id_thesaurus = '" +idTheso + "' \n" +
+"	and \n" +
+"	non_preferred_term.lang ='" + idLang + "' \n" +
+"	order by non_preferred_term.lexical_value ASC LIMIT 200";
+                */
 
                     resultSet = stmt.executeQuery(query);
 

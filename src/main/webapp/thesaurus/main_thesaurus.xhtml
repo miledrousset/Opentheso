@@ -7,21 +7,40 @@
 
     <div class="container-fluid col-xl-12 col-lg-12">
         <div class="card shadow mb-4">
-            <h:panelGroup rendered="#{currentUser.hasRoleAsSuperAdmin}">
-                <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
-                    <div style="width: 90%; text-align: right;">
-                        <p:column style="text-align: right">
+            <div class="card-header py-3" style="width: 100%; display: flex; margin-bottom: 0px">
+                <div style="width: 45%; text-align: left;">
+                    <p:column style="text-align: left">
+                        <img src="#{request.contextPath}/resources/img/openapi.png" style="width:50px; margin-right: 10px;" />
+                        <p:link href="#{request.contextPath}/openapi/doc/"
+                                value="#{request.serverName}#{request.contextPath}/openapi/doc/"
+                                target="_blank" style="font-size: 13px; color: #F47B2A;" >
+                            <i class="pi pi-link" style="color: #43B572;" />
+                        </p:link>
+                    </p:column>
+                    <p:column style="text-align: left">
+                        <img src="#{request.contextPath}/resources/img/graphql.png" style="width:50px; margin-right: 10px;" />
+                        <p:link href="#{request.contextPath}/graphql/index.html"
+                                value="#{request.serverName}#{request.contextPath}/graphql/doc/"
+                                target="_blank" style="font-size: 13px; color: #F47B2A;" >
+                            <i class="pi pi-link" style="color: #43B572;" />
+                        </p:link>
+                    </p:column>
+                </div>
+
+                <div style="width: 45%; text-align: right;">
+                    <p:column style="text-align: right">
+                        <h:panelGroup rendered="#{currentUser.hasRoleAsSuperAdmin}">
                             <p:selectOneMenu value="#{selectedTheso.optionThesoSelected}" style="color: #000;">
                                 <p:ajax event="valueChange" listener="#{selectedTheso.setSelectedOptionTheso()}" update="containerIndex" />
                                 <f:selectItem itemLabel="Actions ..." itemValue="Option1"/>
                                 <f:selectItem itemLabel="#{langueBean.getMsg('index.modifyHomepage')}" itemValue="Option2"/>
                                 <f:selectItem itemLabel="Code Google Analytics" itemValue="Option3"/>
                             </p:selectOneMenu> 
-                        </p:column>
-                    </div>
-                    <i class="fa-regular fa-pen-to-square" style="font-size: 18px; margin-left: 10px; padding-top: 4px;"></i>
+                            <i class="fa-regular fa-pen-to-square" style="font-size: 18px; margin-left: 10px; padding-top: 4px;"></i>
+                        </h:panelGroup>    
+                    </p:column>
                 </div>
-            </h:panelGroup>
+            </div>
 
             <div class="card-body">
                 <!-- vue Page d'accueil -->
@@ -84,7 +103,7 @@
                                              styleClass="ui-button-secondary button" icon="fas fa-undo-alt"
                                              update="containerIndex" style="font-size: 14px; margin-right: 20px;"
                                              actionListener="#{viewEditorHomeBean.reset()}"/>
-                            
+
                             <p:commandButton value="#{langueBean.getMsg('btnValidate')}" 
                                              update="containerIndex" styleClass="ui-button-success" icon="pi pi-check"
                                              style="font-size: 14px; margin-right: 10px;" 

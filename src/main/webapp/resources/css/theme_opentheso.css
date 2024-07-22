@@ -11348,3 +11348,13 @@ body.sidebar-toggled footer.sticky-footer {
     color: #164A78 !important;
     font-size: 0.8rem !important;    
 }
+
+
+/* images spécifiques */
+
+.ui-icon-custom {
+    /*background: url("#{resource['/resources/img/d3js.png']}") no-repeat center center;*/
+    width: 28px;  /* ajustez en fonction de la taille de votre image */
+    height: 28px;  /* ajustez en fonction de la taille de votre image */
+    display: inline-block;
+}

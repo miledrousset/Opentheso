@@ -2,15 +2,10 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +20,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
+import fr.cnrs.opentheso.ws.openapi.helper.DataHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -322,7 +318,12 @@ public class UserHelper {
                         + "  users.mail,"
                         + "  users.passtomodify,"
                         + "  users.alertmail,"
-                        + "  users.issuperadmin"
+                        + "  users.issuperadmin,"
+                        + "  users.apiKey,"
+                        + "users.key_never_expire,"
+                        + "users.key_expires_at,"
+                        + "users.isservice_account,"
+                        + "users.key_description"
                         + " FROM users"
                         + " WHERE "
                         + " users.id_user = " + idUser);
@@ -336,6 +337,12 @@ public class UserHelper {
                         nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
                         nodeUser.setPasstomodify(resultSet.getBoolean("passtomodify"));
                         nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
+                        nodeUser.setApiKey(resultSet.getString("apiKey"));
+                        nodeUser.setKeyNeverExpire(resultSet.getBoolean("key_never_expire"));
+                        nodeUser.setApiKeyExpireDate(resultSet.getDate("key_expires_at") == null ? null : resultSet.getDate("key_expires_at").toLocalDate());
+                        nodeUser.setServiceAccount(resultSet.getBoolean("isservice_account"));
+                        nodeUser.setKeyDescription(resultSet.getString("key_description"));
+
                     }
                 }
             }
@@ -375,6 +382,17 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return projectId;
+    }
+
+    public boolean isApiKeyExpired(NodeUser nodeUser){
+        if (nodeUser.getApiKeyExpireDate()==null){
+            return false;
+        }
+        if(LocalDate.now().isAfter(nodeUser.getApiKeyExpireDate())){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     /**
@@ -2237,7 +2255,7 @@ public class UserHelper {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, "erreur", ex);
         }
         return idRole;
     }
@@ -2915,5 +2933,55 @@ public class UserHelper {
     ////////////////////////////////////////////////////////////////////
     //////// fin des nouvelles fontions ////////////////////////////////
     ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////    
+    ////////////////////////////////////////////////////////////////////
+
+
+    public Optional<Integer> getUserGroupId (int userId, String thesoId){
+        DataHelper dataHelper = new DataHelper();
+        try (Connection connection = dataHelper.connect().getConnection()){
+            try( PreparedStatement stmt = connection.prepareStatement("SELECT user_role_group.id_group " +
+                    "FROM user_role_group  " +
+                    "JOIN user_group_thesaurus user_group_thesaurus ON user_role_group.id_group = user_group_thesaurus.id_group " +
+                    "WHERE user_role_group.id_user = ? " +
+                    "AND user_group_thesaurus.id_thesaurus = ? ")){
+                stmt.setInt(1, userId);
+                stmt.setString(2, thesoId);
+                ResultSet rs = stmt.executeQuery();
+                if (!rs.next()) {return Optional.empty();}
+                return Optional.of(rs.getInt("id_group"));
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
+     * Sauvegarde en base de donnée les informations concernant la clé d'API
+     * @param userId
+     * @param keyNeverExpire
+     * @param apiKeyExpireDate
+     * @param dataSource
+     */
+    public void updateApiKeyInfos(int userId, Boolean keyNeverExpire, LocalDate apiKeyExpireDate, HikariDataSource dataSource) {
+        String sql = "UPDATE users SET key_never_expire = ?, key_expires_at = ? WHERE id_user = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setBoolean(1, keyNeverExpire);
+            if (apiKeyExpireDate != null) {
+                pstmt.setDate(2, java.sql.Date.valueOf(apiKeyExpireDate));
+            } else {
+                pstmt.setNull(2, java.sql.Types.DATE);
+            }
+            pstmt.setInt(3, userId);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -5,12 +5,12 @@
  */
 package fr.cnrs.opentheso.bdd.helper;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
@@ -25,6 +25,8 @@ import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.timeJob.LineCdt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 
 /**
  *
@@ -1735,5 +1737,114 @@ public class CandidateHelper {
             log.error("Error while asking if id of Candidat exist : " + idCandidat, sqle);
         }
         return nodePropositions;
+    }
+
+
+    /**
+     * Sauvegarde un candidat en base à partir d'un JSON
+     * @param candidate
+     * @param userId
+     * @return true si la sauvegarde est faite, false sinon
+     */
+    public boolean saveCandidat (String candidate, int userId) {
+        PreferencesHelper preferencesHelper = new PreferencesHelper();      // Pour avoir la langue du thésaurus
+        ObjectMapper objectMapper = new ObjectMapper();                     // Pour parse le JSON
+        ConceptHelper conceptHelper = new ConceptHelper();                  // Pour générer les id
+        try (HikariDataSource ds = connect()) {
+            if(ds == null) {return false;}
+            try{
+                JsonNode candidateJson = objectMapper.readTree(candidate);
+                if (!candidateJson.has("title") || !candidateJson.has("definition") || !candidateJson.has("thesoId")){
+                    return false;
+                }
+                String title = candidateJson.path("title").asText();
+                String description = candidateJson.path("definition").asText();
+                String thesoId = candidateJson.path("thesoId").asText();
+
+                // Champs non obligatoires
+                String source = candidateJson.has("source") ? candidateJson.path("source").asText() : "";
+
+                try (Connection conn = ds.getConnection()){
+                    conn.setAutoCommit(false);
+                    String idTerm = conceptHelper.getNumericConceptId(conn);
+                    String idConcept = conceptHelper.getNumericConceptId(conn);
+                    try{
+                        String insertTermSQL = "INSERT INTO term (id_term, lexical_value, lang, id_thesaurus, created, status, source, creator) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                        try (PreparedStatement termStmt = conn.prepareStatement(insertTermSQL)){
+
+                            termStmt.setString(1, idTerm);
+                            termStmt.setString(2, title);
+                            termStmt.setString(3, preferencesHelper.getWorkLanguageOfTheso(ds, thesoId));
+                            termStmt.setString(4, thesoId);
+                            termStmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+                            termStmt.setString(6, "D");
+                            termStmt.setString(7, "candidat");
+                            termStmt.setInt(8, userId);
+                            termStmt.executeUpdate();
+                        }
+                        String insertConceptSQL = "INSERT INTO concept (id_concept, id_thesaurus, created, status, concept_type, creator, top_concept) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        try (PreparedStatement conceptStmt = conn.prepareStatement(insertConceptSQL)) {
+
+                            conceptStmt.setString(1, idConcept);
+                            conceptStmt.setString(2, thesoId);
+                            conceptStmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+                            conceptStmt.setString(4, "CA");
+                            conceptStmt.setString(5, "concept");
+                            conceptStmt.setInt(6, userId);
+                            conceptStmt.setBoolean(7, false);
+                            conceptStmt.executeUpdate();
+                        }
+
+                        String insertNoteSQL = "INSERT INTO note (notetypecode, id_thesaurus, id_term, lang, lexicalvalue, created, modified, id_user, notesource, identifier) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        try (PreparedStatement noteStmt = conn.prepareStatement(insertNoteSQL)) {
+                            noteStmt.setString(1, "definition");
+                            noteStmt.setString(2, thesoId);
+                            noteStmt.setString(3, idTerm);
+                            noteStmt.setString(4, preferencesHelper.getWorkLanguageOfTheso(ds, thesoId));
+                            noteStmt.setString(5, description);
+                            noteStmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+                            noteStmt.setTimestamp(7, new Timestamp(System.currentTimeMillis()));
+                            noteStmt.setInt(8, userId);
+                            noteStmt.setString(9, source);
+                            noteStmt.setString(10, idConcept);
+                            noteStmt.executeUpdate();
+                        }
+                        String insertPreferredTermSQL = "INSERT INTO preferred_term (id_concept, id_term, id_thesaurus)"+
+                                "VALUES (?, ?, ?)";
+                        try (PreparedStatement preferredTermStmt = conn.prepareStatement(insertPreferredTermSQL)) {
+
+                            preferredTermStmt.setString(1, idConcept);
+                            preferredTermStmt.setString(2, idTerm);
+                            preferredTermStmt.setString(3, thesoId);
+                            preferredTermStmt.executeUpdate();
+                        }
+
+                        String insertCandidatStatus = "INSERT INTO candidat_status(id_concept, id_status, date, id_user, id_thesaurus)"+
+                                "VALUES (?, ?, ?, ?, ?)";
+                        try (PreparedStatement candidatStatusStmt = conn.prepareStatement(insertCandidatStatus)) {
+
+                            candidatStatusStmt.setString(1, idConcept);
+                            candidatStatusStmt.setInt(2, 1);
+                            candidatStatusStmt.setDate(3, new java.sql.Date(System.currentTimeMillis()));
+                            candidatStatusStmt.setInt(4, userId);
+                            candidatStatusStmt.setString(5, thesoId);
+                            candidatStatusStmt.executeUpdate();
+                        }
+                        conn.commit();
+                    }catch (SQLException e) {
+                        conn.rollback();
+                        throw e;
+                    }
+
+                }
+            }catch (IOException | SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Error saving candidate", e);
+            }
+        }
+        return true;
     }
 }

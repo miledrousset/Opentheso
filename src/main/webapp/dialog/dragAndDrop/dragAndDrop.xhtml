@@ -5,37 +5,41 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idDragAndDrop" header="Drag and Drop control" widgetVar="dragAndDrop" 
-              modal="true" resizable="true" closable="false" position="top" width="500" style="margin-top: 50px" >
+              modal="true" resizable="true" closable="false" position="top" width="600" style="margin-top: 50px" >
         
         <h:form id="dragAndDropForm">
             <div class="row" style="font-size: 14px; color: black">
-                <div class="col-5" style="margin-left: 10px;">
+                <div class="col-12" style="margin-left: 10px;">
                     <h:outputText value="Déplacer le concept/branche: " title="terme à couper"/>
-                </div>           
-                <div class="col-6" >
+                </div>   
+            </div>
+            <div class="row" style="font-size: 14px; color: black">
+                <div class="col-5" >
                     <i class="pi pi-cut" style="color: red; margin-right: 20px;"/>
                     <h:outputText value="  #{dragAndDrop.cuttedConcept.term.lexical_value} (#{dragAndDrop.cuttedConcept.concept.idConcept})  "
                                   title="terme à couper" style="background-color: #C63632; color: #ffffff"/>
-                </div>                   
-            </div>
-
-            <div class="row" style="font-size: 14px; color: black">
-                <div class="col-5" style="margin-left: 10px;">
-                    <h:outputText value="vers le concept : " title="Vers ce concept" />
-                </div>                  
-                <div class="col-6">
+                </div>  
+                <div class="col-1" >
                     <i class="pi pi-arrow-right" style="color: green; margin-right: 20px;"/>
+                </div>
+                
+                <div class="col-5">
                     <h:outputText value=" #{dragAndDrop.dropppedConcept.term.lexical_value} (#{dragAndDrop.dropppedConcept.concept.idConcept})" 
                                   title="Vers ce concept" style="background-color: #54a90a; color: #ffffff"/>
-                </div>                  
-            </div>            
+                </div>                   
+                
+            </div>
+
+         
 
             <p:spacer />
 
+            
+            <!-- Pour la poly-hiérarchie -->
             <h:panelGroup rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}">          
-                <div class="row" style="font-size: 12px; color: black">
+                <div class="row" style="font-size: 14px; background-color: #C63632; color: white; font-size: 14px;">
                     <div class="col-11" style="margin-left: 10px;">
-                        <h:outputText value="Poly-hiérarchie à supprimer / garder ? : " title="Cochez la case pour supprimer la relation"/>
+                        <h:outputText value="Poly-hiérarchie à supprimer / garder pour : (#{dragAndDrop.cuttedConcept.term.lexical_value})" title="Cochez la case pour supprimer la relation"/>
                     </div>                  
                 </div>
                 <div class="row">
@@ -48,7 +52,9 @@
                                 <h:outputText value="#{broader.title}" />
                             </p:column>
                             <p:column headerText="à couper" width="80">
-                                <p:selectBooleanCheckbox value="#{broader.isSelected}" />
+                                <p:selectBooleanCheckbox value="#{broader.isSelected}" >
+                                    <p:ajax listener="#{dragAndDrop.validateCheck()}"/>
+                                </p:selectBooleanCheckbox>
                             </p:column>                                 
                         </p:dataTable>
                     </div>            
@@ -57,42 +63,46 @@
 
             <p:spacer />
 
-            <div class="row" style="font-size: 12px; color: black">
+            
+            <!-- Pour les collections -->
+            <div class="row" style="font-size: 14px; background-color: #C63632; color: white; font-size: 14px;">
                 <div class="col-11" style="margin-left: 10px;">
-                    <h:outputText value="Collections à supprimer ? " title="Cochez la case pour supprimer la relation"/>
+                    <h:outputText value="Collections à supprimer pour (#{dragAndDrop.cuttedConcept.term.lexical_value})"  title="Cochez la case pour supprimer la relation"/>
                 </div>                  
             </div>
-
+            
             <h:panelGroup rendered="#{dragAndDrop.nodeGroupsToCut.size() > 0}">
                 <div class="row">
                     <div class="col-11" style="margin-left: 5px; font-size: 12px;">
-                        <p:dataTable value="#{dragAndDrop.nodeGroupsToCut}" var="group" rowStyleClass="from"  lazy="false">
-                            <p:column headerText="id" width="100">
+                        <p:dataTable value="#{dragAndDrop.nodeGroupsToCut}" var="group"   lazy="false">
+                            <p:column headerText="id" width="100" >
                                 <h:outputText value="#{group.conceptGroup.idgroup}" />
                             </p:column>                        
-                            <p:column headerText="Collection/groupe">
-                                <h:outputText value="#{group.lexicalValue}"/>
+                            <p:column headerText="Collection/groupe" >
+                                <h:outputText value="#{group.lexicalValue}" />
                             </p:column>
-                            <p:column headerText="à supprimer" width="80">
-                                <p:selectBooleanCheckbox value="#{group.isSelected}" />
+                            <p:column headerText="à supprimer" width="80"  >
+                                <p:selectBooleanCheckbox value="#{group.isSelected}" >
+                                    <p:ajax listener="#{dragAndDrop.validateCheck()}"/>
+                                </p:selectBooleanCheckbox> 
                             </p:column>
                         </p:dataTable>
                     </div>            
                 </div>
             </h:panelGroup>
 
-            <p:spacer />
+            <p:spacer height="40px;" />
 
-            <div class="row" style="font-size: 12px; color: black">
+            <div class="row" style="font-size: 14px; background-color: #54a90a; color: white; font-size: 14px;">
                 <div class="col-11" style="margin-left: 10px;">
-                    <h:outputText value="Collections à ajouter ? " title="Cochez la case pour ajouter la relation"/>
+                    <h:outputText value="Collections à ajouter pour (#{dragAndDrop.cuttedConcept.term.lexical_value})" title="Cochez la case pour ajouter la relation"/>
                 </div>                  
             </div>
 
             <h:panelGroup rendered="#{dragAndDrop.nodeGroupsToAdd.size() > 0}">
                 <div class="row" rendered="#{dragAndDrop.nodeGroupsToAdd.size() > 0}">
                     <div class="col-11" style="margin-left: 5px; font-size: 12px;">
-                        <p:dataTable value="#{dragAndDrop.nodeGroupsToAdd}" var="group" rowStyleClass="to"  lazy="false">
+                        <p:dataTable value="#{dragAndDrop.nodeGroupsToAdd}" var="group" lazy="false">
                             <p:column headerText="id" width="100">
                                 <h:outputText value="#{group.conceptGroup.idgroup}" />
                             </p:column>                        
@@ -100,7 +110,9 @@
                                 <h:outputText value="#{group.lexicalValue}"/>
                             </p:column>
                             <p:column headerText="à ajouter" width="80">
-                                <p:selectBooleanCheckbox value="#{group.isSelected}" />
+                                <p:selectBooleanCheckbox value="#{group.isSelected}">
+                                    <p:ajax listener="#{dragAndDrop.validateCheck()}"/>
+                                </p:selectBooleanCheckbox>
                             </p:column>
                         </p:dataTable>
                     </div>            
@@ -112,13 +124,16 @@
 
             <div style="width: 100%; text-align: right; margin-top: 5px; margin-bottom: 5px;">
 
-                <p:commandButton title="#{langueBean.getMsg('btnCancel')}" class="btn btn-secondary" style="margin-right: 10px"
+                <p:commandButton value="#{langueBean.getMsg('btnCancel')}" 
+                                 styleClass="ui-button-secondary button" icon="fas fa-undo-alt" 
+                                 style="margin-right: 10px"
                                  oncomplete="PF('dragAndDrop').hide();"
                                  actionListener="#{dragAndDrop.rollBackAfterErrorOrCancelDragDrop()}" 
                                  update="containerIndex:rightTab:idConceptViewActions messageIndex containerIndex:formLeftTab:idDragAndDrop" process="@this" ajax="true"/>
 
-                <p:commandButton title="#{langueBean.getMsg('btnValidate')}" update="containerIndex:rightTab:idConceptViewActions messageIndex containerIndex:formLeftTab:idDragAndDrop"
-                                 class="btn btn-primary" oncomplete="PF('dragAndDrop').hide();"
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:rightTab:idConceptViewActions messageIndex containerIndex:formLeftTab:idDragAndDrop"
+                                 styleClass="ui-button-success" icon="pi pi-check"
+                                 oncomplete="PF('dragAndDrop').hide();"
                                  actionListener="#{dragAndDrop.drop()}" style="color: white;" process="@this" ajax="true"/>
             </div>
 

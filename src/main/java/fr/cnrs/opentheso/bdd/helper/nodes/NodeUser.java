@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 
 public class NodeUser implements Serializable {
@@ -12,6 +13,15 @@ public class NodeUser implements Serializable {
     private boolean alertMail;
     private boolean superAdmin;
     private boolean passtomodify;
+    private String apiKey;
+    private boolean keyNeverExpire;
+    private LocalDate apiKeyExpireDate;
+    private boolean isServiceAccount;
+    private String keyDescription;
+
+
+
+
 
 
     public int getIdUser() {
@@ -69,4 +79,64 @@ public class NodeUser implements Serializable {
     public void setPasstomodify(boolean passtomodify) {
         this.passtomodify = passtomodify;
     }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public boolean isKeyNeverExpire() {
+        return keyNeverExpire;
+    }
+
+    public void setKeyNeverExpire(boolean keyNeverExpire) {
+        this.keyNeverExpire = keyNeverExpire;
+    }
+
+    public LocalDate getApiKeyExpireDate() {
+        return apiKeyExpireDate;
+    }
+
+    public void setApiKeyExpireDate(LocalDate apiKeyExpireDate) {
+        this.apiKeyExpireDate = apiKeyExpireDate;
+    }
+
+    public boolean isServiceAccount() {
+        return isServiceAccount;
+    }
+
+    public void setServiceAccount(boolean serviceAccount) {
+        isServiceAccount = serviceAccount;
+    }
+
+    public String getKeyDescription() {
+        return keyDescription;
+    }
+
+    public void setKeyDescription(String keyDescription) {
+        this.keyDescription = keyDescription;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

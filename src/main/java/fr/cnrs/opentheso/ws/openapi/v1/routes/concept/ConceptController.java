@@ -71,4 +71,25 @@ public class ConceptController {
         return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
     }
 
+    /*
+    @Path("/testput")
+    @PUT
+    @Consumes({APPLICATION_JSON_UTF_8})
+    @Produces({APPLICATION_JSON_UTF_8})
+    @Operation(summary = "${searchJsonForWidgetArk.summary}$",
+            description = "${searchJsonForWidgetArk.description}$",
+            tags = {"Concept", "Ark"},
+            responses = {
+                @ApiResponse(responseCode = "200", description = "${searchJsonForWidgetArk.200.description}$", content = {
+            @Content(mediaType = APPLICATION_JSON_UTF_8)
+        }),
+                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+            })
+    public Response testPut(String content
+    ) {
+
+        return ResponseHelper.response(Response.Status.OK, emptyMessage(APPLICATION_JSON_UTF_8), APPLICATION_JSON_UTF_8);
+    }
+*/
 }

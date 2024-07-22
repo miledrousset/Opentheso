@@ -23,13 +23,13 @@
                             </p:menuButton>
                         </h:panelGroup>                        
 
-                        <h:outputText rendered="#{!conceptView.nodeConcept.concept.isDeprecated}"
+                        <h:outputText rendered="#{!conceptView.nodeConcept.concept.deprecated}"
                                       id="textPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
                                       style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-size: 1.1rem;
                                       letter-spacing: .2px; color: #666666; font-weight: bold; text-shadow: none;" />
                         
                         <!-- Cas de concept déprécié -->
-                        <h:outputText rendered="#{conceptView.nodeConcept.concept.isDeprecated}"
+                        <h:outputText rendered="#{conceptView.nodeConcept.concept.deprecated}"
                                       id="textPrefLabelDep" value="#{conceptView.nodeConcept.term.lexical_value}"
                                       style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-size: 1.1rem;
                                       letter-spacing: .2px; color: #C63632; font-weight: bold; font-style: italic; text-shadow: none; text-decoration:line-through" />                        
@@ -57,7 +57,7 @@
             </div>
 
             <!-- ligne concepts qui remplacent le concept déprécié (remplacé par) -->
-            <h:panelGroup id="idDeprecatedLabel" rendered="#{conceptView.nodeConcept.concept.isDeprecated}">
+            <h:panelGroup id="idDeprecatedLabel" rendered="#{conceptView.nodeConcept.concept.deprecated}">
                 <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
                     <div class="row" style="height: 30px; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">

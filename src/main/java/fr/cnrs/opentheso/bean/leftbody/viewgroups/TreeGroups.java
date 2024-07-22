@@ -64,9 +64,11 @@ public class TreeGroups implements Serializable {
     private DataService dataService;
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
+    private boolean sortByNotation;
 
     @PostConstruct
     public void postInit() {
+        sortByNotation = false;
     }
 
     @PreDestroy
@@ -93,7 +95,7 @@ public class TreeGroups implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = new GroupHelper().getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang);
+        List<NodeGroup> racineNode = new GroupHelper().getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang, isSortByNotation());
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(
@@ -142,7 +144,7 @@ public class TreeGroups implements Serializable {
                 connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 idTheso,
-                idLang);
+                idLang, isSortByNotation());
         if (listeSubGroup == null) {
             parent.setType("group");
             return true;
@@ -400,6 +402,14 @@ public class TreeGroups implements Serializable {
             return false;
         }
         return ((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup();
+    }
+
+    public boolean isSortByNotation() {
+        return sortByNotation;
+    }
+
+    public void setSortByNotation(boolean sortByNotation) {
+        this.sortByNotation = sortByNotation;
     }
 
     /**

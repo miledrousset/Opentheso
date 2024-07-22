@@ -30,6 +30,7 @@ public class GraphD3js {
         // les premières infos du root
 
         nodeJsonD3js.setNodeDatas(getRootNode());
+        
     }
     
     private NodeDatas getRootNode(){

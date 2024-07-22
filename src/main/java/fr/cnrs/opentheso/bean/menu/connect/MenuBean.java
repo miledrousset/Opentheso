@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.menu.connect;
 
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
+import fr.cnrs.opentheso.bean.graph.DataGraphView;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.menu.users.NewUSerBean;
@@ -71,6 +72,8 @@ public class MenuBean implements Serializable {
     
     @Inject
     private PropositionBean propositionBean;
+    @Inject
+    private DataGraphView dataGraphView;    
     
     private boolean notificationPannelVisible;
     
@@ -107,6 +110,19 @@ public class MenuBean implements Serializable {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/candidat/candidat.xhtml");
     }
+    
+    // LOGIN Page
+    public void redirectToGraphPage() throws IOException {
+        initSearchBar();
+        activePageName = "graph";
+        notificationPannelVisible = false;
+        dataGraphView.init();
+    //    candidatBean.initCandidatModule();
+    //    propositionBean.searchNewPropositions();
+    //    propositionBean.setRubriqueVisible(false);
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.redirect(context.getRequestContextPath() + "/graphview/graph.xhtml");
+    }    
     
     // MENU Profile
     public void redirectToUsersPage() throws IOException {

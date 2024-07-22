@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
@@ -38,16 +39,16 @@ public class ThesaurusIdController {
             description = "${getThesoFromId.description}$",
             tags = {"Thesaurus"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${getThesoFromId.200.description}$", content = {
-                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
-                            @Content(mediaType = APPLICATION_JSON_UTF_8),
-                            @Content(mediaType = APPLICATION_RDF_UTF_8)
-                    }),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
-                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
+                @ApiResponse(responseCode = "200", description = "${getThesoFromId.200.description}$", content = {
+            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
+            @Content(mediaType = APPLICATION_JSON_UTF_8),
+            @Content(mediaType = APPLICATION_RDF_UTF_8)
+        }),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             })
     public Response getThesoFromId(@Parameter(name = "thesaurusId", description = "${getThesoFromId.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId,
-                                   @Context HttpHeaders headers) {
+            @Context HttpHeaders headers) {
         String format = HeaderHelper.getContentTypeFromHeader(headers);
         String datas;
 
@@ -75,10 +76,10 @@ public class ThesaurusIdController {
             description = "${getThesoGroupsFromId.description}$",
             tags = {"Thesaurus"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${getThesoGroupsFromId.200.description}$", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8)
-                    }),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                @ApiResponse(responseCode = "200", description = "${getThesoGroupsFromId.200.description}$", content = {
+            @Content(mediaType = APPLICATION_JSON_UTF_8)
+        }),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
     public Response getThesoGroupsFromId(
             @Parameter(name = "thesaurusId", description = "${getThesoGroupsFromId.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId,
@@ -87,7 +88,7 @@ public class ThesaurusIdController {
         ConceptHelper conceptHelper = new ConceptHelper();
         TermHelper termHelper = new TermHelper();
         String datasJson;
-        
+
         if (lang != null) {
             return getToptermsWithlangFilter(thesaurusId, lang);
         }
@@ -121,14 +122,13 @@ public class ThesaurusIdController {
         }
 
         if (datasJson != null) {
-            return ResponseHelper.response(Response.Status.OK, datasJson,  APPLICATION_JSON_UTF_8);
+            return ResponseHelper.response(Response.Status.OK, datasJson, APPLICATION_JSON_UTF_8);
         } else {
             return null;
         }
     }
 
-
-    private Response getToptermsWithlangFilter (String thesaurusId, String lang) {
+    private Response getToptermsWithlangFilter(String thesaurusId, String lang) {
         String datas;
         RestRDFHelper restRDFHelper = new RestRDFHelper();
         try (HikariDataSource ds = connect()) {
@@ -145,33 +145,30 @@ public class ThesaurusIdController {
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "${getInfoLastUpdate.summary}$",
-    description = "${getInfoLastUpdate.description}$",
-    tags = {"Thesaurus"},
-    responses = {
-            @ApiResponse(responseCode = "200", description = "${getInfoLastUpdate.200.description}$", content = {
-                    @Content(mediaType = APPLICATION_JSON_UTF_8)
-            }),
-            @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
-            @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
-    })
+            description = "${getInfoLastUpdate.description}$",
+            tags = {"Thesaurus"},
+            responses = {
+                @ApiResponse(responseCode = "200", description = "${getInfoLastUpdate.200.description}$", content = {
+            @Content(mediaType = APPLICATION_JSON_UTF_8)
+        }),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
+            })
     public Response getInfoLastUpdate(@Parameter(name = "thesaurusId", description = "${getInfoLastUpdate.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId) {
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", APPLICATION_JSON_UTF_8);
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", APPLICATION_JSON_UTF_8);
+            }
+            ConceptHelper conceptHelper = new ConceptHelper();
+            Date date = conceptHelper.getLastModification(ds, thesaurusId);
+            if (date == null) {
+                return ResponseHelper.response(Response.Status.OK, MessageHelper.emptyMessage(APPLICATION_JSON_UTF_8), APPLICATION_JSON_UTF_8);
+            }
+            String datas = "{\"lastUpdate\":\"" + date.toString() + "\"}";
+            return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
-        Date date = conceptHelper.getLastModification(ds, thesaurusId);
-        if (date == null) {
-            return ResponseHelper.response(Response.Status.OK, MessageHelper.emptyMessage(APPLICATION_JSON_UTF_8), APPLICATION_JSON_UTF_8);
-        }
-
-        String datas = "{\"lastUpdate\":\"" + date.toString() + "\"}";
-
-        ds.close();
-
-        return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
     }
-    
+
     @Path("/flatlist")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
@@ -179,15 +176,15 @@ public class ThesaurusIdController {
             description = "${getThesoFromIdFlat.description}$",
             tags = {"Thesaurus"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${getThesoFromIdFlat.200.description}$", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8)
-                    }),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
-                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
+                @ApiResponse(responseCode = "200", description = "${getThesoFromIdFlat.200.description}$", content = {
+            @Content(mediaType = APPLICATION_JSON_UTF_8)
+        }),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             })
     public Response getThesoFromIdFlat(@Parameter(name = "thesaurusId", description = "${getThesoFromIdFlat.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId,
-                                   @Parameter(name = "lang", description = "${getThesoFromIdFlat.lang.description}$", required = true) @QueryParam("lang") String lang,
-                                   @Context HttpHeaders headers) {
+            @Parameter(name = "lang", description = "${getThesoFromIdFlat.lang.description}$", required = true) @QueryParam("lang") String lang,
+            @Context HttpHeaders headers) {
         String datas;
         if (lang == null) {
             lang = "fr";
@@ -206,5 +203,41 @@ public class ThesaurusIdController {
             return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
         }
     }
-  
+
+    @Path("/listlang")
+    @GET
+    @Produces({APPLICATION_JSON_UTF_8})
+    @Operation(summary = "${getListLang.summary}$",
+            description = "${getListLang.description}$",
+            tags = {"Thesaurus"},
+            responses = {
+                @ApiResponse(responseCode = "200", description = "${getListLang.200.description}$", content = {
+            @Content(mediaType = APPLICATION_JSON_UTF_8)
+        }),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
+            })
+    public Response getListLang(@Parameter(name = "thesaurusId", description = "${getListLang.thesaurusId.description}$", required = true) @PathParam("thesaurusId") String thesaurusId) {
+        try (HikariDataSource ds = connect()) {
+            if (ds == null) {
+                return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", APPLICATION_JSON_UTF_8);
+            }
+            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+            ArrayList<String> listLangOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurus(ds, thesaurusId);
+            String datasJson;
+            JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
+
+            for (String idLang : listLangOfTheso) {
+                JsonObjectBuilder jobLang = Json.createObjectBuilder();
+                jobLang.add("lang", idLang);
+                jsonArrayBuilderLang.add(jobLang.build());
+            }
+            datasJson = jsonArrayBuilderLang.build().toString();
+            if (datasJson == null) {
+                return null;
+            }
+            return ResponseHelper.response(Response.Status.OK, datasJson, APPLICATION_JSON_UTF_8);
+        }
+    }
+
 }

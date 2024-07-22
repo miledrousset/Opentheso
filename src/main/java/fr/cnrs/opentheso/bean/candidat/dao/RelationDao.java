@@ -2,14 +2,14 @@ package fr.cnrs.opentheso.bean.candidat.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import java.sql.Connection;
+import org.apache.commons.collections.CollectionUtils;
 
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class RelationDao extends BasicDao {
@@ -53,10 +53,7 @@ public class RelationDao extends BasicDao {
         }        
     }  
     
-    public void addRelationBT(Connect connect,
-            String idConceptSelected,
-            String idConceptdestination,
-            String idThesaurus){
+    public void addRelationBT(Connect connect, String idConceptSelected, String idConceptdestination, String idThesaurus){
         
         try {
             stmt = connect.getPoolConnexion().getConnection().createStatement();
@@ -87,48 +84,36 @@ public class RelationDao extends BasicDao {
         }    
     }
     
-    public ArrayList<NodeIdValue> getCandidatRelationsBT(
-            HikariDataSource hikariDataSource,
-            String idConceptSelected,
-            String idThesaurus, String lang) throws SQLException {
-        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-
-        RelationsHelper relationsHelper = new RelationsHelper();
+    public List<NodeIdValue> getCandidatRelationsBT(HikariDataSource hikariDataSource,
+                                                    String idConceptSelected, String idThesaurus, String lang) throws SQLException {
         
-        ArrayList<NodeBT> nodeBTs = relationsHelper.getListBT(hikariDataSource,
-                idConceptSelected, idThesaurus, lang);
+        var nodeBTs = new RelationsHelper().getListBT(hikariDataSource, idConceptSelected, idThesaurus, lang);
         
-        if(nodeBTs != null) {
-            for (NodeBT nodeBT : nodeBTs) {
-                NodeIdValue nodeIdValue = new NodeIdValue();
-                nodeIdValue.setId(nodeBT.getIdConcept());
-                nodeIdValue.setValue(nodeBT.getTitle());
-                nodeIdValues.add(nodeIdValue);
-            }
+        if(CollectionUtils.isNotEmpty(nodeBTs)) {
+            return nodeBTs.stream()
+                    .map(element -> NodeIdValue.builder()
+                            .id(element.getIdConcept())
+                            .value(element.getTitle())
+                            .build())
+                    .collect(Collectors.toList());
         }
-        return nodeIdValues;
+        return List.of();
     } 
     
-    public ArrayList<NodeIdValue> getCandidatRelationsRT(
-            HikariDataSource hikariDataSource,
-            String idConceptSelected,
+    public List<NodeIdValue> getCandidatRelationsRT(HikariDataSource hikariDataSource, String idConceptSelected,
             String idThesaurus, String lang) throws SQLException {
-        ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-
-        RelationsHelper relationsHelper = new RelationsHelper();
         
-        ArrayList<NodeRT> nodeRTs = relationsHelper.getListRT(hikariDataSource,
-                idConceptSelected, idThesaurus, lang);
+        var nodeRTs = new RelationsHelper().getListRT(hikariDataSource, idConceptSelected, idThesaurus, lang);
         
-        if(nodeRTs != null) {
-            for (NodeRT nodeRT : nodeRTs) {
-                NodeIdValue nodeIdValue = new NodeIdValue();
-                nodeIdValue.setId(nodeRT.getIdConcept());
-                nodeIdValue.setValue(nodeRT.getTitle());
-                nodeIdValues.add(nodeIdValue);
-            }
+        if(CollectionUtils.isNotEmpty(nodeRTs)) {
+            return nodeRTs.stream()
+                    .map(element -> NodeIdValue.builder()
+                            .id(element.getIdConcept())
+                            .value(element.getTitle())
+                            .build())
+                    .collect(Collectors.toList());
         }
-        return nodeIdValues;
+        return List.of();
     }     
     
 }

@@ -114,6 +114,67 @@ public class GroupThesoController {
         if (datas == null) return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Group not found", format);
         return ResponseHelper.response(Response.Status.OK, datas, format);
     }
+    
+    @Path("/{idGroup}/subgroup")
+    @GET
+    @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+    @Operation(
+            summary = "${getSubGroupsFromTheso.summary}$",
+            description = "",
+            tags = {"Group"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "${getSubGroupsFromTheso.200.description}$", content = {
+                            @Content(mediaType = APPLICATION_JSON_UTF_8),
+                            @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
+                            @Content(mediaType = APPLICATION_TURTLE_UTF_8),
+                            @Content(mediaType = APPLICATION_RDF_UTF_8)
+                    }),
+                    @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
+                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+            })
+    public Response getSubGroupFromIdThesoIdGroup(
+            @Parameter(name = "idTheso", required = true, description = "${getSubGroupsFromTheso.idTheso.description}$") @PathParam("idTheso") String idTheso,
+            @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathParam("idGroup") String idGroup,
+            @Context HttpHeaders headers
+            ) {
+        GroupHelper groupHelper = new GroupHelper();
+        ArrayList<NodeGroupTraductions> nodeGroupTraductions;
+
+        String datasJson;
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        try (HikariDataSource ds = connect()) {
+
+            List<String> listIdSubGroupOfTheso = groupHelper.getListGroupChildIdOfGroup(ds, idGroup, idTheso);
+            
+            for (String idSubGroup : listIdSubGroupOfTheso) {
+                JsonObjectBuilder job = Json.createObjectBuilder();
+                job.add("idGroup", idSubGroup);
+                JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
+
+                nodeGroupTraductions = groupHelper.getAllGroupTraduction(ds, idSubGroup, idTheso);
+                for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
+                    JsonObjectBuilder jobLang = Json.createObjectBuilder();
+                    jobLang.add("lang", nodeGroupTraduction.getIdLang());
+                    jobLang.add("title", nodeGroupTraduction.getTitle());
+                    jsonArrayBuilderLang.add(jobLang.build());
+                }
+                if (!nodeGroupTraductions.isEmpty()) {
+                    job.add("labels", jsonArrayBuilderLang.build());
+                }
+                jsonArrayBuilder.add(job.build());
+            }
+            datasJson = jsonArrayBuilder.build().toString();
+            if (datasJson != null) {
+                return ResponseHelper.response(Response.Status.OK, datasJson, APPLICATION_JSON_UTF_8);
+            }
+        }
+        
+        return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
+    }
+
+
+
+    
 
     @Path("/branch")
     @GET

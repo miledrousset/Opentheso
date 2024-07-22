@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.candidat;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.DCMIResource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
@@ -10,7 +9,9 @@ import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
+import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
@@ -19,15 +20,22 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
+import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
+import fr.cnrs.opentheso.bean.candidat.dao.DomaineDao;
+import fr.cnrs.opentheso.bean.candidat.dao.NoteDao;
+import fr.cnrs.opentheso.bean.candidat.dao.RelationDao;
 import fr.cnrs.opentheso.bean.candidat.dao.TermeDao;
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.candidat.enumeration.VoteType;
+import fr.cnrs.opentheso.bean.concept.ImageBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -42,7 +50,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -51,12 +58,13 @@ import javax.annotation.PreDestroy;
 import javax.faces.context.ExternalContext;
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
-
+@Data
 @SessionScoped
 @Named(value = "candidatBean")
 public class CandidatBean implements Serializable {
@@ -73,6 +81,12 @@ public class CandidatBean implements Serializable {
     private LanguageBean languageBean;
     @Inject
     private ConceptView conceptView;
+    @Inject
+    private ImageBean imageBean;
+    @Inject
+    private AlignmentBean alignmentBean;
+    @Inject
+    private AlignmentManualBean alignmentManualBean;
 
     private final CandidatService candidatService = new CandidatService();
 
@@ -98,6 +112,7 @@ public class CandidatBean implements Serializable {
     private List<CandidatDto> selectedCandidates;
     private boolean listSelected;
     private boolean traductionVisible;
+    private boolean isModifiedLabel;
 
     private List<NodeIdValue> collectionTemps, termesGeneriqueTmp, termesAssociesTmp;
 
@@ -118,6 +133,7 @@ public class CandidatBean implements Serializable {
         selectedLanguages = null;
         languagesOfTheso = null;
         definition = null;
+        isModifiedLabel = false;
     }
 
     public void setStateForSelectedCandidate() {
@@ -135,6 +151,7 @@ public class CandidatBean implements Serializable {
         isImportViewActivate = false;
         isExportViewActivate = false;
         listSelected = false;
+        isModifiedLabel = false;
 
         collectionTemps = new ArrayList<>();
 
@@ -156,25 +173,6 @@ public class CandidatBean implements Serializable {
         exportFormat = Arrays.asList("skos", "json", "jsonLd", "turtle");
         selectedExportFormat = "skos";
 
-        allCollections = new GroupHelper().searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang(), "%");
-
-/*        allTermesGenerique = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
-                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
-        if (candidatSelected != null && CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
-            for (NodeIdValue nodeIdValue : candidatSelected.getTermesGenerique()) {
-                allTermesGenerique.remove(nodeIdValue);
-            }
-        }*/
-
-/*        AllTermesAssocies = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), "%",
-                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
-        if (candidatSelected != null && CollectionUtils.isNotEmpty(candidatSelected.getTermesAssocies())) {
-            for (NodeIdValue nodeIdValue : candidatSelected.getTermesGenerique()) {
-                AllTermesAssocies.remove(nodeIdValue);
-            }
-        }*/
-
         try {
             languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                     connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
@@ -185,49 +183,8 @@ public class CandidatBean implements Serializable {
         }
     }
 
-    public void addSynonyme() {
-
-        if (StringUtils.isNotEmpty(employePour)) {
-            if (candidatSelected.getEmployePourList().contains(employePour)) {
-                showMessage(FacesMessage.SEVERITY_ERROR, "Le mot '" + employePour + "' existe déjà !");
-            } else {
-                candidatSelected.getEmployePourList().add(employePour);
-                employePour = "";
-                PrimeFaces.current().ajax().update("tabViewCandidat");
-            }
-        }
-    }
-
-    public void removeSynonyme(String synonyme) {
-        if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
-            candidatSelected.getEmployePourList().remove(synonyme);
-            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatSynonym");
-        }
-    }
-
-    public void removeCollection(NodeIdValue collection) {
-        if (CollectionUtils.isNotEmpty(candidatSelected.getCollections())) {
-            candidatSelected.getCollections().remove(collection);
-            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
-        }
-    }
-
-    public void removeGenericTerm(NodeIdValue genericTerm) {
-        if (CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
-            candidatSelected.getTermesGenerique().remove(genericTerm);
-            allTermesGenerique.add(genericTerm);
-            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");
-        }
-    }
-
-    public void removeAssociesTerm(NodeIdValue associeTerm) {
-        if (CollectionUtils.isNotEmpty(candidatSelected.getTermesAssocies())) {
-            candidatSelected.getTermesAssocies().remove(associeTerm);
-            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");
-        }
-    }
-
     public void getAllCandidatsByThesoAndLangue() {
+        isModifiedLabel = false;
         tabViewIndexSelected = 0;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
             candidatList = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
@@ -260,14 +217,17 @@ public class CandidatBean implements Serializable {
 
     /**
      * permet de supprimer les candidats sélectionnés
-     * @param idUser 
+     *
+     * @param idUser
      */
-    public void deleteSelectedCandidate(int idUser){
-        if(selectedCandidates == null) return;
+    public void deleteSelectedCandidate(int idUser) {
+        if (selectedCandidates == null) {
+            return;
+        }
         ConceptHelper conceptHelper = new ConceptHelper();
         for (CandidatDto selectedCandidate : selectedCandidates) {
-            if(!conceptHelper.deleteConcept(connect.getPoolConnexion(), selectedCandidate.getIdConcepte(), 
-                    selectedCandidate.getIdThesaurus(), idUser)){
+            if (!conceptHelper.deleteConcept(connect.getPoolConnexion(), selectedCandidate.getIdConcepte(),
+                    selectedCandidate.getIdThesaurus(), idUser)) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression");
                 return;
             }
@@ -276,15 +236,16 @@ public class CandidatBean implements Serializable {
         getAllCandidatsByThesoAndLangue();
         showMessage(FacesMessage.SEVERITY_INFO, "Candidats supprimés");
     }
-    
+
     /**
-     * permet de savoir si l'identifiant actuel est propriétaire du candidat 
-     * @return 
+     * permet de savoir si l'identifiant actuel est propriétaire du candidat
+     *
+     * @return
      */
     public boolean isMyCandidate() {
         return candidatSelected.getCreatedById() == candidatSelected.getUserId();
     }
-    
+
     /**
      * permet de déctercter la langue préférée d'un thésaurus
      *
@@ -309,19 +270,18 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, new StringBuffer().append(candidatList.size()).append(" ")
                 .append(languageBean.getMsg("candidat.result_found")).toString());
     }
-    
-    public String getCountOfCandidats(){
+
+    public String getCountOfCandidats() {
         return "" + candidatList.size();
     }
-    
-    public String getCountOfAcceptedCandidats(){
+
+    public String getCountOfAcceptedCandidats() {
         return "" + acceptedCadidat.size();
-    }    
-    
-    public String getCountOfRejectedCandidats(){
+    }
+
+    public String getCountOfRejectedCandidats() {
         return "" + rejetCadidat.size();
-    }      
-    
+    }
 
     public void selectMyRejectCandidats() {
         if (myCandidatsSelected3) {
@@ -386,7 +346,7 @@ public class CandidatBean implements Serializable {
 
     public void deleteAlignment(NodeAlignment nodeAlignment) {
 
-        if(!new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
+        if (!new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
                 nodeAlignment.getId_alignement(),
                 selectedTheso.getCurrentIdTheso())) {
 
@@ -401,11 +361,8 @@ public class CandidatBean implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("messageIndex");
-            pf.ajax().update("containerIndex:formRightTab");
-        }
+        PrimeFaces.current().ajax().update("messageIndex");
+        PrimeFaces.current().ajax().update("tabViewCandidat");
     }
 
     public void showRejectCandidatSelected(CandidatDto candidatDto) throws IOException {
@@ -447,7 +404,7 @@ public class CandidatBean implements Serializable {
         candidatSelected.setLang(languageBean.getIdLangue());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-        candidatService.getCandidatDetails(connect, candidatSelected);
+        candidatService.getCandidatDetails(connect, candidatSelected, selectedTheso.getCurrentIdTheso());
     }
 
     public void showCandidatSelected(CandidatDto candidatDto) throws IOException {
@@ -463,20 +420,24 @@ public class CandidatBean implements Serializable {
         candidatSelected.setLang(getIdLang());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-        candidatService.getCandidatDetails(connect, candidatSelected);
+        candidatService.getCandidatDetails(connect, candidatSelected, selectedTheso.getCurrentIdTheso());
         initialCandidat = new CandidatDto(candidatSelected);
 
         allTermes = candidatList.stream().filter(candidat -> !candidat.getNomPref().equals(candidatDto.getNomPref()))
                 .collect(Collectors.toList());
 
-        setShowCandidatActivate(true);
+        isShowCandidatActivate = true;
+        isNewCandidatActivate = false;
+        isListCandidatsActivate = false;
+
+        alignmentManualBean.reset();
     }
-    
-    public CandidatDto getAllInfosOfCandidate(CandidatDto candidatDto){
+
+    public CandidatDto getAllInfosOfCandidate(CandidatDto candidatDto) {
         candidatDto.setLang(getIdLang());
         candidatDto.setUserId(currentUser.getNodeUser().getIdUser());
         candidatDto.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-        candidatService.getCandidatDetails(connect, candidatDto);
+        candidatService.getCandidatDetails(connect, candidatDto, selectedTheso.getCurrentIdTheso());
         return candidatDto;
     }
 
@@ -533,21 +494,22 @@ public class CandidatBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg1"));
             return;
         }
-        if(isNewCandidatActivate) {
+
+        if (isNewCandidatActivate) {
             if (StringUtils.isEmpty(definition)) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.def"));
                 return;
             }
-        }        
+        }
 
         if (roleOnThesoBean.getNodePreference() == null) {
             showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg2"));
             return;
         }
-        TermHelper termHelper = new TermHelper();
-        NoteHelper noteHelper = new NoteHelper();        
+
+        var termHelper = new TermHelper();
+
         if (initialCandidat == null) {
-            ConceptHelper conceptHelper = new ConceptHelper();
 
             // en cas d'un nouveau candidat, verification dans les prefLabels
             if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
@@ -562,38 +524,42 @@ public class CandidatBean implements Serializable {
                 return;
             }
 
-            Concept concept = new Concept();
-            concept.setIdConcept(candidatSelected.getIdConcepte());
-            concept.setIdThesaurus(selectedTheso.getCurrentIdTheso());
-            concept.setTopConcept(false);
-            concept.setLang(getIdLang());
-            concept.setIdUser(currentUser.getNodeUser().getIdUser());
-            concept.setUserName(currentUser.getUsername());
-            concept.setStatus("CA");
+            var concept = Concept.builder()
+                    .idConcept(candidatSelected.getIdConcepte())
+                    .idThesaurus(selectedTheso.getCurrentIdTheso())
+                    .topConcept(false)
+                    .lang(getIdLang())
+                    .idUser(currentUser.getNodeUser().getIdUser())
+                    .userName(currentUser.getUsername())
+                    .status("CA")
+                    .build();
 
+            ConceptHelper conceptHelper = new ConceptHelper();
             conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-            String idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
+            var idNewConcept = candidatService.saveNewCondidat(connect, concept, conceptHelper);
             if (idNewConcept == null) {
                 showMessage(FacesMessage.SEVERITY_ERROR, languageBean.getMsg("candidat.save.msg5"));
                 return;
             }
             candidatSelected.setIdConcepte(idNewConcept);
-            Term terme = new Term();
-            terme.setId_thesaurus(selectedTheso.getCurrentIdTheso());
-            terme.setLang(getIdLang());
-            terme.setContributor(currentUser.getNodeUser().getIdUser());
-            terme.setLexical_value(candidatSelected.getNomPref().trim());
-            terme.setSource("candidat");
-            terme.setStatus("D");
 
-            candidatSelected.setIdTerm(candidatService.saveNewTerm(connect, terme,
-                    candidatSelected.getIdConcepte(), candidatSelected.getUserId()));
-            noteHelper.addNote(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+            var terme = Term.builder()
+                    .lang(getIdLang())
+                    .id_thesaurus(selectedTheso.getCurrentIdTheso())
+                    .contributor(currentUser.getNodeUser().getIdUser())
+                    .lexical_value(candidatSelected.getNomPref().trim())
+                    .source("candidat")
+                    .status("D")
+                    .build();
+
+            candidatSelected.setIdTerm(candidatService.saveNewTerm(connect, terme, candidatSelected.getIdConcepte(),
+                    candidatSelected.getUserId()));
+
+            new NoteHelper().addNote(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
                     selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
                     definition, "definition", "", currentUser.getNodeUser().getIdUser());
-           
-            
+
             setIsListCandidatsActivate(true);
 
         } else {
@@ -618,45 +584,46 @@ public class CandidatBean implements Serializable {
         }
         /////////////////////////
         ///// insert DcTermsData
-        DcElementHelper dcElmentHelper = new DcElementHelper();
-        DcElement dcElement = new DcElement();
-        dcElement.setName(DCMIResource.CREATOR);
-        dcElement.setValue(currentUser.getNodeUser().getName());
-        dcElement.setLanguage(null);
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(), dcElement, candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());        
+        var dcElement = DcElement.builder()
+                .name(DCMIResource.CREATOR)
+                .value(currentUser.getNodeUser().getName())
+                .build();
+        new DcElementHelper().addDcElementConcept(connect.getPoolConnexion(), dcElement, candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus());
         ///////////////        
-        
-        
+
         candidatService.updateDetailsCondidat(connect, candidatSelected, currentUser.getNodeUser().getIdUser());
 
-        getAllCandidatsByThesoAndLangue();
+        //getAllCandidatsByThesoAndLangue();
+        candidatSelected.setNodeNotes(new NoteDao().getNotesCandidat(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus()));
         definition = "";
+        isNewCandidatActivate = false;
+        isListCandidatsActivate = false;
+        isShowCandidatActivate = true;
+
         showMessage(FacesMessage.SEVERITY_INFO, "Candidat enregistré avec succès");
     }
 
     public List<NodeIdValue> searchCollection(String enteredValue) {
 
-        if (CollectionUtils.isNotEmpty(allCollections)) {
-            if ("%".equals(enteredValue)) {
-                return createCollectionsFiltred(allCollections, candidatSelected.getCollections());
-            } else {
-                return createCollectionsFiltred(allCollections.stream()
-                        .filter(element -> element.getValue().contains(enteredValue))
-                        .collect(Collectors.toList()), candidatSelected.getCollections());
-            }
+        if (StringUtils.isNotEmpty(enteredValue)) {
+            allCollections = new GroupHelper().searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(), enteredValue);
+            return createCollectionsFiltred(allCollections, candidatSelected.getCollections());
         } else {
             return Collections.emptyList();
         }
     }
 
     private List<NodeIdValue> createCollectionsFiltred(List<NodeIdValue> collections, List<NodeIdValue> collectionsSelected) {
-        List<NodeIdValue> resultat = new ArrayList<>();
-        for (NodeIdValue element : collections) {
-            if (!isExist(collectionsSelected, element)) {
-                resultat.add(element);
-            }
+        if (CollectionUtils.isNotEmpty(collections)) {
+            return collections.stream()
+                    .filter(element -> !isExist(collectionsSelected, element))
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
         }
-        return resultat;
     }
 
     private boolean isExist(List<NodeIdValue> collections, NodeIdValue nodeIdValue) {
@@ -697,7 +664,7 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, "Vote enregistré");
 
         PrimeFaces.current().ajax().update("messageIndex");
-        PrimeFaces.current().ajax().update("containerIndex:votePanel");
+        PrimeFaces.current().ajax().update("tabViewCandidat");
     }
 
     /**
@@ -744,40 +711,25 @@ public class CandidatBean implements Serializable {
      * @return
      */
     public List<NodeIdValue> searchTermeGenerique(String value) {
-        List<NodeIdValue> values = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
-                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
-        return values;
-        /*
-        if (CollectionUtils.isNotEmpty(allTermesGenerique)) {
-            if ("%".equals(value)) {
-                return allTermesGenerique;
-            } else {
-                return allTermesGenerique.stream()
-                        .filter(element -> element.getValue().contains(value))
-                        .collect(Collectors.toList());
-            }
+
+        if (StringUtils.isNotEmpty(value)) {
+            allTermesGenerique = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+                    selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+            return createCollectionsFiltred(allTermesGenerique, candidatSelected.getTermesGenerique());
         } else {
             return Collections.emptyList();
-        }*/
+        }
     }
 
-
     public List<NodeIdValue> searchTermeAssocie(String value) {
-        List<NodeIdValue> values = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
-                selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
-        return values;        
-        
-    /*    if (CollectionUtils.isNotEmpty(AllTermesAssocies)) {
-            if ("%".equals(value)) {
-                return AllTermesAssocies;
-            } else {
-                return AllTermesAssocies.stream()
-                        .filter(element -> element.getValue().contains(value))
-                        .collect(Collectors.toList());
-            }
+
+        if (StringUtils.isNotEmpty(value)) {
+            AllTermesAssocies = new SearchHelper().searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+                    selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
+            return createCollectionsFiltred(AllTermesAssocies, candidatSelected.getTermesAssocies());
         } else {
             return Collections.emptyList();
-        }*/
+        }
     }
 
     public void initialNewCandidat() throws IOException {
@@ -797,7 +749,6 @@ public class CandidatBean implements Serializable {
 
         initialCandidat = null;
         definition = null;
-        
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
@@ -814,20 +765,22 @@ public class CandidatBean implements Serializable {
         return userHelper.getNameUser(connect.getPoolConnexion(), idUser);
 
     }
-    
-    public void reactivateRejectedCandidat(){
-        if(candidatSelected == null || candidatSelected.getIdConcepte() == null || candidatSelected.getIdConcepte().isEmpty()) return;
-        
+
+    public void reactivateRejectedCandidat() {
+        if (candidatSelected == null || candidatSelected.getIdConcepte() == null || candidatSelected.getIdConcepte().isEmpty()) {
+            return;
+        }
+
         CandidateHelper candidateHelper = new CandidateHelper();
-        if(!candidateHelper.reactivateRejectedCandidat(connect.getPoolConnexion(),
+        if (!candidateHelper.reactivateRejectedCandidat(connect.getPoolConnexion(),
                 candidatSelected.getIdThesaurus(),
                 candidatSelected.getIdConcepte())) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "l'action a échoué");          
+            showMessage(FacesMessage.SEVERITY_ERROR, "l'action a échoué");
         } else {
             try {
                 showMessage(FacesMessage.SEVERITY_INFO, "l'action a réussi");
                 initCandidatModule();
-                getAllCandidatsByThesoAndLangue();                
+                getAllCandidatsByThesoAndLangue();
                 setIsListCandidatsActivate(true);
             } catch (IOException ex) {
                 Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -835,87 +788,151 @@ public class CandidatBean implements Serializable {
         }
     }
 
-    public void onItemSelect(SelectEvent<NodeIdValue> event) {
+    public void addCollection(SelectEvent<NodeIdValue> event) {
         Optional<NodeIdValue> elementAdded = allCollections.stream()
                 .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
                 .findFirst();
         if (elementAdded.isPresent()) {
-            candidatSelected.getCollections().add(elementAdded.get());
-            collectionTemps = Collections.emptyList();
-            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
+            try {
+                new DomaineDao().addNewDomaine(connect, elementAdded.get().getId(),
+                        candidatSelected.getIdThesaurus(),
+                        candidatSelected.getIdConcepte());
+
+                candidatSelected.getCollections().add(elementAdded.get());
+                collectionTemps = Collections.emptyList();
+                PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
+
+                showMessage(FacesMessage.SEVERITY_INFO, "Collection ajoutée avec succès !");
+            } catch (Exception exception) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'enregistrement de la nouvelle collection !");
+            }
         }
     }
 
-    public void onTraductionGenericSelect(SelectEvent<NodeIdValue> event) {
-        /*
-        Optional<NodeIdValue> elementAdded = allTermesGenerique.stream()
-                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
-                .findFirst();
-        if (elementAdded.isPresent()) {
-            if (candidatSelected.getTermesGenerique().stream()
-                    .filter(element -> element.getValue().equalsIgnoreCase(elementAdded.get().getValue()))
-                    .findFirst().isPresent()) {
-                showMessage(FacesMessage.SEVERITY_WARN, "Le terme generique existe déjà !");
-            } else {*/
+    public void removeCollection(NodeIdValue collection) {
+        if (CollectionUtils.isNotEmpty(candidatSelected.getCollections())) {
+            try {
+                new DomaineDao().deleteDomaine(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(), collection.getId());
 
-                     //   (NodeIdValue)event.getObject());//elementAdded.get());
-           //     allTermesGenerique.remove(elementAdded.get());
-           // }
-         //   termesGeneriqueTmp = Collections.emptyList();
-         //   PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");
-       // }*/
-       //####### Désactivé par Miled, ne prend pas en charge tous les concepts du thésaurus ######
-       
-        NodeIdValue elementAdded = (NodeIdValue)event.getObject();
-        Optional<NodeIdValue> elOptional = Optional.of(elementAdded);
-        
+                candidatSelected.getCollections().remove(collection);
+                PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatCollection");
+
+                showMessage(FacesMessage.SEVERITY_INFO, "Collection supprimée avec succès !");
+            } catch (Exception exception) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la suppression de la collection !");
+            }
+        }
+    }
+
+    public void addSynonyme() {
+
+        if (StringUtils.isNotEmpty(employePour)) {
+            if (candidatSelected.getEmployePourList().contains(employePour)) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Le mot '" + employePour + "' existe déjà !");
+            } else {
+                try {
+                    new TermeDao().addNewEmployePour(connect, employePour, candidatSelected.getIdThesaurus(),
+                            candidatSelected.getLang(), candidatSelected.getIdTerm());
+
+                    candidatSelected.getEmployePourList().add(employePour);
+                    employePour = "";
+                    PrimeFaces.current().ajax().update("tabViewCandidat");
+
+                    showMessage(FacesMessage.SEVERITY_INFO, "Synonyme ajouté avec succès !");
+                } catch (Exception ex) {
+                    showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'ajout du nouveau synonyme !");
+                }
+            }
+        }
+    }
+
+    public void removeSynonyme(String synonyme) {
+        if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
+            try {
+                new TermeDao().deleteEMByIdTermAndLang(connect.getPoolConnexion(), candidatSelected.getIdTerm(),
+                        candidatSelected.getIdThesaurus(), candidatSelected.getLang());
+
+                candidatSelected.getEmployePourList().remove(synonyme);
+                PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatSynonym");
+
+                showMessage(FacesMessage.SEVERITY_INFO, "Synonyme supprimé avec succès !");
+            } catch (Exception ex) {
+                showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant la suppression du synonyme !");
+            }
+        }
+    }
+
+    public void addTraduction(SelectEvent<NodeIdValue> event) throws SQLException {
+        var elementAdded = event.getObject();
+
         if (candidatSelected.getTermesGenerique().stream()
-                .filter(element -> element.getId().equalsIgnoreCase(elOptional.get().getId()))
+                .filter(element -> element.getId().equalsIgnoreCase(elementAdded.getId()))
                 .findFirst().isPresent()) {
             showMessage(FacesMessage.SEVERITY_WARN, "Le terme existe déjà !");
-        } else {        
-            elementAdded.setValue(new ConceptHelper().getLexicalValueOfConcept(
-                    connect.getPoolConnexion(), elementAdded.getId(), selectedTheso.getCurrentIdTheso(),selectedTheso.getCurrentLang()));
-            candidatSelected.getTermesGenerique().add(elementAdded); 
+        } else {
+
+            var relationDao = new RelationDao();
+
+            relationDao.addRelationBT(connect, candidatSelected.getIdConcepte(), elementAdded.getId(), selectedTheso.getCurrentIdTheso());
+
+            candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(connect.getPoolConnexion(),
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
+                    candidatSelected.getLang()));
+
+            showMessage(FacesMessage.SEVERITY_INFO, "Term générique ajoutée avec succès !");
+
+            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");
         }
         termesGeneriqueTmp = Collections.emptyList();
-        PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");        
     }
 
-    public void onTraductionAssocieSelect(SelectEvent<NodeIdValue> event) {
+    public void removeGenericTerm(NodeIdValue genericTerm) throws SQLException {
+        if (CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
 
-    /*    Optional<NodeIdValue> elementAdded = AllTermesAssocies.stream()
-                .filter(element -> event.getObject().getId().equalsIgnoreCase(element.getId()))
-                .findFirst();
-        if (elementAdded.isPresent()) {
-            if (candidatSelected.getTermesAssocies().stream()
-                    .filter(element -> element.getValue().equalsIgnoreCase(elementAdded.get().getValue()))
-                    .findFirst().isPresent()) {
-                showMessage(FacesMessage.SEVERITY_WARN, "Le terme associé existe déjà !");
-            } else {
-                candidatSelected.getTermesAssocies().add(elementAdded.get());
-                AllTermesAssocies.remove(elementAdded.get());
-            }
-            termesAssociesTmp = Collections.emptyList();
-            PrimeFaces.current().ajax().update("tabViewCandidat");
-        }*/
-        NodeIdValue elementAdded = (NodeIdValue)event.getObject();
-        Optional<NodeIdValue> elOptional = Optional.of(elementAdded);
-        
+            new RelationsHelper().deleteRelationBT(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+                    selectedTheso.getCurrentIdTheso(), genericTerm.getId(), currentUser.getNodeUser().getIdUser());
+
+            candidatSelected.setTermesGenerique(new RelationDao().getCandidatRelationsBT(connect.getPoolConnexion(),
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
+                    candidatSelected.getLang()));
+
+            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatBT");
+
+            showMessage(FacesMessage.SEVERITY_INFO, "Term générique supprimée avec succès !");
+        }
+    }
+
+    public void addTraductionAssocieSelect(SelectEvent<NodeIdValue> event) throws SQLException {
+
         if (candidatSelected.getTermesAssocies().stream()
-                .filter(element -> element.getId().equalsIgnoreCase(elOptional.get().getId()))
+                .filter(element -> element.getId().equalsIgnoreCase(event.getObject().getId()))
                 .findFirst().isPresent()) {
             showMessage(FacesMessage.SEVERITY_WARN, "Le terme existe déjà !");
-        } else {        
-            elementAdded.setValue(new ConceptHelper().getLexicalValueOfConcept(
-                    connect.getPoolConnexion(), elementAdded.getId(), selectedTheso.getCurrentIdTheso(),selectedTheso.getCurrentLang()));
-            candidatSelected.getTermesAssocies().add(elementAdded); 
+        } else {
+            var relationDao = new RelationDao();
+
+            relationDao.addRelationRT(connect, candidatSelected.getIdConcepte(), event.getObject().getId(), selectedTheso.getCurrentIdTheso());
+
+            candidatSelected.setTermesAssocies(relationDao.getCandidatRelationsRT(connect.getPoolConnexion(),
+                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
+                    candidatSelected.getLang()));
+
+            showMessage(FacesMessage.SEVERITY_INFO, "Term associé ajouté avec succès !");
+            PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");
         }
         termesAssociesTmp = Collections.emptyList();
-        PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");     
-    
-    
-    
+    }
+
+    public void removeAssociesTerm(NodeIdValue associeTerm) throws SQLException {
+        new RelationsHelper().deleteRelationRT(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+                selectedTheso.getCurrentIdTheso(), associeTerm.getId(), currentUser.getNodeUser().getIdUser());
+
+        candidatSelected.setTermesAssocies(new RelationDao().getCandidatRelationsRT(connect.getPoolConnexion(),
+                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
+                candidatSelected.getLang()));
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Term associé supprimé avec succès !");
+        PrimeFaces.current().ajax().update("tabViewCandidat:containerIndexCandidat:candidatRT");
     }
 
     public void onRelationBTAdded(SelectEvent<NodeIdValue> event) {
@@ -945,171 +962,11 @@ public class CandidatBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<CandidatDto> getCandidatList() {
-        return candidatList;
-    }
-
-    public void setCandidatList(List<CandidatDto> candidatList) {
-        this.candidatList = candidatList;
-    }
-
-    public CandidatDto getInitialCandidat() {
-        return initialCandidat;
-    }
-
-    public Connect getConnect() {
-        return connect;
-    }
-
-    public void setConnect(Connect connect) {
-        this.connect = connect;
-    }
-
-    public boolean isMyCandidatsSelected1() {
-        return myCandidatsSelected1;
-    }
-
-    public void setMyCandidatsSelected1(boolean myCandidatsSelected1) {
-        this.myCandidatsSelected1 = myCandidatsSelected1;
-    }
-
-    public boolean isMyCandidatsSelected2() {
-        return myCandidatsSelected2;
-    }
-
-    public void setMyCandidatsSelected2(boolean myCandidatsSelected2) {
-        this.myCandidatsSelected2 = myCandidatsSelected2;
-    }
-
-    public boolean isMyCandidatsSelected3() {
-        return myCandidatsSelected3;
-    }
-
-    public void setMyCandidatsSelected3(boolean myCandidatsSelected3) {
-        this.myCandidatsSelected3 = myCandidatsSelected3;
-    }
-
-    public String getSearchValue1() {
-        return searchValue1;
-    }
-
-    public void setSearchValue1(String searchValue1) {
-        this.searchValue1 = searchValue1;
-    }
-
-    public String getSearchValue2() {
-        return searchValue2;
-    }
-
-    public void setSearchValue2(String searchValue2) {
-        this.searchValue2 = searchValue2;
-    }
-
-    public String getSearchValue3() {
-        return searchValue3;
-    }
-
-    public void setSearchValue3(String searchValue3) {
-        this.searchValue3 = searchValue3;
-    }
-
-    public CandidatDto getCandidatSelected() {
-        return candidatSelected;
-    }
-
-    public void setCandidatSelected(CandidatDto candidatSelected) {
-        this.candidatSelected = candidatSelected;
-    }
-
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(CurrentUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public List<DomaineDto> getDomaines() {
-        return domaines;
-    }
-
-    public List<CandidatDto> getAllTermes() {
-        return allTermes;
-    }
-
-    public void setAllTermes(List<CandidatDto> allTermes) {
-        this.allTermes = allTermes;
-    }
-
-    public LanguageBean getLanguageBean() {
-        return languageBean;
-    }
-
-    public void setLanguageBean(LanguageBean languageBean) {
-        this.languageBean = languageBean;
-    }
-
-    public ConceptView getConceptView() {
-        return conceptView;
-    }
-
-    public void setConceptView(ConceptView conceptView) {
-        this.conceptView = conceptView;
-    }
-
-    public boolean isListCandidatsActivate() {
-        return isListCandidatsActivate;
-    }
-
     public void setListCandidatsActivate(boolean isListCandidatsActivate) {
         getAllCandidatsByThesoAndLangue();
         this.isListCandidatsActivate = isListCandidatsActivate;
         isImportViewActivate = false;
         isExportViewActivate = false;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-
-    public List<CandidatDto> getRejetCadidat() {
-        return rejetCadidat;
-    }
-
-    public List<CandidatDto> getAcceptedCadidat() {
-        return acceptedCadidat;
-    }
-
-    public void setAcceptedCadidat(List<CandidatDto> acceptedCadidat) {
-        this.acceptedCadidat = acceptedCadidat;
-    }
-
-    public boolean isRejectCandidatsActivate() {
-        return isRejectCandidatsActivate;
-    }
-
-    public int getTabViewIndexSelected() {
-        return tabViewIndexSelected;
-    }
-
-    public void setTabViewIndexSelected(int tabViewIndexSelected) {
-        this.tabViewIndexSelected = tabViewIndexSelected;
-    }
-
-    public boolean isExportViewActivate() {
-        return isExportViewActivate;
     }
 
     public void setExportViewActivate(boolean isExportViewActivate) {
@@ -1118,36 +975,8 @@ public class CandidatBean implements Serializable {
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
 
-        setProgressBarStep(0);
-        setProgressBarValue(0);
-    }
-
-    public ArrayList<NodeLangTheso> getLanguagesOfTheso() {
-        return languagesOfTheso;
-    }
-
-    public List<NodeLangTheso> getSelectedLanguages() {
-        return selectedLanguages;
-    }
-
-    public void setSelectedLanguages(List<NodeLangTheso> selectedLanguages) {
-        this.selectedLanguages = selectedLanguages;
-    }
-
-    public String getSelectedExportFormat() {
-        return selectedExportFormat;
-    }
-
-    public void setSelectedExportFormat(String selectedExportFormat) {
-        this.selectedExportFormat = selectedExportFormat;
-    }
-
-    public List<String> getExportFormat() {
-        return exportFormat;
-    }
-
-    public boolean isImportViewActivate() {
-        return isImportViewActivate;
+        progressBarStep = 0;
+        progressBarValue = 0;
     }
 
     public void setImportViewActivate(boolean isImportViewActivate) {
@@ -1156,152 +985,16 @@ public class CandidatBean implements Serializable {
         isListCandidatsActivate = false;
         isShowCandidatActivate = false;
 
-        setProgressBarStep(0);
-        setProgressBarValue(0);
+        progressBarStep = 0;
+        progressBarValue = 0;
     }
 
-    public int getProgressBarStep() {
-        return progressBarStep;
-    }
-
-    public void setProgressBarStep(int progressBarStep) {
-        this.progressBarStep = progressBarStep;
-    }
-
-    public int getProgressBarValue() {
-        return progressBarValue;
-    }
-
-    public void setProgressBarValue(int progressBarValue) {
-        this.progressBarValue = progressBarValue;
-    }
-
-    public boolean isAcceptedCandidatsActivate() {
-        return isAcceptedCandidatsActivate;
-    }
-
-    public void setAcceptedCandidatsActivate(boolean isAcceptedCandidatsActivate) {
-        this.isAcceptedCandidatsActivate = isAcceptedCandidatsActivate;
-    }
-
-    public List<CandidatDto> getSelectedCandidates() {
-        return selectedCandidates;
-    }
-    
     public List<String> getSelectedCandidatesAsId() {
         List<String> listIdOfConcept = new ArrayList<>();
         for (CandidatDto selectedCandidate : selectedCandidates) {
             listIdOfConcept.add(selectedCandidate.getIdConcepte());
         }
         return listIdOfConcept;
-    }    
-
-    public void setSelectedCandidates(List<CandidatDto> selectedCandidates) {
-        this.selectedCandidates = selectedCandidates;
-    }
-
-    public boolean isListSelected() {
-        return listSelected;
-    }
-
-    public void setListSelected(boolean listSelected) {
-        this.listSelected = listSelected;
-    }
-
-    public boolean isTraductionVisible() {
-        return traductionVisible;
-    }
-
-    public void setTraductionVisible(boolean traductionVisible) {
-        this.traductionVisible = traductionVisible;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public void setSelectedTheso(SelectedTheso selectedTheso) {
-        this.selectedTheso = selectedTheso;
-    }
-
-    public RoleOnThesoBean getRoleOnThesoBean() {
-        return roleOnThesoBean;
-    }
-
-    public void setRoleOnThesoBean(RoleOnThesoBean roleOnThesoBean) {
-        this.roleOnThesoBean = roleOnThesoBean;
-    }
-
-    public CandidatService getCandidatService() {
-        return candidatService;
-    }
-
-    public void setNewCandidatActivate(boolean newCandidatActivate) {
-        isNewCandidatActivate = newCandidatActivate;
-    }
-
-    public void setRejectCandidatsActivate(boolean rejectCandidatsActivate) {
-        isRejectCandidatsActivate = rejectCandidatsActivate;
-    }
-
-    public void setInitialCandidat(CandidatDto initialCandidat) {
-        this.initialCandidat = initialCandidat;
-    }
-
-    public void setExportFormat(List<String> exportFormat) {
-        this.exportFormat = exportFormat;
-    }
-
-    public void setRejetCadidat(List<CandidatDto> rejetCadidat) {
-        this.rejetCadidat = rejetCadidat;
-    }
-
-    public void setDomaines(List<DomaineDto> domaines) {
-        this.domaines = domaines;
-    }
-
-    public void setLanguagesOfTheso(ArrayList<NodeLangTheso> languagesOfTheso) {
-        this.languagesOfTheso = languagesOfTheso;
-    }
-
-    public List<NodeIdValue> getCollectionTemps() {
-        return collectionTemps;
-    }
-
-    public void setCollectionTemps(List<NodeIdValue> collectionTemps) {
-        this.collectionTemps = collectionTemps;
-    }
-
-    public List<NodeIdValue> getTermesGeneriqueTmp() {
-        return termesGeneriqueTmp;
-    }
-
-    public void setTermesGeneriqueTmp(List<NodeIdValue> termesGeneriqueTmp) {
-        this.termesGeneriqueTmp = termesGeneriqueTmp;
-    }
-
-    public List<NodeIdValue> getTermesAssociesTmp() {
-        return termesAssociesTmp;
-    }
-
-    public void setTermesAssociesTmp(List<NodeIdValue> termesAssociesTmp) {
-        this.termesAssociesTmp = termesAssociesTmp;
-    }
-
-    public String getEmployePour() {
-        return employePour;
-    }
-
-    public void setEmployePour(String employePour) {
-        this.employePour = employePour;
-    }
-
-    public NodeAlignment getAlignementSelected() {
-        return alignementSelected;
-    }
-
-    public void setAlignementSelected(NodeAlignment alignementSelected) {
-        this.alignementSelected = alignementSelected;
     }
 
     public void deleteAlignement() {
@@ -1333,5 +1026,122 @@ public class CandidatBean implements Serializable {
         showMessage(FacesMessage.SEVERITY_INFO, "Alignement mise à jour avec succès !");
 
         PrimeFaces.current().ajax().update("tabViewCandidat");
+    }
+
+    public String getCreatedByBtnTitle() {
+        var createdBy = (candidatSelected != null && StringUtils.isNotEmpty(candidatSelected.getCreatedBy()))
+                ? " " + languageBean.getMsg("rightbody.concept.createdBy") + " " + candidatSelected.getCreatedBy() : "";
+        return languageBean.getMsg("candidat.file") + createdBy;
+    }
+
+    public void addNewImage(int idUser) {
+
+        if (StringUtils.isEmpty(imageBean.getUri())) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Aucune URI insérée !");
+            return;
+        }
+
+        if (!new ImagesHelper().addExternalImage(connect.getPoolConnexion(),
+                candidatSelected.getIdConcepte(),
+                selectedTheso.getCurrentIdTheso(),
+                imageBean.getName(),
+                imageBean.getCopyright(),
+                imageBean.getUri(),
+                imageBean.getCreator(),
+                idUser)) {
+            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur pendant l'ajout de l'image !");
+            return;
+        }
+
+        candidatSelected.setImages(new ImagesHelper().getExternalImages(connect.getPoolConnexion(),
+                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Image ajoutée avec succès");
+        initImageDialog();
+        PrimeFaces.current().ajax().update("tabViewCandidat");
+    }
+
+    public void openAddAlignementWindow() {
+        alignmentBean.setConceptValueForAlignment(candidatSelected.getNomPref());
+        alignmentBean.setExistingAlignment(candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso());
+        alignmentBean.prepareValuesForIdRef();
+        alignmentBean.setListAlignValues(null);
+        alignmentBean.initAlignmentSources(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        alignmentBean.setIdConceptSelectedForAlignment(candidatSelected.getIdConcepte());
+
+        PrimeFaces.current().executeScript("PF('searchAlignement').show();");
+    }
+
+    public void searchAlignementAuto() {
+        alignmentBean.addAlignment(selectedTheso.getSelectedIdTheso(),
+                alignmentBean.getIdConceptSelectedForAlignment(),
+                currentUser.getNodeUser().getIdUser(),
+                false);
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Alignement ajouté avec sucée !");
+
+        candidatService.getCandidatDetails(connect, candidatSelected, selectedTheso.getCurrentIdTheso());
+
+        PrimeFaces.current().ajax().update("tabViewCandidat");
+    }
+
+    public String getNoteType(String typeCode) {
+        switch (typeCode) {
+            case "note":
+                return "Note";
+            case "historyNote":
+                return "Note historique";
+            case "scopeNote":
+                return "Note d'application";
+            case "example":
+                return "Exemple";
+            case "editorialNote":
+                return "Note éditoriale";
+            case "definition":
+                return "Définition";
+            default:
+                return "Note de changement";
+        }
+    }
+
+    public void initImageDialog() {
+        imageBean.setUri(null);
+        imageBean.setCopyright(null);
+        imageBean.setName(null);
+        imageBean.setCreator(null);
+    }
+
+    public void deleteImage(String imageUri) {
+
+        new ImagesHelper().deleteExternalImage(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+                selectedTheso.getSelectedIdTheso(), imageUri);
+
+        candidatSelected.setImages(new ImagesHelper().getExternalImages(connect.getPoolConnexion(),
+                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
+
+        showMessage(FacesMessage.SEVERITY_INFO, "Image supprimée avec succès");
+    }
+
+    public boolean isIsModifiedLabel() {
+        return isModifiedLabel;
+    }
+
+    public void setIsModifiedLabel(boolean isModifiedLabel) {
+        this.isModifiedLabel = isModifiedLabel;
+    }
+
+    public void changeStateOfLabel() {
+        this.isModifiedLabel = true;
+    }
+
+    public void updateCandidateLabel() {
+        try {
+            candidatService.updateIntitule(connect, candidatSelected.getNomPref(), candidatSelected.getIdThesaurus(),
+                    candidatSelected.getLang(), candidatSelected.getIdTerm());
+            isModifiedLabel = false;
+        } catch (SQLException ex) {
+            Logger.getLogger(CandidatBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 }

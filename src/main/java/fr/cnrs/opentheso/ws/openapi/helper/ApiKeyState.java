@@ -19,6 +19,12 @@ public enum ApiKeyState {
      * La clé fournie est invalide
      */
     INVALID,
+
+    /**
+     * La clé a expiré
+     */
+
+    EXPIRED,
     
     /**
      * Erreur lors de l'exécution du SQL

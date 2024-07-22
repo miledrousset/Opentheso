@@ -11,13 +11,14 @@ import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
+import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
-import fr.cnrs.opentheso.bdd.helper.nodes.Path;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
@@ -37,13 +38,8 @@ import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -91,6 +87,10 @@ public class ConceptView implements Serializable {
 
     private Map mapModel;
     private NodeConcept nodeConcept;
+    
+    /// nouvelle méthode de récupération du concept 
+    private NodeFullConcept nodeFullConcept;    
+    
     private String selectedLang;
     private GpsMode gpsModeSelected;
     private ArrayList<NodeCorpus> nodeCorpuses;
@@ -160,6 +160,7 @@ public class ConceptView implements Serializable {
         example = null;
         historyNote = null;
         nodeConcept = new NodeConcept();
+        nodeFullConcept = new NodeFullConcept();
         nodeFacets = new ArrayList<>();
 
         selectedLang = null;
@@ -179,6 +180,8 @@ public class ConceptView implements Serializable {
         if (nodeConcept != null) {
             nodeConcept.clear();
         }
+        nodeFullConcept = new NodeFullConcept();
+        
         selectedLang = null;
 
         if (nodeFacets == null) {
@@ -395,9 +398,13 @@ public class ConceptView implements Serializable {
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
         offset = 0;
-        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
+        ConceptHelper conceptHelper = new ConceptHelper();
+        
+        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) return;
         
+    //    nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
@@ -423,7 +430,6 @@ public class ConceptView implements Serializable {
         nodeCorpuses = null;
         haveCorpus = false;
         searchedForCorpus = false;
-      //  nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
 
         setRoles();
 
@@ -698,6 +704,12 @@ public class ConceptView implements Serializable {
         }
     }    
 
+    public String getNoteValue(NodeNote nodeNote){
+        if(nodeNote != null)
+            return nodeNote.getLexicalvalue();
+        return "";
+    }
+    
     public String getColorOfTypeConcept() {
         if ("concept".equalsIgnoreCase(nodeConcept.getConcept().getConceptType()))
             return "";

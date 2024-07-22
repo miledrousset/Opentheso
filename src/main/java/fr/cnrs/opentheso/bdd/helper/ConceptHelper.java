@@ -18,7 +18,9 @@ import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.datas.Concept;
 import fr.cnrs.opentheso.bdd.datas.HierarchicalRelationship;
 import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.dao.ConceptRelation;
 import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
+import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptArkId;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
@@ -45,6 +47,7 @@ import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
 import fr.cnrs.opentheso.bean.importexport.outils.HtmlLinkExtraction;
 import fr.cnrs.opentheso.bean.toolbox.statistique.ConceptStatisticData;
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
 import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
@@ -2057,7 +2060,7 @@ public class ConceptHelper {
     /**
      * Permet de retourner un Id numérique et unique pour le Concept
      */
-    private String getNumericConceptId(Connection conn) {
+    public String getNumericConceptId(Connection conn) {
         String idConcept = getNumericConceptId__(conn);
         while (isIdExiste(conn, idConcept)) {
             idConcept = getNumericConceptId__(conn);
@@ -4792,7 +4795,10 @@ public class ConceptHelper {
         String idConcept = null;
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_concept from concept where id_ark ilike '" + arkId + "' and id_thesaurus = '" + idTheso + "'");
+                stmt.executeQuery("select id_concept from concept where"
+                        + " id_thesaurus = '" + idTheso + "'"
+                        + " and"
+                        + " REPLACE(concept.id_ark, '-', '') ilike REPLACE('" + arkId + "', '-', '')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idConcept = resultSet.getString("id_concept").trim();
@@ -4856,7 +4862,8 @@ public class ConceptHelper {
         String idThesaurus = null;
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_thesaurus from concept where id_ark = '" + arkId + "'");
+                stmt.executeQuery("select id_thesaurus from concept where " +
+                        " REPLACE(concept.id_ark, '-', '') = REPLACE('" + arkId + "', '-', '')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         idThesaurus = resultSet.getString("id_thesaurus");
@@ -5761,6 +5768,26 @@ public class ConceptHelper {
 
         return listNce;
     }
+    
+    /**
+     *
+     * Cette fonction permet de récupérer toutes les informations concernant un
+     * Concept par son id et son thésaurus et la langue ##MR ajout de limit NT
+     * qui permet de définir la taille maxi des NT à récupérer, si = -1, pas de
+     * limit offset 42 fetch next 21 rows only
+     *
+     * @param ds
+     * @param idConcept
+     * @param idThesaurus
+     * @param idLang
+     * @param step
+     * @param offset
+     * @return
+     */
+    public NodeFullConcept getConcept2(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
+        return daoResourceHelper.getFullConcept(ds, idThesaurus, idConcept, idLang);
+    }    
 
     /**
      *
@@ -5790,7 +5817,7 @@ public class ConceptHelper {
             return null;
         }
         if ("dep".equalsIgnoreCase(concept.getStatus())) {
-            concept.setIsDeprecated(true);
+            concept.setDeprecated(true);
         }
         nodeConcept.setConcept(concept);
 
@@ -5810,10 +5837,7 @@ public class ConceptHelper {
         //récupération des traductions
         nodeConcept.setNodeTermTraductions(new TermHelper().getTraductionsOfConcept(ds, idConcept, idThesaurus, idLang));
 
-        //récupération des notes du Concept
-//        nodeConcept.setNodeNotesConcept(new NoteHelper().getListNotesConcept(ds, idConcept, idThesaurus, idLang));
-        //récupération des notes du term        
-//        nodeConcept.setNodeNotesTerm(new NoteHelper().getListNotesTerm(ds, term.getId_term(), idThesaurus, idLang));
+        //récupération des notes du term
         nodeConcept.setNodeNotes(new NoteHelper().getListNotes(ds, idConcept, idThesaurus, idLang));
 
         nodeConcept.setNodeConceptGroup(new GroupHelper().getListGroupOfConcept(ds, idThesaurus, idConcept, idLang));

@@ -147,24 +147,23 @@ public class AlignmentManualBean implements Serializable {
         }
     }
 
-    public void updateAlignement(NodeAlignment nodeAlignment){
-
-        if(nodeAlignment == null) return;
-
+    public void updateAlignementFromConceptInterface(){
         if(!new AlignmentHelper().updateAlignment(connect.getPoolConnexion(),
-                nodeAlignment.getId_alignement(),
-                nodeAlignment.getConcept_target(),
-                nodeAlignment.getThesaurus_target(),
-                nodeAlignment.getUri_target(),
-                nodeAlignment.getAlignement_id_type(),
+                alignmentBean.getAlignementElementSelected().getIdAlignment(),
+                alignmentBean.getAlignementElementSelected().getConceptTarget(),
+                alignmentBean.getAlignementElementSelected().getThesaurus_target(),
+                alignmentBean.getAlignementElementSelected().getTargetUri(),
+                alignmentBean.getAlignementElementSelected().getAlignement_id_type(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
         }
 
         updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
+
+        alignmentBean.getIdsAndValues2(conceptView.getSelectedLang(), selectedTheso.getCurrentIdTheso());
         
         conceptView.getConcept(
                 selectedTheso.getCurrentIdTheso(),
@@ -183,11 +182,11 @@ public class AlignmentManualBean implements Serializable {
     
     public void addManualAlignement(String idConcept, boolean isFromConceptView){
 
-        if(manualAlignmentSource == null || manualAlignmentSource.isEmpty()) {
+    /*    if(manualAlignmentSource == null || manualAlignmentSource.isEmpty()) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Veuillez saisir une valeur !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
-        }
+        }*/
         if(manualAlignmentUri == null || manualAlignmentUri.isEmpty()){
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Veuillez saisir une valeur  !");
             FacesContext.getCurrentInstance().addMessage(null, msg);

@@ -44,7 +44,6 @@
                     <h:panelGroup id="header">
                         <ui:include src="../commun/header.xhtml" />
                     </h:panelGroup>
-
                     <div class="container-fluid" style="padding-bottom: 70px">
                         <div class="d-sm-flex align-items-center justify-content-between mb-4" style="margin: 20px">
                             <h1 class="h3 mb-0 text-gray-800">#{langueBean.getMsg('menu.profile')} / <span style="color: #f47b2a">#{langueBean.getMsg('profile.all_users')}</span></h1>
@@ -382,6 +381,53 @@
                         </p:commandButton>
                     </div>
                 </div>
+
+                <p:spacer height="20px;" />
+                <p:separator title="-" />
+
+                <h:panelGroup id="userKey">
+                    <div class="row" style="margin-top: 5px;">
+                        <div class="col-5" style="text-align: right">
+                            <h:outputText value="#{langueBean.getMsg('profile.apiKeyAuthorize')} : " />
+                        </div>
+                        <div class="col-7">
+                            <p:toggleSwitch value="#{modifyUSerBean.hasKey}" onIcon="pi pi-times" offIcon="pi pi-check" >
+                                <p:ajax listener="#{modifyUSerBean.toggleHasKey()}" update="modifyUser2Form:userKey"/>
+                            </p:toggleSwitch>
+                        </div>
+                    </div>
+                    <h:panelGroup rendered="#{modifyUSerBean.hasKey}" >
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-5" style="text-align: right">
+                                <h:outputText value="#{langueBean.getMsg('profile.defApiKey')} : " />
+                            </div>
+                            <div class="col-7">
+                                <p:toggleSwitch value="#{modifyUSerBean.nodeUser.keyNeverExpire}" onIcon="pi pi-times" offIcon="pi pi-check" >
+                                    <p:ajax listener="#{modifyUSerBean.toggleKeyNeverExpire()}" update="modifyUser2Form:userKey"/>
+                                </p:toggleSwitch>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-5" style="text-align: right">
+                                <h:outputText value="#{langueBean.getMsg('profile.apiKeyExpireDate')} : " />
+                            </div>
+                            <div class="col-7">
+                                <p:datePicker value="#{modifyUSerBean.apiKeyExpireDate}" disabled="#{modifyUSerBean.nodeUser.keyNeverExpire}"></p:datePicker>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    <div class="row" style="margin-top: 5px;">
+                        <div class="col-12" style="text-align: right" >
+                            <p:commandButton value="#{langueBean.getMsg('apply')}" update="containerIndex messageIndex"
+                                             icon="fa-regular fa-floppy-disk"
+                                             styleClass="ui-button-success" oncomplete="PF('modifyUser2').hide();"
+                                             actionListener="#{modifyUSerBean.updateApiKey()}">
+                                <p:tooltip value="#{langueBean.getMsg('profile.changeUserPassTooltip')}" showDelay="1000" />
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
             </h:form>
         </p:dialog>           
         

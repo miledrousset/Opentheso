@@ -1,14 +1,22 @@
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.text.Normalizer;
+import java.util.List;
 
 /**
  *
  * @author miled.rousset
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NodeIdValue implements Comparable, Serializable{
 
     private String id;
@@ -16,6 +24,7 @@ public class NodeIdValue implements Comparable, Serializable{
     private boolean Status;
     private String notation;
     private Integer nbrConcepts;
+    private List<NodeAlignment> alignements;
 
     @Override
     public int compareTo(Object o) {
