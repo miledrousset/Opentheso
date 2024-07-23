@@ -237,7 +237,7 @@ public class DataGraphView implements Serializable {
         }
 
         String urlString = url.build().toString();
-        context.redirect(UriBuilder.fromUri(context.getRequestContextPath() + "/d3js/index.html").queryParam("dataUrl", urlString).queryParam("format", "opentheso").build().toString());
+        context.redirect(UriBuilder.fromUri(context.getRequestContextPath() + "/d3js/index.xhtml").queryParam("dataUrl", urlString).queryParam("format", "opentheso").build().toString());
     }
 
     public void exportToNeo4J(String viewId) {

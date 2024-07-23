@@ -32,6 +32,10 @@ document.querySelector("#show-data").addEventListener("click", (event) => {
 
 function initGraph(){
     const input = document.querySelector("#data-url");
+    const loader = document.getElementById("loader-annel");
+    if(loader.style.display === "none"){
+        loader.style.display = "flex";
+    }
     if (input.value == "" || input.value == undefined) {
         alert("Erreur, il faut renseigner une URL avant d'afficher le graphe");
         return;
@@ -49,11 +53,15 @@ function initGraph(){
                 return;
             }
             generatedGraph = new Graph(data, lang, document.getElementById("data-format").checked ? "opentheso" : "other");
+            loader.style.display = "none";
             graph.appendChild(
                 generatedGraph.render("select-nodes", "select-links")
             );
         })
-        .catch((reason) => alert(reason));
+        .catch((reason) => {
+            loader.style.display = "none";
+            alert(reason)
+        });
 }
 
 //Resize du svg lors du resize de l'ecran
