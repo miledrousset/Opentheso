@@ -13,11 +13,6 @@ if(dataUrl !== undefined){
     initGraph()
 }
 
-if(urlParams.get("format") === undefined || urlParams.get("format") === "opentheso"){
-    console.log(urlParams.get("format"))
-    document.getElementById("data-format").checked = true
-}
-
 document.querySelector("#settings-button").addEventListener("click", () => {
     document.querySelector("#settings-panel").classList.toggle("show-settings");
 });
@@ -52,7 +47,7 @@ function initGraph(){
                 alert("Erreur, la langue n'est pas définie");
                 return;
             }
-            generatedGraph = new Graph(data, lang, document.getElementById("data-format").checked ? "opentheso" : "other");
+            generatedGraph = new Graph(data, lang, "opentheso");
             loader.style.display = "none";
             graph.appendChild(
                 generatedGraph.render("select-nodes", "select-links")

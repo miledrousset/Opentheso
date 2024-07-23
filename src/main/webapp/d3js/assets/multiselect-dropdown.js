@@ -4,25 +4,28 @@ style.innerHTML = `
 .multiselect-dropdown{
   display: inline-block;
   padding: 2px 5px 0px 5px;
-  border-radius: 4px;
-  border: solid 1px #ced4da;
+  border-radius: 10px;
+  border: solid 2px #43B572;
   background-color: white;
   position: relative;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right .75rem center;
   background-size: 16px 12px;
+  min-height: 2rem;
 }
 .multiselect-dropdown span.optext, .multiselect-dropdown span.placeholder{
   margin-right:0.5em; 
   margin-bottom:2px;
   padding:1px 0; 
-  border-radius: 4px; 
+  border-radius: 10px; 
   display:inline-block;
 }
 .multiselect-dropdown span.optext{
-  background-color:lightgray;
-  padding:1px 0.75em; 
+  background-color:#f47b2a;
+  color: white;
+  padding:1px 1em 1px 0.6em;
+  font-size: 0.8rem;
 }
 .multiselect-dropdown span.optext .optdel {
   float: right;

@@ -12,17 +12,50 @@ body {
 }
 
 .legend-row-container {
+    font-family: Arial, serif;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 3px;
+    height: 40px;
+}
+
+#settings-panel {
+    position: absolute;
+    top: 30px;
+    left: -1000px;
+    margin: 10px 0 0 10px;
+    background: #ecf8f1;
+    border: 2px solid #43B572;
+    border-radius: 10px;
+    padding: 10px 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .danger-text {
-    color: #cb0000;
+    color: #cd0000;
     font-weight: bold;
+    font-size: 0.75rem;
 }
 
 .show-settings {
     transform: translateX(1000px);
+}
+
+.text-input{
+    height: 2rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 2px solid #43B572;
+}
+
+button {
+    background-color: #43B572;
+    padding: 8px 8px 8px 8px;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
 }
