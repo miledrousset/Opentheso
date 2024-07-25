@@ -18,38 +18,39 @@
                             <p:menuButton 
                                 icon="fas fa-cog" style="margin-top: -4px; font-size: 10px !important; color: #f47b2a">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.rename_concept')}"
-                                            actionListener="#{editConcept.reset(conceptView.nodeConcept.term.lexical_value)}"
+                                            actionListener="#{editConcept.reset(conceptView.nodeFullConcept.prefLabel.label)}"
                                             oncomplete="PF('renameConcept').show();" update="containerIndex:idRenameConcept" icon="fas fa-edit" />
                             </p:menuButton>
                         </h:panelGroup>                        
 
-                        <h:outputText rendered="#{!conceptView.nodeConcept.concept.deprecated}"
-                                      id="textPrefLabel" value="#{conceptView.nodeConcept.term.lexical_value}"
+                        <h:outputText rendered="#{!conceptView.nodeFullConcept.deprecated}"
+                                      id="textPrefLabel" value="#{conceptView.nodeFullConcept.prefLabel.label}"
                                       style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-size: 1.1rem;
                                       letter-spacing: .2px; color: #666666; font-weight: bold; text-shadow: none;" />
                         
                         <!-- Cas de concept déprécié -->
-                        <h:outputText rendered="#{conceptView.nodeConcept.concept.deprecated}"
-                                      id="textPrefLabelDep" value="#{conceptView.nodeConcept.term.lexical_value}"
+                        <h:outputText rendered="#{conceptView.nodeFullConcept.deprecated}"
+                                      id="textPrefLabelDep" value="#{conceptView.nodeFullConcept.prefLabel.label}"
                                       style="font-family: Roboto,RobotoDraft,Helvetica,Arial,sans-serif; font-size: 1.1rem;
                                       letter-spacing: .2px; color: #C63632; font-weight: bold; font-style: italic; text-shadow: none; text-decoration:line-through" />                        
 
-                        <h:outputText value=" (#{conceptView.nodeConcept.term.lang})" style="font-size: 1rem; font-weight: 300; "/>
-
-                        <p:tag rendered="#{conceptView.nodeConcept.concept.conceptType != '' and conceptView.nodeConcept.concept.conceptType != 'concept'}" styleClass="mr-2" 
+                        <h:outputText value=" (#{conceptView.nodeFullConcept.prefLabel.idLang})" style="font-size: 1rem; font-weight: 300; "/>
+                        
+                        <!-- Cas des concepts de type spécifiques comme Qualifier, Place ... -->
+                        <p:tag rendered="#{!conceptView.nodeFullConcept.customRelation and !conceptView.nodeFullConcept.deprecated}" styleClass="mr-2" 
                                severity="warning" style="font-style: italic;margin-left: 5px;font-weight: 300;" rounded="true"
                                value=" #{conceptView.getLabelOfConceptType(
                                                 conceptView.nodeConcept.concept.conceptType,
                                                 conceptView.nodeConcept.concept.idThesaurus)} ">
                         </p:tag>
                         
-                        <p:tooltip for="textPrefLabel" value="#{conceptView.nodeConcept.concept.idConcept}" showDelay="1000" />
-                        <p:tooltip for="textPrefLabelDep" value="#{conceptView.nodeConcept.concept.idConcept}" showDelay="1000" />
+                        <p:tooltip for="textPrefLabel" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
+                        <p:tooltip for="textPrefLabelDep" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
 
                         <p:commandButton rendered="#{!roleOnTheso.nodePreference.auto_expand_tree}" icon="fas fa-sitemap fa-l"
                                          title="#{langueBean.getMsg('rightbody.concept.replace_in_tree')}"
-                                         action="#{tree.expandTreeToPath(conceptView.nodeConcept.concept.idConcept,
-                                                   conceptView.nodeConcept.concept.idThesaurus, conceptView.nodeConcept.term.lang)}"
+                                         action="#{tree.expandTreeToPath(conceptView.nodeFullConcept.identifier,
+                                                   selectedTheso.currentIdTheso, conceptView.nodeFullConcept.prefLabel.idLang)}"
                                          actionListener="#{selectedTheso.actionFromConceptToOn()}" update="containerIndex"
                                          style="color:#f47b2a; background: none; border: none; box-shadow: none; margin-left: 20px;" />
                     </div>
@@ -57,7 +58,7 @@
             </div>
 
             <!-- ligne concepts qui remplacent le concept déprécié (remplacé par) -->
-            <h:panelGroup id="idDeprecatedLabel" rendered="#{conceptView.nodeConcept.concept.deprecated}">
+            <h:panelGroup id="idDeprecatedLabel" rendered="#{conceptView.nodeFullConcept.deprecated}">
                 <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
                     <div class="row" style="height: 30px; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
@@ -79,19 +80,19 @@
                                             oncomplete="PF('deleteReplaceBy').show();"/>
                             </p:menuButton>  
 
-                            <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() == 0}">
+                            <h:panelGroup rendered="#{conceptView.nodeFullConcept.replacedBy.size() == 0}">
                                 <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                             </h:panelGroup>
 
-                            <h:panelGroup rendered="#{conceptView.nodeConcept.replacedBy.size() != 0}">
-                                <ui:repeat var="replace" value="#{conceptView.nodeConcept.replacedBy}" varStatus="status">
-                                    <p:commandLink rendered="#{replace.value != ''}" value="#{replace.value}"
-                                                   title="#{replace.id}"  style="font-size: 1rem;"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
+                            <h:panelGroup rendered="#{conceptView.nodeFullConcept.replacedBy.size() != 0}">
+                                <ui:repeat var="replace" value="#{conceptView.nodeFullConcept.replacedBy}" varStatus="status">
+                                    <p:commandLink rendered="#{replace.label != ''}" value="#{replace.label}"
+                                                   title="#{replace.identifier}"  style="font-size: 1rem;"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.identifier, conceptView.selectedLang)}"
                                                    update="containerIndex:formRightTab indexTitle" />
 
-                                    <p:commandLink rendered="#{replace.value == ''}" value="(#{replace.id})"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.id, conceptView.selectedLang)}"
+                                    <p:commandLink rendered="#{replace.label == ''}" value="(#{replace.identifier})"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.identifier, conceptView.selectedLang)}"
                                                    update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
                                                    style="color: #C63632;font-size: 1rem;" />
 
@@ -104,7 +105,7 @@
             </h:panelGroup>
 
             <!-- ligne qui rappelle les concepts déprécés qui sont remplacés par ce concept (Remplace) -->
-            <h:panelGroup rendered="#{conceptView.nodeConcept.replaces.size() > 0}">
+            <h:panelGroup rendered="#{conceptView.nodeFullConcept.replaces.size() > 0}">
                 <div class="list-group-item list-group-item-action" style="padding-top: -3px; padding-bottom: -3px">
                     <div class="row" style="height: 30px; margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
@@ -113,14 +114,14 @@
                                           styleClass="mr-2" style="color: #8f8f8f; border-color: #f47b2a; padding: 0.3rem; border-style:dotted" />
                         </div>
                         <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px"> 
-                            <ui:repeat var="replaces" value="#{conceptView.nodeConcept.replaces}" varStatus="status" rendered="#{conceptView.nodeConcept.replaces.size() != 0}">
-                                <p:commandLink rendered="#{replaces.value != ''}" value="#{replaces.value}"
-                                               title="#{replaces.id}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
+                            <ui:repeat var="replaces" value="#{conceptView.nodeFullConcept.replaces}" varStatus="status" rendered="#{conceptView.nodeFullConcept.replaces.size() != 0}">
+                                <p:commandLink rendered="#{replaces.label != ''}" value="#{replaces.label}"
+                                               title="#{replaces.identifier}"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang)}"
                                                update="containerIndex:formRightTab indexTitle" style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;text-decoration:line-through"
                                                />
-                                <p:commandLink rendered="#{replaces.value == ''}" value="(#{replaces.id})"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.id, conceptView.selectedLang)}"
+                                <p:commandLink rendered="#{replaces.label == ''}" value="(#{replaces.identifier})"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang)}"
                                                update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
                                                style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;"
                                                />
@@ -152,41 +153,71 @@
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.modify_synonym')}" 
                                             actionListener="#{synonymBean.reset()}" oncomplete="PF('renameSynonym').show();" 
                                             update="containerIndex:idRenameSynonym" icon="fas fa-edit"
-                                            disabled="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" />
+                                            disabled="#{(conceptView.nodeFullConcept.altLabels == null) or (conceptView.nodeFullConcept.altLabels.size() == 0)}" />
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
                                             actionListener="#{synonymBean.reset()}" oncomplete="PF('deleteSynonym').show();"
                                             update="containerIndex:idDeleteSynonym" icon="fas fa-minus"
-                                            disabled="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" />
+                                            disabled="#{(conceptView.nodeFullConcept.altLabels == null) or (conceptView.nodeFullConcept.altLabels.size() == 0)}" />
                             </p:menuButton>
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{(conceptView.nodeConcept.nodeEM == null) or (conceptView.nodeConcept.nodeEM.size() == 0)}" >            
+                        <h:panelGroup rendered="#{(conceptView.nodeFullConcept.altLabels == null) or (conceptView.nodeFullConcept.altLabels.size() == 0)}" >            
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />              
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeEM.size() != 0}">
-                            <ui:repeat var="em" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status">
-                                <h:outputText rendered="#{!em.hiden and conceptView.toggleSwitchAltLabelLang}" value="(#{em.lang}) " style="font-size: 14px; font-weight: 300;"/>
-                                <h:outputText rendered="#{!em.hiden}" value="#{em.lexical_value}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>
-                                <h:outputText rendered="#{(!status.last) and (!em.hiden)}" value=" , " style="color: #FF7979; font-size: 14px;"/>
-                            </ui:repeat>
-
-                            <br/>
-
-                            <ui:repeat var="em2" value="#{conceptView.nodeConcept.nodeEM}" varStatus="status1">
-
-                                <h:outputText rendered="#{(em2.hiden and conceptView.toggleSwitchAltLabelLang)}" value="(#{em2.lang}) " 
-                                              style="font-size: 14px; font-weight: 300;"/>
-
-                                <h:outputText rendered="#{em2.hiden}" value=" #{em2.lexical_value}" 
-                                              title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}"
-                                              styleClass="textOpentheso" style="color:#FF7979; font-style: italic; font-size: 14px;"/>     
-
-                                <h:outputText rendered="#{(!status1.last) and (em2.hiden)}" value=" , " 
-                                              style="color: #FF7979; font-size: 14px;"/>
-                            </ui:repeat>
+                        <!-- cas ou on ne voit pas toutes les langues --> 
+                        <h:panelGroup rendered="#{conceptView.toggleSwitchAltLabelLang}">
+                            <h:panelGroup rendered="#{conceptView.nodeFullConcept.altLabels.size() != 0 or conceptView.nodeFullConcept.hiddenLabels.size() != 0}">
+                                <ui:repeat var="em" value="#{conceptView.nodeFullConcept.altLabels}" varStatus="status">
+                                    <h:outputText value="(#{em.idLang}) " style="font-size: 14px; font-weight: 300;"/>
+                                    <h:outputText value="#{em.label}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.last or conceptView.nodeFullConcept.altLabelTraduction.size() != 0}" value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                </ui:repeat>
+                                <ui:repeat var="emTr" value="#{conceptView.nodeFullConcept.altLabelTraduction}" varStatus="status">
+                                    <h:outputText value="(#{emTr.idLang}) " style="font-size: 14px; font-weight: 300;"/>
+                                    <h:outputText value="#{emTr.label}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                </ui:repeat>                                
+                                <br/>
+                                <ui:repeat var="em2" value="#{conceptView.nodeFullConcept.hiddenLabels}" varStatus="status1">
+                                    <h:outputText value="(#{em2.idLang})" style="font-size: 14px; font-weight: 300;"/>
+                                    <h:outputText value=" #{em2.label}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}"
+                                                  styleClass="textOpentheso" style="color:#FF7979; font-style: italic; font-size: 14px;"/>     
+                                    <h:outputText rendered="#{!status1.last or conceptView.nodeFullConcept.hiddenLabelTraduction.size() != 0}" value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                </ui:repeat>
+                                <ui:repeat var="em3" value="#{conceptView.nodeFullConcept.hiddenLabelTraduction}" varStatus="status1">
+                                    <h:outputText value="(#{em3.idLang})" style="font-size: 14px; font-weight: 300;"/>
+                                    <h:outputText value=" #{em3.label}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}"
+                                                  styleClass="textOpentheso" style="color:#FF7979; font-style: italic; font-size: 14px;"/>     
+                                    <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                </ui:repeat>                                
+                                
+                                
+                            </h:panelGroup>                        
                         </h:panelGroup>
+                            
+                                                  
+                        
+                        <h:panelGroup rendered="#{!conceptView.toggleSwitchAltLabelLang}">
+                            <h:panelGroup rendered="#{conceptView.nodeFullConcept.altLabels.size() != 0 or conceptView.nodeFullConcept.hiddenLabels.size() != 0}">
+                                <ui:repeat var="emw" value="#{conceptView.nodeFullConcept.altLabels}" varStatus="status">
+                                    <h:outputText value="#{emw.label}" styleClass="textOpentheso" style="color: #666666; font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.last}" value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                </ui:repeat>
+                                <br/>
+                                <ui:repeat var="emh" value="#{conceptView.nodeFullConcept.hiddenLabels}" varStatus="status1">
+                                    <h:outputText value=" #{emh.label}" 
+                                                  title="#{langueBean.getMsg('rightbody.concept.hidden_synonym')}"
+                                                  styleClass="textOpentheso" style="color:#FF7979; font-style: italic; font-size: 14px;"/>     
+                                    <h:outputText rendered="#{!status1.last}" value=" , " style="color: #FF7979; font-size: 14px;"/>
+                                </ui:repeat>
+                            </h:panelGroup>                              
+                        </h:panelGroup>
+                        
+                        
                     </div>
 
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right ">
@@ -218,7 +249,7 @@
                                             actionListener="#{removeFromGroupBean.init()}" 
                                             oncomplete="PF('removeConceptFromGroup').show();"
                                             update="containerIndex:idRemoveConceptFromGroup" icon="fas fa-minus"
-                                            disabled="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}"/>
+                                            disabled="#{conceptView.nodeFullConcept.membres.size() == 0}"/>
                                 <p:separator style="height: 10px;"/>
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_concept_to_group')}" 
                                             action="#{removeConceptAndChildFromGroupBean.init()}"
@@ -229,27 +260,27 @@
                                             action="#{removeConceptAndChildFromGroupBean.init()}"
                                             oncomplete="PF('removeConceptAndChildFromGroup').show();"
                                             update="containerIndex:idRemoveConceptAndChildFromGroup" icon="fa-regular fa-square-minus"
-                                            disabled="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}" />
+                                            disabled="#{conceptView.nodeFullConcept.membres.size() == 0}" />
                             </p:menuButton>
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() == 0}" >                          
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.membres.size() == 0}" >                          
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 14px;" />
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeConceptGroup.size() != 0}" > 
-                            <ui:repeat var="domaine" value="#{conceptView.nodeConcept.nodeConceptGroup}" varStatus="status">
-                                <p:commandLink id="commandCollection" rendered="#{domaine.lexicalValue != ''}"
-                                               value="#{domaine.lexicalValue}"
-                                               action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.membres.size() != 0}" > 
+                            <ui:repeat var="domaine" value="#{conceptView.nodeFullConcept.membres}" varStatus="status">
+                                <p:commandLink id="commandCollection" rendered="#{domaine.label != ''}"
+                                               value="#{domaine.label}"
+                                               action="#{treeGroups.selectThisGroup(domaine.identifier)}"
                                                update="containerIndex indexTitle"/>
-                                <p:commandLink rendered="#{domaine.lexicalValue == ''}"
-                                               value="(#{domaine.conceptGroup.idgroup})"
-                                               action="#{treeGroups.selectThisGroup(domaine.conceptGroup.idgroup)}"
+                                <p:commandLink rendered="#{domaine.label == ''}"
+                                               value="(#{domaine.identifier})"
+                                               action="#{treeGroups.selectThisGroup(domaine.identifier)}"
                                                update="containerIndex indexTitle" />                                        
                                 <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
                                 <p:tooltip id="uploaderCancelButtonToolTip"
                                            for="commandCollection"
-                                           value="#{domaine.conceptGroup.idgroup}"
+                                           value="#{domaine.identifier}"
                                            showDelay="500" style="font-size: 12px;" />                                
                             </ui:repeat>
                         </h:panelGroup>

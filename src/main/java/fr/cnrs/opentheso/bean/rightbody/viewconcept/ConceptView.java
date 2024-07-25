@@ -403,7 +403,7 @@ public class ConceptView implements Serializable {
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) return;
         
-    //    nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
 
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
@@ -463,6 +463,11 @@ public class ConceptView implements Serializable {
         
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+    }
+    
+    public boolean isHaveAlignment(){
+        return (CollectionUtils.isNotEmpty(nodeFullConcept.getExactMatchs()) || CollectionUtils.isNotEmpty(nodeFullConcept.getCloseMatchs())
+                || CollectionUtils.isNotEmpty(nodeFullConcept.getBroadMatchs()) || CollectionUtils.isNotEmpty(nodeFullConcept.getRelatedMatchs()) );
     }
     
     public boolean isHaveDefinition(){
@@ -613,22 +618,18 @@ public class ConceptView implements Serializable {
         contributors = null;
         creator = null;
         boolean firstElement = true;
-        if (CollectionUtils.isNotEmpty(nodeConcept.getDcElements())) {
-            for (DcElement dcElement : nodeConcept.getDcElements()) {
-                switch (dcElement.getName()) {
-                    case DCMIResource.CONTRIBUTOR:
-                        if (firstElement) {
-                            contributors = dcElement.getValue();
-                            firstElement = false;
-                        } else {
-                            contributors = contributors + "; " + dcElement.getValue();
-                        }
-                        break;
-                    case DCMIResource.CREATOR:
-                        creator = dcElement.getValue();
-                    default:
-                        break;
-                }
+        
+        if(StringUtils.isNotEmpty(nodeFullConcept.getCreatorName())){
+            creator = nodeFullConcept.getCreatorName();
+        }
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getContributorName())){
+            for (String contributor : nodeFullConcept.getContributorName()) {
+                if (firstElement) {
+                    contributors = contributor;
+                    firstElement = false;
+                } else {
+                    contributors = contributors + "; " + contributor;
+                }   
             }
         }
     }
@@ -648,6 +649,30 @@ public class ConceptView implements Serializable {
     /////////////////////////////////
     private void setNotes() {
         clearNotes();
+        
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getNotes())){
+            
+        }  
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getScopeNotes())){
+            
+        }  
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getChangeNotes())){
+            
+        }       
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getDefinitions())){
+            
+        }        
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getEditorialNotes())){
+            
+        }
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getExamples())){
+            
+        }     
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getHistoryNotes())){
+            
+        }        
+        nodeFullConcept.getDefinitions();
+        
         for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
             switch (nodeNote.getNotetypecode()) {
                 case "note":

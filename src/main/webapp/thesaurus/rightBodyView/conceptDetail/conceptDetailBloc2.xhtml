@@ -30,25 +30,25 @@
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_delete_generic_relation')}"
                                         actionListener="#{broaderBean.reset()}" update="containerIndex:idDeleteBroaderLink" 
                                         oncomplete="PF('deleteBroaderLink').show();" icon="fas fa-minus"
-                                        disabled="#{conceptView.nodeConcept.nodeBT.size() == 0}"/>
+                                        disabled="#{conceptView.nodeFullConcept.broaders.size() == 0}"/>
                         </p:menuButton>
 
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeBT.size() == 0}">   
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.broaders.size() == 0}">   
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                            style="font-size: 14px; color: grey; font-style: italic " /> 
                         </h:panelGroup>  
 
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeBT.size() != 0}">   
-                            <ui:repeat  var="value" value="#{conceptView.nodeConcept.nodeBT}"  varStatus="status">
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.broaders.size() != 0}">   
+                            <ui:repeat  var="value" value="#{conceptView.nodeFullConcept.broaders}"  varStatus="status">
                                 <p:tooltip style="font-size: 12px;" position="bottom"/>
-                                <p:commandLink id="toolTipBT1" rendered="#{value.title != ''}" value="#{value.title}"
+                                <p:commandLink id="toolTipBT1" rendered="#{value.label != ''}" value="#{value.label}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" 
                                                update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex">
 
                                 </p:commandLink>    
 
-                                <p:commandLink id="toolTipBT2" rendered="#{value.title == ''}" value="(#{value.idConcept})"
+                                <p:commandLink id="toolTipBT2" rendered="#{value.label == ''}" value="(#{value.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"/>  
@@ -86,28 +86,28 @@
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_changing_relationships')}"
                                         actionListener="#{narrowerBean.initForChangeRelations()}" icon="fas fa-edit"
                                         update="containerIndex:idChangeRelation" oncomplete="PF('changeRelation').show();"
-                                        disabled="#{conceptView.nodeConcept.nodeNT.size() == 0}"/>  
+                                        disabled="#{conceptView.nodeFullConcept.narrowers.size() == 0}"/>  
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_narrower_relation')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_delete_narrower_relation')}"
                                         actionListener="#{narrowerBean.reset()}" update="containerIndex:idDeleteNarrowerLink" 
                                         oncomplete="PF('deleteNarrowerLink').show();" icon="fas fa-minus"
-                                        disabled="#{conceptView.nodeConcept.nodeNT.size() == 0}"/>
+                                        disabled="#{conceptView.nodeFullConcept.narrowers.size() == 0}"/>
                         </p:menuButton>
 
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeNT.size() == 0}" >            
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.narrowers.size() == 0}" >            
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                         </h:panelGroup> 
 
-                        <h:panelGroup id="idConceptNarrower" rendered="#{conceptView.nodeConcept.nodeNT.size() != 0}" >
-                            <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() lt 21 }" var="value"
+                        <h:panelGroup id="idConceptNarrower" rendered="#{conceptView.nodeFullConcept.narrowers.size() != 0}" >
+                            <ui:repeat rendered="#{conceptView.nodeFullConcept.narrowers.size() lt 21 }" var="value"
                                        varStatus="status1" 
-                                       value="#{conceptView.nodeConcept.nodeNT}">
-                                <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
+                                       value="#{conceptView.nodeFullConcept.narrowers}">
+                                <p:commandLink rendered="#{value.label != ''}" value="#{value.label}"
                                                title="#{value.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
-                                <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})"
+                                <p:commandLink rendered="#{value.label == ''}" value="(#{value.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/> 
@@ -115,15 +115,15 @@
                             </ui:repeat>
 
                             <!-- plus de 20 NT -->
-                            <ui:repeat rendered="#{conceptView.nodeConcept.nodeNT.size() gt 20 }" var="value" varStatus="status2" 
-                                       value="#{conceptView.nodeConcept.nodeNT}" size="#{conceptView.nodeConcept.nodeNT.size()}">
-                                <p:commandLink rendered="#{value.title != ''}" value="#{value.title}"
+                            <ui:repeat rendered="#{conceptView.nodeFullConcept.narrowers.size() gt 20 }" var="value" varStatus="status2" 
+                                       value="#{conceptView.nodeFullConcept.narrowers}" size="#{conceptView.nodeFullConcept.narrowers.size()}">
+                                <p:commandLink rendered="#{value.label != ''}" value="#{value.label}"
                                                title="#{value.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          value.idConcept, conceptView.selectedLang)}" 
                                                update="containerIndex:formRightTab indexTitle"/>
 
-                                <p:commandLink rendered="#{value.title == ''}" value="(#{value.idConcept})" 
+                                <p:commandLink rendered="#{value.label == ''}" value="(#{value.idConcept})" 
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                style="color: #FF7979; font-size: 14px;"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
@@ -164,19 +164,19 @@
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_related_relation')}"
                                         title="#{langueBean.getMsg('rightbody.concept.tooltip_delete_related_relation')}"
                                         oncomplete="PF('deleteRelatedLink').show();" update="containerIndex:idDeleteRelatedLink"
-                                        icon="fas fa-minus" disabled="#{conceptView.nodeConcept.nodeRT.size() == 0}" />
+                                        icon="fas fa-minus" disabled="#{conceptView.nodeFullConcept.relateds.size() == 0}" />
                         </p:menuButton>
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeRT.size() == 0}" >            
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.relateds.size() == 0}" >            
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeRT.size() != 0}" >
-                            <ui:repeat var="rt" value="#{conceptView.nodeConcept.nodeRT}" varStatus="status">
-                                <p:commandLink rendered="#{rt.title != ''}" value="#{rt.title}"
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.relateds.size() != 0}" >
+                            <ui:repeat var="rt" value="#{conceptView.nodeFullConcept.relateds}" varStatus="status">
+                                <p:commandLink rendered="#{rt.label != ''}" value="#{rt.label}"
                                                title="#{rt.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
 
-                                <p:commandLink rendered="#{rt.title == ''}" value="(#{rt.idConcept})"
+                                <p:commandLink rendered="#{rt.label == ''}" value="(#{rt.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                                          rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/> 
@@ -190,12 +190,15 @@
         </div>
     </div>
 
+    
+    
+    
     <!-- Bloc de gestion de type de concepts et des relations personnalisées -->
     <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and
-                              (conceptView.nodeConcept.concept.conceptType == 'concept' or conceptView.nodeConcept.concept.conceptType == '') }" >
+                              (conceptView.nodeFullConcept.conceptType == 'concept' or conceptView.nodeFullConcept.conceptType == '') }" >
 
         <!-- Custom relation  -->
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeCustomRelations.size() != 0)}">    
+        <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeFullConcept.nodeCustomRelations.size() != 0)}">    
             <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                     <div class="list-group-item list-group-item-action">
@@ -216,17 +219,17 @@
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.deleteCustomRelation')}"
                                                 title="#{langueBean.getMsg('rightbody.concept.deleteCustomRelation')}"
                                                 oncomplete="PF('deleteCustomRelation').show();" update="containerIndex:idDeleteCustomRelation"
-                                                icon="fas fa-minus" disabled="#{conceptView.nodeConcept.nodeCustomRelations.size() == 0}" />
+                                                icon="fas fa-minus" disabled="#{conceptView.nodeFullConcept.nodeCustomRelations.size() == 0}" />
                                 </p:menuButton>
 
-                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeCustomRelations.size() == 0}" >            
+                                <h:panelGroup rendered="#{conceptView.nodeFullConcept.nodeCustomRelations.size() == 0}" >            
                                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                                 </h:panelGroup>                        
 
 
 
-                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeCustomRelations.size() != 0}" > 
-                                    <ui:repeat var="customRelation" value="#{conceptView.nodeConcept.nodeCustomRelations}" varStatus="status2">
+                                <h:panelGroup rendered="#{conceptView.nodeFullConcept.nodeCustomRelations.size() != 0}" > 
+                                    <ui:repeat var="customRelation" value="#{conceptView.nodeFullConcept.nodeCustomRelations}" varStatus="status2">
                                         <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                                             <p:spacer width="1" rendered="#{status2.first}" />
                                             <p:spacer width="39" rendered="#{!status2.first}" />
@@ -252,9 +255,13 @@
         </h:panelGroup>
 
     </h:panelGroup>
+    
+    
+    
+    
 
     <!-- Pour afficher les relations réciproques pour les relations personnalisées -->
-    <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeConcept.concept.conceptType != 'concept' and conceptView.nodeCustomRelationReciprocals != null}" >
+    <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeFullConcept.conceptType != 'concept' and conceptView.nodeCustomRelationReciprocals != null}" >
 
         <!-- Custom relation  -->
         <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeCustomRelationReciprocals.size() != 0)}">   
@@ -268,13 +275,13 @@
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                
                                 <h:panelGroup rendered="#{conceptView.nodeCustomRelationReciprocals.size() != 0}" > 
-                                    <ui:repeat var="customRelation" value="#{conceptView.nodeConcept.nodeCustomRelations}" varStatus="status2">
+                                    <ui:repeat var="customRelation" value="#{conceptView.nodeFullConcept.nodeCustomRelations}" varStatus="status2">
                                         <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                                             <p:spacer width="1" rendered="#{status2.first}" />
                                             <p:spacer width="39" rendered="#{!status2.first}" />
                                         </h:panelGroup>
                                         
-                                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #78261f; font-size: 14px;"/>
+                                        <h:outputText value="#{conceptView.nodeFullConcept.prefLabel.label}" style="color: #78261f; font-size: 14px;"/>
                                         <i class="fas fa-arrows-alt-h" style="color: #78261f; margin-right: 10px; margin-left: 10px"/>                                        
                                         <p:commandLink value="#{customRelation.targetLabel} " title="#{customRelation.targetConcept}"
                                                        action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, customRelation.targetConcept, conceptView.selectedLang)}"
@@ -326,33 +333,32 @@
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" actionListener="#{traductionBean.reset()}"
                                         action="#{traductionBean.setTraductionsForEdit()}"
                                         oncomplete="PF('renameTraduction').show();" update="containerIndex:idRenameTraduction"
-                                        icon="fas fa-edit" disabled="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}"/>
+                                        icon="fas fa-edit" disabled="#{conceptView.nodeFullConcept.prefLabelsTraduction.size() == 0}"/>
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" actionListener="#{traductionBean.reset()}"
                                         oncomplete="PF('deleteTraduction').show();" update="containerIndex:idDeleteTraduction"
-                                        icon="fas fa-minus" disabled="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}"/>
+                                        icon="fas fa-minus" disabled="#{conceptView.nodeFullConcept.prefLabelsTraduction.size() == 0}"/>
                         </p:menuButton>
 
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() == 0}" >            
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.prefLabelsTraduction.size() == 0}" >            
                             <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{conceptView.nodeConcept.nodeTermTraductions.size() != 0}" > 
-                            <ui:repeat var="trad" value="#{conceptView.nodeConcept.nodeTermTraductions}" varStatus="status2">
+                        <h:panelGroup rendered="#{conceptView.nodeFullConcept.prefLabelsTraduction.size() != 0}" > 
+                            <ui:repeat var="trad" value="#{conceptView.nodeFullConcept.prefLabelsTraduction}" varStatus="status2">
                                 <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                                     <p:spacer width="3" rendered="#{status2.first}" />
                                     <p:spacer width="41" rendered="#{!status2.first}" />
                                 </h:panelGroup>
 
-                                <img src="#{conceptView.getDrapeauImgLocal(trad.codePays)}" width="20" height="15" style="margin-right: 7px"/>
+                                <img src="#{conceptView.getDrapeauImgLocal(trad.codeFlag)}" width="20" height="15" style="margin-right: 7px"/>
 
-
-                                <p:commandLink value="#{trad.lexicalValue} " title="#{conceptView.nodeConcept.concept.idConcept}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeConcept.concept.idConcept, trad.lang)}"
+                                <p:commandLink value="#{trad.label} " title="#{conceptView.nodeFullConcept.identifier}"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeFullConcept.identifier, trad.idLang)}"
                                                update="containerIndex:contentConcept containerIndex:thesoSelect 
                                                containerIndex:sideBarSearch 
                                                containerIndex:searchBar indexTitle"/>
-                                <h:outputText value=" (#{trad.lang})" style="font-size: 14px; font-weight: 300; margin-left: 5px; "/>
+                                <h:outputText value=" (#{trad.idLang})" style="font-size: 14px; font-weight: 300; margin-left: 5px; "/>
                                 <br/>                                
                             </ui:repeat>
                         </h:panelGroup>

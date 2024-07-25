@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bdd.helper.dao;
 
+import fr.cnrs.opentheso.skosapi.SKOSProperty;
 import java.util.List;
 import lombok.Data;
 /**
@@ -24,6 +25,9 @@ public class NodeFullConcept {
 
     // (DEP=seprecated, CA=Candidate)
     private int resourceStatus;
+    
+    // type de concept :  Qualifier, Subject, Place, people ...
+    private String conceptType;
 
     // dates
     private String created;
@@ -68,6 +72,9 @@ public class NodeFullConcept {
 
     // coordonnées GPS
     private List<ResourceGPS> gps;
+    
+    // ExternalResources
+    private List<String> externalResources;
 
     // images
     private List<ConceptImage> images;
@@ -87,5 +94,20 @@ public class NodeFullConcept {
     // liste des Qualificatifs
     private List <ConceptCustomRelation> nodeCustomRelations;    
     
+    public boolean isDeprecated(){
+        return resourceStatus == SKOSProperty.DEPRECATED;
+    }
+    public boolean isCandidate(){
+        return resourceStatus == SKOSProperty.CANDIDATE;
+    }
     
+    // pour savoir si la ressource est un concept ou Collection ....
+    public boolean isConcept(){
+        return resourceStatus == SKOSProperty.CONCEPT;
+    }
+    
+    // pour savoir si le concept est de type Relation personnalisée (Qualifier ....)
+    public boolean isCustomRelation(){
+        return "concept".equalsIgnoreCase(conceptType);
+    }    
 }
