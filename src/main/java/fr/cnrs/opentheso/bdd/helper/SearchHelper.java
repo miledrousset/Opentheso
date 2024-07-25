@@ -6,22 +6,35 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
+import fr.cnrs.opentheso.bdd.helper.nodes.NodeElement;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePermute;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTab2Levels;
+import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+
+import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 
 public class SearchHelper {
 
@@ -58,8 +71,8 @@ public class SearchHelper {
      * @param withNotes
      * @return
      */
-    public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(HikariDataSource ds,
-            String value, String idLang, String[] idGroups, String idTheso, boolean withNotes) {
+    public ArrayList<NodeAutoCompletion> searchAutoCompletionWS(HikariDataSource ds, String value, String idLang,
+                                                                String[] idGroups, String idTheso, boolean withNotes) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -241,6 +254,147 @@ public class SearchHelper {
             Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return nodeAutoCompletions;
+    }
+
+
+    public List<NodeConceptSearch> searchConceptWSV2(String value, String idLang, String idGroup, String idTheso) {
+
+        var results = new ArrayList<NodeConceptSearch>();
+
+        try (var ds = connect()) {
+            try (var conn = ds.getConnection()){
+                try (var stmt = conn.createStatement()) {
+
+                    var groups = generateGroupCondition(ds, idTheso, idGroup);
+                    var resultSet = stmt.executeQuery(getSqlSearch(value, idTheso, idLang, groups));
+                    while (resultSet.next()) {
+                        var idConcept = resultSet.getString("id_concept");
+
+                        var synonymes = new ArrayList<NodeElement>();
+                        synonymes.addAll(Optional.ofNullable(new TermHelper().getNonPreferredTerms(ds, idConcept, idTheso, "fr"))
+                                .map(terms -> terms.stream().map(this::toElement).collect(Collectors.toList()))
+                                .orElse(Collections.emptyList()));
+                        synonymes.addAll(Optional.ofNullable(new TermHelper().getNonPreferredTerms(ds, idConcept, idTheso, "ar"))
+                                .map(terms -> terms.stream().map(this::toElement).collect(Collectors.toList()))
+                                .orElse(Collections.emptyList()));
+
+                        var notes = new ArrayList<NodeElement>();
+                        var noteFr = new NoteHelper().getNodeNote(ds, idConcept, idTheso, "fr", "note");
+                        if (ObjectUtils.isNotEmpty(noteFr)) notes.add(toElement(noteFr));
+                        var noteAr = new NoteHelper().getNodeNote(ds, idConcept, idTheso, "ar", "note");
+                        if (ObjectUtils.isNotEmpty(noteAr)) notes.add(toElement(noteAr));
+
+                        var definitions = new ArrayList<NodeElement>();
+                        var definitionFr = new NoteHelper().getNodeNote(ds, idConcept, idTheso, "fr", "definition");
+                        if (ObjectUtils.isNotEmpty(definitionFr)) definitions.add(toElement(definitionFr));
+                        var definitionAr = new NoteHelper().getNodeNote(ds, idConcept, idTheso, "ar", "definition");
+                        if (ObjectUtils.isNotEmpty(definitionAr)) definitions.add(toElement(definitionAr));
+
+                        var terms = new ArrayList<NodeElement>();
+                        terms.addAll(Optional.ofNullable(new TermHelper().getTraductionsOfConcept(ds, idConcept, idTheso, "fr"))
+                                .map(element -> element.stream().map(this::toElement).collect(Collectors.toList()))
+                                .orElse(Collections.emptyList()));
+                        terms.addAll(Optional.ofNullable(new TermHelper().getTraductionsOfConcept(ds, idConcept, idTheso, "ar"))
+                                .map(element -> element.stream().map(this::toElement).collect(Collectors.toList()))
+                                .orElse(Collections.emptyList()));
+
+
+                        var nodeConceptSearch = NodeConceptSearch.builder()
+                                .idConcept(idConcept)
+                                .idTerm(resultSet.getString("id_term"))
+                                .terms(terms)
+                                .status(getStatusLabel(resultSet.getString("status")))
+                                .collections(new GroupHelper().getListGroupOfConcept(ds, idTheso, idConcept, idLang).stream()
+                                        .map(this::toElement)
+                                        .collect(Collectors.toList()))
+                                .synonymes(synonymes)
+                                .notes(notes)
+                                .definitions(definitions)
+                                .build();
+
+                        results.add(nodeConceptSearch);
+                    }
+                }
+            }
+            return results;
+        } catch (Exception ex) {
+            return results;
+        }
+    }
+
+    private String generateGroupCondition(HikariDataSource ds, String idTheso, String idGroup) {
+        String groups = null;
+        if (!StringUtils.isEmpty(idGroup)) {
+            var groupList = new GroupHelper().getAllGroupDescending(ds, idGroup, idTheso);
+            if (CollectionUtils.isEmpty(groupList)) groupList = new ArrayList<>();
+            groups = String.join(",", groupList.stream()
+                    .map(element -> String.format("'%s'", element.toLowerCase()))
+                    .collect(Collectors.toList()));
+        }
+        return groups;
+    }
+
+    private NodeElement toElement(NodeTermTraduction nodeTermTraduction) {
+        return NodeElement.builder()
+                .lang(nodeTermTraduction.getLang())
+                .value(nodeTermTraduction.getLexicalValue())
+                .build();
+    }
+
+    private NodeElement toElement(NodeEM nodeEM) {
+        return NodeElement.builder()
+                .lang(nodeEM.getLang())
+                .value(nodeEM.getLexical_value())
+                .build();
+    }
+
+    private NodeElement toElement(NodeNote note) {
+        return NodeElement.builder()
+                .id(note.getId_note() + "")
+                .lang(note.getLang())
+                .value(note.getLexicalvalue())
+                .build();
+    }
+
+    private NodeElement toElement(NodeGroup nodeGroup) {
+        return NodeElement.builder()
+                .id(nodeGroup.getConceptGroup().getIdgroup())
+                .lang(nodeGroup.getIdLang())
+                .value(nodeGroup.getLexicalValue())
+                .build();
+    }
+
+    private String getStatusLabel(String status) {
+        return StringUtils.isEmpty(status) ? "CO" : status;
+    }
+
+    private String getSqlSearch(String valueToSearch, String idTheso, String idLang, String idGroups) {
+
+        var subQuerry = "";
+
+        var values = List.of(formatValue(valueToSearch).trim().split(" "));
+        for (String value1 : values) {
+            subQuerry += "AND f_unaccent(lower(term.lexical_value)) like '%" + value1 + "%' ";
+        }
+
+        return "SELECT DISTINCT term.lexical_value, term.lang, concept.id_concept, concept.status, term.id_term "
+                + "FROM concept, concept_group_concept, preferred_term, term "
+                + "WHERE concept.id_concept = concept_group_concept.idconcept "
+                + "AND concept.id_thesaurus = concept_group_concept.idthesaurus "
+                + "AND concept.id_concept = preferred_term.id_concept "
+                + "AND concept.id_thesaurus = preferred_term.id_thesaurus "
+                + "AND preferred_term.id_term = term.id_term "
+                + "AND preferred_term.id_thesaurus = term.id_thesaurus "
+                + "AND term.id_thesaurus = '" + idTheso + "' "
+                + subQuerry
+                + "AND term.lang = '" + idLang + "' "
+                + (StringUtils.isEmpty(idGroups) ? "" : "AND LOWER(concept_group_concept.idgroup) IN (" + idGroups + ") ")
+                + "ORDER BY term.lexical_value ASC limit 100";
+    }
+
+    private String formatValue(String valueToSearch) {
+        valueToSearch = new StringPlus().convertString(valueToSearch);
+        return new StringPlus().unaccentLowerString(valueToSearch);
     }
 
     /**

@@ -42,6 +42,8 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -1032,10 +1034,7 @@ public class RestRDFHelper {
      * @param lang
      * @return
      */
-    private String findAutocompleteConcepts__(
-            HikariDataSource ds,
-            String value, String idTheso,
-            String lang, String[] groups, boolean withNotes) {
+    public String findAutocompleteConcepts__(HikariDataSource ds, String value, String idTheso, String lang, String[] groups, boolean withNotes) {
 
         if (value == null || idTheso == null) {
             return null;
@@ -1814,7 +1813,7 @@ public class RestRDFHelper {
      * @param idConcept
      * @return
      */
-    private String getUri(HikariDataSource ds, NodePreference nodePreference, String idConcept, String idTheso) {
+    public String getUri(HikariDataSource ds, NodePreference nodePreference, String idConcept, String idTheso) {
         String uri;
 
         // Choix de l'URI pour l'export : 
