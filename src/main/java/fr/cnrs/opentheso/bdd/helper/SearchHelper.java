@@ -377,7 +377,7 @@ public class SearchHelper {
             subQuerry += "AND f_unaccent(lower(term.lexical_value)) like '%" + value1 + "%' ";
         }
 
-        return "SELECT term.lexical_value, term.lang, concept.id_concept, concept.status, term.id_term "
+        return "SELECT DISTINCT term.lexical_value, term.lang, concept.id_concept, concept.status, term.id_term "
                 + "FROM concept, concept_group_concept, preferred_term, term "
                 + "WHERE concept.id_concept = concept_group_concept.idconcept "
                 + "AND concept.id_thesaurus = concept_group_concept.idthesaurus "
@@ -387,7 +387,7 @@ public class SearchHelper {
                 + "AND preferred_term.id_thesaurus = term.id_thesaurus "
                 + "AND term.id_thesaurus = '" + idTheso + "' "
                 + subQuerry
-                + " AND term.lang = '" + idLang + "' "
+                + "AND term.lang = '" + idLang + "' "
                 + (StringUtils.isEmpty(idGroups) ? "" : "AND LOWER(concept_group_concept.idgroup) IN (" + idGroups + ") ")
                 + "ORDER BY term.lexical_value ASC limit 100";
     }
