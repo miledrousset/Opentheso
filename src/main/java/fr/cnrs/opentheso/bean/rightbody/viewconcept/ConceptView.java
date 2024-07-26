@@ -11,6 +11,7 @@ import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bdd.helper.dao.ConceptNote;
 import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
@@ -134,7 +135,9 @@ public class ConceptView implements Serializable {
     
     
     private ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals;
-
+    private ArrayList <NodeCustomRelation> nodeCustomRelations;
+    
+    
     private List<ResponsiveOption> responsiveOptions;
 
     private boolean toggleSwitchAltLabelLang;
@@ -270,11 +273,12 @@ public class ConceptView implements Serializable {
     public void getConcept(String idTheso, String idConcept, String idLang) {
         offset = 0;
         gpsModeSelected = GpsMode.POINT;
-        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
+        ConceptHelper conceptHelper = new ConceptHelper();
+/*        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) {
             return;
-        }
-        
+        }*/
+        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
         searchedForCorpus = false;
         
         
@@ -285,27 +289,18 @@ public class ConceptView implements Serializable {
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
-            nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
-                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
-            setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
+            nodeCustomRelations = new RelationsHelper().getAllNodeCustomRelation(
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang);
+            setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
         setOffset();
 
         // récupération des informations sur les corpus liés
         nodeCorpuses = null;
-    //    haveCorpus = true;
-
-
         createMap(idConcept, idTheso, Boolean.TRUE);
 
         selectedLang = idLang;
-        if (toggleSwitchAltLabelLang) {
-            getAltLabelWithAllLanguages();
-        }
-        if (toggleSwitchNotesLang) {
-            getNotesWithAllLanguages();
-        } 
         setNotes();
 
         indexSetting.setIsValueSelected(true);
@@ -314,8 +309,6 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         haveCorpus = false;
-    //    nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
-
         setRoles();
 
         setFacetsOfConcept(idConcept, idTheso, idLang);
@@ -397,33 +390,26 @@ public class ConceptView implements Serializable {
      * @param idLang
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
+        selectedLang = idLang;
         offset = 0;
         ConceptHelper conceptHelper = new ConceptHelper();
         
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
+    /*    nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) return;
-        
+      */  
         nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
 
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
-            nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
-                    connect.getPoolConnexion(), idConcept, idTheso, idLang, getIdLangOfInterface()));
-            setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
+            nodeCustomRelations = new RelationsHelper().getAllNodeCustomRelation(
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, getIdLangOfInterface());
+            setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
         if (roleOnThesoBean.getNodePreference().isBreadcrumb())
             pathOfConcept2(idTheso, idConcept, idLang);
 
-        if (toggleSwitchAltLabelLang) {
-            getAltLabelWithAllLanguages();
-        }
-        if (toggleSwitchNotesLang) {
-            getNotesWithAllLanguages();
-        }
         setNotes();
-
-
         setOffset();
 
         // récupération des informations sur les corpus liés
@@ -437,7 +423,7 @@ public class ConceptView implements Serializable {
 
         setFacetsOfConcept(idConcept, idTheso, idLang);
 
-        selectedLang = idLang;
+
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
@@ -447,19 +433,11 @@ public class ConceptView implements Serializable {
     /**
      * permet de récupérer toutes les notes dans toutes les langues
      */
-    public void getNotesWithAllLanguages() {
-        NoteHelper noteHelper = new NoteHelper();
+    public void setNotes() {
         if (toggleSwitchNotesLang) {
-            nodeConcept.setNodeNotes(noteHelper.getListNotesAllLang(
-                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
-            setNotesForAllLang();
-        }
-        nodeConcept.setNodeNotes(noteHelper.getListNotes(
-                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
-                nodeConcept.getConcept().getIdThesaurus(),
-                selectedLang));
-        setNotes();
-        
+            setNotesForAllLang();//getNotesWithAllLanguages();
+        } else 
+            setNotesCurrentLang();    
         
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
@@ -491,23 +469,6 @@ public class ConceptView implements Serializable {
     public boolean isHaveScopeNote(){
         return !(scopeNote == null && (scopeNoteAllLang == null || scopeNoteAllLang.isEmpty()));
     }      
-    
-
-    public void getAltLabelWithAllLanguages() {
-        TermHelper termHelper = new TermHelper();
-
-        if (toggleSwitchAltLabelLang)
-            nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
-                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
-        else
-            nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(connect.getPoolConnexion(),
-                    nodeConcept.getConcept().getIdConcept(),
-                    nodeConcept.getConcept().getIdThesaurus(),
-                    selectedLang));
-        PrimeFaces.current().ajax().update("messageIndex");
-        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
-    }
-
 
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang) {
         FacetHelper facetHelper = new FacetHelper();
@@ -525,12 +486,14 @@ public class ConceptView implements Serializable {
     }
 
     public void setOffset() {
-        if (nodeConcept.getNodeNT().size() < step) {
-            offset = 0;
-            haveNext = false;
-        } else {
-            offset = offset + step + 1;
-            haveNext = true;
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getNarrowers())){
+            if (nodeFullConcept.getNarrowers().size() < step) {
+                offset = 0;
+                haveNext = false;
+            } else {
+                offset = offset + step + 1;
+                haveNext = true;
+            }
         }
 
     }
@@ -647,86 +610,205 @@ public class ConceptView implements Serializable {
     // fonctions pour les notes /////    
     /////////////////////////////////
     /////////////////////////////////
-    private void setNotes() {
+    private void setNotesCurrentLang() {
         clearNotes();
         
-        if(CollectionUtils.isNotEmpty(nodeFullConcept.getNotes())){
-            
-        }  
-        if(CollectionUtils.isNotEmpty(nodeFullConcept.getScopeNotes())){
-            
-        }  
-        if(CollectionUtils.isNotEmpty(nodeFullConcept.getChangeNotes())){
-            
-        }       
-        if(CollectionUtils.isNotEmpty(nodeFullConcept.getDefinitions())){
-            
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getNotes())) {
+            nodeFullConcept.getNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (note == null) {
+                        note = new NodeNote();
+                    }
+                    note.setId_note(note1.getIdNote());
+                    note.setLexicalvalue(note1.getLabel());
+                    note.setLang(note1.getIdLang());
+                    note.setNoteSource(note1.getNoteSource());
+                });
+        } 
+        
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getScopeNotes())) {
+            nodeFullConcept.getScopeNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (scopeNote == null) {
+                        scopeNote = new NodeNote();
+                    }
+                    scopeNote.setId_note(note1.getIdNote());
+                    scopeNote.setLexicalvalue(note1.getLabel());
+                    scopeNote.setLang(note1.getIdLang());
+                    scopeNote.setNoteSource(note1.getNoteSource());
+                });
         }        
-        if(CollectionUtils.isNotEmpty(nodeFullConcept.getEditorialNotes())){
-            
-        }
-        if(CollectionUtils.isNotEmpty(nodeFullConcept.getExamples())){
-            
-        }     
+        
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getChangeNotes())) {
+            nodeFullConcept.getChangeNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (changeNote == null) {
+                        changeNote = new NodeNote();
+                    }
+                    changeNote.setId_note(note1.getIdNote());
+                    changeNote.setLexicalvalue(note1.getLabel());
+                    changeNote.setLang(note1.getIdLang());
+                    changeNote.setNoteSource(note1.getNoteSource());
+                });
+        }         
+  
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getDefinitions())) {
+            nodeFullConcept.getDefinitions().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (definition == null) {
+                        definition = new NodeNote();
+                    }
+                    definition.setId_note(note1.getIdNote());
+                    definition.setLexicalvalue(note1.getLabel());
+                    definition.setLang(note1.getIdLang());
+                    definition.setNoteSource(note1.getNoteSource());
+                });
+        }          
+
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getEditorialNotes())) {
+            nodeFullConcept.getEditorialNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (editorialNote == null) {
+                        editorialNote = new NodeNote();
+                    }
+                    editorialNote.setId_note(note1.getIdNote());
+                    editorialNote.setLexicalvalue(note1.getLabel());
+                    editorialNote.setLang(note1.getIdLang());
+                    editorialNote.setNoteSource(note1.getNoteSource());
+                });
+        }        
+   
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getExamples())) {
+            nodeFullConcept.getExamples().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (example == null) {
+                        example = new NodeNote();
+                    }
+                    example.setId_note(note1.getIdNote());
+                    example.setLexicalvalue(note1.getLabel());
+                    example.setLang(note1.getIdLang());
+                    example.setNoteSource(note1.getNoteSource());
+                });
+        }         
+        
         if(CollectionUtils.isNotEmpty(nodeFullConcept.getHistoryNotes())){
             
-        }        
-        nodeFullConcept.getDefinitions();
-        
-        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
-            switch (nodeNote.getNotetypecode()) {
-                case "note":
-                    note = nodeNote;
-                    break;
-                case "scopeNote":
-                    scopeNote = nodeNote;
-                    break;
-                case "changeNote":
-                    changeNote = nodeNote;
-                    break;
-                case "definition":
-                    definition = nodeNote;
-                    break;
-                case "editorialNote":
-                    editorialNote = nodeNote;
-                    break;
-                case "example":
-                    example = nodeNote;
-                    break;
-                case "historyNote":
-                    historyNote = nodeNote;
-                    break;
-            }
-        }
+        }   
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getHistoryNotes())) {
+            nodeFullConcept.getHistoryNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (historyNote == null) {
+                        historyNote = new NodeNote();
+                    }
+                    historyNote.setId_note(note1.getIdNote());
+                    historyNote.setLexicalvalue(note1.getLabel());
+                    historyNote.setLang(note1.getIdLang());
+                    historyNote.setNoteSource(note1.getNoteSource());
+                });
+        }         
     }
     
     private void setNotesForAllLang() {
         clearNotesAllLang();
-        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
-            switch (nodeNote.getNotetypecode()) {
-                case "note":
-                    noteAllLang.add(nodeNote);
-                    break;
-                case "scopeNote":
-                    scopeNoteAllLang.add(nodeNote);
-                    break;
-                case "changeNote":
-                    changeNoteAllLang.add(nodeNote);
-                    break;
-                case "definition":
-                    definitionAllLang.add(nodeNote);
-                    break;
-                case "editorialNote":
-                    editorialNoteAllLang.add(nodeNote);
-                    break;
-                case "example":
-                    exampleAllLang.add(nodeNote);
-                    break;
-                case "historyNote":
-                    historyNoteAllLang.add(nodeNote);
-                    break;
-            }
-        }
+
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getNotes())) {
+            nodeFullConcept.getNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(noteAllLang::add);
+        }        
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getScopeNotes())) {
+            nodeFullConcept.getScopeNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(scopeNoteAllLang::add);
+        }     
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getChangeNotes())) {
+            nodeFullConcept.getChangeNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(changeNoteAllLang::add);
+        }     
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getDefinitions())) {
+            nodeFullConcept.getDefinitions().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(definitionAllLang::add);
+        }         
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getEditorialNotes())) {
+            nodeFullConcept.getEditorialNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(editorialNoteAllLang::add);
+        }     
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getExamples())) {
+            nodeFullConcept.getExamples().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(exampleAllLang::add);
+        }   
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getHistoryNotes())) {
+            nodeFullConcept.getHistoryNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(historyNoteAllLang::add);
+        }        
     }    
 
     public String getNoteValue(NodeNote nodeNote){

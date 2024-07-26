@@ -198,7 +198,7 @@
                               (conceptView.nodeFullConcept.conceptType == 'concept' or conceptView.nodeFullConcept.conceptType == '') }" >
 
         <!-- Custom relation  -->
-        <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeFullConcept.nodeCustomRelations.size() != 0)}">    
+        <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeCustomRelations.size() != 0)}">    
             <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                     <div class="list-group-item list-group-item-action">
@@ -222,14 +222,14 @@
                                                 icon="fas fa-minus" disabled="#{conceptView.nodeFullConcept.nodeCustomRelations.size() == 0}" />
                                 </p:menuButton>
 
-                                <h:panelGroup rendered="#{conceptView.nodeFullConcept.nodeCustomRelations.size() == 0}" >            
+                                <h:panelGroup rendered="#{conceptView.nodeCustomRelations.size() == 0}" >            
                                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" />              
                                 </h:panelGroup>                        
 
 
 
-                                <h:panelGroup rendered="#{conceptView.nodeFullConcept.nodeCustomRelations.size() != 0}" > 
-                                    <ui:repeat var="customRelation" value="#{conceptView.nodeFullConcept.nodeCustomRelations}" varStatus="status2">
+                                <h:panelGroup rendered="#{conceptView.nodeCustomRelations.size() != 0}" > 
+                                    <ui:repeat var="customRelation" value="#{conceptView.nodeCustomRelations}" varStatus="status2">
                                         <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                                             <p:spacer width="1" rendered="#{status2.first}" />
                                             <p:spacer width="39" rendered="#{!status2.first}" />
@@ -258,8 +258,6 @@
     
     
     
-    
-
     <!-- Pour afficher les relations réciproques pour les relations personnalisées -->
     <h:panelGroup rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeFullConcept.conceptType != 'concept' and conceptView.nodeCustomRelationReciprocals != null}" >
 
@@ -275,7 +273,7 @@
                             </div>
                             <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                
                                 <h:panelGroup rendered="#{conceptView.nodeCustomRelationReciprocals.size() != 0}" > 
-                                    <ui:repeat var="customRelation" value="#{conceptView.nodeFullConcept.nodeCustomRelations}" varStatus="status2">
+                                    <ui:repeat var="customRelation" value="#{conceptView.nodeCustomRelations}" varStatus="status2">
                                         <h:panelGroup rendered="#{currentUser.hasRoleAsManager}">
                                             <p:spacer width="1" rendered="#{status2.first}" />
                                             <p:spacer width="39" rendered="#{!status2.first}" />

@@ -611,7 +611,7 @@ public class DaoResourceHelper {
                     ResourceGPS resourceGPS = new ResourceGPS();
                     resourceGPS.setLatitude(Double.valueOf(element[0]));
                     resourceGPS.setLongitude(Double.valueOf(element[1]));
-                    resourceGPS.setPosition(Integer.parseInt(element[3]));
+                    resourceGPS.setPosition(Integer.parseInt(element[2]));
                     resourceGPSs.add(resourceGPS);
                 } catch (Exception e) {
                 }
@@ -678,6 +678,8 @@ public class DaoResourceHelper {
                     conceptNote.setIdNote(Integer.parseInt(element[0]));
                     conceptNote.setLabel(stringPlus.normalizeStringForXml(element[1]));
                     conceptNote.setIdLang(element[2]);
+                    if(element.length > 3)
+                        conceptNote.setNoteSource(element[3]);
                     conceptNotes.add(conceptNote);
                 } catch (Exception e) {
                 }
@@ -771,7 +773,8 @@ public class DaoResourceHelper {
                     conceptLabel.setLabel(element[1]);
                     conceptLabel.setIdLang(element[2]);
                     conceptLabel.setId(Integer.parseInt(element[3]));
-                    conceptLabel.setCodeFlag(element[4]);
+                    if(element.length > 4 )
+                        conceptLabel.setCodeFlag(element[4]);
                     conceptLabels.add(conceptLabel);
                 } catch (Exception e) {
                 }

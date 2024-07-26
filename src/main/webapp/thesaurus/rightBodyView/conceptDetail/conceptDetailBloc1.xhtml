@@ -40,8 +40,8 @@
                         <p:tag rendered="#{!conceptView.nodeFullConcept.customRelation and !conceptView.nodeFullConcept.deprecated}" styleClass="mr-2" 
                                severity="warning" style="font-style: italic;margin-left: 5px;font-weight: 300;" rounded="true"
                                value=" #{conceptView.getLabelOfConceptType(
-                                                conceptView.nodeConcept.concept.conceptType,
-                                                conceptView.nodeConcept.concept.idThesaurus)} ">
+                                         conceptView.nodeFullConcept.conceptType,
+                                                selectedTheso.currentIdTheso)} ">
                         </p:tag>
                         
                         <p:tooltip for="textPrefLabel" value="#{conceptView.nodeFullConcept.identifier}" showDelay="1000" />
@@ -222,7 +222,7 @@
 
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right ">
                         <p:inputSwitch id="commandOtherLangAltLabel" value="#{conceptView.toggleSwitchAltLabelLang}" style="margin-top: 7px">
-                            <p:ajax listener="#{conceptView.getAltLabelWithAllLanguages()}" update="containerIndex:formRightTab messageIndex"/>
+                            <p:ajax  update="containerIndex:formRightTab messageIndex"/>
                         </p:inputSwitch>
                         <p:tooltip for="commandOtherLangAltLabel" value="#{langueBean.getMsg('concept.showEMOtherLang')}" showDelay="1000" />
                     </div>                    

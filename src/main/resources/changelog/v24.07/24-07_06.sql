@@ -152,19 +152,19 @@ BEGIN
 		FOR note_concept_rec IN SELECT * FROM opentheso_get_notes(idtheso, idconcept)
 		LOOP
 			IF (note_concept_rec.note_notetypecode = 'note') THEN
-				note = note || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+				note = note || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || sous_seperateur || note_concept_rec.note_source || seperateur;
 			ELSIF (note_concept_rec.note_notetypecode = 'scopeNote') THEN
-				secopeNote = secopeNote || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+				secopeNote = secopeNote || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || sous_seperateur || note_concept_rec.note_source || seperateur;
 			ELSIF (note_concept_rec.note_notetypecode = 'historyNote') THEN
-				historyNote = historyNote || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+				historyNote = historyNote || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || sous_seperateur || note_concept_rec.note_source || seperateur;
 			ELSIF (note_concept_rec.note_notetypecode = 'definition') THEN
-				definition = definition || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+				definition = definition || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || sous_seperateur || note_concept_rec.note_source || seperateur;
 			ELSIF (note_concept_rec.note_notetypecode = 'example') THEN
-				example = example || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+				example = example || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || sous_seperateur || note_concept_rec.note_source || seperateur;
 			ELSIF (note_concept_rec.note_notetypecode = 'changeNote') THEN
-				changeNote = changeNote || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+				changeNote = changeNote || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || sous_seperateur || note_concept_rec.note_source || seperateur;
 			ELSIF (note_concept_rec.note_notetypecode = 'editorialNote') THEN
-				editorialNote = editorialNote || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || seperateur;
+				editorialNote = editorialNote || note_concept_rec.note_id || sous_seperateur || note_concept_rec.note_lexicalvalue || sous_seperateur || note_concept_rec.note_lang || sous_seperateur || note_concept_rec.note_source || seperateur;
 			END IF;
 		END LOOP;
 
@@ -393,5 +393,29 @@ BEGIN
 	ELSE
 		return path || '?idc=' || id_concept || '&idt=' || id_theso;
 	end if;
+end;
+$BODY$;
+
+-- mise à jour de la focntion pour les notes
+DROP FUNCTION IF EXISTS public.opentheso_get_notes(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_notes(
+	id_theso character varying,
+	id_con character varying)
+    RETURNS TABLE(note_id integer, note_notetypecode text, note_lexicalvalue character varying, note_created timestamp without time zone,
+	note_modified timestamp without time zone, note_lang character varying, note_source character varying) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+begin
+	return query
+		SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang, note.notesource
+		FROM note
+		WHERE 
+		note.id_thesaurus = id_theso
+		AND note.identifier = id_con;
 end;
 $BODY$;
