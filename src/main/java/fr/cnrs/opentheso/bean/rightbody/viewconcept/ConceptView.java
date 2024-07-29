@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.ConceptNote;
 import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
+import fr.cnrs.opentheso.bdd.helper.dao.ResourceGPS;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
@@ -348,21 +349,36 @@ public class ConceptView implements Serializable {
     }
 
     public void createMap(String idConcept, String idTheso, Boolean isFirstTime) {
-        nodeConcept.setNodeGps(gpsRepository.getGpsByConceptAndThesorus(idConcept, idTheso));
-        if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
-            gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
-            gpsList = formatCoordonnees(nodeConcept.getNodeGps());
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getGps())) {
+            List<Gps> gpses = getGpsFromResource(nodeFullConcept.getGps());
+             
+            gpsModeSelected = getGpsMode(gpses);
+            gpsList = formatCoordonnees(gpses);
             if (mapModel == null) {
-                mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsModeSelected,
-                        ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
+                mapModel = new MapUtils().createMap(gpses, gpsModeSelected,
+                        ObjectUtils.isEmpty(nodeFullConcept.getPrefLabel()) ? null : nodeFullConcept.getPrefLabel().getLabel());
             } else {
                 mapModel = new MapUtils().updateMap(nodeConcept.getNodeGps(), mapModel, gpsModeSelected,
-                        ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
+                        ObjectUtils.isEmpty(nodeFullConcept.getPrefLabel()) ? null : nodeFullConcept.getPrefLabel().getLabel());
             }
         } else {
             gpsList = "";
-        }
+        }        
     }
+    private List<Gps> getGpsFromResource(List<ResourceGPS> resourceGps){
+        List<Gps> gpses = new ArrayList<>();
+        for (ResourceGPS resourceGp : resourceGps) {
+            Gps gps = new Gps();
+            gps.setIdConcept(nodeFullConcept.getIdentifier());
+            gps.setIdTheso(selectedTheso.getCurrentIdTheso());
+            gps.setLatitude(resourceGp.getLatitude());
+            gps.setLongitude(resourceGp.getLongitude());
+            gps.setPosition(resourceGp.getPosition());
+            gpses.add(gps);
+        }
+        return gpses;
+    }    
+    
 
     public boolean isGpsDisable() {
         return currentUser.getNodeUser() == null || (currentUser.getNodeUser() != null &&
