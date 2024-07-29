@@ -988,6 +988,9 @@ public class CsvReadHelper {
                 if("skos:Concept".equalsIgnoreCase(conceptObject.getType())){                
                     conceptObject = getMembers(conceptObject, record);
                 }
+                if("skos:collection".equalsIgnoreCase(conceptObject.getType())){                
+                    conceptObject = getMembers(conceptObject, record);
+                }                
                 
                 // récupération des sous groupes
                 if("skos:Collection".equalsIgnoreCase(conceptObject.getType())){

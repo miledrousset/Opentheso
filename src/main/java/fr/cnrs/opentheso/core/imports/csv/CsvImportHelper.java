@@ -376,9 +376,16 @@ public class CsvImportHelper {
         }
 
         // création d'une sous collection en cas d'appertenance à une collection supérieure
-        if (!conceptObject.getMembers().isEmpty()) {
+   /*     if (!conceptObject.getSubGroups().isEmpty()) {
             for (String idFatherGroup : conceptObject.getMembers()) {
                 groupHelper.addSubGroup(ds, idFatherGroup, idGroup, idTheso);
+            }
+        }        */
+        
+        // ajout des concepts à la collection
+        if (!conceptObject.getMembers().isEmpty()) {
+            for (String conceptId : conceptObject.getMembers()) {
+                groupHelper.addConceptGroupConcept(ds, idGroup, conceptId, idTheso);
             }
         }
         
