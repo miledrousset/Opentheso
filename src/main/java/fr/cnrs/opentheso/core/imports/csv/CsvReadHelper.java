@@ -1197,16 +1197,32 @@ public class CsvReadHelper {
     private ConceptObject getMembersOfFacet(ConceptObject conceptObject, CSVRecord record) {
         String value;
         String values[];
-        try {
-            value = record.get("skos:member");
-            values = value.split("##");
-            for (String value1 : values) {
-                if (!value1.isEmpty()) {
-                    conceptObject.members.add(getId(value1.trim()));
+        
+        if (record.isMapped("memberid")) {
+            try {
+                value = record.get("memberid");
+           //     value = value.toLowerCase();
+                values = value.split("##");
+                for (String value1 : values) {
+                    if (!value1.isEmpty()) {
+                        conceptObject.members.add(value1.trim());
+                    }
                 }
+            } catch (Exception e) {
+                //System.err.println("");
             }
-        } catch (Exception e) {
-            //System.err.println("");
+        } else {        
+            try {
+                value = record.get("skos:member");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if (!value1.isEmpty()) {
+                        conceptObject.members.add(getId(value1.trim()));
+                    }
+                }
+            } catch (Exception e) {
+                //System.err.println("");
+            }
         }
 
         return conceptObject;
@@ -1407,18 +1423,31 @@ public class CsvReadHelper {
 
         String value;
         String values[];
-
         // skos:member
-        try {
-            value = record.get("skos:member");
-            values = value.split("##");
-            for (String value1 : values) {
-                if (!value1.isEmpty()) {
-                    conceptObject.members.add(getId(value1.trim()));
+        if (record.isMapped("memberid")) {        
+            try {
+                value = record.get("memberid");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if (!value1.isEmpty()) {
+                        conceptObject.members.add(value1.trim());
+                    }
                 }
+            } catch (Exception e) {
+                //System.err.println("");
+            }            
+        } else {
+            try {
+                value = record.get("skos:member");
+                values = value.split("##");
+                for (String value1 : values) {
+                    if (!value1.isEmpty()) {
+                        conceptObject.members.add(getId(value1.trim()));
+                    }
+                }
+            } catch (Exception e) {
+                //System.err.println("");
             }
-        } catch (Exception e) {
-            //System.err.println("");
         }
 
         return conceptObject;

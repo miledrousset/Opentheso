@@ -140,6 +140,7 @@ public class CsvWriteHelper {
                 header.add("geo:long");
                 header.add("geo:gps");
                 header.add("skos:member");
+                header.add("memberId");                
                 
                 // pour gérer les sous_collections
                 header.add("iso-thes:subGroup"); 
@@ -326,6 +327,7 @@ public class CsvWriteHelper {
         //skos:member (pour les concepts pour ajouter l'info de l'appartenance du concept à une collection)
         //skos:member (pour les Facettes et collections pour ajouter qui sont les membres)        
         record.add(getMemberValue(skosResource.getRelationsList()));
+        record.add(getMemberId(skosResource.getRelationsList()));        
           
         // iso-thes:subGroup pour référencer l'URI des sous groupes 
         record.add(getSubGroup(skosResource.getRelationsList()));        
@@ -468,15 +470,15 @@ public class CsvWriteHelper {
                 .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.MEMBER_OF) || (sKOSRelation.getProperty() == SKOSProperty.MEMBER))
                 .map(sKOSRelation -> sKOSRelation.getTargetUri())
                 .collect(Collectors.joining(delim_multi_datas));
-    }    
+    }   
     
-/*    private String getMemberOfValue(ArrayList<SKOSRelation> sKOSRelations) {
-
+    private String getMemberId(ArrayList<SKOSRelation> sKOSRelations) {
         return sKOSRelations.stream()
-                .filter(sKOSRelation -> sKOSRelation.getProperty() == SKOSProperty.memberOf)
-                .map(sKOSRelation -> sKOSRelation.getTargetUri())
+                .filter(sKOSRelation -> (sKOSRelation.getProperty() == SKOSProperty.MEMBER_OF) || (sKOSRelation.getProperty() == SKOSProperty.MEMBER))
+                .map(sKOSRelation -> sKOSRelation.getLocalIdentifier())
                 .collect(Collectors.joining(delim_multi_datas));
-    }*/
+    }      
+    
 
     private String getRelationGivenValue(List<SKOSRelation> relations, int propertie) {
         return relations.stream()
