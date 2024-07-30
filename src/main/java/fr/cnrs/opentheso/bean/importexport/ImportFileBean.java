@@ -30,6 +30,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
@@ -2993,9 +2994,9 @@ public class ImportFileBean implements Serializable {
      * permet d'ajouter une liste de concepts en CSV sous le concept sélectionné
      * la liste peut être hiérarchisée si la relation BT est renseignée
      *
-     * @param nodeConcept
+     * @param nodeFullConcept
      */
-    public void addListCsvToConcept(NodeConcept nodeConcept) {
+    public void addListCsvToConcept(NodeFullConcept nodeFullConcept) {
         if (conceptObjects == null || conceptObjects.isEmpty()) {
             warning = "pas de valeurs";
             return;
@@ -3018,7 +3019,7 @@ public class ImportFileBean implements Serializable {
         CsvImportHelper csvImportHelper = new CsvImportHelper(nodePreference);
 
         // ajout des concepts
-        String idPere = nodeConcept.getConcept().getIdConcept();
+        String idPere = nodeFullConcept.getIdentifier();
 
         try {
             for (CsvReadHelper.ConceptObject conceptObject : conceptObjects) {
@@ -3026,13 +3027,13 @@ public class ImportFileBean implements Serializable {
                 // si le BT est renseigné, alors on intègre le concept sous ce BT,
                 // sinon, c'est le père du dossier en cours qui est pris en compte
                 if (conceptObject.getBroaders().isEmpty()) {
-                    csvImportHelper.addSingleConcept(connect.getPoolConnexion(), nodeConcept.getConcept().getIdThesaurus(),
-                            idPere, nodeConcept.getConcept().getIdGroup(), currentUser.getNodeUser().getIdUser(),
+                    csvImportHelper.addSingleConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+                            idPere, null/*nodeFullConcept.getMembres()*/, currentUser.getNodeUser().getIdUser(),
                             conceptObject);
                 } else {
                     for (String idBT : conceptObject.getBroaders()) {
-                        csvImportHelper.addSingleConcept(connect.getPoolConnexion(), nodeConcept.getConcept().getIdThesaurus(),
-                                idBT, nodeConcept.getConcept().getIdGroup(), currentUser.getNodeUser().getIdUser(),
+                        csvImportHelper.addSingleConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+                                idBT, null/*nodeFullConcept.getMembres()*/, currentUser.getNodeUser().getIdUser(),
                                 conceptObject);
                     }
                 }
@@ -3050,13 +3051,13 @@ public class ImportFileBean implements Serializable {
             PrimeFaces pf = PrimeFaces.current();
             //if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
             if (tree.getSelectedNode() != null) {
-                tree.initAndExpandTreeToPath(conceptView.getNodeConcept().getConcept().getIdConcept(),
-                        nodeConcept.getConcept().getIdThesaurus(),
+                tree.initAndExpandTreeToPath(conceptView.getNodeFullConcept().getIdentifier(),
+                        selectedTheso.getCurrentIdTheso(),
                         conceptView.getSelectedLang());
             }
             conceptView.getConcept(
-                    nodeConcept.getConcept().getIdThesaurus(),
-                    nodeConcept.getConcept().getIdConcept(),
+                    selectedTheso.getCurrentIdTheso(),
+                    nodeFullConcept.getIdentifier(),
                     conceptView.getSelectedLang());
 
             if (pf.isAjaxRequest()) {

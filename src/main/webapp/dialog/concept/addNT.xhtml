@@ -18,7 +18,7 @@
                     </p:commandLink>   
                 </div>
                 <div class="col-7">
-                    <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="font-weight: bold" /> 
+                    <h:outputText value="#{conceptView.nodeFullConcept.prefLabel.label}" style="font-weight: bold" /> 
                 </div>
             </div>
 
@@ -87,7 +87,7 @@
                                  value="#{langueBean.getMsg('btnAdd')}"
                                  update="messageIndex containerIndex" oncomplete="PF('addNT').show();"
                                  ajax="true" process="@form"
-                                 action="#{addConcept.addNewConcept(conceptView.nodeConcept.concept.idConcept,
+                                 action="#{addConcept.addNewConcept(conceptView.nodeFullConcept.identifier,
                                            selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>                    
                 
                 <!-- concept duppliqué, forcer la création ou annuler -->
@@ -101,7 +101,7 @@
                 <p:commandButton rendered="#{addConcept.duplicate}" value="#{langueBean.getMsg('rightbody.conceptdialog.force')}"
                                  update="messageIndex containerIndex:idAddNT" oncomplete="PF('addNT').show();"
                                  ajax="true" process="@form" icon="pi pi-check" styleClass="ui-button-success"
-                                 action="#{addConcept.addNewConceptForced(conceptView.nodeConcept.concept.idConcept,
+                                 action="#{addConcept.addNewConceptForced(conceptView.nodeFullConcept.identifier,
                                            selectedTheso.currentLang, 'D', selectedTheso.currentIdTheso, currentUser.nodeUser.idUser)}"/>   
             </div>
 

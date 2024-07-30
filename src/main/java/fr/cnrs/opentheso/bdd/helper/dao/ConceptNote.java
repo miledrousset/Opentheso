@@ -13,4 +13,5 @@ public class ConceptNote {
     private int idNote;
     private String idLang;
     private String label;    
+    private String noteSource;
 }

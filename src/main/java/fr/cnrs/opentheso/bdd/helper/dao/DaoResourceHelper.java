@@ -412,13 +412,13 @@ public class DaoResourceHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "')"
-                        + " as x(URI text, conceptType varchar, localUri text, identifier varchar, permalinkId varchar,"
+                        + " as x(URI text, resourceType varchar, localUri text, identifier varchar, permalinkId varchar,"
                         + "prefLabel varchar, altLabel varchar, hidenlabel varchar,"
                         + "prefLabel_trad varchar, altLabel_trad varchar, hiddenLabel_trad varchar, definition text, example text, editorialNote text, changeNote text,"
                         + "scopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
                         + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, gpsData text,"
                         + " membre text, created timestamp with time zone, modified timestamp with time zone, images text, creator text, contributor text,"
-                        + "replaces text, replaced_by text, facets text, externalResources text);"
+                        + "replaces text, replaced_by text, facets text, externalResources text, conceptType text);"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
@@ -426,15 +426,18 @@ public class DaoResourceHelper {
 
                         nodeFullConcept.setUri(resultSet.getString("URI"));
 
-                        // type de concept 
+                        // type de resource (ConceptScheme, Concept, Collection, ThesaurusArray, FoafImage)
                         nodeFullConcept.setResourceType(SKOSProperty.CONCEPT);
 
+                        // type de concept :  Qualifier, Subject, Place, people ...
+                        nodeFullConcept.setConceptType(resultSet.getString("conceptType"));
+                        
                         // Status du concept 
                         nodeFullConcept.setResourceStatus(SKOSProperty.CONCEPT);
-                        if ("DEP".equalsIgnoreCase(resultSet.getString("conceptType"))) {
+                        if ("DEP".equalsIgnoreCase(resultSet.getString("resourceType"))) {
                             nodeFullConcept.setResourceStatus(SKOSProperty.DEPRECATED);
                         }
-                        if ("CA".equalsIgnoreCase(resultSet.getString("conceptType"))) {
+                        if ("CA".equalsIgnoreCase(resultSet.getString("resourceType"))) {
                             nodeFullConcept.setResourceStatus(SKOSProperty.CANDIDATE);
                         }
 
@@ -455,9 +458,9 @@ public class DaoResourceHelper {
                         // selected prefLabel (langue en cours)
                         nodeFullConcept.setPrefLabel((getLabel(resultSet.getString("prefLabel"), idLang)));
                         // selected altLabel
-                        nodeFullConcept.setAltLabels(getLabels(resultSet.getString("altLabel")));
+                        nodeFullConcept.setAltLabels(getLabels(resultSet.getString("altLabel"), idLang));
                         // selected hiddenLabel
-                        nodeFullConcept.setHiddenLabels(getLabels(resultSet.getString("hidenlabel")));
+                        nodeFullConcept.setHiddenLabels(getLabels(resultSet.getString("hidenlabel"), idLang));
 
                         // labels traductions
                         nodeFullConcept.setPrefLabelsTraduction(getLabelsTraduction(resultSet.getString("prefLabel_trad")));
@@ -485,6 +488,9 @@ public class DaoResourceHelper {
                         nodeFullConcept.setRelatedMatchs(getAlignments(resultSet.getString("relatedMatch")));
                         nodeFullConcept.setNarrowMatchs(getAlignments(resultSet.getString("narrowMatch")));
 
+                        // externalResources
+                        nodeFullConcept.setExternalResources(getExternalResources(resultSet.getString("externalResources")));
+                        
                         // GPS
                         nodeFullConcept.setGps(getGps(resultSet.getString("gpsData")));
 
@@ -510,6 +516,23 @@ public class DaoResourceHelper {
         }
         return nodeFullConcept;
     }
+    
+    private List<String> getExternalResources(String textBrut) {
+        List<String> resources = new ArrayList<>();
+        if (StringUtils.isNotEmpty(textBrut)) {
+            String[] tabs = textBrut.split(SEPARATEUR);
+            for (String tab : tabs) {
+                try {
+                    resources.add(tab);
+                } catch (Exception e) {
+                }
+            }
+        }
+        if (CollectionUtils.isNotEmpty(resources)) {
+            return resources;
+        }
+        return null;
+    }    
 
     private List<String> getContributors(String textBrut) {
         List<String> contributors = new ArrayList<>();
@@ -543,6 +566,7 @@ public class DaoResourceHelper {
                     }
                     conceptImage.setCopyRight(element[1]);
                     conceptImage.setUri(element[2]);
+                    conceptImage.setCreator(element[3]);
                     conceptImages.add(conceptImage);
                 } catch (Exception e) {
                 }
@@ -587,7 +611,7 @@ public class DaoResourceHelper {
                     ResourceGPS resourceGPS = new ResourceGPS();
                     resourceGPS.setLatitude(Double.valueOf(element[0]));
                     resourceGPS.setLongitude(Double.valueOf(element[1]));
-                    resourceGPS.setPosition(Integer.parseInt(element[3]));
+                    resourceGPS.setPosition(Integer.parseInt(element[2]));
                     resourceGPSs.add(resourceGPS);
                 } catch (Exception e) {
                 }
@@ -654,6 +678,8 @@ public class DaoResourceHelper {
                     conceptNote.setIdNote(Integer.parseInt(element[0]));
                     conceptNote.setLabel(stringPlus.normalizeStringForXml(element[1]));
                     conceptNote.setIdLang(element[2]);
+                    if(element.length > 3)
+                        conceptNote.setNoteSource(element[3]);
                     conceptNotes.add(conceptNote);
                 } catch (Exception e) {
                 }
@@ -705,7 +731,7 @@ public class DaoResourceHelper {
         return null;
     }    
 
-    private List<ConceptLabel> getLabels(String labelBrut) {
+    private List<ConceptLabel> getLabels(String labelBrut, String idLang) {
         List<ConceptLabel> conceptLabels = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(labelBrut)) {
@@ -715,16 +741,19 @@ public class DaoResourceHelper {
                 try {
                     String[] element = tab.split(SUB_SEPARATEUR);
                     ConceptLabel conceptLabel = new ConceptLabel();
-                    conceptLabel.setIdTerm(element[0]);
-                    conceptLabel.setLabel(element[1]);
-                    conceptLabel.setId(Integer.parseInt(element[2]));
-
+                    conceptLabel.setIdLang(idLang);
+                    conceptLabel.setLabel(element[0]);
+                    conceptLabel.setIdTerm(element[1]);                    
+                    if(element.length > 2)
+                        conceptLabel.setId(Integer.parseInt(element[2]));
+                    
                     conceptLabels.add(conceptLabel);
                 } catch (Exception e) {
                 }
             }
         }
         if (CollectionUtils.isNotEmpty(conceptLabels)) {
+            Collections.sort(conceptLabels);
             return conceptLabels;
         }
         return null;
@@ -744,12 +773,15 @@ public class DaoResourceHelper {
                     conceptLabel.setLabel(element[1]);
                     conceptLabel.setIdLang(element[2]);
                     conceptLabel.setId(Integer.parseInt(element[3]));
+                    if(element.length > 4 )
+                        conceptLabel.setCodeFlag(element[4]);
                     conceptLabels.add(conceptLabel);
                 } catch (Exception e) {
                 }
             }
         }
         if (CollectionUtils.isNotEmpty(conceptLabels)) {
+            Collections.sort(conceptLabels);
             return conceptLabels;
         }
         return null;

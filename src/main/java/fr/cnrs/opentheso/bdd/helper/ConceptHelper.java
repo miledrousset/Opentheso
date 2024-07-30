@@ -633,35 +633,37 @@ public class ConceptHelper {
                             nodeConceptTree.add(nodeConceptTree1);
                         }
                     }
-                    for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
-                        query = "SELECT term.lexical_value, concept.status"
-                                + " FROM concept, preferred_term, term"
-                                + " WHERE concept.id_concept = preferred_term.id_concept AND"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                                + " preferred_term.id_term = term.id_term AND"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus AND"
-                                + " concept.id_concept = '" + nodeConceptTree1.getIdConcept() + "' AND"
-                                + " term.lang = '" + idLang + "' AND"
-                                + " term.id_thesaurus = '" + idThesaurus + "';";
+                    if(nodeConceptTree != null){
+                        for (NodeConceptTree nodeConceptTree1 : nodeConceptTree) {
+                            query = "SELECT term.lexical_value, concept.status"
+                                    + " FROM concept, preferred_term, term"
+                                    + " WHERE concept.id_concept = preferred_term.id_concept AND"
+                                    + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
+                                    + " preferred_term.id_term = term.id_term AND"
+                                    + " preferred_term.id_thesaurus = term.id_thesaurus AND"
+                                    + " concept.id_concept = '" + nodeConceptTree1.getIdConcept() + "' AND"
+                                    + " term.lang = '" + idLang + "' AND"
+                                    + " term.id_thesaurus = '" + idThesaurus + "';";
 
-                        stmt.executeQuery(query);
-                        resultSet = stmt.getResultSet();
-                        if (resultSet != null) {
-                            resultSet.next();
-                            if (resultSet.getRow() == 0) {
-                                nodeConceptTree1.setTitle("");
-                                nodeConceptTree1.setStatusConcept("");
-                            } else {
-                                nodeConceptTree1.setTitle(resultSet.getString("lexical_value"));
-                                if (resultSet.getString("status") == null) {
+                            stmt.executeQuery(query);
+                            resultSet = stmt.getResultSet();
+                            if (resultSet != null) {
+                                resultSet.next();
+                                if (resultSet.getRow() == 0) {
+                                    nodeConceptTree1.setTitle("");
                                     nodeConceptTree1.setStatusConcept("");
                                 } else {
-                                    nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
+                                    nodeConceptTree1.setTitle(resultSet.getString("lexical_value"));
+                                    if (resultSet.getString("status") == null) {
+                                        nodeConceptTree1.setStatusConcept("");
+                                    } else {
+                                        nodeConceptTree1.setStatusConcept(resultSet.getString("status"));
+                                    }
                                 }
+                                nodeConceptTree1.setHaveChildren(
+                                        haveChildren(ds, idThesaurus, nodeConceptTree1.getIdConcept())
+                                );
                             }
-                            nodeConceptTree1.setHaveChildren(
-                                    haveChildren(ds, idThesaurus, nodeConceptTree1.getIdConcept())
-                            );
                         }
                     }
                 } finally {

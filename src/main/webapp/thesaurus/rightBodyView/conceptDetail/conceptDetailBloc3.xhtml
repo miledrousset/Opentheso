@@ -28,7 +28,7 @@
                     <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 offset-xl-8 offset-lg-7 offset-md-6 offset-sm-6" style="text-align: right; margin-top: 7px">
                         <p:inputSwitch id="commandOtherLang" value="#{conceptView.toggleSwitchNotesLang}" 
                                        style="color: #f47b2a; margin-right: 10px" >
-                            <p:ajax listener="#{conceptView.getNotesWithAllLanguages()}" update="containerIndex:formRightTab messageIndex"/>
+                            <p:ajax listener="#{conceptView.setNotes()}" update="containerIndex:formRightTab messageIndex"/>
                         </p:inputSwitch>                              
                         <p:tooltip for="commandOtherLang" value="#{langueBean.getMsg('concept.showNotesOtherLang')}" showDelay="1000" />
                     </div>

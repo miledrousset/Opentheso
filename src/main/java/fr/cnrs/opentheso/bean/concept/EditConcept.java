@@ -365,27 +365,6 @@ public class EditConcept implements Serializable {
         }
 
         updateForced(idTheso, idLang, idUser);
-
-        //   if(tree.getSelectedNode() == null) return;
-        // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-        //    if( !((TreeNodeData) tree.getSelectedNode().getData()).getNodeId().equalsIgnoreCase(idConceptParent)){
-        //   }
-
-        /*    tree.addNewChild(tree.getRoot(), idNewConcept, idTheso, idLang);
-
-        tree.expandTreeToPath(idNewConcept, idTheso, idLang);
-        if (pf.isAjaxRequest()) {
-            pf.ajax().update("formLeftTab");
-        }*/
-        // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-        /*    if (tree.getSelectedNode().isExpanded() || tree.getSelectedNode().getChildCount() == 0) {
-            tree.addNewChild(tree.getSelectedNode(), idNewConcept, idTheso, idLang);
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("formLeftTab");
-            }
-        }*/
-        // sinon, on ne fait rien, l'arbre sera déplié automatiquement
-        //    PrimeFaces.current().executeScript("$('.addNT1').modal('hide');"); 
     }
 
     public void updateForced(

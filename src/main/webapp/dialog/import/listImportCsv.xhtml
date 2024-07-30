@@ -127,7 +127,7 @@
                                 <p:commandButton id="buttonImportCsv" widgetVar="buttonImportCsv"
                                                  value="#{langueBean.getMsg('candidat.import')}" styleClass="ui-button-success" icon="fa fa-download"
                                                  update="panelListCsv"
-                                                 actionListener="#{importFileBean.addListCsvToConcept(conceptView.nodeConcept)}"
+                                                 actionListener="#{importFileBean.addListCsvToConcept(conceptView.nodeFullConcept)}"
                                                  ajax="true"
                                                  disabled="#{!importFileBean.loadDone}" />
                             </div>                             

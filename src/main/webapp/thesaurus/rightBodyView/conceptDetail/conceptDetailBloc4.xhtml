@@ -17,12 +17,14 @@
         }
     </style>
 
-    <h:panelGroup rendered="#{(currentUser.hasRoleAsManager) or (conceptView.nodeConcept.nodeimages.size() !=0) or (conceptView.nodeConcept.nodeExternalResources.size() !=0)
-                              or (conceptView.nodeConcept.nodeGps.size() != 0)}"> 
+    <!-- reste les ressources externes -->
+    
+    <h:panelGroup rendered="#{(currentUser.hasRoleAsManager) or (conceptView.nodeFullConcept.images.size() !=0) or (conceptView.nodeFullConcept.externalResources.size() !=0)
+                              or (conceptView.nodeFullConcept.gps.size() != 0)}"> 
         <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                 <!-- ligne ressources externes -->
-                <h:panelGroup rendered="#{(currentUser.hasRoleAsManager) or (conceptView.nodeConcept.nodeExternalResources.size() !=0)}"> 
+                <h:panelGroup rendered="#{(currentUser.hasRoleAsManager) or (conceptView.nodeFullConcept.externalResources.size() !=0)}"> 
                     <div class="list-group-item list-group-item-action" >
                         <div class="row" style="margin-left: 0px;">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
@@ -44,21 +46,21 @@
                                                 action="#{externalResources.reset()}" icon="fas fa-edit" 
                                                 update="containerIndex:idUpdateExternalResource" ajax="true"
                                                 oncomplete="PF('updateExternalResource').show();"
-                                                disabled="#{conceptView.nodeConcept.nodeExternalResources.size() == 0}" />
+                                                disabled="#{conceptView.nodeFullConcept.externalResources.size() == 0}" />
 
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.deleteExternalResource')}"
                                                 actionListener="#{externalResources.reset()}"
                                                 oncomplete="PF('deleteExternalResource').show();"
-                                                disabled="#{conceptView.nodeConcept.nodeExternalResources.size() == 0}"
+                                                disabled="#{conceptView.nodeFullConcept.externalResources.size() == 0}"
                                                 update="containerIndex:idDeleteExternalResource" icon="fas fa-minus" />                                    
                                 </p:menuButton> 
 
-                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeExternalResources == null or conceptView.nodeConcept.nodeExternalResources.size() == 0}">
+                                <h:panelGroup rendered="#{conceptView.nodeFullConcept.externalResources == null or conceptView.nodeFullConcept.externalResources.size() == 0}">
                                     <h:outputText value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                                   style="font-size: 14px; color: grey; font-style: italic " />
                                 </h:panelGroup>  
 
-                                <ui:repeat var="resources" value="#{conceptView.nodeConcept.nodeExternalResources}" varStatus="resourceStatus" >
+                                <ui:repeat var="resources" value="#{conceptView.nodeFullConcept.externalResources}" varStatus="resourceStatus" >
                                     <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                         <p:spacer width="0" rendered="#{resourceStatus.first}" />
                                         <p:spacer width="37" rendered="#{!resourceStatus.first}" />
@@ -66,13 +68,13 @@
 
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
 
-                                    <p:link href="#{resources.uri}"
-                                            value="#{resources.uri}"
+                                    <p:link href="#{resources}"
+                                            value="#{resources}"
                                             target="_blank" style="font-size: 14px; color: #164A78;" >
                                         <i class="pi pi-link" />
                                     </p:link>
 
-                                    <h:outputText rendered="#{resources.imageName != ''}" value=" (#{resources.imageName})"  style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{resources != ''}" value=" (#{resources})"  style="font-size: 14px;"/>
 
                                     <br/>
                                 </ui:repeat>
@@ -82,7 +84,8 @@
                 </h:panelGroup>
                 
                 <!-- ligne images  --> 
-                <h:panelGroup id="idConceptImages" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeimages != null and conceptView.nodeConcept.nodeimages.size() != 0)}">
+                <h:panelGroup id="idConceptImages" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeFullConcept.images != null
+                                                               and conceptView.nodeFullConcept.images.size() != 0)}">
 
                     <div class="list-group-item list-group-item-action" style="padding-top: 5px; padding-bottom: -3px">
                         <div class="row" style="vertical-align: central; margin-left: 0px;">
@@ -105,24 +108,24 @@
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_image')}" 
                                                     actionListener="#{imageBean.reset()}" icon="fas fa-edit"                 
                                                     oncomplete="PF('updateImage').show();" update="containerIndex:idUpdateImage"
-                                                    disabled="#{conceptView.nodeConcept.nodeimages.size() == 0}" />
+                                                    disabled="#{conceptView.nodeFullConcept.images.size() == 0}" />
 
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_image')}" 
                                                     actionListener="#{imageBean.reset()}" oncomplete="PF('deleteImage').show();"
                                                     update="containerIndex:idDeleteImage" icon="fas fa-minus" 
-                                                    disabled="#{conceptView.nodeConcept.nodeimages.size() == 0}"/>
+                                                    disabled="#{conceptView.nodeFullConcept.images.size() == 0}"/>
                                     </p:menuButton>   
                                 </h:panelGroup>
-                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() == 0}">
+                                <h:panelGroup rendered="#{conceptView.nodeFullConcept.images.size() == 0}">
                                     <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
                                                    style="font-size: 12px; color: grey; font-style: italic " />
                                 </h:panelGroup>  
 
-                                <h:panelGroup rendered="#{conceptView.nodeConcept.nodeimages.size() != 0}" > 
+                                <h:panelGroup rendered="#{conceptView.nodeFullConcept.images.size() != 0}" > 
                                     <p:remoteCommand name="rc" actionListener="#{galleriaView.changeActiveIndex}" 
                                                      update="containerIndex:rightTab:custom" oncomplete="PF('galleria').show()" />   
                                         <p:galleria id="custom" widgetVar="galleria"
-                                                    value="#{conceptView.nodeConcept.nodeimages}" var="photo" numVisible="5"
+                                                    value="#{conceptView.nodeFullConcept.images}" var="photo" numVisible="5"
                                                     circular="true"
                                                     fullScreen="true"
                                                     showCaption="true"
@@ -139,7 +142,7 @@
                                         </p:galleria>
                                     <div class="row">
                                         <div class="col-12">
-                                            <ui:repeat value="#{conceptView.nodeConcept.nodeimages}" var="photo" varStatus="status">
+                                            <ui:repeat value="#{conceptView.nodeFullConcept.images}" var="photo" varStatus="status">
                                                 <p:graphicImage value="#{photo.uri}" alt="#{photo.uri}" style="cursor: pointer; max-height: 200px; max-width: 500px; margin-left: 10px;"
                                                                 onclick="rc([{'name': 'index', 'value': #{status.index}}])" title="#{photo.uri} (@#{photo.copyRight} _ #{photo.creator})"/>
                                                         <f:facet name="caption">
@@ -157,8 +160,8 @@
                 </h:panelGroup>                    
 
                 <!-- ligne GPS MAP-->
-                <h:panelGroup id="idConceptGps" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeConcept.nodeGps != null)}">
-                    <p:spacer rendered="#{conceptView.nodeConcept.nodeimages.size() !=0}" />
+                <h:panelGroup id="idConceptGps" rendered="#{(currentUser.nodeUser != null) or (conceptView.nodeFullConcept.gps != null)}">
+                    <p:spacer rendered="#{conceptView.nodeFullConcept.images.size() !=0}" />
                     <div class="list-group-item list-group-item-action" style="margin-bottom: -5px">
                         <div class="row" style="padding-top: 3px; padding-bottom: 5px;margin-left: 0px; ">
                             <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">

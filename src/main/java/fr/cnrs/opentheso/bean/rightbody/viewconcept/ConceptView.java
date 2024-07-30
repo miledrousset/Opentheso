@@ -1,18 +1,14 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
 import com.jsf2leaf.model.Map;
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
+import fr.cnrs.opentheso.bdd.helper.dao.ResourceGPS;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
@@ -36,6 +32,7 @@ import fr.cnrs.opentheso.repositories.GpsRepository;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -134,7 +131,9 @@ public class ConceptView implements Serializable {
     
     
     private ArrayList<NodeCustomRelation> nodeCustomRelationReciprocals;
-
+    private ArrayList <NodeCustomRelation> nodeCustomRelations;
+    
+    
     private List<ResponsiveOption> responsiveOptions;
 
     private boolean toggleSwitchAltLabelLang;
@@ -177,9 +176,9 @@ public class ConceptView implements Serializable {
     public void init() {
         toggleSwitchAltLabelLang = false;
         toggleSwitchNotesLang = false;
-        if (nodeConcept != null) {
+ /*       if (nodeConcept != null) {
             nodeConcept.clear();
-        }
+        }*/
         nodeFullConcept = new NodeFullConcept();
         
         selectedLang = null;
@@ -270,11 +269,13 @@ public class ConceptView implements Serializable {
     public void getConcept(String idTheso, String idConcept, String idLang) {
         offset = 0;
         gpsModeSelected = GpsMode.POINT;
-        nodeConcept = new ConceptHelper().getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
+        ConceptHelper conceptHelper = new ConceptHelper();
+        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
         if (nodeConcept == null) {
             return;
         }
-        
+        nodeFullConcept = null;
+        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
         searchedForCorpus = false;
         
         
@@ -285,27 +286,18 @@ public class ConceptView implements Serializable {
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
-            nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
-                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang));
-            setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
+            nodeCustomRelations = new RelationsHelper().getAllNodeCustomRelation(
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang);
+            setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
         setOffset();
 
         // récupération des informations sur les corpus liés
         nodeCorpuses = null;
-    //    haveCorpus = true;
-
-
         createMap(idConcept, idTheso, Boolean.TRUE);
 
         selectedLang = idLang;
-        if (toggleSwitchAltLabelLang) {
-            getAltLabelWithAllLanguages();
-        }
-        if (toggleSwitchNotesLang) {
-            getNotesWithAllLanguages();
-        } 
         setNotes();
 
         indexSetting.setIsValueSelected(true);
@@ -314,8 +306,6 @@ public class ConceptView implements Serializable {
 
         // récupération des informations sur les corpus liés
         haveCorpus = false;
-    //    nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idTheso);
-
         setRoles();
 
         setFacetsOfConcept(idConcept, idTheso, idLang);
@@ -346,7 +336,7 @@ public class ConceptView implements Serializable {
         searchedForCorpus = true;
         SearchCorpus2 searchCorpus2 = new SearchCorpus2();
         nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());     
-        nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeConcept);
+        nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeFullConcept);
         haveCorpus = searchCorpus2.isHaveCorpus();
         if(!haveCorpus) {
             nodeCorpuses = null;
@@ -355,21 +345,47 @@ public class ConceptView implements Serializable {
     }
 
     public void createMap(String idConcept, String idTheso, Boolean isFirstTime) {
-        nodeConcept.setNodeGps(gpsRepository.getGpsByConceptAndThesorus(idConcept, idTheso));
-        if (CollectionUtils.isNotEmpty(nodeConcept.getNodeGps())) {
-            gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
-            gpsList = formatCoordonnees(nodeConcept.getNodeGps());
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getGps())) {
+            List<Gps> gpses = getGpsFromResource(nodeFullConcept.getGps());
+             
+            gpsModeSelected = getGpsMode(gpses);
+            gpsList = formatCoordonnees(gpses);
             if (mapModel == null) {
-                mapModel = new MapUtils().createMap(nodeConcept.getNodeGps(), gpsModeSelected,
-                        ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
+                mapModel = new MapUtils().createMap(gpses, gpsModeSelected,
+                        ObjectUtils.isEmpty(nodeFullConcept.getPrefLabel()) ? null : nodeFullConcept.getPrefLabel().getLabel());
             } else {
-                mapModel = new MapUtils().updateMap(nodeConcept.getNodeGps(), mapModel, gpsModeSelected,
-                        ObjectUtils.isEmpty(nodeConcept.getTerm()) ? null : nodeConcept.getTerm().getLexical_value());
+                mapModel = new MapUtils().updateMap(gpses, mapModel, gpsModeSelected,
+                        ObjectUtils.isEmpty(nodeFullConcept.getPrefLabel()) ? null : nodeFullConcept.getPrefLabel().getLabel());
             }
         } else {
             gpsList = "";
-        }
+        }        
     }
+    private List<Gps> getGpsFromResource(List<ResourceGPS> resourceGps){
+        List<Gps> gpses = new ArrayList<>();
+        for (ResourceGPS resourceGp : resourceGps) {
+            Gps gps = new Gps();
+            gps.setIdConcept(nodeFullConcept.getIdentifier());
+            gps.setIdTheso(selectedTheso.getCurrentIdTheso());
+            gps.setLatitude(resourceGp.getLatitude());
+            gps.setLongitude(resourceGp.getLongitude());
+            gps.setPosition(resourceGp.getPosition());
+            gpses.add(gps);
+        }
+        return gpses;
+    }    
+    private List<ResourceGPS> getResourceGpsFromGps(List<Gps> gps){
+        List<ResourceGPS> resourceGPSs = new ArrayList<>();
+        for (Gps gp : gps) {
+            ResourceGPS resourceGPS = new ResourceGPS();
+            resourceGPS.setLatitude(gp.getLatitude());
+            resourceGPS.setLongitude(gp.getLongitude());
+            resourceGPS.setPosition(gp.getPosition());
+            resourceGPSs.add(resourceGPS);
+        }
+        return resourceGPSs;
+    }      
+    
 
     public boolean isGpsDisable() {
         return currentUser.getNodeUser() == null || (currentUser.getNodeUser() != null &&
@@ -397,34 +413,33 @@ public class ConceptView implements Serializable {
      * @param idLang
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
+//                System.out.println("entree : " + LocalTime.now());
+        selectedLang = idLang;
         offset = 0;
         ConceptHelper conceptHelper = new ConceptHelper();
         
         nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
+        
         if (nodeConcept == null) return;
         
-    //    nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
-
+        nodeFullConcept = null;
+        
+        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        
+        
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
-            nodeConcept.setNodeCustomRelations(new RelationsHelper().getAllNodeCustomRelation(
-                    connect.getPoolConnexion(), idConcept, idTheso, idLang, getIdLangOfInterface()));
-            setNodeCustomRelationWithReciprocal(nodeConcept.getNodeCustomRelations());
+            nodeCustomRelations = new RelationsHelper().getAllNodeCustomRelation(
+                    connect.getPoolConnexion(), idConcept, idTheso, idLang, getIdLangOfInterface());
+            setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
 
         if (roleOnThesoBean.getNodePreference().isBreadcrumb())
             pathOfConcept2(idTheso, idConcept, idLang);
 
-        if (toggleSwitchAltLabelLang) {
-            getAltLabelWithAllLanguages();
-        }
-        if (toggleSwitchNotesLang) {
-            getNotesWithAllLanguages();
-        }
         setNotes();
-
-
         setOffset();
+        
 
         // récupération des informations sur les corpus liés
         nodeCorpuses = null;
@@ -434,35 +449,32 @@ public class ConceptView implements Serializable {
         setRoles();
 
         createMap(idConcept, idTheso, Boolean.TRUE);
-
+        
         setFacetsOfConcept(idConcept, idTheso, idLang);
 
-        selectedLang = idLang;
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();
         countOfBranch = 0;
+//                System.out.println("sortie : " + LocalTime.now());
     }
 
     /**
      * permet de récupérer toutes les notes dans toutes les langues
      */
-    public void getNotesWithAllLanguages() {
-        NoteHelper noteHelper = new NoteHelper();
+    public void setNotes() {
         if (toggleSwitchNotesLang) {
-            nodeConcept.setNodeNotes(noteHelper.getListNotesAllLang(
-                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
-            setNotesForAllLang();
-        }
-        nodeConcept.setNodeNotes(noteHelper.getListNotes(
-                connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(),
-                nodeConcept.getConcept().getIdThesaurus(),
-                selectedLang));
-        setNotes();
-        
+            setNotesForAllLang();//getNotesWithAllLanguages();
+        } else 
+            setNotesCurrentLang();    
         
         PrimeFaces.current().ajax().update("messageIndex");
         PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+    }
+    
+    public boolean isHaveAlignment(){
+        return (CollectionUtils.isNotEmpty(nodeFullConcept.getExactMatchs()) || CollectionUtils.isNotEmpty(nodeFullConcept.getCloseMatchs())
+                || CollectionUtils.isNotEmpty(nodeFullConcept.getBroadMatchs()) || CollectionUtils.isNotEmpty(nodeFullConcept.getRelatedMatchs()) );
     }
     
     public boolean isHaveDefinition(){
@@ -486,23 +498,6 @@ public class ConceptView implements Serializable {
     public boolean isHaveScopeNote(){
         return !(scopeNote == null && (scopeNoteAllLang == null || scopeNoteAllLang.isEmpty()));
     }      
-    
-
-    public void getAltLabelWithAllLanguages() {
-        TermHelper termHelper = new TermHelper();
-
-        if (toggleSwitchAltLabelLang)
-            nodeConcept.setNodeEM(termHelper.getAllNonPreferredTerms(
-                    connect.getPoolConnexion(), nodeConcept.getConcept().getIdConcept(), nodeConcept.getConcept().getIdThesaurus()));
-        else
-            nodeConcept.setNodeEM(termHelper.getNonPreferredTerms(connect.getPoolConnexion(),
-                    nodeConcept.getConcept().getIdConcept(),
-                    nodeConcept.getConcept().getIdThesaurus(),
-                    selectedLang));
-        PrimeFaces.current().ajax().update("messageIndex");
-        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
-    }
-
 
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang) {
         FacetHelper facetHelper = new FacetHelper();
@@ -520,12 +515,14 @@ public class ConceptView implements Serializable {
     }
 
     public void setOffset() {
-        if (nodeConcept.getNodeNT().size() < step) {
-            offset = 0;
-            haveNext = false;
-        } else {
-            offset = offset + step + 1;
-            haveNext = true;
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getNarrowers())){
+            if (nodeFullConcept.getNarrowers().size() < step) {
+                offset = 0;
+                haveNext = false;
+            } else {
+                offset = offset + step + 1;
+                haveNext = true;
+            }
         }
 
     }
@@ -535,7 +532,7 @@ public class ConceptView implements Serializable {
         List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                nodeConcept.getConcept().getIdConcept()
+                nodeFullConcept.getIdentifier()
                 );
         this.countOfBranch = listIdsOfBranch.size();
     }
@@ -557,7 +554,7 @@ public class ConceptView implements Serializable {
                     idTheso,
                     idLang, step + 1, offset);
             if (nodeNTs != null && !nodeNTs.isEmpty()) {
-                nodeConcept.getNodeNT().addAll(nodeNTs);
+               // nodeConcept.getNodeNT().addAll(nodeNTs);
                 setOffset();
                 return;
             }
@@ -613,22 +610,18 @@ public class ConceptView implements Serializable {
         contributors = null;
         creator = null;
         boolean firstElement = true;
-        if (CollectionUtils.isNotEmpty(nodeConcept.getDcElements())) {
-            for (DcElement dcElement : nodeConcept.getDcElements()) {
-                switch (dcElement.getName()) {
-                    case DCMIResource.CONTRIBUTOR:
-                        if (firstElement) {
-                            contributors = dcElement.getValue();
-                            firstElement = false;
-                        } else {
-                            contributors = contributors + "; " + dcElement.getValue();
-                        }
-                        break;
-                    case DCMIResource.CREATOR:
-                        creator = dcElement.getValue();
-                    default:
-                        break;
-                }
+        
+        if(StringUtils.isNotEmpty(nodeFullConcept.getCreatorName())){
+            creator = nodeFullConcept.getCreatorName();
+        }
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getContributorName())){
+            for (String contributor : nodeFullConcept.getContributorName()) {
+                if (firstElement) {
+                    contributors = contributor;
+                    firstElement = false;
+                } else {
+                    contributors = contributors + "; " + contributor;
+                }   
             }
         }
     }
@@ -646,62 +639,205 @@ public class ConceptView implements Serializable {
     // fonctions pour les notes /////    
     /////////////////////////////////
     /////////////////////////////////
-    private void setNotes() {
+    private void setNotesCurrentLang() {
         clearNotes();
-        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
-            switch (nodeNote.getNotetypecode()) {
-                case "note":
-                    note = nodeNote;
-                    break;
-                case "scopeNote":
-                    scopeNote = nodeNote;
-                    break;
-                case "changeNote":
-                    changeNote = nodeNote;
-                    break;
-                case "definition":
-                    definition = nodeNote;
-                    break;
-                case "editorialNote":
-                    editorialNote = nodeNote;
-                    break;
-                case "example":
-                    example = nodeNote;
-                    break;
-                case "historyNote":
-                    historyNote = nodeNote;
-                    break;
-            }
-        }
+        
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getNotes())) {
+            nodeFullConcept.getNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (note == null) {
+                        note = new NodeNote();
+                    }
+                    note.setId_note(note1.getIdNote());
+                    note.setLexicalvalue(note1.getLabel());
+                    note.setLang(note1.getIdLang());
+                    note.setNoteSource(note1.getNoteSource());
+                });
+        } 
+        
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getScopeNotes())) {
+            nodeFullConcept.getScopeNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (scopeNote == null) {
+                        scopeNote = new NodeNote();
+                    }
+                    scopeNote.setId_note(note1.getIdNote());
+                    scopeNote.setLexicalvalue(note1.getLabel());
+                    scopeNote.setLang(note1.getIdLang());
+                    scopeNote.setNoteSource(note1.getNoteSource());
+                });
+        }        
+        
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getChangeNotes())) {
+            nodeFullConcept.getChangeNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (changeNote == null) {
+                        changeNote = new NodeNote();
+                    }
+                    changeNote.setId_note(note1.getIdNote());
+                    changeNote.setLexicalvalue(note1.getLabel());
+                    changeNote.setLang(note1.getIdLang());
+                    changeNote.setNoteSource(note1.getNoteSource());
+                });
+        }         
+  
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getDefinitions())) {
+            nodeFullConcept.getDefinitions().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (definition == null) {
+                        definition = new NodeNote();
+                    }
+                    definition.setId_note(note1.getIdNote());
+                    definition.setLexicalvalue(note1.getLabel());
+                    definition.setLang(note1.getIdLang());
+                    definition.setNoteSource(note1.getNoteSource());
+                });
+        }          
+
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getEditorialNotes())) {
+            nodeFullConcept.getEditorialNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (editorialNote == null) {
+                        editorialNote = new NodeNote();
+                    }
+                    editorialNote.setId_note(note1.getIdNote());
+                    editorialNote.setLexicalvalue(note1.getLabel());
+                    editorialNote.setLang(note1.getIdLang());
+                    editorialNote.setNoteSource(note1.getNoteSource());
+                });
+        }        
+   
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getExamples())) {
+            nodeFullConcept.getExamples().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (example == null) {
+                        example = new NodeNote();
+                    }
+                    example.setId_note(note1.getIdNote());
+                    example.setLexicalvalue(note1.getLabel());
+                    example.setLang(note1.getIdLang());
+                    example.setNoteSource(note1.getNoteSource());
+                });
+        }         
+        
+        if(CollectionUtils.isNotEmpty(nodeFullConcept.getHistoryNotes())){
+            
+        }   
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getHistoryNotes())) {
+            nodeFullConcept.getHistoryNotes().stream()
+                .filter(note1 -> selectedLang.equalsIgnoreCase(note1.getIdLang()))
+                .findFirst()
+                .ifPresent(note1 -> {
+                    if (historyNote == null) {
+                        historyNote = new NodeNote();
+                    }
+                    historyNote.setId_note(note1.getIdNote());
+                    historyNote.setLexicalvalue(note1.getLabel());
+                    historyNote.setLang(note1.getIdLang());
+                    historyNote.setNoteSource(note1.getNoteSource());
+                });
+        }         
     }
     
     private void setNotesForAllLang() {
         clearNotesAllLang();
-        for (NodeNote nodeNote : nodeConcept.getNodeNotes()) {
-            switch (nodeNote.getNotetypecode()) {
-                case "note":
-                    noteAllLang.add(nodeNote);
-                    break;
-                case "scopeNote":
-                    scopeNoteAllLang.add(nodeNote);
-                    break;
-                case "changeNote":
-                    changeNoteAllLang.add(nodeNote);
-                    break;
-                case "definition":
-                    definitionAllLang.add(nodeNote);
-                    break;
-                case "editorialNote":
-                    editorialNoteAllLang.add(nodeNote);
-                    break;
-                case "example":
-                    exampleAllLang.add(nodeNote);
-                    break;
-                case "historyNote":
-                    historyNoteAllLang.add(nodeNote);
-                    break;
-            }
-        }
+
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getNotes())) {
+            nodeFullConcept.getNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(noteAllLang::add);
+        }        
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getScopeNotes())) {
+            nodeFullConcept.getScopeNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(scopeNoteAllLang::add);
+        }     
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getChangeNotes())) {
+            nodeFullConcept.getChangeNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(changeNoteAllLang::add);
+        }     
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getDefinitions())) {
+            nodeFullConcept.getDefinitions().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(definitionAllLang::add);
+        }         
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getEditorialNotes())) {
+            nodeFullConcept.getEditorialNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(editorialNoteAllLang::add);
+        }     
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getExamples())) {
+            nodeFullConcept.getExamples().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(exampleAllLang::add);
+        }   
+        if (CollectionUtils.isNotEmpty(nodeFullConcept.getHistoryNotes())) {
+            nodeFullConcept.getHistoryNotes().stream()
+                .map(note1 -> {
+                    NodeNote nodeNote = new NodeNote();
+                    nodeNote.setId_note(note1.getIdNote());
+                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setLang(note1.getIdLang());
+                    nodeNote.setNoteSource(note1.getNoteSource());
+                    return nodeNote;
+                })
+                .forEach(historyNoteAllLang::add);
+        }        
     }    
 
     public String getNoteValue(NodeNote nodeNote){
@@ -711,7 +847,7 @@ public class ConceptView implements Serializable {
     }
     
     public String getColorOfTypeConcept() {
-        if ("concept".equalsIgnoreCase(nodeConcept.getConcept().getConceptType()))
+        if ("concept".equalsIgnoreCase(nodeFullConcept.getConceptType()))
             return "";
         else
             return "#fcd8bf";
@@ -755,12 +891,12 @@ public class ConceptView implements Serializable {
     }
 
     public Boolean isMapVisible() {
-        return ObjectUtils.isNotEmpty(nodeConcept) && CollectionUtils.isNotEmpty(nodeConcept.getNodeGps());
+        return ObjectUtils.isNotEmpty(nodeFullConcept) && CollectionUtils.isNotEmpty(nodeFullConcept.getGps());
     }
 
     public void onRowEdit(RowEditEvent<Gps> event) {
         gpsRepository.updateGps(event.getObject());
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+        createMap(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage("Coordonnée modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -769,7 +905,7 @@ public class ConceptView implements Serializable {
     public void onRowCancel(RowEditEvent<Gps> event) {
         gpsRepository.removeGps(event.getObject());
 
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+        createMap(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage("Coordonnée supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -778,54 +914,52 @@ public class ConceptView implements Serializable {
     public void addNewGps() {
         Gps gps = new Gps();
         gps.setIdTheso(selectedTheso.getCurrentIdTheso());
-        gps.setIdConcept(nodeConcept.getConcept().getIdConcept());
-        gps.setPosition(nodeConcept.getNodeGps().size() + 1);
+        gps.setIdConcept(nodeFullConcept.getIdentifier());
+        gps.setPosition(nodeFullConcept.getGps().size() + 1);
 
         gpsRepository.saveNewGps(gps);
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+        createMap(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage("Nouvelle coordonnée ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    public void onRowReorder(ReorderEvent event) {
-        Integer fromId = 0, toId = 0;
-
-        for (Gps gps : nodeConcept.getNodeGps()) {
-            if (gps.getPosition() == (event.getFromIndex() + 1)) {
-                fromId = gps.getId();
-            }
-            if (gps.getPosition() == (event.getToIndex() + 1)) {
-                toId = gps.getId();
-            }
-        }
-
-        gpsRepository.updateGpsPosition(fromId, (event.getToIndex() + 1));
-        gpsRepository.updateGpsPosition(toId, (event.getFromIndex() + 1));
-
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
-
-        FacesMessage msg = new FacesMessage("Réorganisation des coordonnées effectuée");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
+//    public void onRowReorder(ReorderEvent event) {
+//        Integer fromId = 0, toId = 0;
+//
+//        for (Gps gps : nodeFullConcept.getGps()) {
+//            if (gps.getPosition() == (event.getFromIndex() + 1)) {
+//                fromId = gps.getId();
+//            }
+//            if (gps.getPosition() == (event.getToIndex() + 1)) {
+//                toId = gps.getId();
+//            }
+//        }
+//
+//        gpsRepository.updateGpsPosition(fromId, (event.getToIndex() + 1));
+//        gpsRepository.updateGpsPosition(toId, (event.getFromIndex() + 1));
+//
+//        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+//
+//        FacesMessage msg = new FacesMessage("Réorganisation des coordonnées effectuée");
+//        FacesContext.getCurrentInstance().addMessage(null, msg);
+//    }
 
     private String gpsList;
 
     public void formatGpsList() {
 
         if (StringUtils.isEmpty(gpsList)) {
-            nodeConcept.setNodeGps(null);
-            gpsRepository.removeGpsByConcept(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+            nodeFullConcept.setGps(null);
+            gpsRepository.removeGpsByConcept(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso());
         } else {
-            var gpsListTmps = readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeConcept.getConcept().getIdConcept());
+            List<Gps> gpsListTmps = readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeFullConcept.getIdentifier());
 
             if (ObjectUtils.isNotEmpty(gpsListTmps)) {
-                nodeConcept.setNodeGps(gpsListTmps);
-
-                gpsModeSelected = getGpsMode(nodeConcept.getNodeGps());
-
-                gpsRepository.removeGpsByConcept(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
-                for (Gps gps : nodeConcept.getNodeGps()) {
+                nodeFullConcept.setGps(getResourceGpsFromGps(gpsListTmps));
+                gpsModeSelected = getGpsMode(gpsListTmps);
+                gpsRepository.removeGpsByConcept(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso());
+                for (Gps gps : gpsListTmps) {
                     gpsRepository.saveNewGps(gps);
                 }
             } else {
@@ -836,7 +970,7 @@ public class ConceptView implements Serializable {
             }
         }
 
-        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+        createMap(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Coordonnée GPS modifiés !");
         FacesContext.getCurrentInstance().addMessage(null, msg);

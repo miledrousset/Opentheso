@@ -98,7 +98,7 @@
 
                                             <div class="row" style="margin-top: 10px; margin-bottom: 10px">
                                                 <div class="col-12">
-                                                    <p:commandButton value="#{langueBean.getMsg('service.launchCorrection')}" icon="pi pi-check" iconPos="right"
+                                                    <p:commandButton rendered="#{currentUser.hasRoleAsSuperAdmin}" value="#{langueBean.getMsg('service.launchCorrection')}" icon="pi pi-check" iconPos="right"
                                                                      action="#{restoreTheso.reorganizeConceptsAndCollections(selectedTheso.currentIdTheso)}"
                                                                      update="containerIndex messageIndex"/>           
                                                 </div>
