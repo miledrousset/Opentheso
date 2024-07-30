@@ -165,7 +165,7 @@ public class GraphQLServlet extends HttpServlet {
                             String idConcept = env.getArgument("idConcept");
                             String idLang = env.getArgument("idLang");
                             DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-                            return daoResourceHelper.getFullConcept(ds, idTheso, idConcept, idLang);
+                            return daoResourceHelper.getFullConcept(ds, idTheso, idConcept, idLang, -1, -1);
                         })
                 )
                 .field(GraphQLFieldDefinition.newFieldDefinition() // Query pour la recherche de termes
@@ -186,7 +186,7 @@ public class GraphQLServlet extends HttpServlet {
                             DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
                             List<Object> fullConcepts = new ArrayList<>();
                             for (String autoCompletion : autoCompletions) {
-                                fullConcepts.add(daoResourceHelper.getFullConcept(ds, idTheso, autoCompletion, idLang));
+                                fullConcepts.add(daoResourceHelper.getFullConcept(ds, idTheso, autoCompletion, idLang, -1, -1));
                             }
                             return(fullConcepts);
                         })

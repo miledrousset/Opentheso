@@ -7,6 +7,8 @@ import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.bdd.helper.dao.ConceptRelation;
+import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.dao.ResourceGPS;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
@@ -270,12 +272,17 @@ public class ConceptView implements Serializable {
         offset = 0;
         gpsModeSelected = GpsMode.POINT;
         ConceptHelper conceptHelper = new ConceptHelper();
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
-        if (nodeConcept == null) {
-            return;
-        }
+        
+        if(currentUser != null) {
+            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
+            if (nodeConcept == null) return;
+        }        
+        
         nodeFullConcept = null;
-        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
+        if(nodeFullConcept == null) return;
+        
+        
         searchedForCorpus = false;
         
         
@@ -418,14 +425,15 @@ public class ConceptView implements Serializable {
         offset = 0;
         ConceptHelper conceptHelper = new ConceptHelper();
         
-        nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
-        
-        if (nodeConcept == null) return;
+        if(currentUser != null) {
+            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
+            if (nodeConcept == null) return;
+        }
         
         nodeFullConcept = null;
         
-        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang);
-        
+        nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step+1);
+        if(nodeFullConcept == null) return;
         
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
@@ -549,12 +557,12 @@ public class ConceptView implements Serializable {
 
     public void getNextNT(String idTheso, String idConcept, String idLang) {
         if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
-            ArrayList<NodeNT> nodeNTs = new RelationsHelper().getListNT(connect.getPoolConnexion(),
-                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
+            List<ConceptRelation> conceptRelations = new DaoResourceHelper().getListNT(connect.getPoolConnexion(),
                     idTheso,
-                    idLang, step + 1, offset);
-            if (nodeNTs != null && !nodeNTs.isEmpty()) {
-               // nodeConcept.getNodeNT().addAll(nodeNTs);
+                    ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
+                    idLang, offset, step + 1);
+            if (conceptRelations != null && !conceptRelations.isEmpty()) {
+                nodeFullConcept.getNarrowers().addAll(conceptRelations);
                 setOffset();
                 return;
             }

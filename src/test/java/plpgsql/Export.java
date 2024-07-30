@@ -147,7 +147,7 @@ public class Export {
         String idLang = "fr";
         
         DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-        NodeFullConcept nodeFullConcept = daoResourceHelper.getFullConcept(ds, idTheso, idConcept, idLang);
+        NodeFullConcept nodeFullConcept = daoResourceHelper.getFullConcept(ds, idTheso, idConcept, idLang, -1, -1);
     }
     
     @Test

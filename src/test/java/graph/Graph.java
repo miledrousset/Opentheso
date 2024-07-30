@@ -105,7 +105,7 @@ public class Graph {
         /// récupérer les concepts
         List<String> listIdConcept = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
+            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang, -1, -1); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept, idTheso));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso));
         }
@@ -127,7 +127,7 @@ public class Graph {
         /// récupérer les concepts
         List<String> listIdConcept = conceptHelper.getIdsOfBranch2(ds, idTheso, idConcept);
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
+            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang, -1, -1); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept, idTheso));
             nodeGraphD3js.getRelationships().addAll(getRelationship(nodeFullConcept, idTheso));
         }

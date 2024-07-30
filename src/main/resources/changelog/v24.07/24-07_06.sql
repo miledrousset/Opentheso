@@ -3,11 +3,13 @@
 -- FUNCTION: public.opentheso_get_concept(character varying, character varying, character varying)
 
 DROP FUNCTION IF EXISTS public.opentheso_get_concept(character varying, character varying, character varying);
+DROP FUNCTION IF EXISTS public.opentheso_get_concept(character varying, character varying, character varying, int, int);
 
 CREATE OR REPLACE FUNCTION public.opentheso_get_concept(
 	idtheso character varying,
 	idconcept character varying,
-	idlang character varying)
+	idlang character varying, 
+        offset_ int, step int)
     RETURNS SETOF record 
     LANGUAGE 'plpgsql'
     COST 100
@@ -169,10 +171,8 @@ BEGIN
 		END LOOP;
 
 		-- Relations
-		narrower = '';
-		broader = '';
-		related = '';
-		FOR relation_rec IN SELECT * FROM opentheso_get_relations(idtheso, idconcept)
+                broader = '';
+                FOR relation_rec IN SELECT * FROM opentheso_get_bt(idtheso, idconcept)
 		LOOP
 			tmpLabel = '';
 			select libelle INTO tmpLabel from opentheso_get_conceptlabel(idtheso, relation_rec.relationship_id_concept, idLang);
@@ -180,16 +180,33 @@ BEGIN
 					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
 					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, idtheso, theso_rec.chemin_site)
 					|| sous_seperateur || relation_rec.relationship_role || sous_seperateur || relation_rec.relationship_id_concept || sous_seperateur || tmpLabel ;
-			IF (relation_rec.relationship_role = 'NT' OR relation_rec.relationship_role = 'NTP' OR relation_rec.relationship_role = 'NTI'
-					OR relation_rec.relationship_role = 'NTG') THEN
-				narrower = narrower || tmp || seperateur;
-			ELSIF (relation_rec.relationship_role = 'BT' OR relation_rec.relationship_role = 'BTP' OR relation_rec.relationship_role = 'BTI'
-					OR relation_rec.relationship_role = 'BTG') THEN
-				broader = broader || tmp || seperateur;
-			ELSIF (relation_rec.relationship_role = 'RT' OR relation_rec.relationship_role = 'RHP' OR relation_rec.relationship_role = 'RPO') THEN
-				related = related || tmp || seperateur;
-			END IF;
+      		        broader = broader || tmp || seperateur;
 		END LOOP;
+
+                related = '';
+                FOR relation_rec IN SELECT * FROM opentheso_get_rt(idtheso, idconcept)
+		LOOP
+			tmpLabel = '';
+			select libelle INTO tmpLabel from opentheso_get_conceptlabel(idtheso, relation_rec.relationship_id_concept, idLang);
+			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
+					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, idtheso, theso_rec.chemin_site)
+					|| sous_seperateur || relation_rec.relationship_role || sous_seperateur || relation_rec.relationship_id_concept || sous_seperateur || tmpLabel ;
+      		        related = related || tmp || seperateur;
+		END LOOP;
+
+                narrower = '';
+                FOR relation_rec IN SELECT * FROM opentheso_get_nt(idtheso, idconcept, offset_, step)
+		LOOP
+			tmpLabel = '';
+			select libelle INTO tmpLabel from opentheso_get_conceptlabel(idtheso, relation_rec.relationship_id_concept, idLang);
+			tmp = opentheso_get_uri(theso_rec.original_uri_is_ark, relation_rec.relationship_id_ark, theso_rec.original_uri,
+					theso_rec.original_uri_is_handle, relation_rec.relationship_id_handle, theso_rec.original_uri_is_doi,
+					relation_rec.relationship_id_doi, relation_rec.relationship_id_concept, idtheso, theso_rec.chemin_site)
+					|| sous_seperateur || relation_rec.relationship_role || sous_seperateur || relation_rec.relationship_id_concept || sous_seperateur || tmpLabel ;
+      		        narrower = narrower || tmp || seperateur;
+		END LOOP;
+
 
 		-- Alignement
 		exactMatch = '';
@@ -243,7 +260,7 @@ BEGIN
 		img = '';
 		FOR img_rec IN SELECT * FROM opentheso_get_images(idtheso, idconcept)
 		LOOP
-			img = img || img_rec.name || sous_seperateur || img_rec.copyright || sous_seperateur || img_rec.url || sous_seperateur || img_rec.creator || seperateur;
+			img = img || img_rec.name || sous_seperateur || img_rec.copyright || sous_seperateur || img_rec.url || sous_seperateur || COALESCE(img_rec.creator, '') || seperateur;
 		END LOOP;
 
         -- Agent DcTerms
@@ -418,4 +435,170 @@ begin
 		note.id_thesaurus = id_theso
 		AND note.identifier = id_con;
 end;
+$BODY$;
+
+-- nouvelle focntion pour récupérer les NT avec limite et par étape
+
+DROP FUNCTION IF EXISTS public.opentheso_get_nt(character varying, character varying, integer, integer);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_nt(
+    id_theso character varying,
+    id_con character varying,
+    offset_ int,
+    step int)
+    RETURNS TABLE(
+        relationship_id_concept character varying, 
+        relationship_role character varying, 
+        relationship_id_ark character varying, 
+        relationship_id_handle character varying, 
+        relationship_id_doi character varying
+    ) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+AS $BODY$
+DECLARE
+    limit_clause text := '';
+BEGIN
+    IF step > 0 THEN
+        limit_clause := 'OFFSET ' || offset_ || ' FETCH NEXT ' || step || ' ROWS ONLY';
+    END IF;
+
+    RETURN QUERY EXECUTE 
+        'SELECT id_concept2, role, id_ark, id_handle, id_doi
+         FROM hierarchical_relationship, concept
+         WHERE hierarchical_relationship.id_concept2 = concept.id_concept
+         AND hierarchical_relationship.id_thesaurus = concept.id_thesaurus
+         AND hierarchical_relationship.id_thesaurus = $1
+         AND hierarchical_relationship.id_concept1 = $2
+         AND concept.status != ''CA''
+         AND role LIKE ''NT%''
+         ' || limit_clause
+    USING id_theso, id_con;
+END;
+$BODY$;
+
+-- nouvelle focntion pour récupérer les BT
+DROP FUNCTION IF EXISTS public.opentheso_get_bt(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_bt(
+    id_theso character varying,
+    id_con character varying)
+    RETURNS TABLE(
+        relationship_id_concept character varying, 
+        relationship_role character varying, 
+        relationship_id_ark character varying, 
+        relationship_id_handle character varying, 
+        relationship_id_doi character varying
+    ) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+AS $BODY$
+
+BEGIN
+    RETURN QUERY  
+        SELECT id_concept2, role, id_ark, id_handle, id_doi
+         FROM hierarchical_relationship, concept
+         WHERE hierarchical_relationship.id_concept2 = concept.id_concept
+         AND hierarchical_relationship.id_thesaurus = concept.id_thesaurus
+         AND hierarchical_relationship.id_thesaurus = $1
+         AND hierarchical_relationship.id_concept1 = $2
+         AND concept.status != 'CA'
+         AND role LIKE 'BT%';
+END;
+$BODY$;
+
+-- nouvelle focntion pour récupérer les RT
+DROP FUNCTION IF EXISTS public.opentheso_get_rt(character varying, character varying);
+
+CREATE OR REPLACE FUNCTION public.opentheso_get_rt(
+    id_theso character varying,
+    id_con character varying)
+    RETURNS TABLE(
+        relationship_id_concept character varying, 
+        relationship_role character varying, 
+        relationship_id_ark character varying, 
+        relationship_id_handle character varying, 
+        relationship_id_doi character varying
+    ) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+AS $BODY$
+
+BEGIN
+    RETURN QUERY  
+        SELECT id_concept2, role, id_ark, id_handle, id_doi
+         FROM hierarchical_relationship, concept
+         WHERE hierarchical_relationship.id_concept2 = concept.id_concept
+         AND hierarchical_relationship.id_thesaurus = concept.id_thesaurus
+         AND hierarchical_relationship.id_thesaurus = $1
+         AND hierarchical_relationship.id_concept1 = $2
+         AND concept.status != 'CA'
+         AND role LIKE 'RT%';
+END;
+$BODY$;
+
+
+-- Fonction pour retourner la suite des Nt par étape
+DROP FUNCTION IF EXISTS public.opentheso_get_next_nt(character varying, character varying, character varying, int, int);
+CREATE OR REPLACE FUNCTION public.opentheso_get_next_nt(
+	idtheso character varying,
+	idconcept character varying,
+	idlang character varying, 
+        offset_ int, step int)
+    RETURNS TABLE(narrower text)
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+DECLARE
+    seperateur constant varchar := '##';
+    sous_seperateur constant varchar := '@@';
+    theso_rec record;
+    relation_rec record;
+    narrower_text text := '';	
+    tmpLabel text;
+	tmp text;
+	
+BEGIN
+		SELECT * INTO theso_rec FROM preferences where id_thesaurus = idtheso;
+
+		-- Relations
+        narrower_text = '';
+        FOR relation_rec IN SELECT * FROM opentheso_get_nt(idtheso, idconcept, offset_, step)
+		    LOOP
+		        tmpLabel := '';
+		        SELECT libelle INTO tmpLabel 
+		        FROM opentheso_get_conceptlabel(idtheso, relation_rec.relationship_id_concept, idlang);
+		        
+		        tmp := opentheso_get_uri(
+		                    theso_rec.original_uri_is_ark, 
+		                    relation_rec.relationship_id_ark, 
+		                    theso_rec.original_uri,
+		                    theso_rec.original_uri_is_handle, 
+		                    relation_rec.relationship_id_handle, 
+		                    theso_rec.original_uri_is_doi,
+		                    relation_rec.relationship_id_doi, 
+		                    relation_rec.relationship_id_concept, 
+		                    idtheso, 
+		                    theso_rec.chemin_site)
+		                || sous_seperateur 
+		                || relation_rec.relationship_role 
+		                || sous_seperateur 
+		                || relation_rec.relationship_id_concept 
+		                || sous_seperateur 
+		                || tmpLabel;
+		                
+		        narrower_text := narrower_text || tmp || seperateur;
+		    END LOOP;
+		return query 
+		SELECT narrower_text;
+END;
 $BODY$;

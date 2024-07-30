@@ -394,15 +394,51 @@ public class DaoResourceHelper {
     }    */
     
     /**
+     * pemret de récupérer la liste des relations NT
+     *
+     * @param ds
+     * @param idTheso
+     * @param idConcept
+     * @param idLang
+     * @param step
+     * @param offset
+     * @return
+     */
+    public List<ConceptRelation> getListNT(HikariDataSource ds, String idTheso, String idConcept, String idLang, int offset, int step) {
+        if (ds.isClosed()) {
+            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, "HikariDataSource is closed.");
+            return null;
+        }
+        List<ConceptRelation> conceptRelations = null;
+        
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT * FROM opentheso_get_next_nt('" + idTheso + "', '" + idConcept + "', '" + idLang + "'," + offset + "," + step + ");"
+                );
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        conceptRelations = getRelations(resultSet.getString("narrower"));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return conceptRelations;
+    }    
+    
+    /**
      * pemret de récupérer un concept complet par langue
      *
      * @param ds
      * @param idTheso
      * @param idConcept
      * @param idLang
+     * @param step
+     * @param offset
      * @return
      */
-    public NodeFullConcept getFullConcept(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
+    public NodeFullConcept getFullConcept(HikariDataSource ds, String idTheso, String idConcept, String idLang, int offset, int step) {
         NodeFullConcept nodeFullConcept = null;
         if (ds.isClosed()) {
             Logger.getLogger(DaoResourceHelper.class.getName()).log(Level.SEVERE, "HikariDataSource is closed.");
@@ -411,7 +447,7 @@ public class DaoResourceHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "')"
+                stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "'," + offset + "," + step + ")"
                         + " as x(URI text, resourceType varchar, localUri text, identifier varchar, permalinkId varchar,"
                         + "prefLabel varchar, altLabel varchar, hidenlabel varchar,"
                         + "prefLabel_trad varchar, altLabel_trad varchar, hiddenLabel_trad varchar, definition text, example text, editorialNote text, changeNote text,"
@@ -566,7 +602,8 @@ public class DaoResourceHelper {
                     }
                     conceptImage.setCopyRight(element[1]);
                     conceptImage.setUri(element[2]);
-                    conceptImage.setCreator(element[3]);
+                    if(element.length > 3)
+                        conceptImage.setCreator(element[3]);
                     conceptImages.add(conceptImage);
                 } catch (Exception e) {
                 }

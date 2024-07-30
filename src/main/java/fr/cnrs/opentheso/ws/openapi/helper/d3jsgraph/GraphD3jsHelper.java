@@ -62,7 +62,7 @@ public class GraphD3jsHelper {
         }
         
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
+            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang, -1, -1); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(ds, nodeFullConcept, idTheso, idLang));
         }
@@ -93,7 +93,7 @@ public class GraphD3jsHelper {
             listIdConcept = listIdConcept.subList(0, 2000);
         }        
         for (String idC : listIdConcept) {
-            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang); 
+            NodeFullConcept nodeFullConcept = conceptHelper.getConcept2(ds, idC, idTheso, idLang, -1, -1 ); 
             nodeGraphD3js.addNewNode(getDatasOfNode(nodeFullConcept));
             nodeGraphD3js.getRelationships().addAll(getRelationship(ds, nodeFullConcept, idTheso, idLang));
         }

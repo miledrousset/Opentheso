@@ -5786,9 +5786,9 @@ public class ConceptHelper {
      * @param offset
      * @return
      */
-    public NodeFullConcept getConcept2(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+    public NodeFullConcept getConcept2(HikariDataSource ds, String idConcept, String idThesaurus, String idLang, int offset, int step) {
         DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-        return daoResourceHelper.getFullConcept(ds, idThesaurus, idConcept, idLang);
+        return daoResourceHelper.getFullConcept(ds, idThesaurus, idConcept, idLang, offset, step);
     }    
 
     /**
