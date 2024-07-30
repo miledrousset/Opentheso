@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
+import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -15,18 +15,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import lombok.Data;
 
@@ -34,50 +25,50 @@ import lombok.Data;
 public class SearchCorpus2 {
     private boolean haveCorpus;
 
-    public ArrayList<NodeCorpus> SearchCorpus(ArrayList<NodeCorpus> nodeCorpuses, NodeConcept nodeConcept) {
+    public ArrayList<NodeCorpus> SearchCorpus(ArrayList<NodeCorpus> nodeCorpuses, NodeFullConcept nodeFullConcept) {
         haveCorpus = false;
-        if (nodeConcept != null) {
+        if (nodeFullConcept != null) {
             for (NodeCorpus nodeCorpus : nodeCorpuses) {
                 // cas où on compose uniquement une URL de lien vers les notices
                 if (nodeCorpus.isIsOnlyUriLink()) {
                     if (nodeCorpus.getUriLink().contains("##id##")) {
-                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##id##", nodeFullConcept.getIdentifier()));
                     }
                     if (nodeCorpus.getUriLink().contains("##value##")) {
-                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeFullConcept.getPrefLabel().getLabel()));
                     }
                 } else {
                     // recherche par Id
                     /// pour le count par Id interne
                     if (nodeCorpus.getUriCount().contains("##id##")) {
                         if (nodeCorpus.getUriCount() != null && !nodeCorpus.getUriCount().isEmpty()) {
-                            nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                            nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##id##", nodeFullConcept.getIdentifier()));
                         }
                     }
                     /// pour le count par Id ark
                     if (nodeCorpus.getUriCount().contains("##arkid##")) {
                         if (nodeCorpus.getUriCount() != null && !nodeCorpus.getUriCount().isEmpty()) {
-                            nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##arkid##", nodeConcept.getConcept().getIdArk()));
+                            nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##arkid##", nodeFullConcept.getPermanentId()));
                         }
                     }
 
                     /// pour la construction de l'URL avec Id interne
                     if (nodeCorpus.getUriLink().contains("##id##")) {
-                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
+                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##id##", nodeFullConcept.getIdentifier()));
                     }
                     /// pour la construction de l'URL avec Id Ark
                     if (nodeCorpus.getUriLink().contains("##arkid##")) {
-                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##arkid##", nodeConcept.getConcept().getIdArk()));
+                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##arkid##", nodeFullConcept.getPermanentId()));
                     }
 
                     // recherche par value
                     if (nodeCorpus.getUriCount().contains("##value##")) {
                         if (nodeCorpus.getUriCount() != null && !nodeCorpus.getUriCount().isEmpty()) {
-                            nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                            nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##value##", nodeFullConcept.getPrefLabel().getLabel()));
                         }
                     }
                     if (nodeCorpus.getUriLink().contains("##value##")) {
-                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                        nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeFullConcept.getPrefLabel().getLabel()));
                     }
                     setCorpusCount(nodeCorpus);
                 }
@@ -148,7 +139,6 @@ public class SearchCorpus2 {
         try {
             JsonReader reader = Json.createReader(new StringReader(jsonText));
             jsonObject = reader.readObject();
-            //         System.err.println(jsonText + " #### " + nodeConcept.getConcept().getIdConcept());
             int count = jsonObject.getInt("count");
             if (count > 0) {
                 haveCorpus = true;
