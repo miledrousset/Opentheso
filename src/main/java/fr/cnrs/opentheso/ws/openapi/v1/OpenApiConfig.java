@@ -27,6 +27,7 @@ import javax.ws.rs.ext.Provider;
                 @Tag(name = "Group", description = "${definition.tags.group.description}$"),
                 @Tag(name = "Ark", description = "${definition.tags.ark.description}$"),
                 @Tag(name = "Ontome", description = "${definition.tags.ontome.description}$"),
+                @Tag(name = "Graph", description = "${definition.tags.graph.description}$"),
                 @Tag(name = "Concept Write", description = "${definition.tags.conceptWrite.description}$")
         },
         servers = {

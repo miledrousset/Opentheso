@@ -22,3 +22,7 @@ body {
     color: #cb0000;
     font-weight: bold;
 }
+
+.show-settings {
+    transform: translateX(1000px);
+}

@@ -23,29 +23,32 @@ export class Graph {
     linkCurvature;
     linkNodeIntersectionOffset;
     language;
+    dataFormat;
 
-    constructor(data, lang, params = DefaultGraphSettings) {
+    constructor(data, lang, format, params = DefaultGraphSettings) {
         //Initialisation des données
         console.log(data);
-        this.dataLinks = data.relationships.filter(
-            (value) => value.type == "relationship"
-        );
 
-        this.dataLinks.forEach(function (l) {
-            l.source = l.start.id;
-            l.target = l.end.id;
-        });
-
-        this.dataNodes = data.nodes.filter((value) => value.type == "node");
-
-        this.dataThesoLinks = data.thesaurus.filter(
-            (value) => value.type == "relationship"
-        );
+        if(format === "opentheso"){
+            this.dataNodes = data.nodes
+            this.dataLinks = data.relationships
+            this.dataLinks.forEach(function (l) {
+                l.source = l.start;
+                l.target = l.end;
+                l.id = `${l.source}__${l.target}__${l.label}`;
+            });
+            this.dataThesoLinks = this.dataLinks.filter(
+                (value) => value.label === "skos__inScheme"
+            );
+        } else {
+            console.log("format non pris en charge")
+        }
 
         this.language = lang;
 
         console.log(this.dataNodes);
         console.log(this.dataLinks);
+        console.log(this.dataThesoLinks)
         //Initialisation des paramètres
         this.linkForceDistance = params.LINK_FORCE_DISTANCE
             ? params.LINK_FORCE_DISTANCE
@@ -93,15 +96,21 @@ export class Graph {
     //Verifie si une relation existe dans le tableau dataThesoLinks avec comme point de départ le noeud passé en paramètres.
     //Si c'est un Thésaurus, retourner l'URI du thésaurus
     isInTheso(node) {
+
         if (node.labels.includes("skos__ConceptScheme")) {
-            return node.properties.uri;
+            return node.id;
+        }
+
+        if (node.labels.includes("skos__Collection")) {
+            return "skos__Collection";
         }
 
         const relationships = this.dataThesoLinks.filter(
-            (thesoRel) => thesoRel.start.properties.uri == node.properties.uri
+            (thesoRel) => thesoRel.start == node.id
         );
+
         if (relationships.length > 0) {
-            return relationships[0].end.properties.uri;
+            return relationships[0].end;
         }
         return "no-thesaurus-associated";
     }
@@ -186,6 +195,7 @@ export class Graph {
             .text((d) => {
                 if (
                     d.labels.includes("skos__Concept") ||
+                    d.labels.includes("skos__Collection") ||
                     d.labels.includes("skos__ConceptScheme")
                 ) {
                     if (typeof d.properties.skos__prefLabel != "string") {
@@ -341,11 +351,23 @@ export class Graph {
             .querySelectorAll(`#${selectFilterNodesId} option:checked`)
             .forEach((opt) => nodesFilter.push(opt.value));
 
+        this.filteredNodes = this.dataNodes.filter((node) => {
+            let filterWithoutResource = nodesFilter
+            if(nodesFilter.includes("Resource")){
+                if(node.labels.length == 1){
+                    return node.labels.includes("Resource")
+                }
+                filterWithoutResource = nodesFilter.filter((fil) => fil != "Resource")
+            }
+            return node.labels.filter((nLabel) => filterWithoutResource.includes(nLabel)).length > 0;
+
+        });
+
         this.filteredLinks = this.dataLinks.filter((d) =>
-            linksFilter.includes(d.label)
+            linksFilter.includes(d.label) && this.filteredNodes.filter((node) => node.id == d.start).length > 0 && this.filteredNodes.filter((node) => node.id == d.end).length > 0
         );
 
-        this.filteredNodes = this.dataNodes;
+
 
         const content = this.svg.append("g").attr("id", "graph-content");
 
