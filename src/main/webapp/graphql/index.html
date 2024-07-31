@@ -2,8 +2,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Notice GraphQL</title>
-    <link rel="icon" type="image/png" href="../resources/img/graphql.png">
+    <title>GraphQl API Documentation</title>
     <style>
         /* cspell:disable-file */
         /* webkit printing magic: print all background colors */
@@ -32,7 +31,6 @@
 
         body {
             line-height: 1.5;
-            white-space: pre-wrap;
         }
 
         a,
@@ -823,287 +821,60 @@
             background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
         }
     </style>
+    <link rel="icon" href="https://img.icons8.com/?size=100&amp;id=KRA1PoZgRrca&amp;format=png&amp;color=000000"
+        type="image/x-icon" />
 </head>
 
 <body>
-    <article id="29f97c00-0269-4417-8884-802203479fc8" class="page sans">
-        <header><img class="page-cover-image"
-                src="https://images.unsplash.com/photo-1623282033815-40b05d96c903?ixlib=rb-4.0.3&amp;q=85&amp;fm=jpg&amp;crop=entropy&amp;cs=srgb"
-                style="object-position:center 50%" />
-            <div class="page-header-icon page-header-icon-with-cover"><img class="icon"
+    <article id="363609d2-2c0b-4c10-a5ad-48be5d167285" class="page sans">
+        <header>
+            <div class="page-header-icon undefined"><img class="icon"
                     src="https://img.icons8.com/?size=100&amp;id=KRA1PoZgRrca&amp;format=png&amp;color=000000" /></div>
-            <h1 class="page-title">Notice GraphQL</h1>
+            <h1 class="page-title">GraphQl API Documentation</h1>
             <p class="page-description"></p>
         </header>
         <div class="page-body">
-            <h1 id="5147b689-1629-4b4c-a8f2-27b918ed9d09" class="">Notice GraphQL</h1>
-            <h1 id="838b46f5-3782-46e2-bfd9-e433ff6998b1" class="">1. Introduction</h1>
-            <p id="0616f11b-5c26-4f40-8f07-f2885d918eb1" class="">GraphQL est un langage de requête pour les API dont
+            <p id="0c13da06-a332-4fcc-a6ae-f0e174dc0dad" class="">Ici suivront des exemples d’utilisation de requêtes à
+                l’API GraphQL.</p>
+            <h1 id="49e7deba-880a-4427-bc26-179672269b46" class="">1. Introduction</h1>
+            <p id="8f803f18-7128-4133-9a14-0e8589075114" class="">GraphQL est un langage de requête pour les API dont
                 les requêtes comportent un schéma à respecter pour le retour. De cette manière, le client peut demander
                 précisément les données dont il a besoin sans plus.</p>
-            <p id="afc5dde7-cc1d-424a-b81e-24bd26833aea" class="">A travers cette documentation, vous serez guidés dans
+            <p id="7e8cd796-24d3-448c-953a-92912ef37347" class="">A travers cette documentation, vous serez guidés dans
                 le processus de mise en place d’un serveur GraphQL aves Tomcat et sans Spring Boot.</p>
-            <h1 id="94563a39-d9e3-43a2-944b-f55a2063d28c" class="">2. Prérequis</h1>
-            <p id="48baaad1-32bc-42ea-8331-cc1764aaa02b" class="">Avant de commencer, assurez vous d’avoir les éléments
-                suivants installés :</p>
-            <ul id="e34170e4-fd8a-4493-8023-900400864ba7" class="bulleted-list">
-                <li style="list-style-type:disc">JDK 8 ou supérieur</li>
-            </ul>
-            <ul id="5c96dfda-c623-49d6-b568-045346258dcf" class="bulleted-list">
-                <li style="list-style-type:disc">Tomcat 9 ou Supérieur</li>
-            </ul>
-            <ul id="438b89b4-003a-4f2b-b9bd-1e3acd8ddb12" class="bulleted-list">
-                <li style="list-style-type:disc">Maven pour la gestion de dépendances</li>
-            </ul>
-            <h1 id="2e5ccda8-7e04-4c85-814e-b83c0422d17e" class="">3. Dépendances Maven</h1>
-            <p id="28996e3f-97d4-4785-8d73-33f9c252dd05" class="">Voici la liste des dépendances nécessaires au bon
-                fonctionnement du service GraphQL</p>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
-                integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
-                crossorigin="anonymous" referrerPolicy="no-referrer"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
-                integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
-                crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="0d5fbe4a-7fda-4adb-9d79-7fcc4104b682" class="code"><code class="language-XML" style="white-space:pre-wrap;word-break:break-all">&lt;dependencies&gt;
-    &lt;!-- GraphQL Java --&gt;    &lt;dependency&gt;
-        &lt;groupId&gt;com.graphql-java&lt;/groupId&gt;
-        &lt;artifactId&gt;graphql-java&lt;/artifactId&gt;
-        &lt;version&gt;18.0&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;!-- Servlet API --&gt;    &lt;dependency&gt;
-        &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
-        &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
-        &lt;version&gt;4.0.1&lt;/version&gt;
-        &lt;scope&gt;provided&lt;/scope&gt;
-    &lt;/dependency&gt;
-    &lt;!-- JSON Processing --&gt;    &lt;dependency&gt;
-        &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
-        &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
-        &lt;version&gt;2.12.3&lt;/version&gt;
-    &lt;/dependency&gt;
-&lt;/dependencies&gt;</code></pre>
-            <h1 id="59fa5853-bec0-4f1f-bb78-5b2085d5c8bc" class="">4. Création du servlet et du schéma</h1>
-            <p id="69d9045a-7ab4-48fd-9127-5386481dc3f4" class="">
+            <p id="498bdc06-3184-4ff8-bcfd-ccd1c2591a4d" class="">Pour l’instant, 9 schémas de données sont implémentés:
             </p>
-            <p id="0f0d70e1-b85b-436d-85cd-c8f9c253cc6c" class="">Pour créer une query GraphQL,on a besoin d’un servlet.
-                Il va jouer le rôle de “serveur” pour héberger la route POST de l’API.<br />Dans ce servlet, il nous
-                faut des schémas de données. C’est eux qui vont rendre les données exploitables pour nos futurs
-                requêtes. Ils définissent les différents types de données que l’on va utiliser.<br /></p>
-            <p id="3b286483-bc4a-46a1-92db-995310cbaf2a" class="">
-            </p>
-            <p id="32780001-b050-484d-bcdd-a1f47aa4f12c" class="">
-            </p>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
-                integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
-                crossorigin="anonymous" referrerPolicy="no-referrer"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
-                integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
-                crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="c836c24a-1f8a-44b3-b79e-a43b5f93e9a5" class="code"><code class="language-Java" style="white-space:pre-wrap;word-break:break-all">package fr.cnrs.opentheso.ws.openapi.v1.routes.graphql;
-
-import com.google.gson.Gson;
-import graphql.ExecutionInput;
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.schema.GraphQLObjectType;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.StaticDataFetcher;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.Map;
-
-@WebServlet(name = &quot;GraphQLServlet&quot;, urlPatterns = {&quot;/graphql&quot;})
-        public class GraphQLServlet extends HttpServlet {
-        private final GraphQL graphQL;
-        private final Gson gson;
-
-        public GraphQLServlet() {
-        this.gson = new Gson();
-
-    // Define your GraphQL schema here
-    GraphQLSchema schema = buildSchema();
-    this.graphQL = GraphQL.newGraphQL(schema).build();
-}
-
-private GraphQLSchema buildSchema() {
-    return GraphQLSchema.newSchema()
-            .query(GraphQLObjectType.newObject()
-                    .name(&quot;Query&quot;)
-                    .field(field -&gt; field
-                            .name(&quot;hello&quot;)
-                            .type(graphql.Scalars.GraphQLString)
-                            .dataFetcher(new StaticDataFetcher(&quot;world&quot;)))
-                    .build())
-            .build();
-}
-
-@Override
-protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            // Read and parse the JSON request body
-                    StringBuilder stringBuilder = new StringBuilder();
-                    try (BufferedReader reader = req.getReader()) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                            stringBuilder.append(line);
-                            }
-                            }
-
-                            // Convert JSON to Map
-                            Map&lt;String, Object&gt; requestMap = gson.fromJson(stringBuilder.toString(), Map.class);
-                            String query = (String) requestMap.get(&quot;query&quot;);
-
-                            // Execute GraphQL query
-                            ExecutionInput executionInput = ExecutionInput.newExecutionInput()
-                            .query(query)
-                            .build();
-
-                            ExecutionResult executionResult = graphQL.execute(executionInput);
-
-                            // Convert execution result to JSON response
-                            String jsonResponse = gson.toJson(executionResult.toSpecification());
-
-                            // Write JSON response back to client
-                            resp.setContentType(&quot;application/json&quot;);
-                            resp.setCharacterEncoding(&quot;UTF-8&quot;);
-                            resp.getWriter().write(jsonResponse);
-            }
-            }
-</code></pre>
-            <p id="4ae0283c-9ef5-4218-ad75-7bf4406b68c6" class="">Exemple de code pour un servlet sur un serveur Tomcat
-                en Java</p>
-            <p id="d606d469-2204-48c6-adac-d4ffbf876439" class="">Pour chaque classe qu’on veut pouvoir requêter sur
-                notre API, il faut lui définir un schéma ainsi que des data fetcher qui permettent à GraphQL de
-                retrouver les données</p>
-            <p id="aa0da6b5-aab2-4064-a164-640c94c2245d" class="">
-            </p>
-            <h1 id="d62a5337-ff1a-475d-a20c-838f89877dc8" class="">5. Schémas</h1>
-            <p id="6334605c-88bb-4141-b492-252a2d7b347c" class="">Pour l’instant, 9 schémas de données sont implémentés:
-            </p>
-            <ul id="2ab01f3b-1bc8-47cc-b1d5-0d0a5173067f" class="bulleted-list">
+            <ul id="91a2dfc6-9709-4975-96e9-1ee9e1ffc540" class="bulleted-list">
                 <li style="list-style-type:disc">NodeFullConcept</li>
-            </ul>
-            <ul id="11d75c6b-d853-403a-8561-8103e5fb0101" class="bulleted-list">
                 <li style="list-style-type:disc">SearchResults</li>
-            </ul>
-            <ul id="dfb6e2a4-f5dd-4a5f-8ba4-142291b5fe51" class="bulleted-list">
                 <li style="list-style-type:disc">ConceptCustomRelation</li>
-            </ul>
-            <ul id="cc7d6fbc-0e00-4df6-a668-e4bc69b13547" class="bulleted-list">
                 <li style="list-style-type:disc">ConceptIdLabel</li>
-            </ul>
-            <ul id="3b95d1a6-1641-4a14-a483-d3ef90aadd4b" class="bulleted-list">
                 <li style="list-style-type:disc">ConceptImage</li>
-            </ul>
-            <ul id="a813268f-abd7-4639-abcc-a510daca193c" class="bulleted-list">
                 <li style="list-style-type:disc">ResourceGPS</li>
-            </ul>
-            <ul id="035c9c44-10b1-4f37-9ec6-4cc8580fe98a" class="bulleted-list">
                 <li style="list-style-type:disc">ConceptNote</li>
-            </ul>
-            <ul id="9a60c471-e8bd-4985-a29d-2103c3402b0d" class="bulleted-list">
                 <li style="list-style-type:disc">ConceptRelation</li>
-            </ul>
-            <ul id="1235c0b6-9891-4c14-adb0-d537a5ad6400" class="bulleted-list">
                 <li style="list-style-type:disc">ConceptLabel</li>
             </ul>
-            <p id="c4715e5f-1b2d-47ae-b95c-c3f4b08edd6c" class="">Les 2 principaux sont NodeFullConcept et
+            <p id="18c714fd-6eeb-4e81-9cdf-e697d9576a6f" class="">Les 2 principaux sont NodeFullConcept et
                 SearchResults. Les autres types ne peuvent pas être requêtés car ils servent à NodeFullConcept.</p>
-            <p id="8fb959da-ef76-447f-b844-9f774bb898b4" class="">Le type SearchResults est en fait une fonction qui
+            <p id="4db895ce-ee3d-45d2-8671-843c654c56d9" class="">Le type SearchResults est en fait une fonction qui
                 permet de rechercher un terme à partir de la langue, et l’id d’un thésaurus et nous retourne une liste
                 de concepts. </p>
-            <p id="3b4a3848-d71a-4c79-8c1b-197221ba8fbb" class="">
+            <p id="78000bc0-1b45-4a00-9732-5fb555ee6f14" class="">
             </p>
-            <p id="870e46dd-a7af-4a94-8af5-21bb9c0d766c" class="">L’objectif avec GraphQL est de pouvoir manipuler les
+            <p id="40e681ea-ca51-43f2-a8ef-b739060c5f68" class="">L’objectif avec GraphQL est de pouvoir manipuler les
                 données lors de la requête pour récupérer uniquement ce dont on a besoin.</p>
-            <p id="7d954d66-4291-49dc-8bfb-5c0b85ccd3cc" class="">
+            <h2 id="e96a8fde-c00e-478c-ab0b-6852c49a0210" class="">NodeFullConcept</h2>
+            <p id="4b3bfef8-1861-4d36-86b7-957c6de2df3f" class="">
             </p>
-            <p id="087c9356-9b89-4d8e-90f4-59702111fb03" class="">Ci-dessous les deux schémas principaux : </p>
+            <p id="e10ee318-0b33-4282-807b-dadc5a25f7e9" class="">Requête sur l’entité complète :</p>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
                 integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
                 crossorigin="anonymous" referrerPolicy="no-referrer"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
                 integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
                 crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="e48c19fd-5149-4697-a591-db9296c5dc9e" class="code"><code class="language-Java">GraphQLObjectType nodeFullConceptType = GraphQLObjectType.newObject()
-                .name(&quot;NodeFullConcept&quot;)
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;uri&quot;).type(Scalars.GraphQLString))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;resourceType&quot;).type(Scalars.GraphQLInt))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;identifier&quot;).type(Scalars.GraphQLString))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;permanentId&quot;).type(Scalars.GraphQLString))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;notation&quot;).type(Scalars.GraphQLString))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;resourceStatus&quot;).type(Scalars.GraphQLInt))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;created&quot;).type(Scalars.GraphQLString))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;modified&quot;).type(Scalars.GraphQLString))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;creatorName&quot;).type(Scalars.GraphQLString))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;contributorName&quot;).type(new GraphQLList(Scalars.GraphQLString)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;prefLabel&quot;).type(conceptLabelType))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;altLabels&quot;).type(new GraphQLList(conceptLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;hiddenLabels&quot;).type(new GraphQLList(conceptLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;prefLabelsTraduction&quot;).type(new GraphQLList(conceptLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;altLabelTraduction&quot;).type(new GraphQLList(conceptLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;hiddenLabelTraduction&quot;).type(new GraphQLList(conceptLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;narrowers&quot;).type(new GraphQLList(conceptRelationType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;broaders&quot;).type(new GraphQLList(conceptRelationType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;relateds&quot;).type(new GraphQLList(conceptRelationType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;notes&quot;).type(new GraphQLList(conceptNoteType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;definitions&quot;).type(new GraphQLList(conceptNoteType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;examples&quot;).type(new GraphQLList(conceptNoteType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;editorialNotes&quot;).type(new GraphQLList(conceptNoteType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;changeNotes&quot;).type(new GraphQLList(conceptNoteType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;scopeNotes&quot;).type(new GraphQLList(conceptNoteType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;historyNotes&quot;).type(new GraphQLList(conceptNoteType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;exactMatchs&quot;).type(new GraphQLList(Scalars.GraphQLString)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;closeMatchs&quot;).type(new GraphQLList(Scalars.GraphQLString)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;broadMatchs&quot;).type(new GraphQLList(Scalars.GraphQLString)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;relatedMatchs&quot;).type(new GraphQLList(Scalars.GraphQLString)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;narrowMatchs&quot;).type(new GraphQLList(Scalars.GraphQLString)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;gps&quot;).type(new GraphQLList(resourceGPSType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;images&quot;).type(new GraphQLList(conceptImageType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;membres&quot;).type(new GraphQLList(conceptIdLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;replacedBy&quot;).type(new GraphQLList(conceptIdLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;replaces&quot;).type(new GraphQLList(conceptIdLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;facets&quot;).type(new GraphQLList(conceptIdLabelType)))
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;nodeCustomRelations&quot;).type(new GraphQLList(conceptCustomRelationType)))
-                .build();</code></pre>
-            <p id="46b13349-ed2e-4f41-bc04-b8646ff8c9f0" class="">Schéma NodeFullConcept</p>
-            <p id="f95b5e3e-8e5f-497b-9c2e-723a4fd32367" class="">
-            </p>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
-                integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
-                crossorigin="anonymous" referrerPolicy="no-referrer"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
-                integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
-                crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="d973f420-1bc8-4e3e-8fc2-7868b9342565" class="code"><code class="language-Java">GraphQLObjectType searchResultsType = GraphQLObjectType.newObject()
-                .name(&quot;SearchResults&quot;)
-                .field(GraphQLFieldDefinition.newFieldDefinition().name(&quot;results&quot;).type(new GraphQLList(nodeFullConceptType)))
-                .build();</code></pre>
-            <p id="58ae4fc2-a8c6-4796-a5e3-1323bd7b0343" class="">Schéma SearchResults</p>
-            <p id="fb03f813-7cd7-44c3-912e-780848a15c6c" class="">
-            </p>
-            <p id="02820036-da70-4c11-b156-094919e0cf8d" class="">
-            </p>
-            <h1 id="7e1f4038-d361-4fa1-844e-9ddc5528e0a5" class="">6. Requêtes</h1>
-            <p id="3e293923-fc62-4e0b-b31b-74acff44baca" class="">
-            </p>
-            <p id="ce09c58b-d618-4b3f-b9bc-b14c34950e6a" class="">Ici seront des exemples de requêtes pour l’API GraphQL
-            </p>
-            <p id="721bbe02-a3c5-4800-a206-154372baf8bf" class="">
-            </p>
-            <h2 id="7e628b85-4614-4c8a-9bcf-d253e3657059" class="">NodeFullConcept</h2>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
-                integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
-                crossorigin="anonymous" referrerPolicy="no-referrer"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
-                integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
-                crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="b6e1d33a-bb7e-471e-b06b-57c19bc5ee08" class="code"><code class="language-GraphQL">query {
+            <pre id="90f446b2-a4a8-4702-9337-ec3055d77030" class="code"><code class="language-GraphQL">query {
     fullConcept(idTheso: &quot;th2&quot;, idConcept: &quot;169&quot;, idLang: &quot;fr&quot;) {
     uri
     resourceType
@@ -1256,12 +1027,13 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
     }
   }
 }
-
-
-
 </code></pre>
-            <hr id="e53d9236-09ae-4ae9-bcf7-9104f7b73403" />
-            <p id="275a0463-3c04-4b2c-9be0-3b4d9d8551da" class="">Cette requête permets de récupérer tout un concept et
+            <p id="0d919a04-e487-482f-8bc6-675da033dc83" class="">
+            </p>
+            <hr id="836e74ec-88e2-492c-b09c-55436284ae2d" />
+            <p id="f59e757b-28a4-4378-bbe9-a12ba17a74b6" class="">
+            </p>
+            <p id="752b9ab6-9a41-410a-954f-95c1dd04e9e5" class="">Cette requête permets de récupérer tout un concept et
                 l’ensemble de ses attributs. C’est assez fastidieux de faire une requête sur un concept complet. On va
                 donc récupérer l’uri, l’identifiant et le prefLabel d’un concept avec la requête suivante :</p>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
@@ -1270,27 +1042,30 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
                 integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
                 crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="df449bbf-1a10-4bcc-9d34-dd8d840b3439" class="code"><code class="language-GraphQL">query {
+            <pre id="e29839e1-8f2f-4c4b-8c98-8d5943ced4cf" class="code"><code class="language-GraphQL">query {
     fullConcept(idTheso: &quot;th2&quot;, idConcept: &quot;169&quot;, idLang: &quot;fr&quot;) {
     uri
     identifier
     prefLabel {
         idTerm
-            id
-            label
-            idLang
-            codeFlag
-            }
-            }
-            }</code></pre>
-            <p id="3fc9c013-263b-4e49-99ce-f6485d812449" class="">De cette manière, on récupère l’objet suivant : </p>
+        id
+        label
+        idLang
+        codeFlag
+        }
+    }
+}</code>
+        </pre>
+            <p id="4f244f33-d1b9-414e-98c8-10188a9b1d50" class="">
+            </p>
+            <p id="eb6fc861-bf18-4bb1-8841-a3a0cf9ed1a6" class="">De cette manière, on récupère l’objet suivant : </p>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
                 integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
                 crossorigin="anonymous" referrerPolicy="no-referrer"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
                 integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
                 crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="554ebe7e-c790-44aa-b282-afd84edff78e" class="code"><code class="language-GraphQL">{
+            <pre id="df708b1e-9c87-46d9-8fb3-b828751efafe" class="code"><code class="language-GraphQL">{
             &quot;data&quot;: {
             &quot;fullConcept&quot;: {
             &quot;uri&quot;: &quot;http://mondomaine.fr//?idc=169&amp;idt=th2&quot;,
@@ -1303,16 +1078,18 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
         }
     }
 }</code></pre>
-            <p id="5fcfb99f-8b98-4c5d-afd2-4135a247749b" class="">
+            <p id="8c78ed8c-67cf-4b91-998c-260738277ce0" class="">
             </p>
-            <h2 id="822a6e09-8e2e-4e36-a72e-c6c5b03bc14e" class="">SearchConcepts</h2>
+            <hr id="0bb18ce0-c440-49d4-85ea-f49251fba8c7" />
+            <h2 id="a7adf31c-8702-4863-ab7f-e79deff5b1b6" class="">SearchConcepts</h2>
+            <p id="f0a007dd-d253-4cfc-a45f-0a6f746f85a7" class="">Requête sur l’entité complète :</p>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
                 integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
                 crossorigin="anonymous" referrerPolicy="no-referrer"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
                 integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
                 crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="2db57a83-f191-4d4e-9e47-875366706703" class="code"><code class="language-GraphQL">query {
+            <pre id="09698c7a-833a-48e6-be44-056f7b4c4cf1" class="code"><code class="language-GraphQL">query {
     searchConcepts(value: &quot;en&quot;, idLang: &quot;fr&quot;, idGroups: [], idTheso: &quot;th3&quot;){
       uri
       resourceType
@@ -1465,16 +1242,16 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
       }
     }
   }</code></pre>
-            <p id="8bc58c84-3ff3-488d-86b3-679f911aab2d" class="">
+            <p id="fca5d4b4-aa87-4190-9628-ce2bd9e4dcdc" class="">
             </p>
-            <p id="989917d9-0ad0-4c26-aa2a-c2bf9b66c1c7" class="">Une requête typique serait de cette forme : </p>
+            <p id="449ede50-ebd3-49c9-8553-08f1f69de33b" class="">Une requête typique serait de cette forme : </p>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
                 integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
                 crossorigin="anonymous" referrerPolicy="no-referrer"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
                 integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
                 crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="6a79f80a-8e9d-4b76-859b-fc2a5151a22b" class="code"><code class="language-GraphQL">query {
+            <pre id="5c9c406b-ed06-4ccc-ad98-0d1256c42031" class="code"><code class="language-GraphQL">query {
     searchConcepts(value: &quot;Adriatic ampho&quot;, idLang: &quot;en&quot;, idGroups: [], idTheso: &quot;th3&quot;) {
     uri
     identifier
@@ -1487,14 +1264,14 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
             }
             }
             }</code></pre>
-            <p id="bc318d77-5ce0-4b16-b66e-acd3f98e49e9" class="">On aurait une réponse de ce type : </p>
+            <p id="da022661-4bf1-4437-a32e-a51e388b05d1" class="">On aurait une réponse de ce type : </p>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
                 integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg=="
                 crossorigin="anonymous" referrerPolicy="no-referrer"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
                 integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
                 crossorigin="anonymous" referrerPolicy="no-referrer" />
-            <pre id="da5d13cc-2ada-40b6-a57a-213de46ee181" class="code"><code class="language-GraphQL">{
+            <pre id="b9a2403b-63f3-4d9c-8ff0-f86222508f41" class="code"><code class="language-GraphQL">{
             &quot;data&quot;: {
             &quot;searchConcepts&quot;: [
             {
