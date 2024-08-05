@@ -5,8 +5,20 @@
  */
 package fr.cnrs.opentheso.core.alignment.helper;
 
-import com.bordercloud.sparql.Endpoint;
-import com.bordercloud.sparql.EndpointException;
+//import com.bordercloud.sparql.Endpoint;
+//import com.bordercloud.sparql.EndpointException;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.eclipse.rdf4j.query.MalformedQueryException;
+
+
+import java.util.Collections;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +35,11 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonReader;
 import javax.net.ssl.HttpsURLConnection;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 /**
  *
@@ -158,7 +172,86 @@ public class WikidataHelper {
      * @param source
      * @return
      */
+    
     public List<NodeAlignment> queryWikidata_sparql(String idC, String idTheso, String lexicalValue, String lang,
+            String requete, String source) {
+        List<NodeAlignment> listAlignValues = new ArrayList<>();
+
+        String sparqlEndpoint = "https://query.wikidata.org/sparql";
+        SPARQLRepository repo = new SPARQLRepository(sparqlEndpoint);
+
+        String userAgent = "opentheso";
+        repo.setAdditionalHttpHeaders( Collections.singletonMap("User-Agent", userAgent ) );
+        
+        
+        List<Map<String, String>> resultsList = new ArrayList<>();
+
+        try (RepositoryConnection conn = repo.getConnection()) {
+            TupleQuery query = conn.prepareTupleQuery(requete);
+            try (TupleQueryResult result = query.evaluate()) {
+                while (result.hasNext()) {
+                    BindingSet bindingSet = result.next();
+                    Map<String, String> resultMap = new HashMap<>();
+
+                    for (String bindingName : bindingSet.getBindingNames()) {
+                        Value value = bindingSet.getValue(bindingName);
+                        if (value != null) {
+                            resultMap.put(bindingName, value.stringValue());
+                        }
+                    }
+
+                    resultsList.add(resultMap);
+                }
+            } catch (QueryEvaluationException | RepositoryException ex) {
+                ex.printStackTrace();
+            }
+            
+        } catch (RepositoryException | MalformedQueryException ex) {
+            ex.printStackTrace();
+        }        
+        for (Map<String, String> result : resultsList) {
+            NodeAlignment na = new NodeAlignment();
+            na.setInternal_id_concept(idC);
+            na.setInternal_id_thesaurus(idTheso);    
+            
+            // label ou Nom
+            if (result.get("itemLabel") != null) {
+                na.setConcept_target(result.get("itemLabel"));
+            } else {
+                continue;
+            }       
+            // description
+            if (result.get("itemDescription") != null) {
+                na.setDef_target(result.get("itemDescription"));
+            } else {
+                na.setDef_target("");
+            }     
+            na.setThesaurus_target(source);            
+            // URI
+            if (result.get("item") != null) {
+                na.setUri_target(result.get("item"));
+            } else {
+                continue;
+            }
+            listAlignValues.add(na);            
+        }         
+        return listAlignValues;
+    }
+    
+    
+    /**
+     * Alignement du thésaurus vers la source Wikidata en Sparql et en retour du
+     * Json
+     *
+     * @param idC
+     * @param idTheso
+     * @param lexicalValue
+     * @param lang
+     * @param requete
+     * @param source
+     * @return
+     */
+ /*   public List<NodeAlignment> queryWikidata_sparql2(String idC, String idTheso, String lexicalValue, String lang,
             String requete, String source) {
 
         List<NodeAlignment> listAlignValues = new ArrayList<>();
@@ -216,7 +309,10 @@ public class WikidataHelper {
             return null;
         }
         return listAlignValues;
-    }
+    }    */
+    
+    
+    
 
     /**
      * Cette fonction permet de récupérer les options de Wikidata Images,

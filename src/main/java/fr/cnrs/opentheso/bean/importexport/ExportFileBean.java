@@ -996,8 +996,8 @@ public class ExportFileBean implements Serializable {
                     Resource subject = stmt.getSubject();
                     Property predicate = stmt.getPredicate();
                     RDFNode object = stmt.getObject();
-                    Triple tri = new Triple(subject.asNode(), predicate.asNode(), object.asNode());
-                    virtGraph.add(tri);
+                //    Triple tri = new Triple(subject.asNode(), predicate.asNode(), object.asNode());
+                 //   virtGraph.add(tri);
                 }
             }
             virtGraph.close();
