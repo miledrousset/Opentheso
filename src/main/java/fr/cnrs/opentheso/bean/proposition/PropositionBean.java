@@ -148,40 +148,64 @@ public class PropositionBean implements Serializable {
     }
 
     public void checkSynonymPropositionStatus() {
-        varianteAccepted = proposition.getSynonymsProp().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
+            if (synonymPropBean.isToAdd() || synonymPropBean.isToRemove()
+                    || synonymPropBean.isToUpdate()) {
+                varianteAccepted = true;
+            }
+        }
     }
 
     public void checkTraductionPropositionStatus() {
-        traductionAccepted = proposition.getTraductionsProp().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        for (TraductionPropBean traductionPropBean : proposition.getTraductionsProp()) {
+            if (traductionPropBean.isToAdd() || traductionPropBean.isToRemove()
+                    || traductionPropBean.isToUpdate()) {
+                traductionAccepted = true;
+            }
+        }
     }
 
     public void checkNotePropositionStatus() {
-        if (CollectionUtils.isNotEmpty(proposition.getNote())) {
-            noteAccepted = proposition.getNote().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getNote() != null) {
+            if (proposition.getNote().isToAdd() || proposition.getNote().isToRemove() || proposition.getNote().isToUpdate()) {
+                noteAccepted = true;
+            }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
-            definitionAccepted = proposition.getDefinitions().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getDefinition() != null) {
+            if (proposition.getDefinition().isToAdd() || proposition.getDefinition().isToRemove() || proposition.getDefinition().isToUpdate()) {
+                definitionAccepted = true;
+            }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
-            changeNoteAccepted = proposition.getChangeNotes().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getChangeNote() != null) {
+            if (proposition.getChangeNote().isToAdd() || proposition.getChangeNote().isToRemove() || proposition.getChangeNote().isToUpdate()) {
+                changeNoteAccepted = true;
+            }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getScopeNotes())) {
-            scopeAccepted = proposition.getScopeNotes().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getScopeNote() != null) {
+            if (proposition.getScopeNote().isToAdd() || proposition.getScopeNote().isToRemove() || proposition.getScopeNote().isToUpdate()) {
+                scopeAccepted = true;
+            }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getEditorialNotes())) {
-            editorialNotesAccepted = proposition.getEditorialNotes().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getEditorialNote() != null) {
+            if (proposition.getEditorialNote().isToAdd() || proposition.getEditorialNote().isToRemove() || proposition.getEditorialNote().isToUpdate()) {
+                editorialNotesAccepted = true;
+            }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getExamples())) {
-            examplesAccepted = proposition.getExamples().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getExample() != null) {
+            if (proposition.getExample().isToAdd() || proposition.getExample().isToRemove() || proposition.getExample().isToUpdate()) {
+                examplesAccepted = true;
+            }
         }
 
-        if (CollectionUtils.isNotEmpty(proposition.getHistoryNotes())) {
-            historyAccepted = proposition.getHistoryNotes().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getHistoryNote() != null) {
+            if (proposition.getHistoryNote().isToAdd() || proposition.getHistoryNote().isToRemove() || proposition.getHistoryNote().isToUpdate()) {
+                historyAccepted = true;
+            }
         }
 
     }
@@ -310,7 +334,7 @@ public class PropositionBean implements Serializable {
         if (currentUser.getNodeUser() == null) {
             rightBodySetting.setIndex("2");
         } else {
-            if (ObjectUtils.isNotEmpty(roleOnThesoBean.getNodeUserRoleGroup()) && roleOnThesoBean.getNodeUserRoleGroup().isIsContributor()) {
+            if (roleOnThesoBean.getNodeUserRoleGroup().isIsContributor()) {
                 rightBodySetting.setIndex("2");
             } else {
                 rightBodySetting.setIndex("3");
@@ -404,50 +428,66 @@ public class PropositionBean implements Serializable {
     }
 
     private boolean isHistoryNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getHistoryNotes())) {
-            return proposition.getHistoryNotes().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getHistoryNote() != null) {
+            if (proposition.getHistoryNote().isToAdd() || proposition.getHistoryNote().isToRemove() || proposition.getHistoryNote().isToUpdate()) {
+                return true;
+            }
         }
         return false;
     }
 
     private boolean isScopeNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getScopeNotes())) {
-            return proposition.getScopeNotes().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getScopeNote() != null) {
+            if (proposition.getScopeNote().isToAdd() || proposition.getScopeNote().isToRemove() || proposition.getScopeNote().isToUpdate()) {
+                return true;
+            }
         }
+
         return false;
     }
 
     private boolean isExempleNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getExamples())) {
-            return proposition.getExamples().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getExample() != null) {
+            if (proposition.getExample().isToAdd() || proposition.getExample().isToRemove() || proposition.getExample().isToUpdate()) {
+                return true;
+            }
         }
         return false;
     }
 
     private boolean isEditorialNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getEditorialNotes())) {
-            return proposition.getEditorialNotes().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getEditorialNote() != null) {
+            if (proposition.getEditorialNote().isToAdd() || proposition.getEditorialNote().isToRemove() || proposition.getEditorialNote().isToUpdate()) {
+                return true;
+            }
         }
         return false;
     }
 
     private boolean isNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getNote())) {
-            return proposition.getNote().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getNote() != null) {
+            if (proposition.getNote().isToAdd() || proposition.getNote().isToRemove() || proposition.getNote().isToUpdate()) {
+                return true;
+            }
         }
         return false;
     }
 
     private boolean isChangeNoteProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getChangeNotes())) {
-            return proposition.getChangeNotes().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getChangeNote() != null) {
+            if (proposition.getChangeNote().isToAdd() || proposition.getChangeNote().isToRemove() || proposition.getChangeNote().isToUpdate()) {
+                return true;
+            }
         }
+
         return false;
     }
 
     private boolean isDefinitionProPresent() {
-        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
-            return proposition.getDefinitions().stream().anyMatch(element -> element.isToAdd() || element.isToRemove() || element.isToUpdate());
+        if (proposition.getDefinition() != null) {
+            if (proposition.getDefinition().isToAdd() || proposition.getDefinition().isToRemove() || proposition.getDefinition().isToUpdate()) {
+                return true;
+            }
         }
         return false;
     }
