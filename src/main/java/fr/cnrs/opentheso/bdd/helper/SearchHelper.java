@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -374,7 +375,11 @@ public class SearchHelper {
 
         var values = List.of(formatValue(valueToSearch).trim().split(" "));
         for (String value1 : values) {
-            subQuerry += "AND f_unaccent(lower(term.lexical_value)) like '%" + value1 + "%' ";
+            if ("ar".equals(idLang)) {
+                subQuerry += "AND to_tsvector('arabic', term.lexical_value) @@ to_tsquery('arabic', '"+ Normalizer.normalize(value1, Normalizer.Form.NFKC)+"') ";
+            } else {
+                subQuerry += "AND f_unaccent(lower(term.lexical_value)) like '%" + value1 + "%' ";
+            }
         }
 
         return "SELECT DISTINCT term.lexical_value, term.lang, concept.id_concept, concept.status, term.id_term "
