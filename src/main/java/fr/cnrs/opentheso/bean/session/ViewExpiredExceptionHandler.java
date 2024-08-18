@@ -1,23 +1,20 @@
 package fr.cnrs.opentheso.bean.session;
 
-/**
- *
- * @author miled.rousset
- */
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.faces.FacesException;
-import javax.faces.application.NavigationHandler;
-import javax.faces.application.ViewExpiredException;
-import javax.faces.context.ExceptionHandler;
-import javax.faces.context.ExceptionHandlerWrapper;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ExceptionQueuedEvent;
-import javax.faces.event.ExceptionQueuedEventContext;
+import jakarta.faces.FacesException;
+import jakarta.faces.application.NavigationHandler;
+import jakarta.faces.application.ViewExpiredException;
+import jakarta.faces.context.ExceptionHandler;
+import jakarta.faces.context.ExceptionHandlerWrapper;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ExceptionQueuedEvent;
+import jakarta.faces.event.ExceptionQueuedEventContext;
 
 public class ViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
-    private ExceptionHandler handler;
+
+    private final ExceptionHandler handler;
 
     public ViewExpiredExceptionHandler(ExceptionHandler handler) {
         this.handler = handler;
@@ -45,16 +42,9 @@ public class ViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
                 NavigationHandler navigationHandler = facesContext
                         .getApplication().getNavigationHandler();
                 try {
-                  //  System.gc();
                     map.put("currentViewId", viewExpiredException.getViewId());
-                    navigationHandler
-                            .handleNavigation(facesContext, null,
-                                    "/index.xhtml?faces-redirect=true");//"viewExpired");
-                                    //"/errorPages/timeOut.xhtml?faces-redirect=true");//"viewExpired");
+                    navigationHandler.handleNavigation(facesContext, null, "/index.xhtml?faces-redirect=true");
                     facesContext.renderResponse();
-            //        System.gc();
-      //              System.gc();
-               //     System.runFinalization ();
                 } finally {
                     i.remove();
                 }

@@ -9,7 +9,7 @@ import com.sun.mail.smtp.SMTPTransport;
 import fr.cnrs.opentheso.bean.forgetpassword.ForgetPassBean;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;

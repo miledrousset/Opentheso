@@ -5,12 +5,7 @@
  */
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.*;
 import io.swagger.v3.jaxrs2.integration.resources.BaseOpenApiResource;
@@ -19,13 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.primefaces.shaded.json.JSONObject;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.*;
 
 import javax.servlet.ServletConfig;
@@ -62,7 +52,7 @@ public class OpenApiController extends BaseOpenApiResource {
             @Context UriInfo uriInfo,
             @PathParam("type") String type,
             @PathParam("lang") String lang,
-            @QueryParam("scheme") String scheme) throws Exception {
+            @QueryParam("scheme") String scheme) {
 
        Map<String, String> types = new HashMap<>();
        types.put("json", CustomMediaType.APPLICATION_JSON_UTF_8);
@@ -72,7 +62,12 @@ public class OpenApiController extends BaseOpenApiResource {
          List<String> languages = helper.availableLang();
 
          if (!languages.contains(lang.toLowerCase())) {
-             return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "The lang " + lang + " is not available", types.get(type));
+             return Response
+                     .status(Response.Status.NOT_FOUND)
+                     .entity("The lang " + lang + " is not available")
+                     .type(types.get(type))
+                     .header("Access-Control-Allow-Origin", "*")
+                     .build();
          }
 
          ResourceBundle bundle = ResourceBundle.getBundle("language.openapi", new Locale(lang));
@@ -86,12 +81,20 @@ public class OpenApiController extends BaseOpenApiResource {
             jsonOAS = jsonOAS.replace("${BASE_SERVER}$", changeURL(uriInfo, scheme));
             Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, changeURL(uriInfo, scheme));
 
-            return ResponseHelper.response(Response.Status.OK, jsonOAS, types.get(type));
+            return Response.status(Response.Status.OK)
+                    .entity(jsonOAS)
+                    .type(types.get(type))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
         } catch (Exception e) {
             Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, e.getMessage());
         }
 
-        return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", CustomMediaType.APPLICATION_JSON_UTF_8);
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Internal server error")
+                .type(CustomMediaType.APPLICATION_JSON_UTF_8)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
     }
 
     @Path("/ping")
@@ -143,13 +146,19 @@ public class OpenApiController extends BaseOpenApiResource {
         String apiKey = headers.getHeaderString("API-KEY");
         ApiKeyHelper helper = new ApiKeyHelper();
         ApiKeyState keyState = helper.checkApiKey(apiKey);
-        if (keyState != ApiKeyState.VALID){return helper.errorResponse(keyState);}
+        if (keyState != ApiKeyState.VALID){
+            return errorResponse(keyState);
+        }
         JsonObjectBuilder builder = Json.createObjectBuilder();
         builder.add("valid", true);
         builder.add("key", apiKey);
         try (HikariDataSource ds = connect()) {
             if (ds == null) {
-                return ResponseHelper.response(Response.Status.NOT_FOUND, null, CustomMediaType.APPLICATION_JSON_UTF_8);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(null)
+                        .type(CustomMediaType.APPLICATION_JSON_UTF_8)
+                        .header("Access-Control-Allow-Origin", "*")
+                        .build();
             }
 
             int roleId = userHelper.getRoleOnThisTheso(ds, helper.getIdUser(apiKey), userHelper.getUserGroupId(helper.getIdUser(apiKey), "th2").orElse(0), "th2" );
@@ -159,9 +168,11 @@ public class OpenApiController extends BaseOpenApiResource {
             throw new RuntimeException(e);
         }
 
-        Response myResponse = ResponseHelper.response(Response.Status.OK, builder.build().toString(), CustomMediaType.APPLICATION_JSON_UTF_8);
-
-        return myResponse;
+        return Response.status(Response.Status.OK)
+                .entity(builder.build().toString())
+                .type(CustomMediaType.APPLICATION_JSON_UTF_8)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
     }
 
     private String changeURL(UriInfo uriInfo, String scheme) {
@@ -171,7 +182,38 @@ public class OpenApiController extends BaseOpenApiResource {
     }
 
 
+    public Response errorResponse(ApiKeyState state) {
+        Response.Status code = null;
+        String msg = null;
+        switch (state) {
+            case EMPTY:
+                code = Response.Status.UNAUTHORIZED;
+                msg = "No API key given";
+                break;
+            case DATABASE_UNAVAILABLE:
+                code = Response.Status.SERVICE_UNAVAILABLE;
+                msg = "Database unavailable";
+                break;
+            case INVALID:
+                code = Response.Status.FORBIDDEN;
+                msg = "API key is invalid";
+                break;
+            case SQL_ERROR:
+                code = Response.Status.INTERNAL_SERVER_ERROR;
+                msg = "Server internal error";
+                break;
+            case EXPIRED:
+                code = Response.Status.UNAUTHORIZED;
+                msg = "API key is expired";
+                break;
+        }
 
+        return Response.status(code)
+                .entity(msg)
+                .type(CustomMediaType.APPLICATION_JSON_UTF_8)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+    }
 
 
 

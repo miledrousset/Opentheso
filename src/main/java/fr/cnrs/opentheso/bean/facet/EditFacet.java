@@ -21,12 +21,12 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -200,11 +200,6 @@ public class EditFacet implements Serializable {
         editorialNote = null;
         example = null;
         historyNote = null;
-    }    
-
-    public void initNewFacet(){
-        newFacetName = "";
-        definition = null;
     }
     
     public String getNoteSource(String noteSource) {
@@ -247,9 +242,7 @@ public class EditFacet implements Serializable {
                 selectedTheso.getCurrentIdTheso());
 
         conceptList = new ArrayList<>();
-        for (NodeIdValue nodeIdValue : nodeIdValues) {
-            conceptList.add(nodeIdValue);
-        }
+        conceptList.addAll(nodeIdValues);
     }
 
     public void deleteTraduction(NodeFacet nodeFacet) {
@@ -329,9 +322,7 @@ public class EditFacet implements Serializable {
                 facetSelected.getLang());
 
         nodeLangs = selectedTheso.getNodeLangs();
-        nodeLangs.forEach((nodeLang) -> {
-            nodeLangsFiltered.add(nodeLang);
-        });
+        nodeLangs.forEach((nodeLang) -> nodeLangsFiltered.add(nodeLang));
 
         // les langues à ignorer
         ArrayList<String> langsToRemove = new ArrayList<>();

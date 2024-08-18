@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 import fr.cnrs.opentheso.bdd.datas.ConceptGroup;
 import fr.cnrs.opentheso.bdd.datas.ConceptGroupLabel;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;

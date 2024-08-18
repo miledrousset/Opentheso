@@ -15,7 +15,7 @@ import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

@@ -4,9 +4,9 @@ import fr.cnrs.opentheso.bdd.datas.DcElement;
 import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.tools.FileUtilities;
 /*
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObjectBuilder;
 */
 
 public final class NodeJson {

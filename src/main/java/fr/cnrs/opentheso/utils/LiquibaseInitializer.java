@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.utils;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import fr.cnrs.opentheso.ws.openapi.helper.DataHelper;
 import java.io.Serializable;
@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.SessionScoped;
 
 
 @Slf4j

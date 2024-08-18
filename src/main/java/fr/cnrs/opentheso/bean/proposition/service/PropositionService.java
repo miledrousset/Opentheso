@@ -38,10 +38,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -422,77 +422,77 @@ public class PropositionService implements Serializable {
 
         if (noteAccepted && proposition.getNote() != null) {
             if (proposition.getNote().isToAdd()) {
-                addNewNote(proposition.getNote(), "note", propositionSelected.getIdConcept());
+                addNewNote(proposition.getNote(), "note");
             } else if (proposition.getNote().isToUpdate()) {
-                updateNote(proposition.getNote(), "note");
+                updateNote(proposition.getNote());
             } else if (proposition.getNote().isToRemove()) {
-                deleteNote(proposition.getNote(), "note");
+                deleteNote(proposition.getNote());
             }
 
         }
 
         if (changeNoteAccepted && proposition.getChangeNote() != null) {
             if (proposition.getChangeNote().isToAdd()) {
-                addNewNote(proposition.getChangeNote(), "changeNote", propositionSelected.getIdConcept());
+                addNewNote(proposition.getChangeNote(), "changeNote");
             } else if (proposition.getChangeNote().isToUpdate()) {
-                updateNote(proposition.getChangeNote(), "changeNote");
+                updateNote(proposition.getChangeNote());
             } else if (proposition.getChangeNote().isToRemove()) {
-                deleteNote(proposition.getChangeNote(), "changeNote");
+                deleteNote(proposition.getChangeNote());
             }
 
         }
 
         if (definitionAccepted && proposition.getDefinition() != null) {
             if (proposition.getDefinition().isToAdd()) {
-                addNewNote(proposition.getDefinition(), "definition", propositionSelected.getIdConcept());
+                addNewNote(proposition.getDefinition(), "definition");
             } else if (proposition.getDefinition().isToUpdate()) {
-                updateNote(proposition.getDefinition(), "definition");
+                updateNote(proposition.getDefinition());
             } else if (proposition.getDefinition().isToRemove()) {
-                deleteNote(proposition.getDefinition(), "definition");
+                deleteNote(proposition.getDefinition());
             }
 
         }
 
         if (editorialNotesAccepted && proposition.getEditorialNote() != null) {
             if (proposition.getEditorialNote().isToAdd()) {
-                addNewNote(proposition.getEditorialNote(), "editorialNote", propositionSelected.getIdConcept());
+                addNewNote(proposition.getEditorialNote(), "editorialNote");
             } else if (proposition.getEditorialNote().isToUpdate()) {
-                updateNote(proposition.getEditorialNote(), "editorialNote");
+                updateNote(proposition.getEditorialNote());
             } else if (proposition.getEditorialNote().isToRemove()) {
-                deleteNote(proposition.getEditorialNote(), "editorialNote");
+                deleteNote(proposition.getEditorialNote());
             }
 
         }
 
         if (examplesAccepted && proposition.getExample() != null) {
             if (proposition.getExample().isToAdd()) {
-                addNewNote(proposition.getExample(), "example", propositionSelected.getIdConcept());
+                addNewNote(proposition.getExample(), "example");
             } else if (proposition.getExample().isToUpdate()) {
-                updateNote(proposition.getExample(), "example");
+                updateNote(proposition.getExample());
             } else if (proposition.getExample().isToRemove()) {
-                deleteNote(proposition.getExample(), "example");
+                deleteNote(proposition.getExample());
             }
 
         }
 
         if (scopeAccepted && proposition.getScopeNote() != null) {
             if (proposition.getScopeNote().isToAdd()) {
-                addNewNote(proposition.getScopeNote(), "scopeNote", propositionSelected.getIdConcept());
+                addNewNote(proposition.getScopeNote(), "scopeNote");
             } else if (proposition.getScopeNote().isToUpdate()) {
-                updateNote(proposition.getScopeNote(), "scopeNote");
+                updateNote(proposition.getScopeNote());
             } else if (proposition.getScopeNote().isToRemove()) {
-                deleteNote(proposition.getScopeNote(), "scopeNote");
+                deleteNote(proposition.getScopeNote());
             }
 
         }
 
         if (historyAccepted && proposition.getHistoryNote() != null) {
             if (proposition.getHistoryNote().isToAdd()) {
-                addNewNote(proposition.getHistoryNote(), "historyNote", propositionSelected.getIdConcept());
+                addNewNote(proposition.getHistoryNote(), "historyNote");
             } else if (proposition.getHistoryNote().isToUpdate()) {
-                updateNote(proposition.getHistoryNote(), "historyNote");
+                updateNote(proposition.getHistoryNote());
             } else if (proposition.getHistoryNote().isToRemove()) {
-                deleteNote(proposition.getHistoryNote(), "historyNote");
+                deleteNote(proposition.getHistoryNote());
             }
 
         }
@@ -537,7 +537,7 @@ public class PropositionService implements Serializable {
         }
     }
 
-    private void deleteNote(NotePropBean notePropBean, String typeNote) {
+    private void deleteNote(NotePropBean notePropBean) {
         if (!new NoteHelper().deleteThisNote(connect.getPoolConnexion(),
                 notePropBean.getId_note(),
                 notePropBean.getId_concept(),
@@ -552,7 +552,7 @@ public class PropositionService implements Serializable {
         }
     }
 
-    private void updateNote(NotePropBean notePropBean, String typeNote) {
+    private void updateNote(NotePropBean notePropBean) {
         if (!new NoteHelper().updateNote(connect.getPoolConnexion(),
                 notePropBean.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 notePropBean.getId_concept(),
@@ -567,7 +567,7 @@ public class PropositionService implements Serializable {
         }
     }
 
-    private void addNewNote(NotePropBean notePropBean, String typeNote, String conceptId) {
+    private void addNewNote(NotePropBean notePropBean, String typeNote) {
         if (!new NoteHelper().addNote(
                 connect.getPoolConnexion(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),

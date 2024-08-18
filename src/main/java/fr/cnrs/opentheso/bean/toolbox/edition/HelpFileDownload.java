@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import javax.inject.Named;
+import jakarta.inject.Named;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
