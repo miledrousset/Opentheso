@@ -33,6 +33,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import jakarta.annotation.PreDestroy;
 
@@ -51,31 +52,30 @@ import org.primefaces.PrimeFaces;
 @Named(value = "currentUser")
 public class CurrentUser implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
-    @Autowired
+    @Autowired @Lazy
     private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired
+    @Autowired @Lazy
     private IndexSetting indexSetting;
-    @Autowired
+    @Autowired @Lazy
     private MenuBean menuBean;
-    @Autowired
+    @Autowired @Lazy
     private RightBodySetting rightBodySetting;
-    @Autowired
+    @Autowired @Lazy
     private PropositionBean propositionBean;
-    @Autowired
+    @Autowired @Lazy
     private SearchBean searchBean;
-    @Autowired
+    @Autowired @Lazy
     private LanguageBean languageBean;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
-    @Autowired
+    @Autowired @Lazy
     private ProjectBean projectBean;
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;
-    @Autowired private UserGroupLabelRepository userGroupLabelRepository;    
 
     private NodeUser nodeUser;
     private String username;
@@ -311,7 +311,7 @@ public class CurrentUser implements Serializable {
 
         // liste des projets de l'utilisateur
         if (nodeUser.isSuperAdmin()) {
-            userPermissions.setListProjects(userGroupLabelRepository.getAllProjects());
+            userPermissions.setListProjects(new UserGroupLabelRepository().getAllProjects(connect.getPoolConnexion()));
         } else {  
             userPermissions.setListProjects(userHelper.getProjectOfUser(connect.getPoolConnexion(), nodeUser.getIdUser()));//userGroupLabelRepository.getProjectsByUserId(nodeUser.getIdUser()));
             setListProjectForUser();
@@ -506,7 +506,7 @@ public class CurrentUser implements Serializable {
         if(userPermissions == null){
             userPermissions = new UserPermissions();
         }
-        userPermissions.setListProjects(userGroupLabelRepository.getProjectsByThesoStatus(false));
+        userPermissions.setListProjects(new UserGroupLabelRepository().getProjectsByThesoStatus(connect.getPoolConnexion(),false));
         
         // contrôle si le projet actuel est dans la liste, sinon, on initialise le projet sélectionné à -1
         if(userPermissions.getSelectedProject() != -1){

@@ -7,7 +7,6 @@ package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -19,6 +18,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -31,10 +31,10 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Named(value = "removeFromGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemoveFromGroupBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private LanguageBean languageBean;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private ConceptView conceptView;
+
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private ConceptView conceptView;
 
     private ArrayList <NodeGroup> nodeGroups;
 

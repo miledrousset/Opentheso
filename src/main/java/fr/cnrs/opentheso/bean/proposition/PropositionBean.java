@@ -25,6 +25,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 
 import lombok.Data;
@@ -38,34 +39,34 @@ import org.primefaces.PrimeFaces;
 @Named(value = "propositionBean")
 public class PropositionBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
 
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;
 
-    @Autowired
+    @Autowired @Lazy
     private ConceptView conceptView;
 
-    @Autowired
+    @Autowired @Lazy
     private IndexSetting indexSetting;
 
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
 
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
-    @Autowired
+    @Autowired @Lazy
     private RightBodySetting rightBodySetting;
 
-    @Autowired
+    @Autowired @Lazy
     private PropositionService propositionService;
 
-    @Autowired
+    @Autowired @Lazy
     private SearchBean searchBean;
 
-    @Autowired
+    @Autowired @Lazy
     private LanguageBean languageBean;
 
     private boolean isRubriqueVisible, isNewProposition, isConsultation;

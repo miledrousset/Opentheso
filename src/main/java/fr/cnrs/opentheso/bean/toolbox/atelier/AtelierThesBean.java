@@ -12,6 +12,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.fusion.FusionService;
@@ -29,10 +30,10 @@ import org.primefaces.model.StreamedContent;
 @ViewScoped
 public class AtelierThesBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private AtelierThesService atelierThesService;
 
-    @Autowired
+    @Autowired @Lazy
     private FusionService fusionService;
 
     private List<String> titles;

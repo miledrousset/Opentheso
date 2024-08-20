@@ -19,17 +19,18 @@ import java.util.logging.Logger;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 @Named(value = "traductionService")
 @SessionScoped
 public class TraductionService implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private CandidatBean candidatBean;
-    @Autowired
+    @Autowired @Lazy
     private LanguageBean languageBean;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
     private String langage;

@@ -30,6 +30,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 
 import org.primefaces.PrimeFaces;
@@ -39,19 +40,19 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AddConcept implements Serializable {
     
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
-    @Autowired
+    @Autowired @Lazy
     private ConceptView conceptBean;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
-    @Autowired
+    @Autowired @Lazy
     private Tree tree;
-    @Autowired
+    @Autowired @Lazy
     private EditFacet editFacet;
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;    
 
     private String prefLabel;

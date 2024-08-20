@@ -38,41 +38,43 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;import org.springframework.context.annotation.Lazy;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.springframework.stereotype.Service;
 
-@SessionScoped
+
+@Service
 public class PropositionService implements Serializable {
 
     private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 
-    @Autowired
+    @Autowired @Lazy
     private Tree tree;
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
 
-    @Autowired
+    @Autowired @Lazy
     private ConceptView conceptView;
 
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;
 
-    @Autowired
+    @Autowired @Lazy
     private IndexSetting indexSetting;
 
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
 
-    @Autowired
+    @Autowired @Lazy
     private MailBean mailBean;
 
     public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire) {

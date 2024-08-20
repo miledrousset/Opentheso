@@ -38,3 +38,9 @@ logging:
     root: INFO
     org:
       springframework: INFO
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

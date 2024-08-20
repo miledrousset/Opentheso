@@ -30,6 +30,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -44,13 +45,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Named(value = "moveConcept")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MoveConcept implements Serializable {
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;    
-    @Autowired
+    @Autowired @Lazy
     private CandidatBean candidatBean;   
     
     private String idThesoFrom, idThesoTo;

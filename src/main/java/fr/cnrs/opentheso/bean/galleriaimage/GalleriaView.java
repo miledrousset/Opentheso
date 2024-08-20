@@ -8,7 +8,6 @@ import java.util.Map;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
-import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import org.primefaces.model.ResponsiveOption;
 
@@ -21,8 +20,6 @@ import org.primefaces.model.ResponsiveOption;
 @ViewScoped
 public class GalleriaView implements Serializable {
 
-//    private List<Photo> photos;
-
     private List<ResponsiveOption> responsiveOptions1;
 
     private List<ResponsiveOption> responsiveOptions2;
@@ -30,13 +27,10 @@ public class GalleriaView implements Serializable {
     private List<ResponsiveOption> responsiveOptions3;
 
     private int activeIndex = 0;
-//
-//    @Autowired
-//    private PhotoService service;
+
 
     @PostConstruct
     public void init() {
-//        photos = service.getPhotos();
 
         responsiveOptions1 = new ArrayList<>();
         responsiveOptions1.add(new ResponsiveOption("1024px", 5));
@@ -61,10 +55,6 @@ public class GalleriaView implements Serializable {
         this.activeIndex = Integer.valueOf(params.get("index"));
     }
 
-/*    public List<Photo> getPhotos() {
-        return photos;
-    }*/
-
     public List<ResponsiveOption> getResponsiveOptions1() {
         return responsiveOptions1;
     }
@@ -84,10 +74,4 @@ public class GalleriaView implements Serializable {
     public void setActiveIndex(int activeIndex) {
         this.activeIndex = activeIndex;
     }
-/*
-    public void setService(PhotoService service) {
-        this.service = service;
-    }*/
-
-
 }

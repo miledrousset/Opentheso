@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -68,14 +69,14 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AlignmentBean implements Serializable {
 
-    @Autowired private Connect connect;
-    @Autowired private ConceptView conceptView;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private ConceptView conceptBean;
-    @Autowired private AlignmentManualBean alignmentManualBean;
-    @Autowired private LanguageBean languageBean;
-    @Autowired private CurrentUser currentUser;
-    @Autowired private SetAlignmentSourceBean setAlignmentSourceBean;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private ConceptView conceptView;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private ConceptView conceptBean;
+    @Autowired @Lazy private AlignmentManualBean alignmentManualBean;
+    @Autowired @Lazy private LanguageBean languageBean;
+    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private SetAlignmentSourceBean setAlignmentSourceBean;
 
     private boolean withLang;
     private boolean withNote;
@@ -528,9 +529,9 @@ public class AlignmentBean implements Serializable {
         }
     }
 
-    public void remplacerAlignementSelected() throws SQLException {
+    public void remplacerAlignementSelected(String idThesaurus) throws SQLException {
 
-        supprimerAlignementLocal(alignementSelect);
+        supprimerAlignementLocal(alignementSelect, idThesaurus);
 
         addSingleAlignment(alignementSelect,
                 selectedTheso.getCurrentIdTheso(),
@@ -560,21 +561,21 @@ public class AlignmentBean implements Serializable {
 
     }
 
-    public void supprimerAlignementLocal(NodeAlignment selectedAlignement) throws SQLException {
+    public void supprimerAlignementLocal(NodeAlignment selectedAlignement, String idThesaurus) throws SQLException {
 
         //Supprimer définition
         new NoteHelper().deleteNotes(connect.getPoolConnexion().getConnection(),
                 conceptView.getDefinition().getId_note() + "",
-                conceptView.getSelectedTheso().getCurrentIdTheso());
+                idThesaurus);
 
         //Supprimer l'alignement
         new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
                 selectedAlignement.getId_alignement(),
-                conceptView.getSelectedTheso().getCurrentIdTheso());
+                idThesaurus);
 
         new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
                 selectedAlignement.getInternal_id_concept(),
-                conceptView.getSelectedTheso().getCurrentIdTheso(),
+                idThesaurus,
                 selectedAlignement.getUri_target());
     }
 

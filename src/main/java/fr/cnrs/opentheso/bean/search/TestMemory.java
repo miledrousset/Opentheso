@@ -8,9 +8,9 @@ package fr.cnrs.opentheso.bean.search;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
-//import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
@@ -22,8 +22,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Named(value = "testMemory")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class TestMemory implements Serializable {
-    @Autowired private SearchBean searchBean;
-    @Autowired private ConceptView conceptView;    
+
+    @Autowired @Lazy private ConceptView conceptView;    
     
     public TestMemory() {
     }

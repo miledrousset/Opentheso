@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.event.ToggleSelectEvent;
 
 /**
@@ -29,10 +30,10 @@ import org.primefaces.event.ToggleSelectEvent;
 @Named(value = "viewExportBean")
 @SessionScoped
 public class ViewExportBean implements Serializable {
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private Connect connect;
-    @Autowired private ExportFileBean downloadBean;
-    @Autowired private LanguageBean languageBean;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private ExportFileBean downloadBean;
+    @Autowired @Lazy private LanguageBean languageBean;
 
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<NodeGroup> groupList;

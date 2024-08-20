@@ -36,6 +36,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -45,7 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 @Named(value = "restoreTheso")
 @RequestScoped
 public class RestoreTheso implements Serializable {
-    @Autowired private Connect connect;
+    @Autowired @Lazy private Connect connect;
     
     @PostConstruct
     public void init() {

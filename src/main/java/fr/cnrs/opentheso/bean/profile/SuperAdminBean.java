@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  *
@@ -24,13 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SessionScoped
 public class SuperAdminBean implements Serializable {
 
-    @Autowired 
+    @Autowired @Lazy 
     private Connect connect;
     
-    @Autowired 
+    @Autowired @Lazy 
     private CurrentUser currentUser;
     
-    @Autowired 
+    @Autowired @Lazy 
     private SelectedTheso selectedTheso;
     
     private ArrayList<NodeUser> allUsers;// la liste de tous les utilisateurs  

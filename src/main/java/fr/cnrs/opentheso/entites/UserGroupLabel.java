@@ -23,7 +23,7 @@ public class UserGroupLabel implements Serializable {
     @Id
     @Column(name = "id_group")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "label_group")
     private String label;

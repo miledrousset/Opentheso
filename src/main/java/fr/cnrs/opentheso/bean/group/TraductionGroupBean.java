@@ -8,13 +8,10 @@ package fr.cnrs.opentheso.bean.group;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
@@ -22,6 +19,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -32,13 +30,11 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class TraductionGroupBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
-    private LanguageBean languageBean;
-    @Autowired
+    @Autowired @Lazy
     private GroupView groupView;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
     private String selectedLang;

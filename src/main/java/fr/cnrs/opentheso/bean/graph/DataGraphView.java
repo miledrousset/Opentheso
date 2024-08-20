@@ -11,6 +11,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import jakarta.ws.rs.core.UriBuilder;
 
@@ -31,13 +32,13 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class DataGraphView implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
     private List<GraphObject> graphObjects;
 
     private GraphObject selectedGraph;
 
-    @Autowired
+    @Autowired @Lazy
     private GraphService graphService;
 
     private int selectedViewId;

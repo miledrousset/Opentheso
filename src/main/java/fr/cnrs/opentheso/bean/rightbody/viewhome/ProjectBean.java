@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.rightbody.viewhome;
 import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -23,6 +22,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
@@ -33,13 +33,12 @@ import java.util.List;
 @Named(value = "projectBean")
 public class ProjectBean implements Serializable {
 
-    @Autowired private Connect connect;
-    @Autowired private ConceptView conceptView;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private GpsRepository gpsRepository;
-    @Autowired private LanguageBean languageBean;
-    @Autowired private ProjectDescriptionRepository projectDescriptionRepository;
-    @Autowired private CurrentUser currentUser;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private ConceptView conceptView;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private GpsRepository gpsRepository;
+    @Autowired @Lazy private LanguageBean languageBean;
+    @Autowired @Lazy private CurrentUser currentUser;
 
     private String description, langCode, langCodeSelected, projectIdSelected;
     private boolean projectDescription, editingHomePage, isButtonEnable;
@@ -53,11 +52,15 @@ public class ProjectBean implements Serializable {
         selectedLangs = new LanguageHelper().getLanguagesByProject(connect.getPoolConnexion(), projectIdSelected);
         projectDescription = CollectionUtils.isNotEmpty(selectedLangs);
 
-        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, getLang());
+        var projectDescriptionRepository = new ProjectDescriptionRepository();
+
+        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(connect.getPoolConnexion(), projectIdSelected, getLang());
 
         if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
             if (CollectionUtils.isNotEmpty(selectedLangs)) {
-                projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected,
+                projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(
+                        connect.getPoolConnexion(),
+                        projectIdSelected,
                         selectedLangs.get(0).getId_iso639_1());
 
                 if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
@@ -115,7 +118,8 @@ public class ProjectBean implements Serializable {
             allLangs = new LanguageHelper().getAllLanguages(connect.getPoolConnexion());
         }
 
-        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(projectIdSelected, langCodeSelected);
+        projectDescriptionSelected = new ProjectDescriptionRepository().getProjectDescription(connect.getPoolConnexion(),
+                projectIdSelected, langCodeSelected);
         if (!ObjectUtils.isEmpty(projectDescriptionSelected)) {
             description = projectDescriptionSelected.getDescription();
             langCode = projectDescriptionSelected.getLang();
@@ -150,10 +154,11 @@ public class ProjectBean implements Serializable {
         projectDescriptionSelected.setDescription(description);
         projectDescriptionSelected.setLang(langCode);
 
+        var projectDescriptionRepository = new ProjectDescriptionRepository();
         if (projectDescriptionSelected.getId() != null) {
-            projectDescriptionRepository.updateProjectDescription(projectDescriptionSelected);
+            projectDescriptionRepository.updateProjectDescription(connect.getPoolConnexion(), projectDescriptionSelected);
         } else {
-            projectDescriptionRepository.saveProjectDescription(projectDescriptionSelected);
+            projectDescriptionRepository.saveProjectDescription(connect.getPoolConnexion(), projectDescriptionSelected);
         }
 
         langCodeSelected = projectDescriptionSelected.getLang();
@@ -173,7 +178,8 @@ public class ProjectBean implements Serializable {
 
     public void deleteDescription() {
 
-        projectDescriptionRepository.removeProjectDescription(projectDescriptionSelected);
+        var projectDescriptionRepository = new ProjectDescriptionRepository();
+        projectDescriptionRepository.removeProjectDescription(connect.getPoolConnexion(), projectDescriptionSelected);
 
         selectedLangs = new LanguageHelper().getLanguagesByProject(connect.getPoolConnexion(),
                 projectDescriptionSelected.getIdGroup());
@@ -181,7 +187,7 @@ public class ProjectBean implements Serializable {
         if (CollectionUtils.isNotEmpty(selectedLangs)) {
             projectDescription = true;
             projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(
-                    projectDescriptionSelected.getIdGroup(), selectedLangs.get(0).getId_iso639_1());
+                    connect.getPoolConnexion(), projectDescriptionSelected.getIdGroup(), selectedLangs.get(0).getId_iso639_1());
 
             projectDescription = true;
             langCodeSelected = selectedLangs.get(0).getId_iso639_1();
@@ -212,7 +218,8 @@ public class ProjectBean implements Serializable {
     }
 
     public void changeLangListener() {
-        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(selectedTheso.getProjectIdSelected(), langCode);
+        projectDescriptionSelected = new ProjectDescriptionRepository().getProjectDescription(
+                connect.getPoolConnexion(), selectedTheso.getProjectIdSelected(), langCode);
         if (ObjectUtils.isEmpty(projectDescriptionSelected)) {
             projectDescriptionSelected = new ProjectDescription();
             projectDescriptionSelected.setLang(langCode);
@@ -222,7 +229,8 @@ public class ProjectBean implements Serializable {
     }
 
     public void changeProjectDescription() {
-        projectDescriptionSelected = projectDescriptionRepository.getProjectDescription(selectedTheso.getProjectIdSelected(), langCodeSelected);
+        projectDescriptionSelected = new ProjectDescriptionRepository().getProjectDescription(
+                connect.getPoolConnexion(), selectedTheso.getProjectIdSelected(), langCodeSelected);
     }
 
     public String getDrapeauImgLocal(String codePays) {

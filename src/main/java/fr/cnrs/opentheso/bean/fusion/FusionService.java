@@ -22,6 +22,7 @@ import org.primefaces.event.FileUploadEvent;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import jakarta.faces.view.ViewScoped;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -33,10 +34,10 @@ import java.util.List;
 @ViewScoped
 public class FusionService implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
 
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;
 
     private SKOSXmlDocument sourceSkos;

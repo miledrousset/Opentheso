@@ -8,20 +8,19 @@ package mail;
 import com.sun.mail.smtp.SMTPTransport;
 import fr.cnrs.opentheso.bean.forgetpassword.ForgetPassBean;
 import java.util.Properties;
-import java.util.ResourceBundle;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;import org.springframework.context.annotation.Lazy;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.junit.Test;
 
 /**
  *
  * @author miledrousset
  */
 public class SendMailTest {
-    @Autowired ForgetPassBean forgetPassBean;
+    @Autowired @Lazy ForgetPassBean forgetPassBean;
     
     public SendMailTest() {
     }

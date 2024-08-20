@@ -16,6 +16,7 @@ import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  *
@@ -25,9 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RequestScoped
 public class ForgetPassBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private MailBean mailBean;    
 
     private String sendTo;

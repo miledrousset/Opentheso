@@ -27,6 +27,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -39,11 +40,11 @@ import org.primefaces.model.StreamedContent;
 @SessionScoped
 public class ProcessCandidateBean implements Serializable {
 
-    @Autowired private Connect connect;
-    @Autowired private CandidatBean candidatBean;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private MailBean mailBean;  
-    @Autowired private CurrentUser currentUser;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private CandidatBean candidatBean;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private MailBean mailBean;  
+    @Autowired @Lazy private CurrentUser currentUser;
     
     private CandidatDto selectedCandidate;
     private String adminMessage;

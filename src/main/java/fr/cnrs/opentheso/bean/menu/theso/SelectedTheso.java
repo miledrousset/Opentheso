@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.menu.theso;
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
@@ -25,17 +24,16 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.repositories.ThesaurusRepository;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.util.Collections;
 import java.util.List;
@@ -47,30 +45,27 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
 
-
 @SessionScoped
 @Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
 
-    @Autowired private LanguageBean languageBean;
-    @Autowired private Connect connect;
-    @Autowired private IndexSetting indexSetting;
-    @Autowired private TreeGroups treeGroups;
-    @Autowired private TreeConcepts treeConcepts;
-    @Autowired private Tree tree;
-    @Autowired private ListIndex listIndex;
-    @Autowired private ConceptView conceptBean;
-    @Autowired private SearchBean searchBean;
-    @Autowired private RoleOnThesoBean roleOnThesoBean;
-    @Autowired private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired private RightBodySetting rightBodySetting;
-    @Autowired private MenuBean menuBean;
-    @Autowired private PropositionBean propositionBean;
-    @Autowired private UserGroupLabelRepository userGroupLabelRepository;
-    @Autowired private ThesaurusRepository thesaurusRepository;
-    @Autowired private CurrentUser currentUser;
-    @Autowired private ProjectBean projectBean;
+    @Autowired @Lazy private LanguageBean languageBean;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private IndexSetting indexSetting;
+    @Autowired @Lazy private TreeGroups treeGroups;
+    @Autowired @Lazy private TreeConcepts treeConcepts;
+    @Autowired @Lazy private Tree tree;
+    @Autowired @Lazy private ListIndex listIndex;
+    @Autowired @Lazy private ConceptView conceptBean;
+    @Autowired @Lazy private SearchBean searchBean;
+    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
+    @Autowired @Lazy private RightBodySetting rightBodySetting;
+    @Autowired @Lazy private MenuBean menuBean;
+    @Autowired @Lazy private PropositionBean propositionBean;
+    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private ProjectBean projectBean;
 
     private static final long serialVersionUID = 1L;
 
@@ -126,21 +121,7 @@ public class SelectedTheso implements Serializable {
         localUri = null;
         projectIdSelected = "-1";
     }
-    
-    @PostConstruct
-    public void initializing() {
 
-        if (!connect.isConnected()) {
-            System.err.println("Erreur de connexion BDD");
-            return;
-        }
-        
-        isNetworkAvailable = true;
-        roleOnThesoBean.showListTheso();
-        sortByNotation = false; 
-
-        loadProject();
-    }
 
     public void init() {
         selectedLang = null;
@@ -319,17 +300,18 @@ public class SelectedTheso implements Serializable {
      */
     public void loadProject() {
 
+        var userGroupLabelRepository = new UserGroupLabelRepository();
         if (ObjectUtils.isEmpty(currentUser.getNodeUser())) {
             currentUser.initAllProject();
             currentUser.initAllTheso();
             projectIdSelected = ""+currentUser.getUserPermissions().getSelectedProject();
             selectedIdTheso = currentUser.getUserPermissions().getSelectedTheso();
-            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(false);
+            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(connect.getPoolConnexion(), false);
         } else {
             if (currentUser.getNodeUser().isSuperAdmin()) {
-                projectsList = userGroupLabelRepository.getAllProjects();
+                projectsList = userGroupLabelRepository.getAllProjects(connect.getPoolConnexion());
             } else {
-                projectsList = userGroupLabelRepository.getProjectsByUserId(currentUser.getNodeUser().getIdUser());
+                projectsList = userGroupLabelRepository.getProjectsByUserId(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
             }
         }
         if(projectsList == null || projectsList.isEmpty()) {
@@ -857,22 +839,6 @@ public class SelectedTheso implements Serializable {
 
     public void setPropositionBean(PropositionBean propositionBean) {
         this.propositionBean = propositionBean;
-    }
-
-    public UserGroupLabelRepository getUserGroupLabelRepository() {
-        return userGroupLabelRepository;
-    }
-
-    public void setUserGroupLabelRepository(UserGroupLabelRepository userGroupLabelRepository) {
-        this.userGroupLabelRepository = userGroupLabelRepository;
-    }
-
-    public ThesaurusRepository getThesaurusRepository() {
-        return thesaurusRepository;
-    }
-
-    public void setThesaurusRepository(ThesaurusRepository thesaurusRepository) {
-        this.thesaurusRepository = thesaurusRepository;
     }
 
     public CurrentUser getCurrentUser() {

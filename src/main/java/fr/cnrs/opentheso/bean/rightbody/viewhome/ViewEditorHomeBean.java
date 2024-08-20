@@ -9,18 +9,14 @@ import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-
 import java.io.Serializable;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import lombok.Data;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -31,12 +27,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "viewEditorHomeBean")
 public class ViewEditorHomeBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private LanguageBean languageBean;
-    @Autowired
-    private SelectedTheso selectedTheso;
 
     private boolean isViewPlainText = false;
     private String text;
@@ -207,14 +201,6 @@ public class ViewEditorHomeBean implements Serializable {
 
     public void setLanguageBean(LanguageBean languageBean) {
         this.languageBean = languageBean;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public void setSelectedTheso(SelectedTheso selectedTheso) {
-        this.selectedTheso = selectedTheso;
     }
 
     public boolean isViewPlainText() {

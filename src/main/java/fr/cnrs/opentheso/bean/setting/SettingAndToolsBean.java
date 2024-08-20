@@ -10,6 +10,7 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  *
@@ -18,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Named(value = "settingAndToolsBean")
 @SessionScoped
 public class SettingAndToolsBean implements Serializable {
-    @Autowired private PreferenceBean preferenceBean;
+    @Autowired @Lazy private PreferenceBean preferenceBean;
     
     private boolean isPreferenceActive;
     private boolean isIdentifierActive;

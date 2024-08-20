@@ -17,8 +17,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import fr.cnrs.opentheso.utils.UrlUtils;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -29,9 +28,9 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CorpusBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
     private ArrayList<NodeCorpus> nodeCorpuses;

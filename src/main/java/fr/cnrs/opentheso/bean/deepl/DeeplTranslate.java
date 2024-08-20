@@ -14,17 +14,17 @@ import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 
 @Named(value = "deeplTranslate")
 @SessionScoped
 public class DeeplTranslate implements Serializable {
 
-    @Autowired private Connect connect;
-    @Autowired private RoleOnThesoBean roleOnThesoBean;
-    @Autowired private CurrentUser currentUser;
-    @Autowired private SelectedTheso selectedTheso;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
     
     
     private DeeplHelper deeplHelper;

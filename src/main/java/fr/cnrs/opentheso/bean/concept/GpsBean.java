@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -17,6 +12,7 @@ import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import lombok.Data;
 import org.primefaces.PrimeFaces;
 
@@ -26,10 +22,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "gpsBean")
 public class GpsBean implements Serializable {
 
-    @Autowired private Connect connect;
-    @Autowired private ConceptView conceptView;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private GpsRepository gpsRepository;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private ConceptView conceptView;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private GpsRepository gpsRepository;
 
     private Gps gpsSelected;
 

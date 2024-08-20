@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRole;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import jakarta.inject.Named;
@@ -19,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  *
@@ -28,9 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SessionScoped
 public class MyProjectBean implements Serializable {
 
-    @Autowired private Connect connect;
-    @Autowired private LanguageBean languageBean;
-    @Autowired private CurrentUser currentUser;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private CurrentUser currentUser;
     
     private ArrayList<NodeIdValue> listeThesoOfProject;
     private Map<String, String> listeGroupsOfUser;

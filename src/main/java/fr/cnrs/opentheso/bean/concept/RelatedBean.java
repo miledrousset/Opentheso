@@ -32,6 +32,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -43,11 +44,11 @@ import org.primefaces.PrimeFaces;
 @Named(value = "relatedBean")
 @SessionScoped
 public class RelatedBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private ConceptView conceptBean;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private Tree tree;
-    @Autowired private CurrentUser currentUser;    
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private ConceptView conceptBean;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private Tree tree;
+    @Autowired @Lazy private CurrentUser currentUser;    
 
     private NodeSearchMini searchSelected;
     private ArrayList<NodeRT> nodeRTs;

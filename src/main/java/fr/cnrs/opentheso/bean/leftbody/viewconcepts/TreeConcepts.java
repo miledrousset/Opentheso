@@ -23,6 +23,7 @@ import org.primefaces.model.TreeNode;
 
 import jakarta.enterprise.context.SessionScoped;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,12 +37,12 @@ import jakarta.annotation.PreDestroy;
 @Named(value = "treeConcepts")
 @SessionScoped
 public class TreeConcepts implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private RightBodySetting rightBodySetting;
-    @Autowired private ConceptView conceptView;
-    @Autowired private GroupView groupView;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private PropositionBean propositionBean;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private RightBodySetting rightBodySetting;
+    @Autowired @Lazy private ConceptView conceptView;
+    @Autowired @Lazy private GroupView groupView;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private PropositionBean propositionBean;
 
     private DataService dataService;
     private TreeNode root, selectedNode;

@@ -5,8 +5,6 @@
  */
 package fr.cnrs.opentheso.bean.leftbody.viewgroups;
 
-import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
-import fr.cnrs.opentheso.bean.leftbody.DataService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +12,8 @@ import java.util.List;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
-
+import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
+import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
@@ -24,14 +23,15 @@ import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-
 import jakarta.enterprise.context.SessionScoped;
-import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
-import org.primefaces.PrimeFaces;
 
+import org.springframework.beans.factory.annotation.Autowired;import org.springframework.context.annotation.Lazy;
+
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -46,19 +46,19 @@ import org.primefaces.model.TreeNode;
 
 public class TreeGroups implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private RightBodySetting rightBodySetting;
-    @Autowired
+    @Autowired @Lazy
     private ConceptView conceptView;
-    @Autowired
+    @Autowired @Lazy
     private GroupView groupView;
-    @Autowired
+    @Autowired @Lazy
     private LeftBodySetting leftBodySetting;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
-    @Autowired
+    @Autowired @Lazy
     private PropositionBean propositionBean;
 
     private DataService dataService;

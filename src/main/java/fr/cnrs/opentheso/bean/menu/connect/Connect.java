@@ -2,26 +2,22 @@ package fr.cnrs.opentheso.bean.menu.connect;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bean.notification.NewVersionService;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
-
-
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 
 
 @Named (value = "connect")
 @ApplicationScoped
 public class Connect implements Serializable{
-    @Autowired private NewVersionService newVersionService;
+
     private final int DEFAULT_TIMEOUT_IN_MIN = 10;
    
    
@@ -37,7 +33,6 @@ public class Connect implements Serializable{
         ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
         workLanguage = bundlePref.getString("workLanguage");
         defaultThesaurusId = bundlePref.getString("defaultThesaurusId");
-        newVersionService.isNewVersionExist();
     }    
 
     

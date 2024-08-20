@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import jakarta.faces.view.ViewScoped;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.event.FileUploadEvent;
@@ -35,9 +36,9 @@ import org.primefaces.event.FileUploadEvent;
 @Named
 @ViewScoped
 public class AtelierThesService implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private LanguageBean languageBean;
-    @Autowired private CurrentUser currentUser;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private LanguageBean languageBean;
+    @Autowired @Lazy private CurrentUser currentUser;
     
     
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {

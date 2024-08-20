@@ -1,66 +1,73 @@
 package fr.cnrs.opentheso.repositories;
 
-import fr.cnrs.opentheso.SessionFactoryMaker;
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.entites.ProjectDescription;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
-@ApplicationScoped
 public class ProjectDescriptionRepository {
 
-    public void saveProjectDescription(ProjectDescription projectDescription) {
-        try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            session.save(projectDescription);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Erreur lors de l'enregistrement de la description du projet : " + ex.getMessage());
+    public void saveProjectDescription(HikariDataSource ds, ProjectDescription projectDescription) {
+        try ( Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("Insert into project_description (id_group, lang, description) values ('"
+                        + projectDescription.getIdGroup() + "', '" + projectDescription.getLang() + "', '" + projectDescription.getDescription() + "')");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public ProjectDescription getProjectDescription(String idGroup, String lang) {
-        try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            String query = "SELECT projectDesc "
-                    + "FROM ProjectDescription projectDesc "
-                    + "WHERE projectDesc.idGroup = :idGroup "
-                    + "AND projectDesc.lang = :lang";
-            TypedQuery<ProjectDescription> typedQuery = session.createQuery(query, ProjectDescription.class)
-                    .setParameter("idGroup", idGroup)
-                    .setParameter("lang", lang)
-                    .setMaxResults(1);
-            return typedQuery.getSingleResult();
-        } catch (Exception ex) {
-            return null;
+    public ProjectDescription getProjectDescription(HikariDataSource ds, String idGroup, String lang) {
+        ProjectDescription projectDescription = null;
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT * FROM project_description projectDesc "
+                        + "WHERE projectDesc.id_group = '" + idGroup + "' "
+                        + "AND projectDesc.lang = '" + lang + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        projectDescription = new ProjectDescription();
+                        projectDescription.setId(resultSet.getInt("id"));
+                        projectDescription.setIdGroup(resultSet.getString("id_group"));
+                        projectDescription.setLang(resultSet.getString("lang"));
+                        projectDescription.setDescription(resultSet.getString("description"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+
         }
+        return projectDescription;
     }
 
-    public void removeProjectDescription(ProjectDescription projectDescription) {
-        try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            Query query = session.createQuery("delete from ProjectDescription where id = :idDescription");
-            query.setParameter("idDescription", projectDescription.getId());
-            query.executeUpdate();
-            transaction.commit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    public void removeProjectDescription(HikariDataSource ds, ProjectDescription projectDescription) {
+        try ( Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from project_description where id = " + projectDescription.getId());
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
-    public void updateProjectDescription(ProjectDescription projectDescription) {
-        try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            Query query = session.createQuery("update ProjectDescription set lang = :lang, description = :description where id = :idDescription");
-            query.setParameter("lang", projectDescription.getLang());
-            query.setParameter("description", projectDescription.getDescription());
-            query.setParameter("idDescription", projectDescription.getId());
-            query.executeUpdate();
-            transaction.commit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    public void updateProjectDescription(HikariDataSource ds, ProjectDescription projectDescription) {
+
+        try ( Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE project_description set lang = '" + projectDescription.getLang() + "', description = '"
+                        + projectDescription.getDescription() + "' WHERE id = " + projectDescription.getId());
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

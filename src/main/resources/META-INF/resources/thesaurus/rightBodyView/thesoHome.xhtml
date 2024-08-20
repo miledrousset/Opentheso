@@ -19,7 +19,7 @@
                                      update="containerIndex:formRightTab"
                                      icon="pi pi-pencil"
                                      styleClass="ui-button-success" ajax="true" 
-                                     actionListener="#{viewEditorThesoHomeBean.initText()}"/>
+                                     actionListener="#{viewEditorThesoHomeBean.initText(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}"/>
                 </div>
             </div>    
             <p:separator />            
@@ -35,20 +35,20 @@
                     <div class="row">
                         <div class="col-6" style="margin-top: 3px">
                             <h:outputText value="#{selectedTheso.thesoName}: " style="font-size: 13px; font-weight: bold"/>
-                            <h:outputText value=" #{viewEditorThesoHomeBean.totalConceptOfTheso}" 
+                            <h:outputText value=" #{viewEditorThesoHomeBean.getTotalConceptOfTheso(selectedTheso.getCurrentIdTheso())}"
                                           title="#{langueBean.getMsg('thesohome.totalConcepts')} #{selectedTheso.thesoName}" 
                                           style="font-size: 13px; color: #F47B2A; font-weight: bold;"/>
                             <h:outputText value=" Concepts" style="font-size: 13px; color: #858796"/>
                             
                             <h:outputText value="; #{langueBean.getMsg('profile.project')}:" style="font-size: 13px;"/>
-                            <h:outputText value="  #{viewEditorThesoHomeBean.projectName}" style="font-size: 13px; color: #F47B2A;font-weight: bold"/>  
+                            <h:outputText value="  #{viewEditorThesoHomeBean.getProjectName(selectedTheso.getCurrentIdTheso())}" style="font-size: 13px; color: #F47B2A;font-weight: bold"/>
                             <p:commandButton icon="fa-solid fa-circle-question" styleClass="rounded-button ui-button-flat" style="margin-left: 5px; color: #f47b2a"
                                              action="#{roleOnTheso.showInfosOfTheso(selectedTheso.currentIdTheso)}"/>                              
                         </div>
                         
                         <div class="col-6" style="text-align: right">
                             <h:outputText value="#{langueBean.getMsg('thesohome.modified')}: " style="font-size: 13px; color: #858796"/>
-                            <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate()}" style="font-size: 13px; color: #601e18;"/>
+                            <h:outputText value=" #{viewEditorThesoHomeBean.getLastModifiedDate(selectedTheso.getCurrentIdTheso())}" style="font-size: 13px; color: #601e18;"/>
                         </div>
                     </div>
                     
@@ -91,7 +91,7 @@
                         <div class="col-12">
                             <h:outputText value="#{langueBean.getMsg('thesohome.lastModificationConcepts')}: " style="font-size: 13px;color: #858796"/>
 
-                            <ui:repeat var="value1" varStatus="status1" value="#{viewEditorThesoHomeBean.getLastModifiedConcepts()}">
+                            <ui:repeat var="value1" varStatus="status1" value="#{viewEditorThesoHomeBean.getLastModifiedConcepts(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())}">
 
                                 <p:commandLink rendered="#{value1.value != ''}" value="#{value1.value}"
                                                style="font-size: 13px; color: #601e18;"
@@ -112,7 +112,7 @@
                         <div class="col-10" style="margin-top: -2px;">
                             <p:accordionPanel id="meta" widgetVar="basic" activeIndex="-2" style="font-size: 12px;" >
                                 <p:tab title="#{langueBean.getMsg('thesohome.metadata')}" titleStyle="color: #858796; background-color: #F5F2F2; font-size: 12px; border: none">
-                                    <p:dataTable id="metadataTheso" widgetVar="metadataTheso" var="dcElement" value="#{viewEditorThesoHomeBean.meta()}"
+                                    <p:dataTable id="metadataTheso" widgetVar="metadataTheso" var="dcElement" value="#{viewEditorThesoHomeBean.meta(selectedTheso.getCurrentIdTheso())}"
                                                  editable="false" scrollHeight="250" scrollable="true" showGridlines="true" lazy="false">
 
                                         <p:column width="20%" headerText="#{langueBean.getMsg('toolbox.metadata_property')}">
@@ -141,7 +141,7 @@
 
             <div class="row">
                 <div class="col-12">
-                    <h:outputText escape="false" style="font-size: 14px;" value="#{viewEditorThesoHomeBean.getThesoHomePage()}" />
+                    <h:outputText escape="false" style="font-size: 14px;" value="#{viewEditorThesoHomeBean.getThesoHomePage(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}" />
                 </div>                
             </div>
         </h:panelGroup>
@@ -191,7 +191,7 @@
                     <p:commandButton value="#{langueBean.getMsg('candidat.save')}" 
                                      update="containerIndex messageIndex"
                                      styleClass="ui-button-success" icon="pi pi-check"
-                                     action="#{viewEditorThesoHomeBean.updateThesoHomePage()}" />
+                                     action="#{viewEditorThesoHomeBean.updateThesoHomePage(selectedTheso.getSelectedLang(), selectedTheso.getCurrentIdTheso())}" />
                 </div>
             </div>
         </h:panelGroup>

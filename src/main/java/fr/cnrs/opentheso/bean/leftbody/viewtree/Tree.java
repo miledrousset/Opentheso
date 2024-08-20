@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.leftbody.viewtree;
 import com.zaxxer.hikari.HikariDataSource;
 
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bean.alignment.AlignementElement;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
@@ -36,6 +35,7 @@ import jakarta.annotation.PreDestroy;
 
 import jakarta.enterprise.context.SessionScoped;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,37 +55,37 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public class Tree implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
 
-    @Autowired
+    @Autowired @Lazy
     private RightBodySetting rightBodySetting;
 
-    @Autowired
+    @Autowired @Lazy
     private LeftBodySetting leftBodySetting;
 
-    @Autowired
+    @Autowired @Lazy
     private ConceptView conceptBean;
 
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
 
-    @Autowired
+    @Autowired @Lazy
     private IndexSetting indexSetting;
 
-    @Autowired
+    @Autowired @Lazy
     private EditFacet editFacet;
 
-    @Autowired
+    @Autowired @Lazy
     private AlignmentBean alignmentBean;
 
-    @Autowired
+    @Autowired @Lazy
     private PropositionBean propositionBean;
 
-    @Autowired
+    @Autowired @Lazy
     private AlignmentManualBean alignmentManualBean;
 
     private DataService dataService;

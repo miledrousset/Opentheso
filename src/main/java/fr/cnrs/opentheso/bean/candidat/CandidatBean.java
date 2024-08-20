@@ -48,6 +48,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 
 import java.io.IOException;
@@ -69,23 +70,23 @@ import org.primefaces.event.SelectEvent;
 @Named(value = "candidatBean")
 public class CandidatBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
-    @Autowired
+    @Autowired @Lazy
     private LanguageBean languageBean;
-    @Autowired
+    @Autowired @Lazy
     private ConceptView conceptView;
-    @Autowired
+    @Autowired @Lazy
     private ImageBean imageBean;
-    @Autowired
+    @Autowired @Lazy
     private AlignmentBean alignmentBean;
-    @Autowired
+    @Autowired @Lazy
     private AlignmentManualBean alignmentManualBean;
 
     private final CandidatService candidatService = new CandidatService();

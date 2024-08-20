@@ -22,6 +22,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -31,8 +32,8 @@ import org.primefaces.PrimeFaces;
 @Named(value = "modifyRoleBean")
 @SessionScoped
 public class ModifyRoleBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private MyProjectBean myProjectBean;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private MyProjectBean myProjectBean;
     
     private NodeUser nodeSelectedUser;
     private String selectedProject;

@@ -1,24 +1,103 @@
 package fr.cnrs.opentheso.repositories;
 
-import fr.cnrs.opentheso.SessionFactoryMaker;
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bean.notification.dto.ReleaseDto;
 import fr.cnrs.opentheso.entites.Release;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class ReleaseRepository {
 
 
-    public static Release toRelease(ReleaseDto releaseDto) {
+    public void saveRelease(HikariDataSource ds, Release release) {
+        try ( Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("Insert into releases (version, url, date, description) values ('"
+                        + release.getVersion() + "', '" + release.getUrl() + "', " + release.getDate() + ", '" + release.getDescription() + "')");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void saveAllReleases(HikariDataSource ds, List<Release> releases) {
+        for (Release release : releases) {
+            if (ObjectUtils.isEmpty(getReleaseByVersion(ds, release.getVersion()))) {
+                saveRelease(ds, release);
+            }
+        }
+    }
+
+    public List<Release> getAllReleases(HikariDataSource ds) {
+        List<Release> allReleases = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT * FROM releases");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        Release release = new Release();
+                        release.setId(resultSet.getInt("id"));
+                        release.setVersion(resultSet.getString("version"));
+                        release.setUrl(resultSet.getString("url"));
+                        var date = resultSet.getDate("date");
+                        if (date != null) {
+                            release.setDate(LocalDate.of(date.getYear(), date.getMonth()+1, date.getDay()));
+                        }
+                        release.setDescription(resultSet.getString("description"));
+                        allReleases.add(release);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+
+        }
+        return allReleases;
+    }
+
+    public Release getReleaseByVersion(HikariDataSource ds, String version) {
+
+        Release release = null;
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT * FROM releases WHERE version = '" + version + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        release = new Release();
+                        release.setId(resultSet.getInt("id"));
+                        release.setVersion(resultSet.getString("version"));
+                        release.setUrl(resultSet.getString("url"));
+
+                        var date = resultSet.getDate("date");
+                        if (date != null) {
+                            release.setDate(LocalDate.of(date.getYear(), date.getMonth()+1, date.getDay()));
+                        }
+                        release.setDescription(resultSet.getString("description"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+
+        }
+        return release;
+    }
+
+
+    public Release toRelease(ReleaseDto releaseDto) {
         Release release = new Release();
         release.setVersion(releaseDto.getTag_name());
         release.setUrl(releaseDto.getHtml_url());
@@ -27,52 +106,11 @@ public class ReleaseRepository {
         return release;
     }
 
-    private static LocalDate toLocalDate(String date) {
+    private LocalDate toLocalDate(String date) {
         if (StringUtils.isNotEmpty(date)) {
             Instant instant = Instant.parse(date);
             return instant.atZone(ZoneId.systemDefault()).toLocalDate();
         } else {
-            return null;
-        }
-    }
-
-    public static void saveRelease(Release release) {
-        try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            session.save(release);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Erreur lors de l'enregistrement de la release : " + ex.getMessage());
-        }
-    }
-
-    public static void saveRelease(List<Release> releases) {
-        for (Release release : releases) {
-            if (ObjectUtils.isEmpty(getReleaseByVersion(release.getVersion()))) {
-                saveRelease(release);
-            }
-        }
-    }
-
-    public static List<Release> getAllReleases() {
-        try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            Query rleaseQuery = session.createQuery("SELECT res FROM Release res", Release.class);
-            return rleaseQuery.getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return Collections.emptyList();
-        }
-    }
-
-    public static Release getReleaseByVersion(String version) {
-        try (Session session = SessionFactoryMaker.getFactory().openSession()) {
-            String query = "SELECT res FROM Release res WHERE res.version = :value";
-            TypedQuery<Release> typedQuery = session.createQuery(query, Release.class)
-                    .setParameter("value", version)
-                    .setMaxResults(1);
-            Release release = typedQuery.getSingleResult();
-            return release;
-        } catch (Exception ex) {
-            ex.printStackTrace();
             return null;
         }
     }

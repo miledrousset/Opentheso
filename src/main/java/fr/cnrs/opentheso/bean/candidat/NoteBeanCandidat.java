@@ -21,6 +21,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
@@ -33,10 +34,10 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class NoteBeanCandidat implements Serializable {
 
-    @Autowired private Connect connect;
-    @Autowired private NoteBeanCandidat noteBeanCandidat;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private CandidatBean candidatBean;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private NoteBeanCandidat noteBeanCandidat;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private CandidatBean candidatBean;
 
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;

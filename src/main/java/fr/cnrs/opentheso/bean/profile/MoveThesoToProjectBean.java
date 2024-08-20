@@ -18,6 +18,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -27,10 +28,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "moveThesoToProjectBean")
 @SessionScoped
 public class MoveThesoToProjectBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private MyProjectBean myProjectBean;
-    @Autowired private CurrentUser currentUser;
-    @Autowired private SuperAdminBean superAdminBean;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private MyProjectBean myProjectBean;
+    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private SuperAdminBean superAdminBean;
     
     private NodeIdValue selectedThesoToMove;
     private String currentProject;

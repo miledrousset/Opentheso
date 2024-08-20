@@ -3,7 +3,9 @@ package fr.cnrs.opentheso.bean.notification;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.entites.Release;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +17,9 @@ import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +28,9 @@ import fr.cnrs.opentheso.bean.notification.client.GitHubClient;
 import fr.cnrs.opentheso.bean.notification.dto.ReleaseDto;
 import fr.cnrs.opentheso.bean.notification.dto.TagDto;
 import fr.cnrs.opentheso.repositories.ReleaseRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
@@ -34,9 +42,21 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class NewVersionService implements Serializable {
 
+    @Autowired @Lazy
+    private Connect connect;
+
     private Release release;
     private boolean isAlreadyLoaded, newVersionExist;
 
+
+    @PostConstruct
+    public boolean searchNew() {
+        if (!isAlreadyLoaded) {
+            isAlreadyLoaded = true;
+            searchNewVersion();
+        }
+        return newVersionExist;
+    }
 
     public void searchNewVersion() {
 
@@ -59,6 +79,7 @@ public class NewVersionService implements Serializable {
 
     private Release rechercherReleases() throws IOException {
 
+        var releaseRepository = new ReleaseRepository();
         List<TagDto> tags = new Gson().fromJson(GitHubClient.getResponse(GitHubClient.TAGS_API_URL),
                 new TypeToken<List<TagDto>>() {}.getType());
 
@@ -67,18 +88,16 @@ public class NewVersionService implements Serializable {
             return null;
         }
 
-        List<Release> releasesSaved = ReleaseRepository.getAllReleases();
+        List<Release> releasesSaved = releaseRepository.getAllReleases(connect.getPoolConnexion());
 
         List<ReleaseDto> releases = new Gson().fromJson(GitHubClient.getResponse(GitHubClient.RELEASES_API_URL),
                 new TypeToken<List<ReleaseDto>>() {}.getType());
 
         if (CollectionUtils.isEmpty(releasesSaved)) {
             log.info("First project running ! Saving previous releases");
-            List<Release> releaseList = releases
-                    .stream()
-                    .map(releaseDto -> ReleaseRepository.toRelease(releaseDto))
-                    .collect(Collectors.toList());
-            ReleaseRepository.saveRelease(releaseList);
+            releaseRepository.saveAllReleases(connect.getPoolConnexion(), releases.stream()
+                    .map(this::toRelease)
+                    .collect(Collectors.toList()));
             log.info("All releases are saved in DB !");
             return null;
         } else {
@@ -96,8 +115,8 @@ public class NewVersionService implements Serializable {
                         .filter(releaseDto -> tag.getName().equalsIgnoreCase(releaseDto.getTag_name()))
                         .findFirst();
                 if (release.isPresent()) {
-                    Release newRelease = ReleaseRepository.toRelease(release.get());
-                    ReleaseRepository.saveRelease(newRelease);
+                    var newRelease = toRelease(release.get());
+                    releaseRepository.saveRelease(connect.getPoolConnexion(), newRelease);
                     log.info("Save latest release in DB !");
                     return newRelease;
                 } else {
@@ -108,12 +127,22 @@ public class NewVersionService implements Serializable {
         }
     }
 
-    public boolean isNewVersionExist() {
-        if (!isAlreadyLoaded) {
-            isAlreadyLoaded = true;
-            searchNewVersion();
+    public Release toRelease(ReleaseDto releaseDto) {
+        Release release = new Release();
+        release.setVersion(releaseDto.getTag_name());
+        release.setUrl(releaseDto.getHtml_url());
+        release.setDate(toLocalDate(releaseDto.getPublished_at()));
+        release.setDescription(releaseDto.getBody());
+        return release;
+    }
+
+    private LocalDate toLocalDate(String date) {
+        if (StringUtils.isNotEmpty(date)) {
+            Instant instant = Instant.parse(date);
+            return instant.atZone(ZoneId.systemDefault()).toLocalDate();
+        } else {
+            return null;
         }
-        return newVersionExist;
     }
 
     public String getFormatUrl() {

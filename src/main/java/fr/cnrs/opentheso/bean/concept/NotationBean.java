@@ -6,7 +6,6 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -19,6 +18,7 @@ import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -31,11 +31,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Named(value = "notationBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class NotationBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private LanguageBean languageBean;
-    @Autowired private ConceptView conceptBean;
-    @Autowired private Tree tree;
-    @Autowired private SelectedTheso selectedTheso;
+
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private ConceptView conceptBean;
+    @Autowired @Lazy private Tree tree;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
     
     private String notation;
 

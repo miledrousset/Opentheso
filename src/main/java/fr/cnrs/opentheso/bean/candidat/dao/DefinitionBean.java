@@ -5,7 +5,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -13,7 +13,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class DefinitionBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private CandidatBean candidatBean;
 
     private String definition;

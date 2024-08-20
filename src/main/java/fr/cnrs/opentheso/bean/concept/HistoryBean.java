@@ -6,7 +6,6 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.HistoryHelper;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -18,6 +17,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  *
@@ -26,10 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Named(value = "historyBean")
 @SessionScoped
 public class HistoryBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private LanguageBean languageBean;
-    @Autowired private ConceptView conceptBean;
-    @Autowired private SelectedTheso selectedTheso;
+
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private ConceptView conceptBean;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
 
     private ArrayList<HistoryHelper.HistoryValue> historyLabels;
     private ArrayList<HistoryHelper.HistoryValue> historySynonyms;

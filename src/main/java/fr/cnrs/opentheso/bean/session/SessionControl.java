@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.bean.leftbody.viewconcepts.TreeConcepts;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
-import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
@@ -22,6 +21,7 @@ import jakarta.faces.component.html.HtmlSelectOneMenu;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
@@ -31,16 +31,16 @@ import java.util.Iterator;
 @Named(value = "sessionControl")
 @SessionScoped
 public class SessionControl implements Serializable {
-    @Autowired private CurrentUser currentUser;
-    @Autowired private TreeGroups treeGroups;
-    @Autowired private TreeConcepts treeConcepts;
-    @Autowired private Tree tree;
-    @Autowired private ListIndex listIndex;
-    @Autowired private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
-    @Autowired private RoleOnThesoBean roleOnThesoBean;
-    @Autowired private IndexSetting indexSetting;
-    @Autowired private MenuBean menuBean;
+
+    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private TreeGroups treeGroups;
+    @Autowired @Lazy private TreeConcepts treeConcepts;
+    @Autowired @Lazy private Tree tree;
+    @Autowired @Lazy private ListIndex listIndex;
+    @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Autowired @Lazy private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
+    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired @Lazy private IndexSetting indexSetting;
     
     public void isTimeout() throws IOException {
 

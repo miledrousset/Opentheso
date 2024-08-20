@@ -21,6 +21,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 
@@ -34,8 +35,8 @@ import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 @SessionScoped
 public class MyAccountBean implements Serializable {
 
-    @Autowired private Connect connect;
-    @Autowired private CurrentUser currentUser;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private CurrentUser currentUser;
 
     private NodeUser nodeUser;
     private ApiKeyHelper apiKeyHelper = new ApiKeyHelper();

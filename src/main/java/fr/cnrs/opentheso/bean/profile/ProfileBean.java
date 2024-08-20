@@ -11,6 +11,7 @@ import java.io.Serializable;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  *
@@ -19,7 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Named(value = "profileBean")
 @SessionScoped
 public class ProfileBean implements Serializable {
-    @Autowired private MyAccountBean myAccountBean;
+
+    @Autowired @Lazy private MyAccountBean myAccountBean;
  
     private boolean isMyAccountActive;
     private boolean isMyProjectActive;

@@ -28,6 +28,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.*;
@@ -45,8 +46,8 @@ public class ConceptsDiagramBean implements Serializable {
     private final float GAP_BETWEEN_NODES = 3.1f;
     private final float GAP_BETWEEN_LEVELS = 4;
 
-    @Autowired private Connect connect;
-    @Autowired private SelectedTheso selectedTheso;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
     
     private String elementSelected;
     private ConceptHelper conceptHelper;

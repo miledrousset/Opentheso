@@ -7,9 +7,7 @@ import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -21,6 +19,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -30,9 +29,9 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 @Named(value = "viewEditorThesoHomeBean")
 public class ViewEditorThesoHomeBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private LanguageBean languageBean; 
+
+    @Autowired @Lazy
+    private Connect connect;
 
     private boolean isViewPlainText;
     private boolean isInEditing;
@@ -58,29 +57,28 @@ public class ViewEditorThesoHomeBean implements Serializable {
         text = null;
     }
     
-    public void initText() {
-        String lang = selectedTheso.getSelectedLang();
-        if(lang == null || lang.isEmpty()) {
-            lang = connect.getWorkLanguage();
+    public void initText(String idLanguage, String idThesaurus) {
+        if(idLanguage == null || idLanguage.isEmpty()) {
+            idLanguage = connect.getWorkLanguage();
         } 
         HtmlPageHelper copyrightHelper = new HtmlPageHelper();
-        text = copyrightHelper.getThesoHomePage(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), lang);
+        text = copyrightHelper.getThesoHomePage(connect.getPoolConnexion(), idThesaurus, idLanguage);
         isInEditing = true;
         isViewPlainText = false;
         colorOfHtmlButton = "#F49F66;";
         colorOfTextButton = "#8C8C8C;";        
     }
 
-    public String getThesoHomePage(){
-        String lang = selectedTheso.getSelectedLang();
-        if(lang == null || lang.isEmpty()) {
-            lang = connect.getWorkLanguage();
+    public String getThesoHomePage(String idLanguage, String idThesaurus){
+
+        if(idLanguage == null || idLanguage.isEmpty()) {
+            idLanguage = connect.getWorkLanguage();
         }         
         HtmlPageHelper copyrightHelper = new HtmlPageHelper();
         String homePage = copyrightHelper.getThesoHomePage(
                 connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                lang);
+                idThesaurus,
+                idLanguage);
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("containerIndex:meta:metadataTheso");
             PrimeFaces.current().ajax().update("containerIndex:thesoHomeData");
@@ -89,9 +87,9 @@ public class ViewEditorThesoHomeBean implements Serializable {
         return homePage;
     }
     
-    public List<DcElement> meta(){
-        DcElementHelper dcElementHelper = new DcElementHelper();
-        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+    public List<DcElement> meta(String idThesaurus){
+
+        List<DcElement> dcElements = new DcElementHelper().getDcElementOfThesaurus(connect.getPoolConnexion(), idThesaurus);
         if(dcElements == null || dcElements.isEmpty())
             dcElements = new ArrayList<>();           
         return dcElements;
@@ -99,19 +97,17 @@ public class ViewEditorThesoHomeBean implements Serializable {
     /**
      * permet d'ajouter un copyright, s'il n'existe pas, on le créé,sinon, on applique une mise à jour 
      */
-    public void updateThesoHomePage() {
+    public void updateThesoHomePage(String idLanguage, String idThesaurus) {
         FacesMessage msg;
-
-        String lang = selectedTheso.getSelectedLang();
-        if(lang == null || lang.isEmpty()) {
-            lang = connect.getWorkLanguage();
+        if(idLanguage == null || idLanguage.isEmpty()) {
+            idLanguage = connect.getWorkLanguage();
         }         
         HtmlPageHelper htmlPageHelper = new HtmlPageHelper();
         if (!htmlPageHelper.setThesoHomePage(
                 connect.getPoolConnexion(),
                 text,
-                selectedTheso.getCurrentIdTheso(),
-                lang)){
+                idThesaurus,
+                idLanguage)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;               
@@ -121,33 +117,32 @@ public class ViewEditorThesoHomeBean implements Serializable {
         isInEditing = false;
         isViewPlainText = false;
     }
-    
-    public String getTotalConceptOfTheso(){
+
+    public String getTotalConceptOfTheso(String idThesaurus){
         StatisticHelper statisticHelper = new StatisticHelper();
-        int count = statisticHelper.getNbCpt(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        int count = statisticHelper.getNbCpt(connect.getPoolConnexion(), idThesaurus);
         return "" + count;
-    }    
-    
-    public String getLastModifiedDate(){
+    }
+
+    public String getLastModifiedDate(String idThesaurus){
         ConceptHelper conceptHelper = new ConceptHelper();
-        Date date = conceptHelper.getLastModification(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        Date date = conceptHelper.getLastModification(connect.getPoolConnexion(), idThesaurus);
         if(date != null)
             return date.toString();
         return "";
     }
-    
-    public String getProjectName(){
+
+    public String getProjectName(String idThesaurus){
         UserHelper userHelper = new UserHelper();
-        int idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        int idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), idThesaurus);
         if(idProject != -1) {
             return userHelper.getGroupName(connect.getPoolConnexion(), idProject);
-        } else 
+        } else
             return "";
-    }    
-    
-    public ArrayList<NodeIdValue> getLastModifiedConcepts(){
-        ConceptHelper conceptHelper = new ConceptHelper();
-        return conceptHelper.getLastModifiedConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+    }
+
+    public ArrayList<NodeIdValue> getLastModifiedConcepts(String idThesaurus, String idLanguage){
+        return new ConceptHelper().getLastModifiedConcept(connect.getPoolConnexion(), idThesaurus, idLanguage);
     }        
     
     public void setViewPlainTextTo(boolean status){
@@ -159,30 +154,6 @@ public class ViewEditorThesoHomeBean implements Serializable {
             colorOfTextButton = "#8C8C8C;";            
         } 
         isViewPlainText = status;
-    }
-
-    public Connect getConnect() {
-        return connect;
-    }
-
-    public void setConnect(Connect connect) {
-        this.connect = connect;
-    }
-
-    public SelectedTheso getSelectedTheso() {
-        return selectedTheso;
-    }
-
-    public void setSelectedTheso(SelectedTheso selectedTheso) {
-        this.selectedTheso = selectedTheso;
-    }
-
-    public LanguageBean getLanguageBean() {
-        return languageBean;
-    }
-
-    public void setLanguageBean(LanguageBean languageBean) {
-        this.languageBean = languageBean;
     }
 
     public boolean isViewPlainText() {

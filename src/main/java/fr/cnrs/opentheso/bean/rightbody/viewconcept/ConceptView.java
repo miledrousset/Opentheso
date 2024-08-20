@@ -15,7 +15,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
@@ -25,7 +24,6 @@ import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
-import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
@@ -34,7 +32,6 @@ import fr.cnrs.opentheso.repositories.GpsRepository;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,14 +40,13 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.ReorderEvent;
-import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.ResponsiveOption;
 
 
@@ -63,25 +59,23 @@ import org.primefaces.model.ResponsiveOption;
 @Named(value = "conceptView")
 public class ConceptView implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private IndexSetting indexSetting;
-    @Autowired
+    @Autowired @Lazy
     private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired
+    @Autowired @Lazy
     private ViewEditorHomeBean viewEditorHomeBean;
-    @Autowired
+    @Autowired @Lazy
     private Tree tree;
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
-    @Autowired
-    private SelectedTheso selectedTheso;
-    @Autowired
+    @Autowired @Lazy
     private LanguageBean languageBean;
-    @Autowired
+    @Autowired @Lazy
     private GpsRepository gpsRepository;
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;
 
     private Map mapModel;
@@ -339,21 +333,20 @@ public class ConceptView implements Serializable {
     }
 
 
-    public void searchCorpus() {
+    public void searchCorpus(String idThesaurus) {
         searchedForCorpus = true;
         SearchCorpus2 searchCorpus2 = new SearchCorpus2();
-        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());     
+        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idThesaurus);
         nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeFullConcept);
         haveCorpus = searchCorpus2.isHaveCorpus();
         if(!haveCorpus) {
-            nodeCorpuses = null;
             nodeCorpuses = null;
         }
     }
 
     public void createMap(String idConcept, String idTheso, Boolean isFirstTime) {
         if (CollectionUtils.isNotEmpty(nodeFullConcept.getGps())) {
-            List<Gps> gpses = getGpsFromResource(nodeFullConcept.getGps());
+            List<Gps> gpses = getGpsFromResource(nodeFullConcept.getGps(), idTheso);
              
             gpsModeSelected = getGpsMode(gpses);
             gpsList = formatCoordonnees(gpses);
@@ -368,12 +361,12 @@ public class ConceptView implements Serializable {
             gpsList = "";
         }        
     }
-    private List<Gps> getGpsFromResource(List<ResourceGPS> resourceGps){
+    private List<Gps> getGpsFromResource(List<ResourceGPS> resourceGps, String idThesaurus){
         List<Gps> gpses = new ArrayList<>();
         for (ResourceGPS resourceGp : resourceGps) {
             Gps gps = new Gps();
             gps.setIdConcept(nodeFullConcept.getIdentifier());
-            gps.setIdTheso(selectedTheso.getCurrentIdTheso());
+            gps.setIdTheso(idThesaurus);
             gps.setLatitude(resourceGp.getLatitude());
             gps.setLongitude(resourceGp.getLongitude());
             gps.setPosition(resourceGp.getPosition());
@@ -535,13 +528,12 @@ public class ConceptView implements Serializable {
 
     }
 
-    public void countTheTotalOfBranch() {
+    public void countTheTotalOfBranch(String idThesaurus) {
         ConceptHelper conceptHelper = new ConceptHelper();
         List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(
                 connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeFullConcept.getIdentifier()
-                );
+                idThesaurus,
+                nodeFullConcept.getIdentifier());
         this.countOfBranch = listIdsOfBranch.size();
     }
 
@@ -902,71 +894,33 @@ public class ConceptView implements Serializable {
         return ObjectUtils.isNotEmpty(nodeFullConcept) && CollectionUtils.isNotEmpty(nodeFullConcept.getGps());
     }
 
-    public void onRowEdit(RowEditEvent<Gps> event) {
-        gpsRepository.updateGps(event.getObject());
-        createMap(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
-
-        FacesMessage msg = new FacesMessage("Coordonnée modifiée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    public void onRowCancel(RowEditEvent<Gps> event) {
-        gpsRepository.removeGps(event.getObject());
-
-        createMap(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
-
-        FacesMessage msg = new FacesMessage("Coordonnée supprimée avec succès");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    public void addNewGps() {
+    public void addNewGps(String idThesaurus) {
         Gps gps = new Gps();
-        gps.setIdTheso(selectedTheso.getCurrentIdTheso());
+        gps.setIdTheso(idThesaurus);
         gps.setIdConcept(nodeFullConcept.getIdentifier());
         gps.setPosition(nodeFullConcept.getGps().size() + 1);
 
         gpsRepository.saveNewGps(gps);
-        createMap(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+        createMap(nodeFullConcept.getIdentifier(), idThesaurus, Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage("Nouvelle coordonnée ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-//    public void onRowReorder(ReorderEvent event) {
-//        Integer fromId = 0, toId = 0;
-//
-//        for (Gps gps : nodeFullConcept.getGps()) {
-//            if (gps.getPosition() == (event.getFromIndex() + 1)) {
-//                fromId = gps.getId();
-//            }
-//            if (gps.getPosition() == (event.getToIndex() + 1)) {
-//                toId = gps.getId();
-//            }
-//        }
-//
-//        gpsRepository.updateGpsPosition(fromId, (event.getToIndex() + 1));
-//        gpsRepository.updateGpsPosition(toId, (event.getFromIndex() + 1));
-//
-//        createMap(nodeConcept.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
-//
-//        FacesMessage msg = new FacesMessage("Réorganisation des coordonnées effectuée");
-//        FacesContext.getCurrentInstance().addMessage(null, msg);
-//    }
-
     private String gpsList;
 
-    public void formatGpsList() {
+    public void formatGpsList(String idThesaurus) {
 
         if (StringUtils.isEmpty(gpsList)) {
             nodeFullConcept.setGps(null);
-            gpsRepository.removeGpsByConcept(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso());
+            gpsRepository.removeGpsByConcept(nodeFullConcept.getIdentifier(), idThesaurus);
         } else {
-            List<Gps> gpsListTmps = readGps(gpsList, selectedTheso.getCurrentIdTheso(), nodeFullConcept.getIdentifier());
+            List<Gps> gpsListTmps = readGps(gpsList, idThesaurus, nodeFullConcept.getIdentifier());
 
             if (ObjectUtils.isNotEmpty(gpsListTmps)) {
                 nodeFullConcept.setGps(getResourceGpsFromGps(gpsListTmps));
                 gpsModeSelected = getGpsMode(gpsListTmps);
-                gpsRepository.removeGpsByConcept(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso());
+                gpsRepository.removeGpsByConcept(nodeFullConcept.getIdentifier(), idThesaurus);
                 for (Gps gps : gpsListTmps) {
                     gpsRepository.saveNewGps(gps);
                 }
@@ -978,7 +932,7 @@ public class ConceptView implements Serializable {
             }
         }
 
-        createMap(nodeFullConcept.getIdentifier(), selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+        createMap(nodeFullConcept.getIdentifier(), idThesaurus, Boolean.FALSE);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Coordonnée GPS modifiés !");
         FacesContext.getCurrentInstance().addMessage(null, msg);

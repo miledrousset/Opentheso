@@ -23,6 +23,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -31,48 +32,48 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class MenuBean implements Serializable {
 
-    @Autowired 
+    @Autowired @Lazy 
     private SearchBean searchBean;
 
-    @Autowired 
+    @Autowired @Lazy 
     private SuperAdminBean superAdminBean;
 
-    @Autowired 
+    @Autowired @Lazy 
     private MyAccountBean myAccountBean;
 
-    @Autowired 
+    @Autowired @Lazy 
     private MyProjectBean myProjectBean;
 
-    @Autowired 
+    @Autowired @Lazy 
     private CorpusBean corpusBean;
 
-    @Autowired 
+    @Autowired @Lazy 
     private PreferenceBean preferenceBean;
     
-    @Autowired
+    @Autowired @Lazy
     private ViewEditionBean viewEditionBean;
     
-    @Autowired
+    @Autowired @Lazy
     private AtelierThesBean atelierThesBean;
     
-    @Autowired
+    @Autowired @Lazy
     private StatistiqueBean statistiqueBean;
     
-    @Autowired
+    @Autowired @Lazy
     private NewUSerBean newUSerBean;
     
-    @Autowired 
+    @Autowired @Lazy 
     private SelectedTheso selectedTheso;
     
-    @Autowired 
+    @Autowired @Lazy 
     private CandidatBean candidatBean;
     
-    @Autowired 
+    @Autowired @Lazy 
     private CurrentUser currentUser;
     
-    @Autowired
+    @Autowired @Lazy
     private PropositionBean propositionBean;
-    @Autowired
+    @Autowired @Lazy
     private DataGraphView dataGraphView;    
     
     private boolean notificationPannelVisible;

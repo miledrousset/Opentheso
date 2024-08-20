@@ -23,6 +23,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
@@ -36,10 +37,10 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Named(value = "addGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddGroupBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private LeftBodySetting leftBodySetting;
-    @Autowired private RoleOnThesoBean roleOnThesoBean;
-    @Autowired private TreeGroups treeGroups;    
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private LeftBodySetting leftBodySetting;
+    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired @Lazy private TreeGroups treeGroups;    
     
     private String selectedGroupType;
     private String titleGroup;    

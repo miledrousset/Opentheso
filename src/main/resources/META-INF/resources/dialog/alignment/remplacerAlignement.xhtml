@@ -100,7 +100,7 @@
 
                 <p:commandButton styleClass="ui-button-success" value="#{langueBean.getMsg('btnValidate')}"
                                  update="containerIndex"
-                                 actionListener="#{alignmentBean.remplacerAlignementSelected()}"
+                                 actionListener="#{alignmentBean.remplacerAlignementSelected(selectedTheso.getCurrentIdTheso())}"
                                  icon="pi pi-check" ajax="true" process="@this"/>
             </div>
         </h:form>

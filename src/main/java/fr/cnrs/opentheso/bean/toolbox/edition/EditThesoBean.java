@@ -31,6 +31,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -40,11 +41,11 @@ import org.primefaces.PrimeFaces;
 @Named(value = "editThesoBean")
 @SessionScoped
 public class EditThesoBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private CurrentUser currentUser;
-    @Autowired private RoleOnThesoBean roleOnThesoBean;
-    @Autowired private MenuBean menuBean;
-    @Autowired private ThesaurusMetadataAdd thesaurusMetadataAdd;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired @Lazy private MenuBean menuBean;
+    @Autowired @Lazy private ThesaurusMetadataAdd thesaurusMetadataAdd;
 
     private NodeLangTheso langSelected;
     private ArrayList<Languages_iso639> allLangs;

@@ -19,6 +19,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
@@ -31,9 +32,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "modifyUSerBean")
 @SessionScoped
 public class ModifyUSerBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private MyProjectBean myProjectBean;
-    @Autowired private SuperAdminBean superAdminBean;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private MyProjectBean myProjectBean;
+    @Autowired @Lazy private SuperAdminBean superAdminBean;
     
     private NodeUser nodeUser;
     private String passWord1;

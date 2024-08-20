@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -35,13 +36,13 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class DeleteThesoBean implements Serializable {
     
-    @Autowired 
+    @Autowired @Lazy 
     private Connect connect;
     
-    @Autowired 
+    @Autowired @Lazy 
     private SelectedTheso selectedTheso;
     
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
     
     private String idThesoToDelete;

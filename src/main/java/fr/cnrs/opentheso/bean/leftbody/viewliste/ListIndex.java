@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
@@ -30,17 +31,17 @@ import org.primefaces.event.SelectEvent;
 @SessionScoped
 public class ListIndex implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
-    @Autowired
+    @Autowired @Lazy
     private RightBodySetting rightBodySetting;
-    @Autowired 
+    @Autowired @Lazy 
     private LeftBodySetting leftBodySetting;
-    @Autowired
+    @Autowired @Lazy
     private ConceptView conceptBean;
-    @Autowired
+    @Autowired @Lazy
     private PropositionBean propositionBean;
 
     private String searchValue;

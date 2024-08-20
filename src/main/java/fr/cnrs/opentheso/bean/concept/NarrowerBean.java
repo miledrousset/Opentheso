@@ -15,7 +15,6 @@ import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTypeRelation;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
-import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -34,6 +33,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -43,12 +43,12 @@ import org.primefaces.PrimeFaces;
 @Named(value = "narrowerBean")
 @SessionScoped
 public class NarrowerBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private LanguageBean languageBean;
-    @Autowired private ConceptView conceptBean;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private Tree tree;
-    @Autowired private CurrentUser currentUser;     
+
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private ConceptView conceptBean;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private Tree tree;
+    @Autowired @Lazy private CurrentUser currentUser;     
 
     private NodeSearchMini searchSelected;
     private ArrayList<NodeNT> nodeNTs;

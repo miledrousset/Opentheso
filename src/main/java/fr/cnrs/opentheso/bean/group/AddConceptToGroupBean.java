@@ -24,6 +24,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -36,10 +37,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Named(value = "addConceptToGroupBean")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddConceptToGroupBean implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private SelectedTheso selectedTheso;
-    @Autowired private ConceptView conceptView;
-    @Autowired private CurrentUser currentUser;                    
+
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private ConceptView conceptView;
+    @Autowired @Lazy private CurrentUser currentUser;                    
     
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
 

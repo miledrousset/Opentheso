@@ -22,14 +22,13 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.primefaces.PrimeFaces;
@@ -43,18 +42,13 @@ import org.primefaces.PrimeFaces;
 
 public class NoteBean implements Serializable {
 
-    @Autowired
-    private Connect connect;
-    @Autowired
-    private PropositionBean propositionBean;
-    @Autowired
-    private ConceptView conceptBean;
-    @Autowired
-    private SelectedTheso selectedTheso;
-    @Autowired private CurrentUser currentUser;    
-
-    @Autowired private EditFacet editFacet;
-    @Autowired private GroupView groupView;
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private PropositionBean propositionBean;
+    @Autowired @Lazy private ConceptView conceptBean;
+    @Autowired @Lazy private SelectedTheso selectedTheso;
+    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy private EditFacet editFacet;
+    @Autowired @Lazy private GroupView groupView;
     
     private String selectedLang;
     

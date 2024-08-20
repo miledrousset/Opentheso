@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  *
@@ -30,10 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Named(value = "groupView")
 @SessionScoped
 public class GroupView implements Serializable {
-    @Autowired private Connect connect;
-    @Autowired private IndexSetting indexSetting;     
-    @Autowired private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired private ViewEditorHomeBean viewEditorHomeBean;       
+    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy private IndexSetting indexSetting;     
+    @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;       
 
     private NodeGroup nodeGroup;
     private ArrayList<NodeGroupTraductions> nodeGroupTraductions;

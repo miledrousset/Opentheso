@@ -10,9 +10,9 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Named(value = "langueBean")
 @SessionScoped
@@ -20,7 +20,7 @@ public class LanguageBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
 
     private String currentBundle;

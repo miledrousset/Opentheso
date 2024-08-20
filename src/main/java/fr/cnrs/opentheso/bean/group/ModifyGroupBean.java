@@ -24,6 +24,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.springframework.context.annotation.Scope;
@@ -38,15 +39,15 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ModifyGroupBean implements Serializable {
 
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private TreeGroups treeGroups;
-    @Autowired
+    @Autowired @Lazy
     private GroupView groupView;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;
 
     private String selectedGroupType;

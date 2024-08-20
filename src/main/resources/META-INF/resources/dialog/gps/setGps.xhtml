@@ -11,7 +11,7 @@
 
             <p:toolbar>
                 <p:toolbarGroup>
-                    <p:commandButton value="Ajouter" icon="pi pi-plus" actionListener="#{conceptView.addNewGps()}"
+                    <p:commandButton value="Ajouter" icon="pi pi-plus" actionListener="#{conceptView.addNewGps(selectedTheso.getCurrentIdTheso())}"
                                      update="containerIndex:form" ajax="true" process="@this" styleClass="ui-button-success" style="margin-right: .5rem" />
                 </p:toolbarGroup>
                 <p:toolbarGroup align="right">

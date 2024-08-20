@@ -73,7 +73,9 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.event.AjaxBehaviorEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -88,26 +90,26 @@ import org.primefaces.model.StreamedContent;
  *
  * @author miledrousset
  */
+@Slf4j
 @Named(value = "importFileBean")
 @SessionScoped
 public class ImportFileBean implements Serializable {
 
-    private final Log log = LogFactory.getLog(ImportFileBean.class);
-    @Autowired
+    @Autowired @Lazy
     private Connect connect;
-    @Autowired
+    @Autowired @Lazy
     private CurrentUser currentUser;
-    @Autowired
+    @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
-    @Autowired
+    @Autowired @Lazy
     private ViewEditionBean viewEditionBean;
-    @Autowired
+    @Autowired @Lazy
     private ConceptView conceptView;
-    @Autowired
+    @Autowired @Lazy
     private Tree tree;
-    @Autowired
+    @Autowired @Lazy
     private CandidatBean candidatBean;
-    @Autowired
+    @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
     private double progress = 0;
