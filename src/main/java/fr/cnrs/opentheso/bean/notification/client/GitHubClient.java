@@ -8,14 +8,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-@ApplicationScoped
 public class GitHubClient {
 
     public static final String RELEASES_API_URL = " https://api.github.com/repos/miledrousset/Opentheso2/releases";
     public static final String TAGS_API_URL = " https://api.github.com/repos/miledrousset/Opentheso2/tags?sort=created&direction=desc";
 
 
-    public String getResponse(String apiURL) throws IOException {
+    public static String getResponse(String apiURL) throws IOException {
         HttpURLConnection connection = createRequest(apiURL);
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -35,7 +34,7 @@ public class GitHubClient {
         }
     }
 
-    private HttpURLConnection createRequest(String apiUrl) throws IOException {
+    private static HttpURLConnection createRequest(String apiUrl) throws IOException {
         URL url = new URL(apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");

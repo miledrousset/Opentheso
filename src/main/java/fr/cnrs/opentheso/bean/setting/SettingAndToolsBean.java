@@ -9,7 +9,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -18,7 +18,7 @@ import jakarta.inject.Inject;
 @Named(value = "settingAndToolsBean")
 @SessionScoped
 public class SettingAndToolsBean implements Serializable {
-    @Inject private PreferenceBean preferenceBean;
+    @Autowired private PreferenceBean preferenceBean;
     
     private boolean isPreferenceActive;
     private boolean isIdentifierActive;

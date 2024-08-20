@@ -17,7 +17,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +32,10 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class ImageBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;    
+    @Autowired private Connect connect;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private CurrentUser currentUser;    
 
     private String uri;
     private String copyright;

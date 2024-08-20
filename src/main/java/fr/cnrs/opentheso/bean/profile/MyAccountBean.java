@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 
@@ -34,8 +34,8 @@ import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 @SessionScoped
 public class MyAccountBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private CurrentUser currentUser;
+    @Autowired private Connect connect;
+    @Autowired private CurrentUser currentUser;
 
     private NodeUser nodeUser;
     private ApiKeyHelper apiKeyHelper = new ApiKeyHelper();

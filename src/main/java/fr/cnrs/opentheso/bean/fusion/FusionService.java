@@ -14,14 +14,14 @@ import fr.cnrs.opentheso.core.imports.rdf4j.helper.AddConceptsStruct;
 import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
 import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.skosapi.*;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
 import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -33,10 +33,10 @@ import java.util.List;
 @ViewScoped
 public class FusionService implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
 
-    @Inject
+    @Autowired
     private CurrentUser currentUser;
 
     private SKOSXmlDocument sourceSkos;

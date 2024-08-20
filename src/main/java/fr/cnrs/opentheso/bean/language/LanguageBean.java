@@ -9,9 +9,10 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Named(value = "langueBean")
 @SessionScoped
@@ -19,7 +20,8 @@ public class LanguageBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Inject private Connect connect;
+    @Autowired
+    private Connect connect;
 
     private String currentBundle;
     private String idLangue;
@@ -28,13 +30,6 @@ public class LanguageBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         ResourceBundle bundleLangue = context.getApplication().getResourceBundle(context, l);
         return bundleLangue;
-    }
-
-    /**
-     * Constructeur
-     */
-    public LanguageBean() {
-        //    FacesContext context = FacesContext.getCurrentInstance();
     }
 
     @PostConstruct

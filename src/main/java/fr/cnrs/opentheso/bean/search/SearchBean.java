@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -47,27 +47,27 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class SearchBean implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private RightBodySetting rightBodySetting;
-    @Inject
+    @Autowired
     private LeftBodySetting leftBodySetting;
-    @Inject
+    @Autowired
     private ConceptView conceptBean;
-    @Inject
+    @Autowired
     private IndexSetting indexSetting;
-    @Inject
+    @Autowired
     private TreeGroups treeGroups;
-    @Inject
+    @Autowired
     private Tree tree;
-    @Inject
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
-    @Inject
+    @Autowired
     private PropositionBean propositionBean;
-    @Inject
+    @Autowired
     private LanguageBean languageBean;
 
     private NodeSearchMini searchSelected;

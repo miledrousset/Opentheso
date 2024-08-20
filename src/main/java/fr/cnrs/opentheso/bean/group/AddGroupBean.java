@@ -13,6 +13,7 @@ import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,22 +22,24 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  *
  * @author miledrousset
  */
+@SessionScoped
 @Named(value = "addGroupBean")
-@javax.enterprise.context.SessionScoped
-
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddGroupBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LeftBodySetting leftBodySetting;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private TreeGroups treeGroups;    
+    @Autowired private Connect connect;
+    @Autowired private LeftBodySetting leftBodySetting;
+    @Autowired private RoleOnThesoBean roleOnThesoBean;
+    @Autowired private TreeGroups treeGroups;    
     
     private String selectedGroupType;
     private String titleGroup;    

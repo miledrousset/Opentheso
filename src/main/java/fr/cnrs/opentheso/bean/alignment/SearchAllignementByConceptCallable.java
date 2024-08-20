@@ -12,7 +12,7 @@ import fr.cnrs.opentheso.core.alignment.helper.IdRefHelper;
 import fr.cnrs.opentheso.core.alignment.helper.OntomeHelper;
 import fr.cnrs.opentheso.core.alignment.helper.OpenthesoHelper;
 import fr.cnrs.opentheso.core.alignment.helper.WikidataHelper;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

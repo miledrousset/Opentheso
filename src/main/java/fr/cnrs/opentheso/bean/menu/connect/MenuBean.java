@@ -22,7 +22,7 @@ import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -31,48 +31,48 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class MenuBean implements Serializable {
 
-    @Inject 
+    @Autowired 
     private SearchBean searchBean;
 
-    @Inject 
+    @Autowired 
     private SuperAdminBean superAdminBean;
 
-    @Inject 
+    @Autowired 
     private MyAccountBean myAccountBean;
 
-    @Inject 
+    @Autowired 
     private MyProjectBean myProjectBean;
 
-    @Inject 
+    @Autowired 
     private CorpusBean corpusBean;
 
-    @Inject 
+    @Autowired 
     private PreferenceBean preferenceBean;
     
-    @Inject
+    @Autowired
     private ViewEditionBean viewEditionBean;
     
-    @Inject
+    @Autowired
     private AtelierThesBean atelierThesBean;
     
-    @Inject
+    @Autowired
     private StatistiqueBean statistiqueBean;
     
-    @Inject
+    @Autowired
     private NewUSerBean newUSerBean;
     
-    @Inject 
+    @Autowired 
     private SelectedTheso selectedTheso;
     
-    @Inject 
+    @Autowired 
     private CandidatBean candidatBean;
     
-    @Inject 
+    @Autowired 
     private CurrentUser currentUser;
     
-    @Inject
+    @Autowired
     private PropositionBean propositionBean;
-    @Inject
+    @Autowired
     private DataGraphView dataGraphView;    
     
     private boolean notificationPannelVisible;

@@ -25,28 +25,32 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  *
  * @author miledrousset
  */
+@SessionScoped
 @Named(value = "moveConcept")
-@javax.enterprise.context.SessionScoped
-
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MoveConcept implements Serializable {
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private CurrentUser currentUser;    
-    @Inject
+    @Autowired
     private CandidatBean candidatBean;   
     
     private String idThesoFrom, idThesoTo;

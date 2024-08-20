@@ -28,7 +28,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 
@@ -46,19 +46,19 @@ import org.primefaces.model.TreeNode;
 
 public class TreeGroups implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private RightBodySetting rightBodySetting;
-    @Inject
+    @Autowired
     private ConceptView conceptView;
-    @Inject
+    @Autowired
     private GroupView groupView;
-    @Inject
+    @Autowired
     private LeftBodySetting leftBodySetting;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private PropositionBean propositionBean;
 
     private DataService dataService;

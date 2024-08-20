@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -28,8 +28,8 @@ import jakarta.inject.Inject;
 @Named(value = "showVoteNote")
 @SessionScoped
 public class showVoteNote implements Serializable {
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
+    @Autowired private Connect connect;
+    @Autowired private SelectedTheso selectedTheso;
 
     private String userName;
     private String candidat;

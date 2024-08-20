@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -39,10 +39,10 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class NewThesoBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private CurrentUser currentUser;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private ViewEditionBean viewEditionBean;
+    @Autowired private Connect connect;
+    @Autowired private CurrentUser currentUser;
+    @Autowired private RoleOnThesoBean roleOnThesoBean;
+    @Autowired private ViewEditionBean viewEditionBean;
 
     private String title;
     private ArrayList<Languages_iso639> allLangs;

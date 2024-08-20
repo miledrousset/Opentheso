@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
@@ -31,9 +31,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "modifyUSerBean")
 @SessionScoped
 public class ModifyUSerBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private MyProjectBean myProjectBean;
-    @Inject private SuperAdminBean superAdminBean;
+    @Autowired private Connect connect;
+    @Autowired private MyProjectBean myProjectBean;
+    @Autowired private SuperAdminBean superAdminBean;
     
     private NodeUser nodeUser;
     private String passWord1;

@@ -18,13 +18,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.sql.SQLException;
 import java.util.*;
 
-import javax.servlet.ServletConfig;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import jakarta.servlet.ServletConfig;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 
@@ -73,7 +73,7 @@ public class OpenApiController extends BaseOpenApiResource {
          ResourceBundle bundle = ResourceBundle.getBundle("language.openapi", new Locale(lang));
 
         try {
-            Response openapi = super.getOpenApi(headers, config, app, uriInfo, type);
+            /*Response openapi = super.getOpenApi(headers, config, app, uriInfo, type);
 
             String jsonOAS = (String) openapi.getEntity();
             jsonOAS = helper.translate(jsonOAS, bundle);
@@ -85,7 +85,7 @@ public class OpenApiController extends BaseOpenApiResource {
                     .entity(jsonOAS)
                     .type(types.get(type))
                     .header("Access-Control-Allow-Origin", "*")
-                    .build();
+                    .build();*/
         } catch (Exception e) {
             Logger.getLogger(OpenApiConfig.class.getName()).log(Level.SEVERE, e.getMessage());
         }

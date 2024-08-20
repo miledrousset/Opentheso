@@ -3,14 +3,14 @@ package fr.cnrs.opentheso.bean.candidat;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Named("candidatProgressBar")
 @ViewScoped
 public class ProgressBarView implements Serializable {
 
-    @Inject
+    @Autowired
     private CandidatBean candidatBean;
     
 

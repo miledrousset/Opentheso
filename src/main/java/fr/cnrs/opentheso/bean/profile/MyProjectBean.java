@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -28,9 +28,9 @@ import jakarta.inject.Inject;
 @SessionScoped
 public class MyProjectBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private CurrentUser currentUser;
+    @Autowired private Connect connect;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private CurrentUser currentUser;
     
     private ArrayList<NodeIdValue> listeThesoOfProject;
     private Map<String, String> listeGroupsOfUser;

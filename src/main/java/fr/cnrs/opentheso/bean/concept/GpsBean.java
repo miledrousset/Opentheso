@@ -16,7 +16,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import lombok.Data;
 import org.primefaces.PrimeFaces;
 
@@ -26,10 +26,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "gpsBean")
 public class GpsBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private ConceptView conceptView;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private GpsRepository gpsRepository;
+    @Autowired private Connect connect;
+    @Autowired private ConceptView conceptView;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private GpsRepository gpsRepository;
 
     private Gps gpsSelected;
 

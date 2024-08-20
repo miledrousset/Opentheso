@@ -14,7 +14,7 @@ import fr.cnrs.opentheso.core.alignment.helper.AgrovocHelper;
 import fr.cnrs.opentheso.core.alignment.helper.GemetHelper;
 import fr.cnrs.opentheso.core.alignment.helper.GeoNamesHelper;
 import fr.cnrs.opentheso.core.alignment.helper.WikidataHelper;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;

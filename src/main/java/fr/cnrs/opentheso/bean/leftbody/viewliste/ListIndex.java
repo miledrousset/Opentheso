@@ -18,7 +18,7 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.List;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
@@ -30,17 +30,17 @@ import org.primefaces.event.SelectEvent;
 @SessionScoped
 public class ListIndex implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private RightBodySetting rightBodySetting;
-    @Inject 
+    @Autowired 
     private LeftBodySetting leftBodySetting;
-    @Inject
+    @Autowired
     private ConceptView conceptBean;
-    @Inject
+    @Autowired
     private PropositionBean propositionBean;
 
     private String searchValue;

@@ -14,6 +14,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,28 +23,30 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  *
  * @author miledrousset
  */
+@SessionScoped
 @Named(value = "modifyGroupBean")
-@javax.enterprise.context.SessionScoped
-
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ModifyGroupBean implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private TreeGroups treeGroups;
-    @Inject
+    @Autowired
     private GroupView groupView;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private CurrentUser currentUser;
 
     private String selectedGroupType;

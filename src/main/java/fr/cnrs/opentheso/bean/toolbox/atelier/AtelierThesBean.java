@@ -11,12 +11,12 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.fusion.FusionService;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
@@ -29,10 +29,10 @@ import org.primefaces.model.StreamedContent;
 @ViewScoped
 public class AtelierThesBean implements Serializable {
 
-    @Inject
+    @Autowired
     private AtelierThesService atelierThesService;
 
-    @Inject
+    @Autowired
     private FusionService fusionService;
 
     private List<String> titles;

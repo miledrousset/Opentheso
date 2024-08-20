@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.event.ToggleSelectEvent;
 
 /**
@@ -29,10 +29,10 @@ import org.primefaces.event.ToggleSelectEvent;
 @Named(value = "viewExportBean")
 @SessionScoped
 public class ViewExportBean implements Serializable {
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private Connect connect;
-    @Inject private ExportFileBean downloadBean;
-    @Inject private LanguageBean languageBean;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private Connect connect;
+    @Autowired private ExportFileBean downloadBean;
+    @Autowired private LanguageBean languageBean;
 
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<NodeGroup> groupList;

@@ -17,7 +17,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -26,10 +26,10 @@ import jakarta.inject.Inject;
 @Named(value = "historyBean")
 @SessionScoped
 public class HistoryBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
+    @Autowired private Connect connect;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private SelectedTheso selectedTheso;
 
     private ArrayList<HistoryHelper.HistoryValue> historyLabels;
     private ArrayList<HistoryHelper.HistoryValue> historySynonyms;

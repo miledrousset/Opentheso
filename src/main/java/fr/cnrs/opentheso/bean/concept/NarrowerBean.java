@@ -33,7 +33,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -43,12 +43,12 @@ import org.primefaces.PrimeFaces;
 @Named(value = "narrowerBean")
 @SessionScoped
 public class NarrowerBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private Tree tree;
-    @Inject private CurrentUser currentUser;     
+    @Autowired private Connect connect;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private Tree tree;
+    @Autowired private CurrentUser currentUser;     
 
     private NodeSearchMini searchSelected;
     private ArrayList<NodeNT> nodeNTs;

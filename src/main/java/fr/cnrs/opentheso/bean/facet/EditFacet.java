@@ -25,7 +25,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,14 +37,14 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class EditFacet implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private ConceptView conceptBean;
-    @Inject private IndexSetting indexSetting;
-    @Inject private ConceptView conceptView;
-    @Inject private Tree tree;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;    
+    @Autowired private Connect connect;
+    @Autowired private RightBodySetting rightBodySetting;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private IndexSetting indexSetting;
+    @Autowired private ConceptView conceptView;
+    @Autowired private Tree tree;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private CurrentUser currentUser;    
 
     private ArrayList<NodeLangTheso> nodeLangs, nodeLangsFiltered;
     private ArrayList<NodeIdValue> conceptList;

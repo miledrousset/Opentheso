@@ -14,14 +14,14 @@ import jakarta.faces.context.ExternalContext;
 
 
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 
 
 @Named (value = "connect")
 @ApplicationScoped
 public class Connect implements Serializable{
-    @Inject private NewVersionService newVersionService;
+    @Autowired private NewVersionService newVersionService;
     private final int DEFAULT_TIMEOUT_IN_MIN = 10;
    
    

@@ -8,7 +8,7 @@ import java.util.Map;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import org.primefaces.model.ResponsiveOption;
 
@@ -31,7 +31,7 @@ public class GalleriaView implements Serializable {
 
     private int activeIndex = 0;
 //
-//    @Inject
+//    @Autowired
 //    private PhotoService service;
 
     @PostConstruct

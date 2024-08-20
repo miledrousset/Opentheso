@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -57,7 +57,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import lombok.Data;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -68,14 +68,14 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AlignmentBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private ConceptView conceptView;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private ConceptView conceptBean;
-    @Inject private AlignmentManualBean alignmentManualBean;
-    @Inject private LanguageBean languageBean;
-    @Inject private CurrentUser currentUser;
-    @Inject private SetAlignmentSourceBean setAlignmentSourceBean;
+    @Autowired private Connect connect;
+    @Autowired private ConceptView conceptView;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private AlignmentManualBean alignmentManualBean;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private CurrentUser currentUser;
+    @Autowired private SetAlignmentSourceBean setAlignmentSourceBean;
 
     private boolean withLang;
     private boolean withNote;

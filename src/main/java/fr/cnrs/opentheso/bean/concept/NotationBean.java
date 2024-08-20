@@ -14,25 +14,28 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  *
  * @author miledrousset
  */
+@SessionScoped
 @Named(value = "notationBean")
-@javax.enterprise.context.SessionScoped
-
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class NotationBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private Tree tree;
-    @Inject private SelectedTheso selectedTheso;
+    @Autowired private Connect connect;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private Tree tree;
+    @Autowired private SelectedTheso selectedTheso;
     
     private String notation;
 

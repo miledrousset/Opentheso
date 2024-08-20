@@ -28,7 +28,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -43,18 +43,18 @@ import org.primefaces.PrimeFaces;
 
 public class NoteBean implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private PropositionBean propositionBean;
-    @Inject
+    @Autowired
     private ConceptView conceptBean;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;    
+    @Autowired private CurrentUser currentUser;    
 
-    @Inject private EditFacet editFacet;
-    @Inject private GroupView groupView;
+    @Autowired private EditFacet editFacet;
+    @Autowired private GroupView groupView;
     
     private String selectedLang;
     

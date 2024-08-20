@@ -10,7 +10,7 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -19,7 +19,7 @@ import jakarta.inject.Inject;
 @Named(value = "profileBean")
 @SessionScoped
 public class ProfileBean implements Serializable {
-    @Inject private MyAccountBean myAccountBean;
+    @Autowired private MyAccountBean myAccountBean;
  
     private boolean isMyAccountActive;
     private boolean isMyProjectActive;

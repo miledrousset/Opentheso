@@ -11,7 +11,7 @@ import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.RowEditEvent;
@@ -28,7 +28,7 @@ public class ThesaurusMetadataAdd implements Serializable{
     private List<String> dcmiTypes;     
     private String idTheso;
     
-    @Inject private Connect connect;
+    @Autowired private Connect connect;
     
     public void init(String idTheso1) {
         DcElementHelper dcElementHelper = new DcElementHelper();

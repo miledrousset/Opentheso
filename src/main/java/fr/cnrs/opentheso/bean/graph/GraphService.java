@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,9 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 @SessionScoped
 public class GraphService implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private CurrentUser currentUser;
 
     private final Log LOG = LogFactory.getLog(GraphService.class);

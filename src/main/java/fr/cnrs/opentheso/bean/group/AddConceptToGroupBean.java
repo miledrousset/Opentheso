@@ -15,6 +15,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,21 +23,23 @@ import java.util.List;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  *
  * @author miledrousset
  */
+@SessionScoped
 @Named(value = "addConceptToGroupBean")
-@javax.enterprise.context.SessionScoped
-
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddConceptToGroupBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private ConceptView conceptView;
-    @Inject private CurrentUser currentUser;                    
+    @Autowired private Connect connect;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private ConceptView conceptView;
+    @Autowired private CurrentUser currentUser;                    
     
     private NodeAutoCompletion selectedNodeAutoCompletionGroup;
 

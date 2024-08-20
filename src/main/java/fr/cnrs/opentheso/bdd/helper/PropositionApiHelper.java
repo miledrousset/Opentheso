@@ -12,7 +12,7 @@ import fr.cnrs.opentheso.bean.proposition.model.PropositionActionEnum;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionCategoryEnum;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionFromApi;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.ws.rs.core.Response;

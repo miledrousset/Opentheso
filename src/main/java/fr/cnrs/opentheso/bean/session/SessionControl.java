@@ -21,7 +21,7 @@ import jakarta.faces.component.html.HtmlSelectManyCheckbox;
 import jakarta.faces.component.html.HtmlSelectOneMenu;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
@@ -31,16 +31,16 @@ import java.util.Iterator;
 @Named(value = "sessionControl")
 @SessionScoped
 public class SessionControl implements Serializable {
-    @Inject private CurrentUser currentUser;
-    @Inject private TreeGroups treeGroups;
-    @Inject private TreeConcepts treeConcepts;
-    @Inject private Tree tree;
-    @Inject private ListIndex listIndex;
-    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private IndexSetting indexSetting;
-    @Inject private MenuBean menuBean;
+    @Autowired private CurrentUser currentUser;
+    @Autowired private TreeGroups treeGroups;
+    @Autowired private TreeConcepts treeConcepts;
+    @Autowired private Tree tree;
+    @Autowired private ListIndex listIndex;
+    @Autowired private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Autowired private CopyAndPasteBetweenTheso copyAndPasteBetweenTheso;
+    @Autowired private RoleOnThesoBean roleOnThesoBean;
+    @Autowired private IndexSetting indexSetting;
+    @Autowired private MenuBean menuBean;
     
     public void isTimeout() throws IOException {
 

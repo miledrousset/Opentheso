@@ -42,10 +42,10 @@ import java.util.regex.Pattern;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.Data;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -63,25 +63,25 @@ import org.primefaces.model.ResponsiveOption;
 @Named(value = "conceptView")
 public class ConceptView implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private IndexSetting indexSetting;
-    @Inject
+    @Autowired
     private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject
+    @Autowired
     private ViewEditorHomeBean viewEditorHomeBean;
-    @Inject
+    @Autowired
     private Tree tree;
-    @Inject
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private LanguageBean languageBean;
-    @Inject
+    @Autowired
     private GpsRepository gpsRepository;
-    @Inject
+    @Autowired
     private CurrentUser currentUser;
 
     private Map mapModel;

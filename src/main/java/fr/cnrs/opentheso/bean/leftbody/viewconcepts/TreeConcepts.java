@@ -15,14 +15,14 @@ import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,12 +36,12 @@ import jakarta.annotation.PreDestroy;
 @Named(value = "treeConcepts")
 @SessionScoped
 public class TreeConcepts implements Serializable {
-    @Inject private Connect connect;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private ConceptView conceptView;
-    @Inject private GroupView groupView;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private PropositionBean propositionBean;
+    @Autowired private Connect connect;
+    @Autowired private RightBodySetting rightBodySetting;
+    @Autowired private ConceptView conceptView;
+    @Autowired private GroupView groupView;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private PropositionBean propositionBean;
 
     private DataService dataService;
     private TreeNode root, selectedNode;

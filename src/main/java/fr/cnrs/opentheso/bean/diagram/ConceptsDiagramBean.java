@@ -10,7 +10,7 @@ import org.abego.treelayout.TreeLayout;
 import org.abego.treelayout.util.DefaultConfiguration;
 import org.abego.treelayout.util.DefaultTreeForTreeLayout;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import org.primefaces.PrimeFaces;
@@ -27,7 +27,7 @@ import org.primefaces.model.diagram.overlay.ArrowOverlay;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.*;
@@ -45,8 +45,8 @@ public class ConceptsDiagramBean implements Serializable {
     private final float GAP_BETWEEN_NODES = 3.1f;
     private final float GAP_BETWEEN_LEVELS = 4;
 
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
+    @Autowired private Connect connect;
+    @Autowired private SelectedTheso selectedTheso;
     
     private String elementSelected;
     private ConceptHelper conceptHelper;

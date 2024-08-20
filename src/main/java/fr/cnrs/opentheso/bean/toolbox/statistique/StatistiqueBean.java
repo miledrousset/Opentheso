@@ -24,9 +24,9 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
@@ -40,9 +40,9 @@ import org.primefaces.model.charts.donut.DonutChartModel;
 @Named(value = "statistiqueBean")
 @SessionScoped
 public class StatistiqueBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private LanguageBean languageBean;
+    @Autowired private Connect connect;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private LanguageBean languageBean;
 
     private boolean genericTypeVisible, conceptTypeVisible;
     private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;

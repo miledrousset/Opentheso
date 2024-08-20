@@ -21,7 +21,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -32,13 +32,13 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class TraductionGroupBean implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private LanguageBean languageBean;
-    @Inject
+    @Autowired
     private GroupView groupView;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
 
     private String selectedLang;

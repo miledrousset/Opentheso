@@ -6,7 +6,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -15,8 +15,8 @@ import jakarta.inject.Inject;
 @Named(value = "toolBoxBean")
 @SessionScoped
 public class ToolBoxBean implements Serializable {
-    @Inject private ViewEditionBean viewEditionBean;
-    @Inject private AtelierThesBean atelierThesBean;
+    @Autowired private ViewEditionBean viewEditionBean;
+    @Autowired private AtelierThesBean atelierThesBean;
     
     private boolean isEditionActive;
     private boolean isAtelierActive;

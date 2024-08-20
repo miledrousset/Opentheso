@@ -51,7 +51,6 @@ import fr.cnrs.opentheso.ws.ark.ArkHelper2;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import fr.cnrs.opentheso.ws.handlestandard.HandleService;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,8 +60,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
-import net.handle.hdllib.HandleException;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -3607,7 +3605,7 @@ public class ConceptHelper {
                     System.out.println(hs.getResponseMsg());
                     return false;
                 }
-            } catch (UnsupportedEncodingException | HandleException ex) {
+            } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
             idHandle = hs.getPrefix() + "/" + idHandle;                
@@ -3653,7 +3651,7 @@ public class ConceptHelper {
                     System.out.println(hs.getResponseMsg());
                     return false;
                 }
-            } catch (UnsupportedEncodingException | HandleException ex) {
+            } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
             idHandle = hs.getPrefix() + "/" + idHandle;                
@@ -3717,7 +3715,7 @@ public class ConceptHelper {
                         System.out.println(hs.getResponseMsg());
                         return false;
                     }
-                } catch (UnsupportedEncodingException | HandleException ex) {
+                } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
                 idHandle = hs.getPrefix() + "/" + idHandle;                
@@ -3758,7 +3756,7 @@ public class ConceptHelper {
             hs.connectHandle(); 
             try {
                 hs.deleteHandle(idHandle);
-            } catch (HandleException ex) {
+            } catch (Exception ex) {
                 System.out.println(ex.toString());
             }    
             return updateHandleIdOfConcept(conn, idConcept,
@@ -3799,7 +3797,7 @@ public class ConceptHelper {
             for (String idHandle : tabIdHandle) {
                 try {
                     hs.deleteHandle(idHandle);
-                } catch (HandleException ex) {
+                } catch (Exception ex) {
                     System.out.println(ex.toString());
                 }                  
             }

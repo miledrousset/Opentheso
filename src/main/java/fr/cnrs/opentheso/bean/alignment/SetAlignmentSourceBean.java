@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
 
@@ -29,13 +29,13 @@ import org.primefaces.PrimeFaces;
 @Named(value = "setAlignmentSourceBean")
 public class SetAlignmentSourceBean implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private ConceptView conceptView;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private AlignmentBean alignmentBean;
 
     private ArrayList<AlignementSource> allAlignementSources;

@@ -21,7 +21,7 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -30,10 +30,10 @@ import jakarta.inject.Inject;
 @Named(value = "groupView")
 @SessionScoped
 public class GroupView implements Serializable {
-    @Inject private Connect connect;
-    @Inject private IndexSetting indexSetting;     
-    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject private ViewEditorHomeBean viewEditorHomeBean;       
+    @Autowired private Connect connect;
+    @Autowired private IndexSetting indexSetting;     
+    @Autowired private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Autowired private ViewEditorHomeBean viewEditorHomeBean;       
 
     private NodeGroup nodeGroup;
     private ArrayList<NodeGroupTraductions> nodeGroupTraductions;

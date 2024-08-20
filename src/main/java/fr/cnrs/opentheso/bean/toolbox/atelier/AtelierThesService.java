@@ -26,18 +26,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.primefaces.event.FileUploadEvent;
 
 
 @Named
 @ViewScoped
 public class AtelierThesService implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private CurrentUser currentUser;
+    @Autowired private Connect connect;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private CurrentUser currentUser;
     
     
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {

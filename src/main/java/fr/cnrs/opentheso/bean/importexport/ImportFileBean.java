@@ -41,7 +41,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
@@ -66,7 +65,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -75,14 +73,12 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.event.AjaxBehaviorEvent;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFParseException;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -97,21 +93,21 @@ import org.primefaces.model.StreamedContent;
 public class ImportFileBean implements Serializable {
 
     private final Log log = LogFactory.getLog(ImportFileBean.class);
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private CurrentUser currentUser;
-    @Inject
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
-    @Inject
+    @Autowired
     private ViewEditionBean viewEditionBean;
-    @Inject
+    @Autowired
     private ConceptView conceptView;
-    @Inject
+    @Autowired
     private Tree tree;
-    @Inject
+    @Autowired
     private CandidatBean candidatBean;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
 
     private double progress = 0;
@@ -3103,12 +3099,8 @@ public class ImportFileBean implements Serializable {
                 loadDone = true;
                 BDDinsertEnable = true;
                 info = "File correctly loaded";
-            } catch (RDFParseException | EnumConstantNotPresentException | ExceptionInInitializerError | IOException e) {
+            } catch (Exception e) {
                 error.append(System.getProperty("line.separator"));
-                error.append(e.toString());
-            } catch (Exception ex2) {
-                error.append(System.getProperty("line.separator"));
-                error.append(ex2.toString());
             } finally {
                 showError();
             }

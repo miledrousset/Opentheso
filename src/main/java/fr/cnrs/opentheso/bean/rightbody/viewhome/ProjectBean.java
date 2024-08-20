@@ -14,7 +14,7 @@ import fr.cnrs.opentheso.entites.ProjectDescription;
 import fr.cnrs.opentheso.repositories.GpsRepository;
 import fr.cnrs.opentheso.repositories.ProjectDescriptionRepository;
 import lombok.Data;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -22,7 +22,7 @@ import org.primefaces.PrimeFaces;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
@@ -33,13 +33,13 @@ import java.util.List;
 @Named(value = "projectBean")
 public class ProjectBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private ConceptView conceptView;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private GpsRepository gpsRepository;
-    @Inject private LanguageBean languageBean;
-    @Inject private ProjectDescriptionRepository projectDescriptionRepository;
-    @Inject private CurrentUser currentUser;
+    @Autowired private Connect connect;
+    @Autowired private ConceptView conceptView;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private GpsRepository gpsRepository;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private ProjectDescriptionRepository projectDescriptionRepository;
+    @Autowired private CurrentUser currentUser;
 
     private String description, langCode, langCodeSelected, projectIdSelected;
     private boolean projectDescription, editingHomePage, isButtonEnable;

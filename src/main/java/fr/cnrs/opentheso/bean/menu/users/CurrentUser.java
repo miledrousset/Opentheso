@@ -32,7 +32,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.annotation.PreDestroy;
 
@@ -51,31 +51,31 @@ import org.primefaces.PrimeFaces;
 @Named(value = "currentUser")
 public class CurrentUser implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
-    @Inject
+    @Autowired
     private ViewEditorHomeBean viewEditorHomeBean;
-    @Inject
+    @Autowired
     private IndexSetting indexSetting;
-    @Inject
+    @Autowired
     private MenuBean menuBean;
-    @Inject
+    @Autowired
     private RightBodySetting rightBodySetting;
-    @Inject
+    @Autowired
     private PropositionBean propositionBean;
-    @Inject
+    @Autowired
     private SearchBean searchBean;
-    @Inject
+    @Autowired
     private LanguageBean languageBean;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private ProjectBean projectBean;
-    @Inject
+    @Autowired
     private CurrentUser currentUser;
-    @Inject private UserGroupLabelRepository userGroupLabelRepository;    
+    @Autowired private UserGroupLabelRepository userGroupLabelRepository;    
 
     private NodeUser nodeUser;
     private String username;

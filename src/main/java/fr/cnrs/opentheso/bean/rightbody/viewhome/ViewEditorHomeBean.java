@@ -18,7 +18,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.Data;
 import org.primefaces.PrimeFaces;
@@ -31,11 +31,11 @@ import org.primefaces.PrimeFaces;
 @Named(value = "viewEditorHomeBean")
 public class ViewEditorHomeBean implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private LanguageBean languageBean;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
 
     private boolean isViewPlainText = false;

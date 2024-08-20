@@ -24,7 +24,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 
@@ -35,19 +35,19 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public class RemoveConceptAndChildFromGroupBean implements Serializable {
 
-    @Inject 
+    @Autowired 
     private Connect connect;
     
-    @Inject 
+    @Autowired 
     private SelectedTheso selectedTheso;
     
-    @Inject 
+    @Autowired 
     private ConceptView conceptView;
     
-    @Inject 
+    @Autowired 
     private TreeGroups treeGroups;
     
-    @Inject 
+    @Autowired 
     private GroupView groupView;    
 
     private ArrayList <NodeGroup> nodeGroups;

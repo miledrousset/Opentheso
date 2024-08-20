@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -35,13 +35,13 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class DeleteThesoBean implements Serializable {
     
-    @Inject 
+    @Autowired 
     private Connect connect;
     
-    @Inject 
+    @Autowired 
     private SelectedTheso selectedTheso;
     
-    @Inject
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
     
     private String idThesoToDelete;

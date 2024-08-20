@@ -27,7 +27,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.TreeDragDropEvent;
 import org.primefaces.model.TreeNode;
@@ -40,19 +40,19 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public class DragAndDrop implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
 
-    @Inject
+    @Autowired
     private ConceptView conceptBean;
 
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
 
-    @Inject
+    @Autowired
     private CurrentUser currentUser;
 
-    @Inject
+    @Autowired
     private Tree tree;
 
     private boolean isCopyOn;

@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ import jakarta.faces.context.ExternalContext;
 import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.Data;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -69,23 +69,23 @@ import org.primefaces.event.SelectEvent;
 @Named(value = "candidatBean")
 public class CandidatBean implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
-    @Inject
+    @Autowired
     private CurrentUser currentUser;
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
-    @Inject
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
-    @Inject
+    @Autowired
     private LanguageBean languageBean;
-    @Inject
+    @Autowired
     private ConceptView conceptView;
-    @Inject
+    @Autowired
     private ImageBean imageBean;
-    @Inject
+    @Autowired
     private AlignmentBean alignmentBean;
-    @Inject
+    @Autowired
     private AlignmentManualBean alignmentManualBean;
 
     private final CandidatService candidatService = new CandidatService();

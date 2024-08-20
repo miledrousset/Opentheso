@@ -29,10 +29,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -40,19 +41,15 @@ import org.primefaces.PrimeFaces;
  * @author miledrousset
  */
 @Named(value = "broaderBean")
-//@ViewScoped
-//@javax.enterprise.context.RequestScoped
-//@javax.enterprise.context.ConversationScoped
-@javax.enterprise.context.SessionScoped
-
+@SessionScoped
 public class BroaderBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private Tree tree;
-    @Inject private CurrentUser currentUser;     
+    @Autowired private Connect connect;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private Tree tree;
+    @Autowired private CurrentUser currentUser;     
 
     private NodeSearchMini searchSelected;
     private ArrayList<NodeBT> nodeBTs;

@@ -27,7 +27,7 @@ import java.util.Collections;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -38,12 +38,12 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AlignmentManualBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private AlignmentBean alignmentBean;
-    @Inject private ConceptView conceptView;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;
-    @Inject private CandidatBean candidatBean;
+    @Autowired private Connect connect;
+    @Autowired private AlignmentBean alignmentBean;
+    @Autowired private ConceptView conceptView;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private CurrentUser currentUser;
+    @Autowired private CandidatBean candidatBean;
     
     private ArrayList<NodeAlignmentType> nodeAlignmentTypes;
     

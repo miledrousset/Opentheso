@@ -7,12 +7,11 @@ import fr.cnrs.opentheso.entites.Release;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.IOException;
 import java.io.Serializable;
@@ -24,19 +23,16 @@ import fr.cnrs.opentheso.bean.notification.client.GitHubClient;
 import fr.cnrs.opentheso.bean.notification.dto.ReleaseDto;
 import fr.cnrs.opentheso.bean.notification.dto.TagDto;
 import fr.cnrs.opentheso.repositories.ReleaseRepository;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 
 @Slf4j
 @Data
 @SessionScoped
 @Named(value = "newVersionBean")
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class NewVersionService implements Serializable {
-
-    @Inject
-    private GitHubClient gitHubClient;
-
-    @Inject
-    private ReleaseRepository releaseRepository;
 
     private Release release;
     private boolean isAlreadyLoaded, newVersionExist;
@@ -63,7 +59,7 @@ public class NewVersionService implements Serializable {
 
     private Release rechercherReleases() throws IOException {
 
-        List<TagDto> tags = new Gson().fromJson(gitHubClient.getResponse(GitHubClient.TAGS_API_URL),
+        List<TagDto> tags = new Gson().fromJson(GitHubClient.getResponse(GitHubClient.TAGS_API_URL),
                 new TypeToken<List<TagDto>>() {}.getType());
 
         if (CollectionUtils.isEmpty(tags)) {
@@ -71,18 +67,18 @@ public class NewVersionService implements Serializable {
             return null;
         }
 
-        List<Release> releasesSaved = releaseRepository.getAllReleases();
+        List<Release> releasesSaved = ReleaseRepository.getAllReleases();
 
-        List<ReleaseDto> releases = new Gson().fromJson(gitHubClient.getResponse(GitHubClient.RELEASES_API_URL),
+        List<ReleaseDto> releases = new Gson().fromJson(GitHubClient.getResponse(GitHubClient.RELEASES_API_URL),
                 new TypeToken<List<ReleaseDto>>() {}.getType());
 
         if (CollectionUtils.isEmpty(releasesSaved)) {
             log.info("First project running ! Saving previous releases");
             List<Release> releaseList = releases
                     .stream()
-                    .map(releaseDto -> releaseRepository.toRelease(releaseDto))
+                    .map(releaseDto -> ReleaseRepository.toRelease(releaseDto))
                     .collect(Collectors.toList());
-            releaseRepository.saveRelease(releaseList);
+            ReleaseRepository.saveRelease(releaseList);
             log.info("All releases are saved in DB !");
             return null;
         } else {
@@ -100,8 +96,8 @@ public class NewVersionService implements Serializable {
                         .filter(releaseDto -> tag.getName().equalsIgnoreCase(releaseDto.getTag_name()))
                         .findFirst();
                 if (release.isPresent()) {
-                    Release newRelease = releaseRepository.toRelease(release.get());
-                    releaseRepository.saveRelease(newRelease);
+                    Release newRelease = ReleaseRepository.toRelease(release.get());
+                    ReleaseRepository.saveRelease(newRelease);
                     log.info("Save latest release in DB !");
                     return newRelease;
                 } else {

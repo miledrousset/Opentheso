@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.Serializable;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 
@@ -41,10 +41,10 @@ import org.primefaces.PrimeFaces;
 @Named(value = "roleOnTheso")
 public class RoleOnThesoBean implements Serializable {
 
-    @Inject private Connect connect;
-    @Inject private CurrentUser currentUser;
-    @Inject private LanguageBean languageBean;
-    @Inject private SelectedTheso selectedTheso;
+    @Autowired private Connect connect;
+    @Autowired private CurrentUser currentUser;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private SelectedTheso selectedTheso;
 
     //liste des thesaurus public suivant les droits de l'utilisateur, n'inclus pas les thésaurus privés
     private List<ThesoModel> listTheso;    

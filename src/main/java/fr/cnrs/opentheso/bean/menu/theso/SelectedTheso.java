@@ -35,13 +35,13 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
@@ -52,25 +52,25 @@ import org.primefaces.PrimeFaces;
 @Named(value = "selectedTheso")
 public class SelectedTheso implements Serializable {
 
-    @Inject private LanguageBean languageBean;
-    @Inject private Connect connect;
-    @Inject private IndexSetting indexSetting;
-    @Inject private TreeGroups treeGroups;
-    @Inject private TreeConcepts treeConcepts;
-    @Inject private Tree tree;
-    @Inject private ListIndex listIndex;
-    @Inject private ConceptView conceptBean;
-    @Inject private SearchBean searchBean;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Inject private ViewEditorHomeBean viewEditorHomeBean;
-    @Inject private RightBodySetting rightBodySetting;
-    @Inject private MenuBean menuBean;
-    @Inject private PropositionBean propositionBean;
-    @Inject private UserGroupLabelRepository userGroupLabelRepository;
-    @Inject private ThesaurusRepository thesaurusRepository;
-    @Inject private CurrentUser currentUser;
-    @Inject private ProjectBean projectBean;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private Connect connect;
+    @Autowired private IndexSetting indexSetting;
+    @Autowired private TreeGroups treeGroups;
+    @Autowired private TreeConcepts treeConcepts;
+    @Autowired private Tree tree;
+    @Autowired private ListIndex listIndex;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private SearchBean searchBean;
+    @Autowired private RoleOnThesoBean roleOnThesoBean;
+    @Autowired private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
+    @Autowired private ViewEditorHomeBean viewEditorHomeBean;
+    @Autowired private RightBodySetting rightBodySetting;
+    @Autowired private MenuBean menuBean;
+    @Autowired private PropositionBean propositionBean;
+    @Autowired private UserGroupLabelRepository userGroupLabelRepository;
+    @Autowired private ThesaurusRepository thesaurusRepository;
+    @Autowired private CurrentUser currentUser;
+    @Autowired private ProjectBean projectBean;
 
     private static final long serialVersionUID = 1L;
 

@@ -22,7 +22,7 @@ import java.util.List;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import liquibase.util.StringUtil;
 import org.primefaces.PrimeFaces;
 
@@ -33,9 +33,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "newUSerBean")
 @SessionScoped
 public class NewUSerBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private MyProjectBean myProjectBean;
-    @Inject private SuperAdminBean superAdminBean;
+    @Autowired private Connect connect;
+    @Autowired private MyProjectBean myProjectBean;
+    @Autowired private SuperAdminBean superAdminBean;
     private NodeUser nodeUser;
     private String passWord1;
     private String passWord2; 

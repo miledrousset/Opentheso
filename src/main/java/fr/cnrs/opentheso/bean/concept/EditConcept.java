@@ -34,36 +34,36 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
-import net.handle.hdllib.HandleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  *
  * @author miledrousset
  */
+@SessionScoped
 @Named(value = "editConcept")
-//@javax.enterprise.context.RequestScoped
-//// on ne peut pas relancer plusieurs actions avec cette déclaration
-
-@javax.enterprise.context.SessionScoped
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EditConcept implements Serializable {
-    @Inject private Connect connect;
-    @Inject private RoleOnThesoBean roleOnThesoBean;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptView;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private Tree tree;
-    @Inject private ConceptView conceptBean;
-    @Inject private CurrentUser currentUser;    
+    @Autowired private Connect connect;
+    @Autowired private RoleOnThesoBean roleOnThesoBean;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private ConceptView conceptView;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private Tree tree;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private CurrentUser currentUser;    
     
     private String prefLabel;
     private String notation;
@@ -1007,7 +1007,7 @@ public class EditConcept implements Serializable {
             hs.connectHandle(); 
             try {
                 hs.deleteHandle(conceptView.getNodeConcept().getConcept().getIdHandle());
-            } catch (HandleException ex) {
+            } catch (Exception ex) {
                 System.out.println(ex.toString());
             }    
             conceptHelper.updateHandleIdOfConcept(connect.getPoolConnexion(),

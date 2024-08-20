@@ -9,19 +9,16 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
-
-@ApplicationScoped
 public class ReleaseRepository {
 
 
-    public Release toRelease(ReleaseDto releaseDto) {
+    public static Release toRelease(ReleaseDto releaseDto) {
         Release release = new Release();
         release.setVersion(releaseDto.getTag_name());
         release.setUrl(releaseDto.getHtml_url());
@@ -30,7 +27,7 @@ public class ReleaseRepository {
         return release;
     }
 
-    private LocalDate toLocalDate(String date) {
+    private static LocalDate toLocalDate(String date) {
         if (StringUtils.isNotEmpty(date)) {
             Instant instant = Instant.parse(date);
             return instant.atZone(ZoneId.systemDefault()).toLocalDate();
@@ -39,7 +36,7 @@ public class ReleaseRepository {
         }
     }
 
-    public void saveRelease(Release release) {
+    public static void saveRelease(Release release) {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
             session.save(release);
         } catch (Exception ex) {
@@ -48,7 +45,7 @@ public class ReleaseRepository {
         }
     }
 
-    public void saveRelease(List<Release> releases) {
+    public static void saveRelease(List<Release> releases) {
         for (Release release : releases) {
             if (ObjectUtils.isEmpty(getReleaseByVersion(release.getVersion()))) {
                 saveRelease(release);
@@ -56,7 +53,7 @@ public class ReleaseRepository {
         }
     }
 
-    public List<Release> getAllReleases() {
+    public static List<Release> getAllReleases() {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
             Query rleaseQuery = session.createQuery("SELECT res FROM Release res", Release.class);
             return rleaseQuery.getResultList();
@@ -66,7 +63,7 @@ public class ReleaseRepository {
         }
     }
 
-    public Release getReleaseByVersion(String version) {
+    public static Release getReleaseByVersion(String version) {
         try (Session session = SessionFactoryMaker.getFactory().openSession()) {
             String query = "SELECT res FROM Release res WHERE res.version = :value";
             TypedQuery<Release> typedQuery = session.createQuery(query, Release.class)

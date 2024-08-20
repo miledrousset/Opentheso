@@ -19,7 +19,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -29,11 +29,11 @@ import org.primefaces.PrimeFaces;
 @Named(value = "externalResources")
 @SessionScoped
 public class ExternalResources implements Serializable {
-    @Inject private Connect connect;
-    @Inject private LanguageBean languageBean;
-    @Inject private ConceptView conceptBean;
-    @Inject private SelectedTheso selectedTheso;
-    @Inject private CurrentUser currentUser;    
+    @Autowired private Connect connect;
+    @Autowired private LanguageBean languageBean;
+    @Autowired private ConceptView conceptBean;
+    @Autowired private SelectedTheso selectedTheso;
+    @Autowired private CurrentUser currentUser;    
 
     private String uri;
     private String description;

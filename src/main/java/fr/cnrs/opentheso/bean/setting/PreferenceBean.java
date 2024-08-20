@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
@@ -32,13 +32,13 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class PreferenceBean implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
 
-    @Inject
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
 
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
 
     private String uriType;

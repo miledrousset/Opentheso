@@ -14,7 +14,7 @@ import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -24,13 +24,13 @@ import jakarta.inject.Inject;
 @SessionScoped
 public class SuperAdminBean implements Serializable {
 
-    @Inject 
+    @Autowired 
     private Connect connect;
     
-    @Inject 
+    @Autowired 
     private CurrentUser currentUser;
     
-    @Inject 
+    @Autowired 
     private SelectedTheso selectedTheso;
     
     private ArrayList<NodeUser> allUsers;// la liste de tous les utilisateurs  

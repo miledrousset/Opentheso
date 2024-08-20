@@ -35,7 +35,7 @@ import java.util.List;
 import jakarta.annotation.PreDestroy;
 
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,37 +55,37 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public class Tree implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
 
-    @Inject
+    @Autowired
     private RightBodySetting rightBodySetting;
 
-    @Inject
+    @Autowired
     private LeftBodySetting leftBodySetting;
 
-    @Inject
+    @Autowired
     private ConceptView conceptBean;
 
-    @Inject
+    @Autowired
     private SelectedTheso selectedTheso;
 
-    @Inject
+    @Autowired
     private RoleOnThesoBean roleOnThesoBean;
 
-    @Inject
+    @Autowired
     private IndexSetting indexSetting;
 
-    @Inject
+    @Autowired
     private EditFacet editFacet;
 
-    @Inject
+    @Autowired
     private AlignmentBean alignmentBean;
 
-    @Inject
+    @Autowired
     private PropositionBean propositionBean;
 
-    @Inject
+    @Autowired
     private AlignmentManualBean alignmentManualBean;
 
     private DataService dataService;

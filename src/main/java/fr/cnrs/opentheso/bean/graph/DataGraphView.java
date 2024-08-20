@@ -2,8 +2,6 @@ package fr.cnrs.opentheso.bean.graph;
 
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,12 +10,11 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.inject.Named;
 import jakarta.ws.rs.core.UriBuilder;
 
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.IdValuePair;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.neo4j.driver.AuthTokens;
@@ -34,13 +31,13 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class DataGraphView implements Serializable {
 
-    @Inject
+    @Autowired
     private Connect connect;
     private List<GraphObject> graphObjects;
 
     private GraphObject selectedGraph;
 
-    @Inject
+    @Autowired
     private GraphService graphService;
 
     private int selectedViewId;

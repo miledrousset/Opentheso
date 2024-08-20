@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -26,9 +26,9 @@ import org.primefaces.PrimeFaces;
 @Named(value = "newProjectBean")
 @SessionScoped
 public class NewProjectBean implements Serializable {
-    @Inject private Connect connect;
-    @Inject private MyProjectBean myProjectBean;
-    @Inject private CurrentUser currentUser;
+    @Autowired private Connect connect;
+    @Autowired private MyProjectBean myProjectBean;
+    @Autowired private CurrentUser currentUser;
  
     private String projectName;
     private ArrayList<NodeUserGroup> listeProjectOfUser;
