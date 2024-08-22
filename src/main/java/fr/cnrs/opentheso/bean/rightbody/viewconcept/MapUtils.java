@@ -1,77 +1,48 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
 import com.jsf2leaf.model.LatLong;
-import com.jsf2leaf.model.Layer;
-import com.jsf2leaf.model.Map;
-import com.jsf2leaf.model.Marker;
-import com.jsf2leaf.model.Polyline;
-import com.jsf2leaf.model.Pulse;
 import fr.cnrs.opentheso.entites.Gps;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class MapUtils {
 
-    public Map createMap(List<Gps> gpsList, GpsMode gpsMode, String term) {
+    public String createMap(List<Gps> gpsList, GpsMode gpsMode, String term) {
 
-        Map mapModel = new Map();
-        mapModel.setWidth("100%");
-        mapModel.setHeight("250px");
-        mapModel.setZoom(calculerZoom(gpsList));
-        mapModel.setAttribution("©<a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>");
-        mapModel.setMiniMap(false);
-        mapModel.setLayerControl(false);
-        mapModel.setDraggingEnabled(true);
-        mapModel.setZoomEnabled(true);
-        mapModel.setCenter(calculerCentrePolyline(gpsList));
+        StringBuilder script = new StringBuilder();
 
-        String title = StringUtils.isEmpty(term) ? "" : term.replaceAll("'", "_");
+        var centerPoint = calculerCentrePolyline(gpsList);
+        script.append("var map = L.map('map').setView([" + centerPoint.getLongitude() + ", " + centerPoint.getLatitude() + "], " + calculerZoom(gpsList) + ");" +
+                "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {" +
+                "maxZoom: 19," +
+                "attribution: '© OpenStreetMap contributors'" +
+                "}).addTo(map);");
+        script.append("var latlngs = [");
 
-        if (GpsMode.POINT.equals(gpsMode)) {
-            Pulse pule = new Pulse(true, 10, "#0E53FF");
-            mapModel.addLayer(new Layer()
-                    .setLabel(title).addMarker(new Marker(new LatLong(gpsList.get(0).getLatitude().toString(),
-                            gpsList.get(0).getLongitude().toString()), title, pule)));
-        } else {
-            mapModel.addLayer(new Layer()
-                    .setLabel(title)
-                    .addPolyline((new Polyline())
-                            .addPoint(gpsList.stream()
-                                    .map(gps -> new LatLong(gps.getLatitude().toString(), gps.getLongitude().toString()))
-                                    .collect(Collectors.toList()))
-                            .setColor("#0E53FF")));
+        for (Gps gps : gpsList) {
+            script.append("[").append(gps.getLongitude()).append(", ").append(gps.getLatitude()).append("],");
         }
 
-        return mapModel;
-    }
-
-    public Map updateMap(List<Gps> gpsList, Map mapModel, GpsMode gpsModeSelected, String title) {
-        mapModel.getLayers().removeAll(mapModel.getLayers());
-        mapModel.setZoom(calculerZoom(gpsList));
-        
-        title = StringUtils.isEmpty(title) ? "" : title.replaceAll("'", "_");        
-        
-        if (GpsMode.POINT.equals(gpsModeSelected)) {
-            Pulse pule = new Pulse(true, 10, "#0E53FF");
-            mapModel.addLayer(new Layer()
-                    .setLabel(title)
-                    .addMarker(new Marker(new LatLong(gpsList.get(0).getLatitude().toString(),
-                            gpsList.get(0).getLongitude().toString()), title, pule)));
-        } else {
-            mapModel.addLayer(new Layer()
-                    .setLabel(title)
-                    .addPolyline((new Polyline())
-                            .addPoint(gpsList.stream()
-                                    .map(gps -> new LatLong(gps.getLatitude().toString(), gps.getLongitude().toString()))
-                                    .collect(Collectors.toList()))
-                            .setColor("#0E53FF")));
+        // Supprimer la dernière virgule
+        if (!gpsList.isEmpty()) {
+            script.deleteCharAt(script.length() - 1);
         }
 
-        mapModel.setCenter(calculerCentrePolyline(gpsList));
-        return mapModel;
+        script.append("];\n");
+
+        script.append("L.circleMarker(latlngs[0], { radius: 5, color: '#0E53FF', fillColor: '#0E53FF', fillOpacity: 1}).addTo(map);");
+
+        if (!GpsMode.POINT.equals(gpsMode)) {
+            if (gpsList.get(0).getLongitude().equals(gpsList.get(gpsList.size()-1).getLongitude())
+                    && gpsList.get(0).getLatitude().equals(gpsList.get(gpsList.size()-1).getLatitude()) ) {
+                script.append("var polygon = L.polygon(latlngs, { color: 'blue', fillColor: '#0E53FF', fillOpacity: 0.5 }).addTo(map);\n");
+            } else {
+                script.append("var polygon = L.polyline(latlngs, { color: 'blue', fillColor: '#0E53FF', fillOpacity: 0.5 }).addTo(map);\n");
+            }
+            script.append("map.fitBounds(polygon.getBounds());");
+        }
+
+        return script.toString();
     }
 
     private LatLong calculerCentrePolyline(List<Gps> gpsList) {

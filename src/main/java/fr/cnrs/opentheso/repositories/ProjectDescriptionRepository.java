@@ -56,7 +56,6 @@ public class ProjectDescriptionRepository {
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     public void updateProjectDescription(HikariDataSource ds, ProjectDescription projectDescription) {

@@ -25,21 +25,21 @@ public class GpsBean implements Serializable {
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private GpsRepository gpsRepository;
 
     private Gps gpsSelected;
 
 
     public void addNewCoordinateGps() {
 
-        gpsRepository.saveNewGps(gpsSelected);
+        var gpsRepository = new GpsRepository();
+        gpsRepository.saveNewGps(connect.getPoolConnexion(), gpsSelected);
 
         conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
+                connect.getPoolConnexion(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
-        conceptView.createMap(conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+        conceptView.createMap(selectedTheso.getCurrentIdTheso());
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Coordonnée GPS ajoutée avec succèe");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -54,7 +54,8 @@ public class GpsBean implements Serializable {
      */
     public void updateCoordinateGps(Gps gps) {
 
-        gpsRepository.saveNewGps(Gps.builder()
+        var gpsRepository = new GpsRepository();
+        gpsRepository.saveNewGps(connect.getPoolConnexion(), Gps.builder()
                 .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
                 .idTheso(selectedTheso.getCurrentIdTheso())
                 .latitude(gps.getLatitude())
@@ -62,6 +63,7 @@ public class GpsBean implements Serializable {
                 .build());
 
         conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
+                connect.getPoolConnexion(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
@@ -83,10 +85,9 @@ public class GpsBean implements Serializable {
 
         if(gps == null) return;
 
-        gpsRepository.removeGps(gps);
+        new GpsRepository().removeGps(connect.getPoolConnexion(), gps);
 
-        conceptView.createMap(conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(), Boolean.FALSE);
+        conceptView.createMap(selectedTheso.getCurrentIdTheso());
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Suppression des coordonnées GPS réussie");
         FacesContext.getCurrentInstance().addMessage(null, msg);

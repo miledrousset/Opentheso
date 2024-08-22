@@ -30,7 +30,7 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
-    enabled: false
+    enabled: true
     change-log: classpath:/changelog/db.changelog.xml
 
 logging:

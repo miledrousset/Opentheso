@@ -63,7 +63,7 @@ public class ViewEditorHomeBean implements Serializable {
         codeGoogleAnalitics = null;
         isInEditingGoogleAnalytics = false;
         isInEditingHomePage = false;
-        selectedTheso.setOptionThesoSelected("Option1");
+        //selectedTheso.setOptionThesoSelected("Option1");
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

@@ -329,9 +329,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.themrleon</groupId>
-            <artifactId>JSF2Leaf</artifactId>
-            <version>1.0</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>leaflet</artifactId>
+            <version>1.8.0</version>
         </dependency>
     </dependencies>
 
