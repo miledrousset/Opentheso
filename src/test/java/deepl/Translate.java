@@ -5,50 +5,23 @@
 package deepl;
 
 import com.deepl.api.Language;
-import com.deepl.api.LanguageType;
 import com.deepl.api.TextResult;
-import com.deepl.api.TextTranslationOptions;
 import com.deepl.api.Translator;
 import com.deepl.api.Usage;
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author miledrousset
  */
 public class Translate {
-    
-    public Translate() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
-    
-
     public void Translate() throws Exception {
         Translator translator;
         String authKey = "";  // Replace with your key

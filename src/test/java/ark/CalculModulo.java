@@ -3,36 +3,13 @@ package ark;
 
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author miledrousset
  */
 public class CalculModulo {
- 
-    public CalculModulo() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:

@@ -17,7 +17,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import javax.net.ssl.HttpsURLConnection;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

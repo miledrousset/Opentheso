@@ -10,7 +10,7 @@ import connexion.ConnexionTest;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdConceptIdTerm;
 import java.util.ArrayList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

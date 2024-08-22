@@ -8,7 +8,7 @@ package json;
 import fr.cnrs.opentheso.ws.api.NodeDatas;
 import fr.cnrs.opentheso.ws.api.NodeJsonD3js;
 import java.util.ArrayList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

@@ -1,18 +1,20 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import com.jsf2leaf.model.LatLong;
 import fr.cnrs.opentheso.entites.Gps;
 import java.util.List;
 
 
 public class MapUtils {
 
+    private String longitudeCentre, latitudeCentre;
+
     public String createMap(List<Gps> gpsList, GpsMode gpsMode, String term) {
 
         StringBuilder script = new StringBuilder();
 
-        var centerPoint = calculerCentrePolyline(gpsList);
-        script.append("var map = L.map('map').setView([" + centerPoint.getLongitude() + ", " + centerPoint.getLatitude() + "], " + calculerZoom(gpsList) + ");" +
+        calculerCentrePolyline(gpsList);
+
+        script.append("var map = L.map('map').setView([" + longitudeCentre + ", " + latitudeCentre + "], " + calculerZoom(gpsList) + ");" +
                 "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {" +
                 "maxZoom: 19," +
                 "attribution: '© OpenStreetMap contributors'" +
@@ -45,7 +47,7 @@ public class MapUtils {
         return script.toString();
     }
 
-    private LatLong calculerCentrePolyline(List<Gps> gpsList) {
+    private void calculerCentrePolyline(List<Gps> gpsList) {
 
         Double centreLatitude = gpsList.stream()
                 .map(element -> Double.valueOf(element.getLatitude()))
@@ -57,7 +59,8 @@ public class MapUtils {
                 .mapToDouble(Double::doubleValue)
                 .sum() / gpsList.size();
 
-        return new LatLong(centreLatitude.toString(), centreLongitude.toString());
+        latitudeCentre = centreLatitude.toString();
+        longitudeCentre = centreLongitude.toString();
     }
 
 

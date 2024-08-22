@@ -9,7 +9,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import java.util.ArrayList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
