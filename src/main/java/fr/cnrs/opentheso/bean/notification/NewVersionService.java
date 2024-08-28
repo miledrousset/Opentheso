@@ -59,7 +59,6 @@ public class NewVersionService implements Serializable {
     }
 
     public void searchNewVersion() {
-
         try {
             release = rechercherReleases();
             if (ObjectUtils.isEmpty(release)) {

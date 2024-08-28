@@ -20,7 +20,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
-import fr.cnrs.opentheso.ws.openapi.helper.DataHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,13 +36,8 @@ public class UserHelper {
     ////////////////////////////////////////////////////////////////////    
     /**
      * cette fonction permet de retourner tous les roles
-     *
-     *
-     * @param ds
-     * @return
      */
-    public ArrayList<NodeUserRoleGroup> getAllRole(
-            HikariDataSource ds) {
+    public ArrayList<NodeUserRoleGroup> getAllRole(HikariDataSource ds) {
         ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -2216,8 +2210,7 @@ public class UserHelper {
      * @param idTheso
      * @return
      */
-    public int getRoleOnThisTheso(
-            HikariDataSource ds, int idUser, int idGroup, String idTheso) {
+    public int getRoleOnThisTheso(HikariDataSource ds, int idUser, int idGroup, String idTheso) {
         int idRole = -1;
 
         try (Connection conn = ds.getConnection()) {
@@ -2936,9 +2929,8 @@ public class UserHelper {
     ////////////////////////////////////////////////////////////////////
 
 
-    public Optional<Integer> getUserGroupId (int userId, String thesoId){
-        DataHelper dataHelper = new DataHelper();
-        try (Connection connection = dataHelper.connect().getConnection()){
+    public Optional<Integer> getUserGroupId (HikariDataSource ds, int userId, String thesoId){
+        try (Connection connection = ds.getConnection()){
             try( PreparedStatement stmt = connection.prepareStatement("SELECT user_role_group.id_group " +
                     "FROM user_role_group  " +
                     "JOIN user_group_thesaurus user_group_thesaurus ON user_role_group.id_group = user_group_thesaurus.id_group " +

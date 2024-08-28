@@ -30,13 +30,11 @@ public class D3jsHelper {
 
     public String findDatasForGraph__(HikariDataSource ds, String idConcept, String idTheso, String idLang) {
 
-        if(idTheso == null || idTheso.isEmpty()) {
+        if(StringUtils.isEmpty(idTheso)) {
             return null;
         }
-    /*    if(idConcept == null || idConcept.isEmpty()) {
-            return null;
-        }*/
-        if(idLang == null || idLang.isEmpty()) {
+
+        if(StringUtils.isEmpty(idLang)) {
             return null;
         }
         nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
@@ -64,7 +62,6 @@ public class D3jsHelper {
         }
         
         NodeJsonD3js nodeJsonD3js = new NodeJsonD3js();
-    
         nodeJsonD3js.setNodeDatas(getRootNode(ds, idTheso, idLang, idConcept, nodeConceptGraphs_childs));            
 
         return getJsonFromNodeJsonD3js(nodeJsonD3js);

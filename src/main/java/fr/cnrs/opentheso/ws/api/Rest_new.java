@@ -1,76 +1,73 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.ws.api;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
 
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.UriInfo;
+import jakarta.validation.constraints.NotNull;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.Json;
+
+import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.core.json.helper.JsonHelper;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MultivaluedMap;
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST Web Service
  *
  * @author miled.rousset
  */
-//general path = /api
-@Path("/")
+@Slf4j
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.PUT })
 public class Rest_new {
-    /**
-     * Creates a new instance of resources La connexion est faite à chaque
-     * question
-     *
-     */
-    public Rest_new() {
-    }
 
-    private HikariDataSource connect() {
-        ConnexionRest connexionRest = new ConnexionRest();
-        return connexionRest.getConnexion();
-    }
+    @Autowired
+    private Connect connect;
 
-    /**
-     * Permet de lire les préférences d'un thésaurus pour savoir si le
-     * webservices est activé ou non
-     *
-     * @param idTheso
-     */
-    private boolean getStatusOfWebservices(HikariDataSource ds, String idTheso) {
-        return new PreferencesHelper().isWebservicesOn(ds, idTheso);
-    }
+    private static final String JSON_FORMAT = "application/json";
+    private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
+
+    // Mapping des formats à leurs MIME types correspondants
+    private static final Map<String, String> FORMAT_MAP = Map.of(
+            "rdf", CustomMediaType.APPLICATION_RDF,
+            "jsonld", CustomMediaType.APPLICATION_JSON_LD,
+            "turtle", CustomMediaType.APPLICATION_TURTLE,
+            "json", JSON_FORMAT
+    );
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -86,431 +83,77 @@ public class Rest_new {
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
 
-
-    @Path("/ping")
-    @GET
-    @Produces("text/text;charset=UTF-8")
+    @GetMapping("/ping")
     public String testWS(){
         return "pong";
     }
-    
-    @Path("/testput")
-    @PUT
-    @Consumes("application/json;charset=UTF-8")
-    @Produces("application/json;charset=UTF-8")
-    public String addArk(String content) {
-        JsonHelper jsonHelper = new JsonHelper();
-        JsonObject jo;
-        try {
-            jo = jsonHelper.getJsonObject(content);
-            return jo.toString();
-        } catch (Exception e) {
-            return "Erreur";
-        }
-    }    
 
-
-    @Path("/post")
-    @POST
-    @Produces("text/text;charset=UTF-8")
+    @PostMapping(value = "/post", produces = "text/text;charset=UTF-8")
     public String testPost(){
         return "pong";
     }
-
-    /**
-     * pour produire du RDF-SKOS
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/{naan}/{idArk}")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getSkosFromArk__(@PathParam("naan") String naan,
-                                     @PathParam("idArk") String arkId) {
-
-        if (naan == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (arkId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConcept(ds,
-                naan + "/" + arkId,
-                "application/rdf+xml");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
+    
+    @PutMapping("/testput")
+    public String addArk(String content) {
+        return new JsonHelper().getJsonObject(content).toString();
     }
 
-    /**
-     * pour produire du RDF-SKOS
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/{naan}/{idArk}.rdf")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getSkosFromArk(@PathParam("naan") String naan,
-                                   @PathParam("idArk") String arkId) {
-
-        if (naan == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (arkId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConcept(ds,
-                naan + "/" + arkId,
-                "application/rdf+xml");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
+    @GetMapping(value = "/{naan}/{idArk}.rdf", produces = CustomMediaType.APPLICATION_RDF)
+    public ResponseEntity<String> getSkosFromArk(@PathVariable("naan") String naan,
+                                                 @PathVariable("idArk") String arkId) {
+        return processRequest(naan, arkId, CustomMediaType.APPLICATION_RDF);
     }
 
-    /**
-     * pour produire du Json
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/{naan}/{idArk}")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getJsonFromArk__(@PathParam("naan") String naan,
-                                     @PathParam("idArk") String arkId) {
-
-        if (naan == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (arkId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConcept(ds,
-                naan + "/" + arkId,
-                "application/json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+    @GetMapping(value = "/{naan}/{idArk}.json", produces = JSON_FORMAT)
+    public ResponseEntity<String> getJsonFromArk(@PathVariable("naan") String naan,
+                                                 @PathVariable("idArk") String arkId) {
+        return processRequest(naan, arkId, JSON_FORMAT);
     }
 
-    /**
-     * pour produire du Json
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/{naan}/{idArk}.json")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getJsonFromArk(@PathParam("naan") String naan,
-                                   @PathParam("idArk") String arkId) {
-
-        if (naan == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (arkId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConcept(ds,
-                naan + "/" + arkId,
-                "application/json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+    @GetMapping(value = "/{naan}/{idArk}.jsonld", produces = CustomMediaType.APPLICATION_JSON_LD)
+    public ResponseEntity<String> getJsonldFromArk(@PathVariable("naan") String naan,
+                                                   @PathVariable("idArk") String arkId) {
+        return processRequest(naan, arkId, CustomMediaType.APPLICATION_JSON_LD);
     }
 
-    /**
-     * pour produire du JsonLd
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/{naan}/{idArk}")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getJsonldFromArk__(@PathParam("naan") String naan,
-                                       @PathParam("idArk") String arkId) {
-
-        if (naan == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (arkId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConcept(ds,
-                naan + "/" + arkId,
-                "application/ld+json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+    @GetMapping(value = "/{naan}/{idArk}.ttl", produces = CustomMediaType.APPLICATION_TURTLE)
+    public ResponseEntity<String> getTurtleFromArk(@PathVariable("naan") String naan,
+                                                   @PathVariable("idArk") String arkId) {
+        return processRequest(naan, arkId, CustomMediaType.APPLICATION_TURTLE);
     }
 
-    /**
-     * pour produire du JsonLd
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/{naan}/{idArk}.jsonld")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getJsonldFromArk(@PathParam("naan") String naan,
-                                     @PathParam("idArk") String arkId) {
-
-        if (naan == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (arkId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+    // Méthode privée pour gérer les requêtes
+    private ResponseEntity<String> processRequest(String naan, String arkId, String mimeType) {
+        if (StringUtils.isEmpty(naan) || StringUtils.isEmpty(arkId)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConcept(ds,
-                naan + "/" + arkId,
-                "application/ld+json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(mimeType))
+                .body(new RestRDFHelper().exportConcept(connect.getPoolConnexion(), naan + "/" + arkId, mimeType));
     }
 
-    /**
-     * pour produire du Turtle
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/{naan}/{idArk}")
-    @GET
-    @Produces("text/turtle;charset=UTF-8")
-    public Response getTurtleFromArk__(@PathParam("naan") String naan,
-                                       @PathParam("idArk") String arkId) {
-
-        if (naan == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (arkId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConcept(ds,
-                naan + "/" + arkId,
-                "text/turtle");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
-    }
-
-    /**
-     * pour produire du Turtle
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/{naan}/{idArk}.ttl")
-    @GET
-    @Produces("text/turtle;charset=UTF-8")
-    public Response getTurtleFromArk(@PathParam("naan") String naan,
-                                     @PathParam("idArk") String arkId) {
-
-        if (naan == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (arkId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConcept(ds,
-                naan + "/" + arkId,
-                "text/turtle");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
-    }
-
-/////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
     /*
      * fin de la recherche par idArk
      */
 /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-    /* TEST TEST TEST DOI
-     */
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
     /**
-     * récupérer un concept par DOI et produire du REF-SKOS
-     *
-     * @param doi1
-     * @param doi2
-     * @param doiId
-     * @return
+     * GET concept par DOI et produire du REF-SKOS
      */
-    @Path("/doi:{doi1}.{doi2}/{doiId}.rdf")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getSkosFromDoi__(
-            @PathParam("doi1") String doi1,
-            @PathParam("doi2") String doi2,
-            @PathParam("doiId") String doiId) {
+    @GetMapping("/doi:{doi1}.{doi2}/{doiId}.rdf")
+    public ResponseEntity<Object> getSkosFromDoi__(@PathVariable("doi1") String doi1,
+                                           @PathVariable("doi2") String doi2,
+                                           @PathVariable("doiId") String doiId) {
 
-        if (doi1 == null || doi2 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        if (StringUtils.isEmpty(doi1) || StringUtils.isEmpty(doi2) || StringUtils.isEmpty(doiId)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
-        if (doi1.isEmpty() || doi2.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (doiId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (doiId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptDoi(ds,
-                "doi:" + doi1 + "." + doi2 + "/" + doiId,
-                "application/rdf+xml");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
+
+        var datas = new RestRDFHelper().exportConceptDoi(connect.getPoolConnexion(), "doi:" + doi1 + "." + doi2 + "/" + doiId, CustomMediaType.APPLICATION_RDF);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8)).body(datas);
     }
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
 
-    /* TEST TEST TEST DOI
-     */
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
     /*
      * recherche par Id Handle
      * Partie pour la négociation de contenu
@@ -520,758 +163,161 @@ public class Rest_new {
      * curl -L --header "Accept: application/json »
      * curl -L --header "Accept: application/ld+json »
      */
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
     /**
      * pour produire du RDF-SKOS
-     *
-     * @param hdl1
-     * @param handleId
-     * @param hdl3
-     * @param hdl2
-     * @return #MR
      */
-    @Path("/{hdl1}.{hdl2}.{hdl3}/{handleId}")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getSkosFromHandle(
-            @PathParam("hdl1") String hdl1,
-            @PathParam("hdl2") String hdl2,
-            @PathParam("hdl3") String hdl3,
-            @PathParam("handleId") String handleId) {
+    @GetMapping(value = "/{hdl1}.{hdl2}.{hdl3}/{handleId}.rdf", produces = CustomMediaType.APPLICATION_RDF_UTF_8)
+    public ResponseEntity<Object> getSkosFromHandle__(@PathVariable("hdl1") String hdl1,
+                                              @PathVariable("hdl2") String hdl2,
+                                              @PathVariable("hdl3") String hdl3,
+                                              @PathVariable("handleId") String handleId) {
 
-        if (hdl1 == null || hdl2 == null || hdl3 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (handleId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (handleId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptHdl(ds,
-                hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
-                "application/rdf+xml");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
-    }
-
-    /**
-     * pour produire du RDF-SKOS
-     *
-     * @param hdl1
-     * @param handleId
-     * @param hdl3
-     * @param hdl2
-     * @return #MR
-     */
-    @Path("/{hdl1}.{hdl2}.{hdl3}/{handleId}.rdf")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getSkosFromHandle__(
-            @PathParam("hdl1") String hdl1,
-            @PathParam("hdl2") String hdl2,
-            @PathParam("hdl3") String hdl3,
-            @PathParam("handleId") String handleId) {
-
-        if (hdl1 == null || hdl2 == null || hdl3 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (handleId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (handleId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptHdl(ds,
-                hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
-                "application/rdf+xml");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
+        return getResponseEntity(hdl1, hdl2, hdl3, handleId, CustomMediaType.APPLICATION_RDF, CustomMediaType.APPLICATION_RDF_UTF_8);
     }
 
     /**
      * pour produire du Json
-     *
-     * @param hdl1
-     * @param handleId
-     * @param hdl3
-     * @param hdl2
-     * @return #MR
      */
-    @Path("/{hdl1}.{hdl2}.{hdl3}/{handleId}")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getJsonFromHandle(
-            @PathParam("hdl1") String hdl1,
-            @PathParam("hdl2") String hdl2,
-            @PathParam("hdl3") String hdl3,
-            @PathParam("handleId") String handleId) {
+    @GetMapping(value = "/{hdl1}.{hdl2}.{hdl3}/{handleId}.json", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getJsonFromHandle__(@PathVariable("hdl1") String hdl1,
+                                              @PathVariable("hdl2") String hdl2,
+                                              @PathVariable("hdl3") String hdl3,
+                                              @PathVariable("handleId") String handleId) {
 
-        if (hdl1 == null || hdl2 == null || hdl3 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (handleId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (handleId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptHdl(ds,
-                hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
-                "application/json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-    }
-
-    /**
-     * pour produire du Json
-     *
-     * @param hdl1
-     * @param handleId
-     * @param hdl3
-     * @param hdl2
-     * @return #MR
-     */
-    @Path("/{hdl1}.{hdl2}.{hdl3}/{handleId}.json")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getJsonFromHandle__(
-            @PathParam("hdl1") String hdl1,
-            @PathParam("hdl2") String hdl2,
-            @PathParam("hdl3") String hdl3,
-            @PathParam("handleId") String handleId) {
-
-        if (hdl1 == null || hdl2 == null || hdl3 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (handleId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (handleId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptHdl(ds,
-                hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
-                "application/json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        return getResponseEntity(hdl1, hdl2, hdl3, handleId, JSON_FORMAT, JSON_FORMAT_LONG);
     }
 
     /**
      * pour produire du JsonLd
-     *
-     * @param hdl1
-     * @param handleId
-     * @param hdl3
-     * @param hdl2
-     * @return #MR
      */
-    @Path("/{hdl1}.{hdl2}.{hdl3}/{handleId}")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getJsonldFromHandle(
-            @PathParam("hdl1") String hdl1,
-            @PathParam("hdl2") String hdl2,
-            @PathParam("hdl3") String hdl3,
-            @PathParam("handleId") String handleId) {
+    @GetMapping(value = "/{hdl1}.{hdl2}.{hdl3}/{handleId}.jsonld", produces = CustomMediaType.APPLICATION_JSON_LD_UTF_8)
+    public ResponseEntity<Object> getJsonldFromHandle__(@PathVariable("hdl1") String hdl1,
+                                                @PathVariable("hdl2") String hdl2,
+                                                @PathVariable("hdl3") String hdl3,
+                                                @PathVariable("handleId") String handleId) {
 
-        if (hdl1 == null || hdl2 == null || hdl3 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        return getResponseEntity(hdl1, hdl2, hdl3, handleId, CustomMediaType.APPLICATION_JSON_LD, CustomMediaType.APPLICATION_JSON_LD_UTF_8);
+    }
+
+    /**
+     * pour produire du Turtle
+     */
+    @GetMapping(value = "/{hdl1}.{hdl2}.{hdl3}/{handleId}.ttl", produces = CustomMediaType.APPLICATION_TURTLE_UTF_8)
+    public ResponseEntity<Object> getTurtleFromHandle__(@PathVariable("hdl1") String hdl1,
+                                                @PathVariable("hdl2") String hdl2,
+                                                @PathVariable("hdl3") String hdl3,
+                                                @PathVariable("handleId") String handleId) {
+
+        return getResponseEntity(hdl1, hdl2, hdl3, handleId, CustomMediaType.APPLICATION_TURTLE, CustomMediaType.APPLICATION_TURTLE_UTF_8);
+    }
+
+    @NotNull
+    private ResponseEntity getResponseEntity(String hdl1, String hdl2, String hdl3, String handleId, String rdfFormat, String rdfFormatLong) {
+        if (StringUtils.isEmpty(hdl1) || StringUtils.isEmpty(hdl2) || StringUtils.isEmpty(hdl3) || StringUtils.isEmpty(handleId)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
-        if (hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+
+        var data = new RestRDFHelper().exportConceptHdl(connect.getPoolConnexion(), hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId, rdfFormat);
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(rdfFormatLong)).body(data);
+    }
+
+/////////////////////////////////////////////////////
+// fin de la recherche par idHandle
+/////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////
+// Recherche par Id du concept
+/////////////////////////////////////////////////////
+
+    //Produire du RDF-SKOS
+    @GetMapping(value = "/{idTheso}.{idConcept}.rdf", produces = CustomMediaType.APPLICATION_RDF_UTF_8)
+    public ResponseEntity<Object> getSkosFromIdConcept(@PathVariable("idTheso") String idTheso, @PathVariable("idConcept") String idConcept) {
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
+                .body(new RestRDFHelper().exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, CustomMediaType.APPLICATION_RDF));
+    }
+
+    //Produire du Json
+    @GetMapping(value = "/{idTheso}.{idConcept}", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getJsonFromIdConcept__(@PathVariable("idTheso") String idTheso, @PathVariable("idConcept") String idConcept) {
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(JSON_FORMAT_LONG))
+                .body(new RestRDFHelper().exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, JSON_FORMAT));
+    }
+
+    //Produire du Json
+    @GetMapping(value = "/{idTheso}.{idConcept}.json", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getJsonFromIdConcept(@PathVariable("idTheso") String idTheso, @PathVariable("idConcept") String idConcept) {
+
+        if (StringUtils.isEmpty(idConcept)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
-        if (handleId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (handleId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptHdl(ds,
-                hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
-                "application/ld+json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(new RestRDFHelper().exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, JSON_FORMAT));
     }
 
     /**
      * pour produire du JsonLd
-     *
-     * @param hdl1
-     * @param handleId
-     * @param hdl3
-     * @param hdl2
-     * @return #MR
      */
-    @Path("/{hdl1}.{hdl2}.{hdl3}/{handleId}.jsonld")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getJsonldFromHandle__(
-            @PathParam("hdl1") String hdl1,
-            @PathParam("hdl2") String hdl2,
-            @PathParam("hdl3") String hdl3,
-            @PathParam("handleId") String handleId) {
+    @GetMapping(value = "/{idTheso}.{idConcept}.jsonld", produces = CustomMediaType.APPLICATION_JSON_LD_UTF_8)
+    public ResponseEntity<Object> getJsonLdFromIdConcept(@PathVariable("idTheso") String idTheso, @PathVariable("idConcept") String idConcept) {
 
-        if (hdl1 == null || hdl2 == null || hdl3 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+        if (StringUtils.isEmpty(idConcept)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
-        if (hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (handleId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (handleId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptHdl(ds,
-                hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
-                "application/ld+json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_JSON_LD_UTF_8))
+                .body(new RestRDFHelper().exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, "application/ld+json"));
     }
 
     /**
      * pour produire du Turtle
-     *
-     * @param hdl1
-     * @param handleId
-     * @param hdl3
-     * @param hdl2
-     * @return #MR
      */
-    @Path("/{hdl1}.{hdl2}.{hdl3}/{handleId}")
-    @GET
-    @Produces("text/turtle;charset=UTF-8")
-    public Response getTurtleFromHandle(
-            @PathParam("hdl1") String hdl1,
-            @PathParam("hdl2") String hdl2,
-            @PathParam("hdl3") String hdl3,
-            @PathParam("handleId") String handleId) {
+    @GetMapping(value = "/{idTheso}.{idConcept}.ttl", produces = CustomMediaType.APPLICATION_TURTLE_UTF_8)
+    public ResponseEntity<Object> getTurtleFromIdConcept(@PathVariable("idTheso") String idTheso, @PathVariable("idConcept") String idConcept) {
 
-        if (hdl1 == null || hdl2 == null || hdl3 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
+        if (StringUtils.isEmpty(idConcept)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
-        if (hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (handleId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (handleId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptHdl(ds,
-                hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
-                "text/turtle");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
-    }
 
-    /**
-     * pour produire du Turtle
-     *
-     * @param hdl1
-     * @param handleId
-     * @param hdl3
-     * @param hdl2
-     * @return #MR
-     */
-    @Path("/{hdl1}.{hdl2}.{hdl3}/{handleId}.ttl")
-    @GET
-    @Produces("text/turtle;charset=UTF-8")
-    public Response getTurtleFromHandle__(
-            @PathParam("hdl1") String hdl1,
-            @PathParam("hdl2") String hdl2,
-            @PathParam("hdl3") String hdl3,
-            @PathParam("handleId") String handleId) {
-
-        if (hdl1 == null || hdl2 == null || hdl3 == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (hdl1.isEmpty() || hdl2.isEmpty() || hdl3.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (handleId == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (handleId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptHdl(ds,
-                hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId,
-                "text/turtle");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
+        var data = new RestRDFHelper().exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, CustomMediaType.APPLICATION_TURTLE);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_TURTLE_UTF_8))
+                .body(data);
     }
 
 /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-    /*
-     * fin de la recherche par idHandle
-     */
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-    /*
-     * Recherche par Id du concept
-     */
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-    /**
-     * pour produire du RDF-SKOS
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getSkosFromIdConcept__(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(ds,
-                idConcept, idTheso,
-                "application/rdf+xml");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-//        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
-    }
-
-    /**
-     * pour produire du RDF-SKOS
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}.rdf")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getSkosFromIdConcept(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(ds,
-                idConcept, idTheso,
-                "application/rdf+xml");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
-    }
-
-    /**
-     * pour produire du Json
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getJsonFromIdConcept__(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(ds,
-                idConcept, idTheso,
-                "application/json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-    }
-
-    /**
-     * pour produire du Json
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}.json")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getJsonFromIdConcept(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(ds,
-                idConcept, idTheso,
-                "application/json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //     return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-    }
-
-    /**
-     * pour produire du JsonLd
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getJsonLdFromIdConcept__(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(ds,
-                idConcept, idTheso,
-                "application/ld+json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-    }
-
-    /**
-     * pour produire du JsonLd
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}.jsonld")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getJsonLdFromIdConcept(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(ds,
-                idConcept, idTheso,
-                "application/ld+json");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-    }
-
-    /**
-     * pour produire du Turtle
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}")
-    @GET
-    @Produces("text/turtle;charset=UTF-8")
-    public Response getTurtleFromIdConcept__(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(ds,
-                idConcept, idTheso,
-                "text/turtle");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
-    }
-
-    /**
-     * pour produire du Turtle
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}.ttl")
-    @GET
-    @Produces("text/turtle;charset=UTF-8")
-    public Response getTurtleFromIdConcept(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        if (idConcept.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.exportConceptFromId(ds,
-                idConcept, idTheso,
-                "text/turtle");
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
-    }
-
-
-
-
-/////////////////////////////////////////////////////
+//Fin de la recherche par Id du concept
 /////////////////////////////////////////////////////
 
-    /*
-     * Fin de la recherche par Id du concept
-     */
 /////////////////////////////////////////////////////
-////////////////////////////////////////////////////
+// Trouver la valeur d'après un ID Ark concept
 /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-    /*
-     * Trouver la valeur d'après un ID Ark concept
-     */
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-    /**
-     * pour produire du Json
-     *
-     * @param idLang
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("/preflabel.{idLang}/{naan}/{idArk}.json")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getPrefLabelJsonFromArk(
-            @PathParam("idLang") String idLang,
-            @PathParam("naan") String naan,
-            @PathParam("idArk") String arkId) {
 
-        if (naan == null || naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+    //Produire du Json
+    @GetMapping(value = "/preflabel.{idLang}/{naan}/{idArk}.json", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getPrefLabelJsonFromArk(@PathVariable("idLang") String idLang,
+                                                  @PathVariable("naan") String naan,
+                                                  @PathVariable("idArk") String arkId) {
+
+        if (StringUtils.isEmpty(naan) || StringUtils.isEmpty(arkId) || StringUtils.isEmpty(idLang)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
-        if (arkId == null || arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        if (idLang == null || idLang.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.getPrefLabelFromArk(ds, naan, arkId, idLang);
-        ds.close();
-        if (datas == null) {
-            return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-        }
-        return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new RestRDFHelper().getPrefLabelFromArk(connect.getPoolConnexion(), naan, arkId, idLang));
     }
 
 /////////////////////////////////////////////////////
+// Recherche par valeurs avec négociation de contenu
 /////////////////////////////////////////////////////
-    /*
-     * Recherche par valeurs avec négociation de contenu
-     */
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
+
     /**
      * Permet de rechercher une valeur en filtrant par theso et par langue avec
      * négociation de contenu //exp curl -L --header "Accept:
@@ -1281,245 +327,65 @@ public class Rest_new {
      * curl -L --header "Accept: application/rdf+xml"
      * http://localhost:8083/opentheso/api/search?q=notation:nota1&theso=1
      *
-     * @param uri
-     * @param headers
-     * @return
-     *
      * /// options
      * https://pactols.frantiq.fr/opentheso/api/search?q=ark:/26678/pcrtVFfTq3JlGu&lang=fr&theso=TH_1&showLabels=true
      *
      */
-    @Path("/search")
-    @GET
-    @Produces("application/rdf+xml,application/ld+json,application/json,text/turtle;charset=UTF-8")
-    public Response searchRdf(@Context UriInfo uri, @Context HttpHeaders headers) {
-        String value = null;
-        String idLang = "";
-        String idTheso = null;
-        String format = null;
-//        String group = "";
-        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)        
+    @GetMapping(value = "/search", produces = "application/rdf+xml,application/ld+json,application/json,text/turtle;charset=UTF-8")
+    public ResponseEntity<Object> searchRdf(@RequestParam("theso") String idTheso,
+                                    @RequestParam("idLang") String idLang,
+                                    @RequestParam("q") String value,
+                                    @RequestParam(value = "showLabels", required = false, defaultValue = "false") boolean showLabels,
+                                    @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
-        String filter = null;
-        boolean showLabels = false;
-        String idArk;
-        String match = null; // match=exact (pour limiter la recherche aux termes exactes) match=exactone (pour chercher les prefLable, s'il n'existe pas, on cherche sur les altLabels
-        
-        String datas;
-
-        MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
-        for (Map.Entry<String, List<String>> entry : requestHeaders.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase("accept")) {
-                for (String header : entry.getValue()) {
-                    switch (header.toLowerCase()) {
-                        case "application/rdf+xml":
-                            format= "rdf";
-                            break;
-                        case "application/ld+json":
-                            format= "jsonld";
-                            break;
-                        case "application/json":
-                            format= "json";
-                            break;
-                        case "text/turtle":
-                            format= "turtle";
-                            break;
-                        default:
-                            format= "rdf";
-                            break;
-                    }
-                }
-            }
+        if (!value.contains("ark:/") && StringUtils.isEmpty(idTheso)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("q")) {
-                    value = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    groups = valeur.split(",");
-                }                
-         /*       if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
-                }*/
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("showLabels")) {
-                    if(valeur.equalsIgnoreCase("true"))
-                        showLabels = true;
-                }
-                if (e.getKey().equalsIgnoreCase("match")) {
-                    if("exact".equalsIgnoreCase(valeur) || "exactone".equalsIgnoreCase(valeur))
-                        match = valeur;
-                }                  
-            }
-        }
-        if (value == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-
-        if (!value.contains("ark:/")) {
-            if (idTheso == null) {
-                return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-            }
-        }
-
-        // vérification du filtre pour savoir si la recherche concerne des champs spécifiques
-        if (value.contains("notation:")) {
-            /// rercherche par notation
-            filter = "notation:";
-        }
-        if (value.contains("prefLabel:")) {
-            /// rercherche par prefLabel
-        }
-
-        if (format == null) {
-            format = "rdf";
+        String format;
+        switch (acceptHeader.toLowerCase()) {
+            case CustomMediaType.APPLICATION_JSON_LD:
+                format= "jsonld";
+                break;
+            case JSON_FORMAT:
+                format= "json";
+                break;
+            case CustomMediaType.APPLICATION_TURTLE:
+                format= "turtle";
+                break;
+            default:
+                format= "rdf";
+                break;
         }
 
         /// rercherche par idArk
         if (value.contains("ark:/")) {
-            try {
-                idArk = value.substring(value.indexOf("ark:/")+5);
-            } catch (Exception e) {
-                return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
+            return ResponseEntity.ok(getDatasFromArk(idTheso, idLang, value.substring(value.indexOf("ark:/")+5), showLabels));
+        } else {
+            // vérification du filtre pour savoir si la recherche concerne des champs spécifiques
+            String filter = null;
+            if (value.contains("notation:")) {
+                filter = "notation:";
             }
-            datas = getDatasFromArk(idTheso, idLang, idArk, showLabels);
-            if (datas == null) {
-                return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-            }
-            return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
+            return ResponseEntity.ok(getDatas(idTheso, value, FORMAT_MAP.getOrDefault(format, JSON_FORMAT), filter));
         }
-
-
-        /// autre recherche
-        switch (format) {
-            case "rdf": {
-                format = "application/rdf+xml";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();
-                //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML).build();
-            }
-            case "jsonld":
-                format = "application/ld+json";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();
-            case "turtle":
-                format = "text/turtle";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN).build();
-                }
-                // return Response.status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN).build();
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();
-            case "json":
-                format = "application/json";
-                datas = getDatas(idTheso, idLang, groups, value, format, filter, match);
-                if (datas == null) {
-                    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-                }
-                //    return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();
-        }
-        //    return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        return Response
-                .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
     }
 
+    private String getDatas(String idTheso, String value, String format, String filter) {
 
-
-
-    //////////////////////////////////////////////////
-    //////////////////////////////////////////////////  
-    //////////////////////////////////////////////////
-    //////////////////////////////////////////////////
-    private String getDatas(
-            String idTheso, String idLang,
-            String [] groups,
-            String value,
-            String format, String filter,
-            String match) {
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            if (filter != null) {
-                switch (filter) {
-                    case "notation:":
-                        value = value.substring(value.indexOf(":") + 1);
-                        datas = restRDFHelper.findNotation(ds, idTheso, value, format);
-                        ds.close();
-                        return datas;
-                }
-            }   datas = restRDFHelper.findConcepts(ds,
-                    idTheso, idLang, groups, value, format, match);
-        }
-        if (datas == null) {
+        if ("notation:".equalsIgnoreCase(filter)) {
+            value = value.substring(value.indexOf(":") + 1);
+            return new RestRDFHelper().findNotation(connect.getPoolConnexion(), idTheso, value, format);
+        } else {
             return null;
         }
-        return datas;
     }
 
-    //http://localhost:8082/opentheso2/api/search?q=ark:/26678/pcrt4gr80Hd4Bm
-    private String getDatasFromArk(
-            String idTheso,
-            String idLang,
-            String idArk,
-            boolean showLabels) {
+    private String getDatasFromArk(String idTheso, String idLang, String idArk, boolean showLabels) {
 
-        HikariDataSource ds = null;
-        String datas;
-        try {
-            ds = connect();
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            if(idLang == null || idLang.isEmpty()) {
-                datas = restRDFHelper.exportConcept(ds,
-                        idArk, "application/json");
-            } else
-                datas = restRDFHelper.exportConceptFromArkWithLang(ds,
-                        idArk, idTheso, idLang, showLabels, "application/json");
-            ds.close();
-            return datas;
-        } catch (Exception e) {
-            if (ds != null) {
-                ds.close();
-            }
-        }
-        return null;
+        return StringUtils.isEmpty(idLang)
+                ? new RestRDFHelper().exportConcept(connect.getPoolConnexion(), idArk, JSON_FORMAT)
+                : new RestRDFHelper().exportConceptFromArkWithLang(connect.getPoolConnexion(), idArk, idTheso, idLang, showLabels, JSON_FORMAT);
     }
     
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -1530,91 +396,48 @@ public class Rest_new {
      * Permet de rechercher une valeur en filtrant par theso, groupe et langue
      *
      * "http://193.48.140.131:8083/opentheso/api/searchwidget?q=or&lang=fr&theso=TH_1"
-     *
-     * @param uri JSON
-     * @return
      */
-    @Path("/searchwidget")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response searchJsonForWidget(@Context UriInfo uri) {
-        String value = null;
-        String idLang = "";
-        String idTheso = null;
-        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
-        String [] arkGroups = null; // group peut être de la forme suivante pour multiGroup (psrbfdfdjsfh,fdsfdsfsf,kdhfjsdfhjhf)        
-        String format = null; // format = full (on renvoie les altLabel en plus)
-        boolean match = false; // match=exact (pour limiter la recherche aux termes exactes)
+    @GetMapping(value = "/searchwidget", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> searchJsonForWidget(@RequestParam(value = "lang") String idLang,
+                                              @RequestParam(value = "theso") String idTheso,
+                                              @RequestParam(value = "group") String groupValue,
+                                              @RequestParam(value = "arkgroup") String arkGroupValue,
+                                              @RequestParam(value = "format") String format,
+                                              @RequestParam(value = "q") String value,
+                                              @RequestParam(value = "match") boolean match) {
 
-        String datas;
-
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("q")) {
-                    value = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    groups = valeur.split(",");
-                }
-                if (e.getKey().equalsIgnoreCase("arkgroup")) {
-                    arkGroups = valeur.split(",");
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("match")) {
-                    match = true;
-                }                 
-            }
+        if (StringUtils.isEmpty(idTheso)) {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("l'Id du Thesaurus est obligatoire"));
         }
 
-        if (idTheso == null) {
-            return Response.status(Response.Status.OK).entity(getJsonMessage("l'Id du Thesaurus est obligatoire")).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();            
+        if (StringUtils.isEmpty(value)) {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("La question est vide"));
         }
-        if (value == null) {
-            return Response.status(Response.Status.OK).entity(getJsonMessage("La question est vide")).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();  
+
+        String[] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
+        if (StringUtils.isNotEmpty(groupValue)) {
+            groups = groupValue.split(",");
         }
-        if(arkGroups != null && arkGroups.length != 0){
+
+        String[] arkGroups = null; // group peut être de la forme suivante pour multiGroup (psrbfdfdjsfh,fdsfdsfsf,kdhfjsdfhjhf)
+        if (StringUtils.isNotEmpty(arkGroupValue)) {
+            arkGroups = arkGroupValue.split(",");
+        }
+        if(ArrayUtils.isEmpty(arkGroups)){
             groups = getIdGroupFromArk(arkGroups, idTheso);
         }
 
-        datas = getDatasForWidget(idTheso, idLang, groups, value, format, match);
-        
-        if (datas == null) {
-            return Response.status(Response.Status.OK).entity(getJsonMessage("Pas de résultat")).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();  
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-    }    
-    
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(new RestRDFHelper().findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, match));
+    }
+
     private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {
         String[] groups = new String[arkGroups.length];
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            /// récupération des IdGroup si arkGroup est renseigné
-            GroupHelper groupHelper = new GroupHelper();
-            int i=0;
-            for (String arkGroup : arkGroups) {
-                groups[i] = groupHelper.getIdGroupFromArkId(ds, arkGroup, idTheso);
-                i++;
-            }
-            ds.close();
+        GroupHelper groupHelper = new GroupHelper();
+        int i=0;
+        for (String arkGroup : arkGroups) {
+            groups[i] = groupHelper.getIdGroupFromArkId(connect.getPoolConnexion(), arkGroup, idTheso);
+            i++;
         }
         return groups;
     }    
@@ -1628,150 +451,58 @@ public class Rest_new {
      * Permet de rechercher une valeur en filtrant par theso, groupe et langue
      *
      * "http://193.48.140.131:8083/opentheso/api/searchwidgetbyark?q=77777/abcdddor,76767/oreijezrnh&lang=fr"
-     *
-     * @param uri JSON
-     * @return
      */
-    @Path("/searchwidgetbyark")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response searchJsonForWidgetByArk(@Context UriInfo uri) {
-        String [] idArks = null;
-        String idLang = "";
-        String datas;
-        String format = null; // format = full (on renvoie les altLabel en plus)        
+    @GetMapping(value = "/searchwidgetbyark", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> searchJsonForWidgetByArk(@RequestParam(value = "lang") String idLang,
+                                                   @RequestParam(value = "format") String format,
+                                                   @RequestParam(value = "q") String query) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("q")) {
-                    idArks = valeur.split(",");
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }                  
-            }
-        }
+        String[] idArks = StringUtils.isEmpty(query) ? null : query.split(",");
         
-        if(idArks == null || idArks.length == 0)
-            return Response.status(Response.Status.OK).entity(getJsonMessage("l'Id Ark est obligatoire")).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build(); 
-        
-        datas = getDatasForWidgetByArk(idLang, idArks, format);
-        if (datas == null) {
-            return Response.status(Response.Status.OK).entity(getJsonMessage("Pas de résultat")).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build(); 
+        if(ArrayUtils.isEmpty(idArks)) {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("l'Id Ark est obligatoire"));
+        } else {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new RestRDFHelper().findDatasForWidgetByArk(connect.getPoolConnexion(), idLang, idArks, format));
         }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-    }      
-    
-    private String getDatasForWidgetByArk(String idLang, String[] idArks, String format) {
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.findDatasForWidgetByArk(ds,
-                    idLang, idArks, format);
-            ds.close();
-        }
-        if (datas == null) {
-            return null;
-        }
-        return datas;
-    }    
+    }
     
 /////////////////////////////////////////////////////    
+// fin de la recherche par valeur
 ///////////////////////////////////////////////////// 
-    /*
-     * fin de la recherche par valeur
-     */
-///////////////////////////////////////////////////// 
-///////////////////////////////////////////////////// 
-/////////////////////////////////////////////////////    
-///////////////////////////////////////////////////// 
-    /*
-     * Recherche par valeurs pour autocomplétion
-     * on revoie que le prefLable et l'URI en Json
-     */
-///////////////////////////////////////////////////// 
-/////////////////////////////////////////////////////  
+
+/////////////////////////////////////////////////////
+// Recherche par valeurs pour autocomplétion on revoie que le prefLable et l'URI en Json
+/////////////////////////////////////////////////////
+
     /**
      * Permet de rechercher une valeur en filtrant par theso et par langue
      * retourne une liste des valeurs (prefLabel + Uri) pour les programmes qui
      * font de l'autocompletion exp :
      * http://193.48.140.131:8083/opentheso/api/autocomplete/or?theso=TH_1&lang=fr&group=6
-     *
-     * @param value
-     * @param uri JSON
-     * @return
      */
-    @Path("/autocomplete/{value}")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response searchAutocomplete(@PathParam("value") String value, @Context UriInfo uri) {
-        String idLang = "";
-        String idTheso = null;
-        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
-        String format = null;
+    @GetMapping(value = "/autocomplete/{value}", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> searchAutocomplete(@PathVariable("value") String value,
+                                             @RequestParam(value = "theso") String idTheso,
+                                             @RequestParam(value = "lang") String idLang,
+                                             @RequestParam(value = "group") String group,
+                                             @RequestParam(value = "format", required = false) String format) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    groups = valeur.split(",");
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-            }
-        }
-        if (idTheso == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build(); 
-        }
-        if (value == null || value.isEmpty()) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();               
+        var groups = group.split(","); // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
+
+        if (StringUtils.isEmpty(value)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
         }
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = getAutocompleteDatas(idTheso, idLang, groups, value, true);
+            datas = new RestRDFHelper().findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, true);
         } else {
-            datas = getAutocompleteDatas(idTheso, idLang, groups, value, false);
+            datas = new RestRDFHelper().findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, false);
         }
 
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();            
-            
-        }
-        //      return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //  return Response.ok(skos.toString()).header("Access-Control-Allow-Origin", "*").build();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
     /**
@@ -1782,567 +513,165 @@ public class Rest_new {
      * http://localhost:8080/opentheso/api/autocomplete?theso=TH_1&value=vase&lang=fr&group=6
      * le format : pour définir s'il faut renvoyer plus des données (définition
      * ....)
-     *
-     * @param uri JSON
-     * @return
      */
-    @Path("/autocomplete")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response searchAutocomplete2(@Context UriInfo uri) {
-        String idLang = "";
-        String value = null;
-        String idTheso = null;
-        String [] groups = null;
-        String format = null;
+    @GetMapping(value = "/autocomplete", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> searchAutocomplete2(@RequestParam(value = "value") String value,
+                                        @RequestParam(value = "theso") String idTheso,
+                                        @RequestParam(value = "lang") String idLang,
+                                        @RequestParam(value = "group") String group,
+                                        @RequestParam(value = "format", required = false) String format) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("value")) {
-                    value = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    groups = valeur.split(",");
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-            }
-        }
-        if (value == null) {
-            //  return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-            return Response
-                    .status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();
-        }
-        if (idTheso == null) {
-            //    return Response.status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-            return Response
-                    .status(Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();
+        var groups = group.split(",");
+
+        if (StringUtils.isEmpty(value)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
         }
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = getAutocompleteDatas(idTheso, idLang, groups, value, true);
+            datas = new RestRDFHelper().findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, true);
         } else {
-            datas = getAutocompleteDatas(idTheso, idLang, groups, value, false);
+            datas = new RestRDFHelper().findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, false);
         }
 
-        if (datas == null) {
-            //    return Response.status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-            return Response
-                    .status(Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();
-        }
-        // return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
-    private String getAutocompleteDatas(String idTheso,
-                                        String idLang, String[] groups,
-                                        String value, boolean withNotes) {
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return null;
-        }
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String datas = restRDFHelper.findAutocompleteConcepts(ds,
-                idTheso, idLang, groups, value, withNotes);
-        ds.close();
-        if (datas == null) {
-            return null;
-        }
-        return datas;
-    }
-    
-    private String getDatasForWidget(String idTheso,
-                                     String idLang, String[] groups, String value,
-                                     String format, boolean match) {
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.findDatasForWidget(ds,
-                    idTheso, idLang, groups, value, format, match);
-            ds.close();
-        }
-        if (datas == null) {
-            return null;
-        }
-        return datas;
-    }
+/////////////////////////////////////////////////////
+// Fin de la recherche par valeurs pour autocomplétion
+/////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
-    /*
-     * Fin de la recherche par valeurs pour autocomplétion
-     */
-///////////////////////////////////////////////////// 
-/////////////////////////////////////////////////////  
-/////////////////////////////////////////////////////    
-///////////////////////////////////////////////////// 
-    /*
-     * Fonctions avancées pour retourner une branche complète
-     */
-///////////////////////////////////////////////////// 
-/////////////////////////////////////////////////////      
+// Fonctions avancées pour retourner une branche complète
+/////////////////////////////////////////////////////
     /**
      * Pour retourner une branche complète à partir d'un concept en SKOS mais en
      * remontant la branche par les BT (termes génériques)
      * http://localhost:8082/opentheso2/api/expansion/concept?id=30&theso=th1&way=down
      * http://localhost:8082/opentheso2/api/expansion/concept?id=30&theso=th1&way=down&format=json
-     *
-     * @param uri
-     * @return
      */
-    @Path("expansion/concept")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getBrancheOfConcepts(@Context UriInfo uri) {
-        String idConcept = null;
-        String idArk = null;        
-        String idTheso = null;
-        String way = null;
-        String format = null;
+    @GetMapping(value = "expansion/concept", produces = CustomMediaType.APPLICATION_RDF_UTF_8)
+    public ResponseEntity<Object> getBrancheOfConcepts(@RequestParam(value = "theso") String idTheso,
+                                               @RequestParam(value = "id") String idConcept,
+                                               @RequestParam(value = "idark", required = false) String idark,
+                                               @RequestParam(value = "way", required = false) String way,
+                                               @RequestParam(value = "format", required = false, defaultValue = "rdf") String format) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("id")) {
-                    idConcept = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("idark")) {
-                    idArk = valeur;
-                }                
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("way")) {
-                    way = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-            }
+        if (StringUtils.isEmpty(idTheso)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
         }
-        if (idTheso == null || idTheso.isEmpty()) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();            
-        }
-        
-        if(idConcept == null || idConcept.isEmpty()) {
-            if(idArk == null || idArk.isEmpty()) {
-                return Response
-                        .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
+
+        if (StringUtils.isEmpty(idConcept)) {
+            if (StringUtils.isEmpty(idark)) {
+                return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
             } else {
-                idConcept = getIdConceptFromArk(idArk, idTheso);
+                idConcept = new ConceptHelper().getIdConceptFromArkId(connect.getPoolConnexion(), idark, idTheso);
                 if(idConcept == null)
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                
+                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
             }
         }
-
-        if (format == null) {
-            format = "rdf";
-        }
-        String datas;
 
         switch (format) {
             case "rdf": {
-                format = "application/rdf+xml";
-                datas = getBranchOfConcepts(idConcept, idTheso, way, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
+                return ResponseEntity.ok()
                         .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
+                        .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
+                        .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_RDF));
             }
             case "jsonld":
-                format = "application/ld+json";
-                datas = getBranchOfConcepts(idConcept, idTheso, way, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
+                return ResponseEntity.ok()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_JSON_LD_UTF_8))
+                    .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_JSON_LD));
             case "turtle":
-                format = "text/turtle";
-                datas = getBranchOfConcepts(idConcept, idTheso, way, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.TEXT_PLAIN)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
+                return ResponseEntity.ok()
                         .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
-            case "json":
-                format = "application/json";
-                datas = getBranchOfConcepts(idConcept, idTheso, way, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body(getBranchOfConcepts(idConcept, idTheso, way, CustomMediaType.APPLICATION_TURTLE));
+            default:
+                return ResponseEntity.ok()
                         .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(getBranchOfConcepts(idConcept, idTheso, way, JSON_FORMAT));
         }
-        return Response
-                .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();         
-    }
-    
-    private String getIdConceptFromArk(String idArk, String idtheso){
-        String idConcept;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            ConceptHelper conceptHelper = new ConceptHelper();
-            idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk, idtheso);
-
-        }
-        return idConcept;
     }
 
-    private String getBranchOfConcepts(String idConcept,
-                                       String idTheso, String way, String format) {
-        String datas = null;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            // sens de récupération des concepts vers le haut
-            if (way.equalsIgnoreCase("top")) {
-                datas = restRDFHelper.brancheOfConceptsTop(ds,
-                        idConcept, idTheso, format);
-            }   // sens de récupération des concepts vers le bas        
-            if (way.equalsIgnoreCase("down")) {
-                datas = restRDFHelper.brancheOfConceptsDown(ds,
-                        idConcept, idTheso, format);
-            }
+    private String getBranchOfConcepts(String idConcept, String idTheso, String way, String format) {
+        if (way.equalsIgnoreCase("top")) {
+            return new RestRDFHelper().brancheOfConceptsTop(connect.getPoolConnexion(), idConcept, idTheso, format);
         }
-        if (datas == null) {
-            return null;
+        if (way.equalsIgnoreCase("down")) {
+            return new RestRDFHelper().brancheOfConceptsDown(connect.getPoolConnexion(), idConcept, idTheso, format);
         }
-        return datas;
+        return null;
     }
 
-    /**
-     * Pour retourner une branche complète à partir d'un identifiant d'un groupe
-     *
-     * @param uri
-     * @return
-     */
-    @Path("all/group")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getAllBrancheOfGroup(@Context UriInfo uri) {
-        String [] groups = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
-        String idTheso = null;
-        String format = null;
-        String datas;
+    //Pour retourner une branche complète à partir d'un identifiant d'un groupe
+    @GetMapping(value = "all/group", produces = CustomMediaType.APPLICATION_RDF_UTF_8)
+    public ResponseEntity<Object> getAllBrancheOfGroup(@RequestParam(value = "theso") String idTheso,
+                                               @RequestParam(value = "id") String id,
+                                               @RequestParam(value = "format", required = false, defaultValue = "rdf") String format) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("id")) {
-                    groups = valeur.split(",");
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-            }
-        }
+        var groups = id.split(","); // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
 
-        if (idTheso == null || groups == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }
-        if (format == null) {
-            format = "rdf";
-        }
-        switch (format) {
-            case "rdf": {
+        String formatOutput = switch (format) {
+            case "rdf" -> {
                 format = "application/rdf+xml";
-                datas = getAllBrancheOfGroup__(idTheso, groups, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                       
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                  
+                yield CustomMediaType.APPLICATION_RDF_UTF_8;
             }
-            case "jsonld":
+            case "jsonld" -> {
                 format = "application/ld+json";
-                datas = getAllBrancheOfGroup__(idTheso, groups, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                    
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                  
-            case "turtle":
-                format = "text/turtle";
-                datas = getAllBrancheOfGroup__(idTheso, groups, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                       
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                  
-            case "json":
-                format = "application/json";
-                datas = getAllBrancheOfGroup__(idTheso, groups, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                      
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
-        }
-        
-        return Response
-                .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();        
-    }
+                yield CustomMediaType.APPLICATION_JSON_LD_UTF_8;
+            }
+            case "turtle" -> {
+                format = CustomMediaType.APPLICATION_TURTLE;
+                yield CustomMediaType.APPLICATION_TURTLE_UTF_8;
+            }
+            default -> {
+                format = JSON_FORMAT;
+                yield JSON_FORMAT_LONG;
+            }
+        };
 
-    private String getAllBrancheOfGroup__(String idtheso,
-                                          String [] groups, String format) {
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.brancheOfGroup(ds, groups, idtheso, format);           
-        }
-        return datas;         
+        var datas = new RestRDFHelper().brancheOfGroup(connect.getPoolConnexion(), groups, idTheso, format);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(formatOutput)).body(datas);
     }
 
     /**
      * Pour retourner un thesaurus complet à partir de son identifiant
-     *
-     * @param uri
-     * @return
      */
-    @Path("all/theso")
-    @GET
-    @Produces("application/rdf+xml;charset=UTF-8")
-    public Response getAllTheso(@Context UriInfo uri) {
-        String idTheso = null;
-        String format = null;
-        String datas;
+    @GetMapping(value = "all/theso", produces = CustomMediaType.APPLICATION_RDF + ";charset=UTF-8")
+    public ResponseEntity<String> getAllTheso(@RequestParam(value = "id") String id,
+                                              @RequestParam(value = "format", defaultValue = "rdf") String format) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("id")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }
-            }
-        }
+        // Obtenir le type MIME en fonction du format, avec une valeur par défaut JSON
+        String mimeType = FORMAT_MAP.getOrDefault(format, JSON_FORMAT);
 
-        if (idTheso == null) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
+        try {
+            // Appel à la méthode pour récupérer le Thesaurus
+            String result = new RestRDFHelper().getTheso(connect.getPoolConnexion(), id, mimeType);
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).body(result);
+        } catch (Exception e) {
+            // Gestion d'une exception, peut-être retourner une réponse d'erreur avec un statut approprié
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"error\": \"An error occurred while fetching the thesaurus.\"}");
         }
-        if (format == null) {
-            format = "rdf";
-        }
-        switch (format) {
-            case "rdf": {
-                format = "application/rdf+xml";
-                datas = getAllTheso__(idTheso, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                        
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
-            }
-            case "jsonld":
-                format = "application/ld+json";
-                datas = getAllTheso__(idTheso, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                  
-            case "turtle":
-                format = "text/turtle";
-                datas = getAllTheso__(idTheso, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyTurtle()).type(MediaType.TEXT_PLAIN)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
-            case "json":
-                format = "application/json";
-                datas = getAllTheso__(idTheso, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                      
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
-        }
-        return Response
-                .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();          
-    }
-
-    private String getAllTheso__(String idtheso, String format) {
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.getTheso(ds, idtheso, format);
-        }
-        if (datas == null) {
-            return null;
-        }
-        return datas;
     }
     
     /**
      * Pour retourner un thesaurus complet à partir de son identifiant
      * le thesaurus retourné ne comporte pas de relations, mais uniquement Id et value en Json
-     * On peut préciser la langue 
-     *
-     * @param uri
-     * @return
+     * On peut préciser la langue
      */
-    @Path("jsonlist/theso")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getAllIdValueTheso(@Context UriInfo uri) {
-        String idTheso = null;
-        String lang = null;
-        String datas;
-
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("id")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    lang = valeur;
-                }
-            }
-        }
-
-        if (idTheso == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();              
-        }
-      /*  if (lang == null || lang.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML).build();
-        }*/
+    @GetMapping(value = "jsonlist/theso", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getAllIdValueTheso(@RequestParam(value = "id") String idTheso,
+                                             @RequestParam(value = "lang") String lang) {
         
-        datas = getAllIdValueTheso__(idTheso, lang);
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();              
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();          
-    }    
+        var datas = new RestRDFHelper().getThesoIdValue(connect.getPoolConnexion(), idTheso, lang);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
+    }
 
-    private String getAllIdValueTheso__(String idtheso, String lang) {
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.getThesoIdValue(ds, idtheso, lang);
-        }
-        if (datas == null) {
-            return null;
-        }
-        return datas;
-    }    
     
 /////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////// 
@@ -2352,86 +681,25 @@ public class Rest_new {
 ///////////////////////////////////////////////////// 
 /////////////////////////////////////////////////////      
     /**
-     * Pour retourner la liste des thésaurus publics ou la liste des collections
-     * d'un thésaurus
+     * Pour retourner la liste des thésaurus publics ou la liste des collections d'un thésaurus
      * https://pactols.frantiq.fr/opentheso/api/info/list?theso=all
      * https://pactols.frantiq.fr/opentheso/api/info/list?theso=th1&group=all
      * https://pactols.frantiq.fr/opentheso/api/info/list?theso=th1&topconcept=all
-     *
-     * @param uri
-     * @return
      */
-    @Path("info/list")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getlistAllPublicTheso(@Context UriInfo uri) {
-        String idTheso = null;
-        String group = null;
-        String topconcept = null;
+    @GetMapping(value = "info/list", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getlistAllPublicTheso(@RequestParam(value = "theso") String idTheso,
+                                                @RequestParam(value = "group", required = false) String group,
+                                                @RequestParam(value = "topconcept", required = false) String topconcept) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    group = valeur;
-                    if (!group.trim().equalsIgnoreCase("all")) {
-                        group = null;
-                    }
-                }
-                if (e.getKey().equalsIgnoreCase("topconcept")) {
-                    topconcept = valeur;
-                    if (!topconcept.trim().equalsIgnoreCase("all")) {
-                        topconcept = null;
-                    }
-                }
+        if (group == null && topconcept == null) {
+            return ResponseEntity.ok(getlistAllPublicTheso__(connect.getPoolConnexion()));
+        } else {
+            if (topconcept != null && topconcept.equalsIgnoreCase("all")) {
+                return ResponseEntity.ok(getlistAllTopConceptOfTheso__(connect.getPoolConnexion(), idTheso));
             }
-        }
 
-        if (idTheso == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
+            return ResponseEntity.ok(getlistAllGroupOfTheso__(connect.getPoolConnexion(), idTheso));
         }
-
-        String datas = null;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return Response
-                        .status(Response.Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
-            }
-            if (group == null && topconcept == null) {
-                if (!idTheso.equalsIgnoreCase("all")) {
-                    return Response
-                            .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                datas = getlistAllPublicTheso__(ds);
-            } else {
-                if (group != null && group.equalsIgnoreCase("all")) {
-                    datas = getlistAllGroupOfTheso__(ds, idTheso);
-                }
-                if (topconcept != null && topconcept.equalsIgnoreCase("all")) {
-                    datas = getlistAllTopConceptOfTheso__(ds, idTheso);
-                }
-            }
-        }
-
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();        
     }
 
     private String getlistAllPublicTheso__(HikariDataSource ds) {
@@ -2541,127 +809,36 @@ public class Rest_new {
     /**
      * Pour retourner la liste des langues d'un thésaurus
      * https://pactols.frantiq.fr/opentheso/api/info/listlang?theso=TH_1&lang=all
-     *
-     * @param uri
-     * @return
      */
-    @Path("info/listLang")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getlistLangOfTheso(@Context UriInfo uri) {
-        String idTheso = null;
-        String lang = null;
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
+    @GetMapping(value = "info/listLang", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getlistLangOfTheso(@RequestParam(value = "theso") String idTheso) {
 
-            }
-        }
-        if (idTheso == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();            
-        }
-        if (idTheso.isEmpty()) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();              
-        }
-
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response
-                    .status(Response.Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();              
-        }
-
-        String datas = getlistLangOfTheso__(ds, idTheso);
-        ds.close();
-
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();          
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(getlistLangOfTheso__(connect.getPoolConnexion(), idTheso));
     }
 
     private String getlistLangOfTheso__(HikariDataSource ds, String idTheso) {
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        ArrayList<String> listLangOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurus(ds, idTheso);
 
-        String datasJson;
-
-        JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
-
+        var listLangOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurus(ds, idTheso);
+        var jsonArrayBuilderLang = Json.createArrayBuilder();
         for (String idLang : listLangOfTheso) {
             JsonObjectBuilder jobLang = Json.createObjectBuilder();
             jobLang.add("lang", idLang);
             jsonArrayBuilderLang.add(jobLang.build());
         }
-        datasJson = jsonArrayBuilderLang.build().toString();
-
-        if (datasJson != null) {
-            return datasJson;
-        } else {
-            return null;
-        }
+        return jsonArrayBuilderLang.build().toString();
     }
 
-    /**
-     * Pour retourner la dernière date de modification
-     *
-     * @param uri
-     * @return
-     */
-    @Path("info/lastupdate")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getInfoLastUpdate(@Context UriInfo uri) {
-        String idTheso = null;
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-            }
-        }
-        if (idTheso == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-        HikariDataSource ds = connect();
-        if (ds == null) {
-            return Response
-                    .status(Response.Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();              
+    // Pour retourner la dernière date de modification
+    @GetMapping(value = "info/lastupdate", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getInfoLastUpdate(@RequestParam(value = "theso") String idTheso) {
+
+        if (StringUtils.isEmpty(idTheso)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        String datas = getInfoLastUpdate__(ds, idTheso);
-        ds.close();
-
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();              
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();          
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getInfoLastUpdate__(connect.getPoolConnexion(), idTheso));
     }
 
     private String getInfoLastUpdate__(HikariDataSource ds, String idTheso) {
@@ -2674,125 +851,36 @@ public class Rest_new {
         return "{\"lastUpdate\": \"" + date.toString() + "\"}";
     }
 
-        /**
+    /**
      * Pour retourner les concepts modifiés à partir de la date donnée
      * format de la date 2022-01-01
-     * @param uri
-     * @return
      */
-    @Path("/getchangesfrom")
-    @GET
-    @Produces("application/rdf+xml,application/ld+json,application/json,text/turtle;charset=UTF-8")
-    public Response getConceptsFrom(@Context UriInfo uri) {
-        String fromDate = null;
-        String idTheso = null;      
-        String format = null;
-        
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }                
-                if (e.getKey().equalsIgnoreCase("date")) {
-                    fromDate = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("format")) {
-                    format = valeur;
-                }                
-            }
-        }
-        if (fromDate == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-        if (idTheso == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-        if (format == null) {
-            format = "rdf";
-        }     
-        String datas;
-        
+    @GetMapping(value = "/getchangesfrom", produces = "application/rdf+xml,application/ld+json,application/json,text/turtle;charset=UTF-8")
+    public ResponseEntity<Object> getConceptsFrom(@RequestParam(value = "theso") String idTheso,
+                                          @RequestParam(value = "date") String fromDate,
+                                          @RequestParam(value = "format", required = false, defaultValue = "rdf") String format) {
+
+        String formatOutput;
         switch (format) {
-            case "rdf": {
-                format = "application/rdf+xml";
-                datas = getLastConcepts__(idTheso, fromDate, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_XML)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                  
-            }
+            case "rdf":
+                format = CustomMediaType.APPLICATION_RDF;
+                formatOutput = CustomMediaType.APPLICATION_RDF_UTF_8;
+                break;
             case "jsonld":
-                format = "application/ld+json";
-                datas = getLastConcepts__(idTheso, fromDate, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                     
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
+                format = CustomMediaType.APPLICATION_JSON_LD;
+                formatOutput = CustomMediaType.APPLICATION_JSON_LD_UTF_8;
+                break;
             case "turtle":
-                format = "text/turtle";
-                datas = getLastConcepts__(idTheso, fromDate, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                       
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.TEXT_PLAIN)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                
-            case "json":
-                format = "application/json";
-                datas = getLastConcepts__(idTheso, fromDate, format);
-                if (datas == null) {
-                    return Response
-                            .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                            .header("Access-Control-Allow-Origin", "*")
-                            .build();                    
-                }
-                return Response
-                        .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
+                format = CustomMediaType.APPLICATION_TURTLE;
+                formatOutput = CustomMediaType.APPLICATION_TURTLE_UTF_8;
+                break;
+            default:
+                format = JSON_FORMAT;
+                formatOutput = JSON_FORMAT_LONG;
         }
-        return Response
-                .status(Response.Status.BAD_REQUEST).entity(messageEmptySkos()).type(MediaType.APPLICATION_XML)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();          
+        var datas = new RestRDFHelper().getIdConceptFromDate(connect.getPoolConnexion(), idTheso, fromDate, format);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(formatOutput)).body(datas);
     }
-
-    private String getLastConcepts__(String idTheso, String fromDate, String format) {
-
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.getIdConceptFromDate(ds, idTheso, fromDate, format);           
-        }
-        return datas;
-    }
-
-
-    
-    
-
 
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////// Fonctions spécifiques pour Ontome  //////////////////////////////////////  
@@ -2804,69 +892,24 @@ public class Rest_new {
      * Si la classe est renseignée, on retourne uniquement le concept en question
      * http://localhost:8082/opentheso2/api/ontome/linkedConcept?theso=th1&class=56
      * http://localhost:8082/opentheso2/api/ontome/linkedConcept?theso=th1
-     * @param uri
-     * @return
      */
-    @Path("ontome/linkedConcept/")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getAllLinkedConceptsWithOntome(@Context UriInfo uri) {
-        String idTheso = null;
-        String cidocClass = null;
+    @GetMapping(value = "ontome/linkedConcept/", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getAllLinkedConceptsWithOntome(@RequestParam(value = "theso") String idTheso,
+                                                         @RequestParam(value = "class", required = false) String cidocClass) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("class")) {
-                    cidocClass = valeur;
-                }
-            }
-        }
-
-        if (idTheso == null || idTheso.isEmpty()) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
+        if (StringUtils.isEmpty(idTheso)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
         String datas;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return Response.status(Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON).build();
-            }   RestRDFHelper restRDFHelper = new RestRDFHelper();
-            if(cidocClass == null || cidocClass.isEmpty()) {
-                datas = restRDFHelper.getAllLinkedConceptsWithOntome__(ds, idTheso);
-            } else {
-                datas = restRDFHelper.getLinkedConceptWithOntome__(ds, idTheso, cidocClass);
-            }
+        if(StringUtils.isEmpty(cidocClass)) {
+            datas = new RestRDFHelper().getAllLinkedConceptsWithOntome__(connect.getPoolConnexion(), idTheso);
+        } else {
+            datas = new RestRDFHelper().getLinkedConceptWithOntome__(connect.getPoolConnexion(), idTheso, cidocClass);
         }
 
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();            
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
-
-
-
-
-    /////////////////////////////////////////////////////////////////////////////////////// 
-    ///////////////////////////////////////////////////////////////////////////////////////    
-    /////////////////////////////////////////////////////////////////////////////////////// 
-    ///////////////////////////////////////////////////////////////////////////////////////    
-
-
-
-
 
     ///////////////////////////////////////////////////////////////////////////////////////
     ///////////// Fonctions qui  permettent de naviguer dans le thésaurus /////////////////  
@@ -2875,168 +918,44 @@ public class Rest_new {
     ///////////////////////////////////////////////////////////////////////////////////////
 
     //http://localhost:8082/opentheso2/api/topterm?theso=th19&lang=fr
-    /**
-     * permet de récupérer les TopTerms d'un thésaurus dans une langue donnée
-     * en précisant l'Id du thésaurus et la langue sont obligatoires,
-     * @param uri
-     * @return
-     */
-    @Path("/topterm")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getTopterms(@Context UriInfo uri) {
-        String idLang = null;
-        String idTheso = null;
+    // permet de récupérer les TopTerms d'un thésaurus dans une langue donnée en précisant l'Id du thésaurus et la langue sont obligatoires
+    @GetMapping(value = "/topterm", produces = CustomMediaType.APPLICATION_JSON_LD_UTF_8)
+    public ResponseEntity<Object> getTopterms(@RequestParam(value = "theso") String idTheso,
+                                      @RequestParam(value = "lang") String idLang) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-            }
-        }
-        if (idTheso == null || idLang == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();              
+        if (StringUtils.isEmpty(idTheso) || StringUtils.isEmpty(idLang)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        String datas = getTopterms__(idTheso, idLang);
-
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();            
-        }
-
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-    }
-    private String getTopterms__(String idTheso, String idLang) {
-        String datas;
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        try (HikariDataSource ds = connect()) {
-            datas = restRDFHelper.getTopTerms(ds, idTheso, idLang);
-        }
-        return datas;
+        var datas = new RestRDFHelper().getTopTerms(connect.getPoolConnexion(), idTheso, idLang);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
     //http://localhost:8082/opentheso2/api/narrower?theso=th19&id=300&lang=fr
     /**
      * permet de récupérer les TopTerms d'un thésaurus dans une langue donnée
      * en précisant l'Id du thésaurus, id du concept et la langue sont obligatoires,
-     * @param uri
-     * @return
      */
-    @Path("/narrower")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getNarrower(@Context UriInfo uri) {
-        String idLang = null;
-        String idTheso = null;
-        String idConcept = null;
+    @GetMapping(value = "/narrower", produces = CustomMediaType.APPLICATION_JSON_LD_UTF_8)
+    public ResponseEntity<Object> getNarrower(@RequestParam(value = "theso") String idTheso,
+                                      @RequestParam(value = "id") String idConcept,
+                                      @RequestParam(value = "lang") String idLang) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("id")) {
-                    idConcept = valeur;
-                }
-            }
-        }
-        if (idTheso == null || idConcept == null || idLang == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();            
-        }
-
-        String datas = getNarrower__(idTheso, idConcept, idLang);
-
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-    }
-    private String getNarrower__(String idTheso, String idConcept, String idLang) {
-        String datas;
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        try (HikariDataSource ds = connect()) {
-            datas = restRDFHelper.getNarrower(ds, idTheso, idConcept, idLang);
-        }
-        return datas;
+        var datas = new RestRDFHelper().getNarrower(connect.getPoolConnexion(), idTheso, idConcept, idLang);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
+    // Pour récupérer les informations sur un concept au format Json, les identifiants sont remplacés par les labels
+    @GetMapping(value = "/{idTheso}.{idConcept}.labels", produces = JSON_FORMAT_LONG)
+    public ResponseEntity<Object> getJsonFromIdConceptWithLabels(@PathVariable("idTheso") String idTheso,
+                                                   @PathVariable("idConcept") String idConcept) {
 
+        if (StringUtils.isEmpty(idTheso) || StringUtils.isEmpty(idConcept)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
+        }
 
-    /**
-     * Pour récupérer les informations sur un concept
-     * au format Json, les identifiants sont remplacés par les labels
-     *
-     * @param idTheso
-     * @param idConcept
-     * @return #MR
-     */
-    @Path("/{idTheso}.{idConcept}.labels")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getJsonFromIdConceptWithLabels(
-            @PathParam("idTheso") String idTheso,
-            @PathParam("idConcept") String idConcept) {
-
-        if (idConcept == null) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-        if (idConcept.isEmpty()) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return Response
-                        .status(Response.Status.SERVICE_UNAVAILABLE).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build();                 
-            }   RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.getInfosOfConcept(ds,
-                    idTheso, idConcept, "fr");
-        }
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-        //     return Response.status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON).build();
+        var datas = new RestRDFHelper().getInfosOfConcept(connect.getPoolConnexion(), idTheso, idConcept, "fr");
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
 
@@ -3049,64 +968,13 @@ public class Rest_new {
         count: 10,
         arks: [ark1, ark2, ..., ark10]
        }
-     * @param uri JSON
-     * @return
      */
-    @Path("/ark/allchilds")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getIdArkOfConceptNT(@Context UriInfo uri) {
-        String idArk = null;
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("ark")) {
-                    idArk = valeur;
-                }
-            }
-        }
-        if (StringUtils.isEmpty(idArk)) {
-            return Response
-                    .status(Response.Status.OK).entity(getJsonMessage("The id ark is missing")).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build(); 
-        }
+    @GetMapping(value = "/ark/allchilds", produces = CustomMediaType.APPLICATION_JSON_LD_UTF_8)
+    public ResponseEntity<Object> getIdArkOfConceptNT(@RequestParam(value = "ark") String idArk) {
 
-        String datas;
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return Response
-                        .status(Response.Status.OK).entity(getJsonMessage("No connection")).type(MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", "*")
-                        .build(); 
-            }
-            datas = restRDFHelper.getChildsArkId(ds, idArk);
-        }    
-
-        if (StringUtils.isEmpty(datas)) {
-            return Response
-                    .status(Response.Status.OK).entity(getJsonMessage("No datas")).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();            
-            
-        }
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
-    }    
-    
-    
-    
-
-
-
-
-
-
-
-
+        var datas = new RestRDFHelper().getChildsArkId(connect.getPoolConnexion(), idArk);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////
     //////////////Fonction qui permet de produire /////////////////////////////////////////  
@@ -3122,151 +990,50 @@ public class Rest_new {
      * l'id du concept de départ,
      * l'id de la collection,
      * l'id de la langue
-     * @param uri
-     * @return
      */
-    @Path("/graph")
-    @GET
-    @Produces("application/ld+json;charset=UTF-8")
-    public Response getDatasForGraph(@Context UriInfo uri) {
-        String idLang = "";
-        String idConcept = null;
-        String idTheso = null;
-        String idGroup = "";
+    @GetMapping(value = "/graph", produces = CustomMediaType.APPLICATION_JSON_LD_UTF_8)
+    public ResponseEntity<Object> getDatasForGraph(@RequestParam(value = "theso") String idTheso,
+                                           @RequestParam(value = "id") String idConcept,
+                                           @RequestParam(value = "lang") String idLang) {
 
-        for (Map.Entry<String, List<String>> e : uri.getQueryParameters().entrySet()) {
-            for (String valeur : e.getValue()) {
-                if (e.getKey().equalsIgnoreCase("id")) {
-                    idConcept = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("lang")) {
-                    idLang = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("theso")) {
-                    idTheso = valeur;
-                }
-                if (e.getKey().equalsIgnoreCase("group")) {
-                    idGroup = valeur;
-                }
-            }
-        }
-        if (idTheso == null || idTheso.isEmpty()) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();             
-        }
-
-        String datas = getDatasForGraph__(idTheso, idConcept, idLang, idGroup);
-
-        if (datas == null) {
-            return Response
-                    .status(Response.Status.OK).entity(messageEmptyJson()).type(MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();         }
-
-        return Response
-                .status(Response.Status.OK).entity(datas).type(MediaType.APPLICATION_JSON)
-                .header("Access-Control-Allow-Origin", "*")
-                .build();
+        var datas = new D3jsHelper().findDatasForGraph__(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
-    private String getDatasForGraph__(String idTheso, String idConcept, String idLang, String idGroup) {
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            datas = new D3jsHelper().findDatasForGraph__(ds, idConcept, idTheso, idLang);
-        }
-        return datas;
-    }
-
-
-
-
-    
-    
-    
-    
-////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////Permet de traduire les URI ARK par Opentheso////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////
-    
-    
-    /**
-     * pour faire la redirection entre un IdArk et l'URL Opentheso
-     *
-     * @param naan
-     * @param arkId
-     * @return #MR
-     */
-    @Path("ark:/{naan}/{idArk}")
-    @GET
-    @Produces("application/json;charset=UTF-8")
-    public Response getUriFromArk(@PathParam("naan") String naan,
-                                     @PathParam("idArk") String arkId) {
-        if (naan == null || naan.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("NAAN not specified")).type(MediaType.APPLICATION_JSON).build();
+
+    // pour faire la redirection entre un IdArk et l'URL Opentheso
+    @GetMapping(value = "/{naan}/{idArk}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getUriFromArk(@PathVariable("naan") String naan,
+                                           @PathVariable("idArk") String arkId) throws URISyntaxException {
+
+        if (!org.springframework.util.StringUtils.hasText(naan) || !org.springframework.util.StringUtils.hasText(arkId)) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        if (arkId == null || arkId.isEmpty()) {
-            return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("Ark not specified")).type(MediaType.APPLICATION_JSON).build();
+        var webUrl = new RestRDFHelper().getUrlFromIdArk(connect.getPoolConnexion(), naan, arkId);
+        if (webUrl == null) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("Ark ID does not exist"));
         }
-        String webUrl;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("No connection")).type(MediaType.APPLICATION_JSON).build();
-            }
 
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            webUrl = restRDFHelper.getUrlFromIdArk(ds, naan, arkId);
-            if(webUrl == null) {
-                return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("Ark ID does not exist")).type(MediaType.APPLICATION_JSON).build();
-            }
-            URI uri = new URI(webUrl);
-            return Response.temporaryRedirect(uri).build();
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(Rest_new.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return Response.status(Status.BAD_REQUEST).entity(getJsonMessage("Internal error")).type(MediaType.APPLICATION_JSON).build();
-    }    
-////////////////////////////////////////////////////////////////////////////////////
+        return ResponseEntity.status(307) // 307 corresponds to temporary redirect
+                .location(new URI(webUrl))
+                .build();
+    }
+
 ////////////////////////////////////////////////////////////////////////////////////
 ////////////////FIN traduire les URI ARK par Opentheso//////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-    private String messageEmptySkos() {
-        String message = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<rdf:RDF\n"
-                + "	xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">"
-                + "</rdf:RDF>";
-
-        return message;
-    }
 
     private String messageEmptyJson() {
-
-        String message = "{\n"
-                + "}";
-
-        return message;
+        return "{}";
     }
     
     private String getJsonMessage(String message){
-        JsonObjectBuilder job = Json.createObjectBuilder();
+        var job = Json.createObjectBuilder();
         job.add("message", message);
         return job.build().toString();
-    }
-
-    private String messageEmptyTurtle() {
-        String message = "";
-
-        return message;
     }
 }

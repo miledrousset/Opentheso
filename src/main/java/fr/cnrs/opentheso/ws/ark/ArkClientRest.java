@@ -24,22 +24,15 @@ import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-//import org.primefaces.shaded.json.JSONObject;
 
 
 public final class ArkClientRest {
-    private Properties propertiesArk;  
-//    private Client client;
+
+    private Properties propertiesArk;
     
     private String idArk;
     private String idHandle;
     private String Uri;
-    
-    
-    // prefix MOM
-    private String prefixHandle = "20.500.11859";
-    
-    private String urlHandle = "http://193.48.137.68:8000/api/handles/";
     private String jsonArk;
     
     private JsonObject loginJson;
@@ -87,7 +80,7 @@ public final class ArkClientRest {
 
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);        
         Response response = invocationBuilder.get();
-        String tokenString = null;
+        String tokenString;
         try {
             if (response.getStatus() != 200) {
                 message = "Erreur de login: " + response.getStatus();

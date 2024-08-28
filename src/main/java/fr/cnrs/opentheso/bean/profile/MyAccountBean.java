@@ -85,7 +85,7 @@ public class MyAccountBean implements Serializable {
         displayedKey = apiKeyHelper.generateApiKey("ot_", 64);
         FacesMessage msg;
         nodeUser.setApiKey(displayedKey);
-        if(apiKeyHelper.saveApiKey(MD5Password.getEncodedPassword(displayedKey), nodeUser.getIdUser())){
+        if(apiKeyHelper.saveApiKey(connect.getPoolConnexion(), MD5Password.getEncodedPassword(displayedKey), nodeUser.getIdUser())){
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La clé a bien été enregistrée.");
         } else {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de sauvegarde de la clé.");

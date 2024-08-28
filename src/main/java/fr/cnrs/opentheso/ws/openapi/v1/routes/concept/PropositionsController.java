@@ -4,41 +4,50 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.cnrs.opentheso.bdd.helper.PropositionApiHelper;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.proposition.model.PropositionFromApi;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import java.sql.SQLException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Path("/concepts/propositions")
+
+@Slf4j
+@RestController
+@RequestMapping("/concepts/propositions")
+@CrossOrigin(methods = { RequestMethod.POST })
 public class PropositionsController {
 
+    @Autowired
+    private Connect connect;
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response createProposition(@Context HttpHeaders headers, String propositionJson) throws JsonProcessingException, SQLException {
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON)
+    public ResponseEntity<Object> createProposition(@RequestHeader(value = "API-KEY") String apiKey,
+                                            @RequestBody String propositionJson) throws JsonProcessingException {
 
         var apiKeyHelper = new ApiKeyHelper();
-        var apiKey = headers.getHeaderString("API-KEY");
-
-        var keyState = apiKeyHelper.checkApiKey(apiKey);
+        var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);
 
         if (keyState != ApiKeyState.VALID) {
             return apiKeyHelper.errorResponse(keyState);
         }
 
         var proposition = new ObjectMapper().readValue(propositionJson, PropositionFromApi.class);
-        var userId = apiKeyHelper.getIdUser(apiKey);
+        var userId = apiKeyHelper.getIdUser(connect.getPoolConnexion(), apiKey);
 
-        new PropositionApiHelper().createProposition(proposition, userId);
-        return Response.status(Response.Status.CREATED).build();
+        new PropositionApiHelper().createProposition(connect.getPoolConnexion(), proposition, userId);
+        return ResponseEntity.status(201).build();
     }
 }

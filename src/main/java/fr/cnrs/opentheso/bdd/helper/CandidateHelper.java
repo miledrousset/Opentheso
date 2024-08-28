@@ -5,11 +5,11 @@
  */
 package fr.cnrs.opentheso.bdd.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,8 +27,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 
 /**
  *
@@ -1748,83 +1746,73 @@ public class CandidateHelper {
      * @param userId
      * @return true si la sauvegarde est faite, false sinon
      */
-    public boolean saveCandidat (String candidate, int userId) {
+    public boolean saveCandidat (HikariDataSource ds, String candidate, int userId) throws JsonProcessingException {
+
         ObjectMapper objectMapper = new ObjectMapper();                // Pour générer les id
-        try (HikariDataSource ds = connect()) {
-            if(ds == null) {return false;}
-            try{
-                JsonNode candidateJson = objectMapper.readTree(candidate);
-                String thesoId = candidateJson.path("thesoId").asText();
-                String collectionId = candidateJson.path("collectionId").asText();
+        JsonNode candidateJson = objectMapper.readTree(candidate);
+        String thesoId = candidateJson.path("thesoId").asText();
+        String collectionId = candidateJson.path("collectionId").asText();
 
-                // Champs non obligatoires
-                String source = candidateJson.has("source") ? candidateJson.path("source").asText() : "";
+        // Champs non obligatoires
+        String source = candidateJson.has("source") ? candidateJson.path("source").asText() : "";
 
-                try (Connection conn = ds.getConnection()){
-                    conn.setAutoCommit(false);
+        try (Connection conn = ds.getConnection()){
+            conn.setAutoCommit(false);
 
-                    var idTerm = new ConceptHelper().getNumericConceptId(conn);
-                    var idConcept = new ConceptHelper().getNumericConceptId(conn);
-                    try{
-                        if (ObjectUtils.isNotEmpty(candidateJson.path("terme"))) {
-                            for (int i = 0; i < candidateJson.path("terme").size(); i++) {
-                                insertTerm(conn, thesoId, userId,
-                                        candidateJson.get("terme").get(i).get("lang").asText(),
-                                        idTerm,
-                                        candidateJson.get("terme").get(i).get("value").asText());
-                            }
-                        }
-
-                        insertConcept(conn, thesoId, userId, idConcept);
-
-                        insertCollection(conn, collectionId, thesoId, idConcept);
-
-                        if (ObjectUtils.isNotEmpty(candidateJson.path("definition"))) {
-                            for (int i = 0; i < candidateJson.path("definition").size(); i++) {
-                                insertNoteInCandidat(conn, "definition", thesoId, idTerm,
-                                        candidateJson.get("definition").get(i).get("lang").asText(),
-                                        candidateJson.get("definition").get(i).get("value").asText(),
-                                        userId, source, idConcept);
-                            }
-                        }
-
-                        if (ObjectUtils.isNotEmpty(candidateJson.path("note"))) {
-                            for (int i = 0; i < candidateJson.path("note").size(); i++) {
-                                insertNoteInCandidat(conn, "note", thesoId, idTerm,
-                                        candidateJson.get("note").get(i).get("lang").asText(),
-                                        candidateJson.get("note").get(i).get("value").asText(),
-                                        userId, source, idConcept);
-                            }
-                        }
-
-                        var comment = candidateJson.path("comment").asText();
-                        if (StringUtils.isNotEmpty(comment)) {
-                            insertComment(conn, comment, userId, idConcept, thesoId);
-                        }
-
-                        insertPreferredTerm(conn, thesoId, idTerm, idConcept);
-
-                        if (ObjectUtils.isNotEmpty(candidateJson.path("synonymes")) && candidateJson.path("synonymes").size() > 0) {
-                            for (int i = 0; i < candidateJson.path("synonymes").size(); i++) {
-                                insertSynonymes(conn,
-                                        candidateJson.path("synonymes").get(i).get("value").asText(),
-                                        candidateJson.path("synonymes").get(i).get("lang").asText(),
-                                        thesoId, idTerm);
-                            }
-                        }
-
-                        insertCandidat(conn, idConcept, thesoId, userId);
-
-                        conn.commit();
-                    }catch (SQLException e) {
-                        conn.rollback();
-                        throw e;
-                    }
+            var idTerm = new ConceptHelper().getNumericConceptId(conn);
+            var idConcept = new ConceptHelper().getNumericConceptId(conn);
+            if (ObjectUtils.isNotEmpty(candidateJson.path("terme"))) {
+                for (int i = 0; i < candidateJson.path("terme").size(); i++) {
+                    insertTerm(conn, thesoId, userId,
+                            candidateJson.get("terme").get(i).get("lang").asText(),
+                            idTerm,
+                            candidateJson.get("terme").get(i).get("value").asText());
                 }
-            }catch (IOException | SQLException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Error saving candidate", e);
             }
+
+            insertConcept(conn, thesoId, userId, idConcept);
+
+            insertCollection(conn, collectionId, thesoId, idConcept);
+
+            if (ObjectUtils.isNotEmpty(candidateJson.path("definition"))) {
+                for (int i = 0; i < candidateJson.path("definition").size(); i++) {
+                    insertNoteInCandidat(conn, "definition", thesoId, idTerm,
+                            candidateJson.get("definition").get(i).get("lang").asText(),
+                            candidateJson.get("definition").get(i).get("value").asText(),
+                            userId, source, idConcept);
+                }
+            }
+
+            if (ObjectUtils.isNotEmpty(candidateJson.path("note"))) {
+                for (int i = 0; i < candidateJson.path("note").size(); i++) {
+                    insertNoteInCandidat(conn, "note", thesoId, idTerm,
+                            candidateJson.get("note").get(i).get("lang").asText(),
+                            candidateJson.get("note").get(i).get("value").asText(),
+                            userId, source, idConcept);
+                }
+            }
+
+            var comment = candidateJson.path("comment").asText();
+            if (StringUtils.isNotEmpty(comment)) {
+                insertComment(conn, comment, userId, idConcept, thesoId);
+            }
+
+            insertPreferredTerm(conn, thesoId, idTerm, idConcept);
+
+            if (ObjectUtils.isNotEmpty(candidateJson.path("synonymes")) && candidateJson.path("synonymes").size() > 0) {
+                for (int i = 0; i < candidateJson.path("synonymes").size(); i++) {
+                    insertSynonymes(conn,
+                            candidateJson.path("synonymes").get(i).get("value").asText(),
+                            candidateJson.path("synonymes").get(i).get("lang").asText(),
+                            thesoId, idTerm);
+                }
+            }
+
+            insertCandidat(conn, idConcept, thesoId, userId);
+
+            conn.commit();
+        }catch (SQLException e) {
+
         }
         return true;
     }

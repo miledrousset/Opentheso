@@ -1,35 +1,46 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.apache.commons.lang3.StringUtils;
-
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.*;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
-import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.getContentTypeFromHeader;
-import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Path("/concept/{idTheso}/search")
+import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
+import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.getDatas;
+
+
+@Slf4j
+@RestController
+@RequestMapping("/concept/{idTheso}/search")
+@CrossOrigin(methods = { RequestMethod.GET })
 public class ConcepThesoSearchController {
 
-    @Path("/")
-    @GET
-    @Produces({APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
+    @Autowired
+    private Connect connect;
+
+
+    @GetMapping(produces = {APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
     @Operation(summary = "${search.summary}$",
             description = "${search.description}$",
             tags = {"Concept"},
@@ -43,21 +54,20 @@ public class ConcepThesoSearchController {
                     @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
                     @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
-    public Response search(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathParam("idTheso") String idTheso,
-                           @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @QueryParam("q") String q,
-                           @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @QueryParam("lang") String lang,
-                           @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @QueryParam("group") String group,
+    public ResponseEntity<Object> search(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathVariable("idTheso") String idTheso,
+                           @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @RequestParam("q") String q,
+                           @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @RequestParam(value = "lang", required = false) String lang,
+                           @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @RequestParam(value = "group", required = false) String group,
                            @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), required = false,
-                                   description = "${search.match.description}$") @QueryParam("match") String match,
-                           @Context HttpHeaders headers) {
+                                   description = "${search.match.description}$") @RequestParam(value = "match", required = false) String match,
+                           @RequestHeader(value = "accept", required = false) String format) {
 
-        return searchFilter(idTheso, headers, q, lang, group, match, null);
+        return searchFilter(idTheso, format, q, lang, group, match, null);
 
     }
 
-    @Path("/notation")
-    @GET
-    @Produces({APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
+
+    @GetMapping(value = "/notation", produces = {APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
     @Operation(summary = "${searchNotation.summary}$",
             description = "${searchNotation.description}$",
             tags = {"Concept"},
@@ -71,25 +81,20 @@ public class ConcepThesoSearchController {
                     @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
                     @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
-    public Response searchNotation(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathParam("idTheso") String idTheso,
-                                   @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @QueryParam("q") String q,
-                                   @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @QueryParam("lang") String lang,
-                                   @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @QueryParam("group") String group,
+    public ResponseEntity<Object> searchNotation(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathVariable("idTheso") String idTheso,
+                                   @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @RequestParam("q") String q,
+                                   @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @RequestParam(value = "lang", required = false) String lang,
+                                   @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @RequestParam(value = "group", required = false) String group,
                                    @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), required = false,
-                                           description = "${search.match.description}$") @QueryParam("match") String match,
-                                   @Context HttpHeaders headers) {
-        return searchFilter(idTheso, headers, q, lang, group, match, "notation:");
+                                           description = "${search.match.description}$") @RequestParam(value = "match", required = false) String match,
+                                         @RequestHeader(value = "accept", required = false) String format) {
+        return searchFilter(idTheso, format, q, lang, group, match, "notation:");
     }
 
-    private Response searchFilter(String idTheso, HttpHeaders headers, String q, String lang, String groupsString, String match, String filter) {
+    private ResponseEntity searchFilter(String idTheso, String format, String q, String lang, String groupsString, String match, String filter) {
 
-        String format = getContentTypeFromHeader(headers);
         String datas;
         String[] groups = null;
-
-        if (q == null) {
-            return ResponseHelper.response(Response.Status.BAD_REQUEST, "No term specified", format);
-        }
 
         if (lang == null) {
             lang = "";
@@ -103,18 +108,12 @@ public class ConcepThesoSearchController {
             match = null;
         }
 
-        datas = getDatas(idTheso, lang, groups, q, format, filter, match);
-
-        if (StringUtils.isEmpty(datas)) {
-            return ResponseHelper.response(Response.Status.OK, emptyMessage(format), format);
-        } else {
-            return ResponseHelper.response(Response.Status.OK, datas, format);
-        }
+        datas = getDatas(connect.getPoolConnexion(), idTheso, lang, groups, q, format, filter, match);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(format)).body(datas);
     }
 
-    @Path("/fullpath")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8})
+
+    @GetMapping(value = "/fullpath", produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "${searchJsonForWidget.summary}$",
             description = "${searchJsonForWidget.description}$",
             tags = {"Concept"},
@@ -125,21 +124,15 @@ public class ConcepThesoSearchController {
                     @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
                     @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
-    public Response searchJsonForWidget(
-            @Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true, example = "th3") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidget.q.description}$", example = "Lyon") @QueryParam("q") String q,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.lang.description}$", example = "fr") @QueryParam("lang") String lang,
-            @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.group.description}$") @QueryParam("group") String groupStrings,
-            @Parameter(name = "arkgroup", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.arkgroup.description}$") @QueryParam("arkgroup") String arkgroupStrings,
-            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.full.description}$") @QueryParam("full") String fullString,
-            @Parameter(name = "exactMatch", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.exactMatch.description}$") @QueryParam("exactMatch") String exactMatchString
+    public ResponseEntity<Object> searchJsonForWidget(
+            @Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidget.q.description}$", example = "Lyon") @RequestParam(value = "q", required = false) String q,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.lang.description}$", example = "fr") @RequestParam(value = "lang", required = false) String lang,
+            @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.group.description}$") @RequestParam(value = "group", required = false) String groupStrings,
+            @Parameter(name = "arkgroup", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.arkgroup.description}$") @RequestParam(value = "arkgroup", required = false) String arkgroupStrings,
+            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.full.description}$") @RequestParam(value = "full", required = false) String fullString,
+            @Parameter(name = "exactMatch", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.exactMatch.description}$") @RequestParam(value = "exactMatch", required = false) String exactMatchString
     ) {
-        if (q == null) {
-            return ResponseHelper.response(Response.Status.BAD_REQUEST, "No term specified", APPLICATION_JSON_UTF_8);
-        }
-        if (lang == null) {
-            return ResponseHelper.response(Response.Status.BAD_REQUEST, "No lang specified", APPLICATION_JSON_UTF_8);
-        }
         boolean full = fullString != null && fullString.equalsIgnoreCase("true");
         String[] groups = null;
         if (groupStrings != null) {
@@ -151,43 +144,18 @@ public class ConcepThesoSearchController {
             groups = getIdGroupFromArk(arkgroupStrings.split(","), idTheso);
         }
 
-        String fullFormat = full ? "full" : null;
-
-        String datas = getDatasForWidget(idTheso, lang, groups, q, fullFormat, exactMatch);
-        return ResponseHelper.response(Response.Status.OK, Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)), APPLICATION_JSON_UTF_8);
-    }
-    
-    private String getDatasForWidget(String idTheso, String idLang, String[] groups, String value, String format, boolean match) {
-        String datas;
-
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.findDatasForWidget(ds, idTheso, idLang, groups, value, HeaderHelper.removeCharset(format), match);
-
-            return datas;
-        }
-        catch (Exception e) {
-            System.out.print(e.getMessage());
-                }
-        return null;
+        var fullFormat = full ? "full" : null;
+        var datas = new RestRDFHelper().findDatasForWidget(connect.getPoolConnexion(), idTheso, lang, groups, q, HeaderHelper.removeCharset(fullFormat), exactMatch);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)));
     }
 
     private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {
         String[] groups = new String[arkGroups.length];
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return null;
-            }
-            /// récupération des IdGroup si arkGroup est renseigné
-            GroupHelper groupHelper = new GroupHelper();
-            int i = 0;
-            for (String arkGroup : arkGroups) {
-                groups[i] = groupHelper.getIdGroupFromArkId(ds, arkGroup, idTheso);
-                i++;
-            }
+        GroupHelper groupHelper = new GroupHelper();
+        int i = 0;
+        for (String arkGroup : arkGroups) {
+            groups[i] = groupHelper.getIdGroupFromArkId(connect.getPoolConnexion(), arkGroup, idTheso);
+            i++;
         }
         return groups;
     }

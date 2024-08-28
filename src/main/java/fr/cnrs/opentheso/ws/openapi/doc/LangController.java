@@ -1,53 +1,46 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fr.cnrs.opentheso.ws.openapi.doc;
 
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
 import fr.cnrs.opentheso.ws.openapi.helper.LangHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
-import java.math.BigDecimal;
 import java.util.Locale;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Response;
 import jakarta.json.JsonObjectBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- *
- * @author julie
- */
-@Path("/")
+
+@Slf4j
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(methods = { RequestMethod.GET })
 public class LangController {
-    
-    
+
     private String firstLetterCapital(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
-    
-    @Path("/lang")
-    @GET
-    @Produces(CustomMediaType.APPLICATION_JSON_UTF_8)
-    public Response getAvailablesLanguages() {
+
+
+    @GetMapping(value = "/lang", consumes = CustomMediaType.APPLICATION_JSON_UTF_8)
+    public ResponseEntity<Object> getAvailablesLanguages() {
         
         JsonArrayBuilder builder = Json.createArrayBuilder();
-        
-        LangHelper helper = new LangHelper();
-        for (String langCode : helper.availableLang()) {
+
+        for (String langCode : new LangHelper().availableLang()) {
             JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
             Locale locale = new Locale(langCode);
-            
             objectBuilder.add("code", langCode);
             objectBuilder.add("display", firstLetterCapital(locale.getDisplayLanguage(locale)));
-            
             builder.add(objectBuilder.build());
         }
         
-        return ResponseHelper.response(Response.Status.OK, builder.build().toString(), CustomMediaType.APPLICATION_JSON_UTF_8);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(builder.build().toString());
         
     }
     

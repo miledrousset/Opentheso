@@ -1,12 +1,15 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.graphql;
 
 import com.google.gson.Gson;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.Scalars;
 import graphql.schema.*;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,24 +18,30 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
+
 
 @WebServlet(name = "GraphQLServlet", urlPatterns = {"/graphql"})
 public class GraphQLServlet extends HttpServlet {
+
     private final GraphQL graphQL;
     private final Gson gson;
-    private HikariDataSource ds;
+    private final HikariDataSource ds;
 
 
     // Classe pour avoir la connexion à la BD et exploiter les JSON
     public GraphQLServlet() {
         this.gson = new Gson();
-        this.ds = connect();
+        this.ds = getConnexion();
         GraphQLSchema schema = buildSchema();
         this.graphQL = GraphQL.newGraphQL(schema).build();
     }
@@ -143,13 +152,6 @@ public class GraphQLServlet extends HttpServlet {
                 .field(GraphQLFieldDefinition.newFieldDefinition().name("nodeCustomRelations").type(new GraphQLList(conceptCustomRelationType)))
                 .build();
 
-        // Type SearchResults pour la recherche de termes
-        GraphQLObjectType searchResultsType = GraphQLObjectType.newObject()
-                .name("SearchResults")
-                .field(GraphQLFieldDefinition.newFieldDefinition().name("results").type(new GraphQLList(nodeFullConceptType)))
-                .build();
-
-
         // Déclaration du type Query pour les requêtes
         GraphQLObjectType queryType;
         queryType = GraphQLObjectType.newObject()
@@ -229,6 +231,56 @@ public class GraphQLServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         resp.getWriter().write(jsonResponse);
+    }
+
+    private HikariDataSource getConnexion() {
+
+        Properties properties = new Properties();
+        try {
+            InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("hikari.properties");
+            if (inputStream != null) {
+                properties.load(inputStream);
+                return openConnexionPool(properties);
+            }
+        } catch (IOException ex) {
+            System.err.println(ex);
+        }
+        return null;
+    }
+
+    private HikariDataSource openConnexionPool(Properties properties) {
+        HikariConfig config = new HikariConfig();
+        config.setMinimumIdle(Integer.parseInt(properties.getProperty("minimumIdle")));
+        config.setMaximumPoolSize(Integer.parseInt(properties.getProperty("setMaximumPoolSize")));
+        config.setAutoCommit(true);
+        config.setIdleTimeout(Integer.parseInt(properties.getProperty("idleTimeout")));
+        config.setConnectionTimeout(Integer.parseInt(properties.getProperty("connectionTimeout")));
+        config.setConnectionTestQuery(properties.getProperty("connectionTestQuery"));
+        config.setDataSourceClassName(properties.getProperty("dataSourceClassName"));
+
+        config.addDataSourceProperty("user", properties.getProperty("dataSource.user"));
+        config.addDataSourceProperty("password", properties.getProperty("dataSource.password"));
+        config.addDataSourceProperty("databaseName", properties.getProperty("dataSource.databaseName"));
+        config.addDataSourceProperty("serverName", properties.getProperty("dataSource.serverName"));
+        config.addDataSourceProperty("portNumber", properties.getProperty("dataSource.serverPort"));
+
+        HikariDataSource poolConnexion1 = new HikariDataSource(config);
+        try {
+            Connection conn = poolConnexion1.getConnection();
+
+            if (conn == null) {
+                return null;
+            }
+            conn.close();
+
+        } catch (SQLException ex) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_FATAL, ex.getClass().getName(), ex.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, message);
+            poolConnexion1.close();
+            return null;
+        }
+        return poolConnexion1;
     }
 
 }

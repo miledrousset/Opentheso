@@ -1,27 +1,14 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Response;
-
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
-import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
@@ -29,14 +16,34 @@ import java.util.List;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
-import jakarta.ws.rs.QueryParam;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Path("/group/{idTheso}")
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
+import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
+
+
+@Slf4j
+@RestController
+@RequestMapping("/group/{idTheso}")
+@CrossOrigin(methods = { RequestMethod.GET })
 public class GroupThesoController {
-    
-    @Path("/")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8})
+
+    @Autowired
+    private Connect connect;
+
+
+    @GetMapping(produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "${getAllGroupsFromTheso.summary}$",
             description = "${getAllGroupsFromTheso.description}$",
             tags = {"Group"},
@@ -45,45 +52,36 @@ public class GroupThesoController {
             @Content(mediaType = APPLICATION_JSON_UTF_8)}),
                 @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
             })
-    public Response getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "${getAllGroupsFromTheso.idTheso.description}$", schema = @Schema(type = "string")) @PathParam("idTheso") String idTheso) {
+    public ResponseEntity<Object>  getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "${getAllGroupsFromTheso.idTheso.description}$", schema = @Schema(type = "string")) @PathVariable("idTheso") String idTheso) {
+
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
-
-        String datasJson;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        try (HikariDataSource ds = connect()) {
+        List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(connect.getPoolConnexion(), idTheso);
 
-            List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(ds, idTheso);
-            
-            for (String idGroup : listIdGroupOfTheso) {
-                JsonObjectBuilder job = Json.createObjectBuilder();
-                job.add("idGroup", idGroup);
-                JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
+        for (String idGroup : listIdGroupOfTheso) {
+            JsonObjectBuilder job = Json.createObjectBuilder();
+            job.add("idGroup", idGroup);
+            JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-                nodeGroupTraductions = groupHelper.getAllGroupTraduction(ds, idGroup, idTheso);
-                for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
-                    JsonObjectBuilder jobLang = Json.createObjectBuilder();
-                    jobLang.add("lang", nodeGroupTraduction.getIdLang());
-                    jobLang.add("title", nodeGroupTraduction.getTitle());
-                    jsonArrayBuilderLang.add(jobLang.build());
-                }
-                if (!nodeGroupTraductions.isEmpty()) {
-                    job.add("labels", jsonArrayBuilderLang.build());
-                }
-                jsonArrayBuilder.add(job.build());
+            nodeGroupTraductions = groupHelper.getAllGroupTraduction(connect.getPoolConnexion(), idGroup, idTheso);
+            for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
+                JsonObjectBuilder jobLang = Json.createObjectBuilder();
+                jobLang.add("lang", nodeGroupTraduction.getIdLang());
+                jobLang.add("title", nodeGroupTraduction.getTitle());
+                jsonArrayBuilderLang.add(jobLang.build());
             }
-            datasJson = jsonArrayBuilder.build().toString();
-            if (datasJson != null) {
-                return ResponseHelper.response(Response.Status.OK, datasJson, APPLICATION_JSON_UTF_8);
+            if (!nodeGroupTraductions.isEmpty()) {
+                job.add("labels", jsonArrayBuilderLang.build());
             }
+            jsonArrayBuilder.add(job.build());
         }
-        
-        return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jsonArrayBuilder.build().toString());
     }
-    
-    @Path("/{idGroup}")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+
+
+    @GetMapping(value = "/{idGroup}", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
             summary = "${getGroupFromIdThesoIdGroup.summary}$",
             description = "${getGroupFromIdThesoIdGroup.description}$",
@@ -98,26 +96,17 @@ public class GroupThesoController {
                     @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
                     @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
-    public Response getGroupFromIdThesoIdGroup(
-            @Parameter(name = "idTheso", required = true, description = "${getGroupFromIdThesoIdGroup.idTheso.description}$") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathParam("idGroup") String idGroup,
-            @Context HttpHeaders headers
-            ) {
-        RestRDFHelper restRDFHelper = new RestRDFHelper();
-        String format;
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            format = HeaderHelper.getContentTypeFromHeader(headers);
-            if (ds == null) return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", format);
-            datas = restRDFHelper.exportGroup(ds, idTheso, idGroup, removeCharset(format));
-        }
-        if (datas == null) return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Group not found", format);
-        return ResponseHelper.response(Response.Status.OK, datas, format);
+    public ResponseEntity<Object> getGroupFromIdThesoIdGroup(
+            @Parameter(name = "idTheso", required = true, description = "${getGroupFromIdThesoIdGroup.idTheso.description}$") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathVariable("idGroup") String idGroup,
+            @RequestHeader(value = "accept", required = false) String acceptHeader) {
+
+
+        var datas = new RestRDFHelper().exportGroup(connect.getPoolConnexion(), idTheso, idGroup, removeCharset(acceptHeader));
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
-    
-    @Path("/{idGroup}/subgroup")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+
+    @GetMapping(value = "/{idGroup}/subgroup", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
             summary = "${getSubGroupsFromTheso.summary}$",
             tags = {"Group"},
@@ -131,51 +120,38 @@ public class GroupThesoController {
                     @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
                     @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
-    public Response getSubGroupFromIdThesoIdGroup(
-            @Parameter(name = "idTheso", required = true, description = "${getSubGroupsFromTheso.idTheso.description}$") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathParam("idGroup") String idGroup) {
+    public ResponseEntity<Object> getSubGroupFromIdThesoIdGroup(
+            @Parameter(name = "idTheso", required = true, description = "${getSubGroupsFromTheso.idTheso.description}$") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathVariable("idGroup") String idGroup) {
+
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
-
-        String datasJson;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        try (HikariDataSource ds = connect()) {
+        List<String> listIdSubGroupOfTheso = groupHelper.getListGroupChildIdOfGroup(connect.getPoolConnexion(), idGroup, idTheso);
 
-            List<String> listIdSubGroupOfTheso = groupHelper.getListGroupChildIdOfGroup(ds, idGroup, idTheso);
-            
-            for (String idSubGroup : listIdSubGroupOfTheso) {
-                JsonObjectBuilder job = Json.createObjectBuilder();
-                job.add("idGroup", idSubGroup);
-                JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
+        for (String idSubGroup : listIdSubGroupOfTheso) {
+            JsonObjectBuilder job = Json.createObjectBuilder();
+            job.add("idGroup", idSubGroup);
+            JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-                nodeGroupTraductions = groupHelper.getAllGroupTraduction(ds, idSubGroup, idTheso);
-                for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
-                    JsonObjectBuilder jobLang = Json.createObjectBuilder();
-                    jobLang.add("lang", nodeGroupTraduction.getIdLang());
-                    jobLang.add("title", nodeGroupTraduction.getTitle());
-                    jsonArrayBuilderLang.add(jobLang.build());
-                }
-                if (!nodeGroupTraductions.isEmpty()) {
-                    job.add("labels", jsonArrayBuilderLang.build());
-                }
-                jsonArrayBuilder.add(job.build());
+            nodeGroupTraductions = groupHelper.getAllGroupTraduction(connect.getPoolConnexion(), idSubGroup, idTheso);
+            for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
+                JsonObjectBuilder jobLang = Json.createObjectBuilder();
+                jobLang.add("lang", nodeGroupTraduction.getIdLang());
+                jobLang.add("title", nodeGroupTraduction.getTitle());
+                jsonArrayBuilderLang.add(jobLang.build());
             }
-            datasJson = jsonArrayBuilder.build().toString();
-            if (datasJson != null) {
-                return ResponseHelper.response(Response.Status.OK, datasJson, APPLICATION_JSON_UTF_8);
+            if (!nodeGroupTraductions.isEmpty()) {
+                job.add("labels", jsonArrayBuilderLang.build());
             }
+            jsonArrayBuilder.add(job.build());
         }
-        
-        return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jsonArrayBuilder.build().toString());
     }
 
 
-
-    
-
-    @Path("/branch")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+    @GetMapping(value = "/branch", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
             summary = "${getAllBranchOfGroup.summary}$",
             description = "${getAllBranchOfGroup.description}$",
@@ -192,37 +168,22 @@ public class GroupThesoController {
                     @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             }
     )
-    public Response getAllBranchOfGroup(
-            @Parameter(name = "idTheso", required = true, description = "${getAllBranchOfGroup.idTheso.description}$") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "idGroups", required = true, description = "${getAllBranchOfGroup.idGroups.description}$", example = "g1,g2,g3") @QueryParam("idGroups") String idGroups,
-            @Context HttpHeaders headers
-    ) {
-        String format = HeaderHelper.getContentTypeFromHeader(headers);
-        
-        if (idGroups == null) {
-            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "No group id", format);
-        }
-        
+    public ResponseEntity<Object> getAllBranchOfGroup(
+            @Parameter(name = "idTheso", required = true, description = "${getAllBranchOfGroup.idTheso.description}$") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idGroups", required = true, description = "${getAllBranchOfGroup.idGroups.description}$", example = "g1,g2,g3") @RequestParam("idGroups") String idGroups,
+            @RequestHeader(value = "accept", required = false) String acceptHeader) {
+
         String[] groups = idGroups.split(",");
-        
         if (groups.length == 0) {
-            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "No group id", format);
+            return ResponseEntity.badRequest().contentType(MediaType.parseMediaType(acceptHeader)).body("No group id");
         }
         
-        String datas;
-        
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", format);
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.brancheOfGroup(ds, groups, idTheso, removeCharset(format));
-        }
-        if (datas == null || datas.equals("{}")) return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Group not found", format);
-        return ResponseHelper.response(Response.Status.OK, datas, format);
+        var datas = new RestRDFHelper().brancheOfGroup(connect.getPoolConnexion(), groups, idTheso, removeCharset(acceptHeader));
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
-    
-    @Path("/branchtree")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8})
+
+
+    @GetMapping(value = "/branchtree", produces = APPLICATION_JSON_UTF_8)
     @Operation(
             summary = "${getAllBranchOfGroupAsTree.summary}$",
             description = "${getAllBranchOfGroupAsTree.description}$",
@@ -236,33 +197,19 @@ public class GroupThesoController {
                     @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             }
     )
-    public Response getAllBranchOfGroupAsTree(
-            @Parameter(name = "idTheso", required = true, description = "${getAllBranchOfGroupAsTree.idTheso.description}$") @PathParam("idTheso") String idTheso,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchAutocomplete.lang.description}$") @QueryParam("lang") String lang,
-            @Parameter(name = "idGroups", required = true, description = "${getAllBranchOfGroupAsTree.idGroups.description}$", example = "g1,g2,g3") @QueryParam("idGroups") String idGroups,
-            @Context HttpHeaders headers
-    ) {
-        String format = HeaderHelper.getContentTypeFromHeader(headers);
-        
-        if (idGroups == null) {
-            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "No group id", format);
-        }
-        
+    public ResponseEntity<Object> getAllBranchOfGroupAsTree(
+            @Parameter(name = "idTheso", required = true, description = "${getAllBranchOfGroupAsTree.idTheso.description}$") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchAutocomplete.lang.description}$") @RequestParam("lang") String lang,
+            @Parameter(name = "idGroups", required = true, description = "${getAllBranchOfGroupAsTree.idGroups.description}$", example = "g1,g2,g3") @RequestParam("idGroups") String idGroups,
+            @RequestHeader(value = "accept", required = false) String acceptHeader) {
+
         String[] groups = idGroups.split(",");
-        
         if (groups.length == 0) {
-            return ResponseHelper.errorResponse(Response.Status.BAD_REQUEST, "No group id", format);
+            return ResponseEntity.badRequest().contentType(MediaType.parseMediaType(acceptHeader)).body("No group id");
         }
-        
-        String datas;
-        
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Service unavailable", format);
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.brancheOfGroupAsTree(ds, groups, idTheso, lang);
-        }
-        if (datas == null || datas.equals("{}")) return ResponseHelper.errorResponse(Response.Status.NOT_FOUND, "Group not found", format);
-        return ResponseHelper.response(Response.Status.OK, datas, format);
+
+        var datas = new RestRDFHelper().brancheOfGroupAsTree(connect.getPoolConnexion(), groups, idTheso, lang);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }    
     
 }

@@ -3,48 +3,47 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
-import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
-import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.Data;
-
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 
-
-@Path("/candidate")
+@Slf4j
+@RestController
+@RequestMapping("/api/concept/candidate")
+@CrossOrigin(methods = { RequestMethod.POST })
 public class addCandidateController {
+
+    @Autowired
+    private Connect connect;
+
     /**
      * Route qui permet d'ajouter un candidat à partir d'un JSON
-     * @param headers
-     * @param candidate
-     * @return
      */
-    @Path("")
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @Operation(
             summary = "${addCandidate.summary}$",
             description = "${addCandidate.description}$",
@@ -61,45 +60,32 @@ public class addCandidateController {
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Allo", content = {
-                            @Content(mediaType = MediaType.APPLICATION_JSON)
-                    }),
+                    @ApiResponse(responseCode = "200", description = "Allo", content = { @Content(mediaType = MediaType.APPLICATION_JSON)}),
                     @ApiResponse(responseCode = "400", description = "400"),
                     @ApiResponse(responseCode = "404", description = "404"),
                     @ApiResponse(responseCode = "503", description = "503")
             },
-            security = {
-                    @SecurityRequirement(name = "API-KEY")
-            }
+            security = { @SecurityRequirement(name = "API-KEY") }
     )
-    public Response addCandidate(@Context HttpHeaders headers, String candidate) throws JsonProcessingException {
+    public ResponseEntity<Object> addCandidate(@RequestHeader(value = "API-KEY") String apiKey,
+                                       String candidate) throws JsonProcessingException, SQLException {
 
         var apiKeyHelper = new ApiKeyHelper();
-        var apiKey = headers.getHeaderString("API-KEY");
-
-        var keyState = apiKeyHelper.checkApiKey(apiKey);
+        var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);
 
         if (keyState != ApiKeyState.VALID){
-            return apiKeyHelper.errorResponse(keyState);
-        }
-        
-        try (HikariDataSource ds = connect()) {
-            var userId = apiKeyHelper.getIdUser(apiKey);
-            JsonNode candidateJson = new ObjectMapper().readTree(candidate);
-            if (ds == null) {
-                return ResponseHelper.response(Response.Status.NOT_FOUND, null, CustomMediaType.APPLICATION_JSON_UTF_8);
-            }
-
-            Map<String, Object> successResponse = new HashMap<>();
-            if (!new CandidateHelper().saveCandidat(candidate, userId)){
-                return ResponseHelper.createStatusResponse(Response.Status.BAD_REQUEST, "Bad JSON format.");
-            }
-            successResponse.put("candidate", candidateJson);
-            return ResponseHelper.createJsonResponse(Response.Status.OK, successResponse);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.badRequest().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body(apiKeyHelper.errorResponse(keyState));
         }
 
+        var userId = apiKeyHelper.getIdUser(connect.getPoolConnexion(), apiKey);
+        JsonNode candidateJson = new ObjectMapper().readTree(candidate);
+
+        Map<String, Object> successResponse = new HashMap<>();
+        if (!new CandidateHelper().saveCandidat(connect.getPoolConnexion(), candidate, userId)){
+            return ResponseEntity.badRequest().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body("");
+        }
+        successResponse.put("candidate", candidateJson);
+        return ResponseEntity.ok().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body(successResponse);
     }
 
     public class Candidate {

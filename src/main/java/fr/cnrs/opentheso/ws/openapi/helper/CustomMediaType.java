@@ -1,17 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fr.cnrs.opentheso.ws.openapi.helper;
 
 import jakarta.ws.rs.core.MediaType;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author julie
- */
+
 public class CustomMediaType extends MediaType {
     
     public static final String APPLICATION_JSON_LD = "application/ld+json";

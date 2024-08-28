@@ -1,38 +1,44 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
-import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.MessageHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
+import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Response;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
-import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 
 /**
  * @author julie
  */
-@Path("/group")
+@Slf4j
+@RestController
+@RequestMapping("/group")
+@CrossOrigin(methods = { RequestMethod.GET })
 public class GroupController {
 
-    @Path("/ark:/{naan}/{ark}")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8})
+    @Autowired
+    private Connect connect;
+
+
+    @GetMapping(value = "/ark:/{naan}/{ark}", produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "${getGroupIdFromArk.summary}$",
             description = "${getGroupIdFromArk.description}$",
             tags = {"Group", "Ark"},
@@ -43,19 +49,14 @@ public class GroupController {
                     @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
                     @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
             })
-    public Response getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "${getGroupIdFromArk.naan.description}$") @PathParam("naan") String naan,
-                                      @Parameter(name = "ark", required = true, description = "${getGroupIdFromArk.arkId.description}$") @PathParam("ark") String arkId) {
+    public ResponseEntity<Object>  getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "${getGroupIdFromArk.naan.description}$") @PathVariable("naan") String naan,
+                                            @Parameter(name = "ark", required = true, description = "${getGroupIdFromArk.arkId.description}$") @PathVariable("ark") String arkId) {
 
-        String datas;
-        String format = APPLICATION_JSON_UTF_8;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null)
-                return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Server unavailable", format);
-
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.exportGroup(ds, naan + "/" + arkId, HeaderHelper.removeCharset(format));
-        }
-        return ResponseHelper.response(Response.Status.OK, Objects.requireNonNullElseGet(datas, () -> MessageHelper.emptyMessage(format)), format);
+        var restRDFHelper = new RestRDFHelper();
+        var datas = restRDFHelper.exportGroup(connect.getPoolConnexion(), naan + "/" + arkId, HeaderHelper.removeCharset(APPLICATION_JSON_UTF_8));
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Objects.requireNonNullElseGet(datas, () -> MessageHelper.emptyMessage(APPLICATION_JSON_UTF_8)));
     }
 
 }

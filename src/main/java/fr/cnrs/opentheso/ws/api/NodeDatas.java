@@ -2,10 +2,7 @@ package fr.cnrs.opentheso.ws.api;
 
 import java.util.List;
 import lombok.Data;
-/**
- *
- * @author miledrousset
- */
+
 /**
  * Class pour regrouper les datas pour un noeud
  */
@@ -17,10 +14,5 @@ public class NodeDatas {
     private String url;
     private List<String> definition;
     private List<String> synonym;
-
     private List<NodeDatas> childrens;
-
-    public NodeDatas() {
-    }
-
 }

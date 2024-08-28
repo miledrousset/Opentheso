@@ -19,45 +19,38 @@ import jakarta.ws.rs.core.Response;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
-
 
 public class PropositionApiHelper {
 
-    public Response createProposition(PropositionFromApi proposition, int userId) {
+    public Response createProposition(HikariDataSource connexion, PropositionFromApi proposition, int userId) {
 
-        try (var ds = connect()) {
+        var user = new UserHelper().getUser(connexion, userId);
+        var thesaurusLang = new PreferencesHelper().getWorkLanguageOfTheso(connexion, proposition.getIdTheso());
 
-            var user = new UserHelper().getUser(ds, userId);
-            var thesaurusLang = new PreferencesHelper().getWorkLanguageOfTheso(ds, proposition.getIdTheso());
+        var propositionId = saveProposition(connexion, proposition, user, thesaurusLang);
 
-            var propositionId = saveProposition(ds, proposition, user, thesaurusLang);
+        saveTerme(proposition, connexion, propositionId, thesaurusLang);
 
-            saveTerme(proposition, ds, propositionId, thesaurusLang);
-
-            if (CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
-                saveTraductions(proposition, propositionId, ds, thesaurusLang);
-            }
-
-            if (!CollectionUtils.isEmpty(proposition.getSynonymsProp())) {
-                saveSynonymes(proposition, propositionId, ds);
-            }
-
-            if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
-                for (NotePropBean note : proposition.getDefinitions()) {
-                    noteManagement(ds, propositionId, note, PropositionCategoryEnum.NOTE.name());
-                }
-            }
-
-            if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
-                for (NotePropBean definition : proposition.getDefinitions()) {
-                    noteManagement(ds, propositionId, definition, PropositionCategoryEnum.DEFINITION.name());
-                }
-            }
-            return Response.status(Response.Status.CREATED).build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
+            saveTraductions(proposition, propositionId, connexion, thesaurusLang);
         }
+
+        if (!CollectionUtils.isEmpty(proposition.getSynonymsProp())) {
+            saveSynonymes(proposition, propositionId, connexion);
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
+            for (NotePropBean note : proposition.getDefinitions()) {
+                noteManagement(connexion, propositionId, note, PropositionCategoryEnum.NOTE.name());
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(proposition.getDefinitions())) {
+            for (NotePropBean definition : proposition.getDefinitions()) {
+                noteManagement(connexion, propositionId, definition, PropositionCategoryEnum.DEFINITION.name());
+            }
+        }
+        return Response.status(Response.Status.CREATED).build();
     }
 
     private Integer saveProposition(HikariDataSource ds, PropositionFromApi proposition, NodeUser user, String thesaurusLang) {

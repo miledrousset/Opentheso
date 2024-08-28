@@ -7,7 +7,6 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -1345,8 +1344,7 @@ public class GroupHelper {
      * @param isSortByNotation
      * @return
      */
-    public ArrayList<NodeGroup> getListRootConceptGroup(HikariDataSource ds,
-            String idTheso, String idLang, boolean isSortByNotation) {
+    public ArrayList<NodeGroup> getListRootConceptGroup(HikariDataSource ds, String idTheso, String idLang, boolean isSortByNotation) {
 
         ArrayList<NodeGroup> nodeConceptGroupList = new ArrayList<>();
         ArrayList<String> tabIdConceptGroup = getListIdOfRootGroup(ds, idTheso);

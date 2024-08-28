@@ -1,8 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,24 +11,30 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.ConceptHelper.directFetchConcept;
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
-import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
 /**
  * @author julie
  */
-@Path("/concept/ark/fullpath/search")
+@Slf4j
+@RestController
+@RequestMapping("/openapi/v1/concept/ark/fullpath/search")
+@CrossOrigin(methods = { RequestMethod.GET })
 public class ConceptController {
 
-    @Path("/")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8})
+    @Autowired
+    private Connect connect;
+
+    @GetMapping(produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "${searchJsonForWidgetArk.summary}$",
             description = "${searchJsonForWidgetArk.description}$",
             tags = {"Concept", "Ark"},
@@ -52,44 +57,10 @@ public class ConceptController {
         if (lang == null) {
             return ResponseHelper.response(Response.Status.BAD_REQUEST, "No lang specified", APPLICATION_JSON_UTF_8);
         }
-        boolean full = fullString != null && fullString.equalsIgnoreCase("true");
 
-        String fullFormat = full ? "full" : null;
-
-        String datas;
-        try (HikariDataSource ds = connect()) {
-            if (ds == null) {
-                return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Erreur interne du serveur", APPLICATION_JSON_UTF_8);
-            }
-            RestRDFHelper restRDFHelper = new RestRDFHelper();
-            datas = restRDFHelper.findDatasForWidgetByArk(ds, lang, idArks, fullFormat);
-            if (datas == null) {
-                return ResponseHelper.response(Response.Status.OK, emptyMessage(APPLICATION_JSON_UTF_8), APPLICATION_JSON_UTF_8);
-            }
-        }
-
+        var full = fullString != null && fullString.equalsIgnoreCase("true");
+        var fullFormat = full ? "full" : null;
+        var datas = new RestRDFHelper().findDatasForWidgetByArk(connect.getPoolConnexion(), lang, idArks, fullFormat);
         return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
     }
-
-    /*
-    @Path("/testput")
-    @PUT
-    @Consumes({APPLICATION_JSON_UTF_8})
-    @Produces({APPLICATION_JSON_UTF_8})
-    @Operation(summary = "${searchJsonForWidgetArk.summary}$",
-            description = "${searchJsonForWidgetArk.description}$",
-            tags = {"Concept", "Ark"},
-            responses = {
-                @ApiResponse(responseCode = "200", description = "${searchJsonForWidgetArk.200.description}$", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8)
-        }),
-                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
-            })
-    public Response testPut(String content
-    ) {
-
-        return ResponseHelper.response(Response.Status.OK, emptyMessage(APPLICATION_JSON_UTF_8), APPLICATION_JSON_UTF_8);
-    }
-*/
 }

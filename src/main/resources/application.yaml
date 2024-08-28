@@ -2,9 +2,9 @@
 # Server Configuration
 #######################
 server:
-  port: 9090
+  port: 8086
   servlet:
-    context-path: /shs-traduction
+    context-path: /opentheso2
     session:
       timeout: 125m
   tomcat:
@@ -20,6 +20,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/opentheso2
     password: postgres
     username: postgres
+    dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
+    maxPoolSize: 1000
+    minIdle: 1
+    idleTimeout: 30000
+    connectionTimeout: 30000
+    connectionTestQuery: SELECT 1
   jpa:
     show-sql: true
     generate-ddl: true
@@ -44,3 +50,7 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
+
+settings:
+  timeout: 79
+  workLanguage: fr

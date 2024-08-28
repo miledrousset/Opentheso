@@ -2,39 +2,42 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptSearch;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ResponseHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Response;
-
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.getAutocompleteDatas;
-import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
-@Path("/concept/{idTheso}/autocomplete")
+
+@Slf4j
+@RestController
+@RequestMapping("/concept/{idTheso}/autocomplete")
+@CrossOrigin(methods = { RequestMethod.GET })
 public class ConceptAutocompleteController {
 
-    @Path("/{input}")
-    @GET
-    @Produces({APPLICATION_JSON_UTF_8})
+    @Autowired
+    private Connect connect;
+
+
+    @GetMapping(value = "/{input}", produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "${searchAutocomplete.summary}$",
             description = "${searchAutocomplete.description}$",
             tags = {"Concept"},
@@ -45,55 +48,34 @@ public class ConceptAutocompleteController {
                     @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
                     @ApiResponse(responseCode = "404", description = "${searchAutocomplete.404.description}$")
             })
-    public Response searchAutocomplete(@Parameter(name = "idThesaurus", required = true, description = "${searchAutocomplete.idThesaurus.description}$") @PathParam("idTheso") String idTheso,
-                                       @Parameter(name = "input", required = true, description = "${searchAutocomplete.input.description}$") @PathParam("input") String input,
-                                       @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchAutocomplete.lang.description}$") @QueryParam("lang") String lang,
-                                       @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchAutocomplete.group.description}$") @QueryParam("group") String groupsString,
-                                       @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchAutocomplete.full.description}$") @QueryParam("full") String fullString) {
-        if (lang == null) {
-            lang = "";
-        }
-        String[] groups = groupsString != null ? groupsString.split(",") : null;
-        boolean full = fullString != null && fullString.equalsIgnoreCase("true");
-        String format = APPLICATION_JSON_UTF_8;
-        String datas;
+    public ResponseEntity<Object> searchAutocomplete(@Parameter(name = "idThesaurus", required = true, description = "${searchAutocomplete.idThesaurus.description}$") @PathVariable("idTheso") String idTheso,
+                                       @Parameter(name = "input", required = true, description = "${searchAutocomplete.input.description}$") @PathVariable("input") String input,
+                                       @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchAutocomplete.lang.description}$") @RequestParam(value = "lang", required = false) String lang,
+                                       @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchAutocomplete.group.description}$") @RequestParam(value = "group", required = false) String groupsString,
+                                       @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchAutocomplete.full.description}$") @RequestParam(value = "full", required = false) String fullString) {
 
-        datas = getAutocompleteDatas(idTheso, lang, groups, input, full);
-
-        if (StringUtils.isEmpty(datas)) {
-            return ResponseHelper.response(Response.Status.NOT_FOUND, emptyMessage(format), format);
-        } else {
-            return ResponseHelper.response(Response.Status.OK, datas, format);
-        }
-
+        var groups = groupsString != null ? groupsString.split(",") : null;
+        var full = fullString != null && fullString.equalsIgnoreCase("true");
+        var datas = new RestRDFHelper().findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, lang, groups, input, full);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
+    @GetMapping("/{input}/full")
+    public ResponseEntity<Object> searchAutocompleteV2(@PathVariable("idTheso") String idTheso,
+                                               @PathVariable("input") String input,
+                                               @RequestParam("lang") String lang,
+                                               @RequestParam("group") String idGroup) throws JsonProcessingException {
 
-
-    @GET
-    @Path("/{input}/full")
-    public Response searchAutocompleteV2(@PathParam("idTheso") String idTheso,
-                                                        @PathParam("input") String input,
-                                                        @QueryParam("lang") String lang,
-                                                        @QueryParam("group") String idGroup) throws JsonProcessingException {
-
-        var concepts = new SearchHelper().searchConceptWSV2(input, lang, idGroup, idTheso);
-        String jsonString = new ObjectMapper().writeValueAsString(concepts);
-        return ResponseHelper.response(Response.Status.OK, jsonString, APPLICATION_JSON_UTF_8);
+        var concepts = new SearchHelper().searchConceptWSV2(connect.getPoolConnexion(), input, lang, idGroup, idTheso);
+        var jsonString = new ObjectMapper().writeValueAsString(concepts);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jsonString);
     }
 
-    @GET
-    @Path("/{idThesaurus}/{idLang}")
-    public Response getGroupsByThesaurus(@PathParam("idThesaurus") String idThesaurus, @PathParam("idLang") String idLang) {
+    @GetMapping("/{idThesaurus}/{idLang}")
+    public ResponseEntity<Object> getGroupsByThesaurus(@PathVariable("idThesaurus") String idThesaurus,
+                                               @PathVariable("idLang") String idLang) throws JsonProcessingException {
 
-        try (HikariDataSource ds = connect()) {
-            if (ds == null)
-                return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Server unavailable", APPLICATION_JSON_UTF_8);
-
-            var groups = new GroupHelper().getListRootConceptGroup(ds, idThesaurus, idLang, true);
-            return ResponseHelper.response(Response.Status.OK, new ObjectMapper().writeValueAsString(groups), APPLICATION_JSON_UTF_8);
-        } catch (JsonProcessingException e) {
-            return ResponseHelper.response(Response.Status.OK, List.of(), APPLICATION_JSON_UTF_8);
-        }
+        var groups = new GroupHelper().getListRootConceptGroup(connect.getPoolConnexion(), idThesaurus, idLang, true);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(groups));
     }
 }
