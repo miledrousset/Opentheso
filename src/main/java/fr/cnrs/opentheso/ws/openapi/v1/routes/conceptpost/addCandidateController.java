@@ -33,7 +33,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/concept/candidate")
+@RequestMapping("/candidate")
 @CrossOrigin(methods = { RequestMethod.POST })
 public class addCandidateController {
 

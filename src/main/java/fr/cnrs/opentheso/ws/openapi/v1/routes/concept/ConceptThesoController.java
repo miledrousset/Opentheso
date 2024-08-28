@@ -46,9 +46,9 @@ public class ConceptThesoController {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8)
         }),
-                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                 @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getSkosFromidConcept(@Parameter(name = "idTheso", description = "${getSkosFromidConcept.idTheso.description}$", required = true) @PathVariable("idTheso") String idThesaurus,
                                          @Parameter(name = "idConcept", description = "${getSkosFromidConcept.idConcept.description}$", required = true) @PathVariable("idConcept") String idConcept,
@@ -67,7 +67,7 @@ public class ConceptThesoController {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
                 @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
@@ -135,9 +135,9 @@ public class ConceptThesoController {
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8),
             @Content(mediaType = APPLICATION_TURTLE_UTF_8)}),
-                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                 @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
@@ -169,7 +169,7 @@ public class ConceptThesoController {
                 @ApiResponse(responseCode = "200", description = "${getNarrower.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)}),
                 @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
@@ -194,7 +194,7 @@ public class ConceptThesoController {
             @Content(mediaType = APPLICATION_RDF_UTF_8),
             @Content(mediaType = APPLICATION_TURTLE_UTF_8)
         }),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
@@ -216,8 +216,8 @@ public class ConceptThesoController {
                 @ApiResponse(responseCode = "200", description = "${getAllLinkedConceptsWithOntome.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+                @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object> getAllLinkedConceptsWithOntome(
             @Parameter(name = "idTheso", description = "${getAllLinkedConceptsWithOntome.idTheso.description}$", required = true, example = "th3") @PathVariable("idTheso") String idTheso,

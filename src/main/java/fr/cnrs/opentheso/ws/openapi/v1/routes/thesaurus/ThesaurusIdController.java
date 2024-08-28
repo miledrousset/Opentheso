@@ -52,7 +52,7 @@ public class ThesaurusIdController {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8)
         }),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur"),
                 @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             })
     public ResponseEntity<Object> getThesoFromId(@Parameter(name = "thesaurusId", description = "${getThesoFromId.thesaurusId.description}$", required = true) @PathVariable("thesaurusId") String thesaurusId,
@@ -71,7 +71,7 @@ public class ThesaurusIdController {
                 @ApiResponse(responseCode = "200", description = "${getThesoGroupsFromId.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getThesoGroupsFromId(
             @Parameter(name = "thesaurusId", description = "${getThesoGroupsFromId.thesaurusId.description}$", required = true) @PathVariable("thesaurusId") String thesaurusId) {
@@ -111,7 +111,7 @@ public class ThesaurusIdController {
                 @ApiResponse(responseCode = "200", description = "${getInfoLastUpdate.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur"),
                 @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             })
     public ResponseEntity<Object> getInfoLastUpdate(@Parameter(name = "thesaurusId", description = "${getInfoLastUpdate.thesaurusId.description}$", required = true) @PathVariable("thesaurusId") String thesaurusId) {
@@ -130,7 +130,7 @@ public class ThesaurusIdController {
                 @ApiResponse(responseCode = "200", description = "${getThesoFromIdFlat.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur"),
                 @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             })
     public ResponseEntity<Object> getThesoFromIdFlat(@Parameter(name = "thesaurusId", description = "${getThesoFromIdFlat.thesaurusId.description}$", required = true) @PathVariable("thesaurusId") String thesaurusId,
@@ -148,7 +148,7 @@ public class ThesaurusIdController {
                 @ApiResponse(responseCode = "200", description = "${getListLang.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$"),
+                @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur"),
                 @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
             })
     public ResponseEntity<Object> getListLang(@Parameter(name = "thesaurusId", description = "${getListLang.thesaurusId.description}$", required = true) @PathVariable("thesaurusId") String thesaurusId) {

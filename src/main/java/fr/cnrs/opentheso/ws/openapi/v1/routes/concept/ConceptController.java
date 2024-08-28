@@ -27,7 +27,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/openapi/v1/concept/ark/fullpath/search")
+@RequestMapping("/concept/ark/fullpath/search")
 @CrossOrigin(methods = { RequestMethod.GET })
 public class ConceptController {
 
@@ -42,8 +42,8 @@ public class ConceptController {
                 @ApiResponse(responseCode = "200", description = "${searchJsonForWidgetArk.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+                @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public Response searchJsonForWidgetArk(
             @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidgetArk.q.description}$", example = "66666/lkp6ure1g7b6,66666/lkubqlukv7i5") @QueryParam("q") String q,

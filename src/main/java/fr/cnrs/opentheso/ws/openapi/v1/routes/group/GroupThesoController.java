@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
@@ -37,6 +39,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 @RestController
 @RequestMapping("/group/{idTheso}")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Group", description = "4. Contient les actions en lien avec les groupes.")
 public class GroupThesoController {
 
     @Autowired
@@ -50,7 +53,7 @@ public class GroupThesoController {
             responses = {
                 @ApiResponse(responseCode = "200", description = "${getAllGroupsFromTheso.200.description}$", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)}),
-                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+                @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object>  getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "${getAllGroupsFromTheso.idTheso.description}$", schema = @Schema(type = "string")) @PathVariable("idTheso") String idTheso) {
 
@@ -94,7 +97,7 @@ public class GroupThesoController {
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
                     @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getGroupFromIdThesoIdGroup(
             @Parameter(name = "idTheso", required = true, description = "${getGroupFromIdThesoIdGroup.idTheso.description}$") @PathVariable("idTheso") String idTheso,
@@ -118,7 +121,7 @@ public class GroupThesoController {
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
                     @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getSubGroupFromIdThesoIdGroup(
             @Parameter(name = "idTheso", required = true, description = "${getSubGroupsFromTheso.idTheso.description}$") @PathVariable("idTheso") String idTheso,
@@ -163,9 +166,9 @@ public class GroupThesoController {
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8),
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                     @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             }
     )
     public ResponseEntity<Object> getAllBranchOfGroup(
@@ -192,9 +195,9 @@ public class GroupThesoController {
                     @ApiResponse(responseCode = "200", description = "${getAllBranchOfGroupAsTree.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                     @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             }
     )
     public ResponseEntity<Object> getAllBranchOfGroupAsTree(

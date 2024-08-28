@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
@@ -10,11 +5,12 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
-import io.swagger.v3.jaxrs2.integration.resources.BaseOpenApiResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.Json;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -36,33 +32,41 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @CrossOrigin(methods = { RequestMethod.GET })
-public class OpenApiController extends BaseOpenApiResource {
+@Tag(name = "Test Authentification", description = "1. Permet de vérifier si l'API est fonctionnelle.")
+public class OpenApiController {
 
     @Autowired
     private Connect connect;
 
-
     @GetMapping(value = "/Auth", produces = CustomMediaType.APPLICATION_JSON_UTF_8)
-    @Operation(summary = "${testAuth.summary}$",
-            description = "${testAuth.description}$",
+    @Operation(
+            summary = "Vérification du système d'authentification",
+            description = "Cette méthode vérifie si le système d'authentification est fonctionnel en utilisant une clé API. " +
+                    "Elle renvoie un statut indiquant si la clé API est valide ou non, ainsi que les rôles associés à l'utilisateur.",
             tags = {"Test"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "${testAuth.200.description}$", content = {
-                    @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8)
-                }),
-                @ApiResponse(responseCode = "401", description = "${testAuth.401.description}$"),
-                @ApiResponse(responseCode = "403", description = "${testAuth.403.description}$"),
-                @ApiResponse(responseCode = "500", description = "${responses.500.description}$"),
-                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "200", description = "La clé API est valide et les rôles de l'utilisateur sont renvoyés.",
+                            content = @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8,
+                                    examples = @ExampleObject(value = "{\"valid\":true,\"key\":\"CLE-API-EXEMPLE\",\"Roles\":[\"admin\"]}"))),
+                    @ApiResponse(responseCode = "401", description = "Aucune clé API fournie ou clé API expirée",
+                            content = @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8,
+                                    examples = @ExampleObject(value = "No API key given"))),
+                    @ApiResponse(responseCode = "403", description = "Clé API invalide",
+                            content = @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8,
+                                    examples = @ExampleObject(value = "API key is invalid"))),
+                    @ApiResponse(responseCode = "500", description = "Erreur interne du serveur",
+                            content = @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8,
+                                    examples = @ExampleObject(value = "Server internal error"))),
+                    @ApiResponse(responseCode = "503", description = "Service non disponible (base de données non accessible)",
+                            content = @Content(mediaType = CustomMediaType.APPLICATION_JSON_UTF_8,
+                                    examples = @ExampleObject(value = "Database unavailable")))
             },
-            security = {
-                @SecurityRequirement(name = "API-KEY")
-            }
+            security = @SecurityRequirement(name = "API-KEY")
     )
     public ResponseEntity<Object> testAuth(@RequestHeader(value = "API-KEY") String apiKey)  {
 
         var keyState = new ApiKeyHelper().checkApiKey(connect.getPoolConnexion(), apiKey);
-        if (keyState != ApiKeyState.VALID){
+        if (keyState != ApiKeyState.VALID) {
             return errorResponse(keyState);
         }
 
@@ -107,5 +111,4 @@ public class OpenApiController extends BaseOpenApiResource {
 
         return ResponseEntity.status(code).contentType(MediaType.APPLICATION_JSON).body(msg);
     }
-
 }

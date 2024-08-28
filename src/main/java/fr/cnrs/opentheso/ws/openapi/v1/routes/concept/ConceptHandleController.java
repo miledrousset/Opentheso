@@ -23,7 +23,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/concept/handle/{handle}/{idHandle}")
+@RequestMapping("/concept/handle/{handle}/{idHandle}")
 @CrossOrigin(methods = { RequestMethod.GET })
 public class ConceptHandleController {
 
@@ -43,7 +43,7 @@ public class ConceptHandleController {
                     @Content(mediaType = APPLICATION_RDF_UTF_8)
                 }),
                     @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object>  getConceptByHandle(@RequestParam(name = "handle") String handle,
                                              @RequestParam(name = "idHandle") String idHandle,

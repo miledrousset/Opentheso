@@ -45,7 +45,7 @@ public class ConceptAutocompleteController {
                     @ApiResponse(responseCode = "200", description = "${searchAutocomplete.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                     @ApiResponse(responseCode = "404", description = "${searchAutocomplete.404.description}$")
             })
     public ResponseEntity<Object> searchAutocomplete(@Parameter(name = "idThesaurus", required = true, description = "${searchAutocomplete.idThesaurus.description}$") @PathVariable("idTheso") String idTheso,

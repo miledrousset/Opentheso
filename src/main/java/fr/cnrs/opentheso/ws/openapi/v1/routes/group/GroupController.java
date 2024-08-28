@@ -46,8 +46,8 @@ public class GroupController {
                     @ApiResponse(responseCode = "200", description = "${getGroupIdFromArk.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object>  getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "${getGroupIdFromArk.naan.description}$") @PathVariable("naan") String naan,
                                             @Parameter(name = "ark", required = true, description = "${getGroupIdFromArk.arkId.description}$") @PathVariable("ark") String arkId) {

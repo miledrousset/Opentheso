@@ -908,9 +908,7 @@ public class AlignmentBean implements Serializable {
 
         // action JSON (HashMap (Wikidata)
         //ici il faut appeler le filtre de Wikidata
-        listAlignValues = wikidataHelper.queryWikidata_sparql(idConcept, idTheso, lexicalValue.trim(),
-                idLang, alignementSource.getRequete(),
-                alignementSource.getSource());
+        listAlignValues = wikidataHelper.queryWikidata_sparql(idConcept, idTheso, alignementSource.getRequete(), alignementSource.getSource());
         if (listAlignValues == null) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
                     languageBean.getMsg("search.noResult"), wikidataHelper.getMessages().toString()));

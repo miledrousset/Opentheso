@@ -123,8 +123,7 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
 
         switch(alignementSource.getSource_filter().toUpperCase()) {
             case "WIKIDATA_SPARQL":
-                return new WikidataHelper().queryWikidata_sparql(concept.getId(), idTheso, concept.getValue().trim(), idLang,
-                        alignementSource.getRequete(), alignementSource.getSource());
+                return new WikidataHelper().queryWikidata_sparql(concept.getId(), idTheso, alignementSource.getRequete(), alignementSource.getSource());
             case "WIKIDATA_REST":
                 return new WikidataHelper().queryWikidata_rest(concept.getId(), idTheso, concept.getValue().trim(), idLang,
                         alignementSource.getRequete(), alignementSource.getSource());

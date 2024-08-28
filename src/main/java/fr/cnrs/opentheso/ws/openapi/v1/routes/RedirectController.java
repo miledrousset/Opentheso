@@ -22,7 +22,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 
 @Slf4j
 @RestController
-@RequestMapping("/api/redirect")
+@RequestMapping("/redirect")
 @CrossOrigin(methods = { RequestMethod.GET })
 public class RedirectController {
 
@@ -36,9 +36,9 @@ public class RedirectController {
             responses = {
                 @ApiResponse(responseCode = "200", description = "${getUriFromArk.200.description}$"),
                 @ApiResponse(responseCode = "307", description = "${getUriFromArk.307.description}$"),
-                @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                 @ApiResponse(responseCode = "404", description = "${getUriFromArk.404.description}$", content = { @Content(mediaType = APPLICATION_JSON_UTF_8) }),
-                @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+                @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object> getUriFromArk(@PathVariable("naan") String naan, @PathVariable("idArk") String arkId) throws URISyntaxException {
 

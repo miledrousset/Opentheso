@@ -3,27 +3,21 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
+import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import java.util.Objects;
-
-import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
@@ -34,6 +28,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.getDatas;
 @RestController
 @RequestMapping("/concept/{idTheso}/search")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Concept", description = "2. Contient toutes les actions disponibles sur les concepts.")
 public class ConcepThesoSearchController {
 
     @Autowired
@@ -41,53 +36,50 @@ public class ConcepThesoSearchController {
 
 
     @GetMapping(produces = {APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
-    @Operation(summary = "${search.summary}$",
-            description = "${search.description}$",
+    @Operation(summary = "Permet de rechercher un concept en filtrant par theso et par langue",
+            description = "Ancienne version : `/api/search?q={input}&theso={idTheso}`\n<br>Effectue une recherche du concept à l'aide d'une valeur avec possibilité de filtrer par thesaurus et langue.<br>Il est possible de sélectionner le format souhaité parmis :\n<br>- RDF\n<br>- JSON-LD\n<br>- JSON\n<br>- TURTLE",
             tags = {"Concept"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
+                    @ApiResponse(responseCode = "200", description = "Fichier contenent le résultat de la recherche", content = {
                             @Content(mediaType = APPLICATION_RDF_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
-    public ResponseEntity<Object> search(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathVariable("idTheso") String idTheso,
-                           @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @RequestParam("q") String q,
-                           @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @RequestParam(value = "lang", required = false) String lang,
-                           @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @RequestParam(value = "group", required = false) String group,
-                           @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), required = false,
-                                   description = "${search.match.description}$") @RequestParam(value = "match", required = false) String match,
+    public ResponseEntity<Object> search(@Parameter(name = "idTheso", description = "ID du thesaurus dans lequel chercher", required = true) @PathVariable("idTheso") String idTheso,
+                           @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "L'entrée correspondant au terme recherché") @RequestParam("q") String q,
+                           @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Langue dans laquelle on recherche") @RequestParam(value = "lang", required = false) String lang,
+                           @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Groupe dans lequel on effectue la recherche") @RequestParam(value = "group", required = false) String group,
+                           @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), description = "-`exact` limitera la recherche aux termes exacts.\n<br>-`exactone` limitera la recherche aux termes exacts mais en envoyant une seule réponse.") @RequestParam(value = "match", required = false) String match,
                            @RequestHeader(value = "accept", required = false) String format) {
 
         return searchFilter(idTheso, format, q, lang, group, match, null);
-
     }
 
 
     @GetMapping(value = "/notation", produces = {APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
-    @Operation(summary = "${searchNotation.summary}$",
-            description = "${searchNotation.description}$",
+    @Operation(summary = "Permet de rechercher un concept par notation",
+            description = "Ancienne version : `/api/search?theso=<idTheso>&q=notation:<input>`\\n\\nEffectue une recherche par notation avec possibilité de filtrer par langue ou groupe.",
             tags = {"Concept"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
+                    @ApiResponse(responseCode = "200", description = "Fichier contenent le résultat de la recherche", content = {
                             @Content(mediaType = APPLICATION_RDF_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
-    public ResponseEntity<Object> searchNotation(@Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true) @PathVariable("idTheso") String idTheso,
-                                   @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.q.description}$") @RequestParam("q") String q,
-                                   @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.lang.description}$") @RequestParam(value = "lang", required = false) String lang,
-                                   @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${search.group.description}$") @RequestParam(value = "group", required = false) String group,
-                                   @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), required = false,
-                                           description = "${search.match.description}$") @RequestParam(value = "match", required = false) String match,
-                                         @RequestHeader(value = "accept", required = false) String format) {
+    public ResponseEntity<Object> searchNotation(@Parameter(name = "idTheso", description = "ID du thesaurus dans lequel chercher", required = true) @PathVariable("idTheso") String idTheso,
+                                   @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "L'entrée correspondant au terme recherché") @RequestParam("q") String q,
+                                   @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Langue dans laquelle on recherche") @RequestParam(value = "lang", required = false) String lang,
+                                   @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Groupe dans lequel on effectue la recherche") @RequestParam(value = "group", required = false) String group,
+                                   @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), description = "-`exact` limitera la recherche aux termes exacts.\n<br>-`exactone` limitera la recherche aux termes exacts mais en envoyant une seule réponse.") @RequestParam(value = "match", required = false) String match,
+                                                 @RequestHeader(value = "accept", required = false) String format) {
         return searchFilter(idTheso, format, q, lang, group, match, "notation:");
     }
 
@@ -118,16 +110,16 @@ public class ConcepThesoSearchController {
             description = "${searchJsonForWidget.description}$",
             tags = {"Concept"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
+                    @ApiResponse(responseCode = "200", description = "Fichier contenent le résultat de la recherche", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object> searchJsonForWidget(
-            @Parameter(name = "idTheso", description = "${search.idTheso.description}$", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel chercher", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
             @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidget.q.description}$", example = "Lyon") @RequestParam(value = "q", required = false) String q,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${search.lang.description}$", example = "fr") @RequestParam(value = "lang", required = false) String lang,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "Langue dans laquelle on recherche", example = "fr") @RequestParam(value = "lang", required = false) String lang,
             @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.group.description}$") @RequestParam(value = "group", required = false) String groupStrings,
             @Parameter(name = "arkgroup", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = false, description = "${searchJsonForWidget.arkgroup.description}$") @RequestParam(value = "arkgroup", required = false) String arkgroupStrings,
             @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), required = false, description = "${searchJsonForWidget.full.description}$") @RequestParam(value = "full", required = false) String fullString,

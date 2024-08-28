@@ -11,7 +11,6 @@ server:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
 
-
 spring:
   main:
     allow-bean-definition-overriding: true

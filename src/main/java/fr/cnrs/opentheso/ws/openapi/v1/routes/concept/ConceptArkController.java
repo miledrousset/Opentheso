@@ -28,7 +28,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
 @Slf4j
 @RestController
-@RequestMapping("/openapi/v1/concept/ark:")
+@RequestMapping("/concept/ark:")
 @CrossOrigin(methods = { RequestMethod.GET })
 public class ConceptArkController {
 
@@ -48,7 +48,7 @@ public class ConceptArkController {
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
                     @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getConceptByArk(
             @Parameter(name = "naan", description = "${getConceptByArk.naan.description}$", required = true, example = "66666") @PathVariable("naan") String naan,
@@ -71,7 +71,7 @@ public class ConceptArkController {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
                     @ApiResponse(responseCode = "400", description = "${getIdArkOfConceptNT.400.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getIdArkOfConceptNT(
                 @Parameter(name = "naan", description = "${getIdArkOfConceptNT.naan.description}$", example = "66666") @PathVariable("naan") String naan,
@@ -94,9 +94,9 @@ public class ConceptArkController {
                     @ApiResponse(responseCode = "200", description = "${getPrefLabelFromArk.200.description}$", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                     @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
-                    @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             }
     )
     public ResponseEntity<Object> getPrefLabelFromArk(

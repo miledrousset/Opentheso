@@ -331,7 +331,7 @@ public class Rest_new {
      * https://pactols.frantiq.fr/opentheso/api/search?q=ark:/26678/pcrtVFfTq3JlGu&lang=fr&theso=TH_1&showLabels=true
      *
      */
-    @GetMapping(value = "/search", produces = "application/rdf+xml,application/ld+json,application/json,text/turtle;charset=UTF-8")
+    @GetMapping(value = "/search")
     public ResponseEntity<Object> searchRdf(@RequestParam("theso") String idTheso,
                                     @RequestParam("idLang") String idLang,
                                     @RequestParam("q") String value,
@@ -855,7 +855,7 @@ public class Rest_new {
      * Pour retourner les concepts modifiés à partir de la date donnée
      * format de la date 2022-01-01
      */
-    @GetMapping(value = "/getchangesfrom", produces = "application/rdf+xml,application/ld+json,application/json,text/turtle;charset=UTF-8")
+    @GetMapping(value = "/getchangesfrom")
     public ResponseEntity<Object> getConceptsFrom(@RequestParam(value = "theso") String idTheso,
                                           @RequestParam(value = "date") String fromDate,
                                           @RequestParam(value = "format", required = false, defaultValue = "rdf") String format) {

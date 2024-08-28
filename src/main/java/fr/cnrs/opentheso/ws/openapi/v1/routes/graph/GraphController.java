@@ -30,7 +30,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 
 @Slf4j
 @RestController
-@RequestMapping("/openapi/v1")
+@RequestMapping("/graph/getData")
 @CrossOrigin(methods = { RequestMethod.GET })
 public class GraphController {
 
@@ -43,11 +43,11 @@ public class GraphController {
             tags = {"Graph"},
             description = "http://localhost:8080/opentheso2/openapi/v1/graph/getData?lang=fr&idThesoConcept=th3,4&idThesoConcept=th3",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${search.200.description}$", content = {
+                    @ApiResponse(responseCode = "200", description = "Fichier contenent le résultat de la recherche", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                     }),
-                    @ApiResponse(responseCode = "400", description = "${responses.400.description}$"),
-                    @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object>  getGraph(
             @Parameter(name = "lang", example = "fr", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${getDatasForGraphNew.lang.description}$") @RequestParam("lang") String lang,

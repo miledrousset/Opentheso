@@ -6,6 +6,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 @RestController
 @RequestMapping("/thesaurus")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Thesaurus", description = "3. Contient toutes les actions en liens avec les thesaurus.")
 public class ThesaurusController {
 
     @Autowired

@@ -166,15 +166,12 @@ public class WikidataHelper {
      *
      * @param idC
      * @param idTheso
-     * @param lexicalValue
-     * @param lang
      * @param requete
      * @param source
      * @return
      */
     
-    public List<NodeAlignment> queryWikidata_sparql(String idC, String idTheso, String lexicalValue, String lang,
-            String requete, String source) {
+    public List<NodeAlignment> queryWikidata_sparql(String idC, String idTheso, String requete, String source) {
         List<NodeAlignment> listAlignValues = new ArrayList<>();
 
         String sparqlEndpoint = "https://query.wikidata.org/sparql";
@@ -238,81 +235,6 @@ public class WikidataHelper {
         return listAlignValues;
     }
     
-    
-    /**
-     * Alignement du thésaurus vers la source Wikidata en Sparql et en retour du
-     * Json
-     *
-     * @param idC
-     * @param idTheso
-     * @param lexicalValue
-     * @param lang
-     * @param requete
-     * @param source
-     * @return
-     */
- /*   public List<NodeAlignment> queryWikidata_sparql2(String idC, String idTheso, String lexicalValue, String lang,
-            String requete, String source) {
-
-        List<NodeAlignment> listAlignValues = new ArrayList<>();
-        
-        try {
-            Endpoint sp = new Endpoint("https://query.wikidata.org/sparql", false);
-            requete = requete.replaceAll("##value##", lexicalValue);
-            requete = requete.replaceAll("##lang##", lang);
-
-            HashMap<String, HashMap> rs = sp.query(requete);
-            if (rs == null) {
-                return null;
-            }
-
-            List<HashMap<String, Object>> rows_queryWikidata = (ArrayList) rs.get("result").get("rows");
-
-            for (HashMap<String, Object> hashMap : rows_queryWikidata) {
-                NodeAlignment na = new NodeAlignment();
-                na.setInternal_id_concept(idC);
-                na.setInternal_id_thesaurus(idTheso);
-
-                // label ou Nom
-                if (hashMap.get("itemLabel") != null) {
-                    na.setConcept_target(hashMap.get("itemLabel").toString());
-                } else {
-                    continue;
-                }
-
-                // description
-                if (hashMap.get("itemDescription") != null) {
-                    na.setDef_target(hashMap.get("itemDescription").toString());
-                } else {
-                    na.setDef_target("");
-                }
-
-                na.setThesaurus_target(source);
-
-                // URI
-                if (hashMap.get("item") != null) {
-                    na.setUri_target(hashMap.get("item").toString());
-                } else {
-                    continue;
-                }
-                listAlignValues.add(na);
-            }
-        } catch (EndpointException eex) {
-            messages.append(eex.toString());
-            System.err.println(eex.toString());
-            return null;
-        } catch (Exception e) {
-            messages.append(requete);
-            messages.append(e.toString());
-            messages.append(" ou pas de connexion internet !! ");
-            System.err.println(e.toString());
-            return null;
-        }
-        return listAlignValues;
-    }    */
-    
-    
-    
 
     /**
      * Cette fonction permet de récupérer les options de Wikidata Images,
@@ -359,9 +281,7 @@ public class WikidataHelper {
      * @param languages
      * @return
      */
-    private ArrayList<SelectedResource> getTraductions(
-            String jsonDatas, String entity,
-            List<String> languages) {
+    private ArrayList<SelectedResource> getTraductions(String jsonDatas, String entity, List<String> languages) {
         ArrayList<SelectedResource> traductions = new ArrayList<>();
 
         JsonHelper jsonHelper = new JsonHelper();
