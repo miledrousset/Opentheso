@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 @RestController
 @RequestMapping("/graph/getData")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Graphe", description = "Actions pour récupérer les données au format graphe")
 public class GraphController {
 
     @Autowired
@@ -39,7 +41,7 @@ public class GraphController {
 
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
-    @Operation(summary = "${getDatasForGraphNew.summary}$",
+    @Operation(summary = "Permet d'obtenir les données d'un thésaurus ou branche pour graphe D3js",
             tags = {"Graph"},
             description = "http://localhost:8080/opentheso2/openapi/v1/graph/getData?lang=fr&idThesoConcept=th3,4&idThesoConcept=th3",
             responses = {
@@ -50,8 +52,8 @@ public class GraphController {
                     @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object>  getGraph(
-            @Parameter(name = "lang", example = "fr", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${getDatasForGraphNew.lang.description}$") @RequestParam("lang") String lang,
-            @Parameter(name = "idThesoConcept", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, example = "th3,4" , description = "${getDatasForGraphNew.idTheso.description}$") @RequestParam("idThesoConcept") List<String> idThesoConcepts) {
+            @Parameter(name = "lang", example = "fr", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "Langue principale pour récupérer les concepts") @RequestParam("lang") String lang,
+            @Parameter(name = "idThesoConcept", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, example = "th3,4" , description = "ID du thesaurus à récupérer et du concept (pour une branche), sinon pour un thésaurus complet, il faut juste l'id du thésaurus") @RequestParam("idThesoConcept") List<String> idThesoConcepts) {
        
         List<IdValuePair> idValuePairs = new ArrayList<>();
         

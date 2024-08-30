@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.ws.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/theso")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Thesaurus", description = "Contient toutes les actions en liens avec les thesaurus.")
 public class SelectTheso {
 
     @Autowired

@@ -24,12 +24,9 @@ public class JsfConfiguration  implements ServletContextAware {
         servletContext.setInitParameter("javax.faces.DEFAULT_SUFFIX", ".xhtml");
         servletContext.setInitParameter("javax.faces.PROJECT_STAGE", "Development");
         servletContext.setInitParameter("javax.faces.FACELETS_REFRESH_PERIOD", "1");
-        servletContext.setInitParameter("javax.faces.FACELETS_LIBRARIES", "/WEB-INF/springsecurity.taglib.xml");
 
         servletContext.setInitParameter("primefaces.CLIENT_SIDE_VALIDATION", Boolean.TRUE.toString());
-        servletContext.setInitParameter("primefaces.THEME", "nova-light");
-        servletContext.setInitParameter("primefaces.UPLOADER", "commons");
-        servletContext.setInitParameter("primefaces.MOVE_SCRIPTS_TO_BOTTOM", Boolean.TRUE.toString());
+        servletContext.setInitParameter("primefaces.THEME", "saga");
     }
 
     @Bean

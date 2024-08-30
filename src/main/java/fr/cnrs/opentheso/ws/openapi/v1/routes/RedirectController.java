@@ -30,14 +30,14 @@ public class RedirectController {
     private Connect connect;
 
     @GetMapping(value = "/ark:/{naan}/{idArk}", produces = APPLICATION_JSON_UTF_8)
-    @Operation(summary = "${getUriFromArk.summary}$",
-            description = "${getUriFromArk.description}$",
+    @Operation(summary = "Redirige vers la page de la ressource correspondant à l'identifiant ARK entré",
+            description = "Ancienne version : `/api/ark:/{naan}/{idArk}`\\n\\nRedirige vers la page de la ressource correspondant à l'identifiant ARK entré",
             tags = {"Ark"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getUriFromArk.200.description}$"),
-                @ApiResponse(responseCode = "307", description = "${getUriFromArk.307.description}$"),
+                @ApiResponse(responseCode = "200", description = "Page de la ressource demandé après redirection"),
+                @ApiResponse(responseCode = "307", description = "Redirection vers la page de la ressource correspondante"),
                 @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
-                @ApiResponse(responseCode = "404", description = "${getUriFromArk.404.description}$", content = { @Content(mediaType = APPLICATION_JSON_UTF_8) }),
+                @ApiResponse(responseCode = "404", description = "Aucune ressource n'est associé à cet identifiant ARK", content = { @Content(mediaType = APPLICATION_JSON_UTF_8) }),
                 @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object> getUriFromArk(@PathVariable("naan") String naan, @PathVariable("idArk") String arkId) throws URISyntaxException {

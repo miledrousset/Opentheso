@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -29,26 +30,27 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 @RestController
 @RequestMapping("/concept/ark/fullpath/search")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConceptController {
 
     @Autowired
     private Connect connect;
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
-    @Operation(summary = "${searchJsonForWidgetArk.summary}$",
-            description = "${searchJsonForWidgetArk.description}$",
+    @Operation(summary = "Permet d'obtenir le chemin complet d'un concept à partir de son ID Ark",
+            description = "Ancienne version : `/api/searchwidgetbyark?q={idArks}&lang={lang}`<br/>Permet d'obtenir le chemin complet d'un concept représenté dans un fichier JSON",
             tags = {"Concept", "Ark"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "${searchJsonForWidgetArk.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "Fichier contenant le résultat de la recherche", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
                 @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                 @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public Response searchJsonForWidgetArk(
-            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidgetArk.q.description}$", example = "66666/lkp6ure1g7b6,66666/lkubqlukv7i5") @QueryParam("q") String q,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchJsonForWidgetArk.lang.description}$", example = "fr") @QueryParam("lang") String lang,
-            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), description = "${searchJsonForWidgetArk.full.description}$") @QueryParam("full") String fullString
+            @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "ID Ark des concepts recherchés, séparé par des virgules", example = "66666/lkp6ure1g7b6,66666/lkubqlukv7i5") @QueryParam("q") String q,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "Code de la langue dans laquelle on recherche", example = "fr") @QueryParam("lang") String lang,
+            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), description = "`true` si l'on souhaite aussi  récupérer les traduction (`altLabels`), `false` sinon") @QueryParam("full") String fullString
     ) {
         String[] idArks = q.split(",");
         if (idArks.length == 0) {

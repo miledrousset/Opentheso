@@ -2,7 +2,7 @@
 # Server Configuration
 #######################
 server:
-  port: 8086
+  port: 8099
   servlet:
     context-path: /opentheso2
     session:

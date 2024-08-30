@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 @RestController
 @RequestMapping("/concept/{idTheso}")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConceptThesoController {
 
     @Autowired
@@ -37,21 +39,21 @@ public class ConceptThesoController {
 
 
     @GetMapping(value = "/{idConcept}", produces = {APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
-    @Operation(summary = "${getSkosFromidConcept.summary}$",
-            description = "${getSkosFromidConcept.description}$",
+    @Operation(summary = "Récupère un concept d'après son ID et le  récupérer dans un format spécifié",
+            description = "Ancienne version : `/api/<idThesaurus>.<idConcept>.<format>`<br/>Permet de  récupérer un concept dans un thesaurus donné d'après son ID en spécifiant l'un des formats possibles :<br>- JSON<br>- JSON-LD<br>- RDF",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getSkosFromidConcept.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "Skos décrivant le concept ayant l'ID correspondant", content = {
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8)
         }),
                 @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
-                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
                 @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
-    public ResponseEntity<Object> getSkosFromidConcept(@Parameter(name = "idTheso", description = "${getSkosFromidConcept.idTheso.description}$", required = true) @PathVariable("idTheso") String idThesaurus,
-                                         @Parameter(name = "idConcept", description = "${getSkosFromidConcept.idConcept.description}$", required = true) @PathVariable("idConcept") String idConcept,
+    public ResponseEntity<Object> getSkosFromidConcept(@Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept.", required = true) @PathVariable("idTheso") String idThesaurus,
+                                         @Parameter(name = "idConcept", description = "Identifiant du concept à récupérer.", required = true) @PathVariable("idConcept") String idConcept,
                                          @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         var datas = new RestRDFHelper().exportConceptFromId(connect.getPoolConnexion(), idConcept, idThesaurus, removeCharset(acceptHeader));
@@ -60,21 +62,21 @@ public class ConceptThesoController {
 
     @GetMapping(value = "/{idConcept}/labels", produces = {APPLICATION_JSON_UTF_8})
     @Operation(
-            summary = "${getJsonFromIdConceptWithLabels.summary}$",
-            description = "${getJsonFromIdConceptWithLabels.description}$",
+            summary = "Récupère les labels d'un concept",
+            description = "Ancienne version : `/api/{idTheso}.{idConcept}.labels`<br/>Permet de  récupérer les labels d'un concept d'un thesaurus donné d'après son ID.",
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getJsonFromIdConceptWithLabels.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "JSON contenant les labels du concept ayant l'ID correspondant", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
-                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
                 @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
     public ResponseEntity<Object> getJsonFromIdConceptWithLabels(
-            @Parameter(name = "idTheso", description = "${getJsonFromIdConceptWithLabels.idTheso.description}$", required = true) @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "idConcept", description = "${getJsonFromIdConceptWithLabels.idConcept.description}$", required = true) @PathVariable("idConcept") String idConcept,
-            @Parameter(name = "lang", description = "${getJsonFromIdConceptWithLabels.lang.description}$") @RequestParam(value = "lang", required = false, defaultValue = "fr") String lang) {
+            @Parameter(name = "idTheso", description = "ID du thesaurus à récupérer", required = true) @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true) @PathVariable("idConcept") String idConcept,
+            @Parameter(name = "lang", description = "Langue du concept à  récupérer") @RequestParam(value = "lang", required = false, defaultValue = "fr") String lang) {
 
         var datas = new RestRDFHelper().getInfosOfConcept(connect.getPoolConnexion(), idTheso, idConcept, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
@@ -84,20 +86,20 @@ public class ConceptThesoController {
 
     @GetMapping(value = "/{idConcept}/graph/", produces = APPLICATION_JSON_LD_UTF_8)
     @Operation(
-            summary = "${getDatasForGraph.summary}$",
-            description = "${getDatasForGraph.description}$",
+            summary = "Permet d'obtenir les données pour l'affichage du graph D3js en partant d'un concept",
+            description = "Ancienne version : `/api/graph?theso=<idTheso>&id=<idConcept>&lang=<lang>`<br/>s dans un format permettant l'affichage du graph D3js",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getDatasForGraph.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "Données pour l'affichage du graph D3js", content = {
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8)
         }),
-                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$")
+                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi")
             }
     )
     public ResponseEntity<Object> getDatasForGraph(
-            @Parameter(name = "idTheso", description = "${getDatasForGraph.idTheso.description}$", required = true) @PathVariable("idTheso") String idThesaurus,
-            @Parameter(name = "idArk", description = "${getDatasForGraph.idArk.description}$", required = true) @PathVariable("idConcept") String idConcept,
-            @Parameter(name = "lang", description = "${getDatasForGraph.lang.description}$", required = true) @RequestParam("lang") String lang) {
+            @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept.", required = true) @PathVariable("idTheso") String idThesaurus,
+            @Parameter(name = "idArk", description = "ID du concept à récupérer", required = true) @PathVariable("idConcept") String idConcept,
+            @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang) {
 
         var datas = new D3jsHelper().findDatasForGraph__(connect.getPoolConnexion(), idConcept, idThesaurus, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
@@ -106,19 +108,19 @@ public class ConceptThesoController {
 
     @GetMapping(value = "/thesoGraph", produces = APPLICATION_JSON_LD_UTF_8)
     @Operation(
-            summary = "${getDatasForGraphByTheso.summary}$",
-            description = "${getDatasForGraph.description}$",
+            summary = "Permet d'obtenir les données pour l'affichage du graph D3js pour tout le thésaurus",
+            description = "Ancienne version : `/api/graph?theso=<idTheso>&id=<idConcept>&lang=<lang>`<br/>Données dans un format permettant l'affichage du graph D3js",
             tags = {"Concept"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getDatasForGraph.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "Données pour l'affichage du graph D3js", content = {
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8)
         }),
-                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$")
+                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi")
             }
     )
     public ResponseEntity<Object> getDatasForGraphForThisTheso(
-            @Parameter(name = "idTheso", description = "${getDatasForGraph.idTheso.description}$", required = true) @PathVariable("idTheso") String idThesaurus,
-            @Parameter(name = "lang", description = "${getDatasForGraph.lang.description}$", required = true) @RequestParam("lang") String lang) {
+            @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept", required = true) @PathVariable("idTheso") String idThesaurus,
+            @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang) {
 
         var datas = new D3jsHelper().findDatasForGraph__(connect.getPoolConnexion(), null, idThesaurus, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
@@ -127,24 +129,24 @@ public class ConceptThesoController {
 
     @GetMapping(value = "/{idConcept}/expansion", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_RDF_UTF_8, APPLICATION_TURTLE_UTF_8})
     @Operation(
-            summary = "${getBrancheOfConcepts.summary}$",
-            description = "${getBrancheOfConcepts.description}$",
+            summary = "Récupère une branche d'expansion d'un concept",
+            description = "Ancienne version : `/api/expansion/concept?theso=<idTheso>&id=<idConcept>&way=<top|down>`<br/>Permet de récupérer une branche d'expansion d'un concept d'un thésaurus donné d'après son ID. Soit en partant d'un concept pour trouver la racine, soit pour récupérer toute une branche à partir de la racine",
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getBrancheOfConcepts.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "Fichier contenant la branche du concept", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8),
             @Content(mediaType = APPLICATION_TURTLE_UTF_8)}),
                 @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
-                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
                 @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
     public ResponseEntity<Object> getBrancheOfConcepts(
-            @Parameter(name = "idTheso", description = "${getBrancheOfConcepts.idTheso.description}$", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "idConcept", description = "${getBrancheOfConcepts.idConcept.description}$", required = true, example = "3") @PathVariable("idConcept") String idConcept,
-            @Parameter(name = "way", description = "${getBrancheOfConcepts.way.description}$", required = true, schema = @Schema(type = "string", allowableValues = {"top", "down"})) @RequestParam("way") String way,
+            @Parameter(name = "idTheso", description = "ID du thésaurus dans lequel récupérer le concept", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true, example = "3") @PathVariable("idConcept") String idConcept,
+            @Parameter(name = "way", description = "Sens de l'expansion, `top` si l'on veut trouver la racine, `down` si l'on veut récupèrer toute la branche à partir de la racine", required = true, schema = @Schema(type = "string", allowableValues = {"top", "down"})) @RequestParam("way") String way,
             @RequestHeader(value = "accept", required = false) String acceptHeader) {
         
         var datas = getBranchOfConcepts(idConcept, idTheso, way, removeCharset(acceptHeader));
@@ -163,20 +165,20 @@ public class ConceptThesoController {
 
     @GetMapping(value = "/{idConcept}/narrower/{lang}", produces = APPLICATION_JSON_UTF_8)
     @Operation(
-            summary = "${getNarrower.summary}$",
-            description = "${getNarrower.description}$",
+            summary = "Permet de  récupérer la liste des termes spécifiques NT",
+            description = "Ancienne version : `/api/narrower?theso=<idTheso>&id=<idConcept>&lang=<lang>`<br/>Permet de  récupérer la liste des termes spécifiques NT d'un concept d'un thesaurus donné d'après son ID",
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getNarrower.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "Liste des termes spécifiques NT", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)}),
-                @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
                 @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             },
             tags = {"Concept"}
     )
     public ResponseEntity<Object> getNarrower(
-            @Parameter(name = "idTheso", description = "${getNarrower.idTheso.description}$", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "idConcept", description = "${getNarrower.idConcept.description}$", required = true, example = "3") @PathVariable("idConcept") String idConcept,
-            @Parameter(name = "lang", description = "${getNarrower.lang.description}$", required = true, example = "fr") @PathVariable("lang") String lang) {
+            @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true, example = "3") @PathVariable("idConcept") String idConcept,
+            @Parameter(name = "lang", description = "Langue du concept à  récupérer", required = true, example = "fr") @PathVariable("lang") String lang) {
 
         var datas = new RestRDFHelper().getNarrower(connect.getPoolConnexion(), idTheso, idConcept, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
@@ -185,10 +187,10 @@ public class ConceptThesoController {
 
     @GetMapping(value = "/fromdate/{date}", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_RDF_UTF_8, APPLICATION_TURTLE_UTF_8})
     @Operation(
-            summary = "${getConceptsFromDate.summary}$",
-            description = "${getConceptsFromDate.description}$",
+            summary = "Permet de  récupérer la liste des concepts modifiés depuis une date donnée",
+            description = "Ancienne version : `/api/getchangesfrom?theso=<idTheso>&date=<date>&format=<format>`<br/>Permet de  récupérer la liste des concepts modifiés depuis une date donnée",
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getConceptsFromDate.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "Liste des concepts modifiés depuis une date donnée", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8),
             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
             @Content(mediaType = APPLICATION_RDF_UTF_8),
@@ -199,8 +201,8 @@ public class ConceptThesoController {
             tags = {"Concept"}
     )
     public ResponseEntity<Object> getConceptsFromDate(
-            @Parameter(name = "idTheso", description = "${getConceptsFromDate.idTheso.description}$", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "date", description = "${getConceptsFromDate.date.description}$", required = true, schema = @Schema(type = "string", format = "date"), example = "2014-07-21") @PathVariable("date") String date,
+            @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer les concepts.", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "date", description = "Date de la dernière modification des concepts à récupérer à format YYYY-MM-DD", required = true, schema = @Schema(type = "string", format = "date"), example = "2014-07-21") @PathVariable("date") String date,
             @RequestHeader(value = "accept", required = false) String format) {
 
         var datas = new RestRDFHelper().getIdConceptFromDate(connect.getPoolConnexion(), idTheso, date, removeCharset(format));
@@ -209,19 +211,19 @@ public class ConceptThesoController {
 
 
     @GetMapping(value = "/ontome/{cidocClass}", produces = APPLICATION_JSON_UTF_8)
-    @Operation(summary = "${getAllLinkedConceptsWithOntome.summary}$",
-            description = "${getAllLinkedConceptsWithOntome.description}$",
+    @Operation(summary = "Récupère tous les concepts du thésaurus qui ont une relation `exactMatch` avec les classes Cidoc",
+            description = "Ancienne version : `/api/ontome/linkedConcept?theso=<idTheso>&class=<cidocClass>`<br>\\n\\nOpentheso permet de relier des classes Cidoc-CRM via la plateforme Ontome, le lien se fait grâce à une relation réciproque construite de cette manière :\\nDans Opentheso, si un concept de haut niveau correspond à une classe du Cidoc-CRM, on peut alors ajouter un alignement `exactMach` entre la classe Cidoc-CRM et le concept<br>\\nExemple :<br>\\nLe concept « Lieu géographique » (Geographical place) a un `exactMatch` avec « https://ontome.net/class/363 ».<br>Cette fonctionnalité récupérer tous les concepts du thésaurus qui ont une relation `exactMatch` avec les classes Cidoc",
             tags = {"Concept", "Ontome"},
             responses = {
-                @ApiResponse(responseCode = "200", description = "${getAllLinkedConceptsWithOntome.200.description}$", content = {
+                @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les concepts", content = {
             @Content(mediaType = APPLICATION_JSON_UTF_8)
         }),
                 @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                 @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
             })
     public ResponseEntity<Object> getAllLinkedConceptsWithOntome(
-            @Parameter(name = "idTheso", description = "${getAllLinkedConceptsWithOntome.idTheso.description}$", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "cidocClass", description = "${getAllLinkedConceptsWithOntome.cidocClass.description}$", required = true, example = "364") @PathVariable("cidocClass") String cidocClass
+            @Parameter(name = "idTheso", description = "Thésaurus dans lequel les concepts sont", required = true, example = "th3") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "cidocClass", description = "Classe Cidoc", required = true, example = "364") @PathVariable("cidocClass") String cidocClass
     ) {
         String datas;
         if (cidocClass == null || cidocClass.isEmpty()) {

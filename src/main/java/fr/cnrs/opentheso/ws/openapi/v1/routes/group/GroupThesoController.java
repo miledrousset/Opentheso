@@ -47,15 +47,11 @@ public class GroupThesoController {
 
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
-    @Operation(summary = "${getAllGroupsFromTheso.summary}$",
-            description = "${getAllGroupsFromTheso.description}$",
+    @Operation(summary = "Récupère toutes les collections et sous collections d'un thésaurus",
+            description = "Ancienne version : `/api/info/list?theso=<idTheso>&group=all`<br/>Permet de récupérer toutes les collections et sous collections d'un thésaurus au format JSON",
             tags = {"Group"},
-            responses = {
-                @ApiResponse(responseCode = "200", description = "${getAllGroupsFromTheso.200.description}$", content = {
-            @Content(mediaType = APPLICATION_JSON_UTF_8)}),
-                @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
-            })
-    public ResponseEntity<Object>  getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "${getAllGroupsFromTheso.idTheso.description}$", schema = @Schema(type = "string")) @PathVariable("idTheso") String idTheso) {
+            responses = { @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les collections d'un thésaurus", content = { @Content(mediaType = APPLICATION_JSON_UTF_8)}), @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")})
+    public ResponseEntity<Object>  getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "Thésaurus pour lequel on veut récupérer les groupes", schema = @Schema(type = "string")) @PathVariable("idTheso") String idTheso) {
 
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
@@ -86,22 +82,22 @@ public class GroupThesoController {
 
     @GetMapping(value = "/{idGroup}", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
-            summary = "${getGroupFromIdThesoIdGroup.summary}$",
-            description = "${getGroupFromIdThesoIdGroup.description}$",
+            summary = "Permet de récupérer les informations d'un groupe à partir de son identifiant interne",
+            description = "Ancienne version : `/api/info/list?theso={idTheso}&group={idGroup}`<br/>Recherche les informations d'un groupe à partir de son identifiant",
             tags = {"Group"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${getGroupFromIdThesoIdGroup.200.description}$", content = {
+                    @ApiResponse(responseCode = "200", description = "Information du groupe", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8),
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
+                    @ApiResponse(responseCode = "404", description = "Groupe non trouvé"),
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getGroupFromIdThesoIdGroup(
-            @Parameter(name = "idTheso", required = true, description = "${getGroupFromIdThesoIdGroup.idTheso.description}$") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathVariable("idGroup") String idGroup,
+            @Parameter(name = "idTheso", required = true, description = "Identifiant du thesaurus") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idGroup", required = true, description = "Identifiant interne du groupe") @PathVariable("idGroup") String idGroup,
             @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
 
@@ -111,21 +107,21 @@ public class GroupThesoController {
 
     @GetMapping(value = "/{idGroup}/subgroup", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
-            summary = "${getSubGroupsFromTheso.summary}$",
+            summary = "Récupère les sous-collections d'une collection dans un thésaurus",
             tags = {"Group"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${getSubGroupsFromTheso.200.description}$", content = {
+                    @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les sous collections d'un thésaurus", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8),
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
-                    @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
+                    @ApiResponse(responseCode = "404", description = "Groupe non trouvé"),
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object> getSubGroupFromIdThesoIdGroup(
-            @Parameter(name = "idTheso", required = true, description = "${getSubGroupsFromTheso.idTheso.description}$") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathVariable("idGroup") String idGroup) {
+            @Parameter(name = "idTheso", required = true, description = "Thésaurus pour lequel on veut récupérer les collections") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idGroup", required = true, description = "Identifiant interne du groupe") @PathVariable("idGroup") String idGroup) {
 
         GroupHelper groupHelper = new GroupHelper();
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
@@ -156,24 +152,24 @@ public class GroupThesoController {
 
     @GetMapping(value = "/branch", produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
-            summary = "${getAllBranchOfGroup.summary}$",
-            description = "${getAllBranchOfGroup.description}$",
+            summary = "Permet de récupérer toute une branche de groupes à partir des identifiants internes",
+            description = "Ancienne version : `/api/all/group?id={idGroups}&theso={idTheso}&format={format}`<br/>Récupère une branche d'un groupe à partir de son identifiant",
             tags = {"Group"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${getAllBranchOfGroup.200.description}$", content = {
+                    @ApiResponse(responseCode = "200", description = "Information de la branche du groupe", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8),
                             @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
                             @Content(mediaType = APPLICATION_TURTLE_UTF_8),
                             @Content(mediaType = APPLICATION_RDF_UTF_8)
                     }),
                     @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
-                    @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
+                    @ApiResponse(responseCode = "404", description = "Groupe non trouvé"),
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             }
     )
     public ResponseEntity<Object> getAllBranchOfGroup(
-            @Parameter(name = "idTheso", required = true, description = "${getAllBranchOfGroup.idTheso.description}$") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "idGroups", required = true, description = "${getAllBranchOfGroup.idGroups.description}$", example = "g1,g2,g3") @RequestParam("idGroups") String idGroups,
+            @Parameter(name = "idTheso", required = true, description = "Identifiant du thésaurus") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idGroups", required = true, description = "Identifiants internes des groupes séparés par une virgule", example = "g1,g2,g3") @RequestParam("idGroups") String idGroups,
             @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         String[] groups = idGroups.split(",");
@@ -188,22 +184,21 @@ public class GroupThesoController {
 
     @GetMapping(value = "/branchtree", produces = APPLICATION_JSON_UTF_8)
     @Operation(
-            summary = "${getAllBranchOfGroupAsTree.summary}$",
-            description = "${getAllBranchOfGroupAsTree.description}$",
+            summary = "Permet de récupérer toute une branche de groupes avec le chemin complet vers la racine",
             tags = {"Group"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${getAllBranchOfGroupAsTree.200.description}$", content = {
+                    @ApiResponse(responseCode = "200", description = "Information de la branche du groupe", content = {
                             @Content(mediaType = APPLICATION_JSON_UTF_8)
                     }),
                     @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
-                    @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
+                    @ApiResponse(responseCode = "404", description = "Groupe non trouvé"),
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             }
     )
     public ResponseEntity<Object> getAllBranchOfGroupAsTree(
-            @Parameter(name = "idTheso", required = true, description = "${getAllBranchOfGroupAsTree.idTheso.description}$") @PathVariable("idTheso") String idTheso,
-            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "${searchAutocomplete.lang.description}$") @RequestParam("lang") String lang,
-            @Parameter(name = "idGroups", required = true, description = "${getAllBranchOfGroupAsTree.idGroups.description}$", example = "g1,g2,g3") @RequestParam("idGroups") String idGroups,
+            @Parameter(name = "idTheso", required = true, description = "Identifiant du thésaurus") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "Langue dans laquelle chercher la saisie de l'utilisateur") @RequestParam("lang") String lang,
+            @Parameter(name = "idGroups", required = true, description = "Identifiants internes des groupes séparés par une virgule", example = "g1,g2,g3") @RequestParam("idGroups") String idGroups,
             @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         String[] groups = idGroups.split(",");

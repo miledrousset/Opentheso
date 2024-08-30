@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @CrossOrigin(methods = { RequestMethod.GET })
-@Tag(name = "Test Authentification", description = "1. Permet de vérifier si l'API est fonctionnelle.")
+@Tag(name = "Test Authentification", description = "Permet de vérifier si l'API est fonctionnelle.")
 public class OpenApiController {
 
     @Autowired

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.core.MediaType;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/candidate")
 @CrossOrigin(methods = { RequestMethod.POST })
+@Tag(name = "Candidat", description = "Ajouter des candidats")
 public class addCandidateController {
 
     @Autowired
@@ -45,8 +47,8 @@ public class addCandidateController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @Operation(
-            summary = "${addCandidate.summary}$",
-            description = "${addCandidate.description}$",
+            summary = "Permet d'ajouter un candidat",
+            description = "Permet d'ajouter un candidat à partir du JSON donné",
             tags = {"Concept Write"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "JSON représentant le candidat à ajouter",
@@ -54,7 +56,7 @@ public class addCandidateController {
                             mediaType = MediaType.APPLICATION_JSON,
                             schema = @Schema(implementation = Candidate.class),
                             examples = @ExampleObject(
-                                    name = "${addCandidate.schemaTitle}$",
+                                    name = "Exemple de candidat",
                                     value = "{ \"title\": \"Sample Title\", \"definition\": \"Sample Description\", \"thesoId\": \"th2\", \"source\": \"Sample Source\" }"
                             )
                     )
@@ -67,8 +69,7 @@ public class addCandidateController {
             },
             security = { @SecurityRequirement(name = "API-KEY") }
     )
-    public ResponseEntity<Object> addCandidate(@RequestHeader(value = "API-KEY") String apiKey,
-                                       String candidate) throws JsonProcessingException, SQLException {
+    public ResponseEntity<Object> addCandidate(@RequestHeader(value = "API-KEY") String apiKey, @RequestBody String candidate) throws JsonProcessingException {
 
         var apiKeyHelper = new ApiKeyHelper();
         var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);

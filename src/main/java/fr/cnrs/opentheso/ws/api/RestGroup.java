@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.ws.api;
 
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/group")
 @CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.PUT })
+@Tag(name = "Group", description = "Contient les actions en lien avec les groupes.")
 public class RestGroup {
 
     @Autowired

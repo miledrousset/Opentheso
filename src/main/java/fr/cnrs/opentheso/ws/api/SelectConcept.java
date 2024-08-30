@@ -3,6 +3,7 @@ package fr.cnrs.opentheso.ws.api;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/concept")
+@RequestMapping("/concept")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class SelectConcept {
 
 

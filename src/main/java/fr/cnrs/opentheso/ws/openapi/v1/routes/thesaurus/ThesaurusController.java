@@ -29,7 +29,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 @RestController
 @RequestMapping("/thesaurus")
 @CrossOrigin(methods = { RequestMethod.GET })
-@Tag(name = "Thesaurus", description = "3. Contient toutes les actions en liens avec les thesaurus.")
+@Tag(name = "Thesaurus", description = "Contient toutes les actions en liens avec les thesaurus.")
 public class ThesaurusController {
 
     @Autowired
@@ -37,14 +37,12 @@ public class ThesaurusController {
 
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
-    @Operation(summary = "${getListAllPublicTheso.summary}$",
-            description = "${getListAllPublicTheso.description}$",
+    @Operation(summary = "Permet de récupérer tous les thesaurus publiques",
+            description = "Ancienne version : `/api/info/list?theso=all`<br/>Récupère une liste de tous les thésaurus publiques ainsi que les langues dans lesquelles ils sont disponibles.",
             tags = {"Thesaurus"},
             responses = {
-                    @ApiResponse(responseCode = "200", description = "${getListAllPublicTheso.200.description}$", content = {
-                            @Content(mediaType = APPLICATION_JSON_UTF_8)
-                    }),
-                    @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
+                    @ApiResponse(responseCode = "200", description = "Liste contenant les ID des thesaurus publiques.", content = { @Content(mediaType = APPLICATION_JSON_UTF_8) }),
+                    @ApiResponse(responseCode = "404", description = "Thésaurus non trouvé")
             }
     )
     public ResponseEntity<Object>  getListAllPublicTheso() {

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,6 +26,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 @RestController
 @RequestMapping("/concept/handle/{handle}/{idHandle}")
 @CrossOrigin(methods = { RequestMethod.GET })
+@Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConceptHandleController {
 
     @Autowired
@@ -42,7 +44,7 @@ public class ConceptHandleController {
                     @Content(mediaType = APPLICATION_TURTLE_UTF_8),
                     @Content(mediaType = APPLICATION_RDF_UTF_8)
                 }),
-                    @ApiResponse(responseCode = "404", description = "${responses.concept.404.description}$"),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
                     @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
             })
     public ResponseEntity<Object>  getConceptByHandle(@RequestParam(name = "handle") String handle,
