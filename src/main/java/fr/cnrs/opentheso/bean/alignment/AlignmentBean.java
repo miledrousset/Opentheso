@@ -25,14 +25,14 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
 import fr.cnrs.opentheso.models.alignment.SelectedResource;
-import fr.cnrs.opentheso.models.alignment.helper.AgrovocHelper;
-import fr.cnrs.opentheso.models.alignment.helper.GemetHelper;
-import fr.cnrs.opentheso.models.alignment.helper.GeoNamesHelper;
-import fr.cnrs.opentheso.models.alignment.helper.GettyAATHelper;
-import fr.cnrs.opentheso.models.alignment.helper.IdRefHelper;
-import fr.cnrs.opentheso.models.alignment.helper.OntomeHelper;
-import fr.cnrs.opentheso.models.alignment.helper.OpenthesoHelper;
-import fr.cnrs.opentheso.models.alignment.helper.WikidataHelper;
+import fr.cnrs.opentheso.client.alignement.AgrovocHelper;
+import fr.cnrs.opentheso.client.alignement.GemetHelper;
+import fr.cnrs.opentheso.client.alignement.GeoNamesHelper;
+import fr.cnrs.opentheso.client.alignement.GettyAATHelper;
+import fr.cnrs.opentheso.client.alignement.IdRefHelper;
+import fr.cnrs.opentheso.client.alignement.OntomeHelper;
+import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
+import fr.cnrs.opentheso.client.alignement.WikidataHelper;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -1044,7 +1044,7 @@ public class AlignmentBean implements Serializable {
 
         // action XML
         //ici il faut appeler le filtre du Getty AAT
-        listAlignValues = gettyAATHelper.queryAAT(idConcept, idTheso, lexicalValue.trim(), idLang,
+        listAlignValues = gettyAATHelper.queryAAT(idConcept, idTheso, lexicalValue.trim(),
                 alignementSource.getRequete(), alignementSource.getSource());
         if (listAlignValues == null) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,

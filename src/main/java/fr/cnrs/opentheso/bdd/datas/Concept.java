@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.Date;
 
 
@@ -32,12 +31,11 @@ public class Concept {
     
     // type de concept (concept, place, people, period ...)
     private String conceptType;
-    
+
     private int creator;
     private int contributor;
     private String creatorName;
     private String contributorName;    
-    
 
     public Concept(String idConcept, String status, String notation, String idThesaurus, String idGroup, boolean topConcept) {
         super();
@@ -49,5 +47,5 @@ public class Concept {
         this.topConcept = topConcept;
         this.notation = "";
     }
-    
+
 }

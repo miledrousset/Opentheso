@@ -4,14 +4,14 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
-import fr.cnrs.opentheso.models.alignment.helper.AgrovocHelper;
-import fr.cnrs.opentheso.models.alignment.helper.GemetHelper;
-import fr.cnrs.opentheso.models.alignment.helper.GeoNamesHelper;
-import fr.cnrs.opentheso.models.alignment.helper.GettyAATHelper;
-import fr.cnrs.opentheso.models.alignment.helper.IdRefHelper;
-import fr.cnrs.opentheso.models.alignment.helper.OntomeHelper;
-import fr.cnrs.opentheso.models.alignment.helper.OpenthesoHelper;
-import fr.cnrs.opentheso.models.alignment.helper.WikidataHelper;
+import fr.cnrs.opentheso.client.alignement.AgrovocHelper;
+import fr.cnrs.opentheso.client.alignement.GemetHelper;
+import fr.cnrs.opentheso.client.alignement.GeoNamesHelper;
+import fr.cnrs.opentheso.client.alignement.GettyAATHelper;
+import fr.cnrs.opentheso.client.alignement.IdRefHelper;
+import fr.cnrs.opentheso.client.alignement.OntomeHelper;
+import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
+import fr.cnrs.opentheso.client.alignement.WikidataHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -121,47 +121,42 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
     private List<NodeAlignment> searchAlignmentsV2(AlignementSource alignementSource, String idTheso, NodeIdValue concept,
                                                    String idLang, String nom, String prenom) {
 
-        switch(alignementSource.getSource_filter().toUpperCase()) {
-            case "WIKIDATA_SPARQL":
-                return new WikidataHelper().queryWikidata_sparql(concept.getId(), idTheso, alignementSource.getRequete(), alignementSource.getSource());
-            case "WIKIDATA_REST":
-                return new WikidataHelper().queryWikidata_rest(concept.getId(), idTheso, concept.getValue().trim(), idLang,
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "IDREFSUJETS":
-                return new IdRefHelper().queryIdRefSubject(concept.getId(), idTheso, concept.getValue().trim(),
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "IDREFPERSONNES":
-                return new IdRefHelper().queryIdRefPerson(concept.getId(), idTheso, concept.getValue().trim(),
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "IDREFAUTEURS":
-                return new IdRefHelper().queryIdRefNames(concept.getId(), idTheso, nom, prenom, alignementSource.getRequete(),
-                        alignementSource.getSource());
-            case "IDREFLIEUX":
-                return new IdRefHelper().queryIdRefLieux(concept.getId(), idTheso, concept.getValue().trim(),
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "IDREFTITREUNIFORME":
-                return new IdRefHelper().queryIdRefUniformtitle(concept.getId(), idTheso, concept.getValue().trim(),
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "GETTY_AAT":
-                return new GettyAATHelper().queryAAT(concept.getId(), idTheso, concept.getValue().trim(), idLang,
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "OPENTHESO":
-                return new OpenthesoHelper().queryOpentheso(concept.getId(), idTheso, concept.getValue().trim(), idLang,
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "GEMET":
-                return new GemetHelper().queryGemet(concept.getId(), idTheso, concept.getValue().trim(),
-                        idLang, alignementSource.getRequete(), alignementSource.getSource());
-            case "AGROVOC":
-                return new AgrovocHelper().queryAgrovoc(concept.getId(), idTheso, concept.getValue().trim(), idLang,
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "GEONAMES":
-                return new GeoNamesHelper().queryGeoNames(concept.getId(), idTheso, concept.getValue().trim(), idLang,
-                        alignementSource.getRequete(), alignementSource.getSource());
-            case "ONTOME":
-                return new OntomeHelper().queryOntomeHelper(concept.getId(), idTheso, concept.getValue().trim(),
-                        alignementSource.getRequete(), alignementSource.getSource());
-            default:
-                return Collections.emptyList();
-        }
+        return switch (alignementSource.getSource_filter().toUpperCase()) {
+            case "WIKIDATA_SPARQL" ->
+                    new WikidataHelper().queryWikidata_sparql(concept.getId(), idTheso, alignementSource.getRequete(), alignementSource.getSource());
+            case "WIKIDATA_REST" ->
+                    new WikidataHelper().queryWikidata_rest(concept.getId(), idTheso, concept.getValue().trim(), idLang,
+                            alignementSource.getRequete(), alignementSource.getSource());
+            case "IDREFSUJETS" ->
+                    new IdRefHelper().queryIdRefSubject(concept.getId(), idTheso, concept.getValue().trim(),
+                            alignementSource.getRequete(), alignementSource.getSource());
+            case "IDREFPERSONNES" ->
+                    new IdRefHelper().queryIdRefPerson(concept.getId(), idTheso, concept.getValue().trim(),
+                            alignementSource.getRequete(), alignementSource.getSource());
+            case "IDREFAUTEURS" ->
+                    new IdRefHelper().queryIdRefNames(concept.getId(), idTheso, nom, prenom, alignementSource.getRequete(),
+                            alignementSource.getSource());
+            case "IDREFLIEUX" -> new IdRefHelper().queryIdRefLieux(concept.getId(), idTheso, concept.getValue().trim(),
+                    alignementSource.getRequete(), alignementSource.getSource());
+            case "IDREFTITREUNIFORME" ->
+                    new IdRefHelper().queryIdRefUniformtitle(concept.getId(), idTheso, concept.getValue().trim(),
+                            alignementSource.getRequete(), alignementSource.getSource());
+            case "GETTY_AAT" -> new GettyAATHelper().queryAAT(concept.getId(), idTheso, concept.getValue().trim(),
+                    alignementSource.getRequete(), alignementSource.getSource());
+            case "OPENTHESO" ->
+                    new OpenthesoHelper().queryOpentheso(concept.getId(), idTheso, concept.getValue().trim(), idLang,
+                            alignementSource.getRequete(), alignementSource.getSource());
+            case "GEMET" -> new GemetHelper().queryGemet(concept.getId(), idTheso, concept.getValue().trim(),
+                    idLang, alignementSource.getRequete(), alignementSource.getSource());
+            case "AGROVOC" ->
+                    new AgrovocHelper().queryAgrovoc(concept.getId(), idTheso, concept.getValue().trim(), idLang,
+                            alignementSource.getRequete(), alignementSource.getSource());
+            case "GEONAMES" ->
+                    new GeoNamesHelper().queryGeoNames(concept.getId(), idTheso, concept.getValue().trim(), idLang,
+                            alignementSource.getRequete(), alignementSource.getSource());
+            case "ONTOME" -> new OntomeHelper().queryOntomeHelper(concept.getId(), idTheso, concept.getValue().trim(),
+                    alignementSource.getRequete(), alignementSource.getSource());
+            default -> Collections.emptyList();
+        };
     }
 }

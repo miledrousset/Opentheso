@@ -1,9 +1,14 @@
 package fr.cnrs.opentheso.bdd.datas;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Data
+@AllArgsConstructor
 public class Thesaurus {
 
     private String id_thesaurus;
@@ -63,171 +68,9 @@ public class Thesaurus {
         this.subject = subject;
         this.title = title;
         this.type = type;
-        
     }
 
-    public String getId_thesaurus() {
-        return id_thesaurus;
-    }
-
-    public void setId_thesaurus(String id_thesaurus) {
-        this.id_thesaurus = id_thesaurus;
-    }
-
-    public String getContributor() {
-        return contributor;
-    }
-
-    public void setContributor(String contributor) {
-        this.contributor = contributor;
-    }
-
-    public String getCoverage() {
-        return coverage;
-    }
-
-    public void setCoverage(String coverage) {
-        this.coverage = coverage;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getModified() {
-        return modified;
-    }
-
-    public void setModified(Date modified) {
-        this.modified = modified;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public String getRelation() {
-        return relation;
-    }
-
-    public void setRelation(String relation) {
-        this.relation = relation;
-    }
-
-    public String getRights() {
-        return rights;
-    }
-
-    public void setRights(String rights) {
-        this.rights = rights;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getId_ark() {
-        return id_ark;
-    }
-
-    public void setId_ark(String id_ark) {
-        this.id_ark = id_ark;
-    }
-
-    public List<DcElement> getDcElement() {
-        return dcElement;
-    }
-
-    public void setDcElement(List<DcElement> dcElement) {
-        this.dcElement = dcElement;
-    }
-    
     public void addDcElement(DcElement dcElement) {
         this.dcElement.add(dcElement);
     }
-    /**
-     * #JM
-     * @return 
-     */
-    public boolean isPrivateTheso() {
-        return privateTheso;
-    }
-    /**
-     * #JM
-     * @param privateTheso 
-     */
-    public void setPrivateTheso(boolean privateTheso) {
-        this.privateTheso = privateTheso;
-    }
-    
-
-
 }

@@ -12,7 +12,7 @@ import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.models.exports.csv.CsvWriteHelper;
+import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

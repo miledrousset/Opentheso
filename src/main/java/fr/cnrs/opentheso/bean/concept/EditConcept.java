@@ -25,7 +25,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.models.exports.csv.CsvWriteHelper;
+import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import fr.cnrs.opentheso.ws.handlestandard.HandleService;
 import java.io.ByteArrayInputStream;

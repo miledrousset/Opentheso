@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DcElement {
+
     private int id;
     protected String name;
     protected String value;
     protected String language;
     private String type;
-    
+
     public DcElement(String name, String value, String language, String type) {
         this.id = -1;
         this.language = language;

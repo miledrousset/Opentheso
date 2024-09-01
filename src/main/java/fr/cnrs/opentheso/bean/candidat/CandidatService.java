@@ -35,17 +35,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
+@Slf4j
 @Named(value = "candidatService")
 @SessionScoped
 public class CandidatService implements Serializable {
-
-    private final Log LOG = LogFactory.getLog(CandidatService.class);
 
     public List<CandidatDto> getAllCandidats(Connect connect, String idThesaurus, String lang) {
         List<CandidatDto> temps = new ArrayList<>();
@@ -69,7 +67,7 @@ public class CandidatService implements Serializable {
             });
             connection.close();
         } catch (SQLException sqle) {
-            LOG.error(sqle);
+            log.error(sqle.toString());
             System.err.println("Error >>> " + sqle);
             if (!connection.isClosed()) {
                 connection.close();
@@ -110,7 +108,7 @@ public class CandidatService implements Serializable {
             });
             connection.close();
         } catch (SQLException sqle) {
-            LOG.error(sqle);
+            log.error(sqle.toString());
             System.err.println("Error >>> " + sqle);
             if (!connection.isClosed()) {
                 connection.close();
@@ -155,7 +153,7 @@ public class CandidatService implements Serializable {
             });
             ds.close();
         } catch (SQLException sqle) {
-            LOG.error(sqle);
+            log.error(sqle.toString());
             System.err.println("Error >>> " + sqle);
             if (!ds.isClosed()) {
                 ds.close();
@@ -170,7 +168,7 @@ public class CandidatService implements Serializable {
         try {
             id = new CandidatDao().getMaxCandidatId(connection);
         } catch (Exception e) {
-            LOG.error(e);
+            log.error(e.toString());
         }
         connection.close();
         return (id + 1) + "";
@@ -354,7 +352,7 @@ public class CandidatService implements Serializable {
 
             connect.getPoolConnexion().getConnection().close();
         } catch (SQLException e) {
-            LOG.error(e);
+            log.error(e.toString());
         }
     }
 
@@ -387,13 +385,7 @@ public class CandidatService implements Serializable {
     }     
     
     /**
-     * permet de récupérer les anciens candidats saisies dans l'ancien module 
-     * uniquement les candidats qui étatient en attente
-     * @param connect
-     * @param idTheso
-     * @param idUser
-     * @param nodePreference
-     * @return 
+     * permet de récupérer les anciens candidats saisies dans l'ancien module uniquement les candidats qui étatient en attente
      */    
     public String getOldCandidates(Connect connect, String idTheso, int idUser,
             NodePreference nodePreference) {

@@ -342,8 +342,7 @@ public class ConceptView implements Serializable {
             gpsModeSelected = getGpsMode(gpses);
             gpsList = formatCoordonnees(gpses);
 
-            return new MapUtils().createMap(gpses, gpsModeSelected,
-                    ObjectUtils.isEmpty(nodeFullConcept.getPrefLabel()) ? null : nodeFullConcept.getPrefLabel().getLabel());
+            return new MapUtils().createMap(gpses, gpsModeSelected);
         } else {
             gpsList = "";
             return "";

@@ -3,18 +3,20 @@ package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 import fr.cnrs.opentheso.entites.Gps;
 import java.util.List;
 
+import static java.lang.Double.valueOf;
+
 
 public class MapUtils {
 
     private String longitudeCentre, latitudeCentre;
 
-    public String createMap(List<Gps> gpsList, GpsMode gpsMode, String term) {
+    public String createMap(List<Gps> gpsList, GpsMode gpsMode) {
 
         StringBuilder script = new StringBuilder();
 
         calculerCentrePolyline(gpsList);
 
-        script.append("var map = L.map('map').setView([" + longitudeCentre + ", " + latitudeCentre + "], " + calculerZoom(gpsList) + ");" +
+        script.append("var map = L.map('map').setView([" + latitudeCentre + ", " + longitudeCentre + "], " + calculerZoom(gpsList) + ");" +
                 "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {" +
                 "maxZoom: 19," +
                 "attribution: '© OpenStreetMap contributors'" +
@@ -22,7 +24,7 @@ public class MapUtils {
         script.append("var latlngs = [");
 
         for (Gps gps : gpsList) {
-            script.append("[").append(gps.getLongitude()).append(", ").append(gps.getLatitude()).append("],");
+            script.append("[").append(gps.getLatitude()).append(", ").append(gps.getLongitude()).append("],");
         }
 
         // Supprimer la dernière virgule
@@ -50,12 +52,12 @@ public class MapUtils {
     private void calculerCentrePolyline(List<Gps> gpsList) {
 
         Double centreLatitude = gpsList.stream()
-                .map(element -> Double.valueOf(element.getLatitude()))
+                .map(element -> element.getLatitude())
                 .mapToDouble(Double::doubleValue)
                 .sum() / gpsList.size();
 
         Double centreLongitude = gpsList.stream()
-                .map(element -> Double.valueOf(element.getLongitude()))
+                .map(element -> element.getLongitude())
                 .mapToDouble(Double::doubleValue)
                 .sum() / gpsList.size();
 

@@ -18,12 +18,11 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewExportBean;
 import fr.cnrs.opentheso.models.exports.UriHelper;
-import fr.cnrs.opentheso.models.exports.csv.CsvWriteHelper;
-import fr.cnrs.opentheso.models.exports.csv.WriteCSV;
-import fr.cnrs.opentheso.models.exports.pdf.new_export.PdfExportType;
-import fr.cnrs.opentheso.models.exports.pdf.new_export.WritePdfNewGen;
-import fr.cnrs.opentheso.models.exports.rdf4j.ExportRdf4jHelperNew;
-import fr.cnrs.opentheso.models.exports.rdf4j.WriteRdf4j;
+import fr.cnrs.opentheso.services.exports.csv.CsvWriteHelper;
+import fr.cnrs.opentheso.services.exports.pdf.PdfExportType;
+import fr.cnrs.opentheso.services.exports.pdf.WritePdfNewGen;
+import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
+import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
@@ -241,12 +240,12 @@ public class ExportFileBean implements Serializable {
             if (viewExportBean.isToogleFilterByGroup()) {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups(),
+                        viewExportBean.getSelectedIdLangTheso(),
                         viewExportBean.getCsvDelimiterChar());
             } else {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null,
+                        viewExportBean.getSelectedIdLangTheso(),
                         viewExportBean.getCsvDelimiterChar());
             }
             if (datas == null) {
@@ -288,7 +287,7 @@ public class ExportFileBean implements Serializable {
                 createMatrice(tab, topConcept);
             }
 
-            byte[] str = new WriteCSV().importTreeCsv(tab, ';');
+            byte[] str = new CsvWriteHelper().importTreeCsv(tab, ';');
 
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");
@@ -370,9 +369,6 @@ public class ExportFileBean implements Serializable {
             }
 
         } else if ("CSV".equalsIgnoreCase(viewExportBean.getFormat())) {
-
-            //char separateur = "\\t".equals(viewExportBean.getCsvDelimiter()) ? '\t' : viewExportBean.getCsvDelimiter().charAt(0);
-            //byte[] str = new WriteCSV().importCsv(skosxd, viewExportBean.getSelectedLanguages(), separateur);
 
             CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
             byte[] str = csvWriteHelper.writeCsv(skosxd,
@@ -465,12 +461,12 @@ public class ExportFileBean implements Serializable {
             if (viewExportBean.isToogleFilterByGroup()) {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), viewExportBean.getSelectedIdGroups(),
+                        viewExportBean.getSelectedIdLangTheso(),
                         viewExportBean.getCsvDelimiterChar());
             } else {
                 datas = csvWriteHelper.writeCsvByDeprecated(connect.getPoolConnexion(),
                         viewExportBean.getNodeIdValueOfTheso().getId(),
-                        viewExportBean.getSelectedIdLangTheso(), null,
+                        viewExportBean.getSelectedIdLangTheso(),
                         viewExportBean.getCsvDelimiterChar());
             }
             if (datas == null) {
@@ -511,7 +507,7 @@ public class ExportFileBean implements Serializable {
                 createMatrice(tab, topConcept);
             }
 
-            byte[] str = new WriteCSV().importTreeCsv(tab, ';');
+            byte[] str = new CsvWriteHelper().importTreeCsv(tab, ';');
 
             try ( ByteArrayInputStream flux = new ByteArrayInputStream(str)) {
                 PrimeFaces.current().executeScript("PF('waitDialog').hide();");

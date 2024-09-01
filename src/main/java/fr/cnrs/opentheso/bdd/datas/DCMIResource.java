@@ -101,8 +101,7 @@ public class DCMIResource {
     
     public List<String> getAllTypes(){
         List allTypes = new ArrayList();
-        allTypes.add("date");   
-//        allTypes.add("langString"); 
+        allTypes.add("date");
         allTypes.add("string"); 
         allTypes.add("resource");     
         return allTypes;

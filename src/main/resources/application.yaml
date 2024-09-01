@@ -69,6 +69,9 @@ smpt:
 neo4j:
   serverName: localhost
   serverPort: 7687
+  databaseName: neo4j
+  user: neo4j
+  password: neo4j1234
 
 ldap:
   security:
