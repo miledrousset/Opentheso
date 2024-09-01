@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.bean.candidat.dao;
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
 
 import java.sql.Connection;
@@ -27,7 +27,7 @@ public class MessageDao {
 
     public void addNewMessage(HikariDataSource hikariDataSource, String msg,
                               int idUser, String idConcept, String idThesaurus, String date) {
-        msg = new StringPlus().convertString(msg);
+        msg = fr.cnrs.opentheso.utils.StringUtils.convertString(msg);
         try (Connection connection = hikariDataSource.getConnection()){
             try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(new StringBuffer("INSERT INTO candidat_messages(value, id_user, date, id_concept, id_thesaurus) ")

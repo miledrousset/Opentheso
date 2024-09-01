@@ -12,7 +12,7 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentType;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -193,7 +193,7 @@ public class AlignmentManualBean implements Serializable {
             return;
         } 
 
-        if(!new StringPlus().urlValidator(manualAlignmentUri)){
+        if(!fr.cnrs.opentheso.utils.StringUtils.urlValidator(manualAlignmentUri)){
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL n'est pas valide !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            

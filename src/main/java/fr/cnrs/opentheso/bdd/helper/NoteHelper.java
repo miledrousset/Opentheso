@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringEscapeUtils;
@@ -61,10 +62,10 @@ public class NoteHelper {
             String note, String noteTypeCode, String noteSource, int idUser) {
 
         boolean status = false;
-        StringPlus stringPlus = new StringPlus(); 
-        note = stringPlus.clearValue(note);
+         
+        note = StringUtils.clearValue(note);
         note = StringEscapeUtils.unescapeXml(note);
-        note = stringPlus.convertString(note);
+        note = StringUtils.convertString(note);
 
         idLang = new LanguageHelper().normalizeIdLang(idLang);
         
@@ -126,7 +127,7 @@ public class NoteHelper {
         idLang = new LanguageHelper().normalizeIdLang(idLang);
         
         boolean status = false;
-        note = new StringPlus().convertString(note);
+        note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE note set lexicalvalue = '" + note + "',"
@@ -175,7 +176,7 @@ public class NoteHelper {
                             + " where identifier = '" + identifier + "'"
                             + " and id_thesaurus = '" + idThesaurus + "'"
                             + " and lang ='" + idLang + "'"
-                            + " and lexicalvalue = '" + new StringPlus().convertString(note) + "'"
+                            + " and lexicalvalue = '" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'"
                             + " and noteTypeCode = '" + noteTypeCode + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -643,7 +644,7 @@ public class NoteHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into note_historique (notetypecode, id_thesaurus, id_term, lang, lexicalvalue, "
                         + "action_performed, id_user) values ('" + noteTypeCode + "','" + idThesausus + "','" + idTerme + "'"
-                        + ",'" + idLang + "','" + new StringPlus().convertString(note) + "'"
+                        + ",'" + idLang + "','" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'"
                         + ",'" + actionPerformed + "','" + idUser + "')");
                 return true;
             }
@@ -680,7 +681,7 @@ public class NoteHelper {
                         + ",'" + idThesausus + "'"
                         + ",'" + idConcept + "'"
                         + ",'" + idLang + "'"
-                        + ",'" + new StringPlus().convertString(note) + "'"
+                        + ",'" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'"
                         + ",'" + actionPerformed + "'"
                         + ",'" + idUser + "')");
                 return true;
@@ -713,7 +714,7 @@ public class NoteHelper {
         Connection conn;
         Statement stmt;
         boolean status = false;
-        note = new StringPlus().convertString(note);
+        note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -745,7 +746,7 @@ public class NoteHelper {
         Connection conn;
         Statement stmt;
         boolean status = false;
-        note = new StringPlus().convertString(note);
+        note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -792,7 +793,7 @@ public class NoteHelper {
         Connection conn;
         Statement stmt;
         boolean status = false;
-        note = new StringPlus().convertString(note);
+        note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -820,7 +821,7 @@ public class NoteHelper {
     public boolean updateTermNoteProp(HikariDataSource ds, int idNote, String idThesausus, String note) {
 
         boolean status = false;
-        note = new StringPlus().convertString(note);
+        note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE note set lexicalvalue = '" + note + "', modified = current_date WHERE id ="
@@ -1134,7 +1135,7 @@ public class NoteHelper {
                         nodeNote.setId_concept(idConcept);
                         nodeNote.setId_note(resultSet.getInt("id"));
                         nodeNote.setLang(resultSet.getString("lang"));
-                        nodeNote.setLexicalvalue(new StringPlus().normalizeStringForXml(resultSet.getString("lexicalvalue")));
+                        nodeNote.setLexicalvalue(fr.cnrs.opentheso.utils.StringUtils.normalizeStringForXml(resultSet.getString("lexicalvalue")));
                         nodeNote.setModified(resultSet.getDate("modified"));
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNotetypecode(resultSet.getString("notetypecode"));
@@ -1222,7 +1223,7 @@ public class NoteHelper {
 /*    public ArrayList<NodeNote> getListNotesTermAllLang(HikariDataSource ds, String idTerm, String idThesaurus) {
 
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
+        
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -1431,7 +1432,7 @@ public class NoteHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into note (notetypecode, id_thesaurus, lang, lexicalvalue, id_user, notesource, identifier)"
                         + " values ('" + noteTypeCode + "','" + idThesaurus + "','" + idLang + "','"
-                        + new StringPlus().convertString(note) + "'," + idUser
+                        + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'," + idUser
                         + ",'" + noteSource + "'," + idConcept + "'" 
                         + ")");
                 status = true;
@@ -1455,7 +1456,7 @@ public class NoteHelper {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into note (notetypecode, id_thesaurus, lang, lexicalvalue, id_user, identifier)"
                         + " values ('" + noteTypeCode + "','" + idThesaurus + "','" + idLang + "','"
-                        + new StringPlus().convertString(note) + "'," + idUser + ",'" + idConcept + "'" +  ")");
+                        + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'," + idUser + ",'" + idConcept + "'" +  ")");
                 status = true;
             }
         } catch (SQLException sqle) {
@@ -1485,7 +1486,7 @@ public class NoteHelper {
         Statement stmt;
         boolean status = false;
 
-        note = new StringPlus().convertString(note);
+        note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
 
         try {
             // Get connection from pool
@@ -1543,7 +1544,7 @@ public class NoteHelper {
                         + ",'" + idThesaurus + "'"
                         + ",'" + idTerm + "'"
                         + ",'" + idLang + "'"
-                        + ",'" + new StringPlus().convertString(note) + "'," + idUser
+                        + ",'" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'," + idUser
                         + ", '" + noteSource + "'"
                         + ")";
 
@@ -1574,7 +1575,7 @@ public class NoteHelper {
                         + ",'" + idThesaurus + "'"
                         + ",'" + idTerm + "'"
                         + ",'" + idLang + "'"
-                        + ",'" + new StringPlus().convertString(note) + "'," + idUser + ")";
+                        + ",'" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'," + idUser + ")";
                 stmt.executeUpdate(query);
             }
         } catch (SQLException sqle) {
@@ -1619,7 +1620,7 @@ public class NoteHelper {
                             + " where id_concept = '" + idConcept + "'"
                             + " and id_thesaurus = '" + idThesaurus + "'"
                             + " and lang ='" + idLang + "'"
-                            + " and lexicalvalue = '" + new StringPlus().convertString(note) + "'"
+                            + " and lexicalvalue = '" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'"
                             + " and noteTypeCode = '" + noteTypeCode + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -1673,7 +1674,7 @@ public class NoteHelper {
                             + " where id_term = '" + idTerm + "'"
                             + " and id_thesaurus = '" + idThesaurus + "'"
                             + " and lang ='" + idLang + "'"
-                            + " and lexicalvalue = '" + new StringPlus().convertString(note) + "'"
+                            + " and lexicalvalue = '" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'"
                             + " and noteTypeCode = '" + noteTypeCode + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -1883,7 +1884,7 @@ public class NoteHelper {
      */
     public int getNoteByValueAndThesaurus(HikariDataSource ds,
             String value, String noteTypeCode, String idLang, String idTheso) {
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         int idNote = -1;
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {

@@ -8,7 +8,8 @@ package fr.cnrs.opentheso.ws.ark;
 import java.util.Properties;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeMetaData;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import fr.cnrs.opentheso.utils.StringUtils;
+
 import java.util.ArrayList;
 
 /**
@@ -233,7 +234,7 @@ public class ArkHelper2 {
         NodeJson2 nodeJson2 = new NodeJson2();
         nodeJson2.setUrlTarget(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
         nodeJson2.setArk(idArk);
-        nodeJson2.setTitle(new StringPlus().convertString(nodeMetaData.getTitle()));
+        nodeJson2.setTitle(StringUtils.convertString(nodeMetaData.getTitle()));
         nodeJson2.setCreator(nodeMetaData.getCreator());
         nodeJson2.setDcElements(nodeMetaData.getDcElementsList()); // n'est pas encore exploité
         nodeJson2.setType(nodePreference.getPrefixArk());  //pcrt : p= pactols, crt=code DCMI pour collection

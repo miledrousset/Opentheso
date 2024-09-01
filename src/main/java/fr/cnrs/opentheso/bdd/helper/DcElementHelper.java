@@ -6,7 +6,7 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,7 +49,7 @@ public class DcElementHelper {
     }
     
     public boolean addDcElementConcept(HikariDataSource ds, DcElement dcElement, String idConcept, String idTheso) {
-        dcElement.setValue(new StringPlus().convertString(dcElement.getValue()));
+        dcElement.setValue(fr.cnrs.opentheso.utils.StringUtils.convertString(dcElement.getValue()));
         try(Connection conn = ds.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("insert into concept_dcterms "
@@ -72,7 +72,7 @@ public class DcElementHelper {
     }
     
     public int addDcElementThesaurus(HikariDataSource ds, DcElement dcElement, String idTheso) {
-        dcElement.setValue(new StringPlus().convertString(dcElement.getValue()));
+        dcElement.setValue(fr.cnrs.opentheso.utils.StringUtils.convertString(dcElement.getValue()));
         try(Connection conn = ds.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeQuery("insert into thesaurus_dcterms "
@@ -98,7 +98,7 @@ public class DcElementHelper {
     }    
     
     public boolean updateDcElementThesaurus(HikariDataSource ds, DcElement dcElement, String idTheso) {
-        dcElement.setValue(new StringPlus().convertString(dcElement.getValue()));
+        dcElement.setValue(fr.cnrs.opentheso.utils.StringUtils.convertString(dcElement.getValue()));
         try(Connection conn = ds.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("update thesaurus_dcterms "

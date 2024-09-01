@@ -11,7 +11,7 @@ import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.tools.FileUtilities;
+import fr.cnrs.opentheso.utils.DateUtils;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,10 +23,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.annotation.PostConstruct;
@@ -129,7 +126,7 @@ public class RestoreTheso implements Serializable {
         fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "l'export du sitemap a réussi !!! " + fileName));     
     }    
     private String getDatas(ArrayList<String> conceptIds, String idTheso){
-        FileUtilities fileUtilities = new FileUtilities();
+        DateUtils fileUtilities = new DateUtils();
         String date = fileUtilities.getDate();
         StringBuilder stringBuilder = new StringBuilder();
         

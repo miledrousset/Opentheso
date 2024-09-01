@@ -3,19 +3,25 @@ package fr.cnrs.opentheso.bean.graph;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import jakarta.ws.rs.core.UriBuilder;
-
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.neo4j.driver.AuthTokens;
@@ -28,18 +34,35 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
+@Data
 @Named
 @SessionScoped
 public class DataGraphView implements Serializable {
 
     @Autowired @Lazy
     private Connect connect;
-    private List<GraphObject> graphObjects;
-
-    private GraphObject selectedGraph;
 
     @Autowired @Lazy
     private GraphService graphService;
+
+    @Value("${neo4j.serverName}")
+    private String serverNameNeo4j;
+
+    @Value("${neo4j.serverPort}")
+    private String serverPortNeo4j;
+
+    @Value("${neo4j.user}")
+    private String userNeo4j;
+
+    @Value("${neo4j.password}")
+    private String passwordNeo4j;
+
+    @Value("${neo4j.databaseName}")
+    private String databaseNameNeo4j;
+
+    private List<GraphObject> graphObjects;
+
+    private GraphObject selectedGraph;
 
     private int selectedViewId;
     private String newViewName;
@@ -51,39 +74,20 @@ public class DataGraphView implements Serializable {
     private NodeSearchMini searchSelected;    
 
     private Properties getPrefOfNeo4j(){
-        ResourceBundle resourceBundle = getBundlePool();
-        if(resourceBundle == null){
-            return null;
-        }
-        Properties props = new Properties();
-        props.setProperty("neo4j.serverName", resourceBundle.getString("neo4j.serverName"));
-        props.setProperty("neo4j.serverPort", resourceBundle.getString("neo4j.serverPort"));
-        props.setProperty("neo4j.user", resourceBundle.getString("neo4j.user"));
-        props.setProperty("neo4j.password", resourceBundle.getString("neo4j.password"));
-        props.setProperty("neo4j.databaseName", resourceBundle.getString("neo4j.databaseName"));        
-        
+
+        var props = new Properties();
+        props.setProperty("neo4j.serverName", serverNameNeo4j);
+        props.setProperty("neo4j.serverPort", serverPortNeo4j);
+        props.setProperty("neo4j.user", userNeo4j);
+        props.setProperty("neo4j.password", passwordNeo4j);
+        props.setProperty("neo4j.databaseName", databaseNameNeo4j);
         return props;
-        
     }
-    private ResourceBundle getBundlePool(){
-        FacesContext context = FacesContext.getCurrentInstance();
-        try {
-            ResourceBundle bundlePool = context.getApplication().getResourceBundle(context, "conHikari");
-            return bundlePool;
-        } catch (Exception e) {
-            System.err.println(e.toString());
-        }
-        return null;
-    }    
-    
     
     /**
      * permet de retourner la liste des concepts possibles pour ajouter une
      * relation NT (en ignorant les relations interdites) on ignore les concepts
      * de type TT on ignore les concepts de type RT
-     *
-     * @param value
-     * @return
      */
     public List<NodeSearchMini> getAutoComplete(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
@@ -99,69 +103,6 @@ public class DataGraphView implements Serializable {
                     selectedIdTheso, true);
         }
         return liste;
-    }  
-
-    public String getSelectedIdTheso() {
-        return selectedIdTheso;
-    }
-
-    public void setSelectedIdTheso(String selectedIdTheso) {
-        this.selectedIdTheso = selectedIdTheso;
-    }
-
-    public NodeSearchMini getSearchSelected() {
-        return searchSelected;
-    }
-
-    public void setSearchSelected(NodeSearchMini searchSelected) {
-        this.searchSelected = searchSelected;
-    }
-
-
-    public void actionAjax(){
-    }
-    
-    
-    
-    
-    public int getSelectedViewId() {
-        return selectedViewId;
-    }
-
-    public void setSelectedViewId(int selectedViewId) {
-        this.selectedViewId = selectedViewId;
-    }
-
-    public String getNewViewDataToAdd() {
-        return newViewDataToAdd;
-    }
-
-    public void setNewViewDataToAdd(String newViewDataToAdd) {
-        this.newViewDataToAdd = newViewDataToAdd;
-    }
-
-    public String getNewViewName() {
-        return newViewName;
-    }
-
-    public void setNewViewName(String newViewName) {
-        this.newViewName = newViewName;
-    }
-
-    public String getNewViewDescription() {
-        return newViewDescription;
-    }
-
-    public void setNewViewDescription(String newViewDescription) {
-        this.newViewDescription = newViewDescription;
-    }
-
-    public List<ImmutablePair<String, String>> getNewViewExportedData() {
-        return newViewExportedData;
-    }
-
-    public void setNewViewExportedData(List<ImmutablePair<String, String>> newViewExportedData) {
-        this.newViewExportedData = newViewExportedData;
     }
 
     public void init() {
@@ -188,28 +129,6 @@ public class DataGraphView implements Serializable {
         newViewDescription = viewToEdit.getDescription();
         newViewDataToAdd = null;
         newViewExportedData = viewToEdit.getExportedData();
-    }
-
-    public List<GraphObject> getGraphObjects() {
-        return graphObjects;
-    }
-
-    public void setService(GraphService graphService) {
-        this.graphService = graphService;
-    }
-
-    public GraphObject getSelectedGraphObject() {
-        return selectedGraph;
-    }
-
-    public void setSelectedProduct(GraphObject selectedGraph) {
-        this.selectedGraph = selectedGraph;
-    }
-
-    public void clearMultiViewState() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        String viewId = context.getViewRoot().getViewId();
-        PrimeFaces.current().multiViewState().clearAll(viewId, true, this::showMessage);
     }
 
     public void redirectToGraphVisualization(String viewId) throws IOException {
@@ -245,8 +164,6 @@ public class DataGraphView implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "La base de données Neo4J n'est pas paramétrée, ouvrez hikari.properties et faire le changement !");
             return;
         }
-        
-        //System.out.println("export " + viewId);
         
         GraphObject view = graphService.getView(viewId);
         if (view == null) {
@@ -372,12 +289,6 @@ public class DataGraphView implements Serializable {
             newViewExportedData.remove(tuple);
         });
         init();
-    }
-
-    private void showMessage(String clientId) {
-        FacesContext.getCurrentInstance()
-                .addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, clientId + " multiview state has been cleared out", null));
     }
 
     public void showMessage(FacesMessage.Severity messageType, String messageValue) {

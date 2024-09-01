@@ -15,7 +15,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -111,8 +111,8 @@ public class FacetHelper {
     public ArrayList<NodeIdValue> searchFacet(HikariDataSource ds,
             String name, String lang, String idThesaurus) {
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
-        name = stringPlus.convertString(name);
+        
+        name = fr.cnrs.opentheso.utils.StringUtils.convertString(name);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_facet, lexical_value FROM node_label WHERE lang = '" + lang
@@ -346,8 +346,8 @@ public class FacetHelper {
 
         Connection conn;
         Statement stmt;
-        StringPlus stringPlus = new StringPlus();
-        lexicalValue = stringPlus.convertString(lexicalValue);
+        
+        lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
 
         if (idFacet == null || idFacet.isEmpty()) {
             idFacet = getNewId(ds);
@@ -464,7 +464,7 @@ public class FacetHelper {
             String idThesaurus,
             String lexicalValue, String idLang) {
         boolean status = false;
-        lexicalValue = new StringPlus().convertString(lexicalValue);
+        lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into node_label "
@@ -501,7 +501,7 @@ public class FacetHelper {
             String idLang,
             String lexicalValue) {
         boolean status = false;
-        lexicalValue = new StringPlus().convertString(lexicalValue);
+        lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -1231,7 +1231,7 @@ public class FacetHelper {
 
     public boolean updateLabelFacet(HikariDataSource ds, String newLabel, String idFacet, String idThes, String lang) {
         boolean status = false;
-        newLabel = (new StringPlus().convertString(newLabel));
+        newLabel = (fr.cnrs.opentheso.utils.StringUtils.convertString(newLabel));
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE node_label SET lexical_value='" + newLabel + "' WHERE id_facet = '"

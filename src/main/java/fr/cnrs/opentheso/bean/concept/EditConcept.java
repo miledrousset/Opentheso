@@ -16,7 +16,7 @@ import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -25,7 +25,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
+import fr.cnrs.opentheso.models.exports.csv.CsvWriteHelper;
 import fr.cnrs.opentheso.ws.handle.HandleHelper;
 import fr.cnrs.opentheso.ws.handlestandard.HandleService;
 import java.io.ByteArrayInputStream;
@@ -203,7 +203,7 @@ public class EditConcept implements Serializable {
         }
         ConceptHelper conceptHelper = new ConceptHelper();
         
-        nodeConceptTypeToAdd.setCode(new StringPlus().unaccentLowerString(nodeConceptTypeToAdd.getCode()));
+        nodeConceptTypeToAdd.setCode(fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(nodeConceptTypeToAdd.getCode()));
         nodeConceptTypeToAdd.setCode(nodeConceptTypeToAdd.getCode().replaceAll(" ", ""));
         
         if(conceptHelper.isConceptTypeExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeConceptTypeToAdd)){

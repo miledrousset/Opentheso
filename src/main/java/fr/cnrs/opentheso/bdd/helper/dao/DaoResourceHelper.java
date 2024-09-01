@@ -2,8 +2,8 @@ package fr.cnrs.opentheso.bdd.helper.dao;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
-import fr.cnrs.opentheso.skosapi.SKOSProperty;
+
+import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -703,7 +703,7 @@ public class DaoResourceHelper {
 
     private List<ConceptNote> getNotes(String textBrut) {
         List<ConceptNote> conceptNotes = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
+        
 
         if (StringUtils.isNotEmpty(textBrut)) {
             String[] tabs = textBrut.split(SEPARATEUR);
@@ -713,7 +713,7 @@ public class DaoResourceHelper {
                     String[] element = tab.split(SUB_SEPARATEUR);
                     ConceptNote conceptNote = new ConceptNote();
                     conceptNote.setIdNote(Integer.parseInt(element[0]));
-                    conceptNote.setLabel(stringPlus.normalizeStringForXml(element[1]));
+                    conceptNote.setLabel(fr.cnrs.opentheso.utils.StringUtils.normalizeStringForXml(element[1]));
                     conceptNote.setIdLang(element[2]);
                     if(element.length > 3)
                         conceptNote.setNoteSource(element[3]);

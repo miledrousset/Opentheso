@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.proposition.helper;
 
 import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -159,7 +160,7 @@ public class PropositionHelper {
     }
 
     public int createNewProposition(HikariDataSource ds, PropositionDao proposition) {
-        proposition.setCommentaire(new StringPlus().convertString(proposition.getCommentaire()));
+        proposition.setCommentaire(StringUtils.convertString(proposition.getCommentaire()));
         try {
             PreparedStatement ps = ds.getConnection().prepareStatement("Insert into proposition_modification "
                     + "(id_concept, id_theso, lang, status, date, nom, email, commentaire) values ('"
@@ -185,8 +186,8 @@ public class PropositionHelper {
 
     public boolean updateStatusProposition(HikariDataSource ds, String status, String approuvePar, String approuveDate, int propositionId, String adminComment) {
         boolean updateStatus = false;
-        StringPlus stringPlus = new StringPlus();
-        adminComment = stringPlus.convertString(adminComment);
+        
+        adminComment = StringUtils.convertString(adminComment);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("UPDATE proposition_modification SET status = '" + status + "', approuve_par = '" 

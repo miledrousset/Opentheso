@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bdd.helper.dao;
 
-import fr.cnrs.opentheso.skosapi.SKOSProperty;
+import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import java.util.List;
 import lombok.Data;
 /**

@@ -15,9 +15,10 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentType;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeSelectedAlignment;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
-import fr.cnrs.opentheso.core.alignment.AlignementPreferences;
-import fr.cnrs.opentheso.core.alignment.AlignementSource;
+
+import fr.cnrs.opentheso.models.alignment.AlignementPreferences;
+import fr.cnrs.opentheso.models.alignment.AlignementSource;
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -208,8 +209,8 @@ public class AlignmentHelper {
             String idConcept, String idThesaurus) {
 
         boolean status = false;
-        uriTarget = new StringPlus().convertString(uriTarget);
-        conceptTarget = new StringPlus().convertString(conceptTarget);
+        uriTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(uriTarget);
+        conceptTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(conceptTarget);
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -246,8 +247,8 @@ public class AlignmentHelper {
             String id_Concept, int alignement_id_type, String urlTarget) {
 
         boolean status = false;
-        StringPlus stringPlus = new StringPlus();
-        urlTarget = stringPlus.addQuotes(urlTarget);
+        
+        urlTarget = StringUtils.addQuotes(urlTarget);
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -290,7 +291,7 @@ public class AlignmentHelper {
             String uriTarget, int idTypeAlignment,
             String idConcept, String idThesaurus, int id_alignement_source) {
         
-        thesaurusTarget = new StringPlus().convertString(thesaurusTarget);
+        thesaurusTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurusTarget);
 
         if (!isExistsAlignement(ds, id_alignement_source, idThesaurus, idConcept, idTypeAlignment, uriTarget)) {
             message = "";//"Cet alignement n'exite pas, création en cours <br>";
@@ -325,8 +326,8 @@ public class AlignmentHelper {
         Connection conn;
         Statement stmt;
         boolean status = false;
-        conceptTarget = new StringPlus().convertString(conceptTarget);
-        uriTarget = new StringPlus().convertString(uriTarget);
+        conceptTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(conceptTarget);
+        uriTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(uriTarget);
 
         try {
             // Get connection from pool
@@ -382,8 +383,8 @@ public class AlignmentHelper {
      */
     public boolean addNewAlignment(HikariDataSource ds, NodeAlignment nodeAlignment) {
 
-        nodeAlignment.setConcept_target(new StringPlus().convertString(nodeAlignment.getConcept_target()));
-        nodeAlignment.setUri_target(new StringPlus().convertString(nodeAlignment.getUri_target()));
+        nodeAlignment.setConcept_target(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeAlignment.getConcept_target()));
+        nodeAlignment.setUri_target(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeAlignment.getUri_target()));
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -727,7 +728,7 @@ public class AlignmentHelper {
                         alignementSource.setId(resultSet.getInt("id"));
                         alignementSource.setDescription(resultSet.getString("description"));
                         alignementSource.setSource_filter(resultSet.getString("source_filter"));
-                        alignementSource.setIsGps(resultSet.getBoolean("gps"));
+                        alignementSource.setGps(resultSet.getBoolean("gps"));
                         alignementSources.add(alignementSource);
                     }
                 }
@@ -763,7 +764,7 @@ public class AlignmentHelper {
                         alignementSource.setId(resultSet.getInt("id"));
                         alignementSource.setDescription(resultSet.getString("description"));
                         alignementSource.setSource_filter(resultSet.getString("source_filter"));
-                        alignementSource.setIsGps(resultSet.getBoolean("gps"));
+                        alignementSource.setGps(resultSet.getBoolean("gps"));
                     }
                 }
             }

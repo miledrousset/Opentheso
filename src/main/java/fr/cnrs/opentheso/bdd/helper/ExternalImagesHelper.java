@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,7 +38,7 @@ public class ExternalImagesHelper {
 
         boolean status = false;
 
-        copyRight = new StringPlus().convertString(copyRight);
+        copyRight = fr.cnrs.opentheso.utils.StringUtils.convertString(copyRight);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into external_images (id_concept, id_thesaurus, image_name, "

@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.ws.ark;
 
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import java.util.ArrayList;
-import fr.cnrs.opentheso.bdd.tools.FileUtilities;
+import fr.cnrs.opentheso.utils.DateUtils;
 /*
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -58,14 +58,14 @@ public final class NodeJson {
                 + "\"handle_prefix\":\"" + handle_prefix + "\","
                 + "\"handle\":\""+ handle +"\","
                 + "\"handle_stored\":"+ handle_stored +","
-                + "\"date\":\"" + new FileUtilities().getDate() +"\","
+                + "\"date\":\"" + new DateUtils().getDate() +"\","
                 + "\"type\":\""+  type + "\","
                 + "\"language\":\""+ language + "\","
                 + "\"linkup\":" + linkup + ","
                 + "\"ark\":\""+ ark + "\","
                 + "\"name\":\""+ name + "\","
                 + "\"qualifier\":\""+ qualifier + "\","
-                + "\"modificationDate\":\""+ new FileUtilities().getDate() +"\","
+                + "\"modificationDate\":\""+ new DateUtils().getDate() +"\","
                 + "\"saved\":" + saved +","
                 + "\"naan\":\"" + naan + "\","
                 + "\"redirect\":" + true + ","

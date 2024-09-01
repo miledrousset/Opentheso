@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,7 +36,7 @@ public class ExternalResourcesHelper {
 
         boolean status = false;
 
-        description = new StringPlus().convertString(description);
+        description = fr.cnrs.opentheso.utils.StringUtils.convertString(description);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into external_resources (id_concept, id_thesaurus, description, "

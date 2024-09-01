@@ -40,7 +40,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
 import fr.cnrs.opentheso.bean.candidat.dao.MessageDao;
 import fr.cnrs.opentheso.bean.importexport.outils.HTMLLinkElement;
@@ -1116,8 +1116,8 @@ public class ConceptHelper {
     public ArrayList<String> getIdConceptsFromLabel(HikariDataSource ds,
             String idTheso, String label, String idLang) {
         ArrayList<String> conceptLabels = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
-        label = stringPlus.convertString(label);
+        
+        label = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select concept.id_concept from concept, preferred_term, term "
@@ -1159,8 +1159,8 @@ public class ConceptHelper {
     public String getOneIdConceptFromLabel(HikariDataSource ds,
             String idTheso, String label, String idLang) {
         String conceptId = null;
-        StringPlus stringPlus = new StringPlus();
-        label = stringPlus.convertString(label);
+        
+        label = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select concept.id_concept from concept, preferred_term, term "
@@ -1204,8 +1204,8 @@ public class ConceptHelper {
     public ArrayList<String> getIdConceptsFromAltLabel(HikariDataSource ds,
             String idTheso, String label, String idLang) {
         ArrayList<String> conceptLabels = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
-        label = stringPlus.convertString(label);
+        
+        label = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select concept.id_concept from concept, preferred_term, non_preferred_term "
@@ -1247,8 +1247,8 @@ public class ConceptHelper {
     public String getOneIdConceptFromAltLabel(HikariDataSource ds,
             String idTheso, String label, String idLang) {
         String conceptId = null;
-        StringPlus stringPlus = new StringPlus();
-        label = stringPlus.convertString(label);
+        
+        label = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select concept.id_concept from concept, preferred_term, non_preferred_term "

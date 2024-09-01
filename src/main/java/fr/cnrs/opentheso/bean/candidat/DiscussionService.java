@@ -12,38 +12,66 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
-import java.util.*;
 import jakarta.annotation.PreDestroy;
-import javax.mail.*;
-import javax.mail.internet.*;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
+@Data
 @Named(value = "discussionService")
 @SessionScoped
 public class DiscussionService implements Serializable {
 
     @Autowired @Lazy
     private CandidatBean candidatBean;
+
     @Autowired @Lazy
     private LanguageBean langueBean;
+
     @Autowired @Lazy
     private Connect connect;
+
     @Autowired @Lazy
     private LanguageBean languageBean;
-    @Autowired @Lazy private MailBean mailBean;
-    
-    
+
+    @Autowired @Lazy
+    private MailBean mailBean;
+
+    @Value("${smpt.protocol}")
+    private String protocolMail;
+
+    @Value("${smpt.hostname}")
+    private String hostname;
+
+    @Value("${smpt.portNumber}")
+    private String portNumber;
+
+    @Value("${smpt.authorization}")
+    private String authorization;
+
+    @Value("${smpt.mailFrom}")
+    private String mailFrom;
+
+    @Value("${smpt.transportMail}")
+    private String transportMail;
+
     private String email;
     private List<NodeUser> nodeUsers;
 
@@ -137,22 +165,14 @@ public class DiscussionService implements Serializable {
     }
 
     private Properties getPrefMail() {
-        Properties props;
-        FacesContext context = FacesContext.getCurrentInstance();
-        try {
-            ResourceBundle bundlePref = context.getApplication().getResourceBundle(context, "pref");
-            props = new Properties();
-            props.setProperty("mail.transport.protocol", bundlePref.getString("protocolMail"));
-            props.setProperty("mail.smtp.host", bundlePref.getString("hostMail"));
-            props.setProperty("mail.smtp.port", bundlePref.getString("portMail"));
-            props.setProperty("mail.smtp.auth", bundlePref.getString("authMail"));
-            props.setProperty("mailFrom", bundlePref.getString("mailFrom"));
-            props.setProperty("transportMail", bundlePref.getString("transportMail"));
-
-            return props;
-        } catch (Exception e) {
-        }
-        return null;
+        var props = new Properties();
+        props.setProperty("mail.transport.protocol", protocolMail);
+        props.setProperty("mail.smtp.host", hostname);
+        props.setProperty("mail.smtp.port", portNumber);
+        props.setProperty("mail.smtp.auth", authorization);
+        props.setProperty("mailFrom", mailFrom);
+        props.setProperty("transportMail", transportMail);
+        return props;
     }
 
     public void sendInvitation() {
@@ -185,21 +205,4 @@ public class DiscussionService implements Serializable {
             }
         }
     }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public List<NodeUser> getNodeUsers() {
-        return nodeUsers;
-    }
-
-    public void setNodeUsers(List<NodeUser> nodeUsers) {
-        this.nodeUsers = nodeUsers;
-    }
-
 }

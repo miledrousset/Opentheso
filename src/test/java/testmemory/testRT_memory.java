@@ -7,9 +7,7 @@ package testmemory;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,6 +15,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -84,10 +84,9 @@ public class testRT_memory {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
 
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = StringUtils.convertString(value);
+        value = StringUtils.unaccentLowerString(value);
 
         try {
             // Get connection from pool

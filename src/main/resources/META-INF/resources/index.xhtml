@@ -34,6 +34,17 @@
 
         <h:outputStylesheet name="webjars/leaflet/1.8.0/leaflet.css"/>
         <h:outputScript name="webjars/leaflet/1.8.0/leaflet.js"/>
+
+        <style type="text/css">
+            .ui-growl {
+                right: 55px;
+                margin-top: -40px;
+                font-size: 12px;
+            }
+            body .ui-growl .ui-growl-item-container .ui-growl-item {
+                background-color: #ECF8F1;
+            }
+        </style>
     </h:head>
 
     <h:body id="page-top" onload="initMenu();" style="overflow-x: hidden;">
@@ -51,20 +62,8 @@
             <f:viewAction action="#{selectedTheso.preRenderView}"/>
         </f:metadata>
 
-        <style type="text/css">
-            .ui-growl {
-                right: 55px;
-                margin-top: -40px;
-                font-size: 12px;
-            }
-            body .ui-growl .ui-growl-item-container .ui-growl-item {
-                background-color: #ECF8F1;
-            }
-        </style>
-
         <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
-        
-        
+
         <div id="wrapper" style="height: 100%">
             <ui:include src="commun/menu.xhtml" />
 
@@ -81,10 +80,10 @@
                     <div id="boutonNotification" style="top: 85px; right: 0; position: absolute; z-index: 10; margin-top: -25px" >
                         <h:panelGroup id="resultSearch" style="z-index: 10">
                             <div style="margin-top: 5px; margin-bottom: -5px; right: 0; margin-right: 11px; z-index: 11;">
-                                <p:commandButton  icon="fa fa-list-ol" style="height: 25px;"
-                                                  styleClass="ui-button-raised ui-button-success"
-                                                  update="messageIndex containerIndex:notificationPanel"
-                                                  actionListener="#{searchBean.afficherResultatRecherche()}" />
+                                <p:commandButton icon="fa fa-list-ol" style="height: 25px;"
+                                                 styleClass="ui-button-raised ui-button-success"
+                                                 update="messageIndex containerIndex:notificationPanel"
+                                                 actionListener="#{searchBean.afficherResultatRecherche()}" />
                             </div>
                         </h:panelGroup>
                     </div>

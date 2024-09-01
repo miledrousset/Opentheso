@@ -20,7 +20,8 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeTab2Levels;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -98,9 +99,9 @@ public class TermHelper {
     public boolean isPrefLabelExist(HikariDataSource ds, String title, String idThesaurus, String idLang) {
 
         boolean existe = false;
-        StringPlus stringPlus = new StringPlus();
-        title = stringPlus.convertString(title);
-        title = stringPlus.unaccentLowerString(title);
+        
+        title = StringUtils.convertString(title);
+        title = StringUtils.unaccentLowerString(title);
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -129,7 +130,7 @@ public class TermHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_term from non_preferred_term where f_unaccent(lower(lexical_value)) like '"
-                        + new StringPlus().convertString(title) + "' and lang = '" + idLang + "' and id_thesaurus = '"
+                        + fr.cnrs.opentheso.utils.StringUtils.convertString(title) + "' and lang = '" + idLang + "' and id_thesaurus = '"
                         + idThesaurus + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
@@ -139,7 +140,7 @@ public class TermHelper {
             }
         } catch (SQLException sqle) {
             // Log exception
-            log.error("Error while asking if Title of altLabel exist : " + new StringPlus().convertString(title), sqle);
+            log.error("Error while asking if Title of altLabel exist : " + fr.cnrs.opentheso.utils.StringUtils.convertString(title), sqle);
         }
         return existe;
     }
@@ -155,10 +156,10 @@ public class TermHelper {
         Connection conn = null;
         Statement stmt;
         boolean isPassed = false;
-        StringPlus stringPlus = new StringPlus();
+        
 
-        oldValue = stringPlus.convertString(oldValue);
-        newValue = stringPlus.convertString(newValue);
+        oldValue = StringUtils.convertString(oldValue);
+        newValue = StringUtils.convertString(newValue);
         try {
             conn = ds.getConnection();
             conn.setAutoCommit(false);
@@ -220,7 +221,7 @@ public class TermHelper {
         Connection conn = null;
         Statement stmt;
         boolean isPassed = false;
-        value = (new StringPlus().convertString(value));
+        value = (fr.cnrs.opentheso.utils.StringUtils.convertString(value));
         try {
             conn = ds.getConnection();
             conn.setAutoCommit(false);
@@ -278,7 +279,7 @@ public class TermHelper {
             String idTerm, String idLang,
             String lexicalValue, String idTheso, String status, int idUser) {
 
-        lexicalValue = new StringPlus().convertString(lexicalValue);
+        lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
         boolean isPassed = false;
         try (Connection conn = ds.getConnection()){
             try ( Statement stmt = conn.createStatement()) {
@@ -353,7 +354,7 @@ public class TermHelper {
             int idUser) {
 
         boolean isPassed = false;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("Insert into non_preferred_term "
@@ -486,7 +487,7 @@ public class TermHelper {
             int idUser) {
 
         boolean passed = false;
-        label = new StringPlus().convertString(label);
+        label = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into term "
@@ -534,7 +535,7 @@ public class TermHelper {
         Connection conn = null;
         Statement stmt;
         boolean status = false;
-        label = new StringPlus().convertString(label);
+        label = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
         try {
             conn = ds.getConnection();
             conn.setAutoCommit(false);
@@ -896,7 +897,7 @@ public class TermHelper {
      */
     public String addNewTerm(Connection conn, Term term, int idUser) {
         String idTerm = null;
-        term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
+        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select max(id) from term");
             try ( ResultSet resultSet = stmt.getResultSet()) {
@@ -1075,7 +1076,7 @@ public class TermHelper {
      */
     private boolean addUSE(Connection conn, Term term, int idUser) {
 
-        term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
+        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
         try ( Statement stmt = conn.createStatement()) {
             String query = "Insert into non_preferred_term "
                     + "(id_term, lexical_value, lang, "
@@ -1109,7 +1110,7 @@ public class TermHelper {
      */
     private boolean addUSEHistorique(Connection conn, Term term, int idUser, String action) {
 
-        term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
+        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
         try ( Statement stmt = conn.createStatement()) {
             String query = "Insert into non_preferred_term_historique "
                     + "(id_term, lexical_value, lang, "
@@ -1142,7 +1143,7 @@ public class TermHelper {
      */
     public boolean addTermTraduction(Connection conn, Term term, int idUser) {
 
-        term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
+        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into term (id_term, lexical_value, lang, id_thesaurus, source, status,contributor, creator)"
                     + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
@@ -1197,7 +1198,7 @@ public class TermHelper {
                 lang,
                 lexicalValue);
 
-        lexicalValue = new StringPlus().convertString(lexicalValue);
+        lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
         String query;
         try {
             // Get connection from pool
@@ -1275,7 +1276,7 @@ public class TermHelper {
         lexicalValue = lexicalValue.replaceAll("\\)", " ");
         lexicalValue = lexicalValue.replaceAll("\\/", " ");
 //        lexicalValue = lexicalValue.replaceAll("'", " ");
-        lexicalValue = new StringPlus().convertString(lexicalValue.trim());
+        lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue.trim());
         String tabMots[] = lexicalValue.split(" ");
 
         try {
@@ -1342,7 +1343,7 @@ public class TermHelper {
         lexicalValue = lexicalValue.replaceAll("\\/", " ");
 //        lexicalValue = lexicalValue.replaceAll("'", " ");
 
-        lexicalValue = new StringPlus().convertString(lexicalValue.trim());
+        lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue.trim());
 
         String tabMots[] = lexicalValue.split(" ");
 
@@ -1398,7 +1399,7 @@ public class TermHelper {
         Connection conn;
         Statement stmt;
         boolean status = false;
-        term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
+        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -1964,7 +1965,7 @@ public class TermHelper {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_term from term where lexical_value = '" + new StringPlus().convertString(title)
+                stmt.executeQuery("select id_term from term where lexical_value = '" + fr.cnrs.opentheso.utils.StringUtils.convertString(title)
                         + "' and lang = '" + idLang + "' and id_thesaurus = '" + idThesaurus + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
@@ -1987,7 +1988,7 @@ public class TermHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_term from term where lexical_value ilike '"
-                        + new StringPlus().convertString(title) + "'  and lang = '" + idLang
+                        + fr.cnrs.opentheso.utils.StringUtils.convertString(title) + "'  and lang = '" + idLang
                         + "' and id_thesaurus = '" + idThesaurus + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
@@ -2007,9 +2008,9 @@ public class TermHelper {
      */
     public boolean isTermExist(HikariDataSource ds, String title, String idThesaurus, String idLang) {
 
-        StringPlus stringPlus = new StringPlus();
-        title = stringPlus.convertString(title);
-        title = stringPlus.unaccentLowerString(title);
+        
+        title = StringUtils.convertString(title);
+        title = StringUtils.unaccentLowerString(title);
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {

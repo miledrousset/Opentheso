@@ -10,7 +10,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -75,7 +76,7 @@ public class HtmlPageHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-                stmt.executeUpdate("update homepage set htmlcode = '" + new StringPlus().convertString(htmlText) + "'"
+                stmt.executeUpdate("update homepage set htmlcode = '" + fr.cnrs.opentheso.utils.StringUtils.convertString(htmlText) + "'"
                         + " where lang = '" + idLang + "'");
                 return true;
             }
@@ -89,7 +90,7 @@ public class HtmlPageHelper {
         
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("insert into homepage (htmlcode, lang) values ('" + new StringPlus().convertString(htmlText) + "', '" + idLang + "')");
+                stmt.executeUpdate("insert into homepage (htmlcode, lang) values ('" + fr.cnrs.opentheso.utils.StringUtils.convertString(htmlText) + "', '" + idLang + "')");
                 return true;
             }
         } catch (SQLException ex) {
@@ -166,8 +167,8 @@ public class HtmlPageHelper {
             String idTheso,
             String idLang) {
 
-        StringPlus stringPlus = new StringPlus();
-        htmlText = stringPlus.convertString(htmlText);
+        
+        htmlText = StringUtils.convertString(htmlText);
 
         String query;
         Statement stmt;
@@ -202,8 +203,8 @@ public class HtmlPageHelper {
             String idTheso,
             String idLang) {
 
-        StringPlus stringPlus = new StringPlus();
-        htmlText = stringPlus.convertString(htmlText);
+        
+        htmlText = StringUtils.convertString(htmlText);
 
         String query;
         Statement stmt;
@@ -352,7 +353,7 @@ public class HtmlPageHelper {
      */
     public boolean updateCopyright(HikariDataSource ds, String idTheso, String copyright) {
         boolean status = false;
-        copyright = new StringPlus().convertString(copyright);
+        copyright = fr.cnrs.opentheso.utils.StringUtils.convertString(copyright);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update copyright SET copyright= '"
@@ -371,7 +372,7 @@ public class HtmlPageHelper {
     public boolean addCopyright(HikariDataSource ds, String idTheso, String copyright) {
 
         boolean status = false;
-        copyright = new StringPlus().convertString(copyright);
+        copyright = fr.cnrs.opentheso.utils.StringUtils.convertString(copyright);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("INSERT INTO copyright (id_thesaurus,copyright) VALUES ('"

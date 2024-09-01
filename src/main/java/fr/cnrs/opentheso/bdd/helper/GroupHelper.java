@@ -28,7 +28,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 
 import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -187,7 +187,7 @@ public class GroupHelper {
             String idTheso,
             int idUser) {
         boolean status = false;
-        label = new StringPlus().convertString(label);
+        label = fr.cnrs.opentheso.utils.StringUtils.convertString(label);
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -452,7 +452,7 @@ public class GroupHelper {
         int idSequenceConcept = -1;
 
         /*    nodeConceptGroup.setLexicalValue(
-                new StringPlus().convertString(nodeConceptGroup.getLexicalValue()));
+                fr.cnrs.opentheso.utils.StringUtils.convertString(nodeConceptGroup.getLexicalValue()));
          */
         if (nodeConceptGroup.getConceptGroup().getNotation() == null) {
             nodeConceptGroup.getConceptGroup().setNotation("");
@@ -567,7 +567,7 @@ public class GroupHelper {
             String idLang, String value) {
         Statement stmt;
         boolean status = false;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         try {
             stmt = conn.createStatement();
             try {
@@ -609,7 +609,7 @@ public class GroupHelper {
             String idGroup, String idTheso,
             String idLang, String value) {
         boolean status = false;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("Insert into concept_group_label "
@@ -649,7 +649,7 @@ public class GroupHelper {
 
         Statement stmt;
         boolean status = false;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         try {
             stmt = conn.createStatement();
             try {
@@ -1931,7 +1931,7 @@ public class GroupHelper {
         Statement stmt;
         ResultSet resultSet = null;
         nodeConceptGroup.setLexicalValue(
-                new StringPlus().convertString(nodeConceptGroup.getLexicalValue()));
+                fr.cnrs.opentheso.utils.StringUtils.convertString(nodeConceptGroup.getLexicalValue()));
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -2328,7 +2328,7 @@ public class GroupHelper {
      */
     public boolean addGroupTraduction(HikariDataSource ds, ConceptGroupLabel conceptGroupLabel, int idUser) {
 
-        conceptGroupLabel.setLexicalvalue(new StringPlus().convertString(conceptGroupLabel.getLexicalvalue()));
+        conceptGroupLabel.setLexicalvalue(fr.cnrs.opentheso.utils.StringUtils.convertString(conceptGroupLabel.getLexicalvalue()));
         try (Connection conn = ds.getConnection()){
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into concept_group_label (lexicalvalue, created, modified,lang, idthesaurus, idgroup)"
@@ -2364,7 +2364,7 @@ public class GroupHelper {
         Statement stmt;
         boolean status = false;
         conceptGroupLabel.setLexicalvalue(
-                new StringPlus().convertString(conceptGroupLabel.getLexicalvalue()));
+                fr.cnrs.opentheso.utils.StringUtils.convertString(conceptGroupLabel.getLexicalvalue()));
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -2719,7 +2719,7 @@ public class GroupHelper {
         Statement stmt;
         ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = null;
-        text = new StringPlus().convertString(text);
+        text = fr.cnrs.opentheso.utils.StringUtils.convertString(text);
 
         try {
             // Get connection from pool
@@ -2783,7 +2783,7 @@ public class GroupHelper {
         Statement stmt;
         ResultSet resultSet = null;
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        text = new StringPlus().convertString(text);
+        text = fr.cnrs.opentheso.utils.StringUtils.convertString(text);
 
         try {
             // Get connection from pool
@@ -2848,7 +2848,7 @@ public class GroupHelper {
         Statement stmt;
         ResultSet resultSet = null;
         List<NodeAutoCompletion> nodeAutoCompletionList = null;
-        text = new StringPlus().convertString(text);
+        text = fr.cnrs.opentheso.utils.StringUtils.convertString(text);
 
         try {
             // Get connection from pool
@@ -3527,7 +3527,7 @@ public class GroupHelper {
         Statement stmt;
         boolean status = false;
         conceptGroupLabel.setLexicalvalue(
-                new StringPlus().convertString(conceptGroupLabel.getLexicalvalue()));
+                fr.cnrs.opentheso.utils.StringUtils.convertString(conceptGroupLabel.getLexicalvalue()));
 
         /**
          * On met à jour tous les chmamps saufs l'idThesaurus, la date de
@@ -3761,7 +3761,7 @@ public class GroupHelper {
         Statement stmt;
         ResultSet resultSet = null;
         boolean existe = false;
-        title = new StringPlus().convertString(title);
+        title = fr.cnrs.opentheso.utils.StringUtils.convertString(title);
         try {
             // Get connection from pool
             conn = ds.getConnection();

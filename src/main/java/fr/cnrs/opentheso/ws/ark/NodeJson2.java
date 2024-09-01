@@ -3,8 +3,7 @@ package fr.cnrs.opentheso.ws.ark;
 import fr.cnrs.opentheso.bdd.datas.DcElement;
 import fr.cnrs.opentheso.bdd.datas.Qualifier;
 import java.util.ArrayList;
-import fr.cnrs.opentheso.bdd.tools.FileUtilities;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import fr.cnrs.opentheso.utils.DateUtils;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -41,7 +40,7 @@ public final class NodeJson2 {
         job.add("title", title);
         job.add("creator", creator);
         job.add("useHandle", useHandle);
-        job.add("modificationDate", new FileUtilities().getDate());
+        job.add("modificationDate", new DateUtils().getDate());
         
         job.add("dcElements", getStringFromDcElements());        
         job.add("qualifiers", getStringFromQualifiers()); 

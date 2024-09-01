@@ -53,3 +53,35 @@ logging:
 settings:
   timeout: 79
   workLanguage: fr
+  user: neo4j
+  password: neo4j1234
+  databaseName: neo4j
+
+smpt:
+  protocol: smtp
+  hostname: smtprelay.cnrs.fr
+  portNumber: 25
+  authorization: false$
+  mailFrom: opentheso@mom.fr
+  transportMail: smtp
+
+
+neo4j:
+  serverName: localhost
+  serverPort: 7687
+
+ldap:
+  security:
+    authentication: simple
+  server:
+    url: ldapr3.huma-num.fr
+  initial:
+    context:
+      factory: com.sun.jndi.ldap.LdapCtxFactory
+  key:
+    store:
+      password: changeit
+      path: /usr/lib/jvm/java-11-openjdk-amd64/lib/security/cacerts
+    trust:
+      password: changeit
+      path: /usr/lib/jvm/java-11-openjdk-amd64/lib/security/cacerts

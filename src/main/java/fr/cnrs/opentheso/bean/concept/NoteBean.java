@@ -11,7 +11,6 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -222,7 +221,7 @@ public class NoteBean implements Serializable {
         }
 
 
-        noteValue = new StringPlus().clearValue(noteValue);
+        noteValue = fr.cnrs.opentheso.utils.StringUtils.clearValue(noteValue);
         noteValue = StringEscapeUtils.unescapeXml(noteValue);
 
         if(isFacetNote){
@@ -381,7 +380,7 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        noteValue = new StringPlus().clearValue(noteValue);
+        noteValue = fr.cnrs.opentheso.utils.StringUtils.clearValue(noteValue);
         noteValue = StringEscapeUtils.unescapeXml(noteValue);
 
         if (new NoteHelper().isNoteExist(
@@ -511,7 +510,7 @@ public class NoteBean implements Serializable {
                     conceptBean.getSelectedLang());            
             return;            
         }
-        nodeNote.setLexicalvalue(new StringPlus().clearValue(nodeNote.getLexicalvalue()));
+        nodeNote.setLexicalvalue(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getLexicalvalue()));
         nodeNote.setLexicalvalue(StringEscapeUtils.unescapeXml(nodeNote.getLexicalvalue()));        
         
         if(isFacetNote){

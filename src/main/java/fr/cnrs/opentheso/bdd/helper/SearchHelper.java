@@ -27,7 +27,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearch;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -75,11 +75,11 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeAutoCompletion> nodeAutoCompletions = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String multiValuesPT = "";
         String multiValuesNPT = "";
@@ -394,8 +394,8 @@ public class SearchHelper {
     }
 
     private String formatValue(String valueToSearch) {
-        valueToSearch = new StringPlus().convertString(valueToSearch);
-        return new StringPlus().unaccentLowerString(valueToSearch);
+        valueToSearch = fr.cnrs.opentheso.utils.StringUtils.convertString(valueToSearch);
+        return fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(valueToSearch);
     }
 
     /**
@@ -415,12 +415,12 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<String> nodeIds = new ArrayList<>();
         value = value.trim();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
         
         String limit = " limit 100";
         if(StringUtils.isEmpty(value)){
@@ -634,12 +634,12 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<String> nodeIds = new ArrayList<>();
         value = value.trim();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String multiValuesPT = "";
         String multiValuesNPT = "";
@@ -812,12 +812,12 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<String> nodeIds = new ArrayList<>();
         value = value.trim();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String multiValuesPT = "";
         String multiValuesNPT = "";
@@ -994,15 +994,13 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<String> listIds = new ArrayList<>();
         if (value == null) {
             return listIds;
         }
-        value = stringPlus.convertString(value);
-        //    value = stringPlus.unaccentLowerString(value);
-
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String preparedValuePT = " and unaccent(lower(term.lexical_value)) like unaccent(lower('%" + value + "%'))";
         String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) like unaccent(lower('%" + value + "%'))";
 
@@ -1136,11 +1134,11 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeSearchMini> nodeSearchMinis = null;
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String preparedValuePT = " and f_unaccent(lower(term.lexical_value)) like '%" + value + "%'";
         String preparedValueNPT = " and f_unaccent(lower(non_preferred_term.lexical_value)) like '%" + value + "%'";
@@ -1363,11 +1361,10 @@ public class SearchHelper {
      */
     public ArrayList<NodeSearchMini> searchExactMatchTest(HikariDataSource ds,
             String value, String idLang, String idTheso) {
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        //    value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String lang;
         if (idLang == null) {
             lang = "";
@@ -1530,11 +1527,10 @@ public class SearchHelper {
      */
     public ArrayList<NodeSearchMini> searchExactMatch(HikariDataSource ds,
             String value, String idLang, String idTheso) {
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        //    value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String lang;
         if (idLang == null) {
             lang = "";
@@ -1693,11 +1689,10 @@ public class SearchHelper {
      */
     public ArrayList<NodeSearchMini> searchStartWith(HikariDataSource ds,
             String value, String idLang, String idTheso) {
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        //    value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String lang;
         if (idLang == null) {
             lang = "";
@@ -2065,11 +2060,11 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String query;
         String lang;
@@ -2241,11 +2236,11 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String query;
 
@@ -2378,11 +2373,11 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String query;
         String lang;
@@ -2472,10 +2467,10 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
         ArrayList<String> tabIdConcepts = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String multiValues = "";
         String values[] = value.trim().split(" ");
@@ -2621,11 +2616,10 @@ public class SearchHelper {
         if (value == null) {
             return null;
         }
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        //value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         String preparedValuePT = " and unaccent(lower(term.lexical_value)) % (unaccent(lower('" + value + "')))";
         String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) % (unaccent(lower('" + value + "')))";
@@ -2755,11 +2749,10 @@ public class SearchHelper {
         if (value == null) {
             return null;
         }
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<String> listIds = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        //value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         String preparedValuePT = " and unaccent(lower(term.lexical_value)) % (unaccent(lower('" + value + "')))";
         String preparedValueNPT = " and unaccent(lower(non_preferred_term.lexical_value)) % (unaccent(lower('" + value + "')))";
@@ -2941,10 +2934,10 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         List<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
+        
 
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String status;
         if(includeDeprecated) {
@@ -3056,10 +3049,10 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         List<NodeSearchMini> nodeSearchMinis = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
+        
 
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         try {
             // Get connection from pool
@@ -3213,10 +3206,10 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
+        
 
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         try {
             // Get connection from pool
@@ -3321,11 +3314,11 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeAutoCompletion> nodeAutoCompletions = null;
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String query;
         String lang;
@@ -3450,15 +3443,14 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeAutoCompletion> nodeAutoCompletions = null;
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String preparedValuePT = " and f_unaccent(lower(term.lexical_value)) % '" + value + "'";
         String preparedValueNPT = " and f_unaccent(lower(non_preferred_term.lexical_value)) % '" + value + "'";
-//        String values [] = value.trim().split(" ");
 
         String preRequestPT;
         String preRequestNPT;
@@ -3689,306 +3681,6 @@ public class SearchHelper {
      * dans une chaine) exp : la recherche de "ceramiqu four" trouve la chaine
      * (four à céramique)
      *
-     * Elle retourne la liste des identiants des concepts
-     *
-     * @param ds
-     * @param value
-     * @param idLang
-     * @param idThesaurus
-     * @param idGroups
-     * @return #MR DÉPRÉCIÉ, Il faut utiliser searchAutoCompletionWSForWidget
-     */
-    /*    public ArrayList<String> searchExactTermNew(HikariDataSource ds,
-            String value, String idLang, String idThesaurus, String [] idGroups) {
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
-
-        ArrayList<String> idConcepts = null;
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
-
-        String query;
-        String lang;
-        String langSynonyme;
-        
-        String multivaluesTerm = "";
-        String multivaluesSynonyme = "";
-        multivaluesTerm
-                += " and f_unaccent(lower(term.lexical_value)) like"
-                + " '" + value + "'";
-        multivaluesSynonyme
-                += " and f_unaccent(lower(non_preferred_term.lexical_value)) like"
-                + " '" + value + "'";
-
-        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
-        if (idLang.isEmpty()) {
-            lang = "";
-            langSynonyme = "";
-        } else {
-            lang = " and term.lang ='" + idLang + "'";
-            langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
-        }
-        
-        // filter by group, c'est très important 
-        if (idGroups != null && idGroups.length != 0) {
-            String groupSearch = "";
-            for (String idGroup : idGroups) {
-                if(groupSearch.isEmpty())
-                    groupSearch = "'" + idGroup + "'";
-                else
-                    groupSearch = groupSearch + ",'" + idGroup + "'";
-            }
-            multivaluesTerm += " and concept_group_concept.idgroup in (" + groupSearch + ")";
-            multivaluesSynonyme += " and concept_group_concept.idgroup in (" + groupSearch + ")";
-        }        
-
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    if (idGroups != null && idGroups.length != 0) {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM term, preferred_term, concept,concept_group_concept WHERE "
-                                + "concept_group_concept.idthesaurus  = term.id_thesaurus AND "
-                                + "concept_group_concept.idconcept = preferred_term.id_concept AND"
-                                + " concept.id_concept = preferred_term.id_concept AND"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                                + " preferred_term.id_term = term.id_term AND"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus"
-                                + multivaluesTerm
-                                + " and term.id_thesaurus = '" + idThesaurus + "'"
-                                + lang
-                                + " order by "
-                                + " CASE unaccent(lower(lexical_value)) "
-                                + " WHEN '" + value + "' THEN 1" 
-                                + " END, lexical_value" 
-                                + " limit 100";                        
-
-                    } else {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM term, preferred_term, concept WHERE "
-                                + " concept.id_concept = preferred_term.id_concept AND"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                                + " preferred_term.id_term = term.id_term AND"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus"
-                                + multivaluesTerm
-                                + " and term.id_thesaurus = '" + idThesaurus + "'"
-                                + lang                        
-                                + " order by "
-                                + " CASE unaccent(lower(lexical_value)) "
-                                + " WHEN '" + value + "' THEN 1" 
-                                + " END, lexical_value" 
-                                + " limit 100";
-                    }
-
-                    resultSet = stmt.executeQuery(query);
-                    idConcepts = new ArrayList<>();
-                    while (resultSet.next()) {
-                        if (!idConcepts.contains(resultSet.getString("id_concept"))) {
-                            idConcepts.add(resultSet.getString("id_concept"));
-                        }
-                    }
-
-                    /**
-                     * recherche de Synonymes
-     */
- /*                  if (group.isEmpty()) {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM non_preferred_term, preferred_term, concept WHERE "
-                                + "  preferred_term.id_term = non_preferred_term.id_term AND"
-                                + "  preferred_term.id_concept = concept.id_concept AND"
-                                + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
-                                + "  preferred_term.id_thesaurus = non_preferred_term.id_thesaurus "
-                                + multivaluesSynonyme
-                                + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                                + langSynonyme
-                                + group
-                                + " order by lexical_value ASC LIMIT 200";
-                    } else {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM non_preferred_term, preferred_term,concept_group_concept, concept WHERE "
-                                + " concept.id_concept = concept_group_concept.idconcept AND"
-                                + "  concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                                + "  preferred_term.id_term = non_preferred_term.id_term AND"
-                                + "  preferred_term.id_concept = concept.id_concept AND"
-                                + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
-                                + "  preferred_term.id_thesaurus = non_preferred_term.id_thesaurus "
-                                + multivaluesSynonyme
-                                + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                                + langSynonyme
-                                + group
-                                + " order by lexical_value ASC LIMIT 200";
-                    }
-                    resultSet = stmt.executeQuery(query);
-
-                    while (resultSet.next()) {
-                        idConcepts.add(resultSet.getString("id_concept"));
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return idConcepts;
-    }*/
-    /**
-     * Cette fonction permet de faire une recherche par value sur les termes
-     * Préférés et les synonymes (la recherche porte sur les termes contenus
-     * dans une chaine) exp : la recherche de "ceramiqu four" trouve la chaine
-     * (four à céramique)
-     *
-     * Elle retourne la liste des identiants des concepts
-     *
-     * @param ds
-     * @param value
-     * @param idLang
-     * @param idThesaurus
-     * @param groups
-     * @return * #MR DÉPRÉCIÉ, Il faut utiliser searchAutoCompletionWSForWidget
-     */
-    /*   public ArrayList<String> searchTermNew(HikariDataSource ds,
-            String value, String idLang, String idThesaurus,  String [] groups) {
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
-
-        ArrayList<String> idConcepts = new ArrayList<>();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
-
-        String values[] = value.trim().split(" ");
-
-        String query;
-        String lang;
-        String langSynonyme;
-        String group;
-        String multivaluesTerm = "";
-        String multivaluesSynonyme = "";
-        for (String value1 : values) {
-            multivaluesTerm
-                    += " and ( (f_unaccent(lower(term.lexical_value)) like"
-                    + " '" + value1 + "%')"
-                    + " or (f_unaccent(lower(term.lexical_value)) like"
-                    + " '% " + value1 + "%') )";
-            multivaluesSynonyme
-                    += " and ( (f_unaccent(lower(non_preferred_term.lexical_value)) like"
-                    + " '" + value1 + "%')"
-                    + " or (f_unaccent(lower(non_preferred_term.lexical_value)) like"
-                    + " '% " + value1 + "%') )";
-        }
-
-        // préparation de la requête en focntion du choix (toutes les langues ou langue donnée) 
-        if (idLang.isEmpty()) {
-            lang = "";
-            langSynonyme = "";
-        } else {
-            lang = " and term.lang ='" + idLang + "'";
-            langSynonyme = " and non_preferred_term.lang ='" + idLang + "'";
-        }
-
-        // cas du choix d'un group
-        if (idGroup.isEmpty()) {
-            group = "";
-        } else {
-            group = " and idgroup = '" + idGroup + "'";
-        }
-
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    if (group == null || group.isEmpty()) {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM term, preferred_term, concept WHERE "
-                                + " concept.id_concept = preferred_term.id_concept AND"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                                + " preferred_term.id_term = term.id_term AND"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus"
-                                + multivaluesTerm
-                                + " and term.id_thesaurus = '" + idThesaurus + "'"
-                                + lang
-                                + " order by lexical_value LIMIT 100";
-                    } else {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM term, preferred_term, concept,concept_group_concept WHERE "
-                                + "concept_group_concept.idthesaurus  = term.id_thesaurus AND "
-                                + "concept_group_concept.idconcept = preferred_term.id_concept AND"
-                                + " concept.id_concept = preferred_term.id_concept AND"
-                                + " concept.id_thesaurus = preferred_term.id_thesaurus AND"
-                                + " preferred_term.id_term = term.id_term AND"
-                                + " preferred_term.id_thesaurus = term.id_thesaurus"
-                                + multivaluesTerm
-                                + " and term.id_thesaurus = '" + idThesaurus + "'"
-                                + lang
-                                + group
-                                + " order by term.lexical_value LIMIT 100";
-                    }
-                    resultSet = stmt.executeQuery(query);
-                    while (resultSet.next()) {
-                        idConcepts.add(resultSet.getString("id_concept"));
-                    }
-
-                    /**
-                     * recherche de Synonymes
-     */
- /*               if (group == null || group.isEmpty()) {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM non_preferred_term, preferred_term, concept WHERE "
-                                + "  preferred_term.id_term = non_preferred_term.id_term AND"
-                                + "  preferred_term.id_concept = concept.id_concept AND"
-                                + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
-                                + "  preferred_term.id_thesaurus = non_preferred_term.id_thesaurus "
-                                + multivaluesSynonyme
-                                + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                                + langSynonyme
-                                + " order by non_preferred_term.lexical_value LIMIT 100";
-                    } else {
-                        query = "SELECT preferred_term.id_concept"
-                                + " FROM non_preferred_term, preferred_term,concept_group_concept, concept WHERE "
-                                + " concept.id_concept = concept_group_concept.idconcept AND"
-                                + "  concept.id_thesaurus = concept_group_concept.idthesaurus AND"
-                                + "  preferred_term.id_term = non_preferred_term.id_term AND"
-                                + "  preferred_term.id_concept = concept.id_concept AND"
-                                + "  preferred_term.id_thesaurus = concept.id_thesaurus AND"
-                                + "  preferred_term.id_thesaurus = non_preferred_term.id_thesaurus "
-                                + multivaluesSynonyme
-                                + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'"
-                                + langSynonyme
-                                + group
-                                + " order by non_preferred_term.lexical_value LIMIT 100";
-                    }
-                    resultSet = stmt.executeQuery(query);
-                    while (resultSet.next()) {
-                        idConcepts.add(resultSet.getString("id_concept"));
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(SearchHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return idConcepts;
-    }*/
-    /**
-     * Cette fonction permet de faire une recherche par value sur les termes
-     * Préférés et les synonymes (la recherche porte sur les termes contenus
-     * dans une chaine) exp : la recherche de "ceramiqu four" trouve la chaine
-     * (four à céramique)
-     *
      * @param ds
      * @param value
      * @param idLang
@@ -4004,11 +3696,11 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        StringPlus stringPlus = new StringPlus();
+        
 
         ArrayList<NodeSearch> nodeSearchList = null;
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(value);
 
         String values[] = value.trim().split(" ");
 
@@ -4246,10 +3938,10 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         List<NodeAutoCompletion> nodeAutoCompletionList = new ArrayList<>();
-        StringPlus stringPlus = new StringPlus();
+        
 
-        text = stringPlus.convertString(text);
-        text = stringPlus.unaccentLowerString(text);
+        text = fr.cnrs.opentheso.utils.StringUtils.convertString(text);
+        text = fr.cnrs.opentheso.utils.StringUtils.unaccentLowerString(text);
 
         try {
             // Get connection from pool
@@ -4402,7 +4094,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<String> listTerms = new ArrayList<>();
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String query;
         try {
             conn = ds.getConnection();
@@ -4459,7 +4151,7 @@ public class SearchHelper {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String query;
         try {
             conn = ds.getConnection();
@@ -4524,7 +4216,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeSearch> nodeSearchList = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String values[] = value.trim().split(" ");
         String query;
         String lang;
@@ -4783,7 +4475,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeSearch> nodeSearchList = new ArrayList<>();
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         String values[] = value.trim().split(" ");
         String query;
@@ -4932,7 +4624,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeSearch> nodeSearchList = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String query;
         String lang;
         String group;
@@ -5014,7 +4706,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<String> ListIdConcept = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         String query;
 
         try {
@@ -5060,7 +4752,7 @@ public class SearchHelper {
         ResultSet resultSet;
         ArrayList<NodeSearch> nodeSearchList = null;
 
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         try {
             conn = ds.getConnection();
             try {
@@ -5332,7 +5024,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeSearch> nodeSearchList = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         try {
             conn = ds.getConnection();
             try {
@@ -5406,7 +5098,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeSearch> nodeSearchList = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         try {
             conn = ds.getConnection();
             try {
@@ -5483,7 +5175,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodeSearch> nodeSearchList = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
         try {
             conn = ds.getConnection();
             try {
@@ -5668,7 +5360,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodePermute> nodePermuteList = new ArrayList<>();
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         try {
             // Get connection from pool
@@ -5744,7 +5436,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodePermute> nodePermuteList = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         try {
             // Get connection from pool
@@ -5818,7 +5510,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodePermute> nodePermuteList = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         try {
             // Get connection from pool
@@ -5891,7 +5583,7 @@ public class SearchHelper {
         Statement stmt;
         ResultSet resultSet;
         ArrayList<NodePermute> nodePermuteList = null;
-        value = new StringPlus().convertString(value);
+        value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
 
         try {
             // Get connection from pool

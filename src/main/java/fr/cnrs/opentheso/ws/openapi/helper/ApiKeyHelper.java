@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.ws.openapi.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
-import fr.cnrs.opentheso.bdd.tools.MD5Password;
+import fr.cnrs.opentheso.utils.MD5Password;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

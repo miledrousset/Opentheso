@@ -2,10 +2,10 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.skosapi.SKOSGPSCoordinates;
-import fr.cnrs.opentheso.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.skosapi.SKOSRelation;
-import fr.cnrs.opentheso.skosapi.SKOSResource;
+import fr.cnrs.opentheso.models.skosapi.SKOSGPSCoordinates;
+import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
+import fr.cnrs.opentheso.models.skosapi.SKOSRelation;
+import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 
@@ -20,7 +20,7 @@ import jakarta.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import org.jsoup.Jsoup;
 
 
@@ -465,7 +465,7 @@ public class ExportHelper {
 
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
-                String str = new StringPlus().normalizeStringForXml(element[0]);
+                String str = fr.cnrs.opentheso.utils.StringUtils.normalizeStringForXml(element[0]);
                 sKOSResource.addDocumentation(str, element[1], type);
             }
         }

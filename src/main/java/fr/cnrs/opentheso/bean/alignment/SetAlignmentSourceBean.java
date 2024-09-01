@@ -5,7 +5,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeSelectedAlignment;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
-import fr.cnrs.opentheso.core.alignment.AlignementSource;
+import fr.cnrs.opentheso.models.alignment.AlignementSource;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;

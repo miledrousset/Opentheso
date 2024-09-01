@@ -21,8 +21,8 @@ import fr.cnrs.opentheso.bdd.datas.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
-import org.apache.commons.lang3.StringUtils;
+
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -792,18 +792,18 @@ public class ThesaurusHelper {
      */
     private Thesaurus addQuotes(Thesaurus thesaurus) {
 
-        thesaurus.setContributor(new StringPlus().convertString(thesaurus.getContributor()));
-        thesaurus.setCoverage(new StringPlus().convertString(thesaurus.getCoverage()));
-        thesaurus.setCreator(new StringPlus().convertString(thesaurus.getCreator()));
-        thesaurus.setDescription(new StringPlus().convertString(thesaurus.getDescription()));
-        thesaurus.setFormat(new StringPlus().convertString(thesaurus.getFormat()));
-        thesaurus.setPublisher(new StringPlus().convertString(thesaurus.getPublisher()));
-        thesaurus.setRelation(new StringPlus().convertString(thesaurus.getRelation()));
-        thesaurus.setRights(new StringPlus().convertString(thesaurus.getRights()));
-        thesaurus.setSource(new StringPlus().convertString(thesaurus.getSource()));
-        thesaurus.setSubject(new StringPlus().convertString(thesaurus.getSubject()));
-        thesaurus.setTitle(new StringPlus().convertString(thesaurus.getTitle()));
-        thesaurus.setType(new StringPlus().convertString(thesaurus.getType()));
+        thesaurus.setContributor(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getContributor()));
+        thesaurus.setCoverage(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getCoverage()));
+        thesaurus.setCreator(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getCreator()));
+        thesaurus.setDescription(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getDescription()));
+        thesaurus.setFormat(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getFormat()));
+        thesaurus.setPublisher(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getPublisher()));
+        thesaurus.setRelation(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getRelation()));
+        thesaurus.setRights(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getRights()));
+        thesaurus.setSource(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getSource()));
+        thesaurus.setSubject(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getSubject()));
+        thesaurus.setTitle(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getTitle()));
+        thesaurus.setType(fr.cnrs.opentheso.utils.StringUtils.convertString(thesaurus.getType()));
 
         return thesaurus;
     }
@@ -860,8 +860,7 @@ public class ThesaurusHelper {
      * @return 
      */
     public boolean deleteThesaurus(HikariDataSource ds, String idThesaurus) {
-        StringPlus text = new StringPlus();
-        idThesaurus = text.convertString(idThesaurus);
+        idThesaurus = StringUtils.convertString(idThesaurus);
         boolean state = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -922,8 +921,8 @@ public class ThesaurusHelper {
      * @return 
      */
     public boolean deleteThesaurusTraduction(HikariDataSource ds, String idThesaurus, String id_lang) {
-        StringPlus text = new StringPlus();
-        idThesaurus = text.convertString(idThesaurus);
+
+        idThesaurus = StringUtils.convertString(idThesaurus);
         boolean state = false;
 
         try ( Connection conn = ds.getConnection()) {

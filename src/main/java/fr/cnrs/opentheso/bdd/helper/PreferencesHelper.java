@@ -13,7 +13,8 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+import fr.cnrs.opentheso.utils.StringUtils;
+
 
 /**
  *
@@ -120,7 +121,7 @@ public class PreferencesHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("update info set googleanalytics = '" + new StringPlus().addQuotes(codeJavaScript) + "'");
+                stmt.executeUpdate("update info set googleanalytics = '" + fr.cnrs.opentheso.utils.StringUtils.addQuotes(codeJavaScript) + "'");
                 return true;
             }
         } catch (SQLException ex) {
@@ -337,12 +338,12 @@ public class PreferencesHelper {
      */
     public boolean updateAllPreferenceUser(HikariDataSource ds, NodePreference np, String idThesaurus) {
         boolean status = false;
-        StringPlus stringPlus = new StringPlus();
+        
         np = normalizeDatas(np);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "update preferences set "
-                        + "source_lang='" + stringPlus.convertString(np.getSourceLang()) + "'"
+                        + "source_lang='" + StringUtils.convertString(np.getSourceLang()) + "'"
                         //   + ", nb_alert_cdt='" + np.getNbAlertCdt() + "'"
                         //   + ", alert_cdt='" + np.isAlertCdt() + "'"
                         + ", identifier_type='" + np.getIdentifierType() + "'"
@@ -354,8 +355,8 @@ public class PreferencesHelper {
                         
                         // Ark
                         + ", use_ark='" + np.isUseArk() + "'"
-                        + ", server_ark='" + stringPlus.convertString(np.getServeurArk()) + "'"
-                        + ", uri_ark='" + stringPlus.convertString(np.getUriArk()) + "'"
+                        + ", server_ark='" + StringUtils.convertString(np.getServeurArk()) + "'"
+                        + ", uri_ark='" + StringUtils.convertString(np.getUriArk()) + "'"
                         + ", id_naan='" + np.getIdNaan() + "'"
                         + ", prefix_ark ='" + np.getPrefixArk() + "'"
                         + ", user_ark='" + np.getUserArk() + "'"
@@ -378,9 +379,9 @@ public class PreferencesHelper {
                         + ", use_handle_with_certificat = '" + np.isUseHandleWithCertificat() + "'"
                         
                         
-                        + ", chemin_site='" + stringPlus.convertString(np.getCheminSite()) + "'"
+                        + ", chemin_site='" + StringUtils.convertString(np.getCheminSite()) + "'"
                         + ", webservices='" + np.isWebservices() + "'"
-                        + ", original_uri='" + stringPlus.convertString(np.getOriginalUri()) + "'"
+                        + ", original_uri='" + StringUtils.convertString(np.getOriginalUri()) + "'"
                         + ", original_uri_is_ark=" + np.isOriginalUriIsArk()
                         + ", original_uri_is_handle=" + np.isOriginalUriIsHandle()
                         + ", original_uri_is_doi=" + np.isOriginalUriIsDoi()
@@ -427,7 +428,7 @@ public class PreferencesHelper {
      */
     public boolean addPreference(HikariDataSource ds, NodePreference np, String idThesaurus) {
         boolean status = false;
-        StringPlus stringPlus = new StringPlus();
+        
         np = normalizeDatas(np);
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -445,16 +446,16 @@ public class PreferencesHelper {
                         + " admin_handle, index_handle, use_deepl_translation, deepl_api_key)"
 
                         + " values('" + idThesaurus + "'"
-                        + ",'" + stringPlus.convertString(np.getSourceLang()) + "'"
+                        + ",'" + StringUtils.convertString(np.getSourceLang()) + "'"
                         + ",'" + np.getIdentifierType() + "'"
                         
                         
-                        + ",'" + stringPlus.convertString(np.getCheminSite()) + "'"
+                        + ",'" + StringUtils.convertString(np.getCheminSite()) + "'"
                         + ",'" + np.isWebservices() + "'"
                         // Ark
                         + ",'" + np.isUseArk() + "'"
-                        + ",'" + stringPlus.convertString(np.getServeurArk()) + "'"
-                        + ",'" + stringPlus.convertString(np.getUriArk()) + "'"
+                        + ",'" + StringUtils.convertString(np.getServeurArk()) + "'"
+                        + ",'" + StringUtils.convertString(np.getUriArk()) + "'"
                         + ",'" + np.getIdNaan() + "'"
                         + ",'" + np.getPrefixArk() + "'"
                         + ",'" + np.getUserArk() + "'"

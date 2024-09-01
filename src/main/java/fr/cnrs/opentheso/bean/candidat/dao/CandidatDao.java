@@ -7,9 +7,10 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeVote;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeCandidateOld;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
 import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
+import fr.cnrs.opentheso.utils.StringUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -203,9 +204,9 @@ public class CandidatDao {
     }    
     
     private String createRequestSearchValue(String lang, String value, String idThesaurus, int etat, String statut) {
-        StringPlus stringPlus = new StringPlus();
-        value = stringPlus.convertString(value);
-        value = stringPlus.unaccentLowerString(value);
+        
+        value = StringUtils.convertString(value);
+        value = StringUtils.unaccentLowerString(value);
         
         StringBuffer request = new StringBuffer("SELECT DISTINCT term.lang, term.id_term,")
                 .append(" term.lexical_value, con.id_concept,")
@@ -625,8 +626,8 @@ public class CandidatDao {
     
     private boolean updateCandidateStatus(CandidatDto candidatDto, Statement stmt,
             String adminMessage, int status, int idUser) throws SQLException{
-        StringPlus stringPlus = new StringPlus();
-        adminMessage = stringPlus.convertString(adminMessage);
+        
+        adminMessage = StringUtils.convertString(adminMessage);
 
         stmt.executeUpdate("update candidat_status set id_status = " + status +
                 ", message = '" + adminMessage + "', id_user_admin = " + idUser +

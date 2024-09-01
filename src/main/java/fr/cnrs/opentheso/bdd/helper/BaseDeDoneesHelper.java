@@ -19,7 +19,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import fr.cnrs.opentheso.core.exports.privatesdatas.tables.Table;
+import fr.cnrs.opentheso.models.exports.privatesdatas.tables.Table;
 
 
 

@@ -9,7 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.dao.NodeConceptGraph;
 import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
 import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
-import fr.cnrs.opentheso.skosapi.SKOSResource;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

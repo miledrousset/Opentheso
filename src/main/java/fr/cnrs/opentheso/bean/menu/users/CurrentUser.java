@@ -9,7 +9,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeProjectThesoRole;
 import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
 import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.UserPermissions;
-import fr.cnrs.opentheso.bdd.tools.MD5Password;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Lazy;
 
 import jakarta.annotation.PreDestroy;
 
-import fr.cnrs.opentheso.utils.LDAPUtils;
+import fr.cnrs.opentheso.services.LdapService;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +76,8 @@ public class CurrentUser implements Serializable {
     private ProjectBean projectBean;
     @Autowired @Lazy
     private CurrentUser currentUser;
+    @Autowired @Lazy
+    private LdapService ldapService;
 
     private NodeUser nodeUser;
     private String username;
@@ -209,7 +211,7 @@ public class CurrentUser implements Serializable {
 
         int idUser;
         if (ldapEnable) {
-            if (!new LDAPUtils().authentificationLdapCheck(username, password)) {
+            if (!ldapService.authentificationLdapCheck(username, password)) {
                 showErrorMessage("User or password LDAP wrong, please try again");
                 return;
             }

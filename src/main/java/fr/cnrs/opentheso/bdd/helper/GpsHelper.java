@@ -14,10 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
-import fr.cnrs.opentheso.core.alignment.AlignementSource;
-import fr.cnrs.opentheso.core.alignment.GpsPreferences;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

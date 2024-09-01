@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Term;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -19,7 +19,7 @@ public class TermeDao extends BasicDao {
 
     public void addNewTerme(HikariDataSource hikariDataSource, Term term) throws SQLException {
 
-        term.setLexical_value(new StringPlus().convertString(term.getLexical_value()));
+        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
         try {
             openDataBase(hikariDataSource);
             stmt.executeUpdate("INSERT INTO term (id_term, lexical_value, lang, id_thesaurus, status, contributor, creator) VALUES ('"
@@ -51,7 +51,7 @@ public class TermeDao extends BasicDao {
             String idTerm) throws SQLException{
         stmt = connect.getPoolConnexion().getConnection().createStatement();
         
-        intitule = new StringPlus().convertString(intitule);
+        intitule = fr.cnrs.opentheso.utils.StringUtils.convertString(intitule);
         
         // insert in non_preferred_term      
         stmt.executeUpdate(new StringBuffer("INSERT INTO non_preferred_term(lexical_value, lang, id_thesaurus, hiden, id_term) VALUES ('"
@@ -80,7 +80,7 @@ public class TermeDao extends BasicDao {
     public void updateTerme(HikariDataSource hikariDataSource,
             String idTerm, String newValue, String lang, String idTheso) throws SQLException {
         try {
-            newValue = new StringPlus().convertString(newValue);
+            newValue = fr.cnrs.opentheso.utils.StringUtils.convertString(newValue);
             openDataBase(hikariDataSource);
             stmt.executeUpdate("UPDATE term SET lexical_value = '"+newValue + "' WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'"
             + " and id_thesaurus = '" +  idTheso + "'");
@@ -137,7 +137,7 @@ public class TermeDao extends BasicDao {
             String intitule, String idTerm, String idThesaurus, String lang
                                ) throws SQLException {
         try {
-            intitule = new StringPlus().convertString(intitule);
+            intitule = fr.cnrs.opentheso.utils.StringUtils.convertString(intitule);
             openDataBase(hikariDataSource);
             stmt.executeUpdate("update term set lexical_value = '" + intitule + "'"
                     + " WHERE id_term = '" + idTerm + "'" 

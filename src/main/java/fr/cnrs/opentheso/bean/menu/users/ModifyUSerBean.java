@@ -7,7 +7,7 @@ package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
-import fr.cnrs.opentheso.bdd.tools.MD5Password;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
@@ -21,8 +21,6 @@ import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
-import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import org.primefaces.PrimeFaces;
 
 /**

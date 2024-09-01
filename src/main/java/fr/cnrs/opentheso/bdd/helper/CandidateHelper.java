@@ -21,8 +21,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeMessageAdmin;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
 import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeTraductionCandidat;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
-import fr.cnrs.opentheso.timeJob.LineCdt;
+import fr.cnrs.opentheso.models.timeJob.LineCdt;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -407,7 +406,7 @@ public class CandidateHelper {
             String idLang, String idThesaurus, int contributor) {
 
         String idTerm = null;
-        lexical_value = new StringPlus().convertString(lexical_value);
+        lexical_value = fr.cnrs.opentheso.utils.StringUtils.convertString(lexical_value);
 
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select max(id) from term_candidat");
@@ -445,7 +444,7 @@ public class CandidateHelper {
             String idLang, String idThesaurus, int contributor) {
 
         String idTerm = null;
-        lexical_value = new StringPlus().convertString(lexical_value);
+        lexical_value = fr.cnrs.opentheso.utils.StringUtils.convertString(lexical_value);
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -483,7 +482,7 @@ public class CandidateHelper {
             String idThesaurus, int adminId, String message) {
 
         boolean status = false;
-        message = new StringPlus().convertString(message);
+        message = fr.cnrs.opentheso.utils.StringUtils.convertString(message);
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -581,7 +580,7 @@ public class CandidateHelper {
         boolean etat = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("Update proposition set note = '" + new StringPlus().convertString(note) + "',"
+                stmt.executeUpdate("Update proposition set note = '" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "',"
                         + " concept_parent = '" + idConceptParent + "', id_group = '" + idGroup + "',"
                         + " modified = current_date where id_concept = '" + idCandidat + "'"
                         + " and id_thesaurus = '" + idThesaurus + "' and id_user = " + idUser);
@@ -785,7 +784,7 @@ public class CandidateHelper {
 
         boolean status = false;
         String idTermCandidat = null;
-        lexical_value = new StringPlus().convertString(lexical_value);
+        lexical_value = fr.cnrs.opentheso.utils.StringUtils.convertString(lexical_value);
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -821,7 +820,7 @@ public class CandidateHelper {
     public boolean addPropositionCandidat_RollBack(Connection conn, String idConcept, int idUser,
             String idThesaurus, String note, String idConceptParent, String idGroup) {
 
-        note = new StringPlus().convertString(note);
+        note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
         boolean status = false;
 
         try ( Statement stmt = conn.createStatement()) {
@@ -868,7 +867,7 @@ public class CandidateHelper {
     public boolean addPropositionCandidat(HikariDataSource ds, String idConcept, int idUser,
             String idThesaurus, String note, String idConceptParent, String idGroup) {
 
-        note = new StringPlus().convertString(note);
+        note = fr.cnrs.opentheso.utils.StringUtils.convertString(note);
         boolean status = false;
 
         try ( Connection conn = ds.getConnection()) {
@@ -1469,8 +1468,8 @@ public class CandidateHelper {
     public boolean isCandidatExist_rollBack(Connection conn, String title, String idThesaurus, String idLang) {
 
         boolean existe = false;
-        StringPlus stringPlus = new StringPlus();
-        title = stringPlus.addQuotes(title);
+        
+        title = fr.cnrs.opentheso.utils.StringUtils.addQuotes(title);
 
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select id_term from term_candidat where unaccent_string(lexical_value) ilike "
@@ -1529,8 +1528,8 @@ public class CandidateHelper {
     public boolean isCandidatExist(HikariDataSource ds, String title, String idThesaurus, String idLang) {
 
         boolean existe = false;
-        StringPlus stringPlus = new StringPlus();
-        title = stringPlus.addQuotes(title);
+        
+        title = fr.cnrs.opentheso.utils.StringUtils.addQuotes(title);
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {

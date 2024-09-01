@@ -1,20 +1,14 @@
 package fr.cnrs.opentheso.repositories;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.SessionFactoryMaker;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.entites.Gps;
-import fr.cnrs.opentheso.entites.Release;
-import jakarta.persistence.Query;
-import org.hibernate.Session;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

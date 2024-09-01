@@ -7,7 +7,7 @@ package fr.cnrs.opentheso.bean.forgetpassword;
 
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.tools.MD5Password;
+import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;

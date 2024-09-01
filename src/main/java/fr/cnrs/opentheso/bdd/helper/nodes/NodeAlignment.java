@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bdd.helper.nodes;
 
-import fr.cnrs.opentheso.core.alignment.SelectedResource;
+import fr.cnrs.opentheso.models.alignment.SelectedResource;
 import lombok.Data;
 
 import java.sql.Date;

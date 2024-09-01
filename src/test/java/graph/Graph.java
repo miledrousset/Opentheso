@@ -14,8 +14,8 @@ import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.core.exports.UriHelper;
-import fr.cnrs.opentheso.skosapi.SKOSProperty;
+import fr.cnrs.opentheso.models.exports.UriHelper;
+import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 
 import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.Node;
 import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.NodeGraphD3js;

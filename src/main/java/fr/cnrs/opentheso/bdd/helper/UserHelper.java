@@ -18,7 +18,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRole;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +71,7 @@ public class UserHelper {
     public ArrayList<NodeUser> searchUser(HikariDataSource ds, String userName) {
 
         ArrayList<NodeUser> nodeUsers = new ArrayList<>();
-        userName = new StringPlus().convertString(userName);
+        userName = fr.cnrs.opentheso.utils.StringUtils.convertString(userName);
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -1122,7 +1122,7 @@ public class UserHelper {
     public boolean addNewProject(HikariDataSource ds,
             String userGroupName) {
         boolean status = false;
-        userGroupName = new StringPlus().convertString(userGroupName);
+        userGroupName = fr.cnrs.opentheso.utils.StringUtils.convertString(userGroupName);
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {

@@ -43,7 +43,7 @@ import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
 import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
 import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -52,14 +52,14 @@ import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.toolbox.edition.ViewEditionBean;
-import fr.cnrs.opentheso.core.exports.csv.CsvWriteHelper;
-import fr.cnrs.opentheso.core.imports.csv.CsvImportHelper;
-import fr.cnrs.opentheso.core.imports.csv.CsvReadHelper;
-import fr.cnrs.opentheso.core.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
-import fr.cnrs.opentheso.core.imports.rdf4j.helper.ImportRdf4jHelper;
-import fr.cnrs.opentheso.skosapi.SKOSProperty;
-import fr.cnrs.opentheso.skosapi.SKOSResource;
-import fr.cnrs.opentheso.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.models.exports.csv.CsvWriteHelper;
+import fr.cnrs.opentheso.models.imports.csv.CsvImportHelper;
+import fr.cnrs.opentheso.models.imports.csv.CsvReadHelper;
+import fr.cnrs.opentheso.models.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
+import fr.cnrs.opentheso.models.imports.rdf4j.helper.ImportRdf4jHelper;
+import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
+import fr.cnrs.opentheso.models.skosapi.SKOSResource;
+import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -78,8 +78,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
@@ -2461,7 +2459,7 @@ public class ImportFileBean implements Serializable {
         String idConcept = null;
         ConceptHelper conceptHelper = new ConceptHelper();
 
-        StringPlus stringPlus = new StringPlus();
+        
         ImagesHelper imagesHelper = new ImagesHelper();
 
         try {
@@ -2498,7 +2496,7 @@ public class ImportFileBean implements Serializable {
                         continue;
                     }
                     //   nodeImage.setUri(URLEncoder.encode(nodeImage.getUri(), "UTF-8"));
-                    if (!stringPlus.urlValidator(nodeImage.getUri())) {
+                    if (!fr.cnrs.opentheso.utils.StringUtils.urlValidator(nodeImage.getUri())) {
                         error.append("URL non valide : ");
                         error.append(uri);
                         continue;

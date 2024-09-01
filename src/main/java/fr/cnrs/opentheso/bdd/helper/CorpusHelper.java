@@ -7,7 +7,7 @@ package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -107,8 +107,8 @@ public class CorpusHelper {
     public boolean updateCorpus(HikariDataSource ds, String idTheso, String oldName, NodeCorpus nodeCorpus) {
 
         boolean status = false;
-        oldName = new StringPlus().convertString(oldName);
-        nodeCorpus.setCorpusName(new StringPlus().convertString(nodeCorpus.getCorpusName()));
+        oldName = fr.cnrs.opentheso.utils.StringUtils.convertString(oldName);
+        nodeCorpus.setCorpusName(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeCorpus.getCorpusName()));
         
         if (StringUtils.isEmpty(nodeCorpus.getUriCount())) 
             nodeCorpus.setUriCount("");
@@ -138,7 +138,7 @@ public class CorpusHelper {
      */
     public boolean addNewCorpus(HikariDataSource ds, String idTheso, NodeCorpus nodeCorpus) {
         boolean status = false;
-        nodeCorpus.setCorpusName(new StringPlus().convertString(nodeCorpus.getCorpusName()));
+        nodeCorpus.setCorpusName(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeCorpus.getCorpusName()));
         if (StringUtils.isEmpty(nodeCorpus.getUriCount())) 
             nodeCorpus.setUriCount("");
         try ( Connection conn = ds.getConnection()) {

@@ -6,13 +6,15 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import fr.cnrs.opentheso.utils.StringUtils;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -95,8 +97,8 @@ public class ExternalResources implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        StringPlus stringPlus = new StringPlus();
-        if(!stringPlus.urlValidator(uri)){
+        
+        if(!StringUtils.urlValidator(uri)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL n'est pas valide !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
@@ -153,8 +155,8 @@ public class ExternalResources implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        StringPlus stringPlus = new StringPlus();
-        if(!stringPlus.urlValidator(nodeImage.getUri())){
+        
+        if(!StringUtils.urlValidator(nodeImage.getUri())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " L'URL n'est pas valide !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            

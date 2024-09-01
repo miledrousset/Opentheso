@@ -11,8 +11,8 @@ import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import fr.cnrs.opentheso.core.exports.csv.StatistiquesRapportCSV;
-import fr.cnrs.opentheso.core.exports.rdf4j.ExportRdf4jHelperNew;
+import fr.cnrs.opentheso.models.exports.csv.StatistiquesRapportCSV;
+import fr.cnrs.opentheso.models.exports.rdf4j.ExportRdf4jHelperNew;
 
 import java.io.*;
 import java.sql.SQLException;

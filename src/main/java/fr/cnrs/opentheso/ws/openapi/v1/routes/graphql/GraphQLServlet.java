@@ -250,14 +250,15 @@ public class GraphQLServlet extends HttpServlet {
     }
 
     private HikariDataSource openConnexionPool(Properties properties) {
+
         HikariConfig config = new HikariConfig();
-        config.setMinimumIdle(Integer.parseInt(properties.getProperty("minimumIdle")));
-        config.setMaximumPoolSize(Integer.parseInt(properties.getProperty("setMaximumPoolSize")));
+        config.setMinimumIdle(1);
+        config.setMaximumPoolSize(1000);
         config.setAutoCommit(true);
-        config.setIdleTimeout(Integer.parseInt(properties.getProperty("idleTimeout")));
-        config.setConnectionTimeout(Integer.parseInt(properties.getProperty("connectionTimeout")));
-        config.setConnectionTestQuery(properties.getProperty("connectionTestQuery"));
-        config.setDataSourceClassName(properties.getProperty("dataSourceClassName"));
+        config.setIdleTimeout(30000);
+        config.setConnectionTimeout(30000);
+        config.setConnectionTestQuery("SELECT 1");
+        config.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
 
         config.addDataSourceProperty("user", properties.getProperty("dataSource.user"));
         config.addDataSourceProperty("password", properties.getProperty("dataSource.password"));

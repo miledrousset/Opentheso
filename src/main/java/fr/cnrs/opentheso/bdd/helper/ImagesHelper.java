@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.tools.StringPlus;
+
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,9 +41,9 @@ public class ImagesHelper {
 
         boolean status = false;
 
-        StringPlus stringPlus = new StringPlus();
-        copyRight = stringPlus.convertString(copyRight);
-        imageName = stringPlus.convertString(imageName);
+        
+        copyRight = StringUtils.convertString(copyRight);
+        imageName = StringUtils.convertString(imageName);
         uri = uri.trim();
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -78,12 +79,12 @@ public class ImagesHelper {
 
         boolean status = false;
 
-        StringPlus stringPlus = new StringPlus();
-        uri = stringPlus.convertString(uri);
+        
+        uri = StringUtils.convertString(uri);
 
-        name = stringPlus.convertString(name);
-        copyRight = stringPlus.convertString(copyRight);
-        creator = stringPlus.convertString(creator);        
+        name = StringUtils.convertString(name);
+        copyRight = StringUtils.convertString(copyRight);
+        creator = StringUtils.convertString(creator);
         uri = uri.trim();
 
         try ( Connection conn = ds.getConnection()) {
