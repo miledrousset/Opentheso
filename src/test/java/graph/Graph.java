@@ -2,18 +2,18 @@ package graph;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.ConceptIdLabel;
-import fr.cnrs.opentheso.bdd.helper.dao.ConceptLabel;
-import fr.cnrs.opentheso.bdd.helper.dao.ConceptRelation;
-import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
-import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
+import fr.cnrs.opentheso.models.concept.ConceptLabel;
+import fr.cnrs.opentheso.models.concept.ConceptRelation;
+import fr.cnrs.opentheso.models.concept.NodeFullConcept;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.concept.NodeUri;
+import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 

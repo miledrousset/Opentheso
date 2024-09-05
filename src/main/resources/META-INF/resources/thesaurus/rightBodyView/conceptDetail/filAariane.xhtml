@@ -41,13 +41,13 @@
 
                 <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and
                                         (dragAndDrop.cuttedConcept.concept.idConcept != conceptView.nodeConcept.concept.idConcept)}"
-                            value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.as_specific')}"
+                            value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.as_specific')}"
                             actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
                             action="#{dragAndDrop.paste(conceptView.nodeConcept)}" icon="fas fa-paste"
                             ajax="true" update="containerIndex:rightTab:idConceptViewActions containerIndex:formLeftTab:idDragAndDrop messageIndex" />
 
                 <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
-                            value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexical_value} #{langueBean.getMsg('rightbody.concept.at_the_root')}"
+                            value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.at_the_root')}"
                             actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
                             action="#{dragAndDrop.paste(null)}" ajax="true"
                             update="containerIndex:rightTab:idConceptViewActions messageIndex" />
@@ -75,7 +75,7 @@
                             icon="fas fa-regular fa-copy" update="containerIndex:rightTab:idConceptViewActions messageIndex" />
 
                 <p:menuitem rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                            value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.here')} !!" 
+                            value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.here')} !!"
                             actionListener="#{copyAndPasteBetweenTheso.validatePaste()}" icon="fas fa-paste"
                             action="#{copyAndPasteBetweenTheso.setIsDropToRoot(false)}"
                             update="containerIndex:rightTab:idCopyAndPasteBetweenTheso containerIndex"
@@ -189,36 +189,36 @@
                             update="messageIndex containerIndex:rightTab:idConceptViewActions"/>                
 
             </p:menuButton>
-            <p:tooltip for="newConcept" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_concept')} #{conceptView.nodeConcept.term.lexical_value}" showDelay="1000" />                
-            <p:tooltip for="newFacet" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_facet')} #{conceptView.nodeConcept.term.lexical_value}" showDelay="1000" />
+            <p:tooltip for="newConcept" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_concept')} #{conceptView.nodeConcept.term.lexicalValue}" showDelay="1000" />
+            <p:tooltip for="newFacet" value="#{langueBean.getMsg('rightbody.concept.tooltip_new_facet')} #{conceptView.nodeConcept.term.lexicalValue}" showDelay="1000" />
         </h:panelGroup>
 
         <h:form rendered="#{roleOnTheso.nodePreference.breadcrumb}" style="padding-left: 5px;">
             <ui:repeat var="path" value="#{conceptView.pathLabel2}" varStatus="status">
                 <ui:repeat var="subPath" value="#{path}" varStatus="substatus">
-                    <h:panelGroup rendered="#{subPath.isStartOfPath}">
+                    <h:panelGroup rendered="#{subPath.startOfPath}">
                         <h:panelGroup rendered="#{!status.first}">
                             <br/>
                         </h:panelGroup>
                         <i class="fas fa-home" size="xs" style="color: #f47b2a; font-size: 15px;"/>
                     </h:panelGroup>
 
-                    <p:commandLink rendered="#{subPath.isStartOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
+                    <p:commandLink rendered="#{subPath.startOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
                                    value=" #{subPath.title}" actionListener="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
                                              subPath.idConcept, selectedTheso.currentLang)}" update="containerIndex" process="@form" ajax="true" /> 
                     
 
                         <h:panelGroup rendered="#{!substatus.last}" >
-                            <p:commandLink rendered="#{!subPath.isStartOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
+                            <p:commandLink rendered="#{!subPath.startOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
                                            value="#{subPath.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, subPath.idConcept, selectedTheso.currentLang)}"
                                            update="containerIndex" process="@form" ajax="true"/>                          
                             <h:outputText rendered="#{!substatus.last}" value=" > " style="font-size: 13px; font-weight: bold"/>                        
                         </h:panelGroup>
 
-                        <h:panelGroup rendered="#{substatus.last and !subPath.isStartOfPath}" >
-                            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value != ''}" 
-                                          value=" #{conceptView.nodeConcept.term.lexical_value}" style="font-size: 13px;"/>
-                            <h:outputText rendered="#{conceptView.nodeConcept.term.lexical_value == ''}" 
+                        <h:panelGroup rendered="#{substatus.last and !subPath.startOfPath}" >
+                            <h:outputText rendered="#{conceptView.nodeConcept.term.lexicalValue != ''}"
+                                          value=" #{conceptView.nodeConcept.term.lexicalValue}" style="font-size: 13px;"/>
+                            <h:outputText rendered="#{conceptView.nodeConcept.term.lexicalValue == ''}"
                                           value=" (#{conceptView.nodeConcept.concept.idConcept})" style="font-size: 13px;"/>                        
                         </h:panelGroup>                     
                     

@@ -1,40 +1,40 @@
-/*
-* permet de valider les actions à apporter sur le thésaurus
-*/
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author miled.rousset
- */
+
+@Data
+@Service
 public class ValidateActionHelper {
 
+    @Autowired
+    private RelationsHelper relationsHelper;
+
     private String message;
-    
+
+
     /**
-     * vérifie la cohérence des relations avant l'action
+     * Vérifie la cohérence des relations avant l'action
      */
     public boolean isAddRelationNTValid(HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
-        RelationsHelper relationsHelper = new RelationsHelper();
+
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
         // relations RT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationRT(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
+        if(relationsHelper.isConceptHaveRelationRT(ds, idConcept, idConceptToAdd, idTheso)){
             return false;
         }
         
         // relations BT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationNTorBT(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
+        if(relationsHelper.isConceptHaveRelationNTorBT(ds, idConcept, idConceptToAdd, idTheso)){
             return false;
         }
         
         // relation entre frères est interdite 
-        if(relationsHelper.isConceptHaveBrother(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
+        if(relationsHelper.isConceptHaveBrother(ds, idConcept, idConceptToAdd, idTheso)){
             return false;
         }        
         return true;
@@ -43,28 +43,24 @@ public class ValidateActionHelper {
     /**
      * vérifie la cohérence des relations avant l'action
      */
-    public boolean isAddRelationBTValid( HikariDataSource ds, String idTheso, 
-            String idConcept, String idConceptToAdd) {
-        RelationsHelper relationsHelper = new RelationsHelper();
+    public boolean isAddRelationBTValid( HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
+
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
         // relations RT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationRT(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
+        if(relationsHelper.isConceptHaveRelationRT(ds, idConcept, idConceptToAdd, idTheso)){
             message = "Une relation associative existe déjà entre les deux concepts";            
             return false;
         }
         
         // relations BT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationNTorBT(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
+        if(relationsHelper.isConceptHaveRelationNTorBT(ds, idConcept, idConceptToAdd, idTheso)){
             message = "Une relation générique ou spécifique existe déjà entre les deux concepts";              
             return false;
         }
         
         // relation entre frères est interdite 
-        if(relationsHelper.isConceptHaveBrother(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
+        if(relationsHelper.isConceptHaveBrother(ds, idConcept, idConceptToAdd, idTheso)){
             message = "Les concepts ont déjà une relation frère";            
             return false;
         }        
@@ -72,28 +68,20 @@ public class ValidateActionHelper {
     }    
     
     /**
-     * vérifie la cohérence des relations avant l'action
-     * @param ds
-     * @param idTheso
-     * @param idConcept
-     * @param idConceptToAdd
-     * @return 
+     * Vérifie la cohérence des relations avant l'action
      */
-    public boolean isMoveConceptToConceptValid(HikariDataSource ds, String idTheso, 
-            String idConcept, String idConceptToAdd) {
-        RelationsHelper relationsHelper = new RelationsHelper();
+    public boolean isMoveConceptToConceptValid(HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
+
         if(idConcept.equalsIgnoreCase(idConceptToAdd)) return false;
         
         // relations RT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationRT(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
+        if(relationsHelper.isConceptHaveRelationRT(ds, idConcept, idConceptToAdd, idTheso)){
             message = "Une relation associative existe déjà entre les deux concepts";
             return false;
         }
         
         // relations BT et NT en même temps interdites
-        if(relationsHelper.isConceptHaveRelationNTorBT(ds,
-                idConcept, idConceptToAdd, idTheso) == true){ 
+        if(relationsHelper.isConceptHaveRelationNTorBT(ds, idConcept, idConceptToAdd, idTheso)){
             message = "Une relation générique ou spécifique existe déjà entre les deux concepts";            
             return false;
         }
@@ -103,25 +91,15 @@ public class ValidateActionHelper {
     }    
     
     /**
-     * vérifie la cohérence des relations avant l'action
+     * Vérifie la cohérence des relations avant l'action
      */
-    public boolean isAddRelationRTValid(HikariDataSource ds, String idTheso, String idConcept,
-            String idConceptToAdd) {
-        RelationsHelper relationsHelper = new RelationsHelper();
-        if(relationsHelper.isConceptHaveRelationNTorBT(ds,
-                idConcept, idConceptToAdd, idTheso) == true) {
+    public boolean isAddRelationRTValid(HikariDataSource ds, String idTheso, String idConcept, String idConceptToAdd) {
+
+        if(relationsHelper.isConceptHaveRelationNTorBT(ds, idConcept, idConceptToAdd, idTheso)) {
             message = "Une relation générique ou spécifique existe déjà entre les deux concepts";              
             return false;
         }  
         return true;
-    }     
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
     
 }

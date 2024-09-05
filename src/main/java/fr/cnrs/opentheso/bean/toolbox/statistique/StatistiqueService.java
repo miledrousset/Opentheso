@@ -2,11 +2,10 @@ package fr.cnrs.opentheso.bean.toolbox.statistique;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.*;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.models.concept.NodeUri;
+import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

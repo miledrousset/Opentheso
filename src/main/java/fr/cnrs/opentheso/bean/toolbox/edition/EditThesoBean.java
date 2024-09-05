@@ -5,15 +5,15 @@
  */
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
-import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.AccessThesaurusHelper;
+import fr.cnrs.opentheso.models.languages.Languages_iso639;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
+import fr.cnrs.opentheso.repositories.AccessThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.connect.MenuBean;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -41,11 +41,14 @@ import org.primefaces.PrimeFaces;
 @Named(value = "editThesoBean")
 @SessionScoped
 public class EditThesoBean implements Serializable {
+
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy private MenuBean menuBean;
     @Autowired @Lazy private ThesaurusMetadataAdd thesaurusMetadataAdd;
+    @Autowired
+    private AccessThesaurusHelper accessThesaurusHelper;
 
     private NodeLangTheso langSelected;
     private ArrayList<Languages_iso639> allLangs;
@@ -190,7 +193,6 @@ public class EditThesoBean implements Serializable {
      * permet de changer le status du thésaurus entre public et privé
      */
     public void changeStatus() {
-        AccessThesaurusHelper accessThesaurusHelper = new AccessThesaurusHelper();
         FacesMessage msg;
         if (!accessThesaurusHelper.updateVisibility(
                 connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), isPrivateTheso)) {

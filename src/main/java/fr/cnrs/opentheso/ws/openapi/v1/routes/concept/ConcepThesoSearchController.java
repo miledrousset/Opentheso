@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
+
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
@@ -33,6 +34,9 @@ public class ConcepThesoSearchController {
 
     @Autowired
     private Connect connect;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
 
     @GetMapping(produces = {APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
@@ -143,7 +147,6 @@ public class ConcepThesoSearchController {
 
     private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {
         String[] groups = new String[arkGroups.length];
-        GroupHelper groupHelper = new GroupHelper();
         int i = 0;
         for (String arkGroup : arkGroups) {
             groups[i] = groupHelper.getIdGroupFromArkId(connect.getPoolConnexion(), arkGroup, idTheso);

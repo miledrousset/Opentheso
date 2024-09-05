@@ -10,8 +10,7 @@ public class HtmlLinkExtraction {
     private Pattern pTag, pLink, pTest;
  
     private static final String HTML_TAG_PATTERN = "(?i)<a([^>]+)>(.+?)</a>";
-    private static final String HTML_HREF_TAG_PATTERN = "\\s*(?i)href\\s*=\\s*(\"([^\"]*\")|'[^']*'|([^'\">\\s]+))"
-            ;
+    private static final String HTML_HREF_TAG_PATTERN = "\\s*(?i)href\\s*=\\s*(\"([^\"]*\")|'[^']*'|([^'\">\\s]+))";
     private static final String HTML_TAG_TEST_PATTERN = "(?i)<a*</a>";
  
     public HtmlLinkExtraction() {

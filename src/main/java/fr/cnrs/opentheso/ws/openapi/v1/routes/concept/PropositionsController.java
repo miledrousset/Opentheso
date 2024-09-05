@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.cnrs.opentheso.bdd.helper.PropositionApiHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.proposition.model.PropositionFromApi;
+import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 

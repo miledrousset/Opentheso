@@ -1,16 +1,17 @@
 package fr.cnrs.opentheso.models.skosapi;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.datas.Term;
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.models.terms.Term;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
+
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import fr.cnrs.opentheso.utils.StringUtils;
+import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  * @author Miled Rousset
  *
  */
+@Data
 public class SKOSResource {
 
     private String uri;
@@ -46,9 +48,7 @@ public class SKOSResource {
     private List<SKOSGPSCoordinates> gpsCoordinates;
     private ArrayList<SKOSNotation> notationList;
     private ArrayList<SKOSMatch> matchList;
-    
-    private ArrayList<String> dcRelations;    
-
+    private ArrayList<String> dcRelations;
     private ArrayList<String> externalResources;
     
     // Autopostage the complete path to the concept
@@ -142,152 +142,20 @@ public class SKOSResource {
         externalResources = null;
     }
 
-    public String getArkId() {
-        return arkId;
-    }
-
-    public void setArkId(String arkId) {
-        this.arkId = arkId;
-    }
-
-    public int getProperty() {
-        return property;
-    }
-
-    public String getLocalUri() {
-        return localUri;
-    }
-
-    public void setLocalUri(String localUri) {
-        this.localUri = localUri;
-    }
-
-    /**
-     *
-     * @return l'Identifier
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public ArrayList<String> getDcRelations() {
-        return dcRelations;
-    }
-
     public void addDcRelations(String dcRelation) {
         this.dcRelations.add(dcRelation);
     }
 
-    /**
-     *
-     * @param identifier
-     */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public ArrayList<SKOSMatch> getMatchList() {
-        return matchList;
-    }
-
-    public ArrayList<SKOSAgent> getAgentList() {
-        return agentList;
-    }
-
-
-    
-    /**
-     *
-     * @param agent le nom
-     * @param prop le type
-     */
     public void addAgent(String agent, int prop) {
         agentList.add(new SKOSAgent(agent, prop));
-    }    
-
-    public List<SKOSGPSCoordinates> getGpsCoordinates() {
-        return gpsCoordinates;
     }
 
-    public ArrayList<SKOSNotation> getNotationList() {
-        return notationList;
-    }
-
-    public Thesaurus getThesaurus() {
-        return thesaurus;
-    }
-
-    public void setThesaurus(Thesaurus thesaurus) {
-        this.thesaurus = thesaurus;
-    }
-
-    public FoafImage getFoafImage() {
-        return foafImage;
-    }
-
-    public void setFoafImage(FoafImage foafImage) {
-        this.foafImage = foafImage;
-    }
-
-    /**
-     *
-     * @return un String URI de la ressource
-     */
-    public String getUri() {
-        return this.uri;
-    }
-
-    /**
-     *
-     * @return la liste des labels
-     */
-    public ArrayList<SKOSLabel> getLabelsList() {
-        return labelsList;
-    }
-
-    /**
-     *
-     * @return la liste des relations
-     */
-    public ArrayList<SKOSRelation> getRelationsList() {
-        return relationsList;
-    }
-
-    /**
-     *
-     * @return la liste des documenntations
-     */
-    public ArrayList<SKOSDocumentation> getDocumentationsList() {
-        return documentationsList;
-    }
-
-    /**
-     *
-     * @return la liste des dates
-     */
-    public ArrayList<SKOSDate> getDateList() {
-        return dateList;
-    }
-
-    /**
-     *
-     * @param v la valeur du match
-     * @param prop le type de match
-     */
     public void addMatch(String v, int prop) {
         matchList.add(new SKOSMatch(v, prop));
     }
 
-    /**
-     *
-     * @param notation valeur
-     */
     public void addNotation(String notation) {
         notationList.add(new SKOSNotation(notation));
-    }
-
-    public ArrayList<String> getExternalResources() {
-        return externalResources;
     }
 
     public void addExternalResource(String externalResource) {
@@ -357,34 +225,6 @@ public class SKOSResource {
         }
     }
 
-    public void setProperty(int property) {
-        this.property = property;
-    }
-
-    public void setLabelsList(ArrayList<SKOSLabel> labelsList) {
-        this.labelsList = labelsList;
-    }
-
-    public void setRelationsList(ArrayList<SKOSRelation> relationsList) {
-        this.relationsList = relationsList;
-    }
-
-    public void setDocumentationsList(ArrayList<SKOSDocumentation> documentationsList) {
-        this.documentationsList = documentationsList;
-    }
-
-    public void setDateList(ArrayList<SKOSDate> dateList) {
-        this.dateList = dateList;
-    }
-
-    public void setNotationList(ArrayList<SKOSNotation> notationList) {
-        this.notationList = notationList;
-    }
-
-    public void setMatchList(ArrayList<SKOSMatch> matchList) {
-        this.matchList = matchList;
-    }
-
     /**
      * Méthode d'ajout des dates de création et de modification à la ressource,
      * dans une ArrayList
@@ -417,48 +257,8 @@ public class SKOSResource {
         }
     }
 
-    public void setGpsCoordinates(List<SKOSGPSCoordinates> gpsCoordinates) {
-        this.gpsCoordinates = gpsCoordinates;
-    }
-
-    public ArrayList<NodeImage> getNodeImage() {
-        return nodeImages;
-    }
-
-    public void setNodeImage(ArrayList<NodeImage> nodeImages) {
-        this.nodeImages = nodeImages;
-    }
-
     public void addNodeImage(NodeImage nodeImage) {
         this.nodeImages.add(nodeImage);
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    /**
-     *
-     * @param uri String URI de la ressource
-     */
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public SKOSdc getSdc() {
-        return sdc;
-    }
-
-    public ArrayList<String> getPaths() {
-        return paths;
-    }
-
-    public void setPaths(ArrayList<String> paths) {
-        this.paths = paths;
     }
 
     /**
@@ -673,8 +473,8 @@ public class SKOSResource {
         private void writeIdToImg(SKOSResource resource) {
             String key = resource.getIdentifier();//getIdFromUri(resource.getUri());
 
-            if (resource.getNodeImage() != null) {
-                idToImg.put(key, resource.getNodeImage());
+            if (resource.getNodeImages() != null) {
+                idToImg.put(key, resource.getNodeImages());
             }
         }
 
@@ -791,10 +591,10 @@ public class SKOSResource {
 
                     if (idToChildId.get(key) == null) {
                         ArrayList<String> temp = new ArrayList<>();
-                        temp.add(relation.getLocalIdentifier());//getIdFromUri(relation.getTargetUri()));
+                        temp.add(relation.getLocalIdentifier());
                         idToChildId.put(key, temp);
                     } else {
-                        String childId = relation.getLocalIdentifier();//getIdFromUri(relation.getTargetUri());
+                        String childId = relation.getLocalIdentifier();
                         if (!idToChildId.get(key).contains(childId)) {
                             idToChildId.get(key).add(childId);
                         }
@@ -808,11 +608,11 @@ public class SKOSResource {
                 ArrayList<TermTemp> conceptIdsTemps = new ArrayList<>();
                 for (String child : childs) {
                     String idTheso = resource.getLocalUri().substring(resource.getLocalUri().indexOf("idt=") + 4); 
-                    Term term = new TermHelper().getThisTerm(hikariDataSource, child, idTheso, langCode);
+                    Term term = null;//TODO Firas new TermHelper().getThisTerm(hikariDataSource, child, idTheso, langCode);
                     if (term != null) {
                         TermTemp termTemp = new TermTemp();
                         termTemp.idConcept = child;
-                        termTemp.term = term.getLexical_value();
+                        termTemp.term = term.getLexicalValue();
                         conceptIdsTemps.add(termTemp);
                     }
                 }
@@ -821,29 +621,6 @@ public class SKOSResource {
                 conceptIdsTemps.sort((o1, o2) -> nodeConceptTree.naturalCompare(o1.term, o2.term, true));
                 idToChildId.put(key, conceptIdsTemps.stream().map(c -> c.idConcept).collect(Collectors.toList()));
             }
-
-            /*
-            for (SKOSRelation relation : resource.getRelationsList()) {
-                String key;
-                if (relation.getProperty() == SKOSProperty.narrower
-                        || relation.getProperty() == SKOSProperty.narrowerGeneric
-                        || relation.getProperty() == SKOSProperty.narrowerInstantial
-                        || relation.getProperty() == SKOSProperty.narrowerPartitive) {
-                    key = getIdFromUri(resource.getUri());
-                    ArrayList<String> child = idToChildId.get(key);
-                    if (child == null) {
-                        ArrayList<String> temp = new ArrayList<>();
-                        temp.add(getIdFromUri(relation.getTargetUri()));
-                        idToChildId.put(key, temp);
-                    } else {
-                        String childId = getIdFromUri(relation.getTargetUri());
-                        if (!child.contains(childId)) {
-                            child.add(childId);
-                        }
-                    }
-
-                }
-            }*/
         }
 
         private void checkTrad(SKOSResource resource) {

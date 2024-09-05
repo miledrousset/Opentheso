@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -11,13 +11,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupThesaurus;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRole;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
+import fr.cnrs.opentheso.models.users.NodeUser;
+import fr.cnrs.opentheso.models.users.NodeUserGroup;
+import fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus;
+import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
+import fr.cnrs.opentheso.models.users.NodeUserRole;
+import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
+import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
 
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import org.apache.commons.collections4.CollectionUtils;
@@ -329,7 +329,7 @@ public class UserHelper {
                         nodeUser.setActive(resultSet.getBoolean("active"));
                         nodeUser.setMail(resultSet.getString("mail"));
                         nodeUser.setAlertMail(resultSet.getBoolean("alertmail"));
-                        nodeUser.setPasstomodify(resultSet.getBoolean("passtomodify"));
+                        nodeUser.setPassToModify(resultSet.getBoolean("passtomodify"));
                         nodeUser.setSuperAdmin(resultSet.getBoolean("issuperadmin"));
                         nodeUser.setApiKey(resultSet.getString("apiKey"));
                         nodeUser.setKeyNeverExpire(resultSet.getBoolean("key_never_expire"));
@@ -1260,7 +1260,7 @@ public class UserHelper {
                         nodeUserRole.setUserName(resultSet.getString("username"));
                         nodeUserRole.setIdRole(1);
                         nodeUserRole.setRoleName("SuperAdmin");
-                        nodeUserRole.setIsActive(resultSet.getBoolean("active"));
+                        nodeUserRole.setActive(resultSet.getBoolean("active"));
                         nodeUserRoles.add(nodeUserRole);
                     }
                 }
@@ -1687,13 +1687,13 @@ public class UserHelper {
                         //   nodeUserRoleGroup.setNodeUserGroupThesauruses(getUserThesaurusOfGroup(ds, resultSet.getInt("id_group")));
 
                         if (resultSet.getInt("id_role") == 2) {
-                            nodeUserRoleGroup.setIsAdmin(true);
+                            nodeUserRoleGroup.setAdmin(true);
                         }
                         if (resultSet.getInt("id_role") == 3) {
-                            nodeUserRoleGroup.setIsManager(true);
+                            nodeUserRoleGroup.setManager(true);
                         }
                         if (resultSet.getInt("id_role") == 4) {
-                            nodeUserRoleGroup.setIsContributor(true);
+                            nodeUserRoleGroup.setContributor(true);
                         }
 
                         nodeUserRoleGroups.add(nodeUserRoleGroup);
@@ -1755,7 +1755,7 @@ public class UserHelper {
                         NodeUserRole nodeUserRole = new NodeUserRole();
                         nodeUserRole.setIdUser(resultSet.getInt("id_user"));
                         nodeUserRole.setUserName(resultSet.getString("username"));
-                        nodeUserRole.setIsActive(resultSet.getBoolean("active"));
+                        nodeUserRole.setActive(resultSet.getBoolean("active"));
                         nodeUserRole.setIdRole(-1);
                         nodeUserRole.setRoleName("");
                         listUser.add(nodeUserRole);
@@ -1766,76 +1766,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listUser;
-    }
-
-    /**
-     * cette fonction permet de retourner un objet vide de type
-     * NodeUserRoleGroup pour un utilisateur qui n'a aucun role encore sur aucun
-     * groupe
-     *
-     *
-     * @param ds
-     * @return
-     */
-    public NodeUserRoleGroup getUserRoleWithoutGroup(
-            HikariDataSource ds) {
-
-        //   NodeUserRoleGroup nodeUserRoleGroup = null;
-        NodeUserRoleGroup nodeUserRoleGroup = new NodeUserRoleGroup();
-        nodeUserRoleGroup.setIdRole(-1);
-        nodeUserRoleGroup.setRoleName("");
-        nodeUserRoleGroup.setGroupName("");
-        nodeUserRoleGroup.setIdGroup(-1);
-        nodeUserRoleGroup.setIsAdmin(false);
-        nodeUserRoleGroup.setIsManager(false);
-        nodeUserRoleGroup.setIsContributor(false);
-
-        /*
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        try {
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT \n" +
-                                    "  roles.id, \n" +
-                                    "  roles.name, \n" +
-                                    "  user_group_label.label_group, \n" +
-                                    "  user_group_label.id_group\n" +
-                                    " FROM \n" +
-                                    "  user_role_group, \n" +
-                                    "  roles, \n" +
-                                    "  user_group_label\n" +
-                                    " WHERE \n" +
-                                    "  user_role_group.id_role = roles.id AND\n" +
-                                    "  user_group_label.id_group = user_role_group.id_group AND\n" +
-                                    "  user_role_group.id_user = " + idUser;
-                    resultSet = stmt.executeQuery(query);
-                    if(resultSet.next()) {
-                        nodeUserRoleGroup = new NodeUserRoleGroup();
-                        nodeUserRoleGroup.setIdRole(resultSet.getInt("id"));
-                        nodeUserRoleGroup.setRoleName(resultSet.getString("name"));
-                        nodeUserRoleGroup.setGroupName(resultSet.getString("label_group"));                        
-                        nodeUserRoleGroup.setIdGroup(resultSet.getInt("id_group"));
-                        if(resultSet.getInt("id") == 2) 
-                            nodeUserRoleGroup.setIsAdmin(true);
-                        if(resultSet.getInt("id") == 3) 
-                            nodeUserRoleGroup.setIsManager(true);
-                        if(resultSet.getInt("id") == 4) 
-                            nodeUserRoleGroup.setIsContributor(true);                        
-                    }
-                } finally {
-                    if (stmt != null) stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper2.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-        return nodeUserRoleGroup;
     }
 
     /**
@@ -1951,7 +1881,7 @@ public class UserHelper {
                         NodeUserRole nodeUserRole = new NodeUserRole();
                         nodeUserRole.setIdUser(resultSet.getInt("id_user"));
                         nodeUserRole.setUserName(resultSet.getString("username"));
-                        nodeUserRole.setIsActive(resultSet.getBoolean("active"));
+                        nodeUserRole.setActive(resultSet.getBoolean("active"));
                         nodeUserRole.setIdRole(resultSet.getInt("id"));
                         nodeUserRole.setRoleName(resultSet.getString("name"));
                         nodeUserRole.setIdTheso(resultSet.getString("id_theso"));
@@ -2118,7 +2048,7 @@ public class UserHelper {
                         NodeUserRole nodeUserRole = new NodeUserRole();
                         nodeUserRole.setIdUser(resultSet.getInt("id_user"));
                         nodeUserRole.setUserName(resultSet.getString("username"));
-                        nodeUserRole.setIsActive(resultSet.getBoolean("active"));
+                        nodeUserRole.setActive(resultSet.getBoolean("active"));
                         nodeUserRole.setIdRole(resultSet.getInt("id"));
                         nodeUserRole.setRoleName(resultSet.getString("name"));
                         listUser.add(nodeUserRole);
@@ -2168,13 +2098,13 @@ public class UserHelper {
                         nodeUserRoleGroup.setGroupName(resultSet.getString("label_group"));
                         nodeUserRoleGroup.setIdGroup(resultSet.getInt("id_group"));
                         if (resultSet.getInt("id") == 2) {
-                            nodeUserRoleGroup.setIsAdmin(true);
+                            nodeUserRoleGroup.setAdmin(true);
                         }
                         if (resultSet.getInt("id") == 3) {
-                            nodeUserRoleGroup.setIsManager(true);
+                            nodeUserRoleGroup.setManager(true);
                         }
                         if (resultSet.getInt("id") == 4) {
-                            nodeUserRoleGroup.setIsContributor(true);
+                            nodeUserRoleGroup.setContributor(true);
                         }
                     }
                 }
@@ -2470,49 +2400,6 @@ public class UserHelper {
         return nodeUserRoleGroup;
     }
 
-    ///////////////////////////
-    /// à vérifier
-    //////////////////////////
-    /**
-     *
-     * permet de retourner la liste des admins pour un thésaurus pour leur
-     * envoyer des alertes candidats
-     *
-     * @param ds
-     * @param idThesaurus
-     * @return
-     */
-    public ArrayList<String> getAdminMail(HikariDataSource ds,
-            String idThesaurus) {
-        ArrayList<String> lesMails = new ArrayList<>();
-
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT "
-                        + "  users.mail"
-                        + " FROM "
-                        + "  users, "
-                        + "  user_role_group, "
-                        + "  user_group_thesaurus"
-                        + " WHERE "
-                        + "  user_role_group.id_user = users.id_user AND"
-                        + "  user_role_group.id_group = user_group_thesaurus.id_group AND"
-                        + "  user_role_group.id_role = 2 AND "
-                        + "  users.active = true AND "
-                        + "  users.alertmail = true AND"
-                        + "  user_group_thesaurus.id_thesaurus = '" + idThesaurus + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        lesMails.add(resultSet.getString("mail"));
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return lesMails;
-    }
-
     public boolean isUserMailExist(HikariDataSource ds, String mail) {
 
         try (Connection conn = ds.getConnection()) {
@@ -2555,23 +2442,6 @@ public class UserHelper {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
         return name;
-    }
-
-    public boolean isneededpass(HikariDataSource ds, int id) {
-        boolean need = false;
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("Select passtomodify from users where id_user = '" + id + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        need = resultSet.getBoolean("passtomodify");
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return need;
     }
 
     /**
@@ -2693,27 +2563,6 @@ public class UserHelper {
                         + "' WHERE id_user = " + idUser);
                 status = true;
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return status;
-    }
-
-    /**
-     * permet de mette à jour le status des alertes mail pour l'utilisateur
-     *
-     * @param conn
-     * @param idUser
-     * @param alertMail
-     * @return #MR
-     */
-    public boolean setAlertMailForUser(Connection conn, int idUser, boolean alertMail) {
-        boolean status = false;
-
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("UPDATE users set alertmail = " + alertMail
-                    + " WHERE id_user = " + idUser);
-            status = true;
         } catch (SQLException ex) {
             Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
         }

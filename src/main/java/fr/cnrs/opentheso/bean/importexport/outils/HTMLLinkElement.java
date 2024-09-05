@@ -1,31 +1,18 @@
 package fr.cnrs.opentheso.bean.importexport.outils;
 
+import lombok.Data;
 
+
+@Data
 public class HTMLLinkElement {
  
-    String linkElement;
-    String linkAddress;
- 
-    public String getLinkAddress() {
-        return linkAddress;
-    }
- 
+    private String linkElement;
+    private String linkAddress;
+
+
     public void setLinkAddress(String linkElement) {
-        this.linkAddress = replaceInvalidChar(linkElement);
-    }
- 
-    public String getLinkElement() {
-        return linkElement;
-    }
- 
-    public void setLinkElement(String linkAddress) {
-        this.linkElement = linkAddress;
-    }
- 
-    private String replaceInvalidChar(String linkElement) {
-        linkElement = linkElement.replaceAll("'", "");
-        linkElement = linkElement.replaceAll("\"", "");
-        return linkElement;
+        this.linkElement = linkElement.replaceAll("'", "");
+        this.linkElement = this.linkElement.replaceAll("\"", "");
     }
  
     @Override

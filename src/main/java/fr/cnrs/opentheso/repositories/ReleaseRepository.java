@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.repositories;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bean.notification.dto.ReleaseDto;
+import fr.cnrs.opentheso.models.releases.ReleaseDto;
 import fr.cnrs.opentheso.entites.Release;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

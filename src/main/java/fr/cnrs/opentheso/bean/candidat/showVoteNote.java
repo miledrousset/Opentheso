@@ -7,11 +7,11 @@ package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeTabVote;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeVote;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bean.candidat.dao.CandidatDao;
-import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.models.candidats.NodeTabVote;
+import fr.cnrs.opentheso.models.candidats.NodeVote;
+import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
+import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.Serializable;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.Lazy;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "showVoteNote")
 @SessionScoped
 public class showVoteNote implements Serializable {
@@ -81,37 +83,11 @@ public class showVoteNote implements Serializable {
             /// pour récupérer les notes
             try {
                 nodeNote = noteHelper.getNoteByIdNote(connect.getPoolConnexion(), Integer.parseInt(nodeVote.getIdNote()));
-                nodeTabVote.setTypeNote(nodeNote.getNotetypecode());
-                nodeTabVote.setNoteValue(nodeNote.getLexicalvalue());
+                nodeTabVote.setTypeNote(nodeNote.getNoteTypeCode());
+                nodeTabVote.setNoteValue(nodeNote.getLexicalValue());
             } catch (Exception e) {
             }
             nodeTabVotes.add(nodeTabVote);
         }
     }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getCandidat() {
-        return candidat;
-    }
-
-    public void setCandidat(String candidat) {
-        this.candidat = candidat;
-    }
-
-    public ArrayList<NodeTabVote> getNodeTabVotes() {
-        return nodeTabVotes;
-    }
-
-    public void setNodeTabVotes(ArrayList<NodeTabVote> nodeTabVotes) {
-        this.nodeTabVotes = nodeTabVotes;
-    }
- 
-    
 }

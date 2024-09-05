@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.proposition;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
+import fr.cnrs.opentheso.models.terms.NodeEM;
 
 
 public class SynonymPropBean extends NodeEM {

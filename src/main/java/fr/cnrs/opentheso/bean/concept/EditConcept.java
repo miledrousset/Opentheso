@@ -5,17 +5,17 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.concept.NodeConceptType;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
@@ -56,6 +56,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Named(value = "editConcept")
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class EditConcept implements Serializable {
+
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy private LanguageBean languageBean;
@@ -63,7 +64,13 @@ public class EditConcept implements Serializable {
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private Tree tree;
     @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private CurrentUser currentUser;    
+    @Autowired @Lazy private CurrentUser currentUser;
+
+    @Autowired
+    private DeprecateHelper deprecateHelper;
+
+    @Autowired
+    private TermHelper termHelper;
     
     private String prefLabel;
     private String notation;
@@ -79,15 +86,15 @@ public class EditConcept implements Serializable {
     
     private boolean isReplacedByRTrelation;
     
-    private ArrayList<NodeConceptType> nodeConceptTypes;
+    private List<NodeConceptType> nodeConceptTypes;
     private String selectedConceptType;
 
     // dépréciation
-    private ArrayList<NodeIdValue> nodeReplaceBy;
+    private List<NodeIdValue> nodeReplaceBy;
     
     private NodeSearchMini searchSelected;    
     
-    private ArrayList<NodeIdValue> nodeIdValues;
+    private List<NodeIdValue> nodeIdValues;
     
     private NodeConceptType nodeConceptTypeToDelete;
     private NodeConceptType nodeConceptTypeToAdd;    
@@ -332,8 +339,6 @@ public class EditConcept implements Serializable {
             return;
         }
 
-        TermHelper termHelper = new TermHelper();
-
         // vérification si le term à ajouter existe déjà, s oui, on a l'Id, sinon, on a Null
         String idTerm = termHelper.isTermEqualTo(connect.getPoolConnexion(),
                 prefLabel.trim(),
@@ -373,7 +378,7 @@ public class EditConcept implements Serializable {
             int idUser) {
 
         PrimeFaces pf = PrimeFaces.current();
-        TermHelper termHelper = new TermHelper();
+
         String idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idTheso);
         if (idTerm == null) {
@@ -573,7 +578,6 @@ public class EditConcept implements Serializable {
 //////// gestion des concepts dépérciés    
 ///////////////////////////////////////////////////////////////////////////////    
     public void deprecateConcept(String idConcept, String idTheso, int idUser) {
-        DeprecateHelper deprecateHelper = new DeprecateHelper();
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
@@ -619,7 +623,6 @@ public class EditConcept implements Serializable {
     }
     
     public void approveConcept(String idConcept, String idTheso, int idUser){
-        DeprecateHelper deprecateHelper = new DeprecateHelper();
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
         if (!deprecateHelper.approveConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser)) {
@@ -676,7 +679,6 @@ public class EditConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        DeprecateHelper deprecateHelper = new DeprecateHelper();
 
         if (!deprecateHelper.addReplacedBy(connect.getPoolConnexion(),
                 idConceptDeprecated, idTheso, searchSelected.getIdConcept(), idUser)) {
@@ -724,7 +726,6 @@ public class EditConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }
-        DeprecateHelper deprecateHelper = new DeprecateHelper();
 
         if (!deprecateHelper.deleteReplacedBy(connect.getPoolConnexion(),
                 idConceptDeprecated, idTheso, idConceptReplaceBy)) {
@@ -886,7 +887,7 @@ public class EditConcept implements Serializable {
         }        
     }    
 
-    private ArrayList<NodeIdValue> generateArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {
+    private List<NodeIdValue> generateArkIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {
         FacesMessage msg;
         nodeIdValues = conceptHelper.generateArkId(
                 connect.getPoolConnexion(),
@@ -985,9 +986,7 @@ public class EditConcept implements Serializable {
         
         if(roleOnThesoBean.getNodePreference().isUseHandleWithCertificat()) {
             HandleHelper handleHelper = new HandleHelper(roleOnThesoBean.getNodePreference());
-            if (!handleHelper.deleteIdHandle(
-                    conceptView.getNodeConcept().getConcept().getIdHandle(),
-                    selectedTheso.getCurrentIdTheso())) {
+            if (!handleHelper.deleteIdHandle(conceptView.getNodeConcept().getConcept().getIdHandle())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", handleHelper.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La suppression de Handle a échoué !!");
@@ -1159,11 +1158,11 @@ public class EditConcept implements Serializable {
         this.forDelete = forDelete;
     }
 
-    public ArrayList<NodeIdValue> getNodeReplaceBy() {
+    public List<NodeIdValue> getNodeReplaceBy() {
         return nodeReplaceBy;
     }
 
-    public void setNodeReplaceBy(ArrayList<NodeIdValue> nodeReplaceBy) {
+    public void setNodeReplaceBy(List<NodeIdValue> nodeReplaceBy) {
         this.nodeReplaceBy = nodeReplaceBy;
     }
 
@@ -1181,9 +1180,9 @@ public class EditConcept implements Serializable {
 
     public void setSearchSelected(NodeSearchMini searchSelected) {
         this.searchSelected = searchSelected;
-    }    
+    }
 
-    public ArrayList<NodeConceptType> getNodeConceptTypes() {
+    public List<NodeConceptType> getNodeConceptTypes() {
         return nodeConceptTypes;
     }
 
@@ -1241,5 +1240,5 @@ public class EditConcept implements Serializable {
     public void setNodeConceptTypeToAdd(NodeConceptType nodeConceptTypeToAdd) {
         this.nodeConceptTypeToAdd = nodeConceptTypeToAdd;
     }
-    
+
 }

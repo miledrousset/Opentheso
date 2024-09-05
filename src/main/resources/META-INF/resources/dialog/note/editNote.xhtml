@@ -19,7 +19,7 @@
                     </h:panelGroup>                    
                     <h:panelGroup rendered="#{!noteBean.isFacetNote and !noteBean.isGroupNote}">
                         <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
-                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="font-size: 14px; color: #C63632;"/>                    
+                        <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="font-size: 14px; color: #C63632;"/>
                     </h:panelGroup>                    
                 </div>
             </div> 
@@ -28,7 +28,7 @@
                 <ui:repeat var="noteToEdit" value="#{noteBean.nodeToEdit()}" >
                     <div class="row" style="margin-bottom: 10px;">
                         <div class="col-10" colXs="9" style="background: #FAFAFA">
-                            <p:textEditor value="#{noteToEdit.lexicalvalue}" allowLinks="true" secure="false"
+                            <p:textEditor value="#{noteToEdit.lexicalValue}" allowLinks="true" secure="false"
                                           placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />          
                         </div>
 

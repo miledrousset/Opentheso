@@ -330,13 +330,13 @@
                         <ui:repeat id="listNotes" var="note" value="#{candidatBean.candidatSelected.nodeNotes}" >
                             <div class="row" style="padding-top: 5px; background-color: #{viewEditionBean.getAlternateColor(candidatBean.candidatSelected.nodeNotes.indexOf(note))}">
                                 <div class="col-3" >
-                                    <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;" title="#{langueBean.getMsg('rightbody.concept.by')} #{candidatBean.getUserName(note.idUser)}"/>
+                                    <h:outputText value="#{note.lexicalValue}" escape="false" style="font-size: 14px;" title="#{langueBean.getMsg('rightbody.concept.by')} #{candidatBean.getUserName(note.idUser)}"/>
                                 </div>
                                 <div class="col-2" >
                                     <h:outputText value="#{candidatBean.getUserName(note.idUser)}" escape="false" style="font-size: 14px;"/>
                                 </div>
                                 <div class="col-2" >
-                                    <h:outputText value="#{candidatBean.getNoteType(note.notetypecode)}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText value="#{candidatBean.getNoteType(note.noteTypeCode)}" escape="false" style="font-size: 14px;"/>
                                 </div>
                                 <div class="col-2" >
                                     <img src="#{conceptView.getFlagFromCodeLang(note.lang)}" width="25" height="20"/>

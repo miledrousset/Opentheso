@@ -4,11 +4,11 @@ package plpgsql;
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.NodeConceptGraph;
-import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.bdd.helper.DaoResourceHelper;
+import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
+import fr.cnrs.opentheso.models.concept.NodeFullConcept;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -127,7 +127,7 @@ public class Export {
         
         System.out.println("start NodeConcept at =  " + LocalDateTime.now());    
         for (int i = 0; i < 1000; i++) {
-            new ConceptHelper().getConceptForExport(ds, idConcept, idTheso, false, false);                    
+            new ConceptHelper().getConceptForExport(ds, idConcept, idTheso, false);
         }
 
 
@@ -313,7 +313,7 @@ public class Export {
 
                     try ( ResultSet resultSet = stmt.getResultSet()) {
                         while (resultSet.next()) {
-                            resultat = resultSet.getString("term_lexical_value");
+                            resultat = resultSet.getString("term_lexicalValue");
                         }   
                     }                    
                 }

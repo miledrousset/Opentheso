@@ -195,7 +195,7 @@
                             </h:panelGroup>    
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <ui:repeat var="note" value="#{groupView.note}" varStatus="status">
-                                    <h:outputText value="#{note.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText value="#{note.lexicalValue}" escape="false" style="font-size: 14px;"/>
                                     <br/>
                                 </ui:repeat>
                             </div>
@@ -229,8 +229,8 @@
                             </h:panelGroup>                                
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                 
                                 <ui:repeat var="changeNote" value="#{groupView.changeNote}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
                                 </ui:repeat>
                             </div>
@@ -264,8 +264,8 @@
                             </h:panelGroup>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
                                 <ui:repeat var="def" value="#{groupView.definition}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{def.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{status.first}" value="#{def.lexicalValue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{def.lexicalValue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
                                 </ui:repeat>
                             </div>
@@ -301,8 +301,8 @@
                             </h:panelGroup>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
                                 <ui:repeat var="editorialNote" value="#{groupView.editorialNote}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
                                 </ui:repeat>
                             </div>
@@ -339,8 +339,8 @@
                             </h:panelGroup>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
                                 <ui:repeat var="example" value="#{groupView.example}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{example.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{status.first}" value="#{example.lexicalValue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{example.lexicalValue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
                                 </ui:repeat>
                             </div>
@@ -377,8 +377,8 @@
                             </h:panelGroup>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
                                 <ui:repeat var="historyNote" value="#{groupView.historyNote}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
                                 </ui:repeat>
                             </div>
@@ -415,8 +415,8 @@
                             </h:panelGroup>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
                                 <ui:repeat var="scopeNote" value="#{groupView.scopeNote}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalvalue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
                                     <br/>                                    
                                 </ui:repeat>
                             </div>

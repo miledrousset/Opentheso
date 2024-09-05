@@ -1,34 +1,34 @@
 package fr.cnrs.opentheso.bean.candidat;
 
-import fr.cnrs.opentheso.bdd.datas.Concept;
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
-import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.models.concept.Concept;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
 import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
-import fr.cnrs.opentheso.bean.candidat.dao.DomaineDao;
-import fr.cnrs.opentheso.bean.candidat.dao.NoteDao;
-import fr.cnrs.opentheso.bean.candidat.dao.RelationDao;
-import fr.cnrs.opentheso.bean.candidat.dao.TermeDao;
-import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
-import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
-import fr.cnrs.opentheso.bean.candidat.enumeration.VoteType;
+import fr.cnrs.opentheso.repositories.candidats.DomaineDao;
+import fr.cnrs.opentheso.repositories.candidats.NoteDao;
+import fr.cnrs.opentheso.repositories.candidats.RelationDao;
+import fr.cnrs.opentheso.repositories.candidats.TermeDao;
+import fr.cnrs.opentheso.models.candidats.CandidatDto;
+import fr.cnrs.opentheso.models.candidats.DomaineDto;
+import fr.cnrs.opentheso.models.candidats.enumeration.VoteType;
 import fr.cnrs.opentheso.bean.concept.ImageBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -36,6 +36,7 @@ import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.services.candidats.CandidatService;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -44,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -64,6 +66,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+
 
 @Data
 @SessionScoped
@@ -89,7 +92,20 @@ public class CandidatBean implements Serializable {
     @Autowired @Lazy
     private AlignmentManualBean alignmentManualBean;
 
-    private final CandidatService candidatService = new CandidatService();
+    @Autowired
+    private CandidateHelper candidateHelper;
+
+    @Autowired
+    private ImagesHelper imagesHelper;
+
+    @Autowired
+    private TermHelper termHelper;
+
+    @Autowired
+    private GroupHelper groupHelper;
+
+    @Autowired
+    private CandidatService candidatService;
 
     private boolean isListCandidatsActivate, isNewCandidatActivate, isShowCandidatActivate;
     private boolean isRejectCandidatsActivate, isAcceptedCandidatsActivate, isExportViewActivate, isImportViewActivate;
@@ -508,8 +524,6 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        var termHelper = new TermHelper();
-
         if (initialCandidat == null) {
 
             // en cas d'un nouveau candidat, verification dans les prefLabels
@@ -547,9 +561,9 @@ public class CandidatBean implements Serializable {
 
             var terme = Term.builder()
                     .lang(getIdLang())
-                    .id_thesaurus(selectedTheso.getCurrentIdTheso())
+                    .idThesaurus(selectedTheso.getCurrentIdTheso())
                     .contributor(currentUser.getNodeUser().getIdUser())
-                    .lexical_value(candidatSelected.getNomPref().trim())
+                    .lexicalValue(candidatSelected.getNomPref().trim())
                     .source("candidat")
                     .status("D")
                     .build();
@@ -570,13 +584,13 @@ public class CandidatBean implements Serializable {
                             getIdLang(), candidatSelected.getIdTerm());
                 } else {
                     Term term = new Term();
-                    term.setId_thesaurus(selectedTheso.getCurrentIdTheso());
+                    term.setIdThesaurus(selectedTheso.getCurrentIdTheso());
                     term.setLang(getIdLang());
                     term.setContributor(currentUser.getNodeUser().getIdUser());
-                    term.setLexical_value(candidatSelected.getNomPref().trim());
+                    term.setLexicalValue(candidatSelected.getNomPref().trim());
                     term.setSource("candidat");
                     term.setStatus("D");
-                    term.setId_term(candidatSelected.getIdTerm());
+                    term.setIdTerm(candidatSelected.getIdTerm());
                     TermeDao termeDao = new TermeDao();
                     termeDao.addNewTerme(connect.getPoolConnexion(), term);
                 }
@@ -609,7 +623,7 @@ public class CandidatBean implements Serializable {
     public List<NodeIdValue> searchCollection(String enteredValue) {
 
         if (StringUtils.isNotEmpty(enteredValue)) {
-            allCollections = new GroupHelper().searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+            allCollections = groupHelper.searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), enteredValue);
             return createCollectionsFiltred(allCollections, candidatSelected.getCollections());
         } else {
@@ -678,15 +692,15 @@ public class CandidatBean implements Serializable {
         try {
             // cas où il y a un vote, on le supprime
             if (candidatService.getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                    currentUser.getNodeUser().getIdUser(), nodeNote.getId_note() + "", VoteType.NOTE)) {
+                    currentUser.getNodeUser().getIdUser(), nodeNote.getIdNote() + "", VoteType.NOTE)) {
 
                 candidatService.removeVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                        currentUser.getNodeUser().getIdUser(), nodeNote.getId_note() + "", VoteType.NOTE);
+                        currentUser.getNodeUser().getIdUser(), nodeNote.getIdNote() + "", VoteType.NOTE);
                 nodeNote.setVoted(false);
             } else {
                 // cas ou il n'y a pas de vote, alors on vote
                 candidatService.addVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
-                        currentUser.getNodeUser().getIdUser(), nodeNote.getId_note() + "", VoteType.NOTE);
+                        currentUser.getNodeUser().getIdUser(), nodeNote.getIdNote() + "", VoteType.NOTE);
                 nodeNote.setVoted(true);
             }
         } catch (SQLException sqle) {
@@ -741,7 +755,7 @@ public class CandidatBean implements Serializable {
         setIsNewCandidatActivate(true);
 
         candidatSelected = new CandidatDto();
-        candidatSelected.setIdConcepte(null);//candidatService.getCandidatID(connect));
+        candidatSelected.setIdConcepte(null);
         candidatSelected.setLang(getIdLang());
         candidatSelected.setIdThesaurus(selectedTheso.getCurrentIdTheso());
         candidatSelected.setUserId(currentUser.getNodeUser().getIdUser());
@@ -772,7 +786,6 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        CandidateHelper candidateHelper = new CandidateHelper();
         if (!candidateHelper.reactivateRejectedCandidat(connect.getPoolConnexion(),
                 candidatSelected.getIdThesaurus(),
                 candidatSelected.getIdConcepte())) {
@@ -1042,7 +1055,7 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        if (!new ImagesHelper().addExternalImage(connect.getPoolConnexion(),
+        if (imagesHelper.addExternalImage(connect.getPoolConnexion(),
                 candidatSelected.getIdConcepte(),
                 selectedTheso.getCurrentIdTheso(),
                 imageBean.getName(),
@@ -1054,7 +1067,7 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        candidatSelected.setImages(new ImagesHelper().getExternalImages(connect.getPoolConnexion(),
+        candidatSelected.setImages(imagesHelper.getExternalImages(connect.getPoolConnexion(),
                 candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Image ajoutée avec succès");
@@ -1114,10 +1127,10 @@ public class CandidatBean implements Serializable {
 
     public void deleteImage(String imageUri) {
 
-        new ImagesHelper().deleteExternalImage(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+        imagesHelper.deleteExternalImage(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
                 selectedTheso.getSelectedIdTheso(), imageUri);
 
-        candidatSelected.setImages(new ImagesHelper().getExternalImages(connect.getPoolConnexion(),
+        candidatSelected.setImages(imagesHelper.getExternalImages(connect.getPoolConnexion(),
                 candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Image supprimée avec succès");

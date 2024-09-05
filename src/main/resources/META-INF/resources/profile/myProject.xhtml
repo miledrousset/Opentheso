@@ -171,10 +171,10 @@
 
                                                                 <p:column width="40" headerText="#{langueBean.getMsg('profile.pseudo')}">
                                                                     <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" 
-                                                                                  value="#{listUser.userName}" rendered="#{!listUser.isActive}"
+                                                                                  value="#{listUser.userName}" rendered="#{!listUser.active}"
                                                                                   style="color: red; font-style: oblique" />
 
-                                                                    <h:outputText value="#{listUser.userName} (#{listUser.idUser})" rendered="#{listUser.isActive}"/>
+                                                                    <h:outputText value="#{listUser.userName} (#{listUser.idUser})" rendered="#{listUser.active}"/>
                                                                 </p:column>
 
                                                                 <p:column width="10" headerText="#{langueBean.getMsg('profile.role')}">
@@ -229,10 +229,10 @@
 
                                                                 <p:column width="40" headerText="#{langueBean.getMsg('profile.pseudo')}">
                                                                     <h:outputText title="#{langueBean.getMsg('profile.user_disabled')}" 
-                                                                                  value="#{listUserLimited.userName}" rendered="#{!listUserLimited.isActive}"
+                                                                                  value="#{listUserLimited.userName}" rendered="#{!listUserLimited.active}"
                                                                                   style="color: red; font-style: oblique" />
 
-                                                                    <h:outputText value="#{listUserLimited.userName} (#{listUserLimited.idUser})" rendered="#{listUserLimited.isActive}"/>
+                                                                    <h:outputText value="#{listUserLimited.userName} (#{listUserLimited.idUser})" rendered="#{listUserLimited.active}"/>
                                                                 </p:column>
 
                                                                 <p:column width="10" headerText="#{langueBean.getMsg('profile.role')}">

@@ -1,19 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.terms.NodeBT;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -32,6 +27,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -40,6 +36,7 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "broaderBean")
 @SessionScoped
 public class BroaderBean implements Serializable {
@@ -48,10 +45,13 @@ public class BroaderBean implements Serializable {
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private CurrentUser currentUser;     
+    @Autowired @Lazy private CurrentUser currentUser;
+
+    @Autowired
+    private ValidateActionHelper validateActionHelper;
 
     private NodeSearchMini searchSelected;
-    private ArrayList<NodeBT> nodeBTs;
+    private List<NodeBT> nodeBTs;
 
     public BroaderBean() {
     }
@@ -76,12 +76,6 @@ public class BroaderBean implements Serializable {
     public void reset() {
         nodeBTs = conceptBean.getNodeConcept().getNodeBT();
         searchSelected = null;
-//        if (toto == null) {
-//            toto = new ArrayList<>();
-//        }
-        /*    for (int i = 0; i < 50000000; i++) {
-            toto.add(conceptBean.getNodeConcept());
-        }*/
     }
 
     public void infos() {
@@ -130,7 +124,6 @@ public class BroaderBean implements Serializable {
         }
 
         /// vérifier la cohérence de la relation
-        ValidateActionHelper validateActionHelper = new ValidateActionHelper();
         if (!validateActionHelper.isAddRelationBTValid(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
@@ -308,22 +301,6 @@ public class BroaderBean implements Serializable {
 
         PrimeFaces.current().executeScript("srollToSelected();");
         PrimeFaces.current().executeScript("PF('deleteBroaderLink').hide();");
-    }
-
-    public NodeSearchMini getSearchSelected() {
-        return searchSelected;
-    }
-
-    public void setSearchSelected(NodeSearchMini searchSelected) {
-        this.searchSelected = searchSelected;
-    }
-
-    public ArrayList<NodeBT> getNodeBTs() {
-        return nodeBTs;
-    }
-
-    public void setNodeBTs(ArrayList<NodeBT> nodeBTs) {
-        this.nodeBTs = nodeBTs;
     }
 
 }

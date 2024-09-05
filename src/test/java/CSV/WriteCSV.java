@@ -7,7 +7,7 @@ package CSV;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;

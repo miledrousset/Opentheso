@@ -7,13 +7,12 @@ package testmemory;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import fr.cnrs.opentheso.utils.StringUtils;
@@ -108,7 +107,7 @@ public class testRT_memory {
                             + " AND term.lang = '" + idLang + "'"
                             + " and concept.status != 'CA'"
                             + " AND term.id_thesaurus = '" + idTheso + "'"
-                            + " AND f_unaccent(lower(term.lexical_value)) LIKE '%" + value + "%' order by term.lexical_value <-> '" + value + "' limit 20";
+                            + " AND f_unaccent(lower(term.lexical_value)) LIKE '%" + value + "%' order by term.lexicalValue <-> '" + value + "' limit 20";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -117,7 +116,7 @@ public class testRT_memory {
 
                         nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("lexical_value"));
-                        nodeSearchMini.setIsAltLabel(false);
+                        nodeSearchMini.setAltLabel(false);
                         nodeSearchMinis.add(nodeSearchMini);
                     }
                     resultSet.close();
@@ -144,7 +143,7 @@ public class testRT_memory {
                             + " and concept.status != 'CA'"
                             + " AND"
                             + " f_unaccent(lower(non_preferred_term.lexical_value)) LIKE '%" + value + "%'"
-                            + " order by non_preferred_term.lexical_value <-> '" + value + "' limit 20";
+                            + " order by non_preferred_term.lexicalValue <-> '" + value + "' limit 20";
 
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
@@ -152,9 +151,9 @@ public class testRT_memory {
                         NodeSearchMini nodeSearchMini = new NodeSearchMini();
 
                         nodeSearchMini.setIdConcept(resultSet.getString("id_concept"));
-                        nodeSearchMini.setAltLabel(resultSet.getString("npt"));
+                        nodeSearchMini.setAltLabelValue(resultSet.getString("npt"));
                         nodeSearchMini.setPrefLabel(resultSet.getString("pt"));
-                        nodeSearchMini.setIsAltLabel(true);
+                        nodeSearchMini.setAltLabel(true);
                         nodeSearchMinis.add(nodeSearchMini);
                     }
                      resultSet.close();

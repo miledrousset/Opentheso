@@ -5,16 +5,17 @@ import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.candidat.dto.DomaineDto;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.exports.csv.StatistiquesRapportCSV;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +42,13 @@ import org.primefaces.model.charts.donut.DonutChartModel;
 @Named(value = "statistiqueBean")
 @SessionScoped
 public class StatistiqueBean implements Serializable {
+
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private LanguageBean languageBean;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     private boolean genericTypeVisible, conceptTypeVisible;
     private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;
@@ -165,7 +170,7 @@ public class StatistiqueBean implements Serializable {
         languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
 
-        groupList = new GroupHelper().getAllGroupsByThesaurusAndLang(connect, selectedTheso.getSelectedIdTheso(),
+        groupList = groupHelper.getAllGroupsByThesaurusAndLang(connect, selectedTheso.getSelectedIdTheso(),
                 languageBean.getIdLangue());
     }
 
@@ -261,8 +266,6 @@ public class StatistiqueBean implements Serializable {
                 connect, selectedTheso.getCurrentIdTheso(),
                 selectedLanguage, dateDebut, dateFin,
                 searchGroupIdFromLabel(selectedCollection), nbrResultat);
-
-        //PrimeFaces.current().executeScript("PF('bui').hide();");
     }
 
     public StreamedContent exportStatiqituque() {

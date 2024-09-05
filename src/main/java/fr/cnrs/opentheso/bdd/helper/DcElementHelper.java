@@ -5,7 +5,7 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import fr.cnrs.opentheso.bean.notification.client.GitHubClient;
-import fr.cnrs.opentheso.bean.notification.dto.ReleaseDto;
-import fr.cnrs.opentheso.bean.notification.dto.TagDto;
+import fr.cnrs.opentheso.client.github.GitHubClient;
+import fr.cnrs.opentheso.models.releases.ReleaseDto;
+import fr.cnrs.opentheso.models.releases.TagDto;
 import fr.cnrs.opentheso.repositories.ReleaseRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

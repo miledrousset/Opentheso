@@ -5,20 +5,22 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.Json;
 
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+
+
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.utils.JsonHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType;
@@ -59,6 +61,15 @@ public class Rest_new {
 
     @Autowired
     private Connect connect;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private TermHelper termHelper;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     private static final String JSON_FORMAT = "application/json";
     private static final String JSON_FORMAT_LONG = JSON_FORMAT + ";charset=UTF-8";
@@ -435,7 +446,6 @@ public class Rest_new {
 
     private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {
         String[] groups = new String[arkGroups.length];
-        GroupHelper groupHelper = new GroupHelper();
         int i=0;
         for (String arkGroup : arkGroups) {
             groups[i] = groupHelper.getIdGroupFromArkId(connect.getPoolConnexion(), arkGroup, idTheso);
@@ -739,7 +749,7 @@ public class Rest_new {
     }
 
     private String getlistAllGroupOfTheso__(HikariDataSource ds, String idTheso) {
-        GroupHelper groupHelper = new GroupHelper();
+
         List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(ds, idTheso);
 
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
@@ -773,8 +783,6 @@ public class Rest_new {
     }
 
     private String getlistAllTopConceptOfTheso__(HikariDataSource ds, String idTheso) {
-        ConceptHelper conceptHelper = new ConceptHelper();
-        TermHelper termHelper = new TermHelper();
 
         List<String> listIdTopConceptOfTheso = conceptHelper.getAllTopTermOfThesaurus(ds, idTheso);
 

@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.converter;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
+import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;

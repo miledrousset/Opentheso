@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.bean.graph;
 
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.IOException;
@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+
+import fr.cnrs.opentheso.models.graphs.GraphObject;
+import fr.cnrs.opentheso.services.graphs.GraphService;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;

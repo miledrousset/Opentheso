@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.client.alignement;
 import java.util.ArrayList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringReader;

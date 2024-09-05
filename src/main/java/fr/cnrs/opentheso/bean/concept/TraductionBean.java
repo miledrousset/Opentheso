@@ -5,13 +5,13 @@
  */
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -21,19 +21,20 @@ import fr.cnrs.opentheso.bean.proposition.TraductionPropBean;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
 @Named(value = "traductionBean")
 @SessionScoped
 public class TraductionBean implements Serializable {
@@ -45,11 +46,14 @@ public class TraductionBean implements Serializable {
     @Autowired @Lazy private CurrentUser currentUser;   
     @Autowired @Lazy private LanguageBean languageBean;
 
+    @Autowired
+    private TermHelper termHelper;
+
     private String selectedLang;
-    private ArrayList<NodeLangTheso> nodeLangs;
-    private ArrayList<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits
-    private ArrayList<NodeTermTraduction> nodeTermTraductions;
-    private ArrayList<NodeTermTraduction> nodeTermTraductionsForEdit;
+    private List<NodeLangTheso> nodeLangs;
+    private List<NodeLangTheso> nodeLangsFiltered; // uniquement les langues non traduits
+    private List<NodeTermTraduction> nodeTermTraductions;
+    private List<NodeTermTraduction> nodeTermTraductionsForEdit;
 
     private String traductionValue;
 
@@ -186,7 +190,7 @@ public class TraductionBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        TermHelper termHelper = new TermHelper();
+
         if (termHelper.isTermExistIgnoreCase(
                 connect.getPoolConnexion(),
                 traductionValue,
@@ -198,7 +202,7 @@ public class TraductionBean implements Serializable {
         }
         if (!termHelper.addTraduction(connect.getPoolConnexion(),
                 traductionValue,
-                conceptBean.getNodeConcept().getTerm().getId_term(),
+                conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedLang, "", "", selectedTheso.getCurrentIdTheso(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur d'ajout de traduction !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -245,7 +249,7 @@ public class TraductionBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        TermHelper termHelper = new TermHelper();
+
         if (termHelper.isTermExistIgnoreCase(
                 connect.getPoolConnexion(),
                 traductionValue,
@@ -268,7 +272,7 @@ public class TraductionBean implements Serializable {
         TraductionPropBean traductionProp = new TraductionPropBean();
         traductionProp.setLang(selectedLang);
         traductionProp.setLexicalValue(traductionValue);
-        traductionProp.setIdTerm(conceptBean.getNodeConcept().getTerm().getId_term());
+        traductionProp.setIdTerm(conceptBean.getNodeConcept().getTerm().getIdTerm());
         traductionProp.setToAdd(true);
         propositionBean.getProposition().getTraductionsProp().add(traductionProp);
         propositionBean.setTraductionAccepted(true);
@@ -293,7 +297,7 @@ public class TraductionBean implements Serializable {
             }
             return;
         }
-        TermHelper termHelper = new TermHelper();
+
         if (termHelper.isTermExistIgnoreCase(
                 connect.getPoolConnexion(),
                 nodeTermTraduction.getLexicalValue(),
@@ -305,7 +309,7 @@ public class TraductionBean implements Serializable {
         }
 
         if (!termHelper.updateTraduction(connect.getPoolConnexion(),
-                nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getId_term(),
+                nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeTermTraduction.getLang(),
                 selectedTheso.getCurrentIdTheso(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
@@ -357,7 +361,7 @@ public class TraductionBean implements Serializable {
         }
 
         // Rechercher dans la base s'il existe un label identique
-        if (new TermHelper().isTermExistIgnoreCase(
+        if (termHelper.isTermExistIgnoreCase(
                 connect.getPoolConnexion(),
                 traductionPropBean.getLexicalValue(),
                 selectedTheso.getCurrentIdTheso(),
@@ -405,7 +409,6 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        TermHelper termHelper = new TermHelper();
         boolean toModify;
         boolean isModified = false;
 
@@ -431,7 +434,7 @@ public class TraductionBean implements Serializable {
                 }
 
                 if (!termHelper.updateTraduction(connect.getPoolConnexion(),
-                        nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getId_term(),
+                        nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
                         nodeTermTraduction.getLang(),
                         selectedTheso.getCurrentIdTheso(), idUser)) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
@@ -490,9 +493,8 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        TermHelper termHelper = new TermHelper();
         if (!termHelper.deleteTraductionOfTerm(connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getTerm().getId_term(),
+                conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeTermTraduction.getLexicalValue(),
                 nodeTermTraduction.getLang(),
                 selectedTheso.getCurrentIdTheso(),
@@ -550,46 +552,6 @@ public class TraductionBean implements Serializable {
         }
         
         propositionBean.checkTraductionPropositionStatus();
-    }
-
-    public String getSelectedLang() {
-        return selectedLang;
-    }
-
-    public void setSelectedLang(String selectedLang) {
-        this.selectedLang = selectedLang;
-    }
-
-    public String getTraductionValue() {
-        return traductionValue;
-    }
-
-    public void setTraductionValue(String traductionValue) {
-        this.traductionValue = traductionValue;
-    }
-
-    public ArrayList<NodeLangTheso> getNodeLangsFiltered() {
-        return nodeLangsFiltered;
-    }
-
-    public void setNodeLangsFiltered(ArrayList<NodeLangTheso> nodeLangsFiltered) {
-        this.nodeLangsFiltered = nodeLangsFiltered;
-    }
-
-    public ArrayList<NodeTermTraduction> getNodeTermTraductions() {
-        return nodeTermTraductions;
-    }
-
-    public void setNodeTermTraductions(ArrayList<NodeTermTraduction> nodeTermTraductions) {
-        this.nodeTermTraductions = nodeTermTraductions;
-    }
-
-    public ArrayList<NodeTermTraduction> getNodeTermTraductionsForEdit() {
-        return nodeTermTraductionsForEdit;
-    }
-
-    public void setNodeTermTraductionsForEdit(ArrayList<NodeTermTraduction> nodeTermTraductionsForEdit) {
-        this.nodeTermTraductionsForEdit = nodeTermTraductionsForEdit;
     }
 
 }

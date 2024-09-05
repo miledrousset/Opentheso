@@ -1,18 +1,18 @@
 package fr.cnrs.opentheso.bean.proposition;
 
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
-import fr.cnrs.opentheso.bean.proposition.model.Proposition;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
+import fr.cnrs.opentheso.models.propositions.Proposition;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
-import fr.cnrs.opentheso.bean.proposition.service.PropositionService;
+import fr.cnrs.opentheso.models.propositions.PropositionDao;
+import fr.cnrs.opentheso.services.PropositionService;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.search.SearchBean;
@@ -335,7 +335,7 @@ public class PropositionBean implements Serializable {
         if (currentUser.getNodeUser() == null) {
             rightBodySetting.setIndex("2");
         } else {
-            if (roleOnThesoBean.getNodeUserRoleGroup().isIsContributor()) {
+            if (roleOnThesoBean.getNodeUserRoleGroup().isContributor()) {
                 rightBodySetting.setIndex("2");
             } else {
                 rightBodySetting.setIndex("3");

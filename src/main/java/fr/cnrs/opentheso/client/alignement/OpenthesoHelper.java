@@ -14,9 +14,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.SelectedResource;
-import fr.cnrs.opentheso.services.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
+import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.models.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.models.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
@@ -116,8 +116,6 @@ public class OpenthesoHelper {
         try {
             inputStream = new ByteArrayInputStream(xmlDatas.getBytes("UTF-8"));
             sxd = new ReadRDF4JNewGen().readRdfFlux(inputStream, RDFFormat.RDFXML, idLang);
-            //ReadRdf4j readRdf4j = new ReadRdf4j(inputStream, 0, false, idLang); /// read XML SKOS
-            //sxd = readRdf4j.getsKOSXmlDocument();
 
             for (SKOSResource resource : sxd.getConceptList()) {
                 NodeAlignment na = new NodeAlignment();

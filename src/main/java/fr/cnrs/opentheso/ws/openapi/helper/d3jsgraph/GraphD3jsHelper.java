@@ -2,20 +2,21 @@
 package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.ConceptIdLabel;
-import fr.cnrs.opentheso.bdd.helper.dao.ConceptLabel;
-import fr.cnrs.opentheso.bdd.helper.dao.ConceptRelation;
-import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
+import fr.cnrs.opentheso.models.concept.ConceptLabel;
+import fr.cnrs.opentheso.models.concept.ConceptRelation;
+import fr.cnrs.opentheso.models.concept.NodeFullConcept;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.concept.NodeUri;
+import fr.cnrs.opentheso.models.group.NodeGroupLabel;
+import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import java.util.ArrayList;
@@ -23,12 +24,17 @@ import java.util.List;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author miledrousset
  */
 public class GraphD3jsHelper {
+
+    @Autowired
+    private GroupHelper groupHelper;
+
     private NodeGraphD3js nodeGraphD3js;
     private NodePreference nodePreference;
     private UriHelper uriHelper;    
@@ -139,7 +145,6 @@ public class GraphD3jsHelper {
     
     private Node getDatasOfCollection(HikariDataSource ds, ConceptIdLabel conceptIdLabel, String idTheso){
         Node node = new Node();
-        GroupHelper groupHelper = new GroupHelper();
         NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, conceptIdLabel.getIdentifier(), idTheso);
  
         node.setId(conceptIdLabel.getUri());

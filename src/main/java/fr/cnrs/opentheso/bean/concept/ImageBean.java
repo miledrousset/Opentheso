@@ -1,17 +1,19 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -36,15 +38,18 @@ public class ImageBean implements Serializable {
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private CurrentUser currentUser;    
+    @Autowired @Lazy private CurrentUser currentUser;
+
+    @Autowired
+    private ImagesHelper imagesHelper;
 
     private String uri;
     private String copyright;
     private String name;
     private String creator;
     
-    private ArrayList<NodeImage> nodeImages;
-    private ArrayList<NodeImage> nodeImagesForEdit;    
+    private List<NodeImage> nodeImages;
+    private List<NodeImage> nodeImagesForEdit;
 
     @PreDestroy
     public void destroy(){
@@ -78,7 +83,6 @@ public class ImageBean implements Serializable {
 
     public void prepareImageForEdit(){
         nodeImagesForEdit = new ArrayList<>();
-        ImagesHelper imagesHelper = new ImagesHelper();
         nodeImagesForEdit = imagesHelper.getExternalImages(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
@@ -90,8 +94,7 @@ public class ImageBean implements Serializable {
     }
  
     /**
-     * permet d'ajouter un 
-     * @param idUser 
+     * permet d'ajouter une image
      */
     public void addNewImage(int idUser) {
         
@@ -100,7 +103,7 @@ public class ImageBean implements Serializable {
             return;
         }
 
-        if(!new ImagesHelper().addExternalImage(connect.getPoolConnexion(),
+        if(!imagesHelper.addExternalImage(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 name,
@@ -149,7 +152,6 @@ public class ImageBean implements Serializable {
             return;
         }
 
-        ImagesHelper imagesHelper = new ImagesHelper();
         if(!imagesHelper.updateExternalImage(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
@@ -157,8 +159,7 @@ public class ImageBean implements Serializable {
                 nodeImage.getUri(),
                 nodeImage.getCopyRight(),
                 nodeImage.getImageName(),
-                nodeImage.getCreator(),
-                idUser)) {
+                nodeImage.getCreator())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur pendant la modification de l'URI de l'image !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -200,7 +201,6 @@ public class ImageBean implements Serializable {
             return;
         }
 
-        ImagesHelper imagesHelper = new ImagesHelper();
         if(!imagesHelper.deleteExternalImage(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),

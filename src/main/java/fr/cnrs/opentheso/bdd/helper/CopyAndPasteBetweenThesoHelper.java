@@ -1,18 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.concept.SynonymBean;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
-import fr.cnrs.opentheso.services.imports.rdf4j.helper.ImportRdf4jHelper;
+import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,16 +20,12 @@ import java.util.logging.Logger;
  *
  * @author miled.rousset
  */
+@Service
 public class CopyAndPasteBetweenThesoHelper {
 
-    public boolean pasteConceptLikeNT(String currentIdTheso, String currentIdConcept, String idConceptToMove) {
-        return true;
-    }
+    @Autowired
+    private ImportRdf4jHelper importRdf4jHelper;
 
-    public boolean pasteConceptLikeNTOfGroup(String currentIdTheso, String currentIdGroup,
-            String idConceptToMove) {
-        return true;
-    }
 
     public boolean pasteBranchLikeNT(HikariDataSource ds, String currentIdTheso, String currentIdConcept,
             String fromIdTheso, String fromIdConcept, String identifierType, int idUser,
@@ -113,11 +106,7 @@ public class CopyAndPasteBetweenThesoHelper {
         return true;
     }
 
-    private SKOSXmlDocument getBranch(
-            HikariDataSource ds,
-            String fromIdTheso,
-            String fromIdConcept) {
-    //    RDFFormat format = RDFFormat.RDFXML;
+    private SKOSXmlDocument getBranch(HikariDataSource ds, String fromIdTheso, String fromIdConcept) {
 
         NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, fromIdTheso);
         if (nodePreference == null) {
@@ -136,31 +125,15 @@ public class CopyAndPasteBetweenThesoHelper {
             exportRdf4jHelperNew.exportConcept(ds, fromIdTheso, idConcept, false);
         }        
         return exportRdf4jHelperNew.getSkosXmlDocument();
-        /*
-        nodePreference.setOriginalUriIsArk(false);
-        nodePreference.setOriginalUriIsHandle(false);   
-        nodePreference.setOriginalUriIsDoi(false);
-
-        ExportRdf4jHelper exportRdf4jHelper = new ExportRdf4jHelper();
-        exportRdf4jHelper.setInfos(ds, "dd-mm-yyyy", false, fromIdTheso, nodePreference.getCheminSite());
-        exportRdf4jHelper.setNodePreference(nodePreference);
-
-        
-        
-        
-        
-        exportRdf4jHelper.addBranch(fromIdTheso, fromIdConcept);
-
-        return exportRdf4jHelper.getSkosXmlDocument();*/
     }
 
     private boolean addBranch(HikariDataSource ds, SKOSXmlDocument sKOSXmlDocument, NodePreference nodePreference,
             String idTheso, int idUser, String identifierType) {
+
         int idGroup = -1;
         String formatDate = "yyyy-MM-dd";
 
-        ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
-        importRdf4jHelper.setInfos(ds, formatDate, idUser, idGroup, "");//connect.getWorkLanguage());
+        importRdf4jHelper.setInfos(ds, formatDate, idUser, idGroup, "");
         // pour récupérer les identifiants pérennes type Ark ou Handle
         importRdf4jHelper.setSelectedIdentifier(identifierType);
 

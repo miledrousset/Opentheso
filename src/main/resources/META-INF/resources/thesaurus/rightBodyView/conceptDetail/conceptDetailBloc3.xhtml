@@ -68,13 +68,13 @@
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
                                     <ui:repeat  var="note" value="#{conceptView.noteAllLang}"  varStatus="status">
                                         <h:outputText value="(#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
-                                        <h:outputText value="#{note.lexicalvalue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>       
+                                        <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>       
                                         <br/>
                                     </ui:repeat>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <h:outputText value="#{conceptView.note.lexicalvalue}#{conceptView.getNoteSource(conceptView.note.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
+                                    <h:outputText value="#{conceptView.note.lexicalValue}#{conceptView.getNoteSource(conceptView.note.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
                                 </h:panelGroup>                                
                             </div>
                         </div>
@@ -111,13 +111,13 @@
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
                                     <ui:repeat  var="note" value="#{conceptView.changeNoteAllLang}"  varStatus="status">
                                         <h:outputText value="(#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
-                                        <h:outputText value="#{note.lexicalvalue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>       
+                                        <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>       
                                         <br/>
                                     </ui:repeat>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <h:outputText value="#{conceptView.changeNote.lexicalvalue}#{conceptView.getNoteSource(conceptView.changeNote.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
+                                    <h:outputText value="#{conceptView.changeNote.lexicalValue}#{conceptView.getNoteSource(conceptView.changeNote.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
                                 </h:panelGroup>                                
                             </div>
                         </div>
@@ -164,13 +164,13 @@
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
                                     <ui:repeat  var="def" value="#{conceptView.definitionAllLang}"  varStatus="status">
                                         <h:outputText value="(#{def.lang}) " style="font-size: 14px; font-weight: 300;"/>
-                                        <h:outputText value="#{def.lexicalvalue}#{conceptView.getNoteSource(def.noteSource)}" escape="false" style="font-size: 14px;"/>       
+                                        <h:outputText value="#{def.lexicalValue}#{conceptView.getNoteSource(def.noteSource)}" escape="false" style="font-size: 14px;"/>       
                                         <br/>
                                     </ui:repeat>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <h:outputText value="#{conceptView.definition.lexicalvalue}#{conceptView.getNoteSource(conceptView.definition.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
+                                    <h:outputText value="#{conceptView.definition.lexicalValue}#{conceptView.getNoteSource(conceptView.definition.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
                                 </h:panelGroup>
                             </div>
                         </div>
@@ -214,13 +214,13 @@
                                     <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
                                         <ui:repeat  var="note" value="#{conceptView.editorialNoteAllLang}"  varStatus="status">
                                             <h:outputText value="(#{note.lang}) " style="font-size: 14px; font-weight: 300;"/>
-                                            <h:outputText value="#{note.lexicalvalue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>       
+                                            <h:outputText value="#{note.lexicalValue}#{conceptView.getNoteSource(note.noteSource)}" escape="false" style="font-size: 14px;"/>       
                                             <br/>
                                         </ui:repeat>
                                     </h:panelGroup>
 
                                     <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                        <h:outputText value="#{conceptView.editorialNote.lexicalvalue}#{conceptView.getNoteSource(conceptView.editorialNote.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
+                                        <h:outputText value="#{conceptView.editorialNote.lexicalValue}#{conceptView.getNoteSource(conceptView.editorialNote.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
                                     </h:panelGroup>                                    
                                 </div>
                             </div>
@@ -262,13 +262,13 @@
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
                                     <ui:repeat  var="def" value="#{conceptView.exampleAllLang}"  varStatus="status">
                                         <h:outputText value="(#{def.lang}) " style="font-size: 14px; font-weight: 300;"/>
-                                        <h:outputText value="#{def.lexicalvalue}#{conceptView.getNoteSource(def.noteSource)}" escape="false" style="font-size: 14px;"/>       
+                                        <h:outputText value="#{def.lexicalValue}#{conceptView.getNoteSource(def.noteSource)}" escape="false" style="font-size: 14px;"/>       
                                         <br/>
                                     </ui:repeat>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <h:outputText value="#{conceptView.example.lexicalvalue}#{conceptView.getNoteSource(conceptView.example.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
+                                    <h:outputText value="#{conceptView.example.lexicalValue}#{conceptView.getNoteSource(conceptView.example.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
                                 </h:panelGroup>                                
                             </div>
                         </div>
@@ -309,13 +309,13 @@
                                     <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
                                         <ui:repeat  var="def" value="#{conceptView.historyNoteAllLang}"  varStatus="status">
                                             <h:outputText value="(#{def.lang}) " style="font-size: 14px; font-weight: 300;"/>
-                                            <h:outputText value="#{def.lexicalvalue}#{conceptView.getNoteSource(def.noteSource)}" escape="false" style="font-size: 14px;"/>       
+                                            <h:outputText value="#{def.lexicalValue}#{conceptView.getNoteSource(def.noteSource)}" escape="false" style="font-size: 14px;"/>       
                                             <br/>
                                         </ui:repeat>
                                     </h:panelGroup>
 
                                     <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                        <h:outputText value="#{conceptView.historyNote.lexicalvalue}#{conceptView.getNoteSource(conceptView.historyNote.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
+                                        <h:outputText value="#{conceptView.historyNote.lexicalValue}#{conceptView.getNoteSource(conceptView.historyNote.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
                                     </h:panelGroup>                                    
                                 </div>
                             </div>
@@ -356,13 +356,13 @@
                                 <h:panelGroup rendered="#{conceptView.toggleSwitchNotesLang}">
                                     <ui:repeat  var="def" value="#{conceptView.scopeNoteAllLang}"  varStatus="status">
                                         <h:outputText value="(#{def.lang}) " style="font-size: 14px; font-weight: 300;"/>
-                                        <h:outputText value="#{def.lexicalvalue}#{conceptView.getNoteSource(def.noteSource)}" escape="false" style="font-size: 14px;"/>       
+                                        <h:outputText value="#{def.lexicalValue}#{conceptView.getNoteSource(def.noteSource)}" escape="false" style="font-size: 14px;"/>       
                                         <br/>
                                     </ui:repeat>
                                 </h:panelGroup>
 
                                 <h:panelGroup rendered="#{!conceptView.toggleSwitchNotesLang}">
-                                    <h:outputText value="#{conceptView.scopeNote.lexicalvalue}#{conceptView.getNoteSource(conceptView.scopeNote.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
+                                    <h:outputText value="#{conceptView.scopeNote.lexicalValue}#{conceptView.getNoteSource(conceptView.scopeNote.noteSource)}" escape="false" style="font-size: 14px;"/>                                      
                                 </h:panelGroup>  
                             </div>
                         </div>

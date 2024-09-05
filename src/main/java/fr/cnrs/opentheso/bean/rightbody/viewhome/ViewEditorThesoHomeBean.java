@@ -1,12 +1,12 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
 import java.io.Serializable;
@@ -32,6 +32,9 @@ public class ViewEditorThesoHomeBean implements Serializable {
 
     @Autowired @Lazy
     private Connect connect;
+
+    @Autowired
+    private HtmlPageHelper htmlPageHelper;
 
     private boolean isViewPlainText;
     private boolean isInEditing;
@@ -60,9 +63,9 @@ public class ViewEditorThesoHomeBean implements Serializable {
     public void initText(String idLanguage, String idThesaurus) {
         if(idLanguage == null || idLanguage.isEmpty()) {
             idLanguage = connect.getWorkLanguage();
-        } 
-        HtmlPageHelper copyrightHelper = new HtmlPageHelper();
-        text = copyrightHelper.getThesoHomePage(connect.getPoolConnexion(), idThesaurus, idLanguage);
+        }
+
+        text = htmlPageHelper.getThesoHomePage(connect.getPoolConnexion(), idThesaurus, idLanguage);
         isInEditing = true;
         isViewPlainText = false;
         colorOfHtmlButton = "#F49F66;";
@@ -73,9 +76,8 @@ public class ViewEditorThesoHomeBean implements Serializable {
 
         if(idLanguage == null || idLanguage.isEmpty()) {
             idLanguage = connect.getWorkLanguage();
-        }         
-        HtmlPageHelper copyrightHelper = new HtmlPageHelper();
-        String homePage = copyrightHelper.getThesoHomePage(
+        }
+        String homePage = htmlPageHelper.getThesoHomePage(
                 connect.getPoolConnexion(),
                 idThesaurus,
                 idLanguage);
@@ -101,8 +103,8 @@ public class ViewEditorThesoHomeBean implements Serializable {
         FacesMessage msg;
         if(idLanguage == null || idLanguage.isEmpty()) {
             idLanguage = connect.getWorkLanguage();
-        }         
-        HtmlPageHelper htmlPageHelper = new HtmlPageHelper();
+        }
+
         if (!htmlPageHelper.setThesoHomePage(
                 connect.getPoolConnexion(),
                 text,

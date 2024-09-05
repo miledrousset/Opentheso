@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
+import fr.cnrs.opentheso.models.concept.NodeFullConcept;
+import fr.cnrs.opentheso.models.nodes.NodeCorpus;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -30,7 +30,7 @@ public class SearchCorpus2 {
         if (nodeFullConcept != null) {
             for (NodeCorpus nodeCorpus : nodeCorpuses) {
                 // cas où on compose uniquement une URL de lien vers les notices
-                if (nodeCorpus.isIsOnlyUriLink()) {
+                if (nodeCorpus.isOnlyUriLink()) {
                     if (nodeCorpus.getUriLink().contains("##id##")) {
                         nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##id##", nodeFullConcept.getIdentifier()));
                     }

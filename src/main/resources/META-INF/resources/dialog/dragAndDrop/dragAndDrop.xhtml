@@ -16,7 +16,7 @@
             <div class="row" style="font-size: 14px; color: black">
                 <div class="col-5" >
                     <i class="pi pi-cut" style="color: red; margin-right: 20px;"/>
-                    <h:outputText value="  #{dragAndDrop.cuttedConcept.term.lexical_value} (#{dragAndDrop.cuttedConcept.concept.idConcept})  "
+                    <h:outputText value="  #{dragAndDrop.cuttedConcept.term.lexicalValue} (#{dragAndDrop.cuttedConcept.concept.idConcept})  "
                                   title="terme à couper" style="background-color: #C63632; color: #ffffff"/>
                 </div>  
                 <div class="col-1" >
@@ -24,7 +24,7 @@
                 </div>
                 
                 <div class="col-5">
-                    <h:outputText value=" #{dragAndDrop.dropppedConcept.term.lexical_value} (#{dragAndDrop.dropppedConcept.concept.idConcept})" 
+                    <h:outputText value=" #{dragAndDrop.nodeConceptDrop.term.lexicalValue} (#{dragAndDrop.nodeConceptDrop.concept.idConcept})"
                                   title="Vers ce concept" style="background-color: #54a90a; color: #ffffff"/>
                 </div>                   
                 
@@ -39,7 +39,7 @@
             <h:panelGroup rendered="#{dragAndDrop.nodeBTsToCut.size() > 1}">          
                 <div class="row" style="font-size: 14px; background-color: #C63632; color: white; font-size: 14px;">
                     <div class="col-11" style="margin-left: 10px;">
-                        <h:outputText value="Poly-hiérarchie à supprimer / garder pour : (#{dragAndDrop.cuttedConcept.term.lexical_value})" title="Cochez la case pour supprimer la relation"/>
+                        <h:outputText value="Poly-hiérarchie à supprimer / garder pour : (#{dragAndDrop.cuttedConcept.term.lexicalValue})" title="Cochez la case pour supprimer la relation"/>
                     </div>                  
                 </div>
                 <div class="row">
@@ -67,7 +67,7 @@
             <!-- Pour les collections -->
             <div class="row" style="font-size: 14px; background-color: #C63632; color: white; font-size: 14px;">
                 <div class="col-11" style="margin-left: 10px;">
-                    <h:outputText value="Collections à supprimer pour (#{dragAndDrop.cuttedConcept.term.lexical_value})"  title="Cochez la case pour supprimer la relation"/>
+                    <h:outputText value="Collections à supprimer pour (#{dragAndDrop.cuttedConcept.term.lexicalValue})"  title="Cochez la case pour supprimer la relation"/>
                 </div>                  
             </div>
             
@@ -95,7 +95,7 @@
 
             <div class="row" style="font-size: 14px; background-color: #54a90a; color: white; font-size: 14px;">
                 <div class="col-11" style="margin-left: 10px;">
-                    <h:outputText value="Collections à ajouter pour (#{dragAndDrop.cuttedConcept.term.lexical_value})" title="Cochez la case pour ajouter la relation"/>
+                    <h:outputText value="Collections à ajouter pour (#{dragAndDrop.cuttedConcept.term.lexicalValue})" title="Cochez la case pour ajouter la relation"/>
                 </div>                  
             </div>
 

@@ -1,13 +1,13 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
 import fr.cnrs.opentheso.models.skosapi.SKOSRelation;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.concept.NodeUri;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,7 +38,7 @@ public class ExportHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * FROM opentheso_get_facettes('" + idTheso + "', '" + baseUrl + "') as (id_facet VARCHAR, "
-                        + "lexical_value VARCHAR, created timestamp with time zone, modified timestamp with time zone, "
+                        + "lexicalValue VARCHAR, created timestamp with time zone, modified timestamp with time zone, "
                         + "lang VARCHAR, id_concept_parent VARCHAR, uri_value VARCHAR, "
                         + "definition text, example text, editorialNote text, changeNote text, "
                         + " secopeNote text, note text, historyNote text "
@@ -235,19 +235,7 @@ public class ExportHelper {
                             sKOSResource.addDate(modified.substring(0, modified.indexOf(" ")), SKOSProperty.MODIFIED);
                         }
 
-                    /*    ArrayList<String> first = new ArrayList<>();
-                        first.add(resultSet.getString("identifier"));
-                        ArrayList<ArrayList<String>> paths = new ArrayList<>();
-
-                        paths = new ConceptHelper().getPathOfConceptWithoutGroup(ds,
-                                resultSet.getString("identifier"), idTheso, first, paths);
-                        ArrayList<String> pathFromArray = getPathFromArray(paths);
-                        if (!pathFromArray.isEmpty()) {
-                            sKOSResource.setPaths(pathFromArray);
-                        }*/
-
                         concepts.add(sKOSResource);
-                    //System.out.println(">> " + "Ajout d'un concept " + sKOSResource.getIdentifier());                         
                     }
                 }
             }
@@ -268,21 +256,6 @@ public class ExportHelper {
                 tmp.add(new SKOSGPSCoordinates(Double.parseDouble(element[0]), Double.parseDouble(element[1])));
             }
             sKOSResource.setGpsCoordinates(tmp);
-        }
-    }
-
-    private String getUriFromId(String id, String originalUri, NodePreference nodePreference) {
-        if(nodePreference.isOriginalUriIsArk()) {
-            return nodePreference.getOriginalUri()+ "/" + nodePreference.getIdNaan() + "/" + id;
-        }
-        if(nodePreference.isOriginalUriIsHandle()) {
-            return "https://hdl.handle.net/" + id;
-        }
-        
-        if (originalUri != null && !originalUri.isEmpty()) {
-            return originalUri + "/" + id;
-        } else {
-            return getPath(originalUri) + "/" + id;
         }
     }
     
@@ -358,7 +331,7 @@ public class ExportHelper {
                     nodeImage.setCreator(imageDetail[3]);
                 nodeImages.add(nodeImage);
             }
-            resource.setNodeImage(nodeImages);
+            resource.setNodeImages(nodeImages);
         }
     }
 

@@ -27,6 +27,6 @@ public class MoveConceptToTheso {
         ConnexionTest connexionTest = new ConnexionTest();
         HikariDataSource ds = connexionTest.getConnexionPool();
         ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.moveConceptToAnotherTheso(ds, idConceptToMove, idThesoFrom, idThesoTarget, 1);
+        conceptHelper.moveConceptToAnotherTheso(ds, idConceptToMove, idThesoFrom, idThesoTarget);
     }
 }

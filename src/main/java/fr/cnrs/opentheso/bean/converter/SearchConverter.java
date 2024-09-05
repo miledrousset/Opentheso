@@ -4,7 +4,7 @@ import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 
 @FacesConverter("searchConverter")
 public class SearchConverter implements Converter{

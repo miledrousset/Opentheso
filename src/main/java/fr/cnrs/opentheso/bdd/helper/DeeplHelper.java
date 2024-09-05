@@ -15,6 +15,7 @@ import java.util.logging.Logger;
  * @author miledrousset
  */
 public class DeeplHelper {
+
     private Translator translator;
     
     public DeeplHelper(String authKey) {

@@ -3,14 +3,15 @@ package fr.cnrs.opentheso.bean.importexport;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.ExportHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
+
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeTree;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.nodes.NodeTree;
+import fr.cnrs.opentheso.models.group.NodeGroup;
+import fr.cnrs.opentheso.models.group.NodeGroupLabel;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -77,6 +78,9 @@ public class ExportFileBean implements Serializable {
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
     private ViewEditionBean viewEditionBean;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     // progressBar
     private int sizeOfTheso;
@@ -183,11 +187,11 @@ public class ExportFileBean implements Serializable {
 
     private void createMatrice(String[][] tab, NodeTree concept) {
         tab[posX][posJ] = concept.getPreferredTerm();
-        if (CollectionUtils.isNotEmpty(concept.getChildrens())) {
+        if (CollectionUtils.isNotEmpty(concept.getChildren())) {
             posJ++;
             if (posX < tab.length-1) posX++;
-            for (NodeTree nodeTree : concept.getChildrens()) {
-                if (CollectionUtils.isNotEmpty(nodeTree.getChildrens())) {
+            for (NodeTree nodeTree : concept.getChildren()) {
+                if (CollectionUtils.isNotEmpty(nodeTree.getChildren())) {
                     createMatrice(tab, nodeTree);
                 } else {
                     tab[posX][posJ] = nodeTree.getPreferredTerm();
@@ -207,12 +211,12 @@ public class ExportFileBean implements Serializable {
             sizeOfTheso++;
             concept.setIdParent(parentId);
             concept.setPreferredTerm(StringUtils.isEmpty(concept.getPreferredTerm()) ? "(" + concept.getIdConcept() + ")" : concept.getPreferredTerm());
-            concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
+            concept.setChildren(parcourirArbre(thesoId, langId, concept.getIdConcept()));
 
             List<NodeTree> facettes = new Tree().searchFacettesForTree(connect.getPoolConnexion(), parentId, thesoId, langId);
             if (CollectionUtils.isNotEmpty(facettes)) {
                 sizeOfTheso += facettes.size();
-                concept.getChildrens().addAll(facettes);
+                concept.getChildren().addAll(facettes);
             }
         }
 
@@ -275,7 +279,7 @@ public class ExportFileBean implements Serializable {
                 sizeOfTheso++;
                 topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm())
                         ? "(" + topConcept.getIdConcept() + ")" : topConcept.getPreferredTerm());
-                topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
+                topConcept.setChildren(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
                         viewExportBean.getSelectedIdLangTheso(), 
                         topConcept.getIdConcept()));
             }
@@ -496,7 +500,7 @@ public class ExportFileBean implements Serializable {
                 sizeOfTheso++;
                 topConcept.setPreferredTerm(StringUtils.isEmpty(topConcept.getPreferredTerm())
                         ? "(" + topConcept.getIdConcept() + ")" : topConcept.getPreferredTerm());
-                topConcept.setChildrens(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
+                topConcept.setChildren(parcourirArbre(viewExportBean.getNodeIdValueOfTheso().getId(),
                         viewExportBean.getSelectedIdLangTheso(), topConcept.getIdConcept()));
             }
 
@@ -844,7 +848,7 @@ public class ExportFileBean implements Serializable {
 
         List<SKOSResource> concepts = new ArrayList<>();
 
-        NodeGroupLabel nodeGroupLabel = new GroupHelper().getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
+        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
         SKOSResource sKOSResource = new SKOSResource(
                 exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
         sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
@@ -938,7 +942,7 @@ public class ExportFileBean implements Serializable {
         } else {
             /// Export filtré par collection, on filtre également les Facettes qui sont dans les collections sélectionnées
             for (String idGroup : viewExportBean.getSelectedIdGroups()) {
-                NodeGroupLabel nodeGroupLabel = new GroupHelper().getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
+                NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
                 SKOSResource sKOSResource = new SKOSResource(
                         exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
                 sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),

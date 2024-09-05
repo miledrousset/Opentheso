@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.bean.diagram;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
@@ -98,8 +98,8 @@ public class ConceptsDiagramBean implements Serializable {
         if(conceptHelper == null) 
             conceptHelper = new ConceptHelper();
         nodeConceptSelected = conceptHelper.getConcept(connect.getPoolConnexion(), conceptId, idTheso, idLang, -1, -1);
-        elementSelected = nodeConceptSelected.getTerm().getLexical_value();
-        TextInBox root = new TextInBox(nodeConceptSelected.getTerm().getLexical_value(),
+        elementSelected = nodeConceptSelected.getTerm().getLexicalValue();
+        TextInBox root = new TextInBox(nodeConceptSelected.getTerm().getLexicalValue(),
                 WIDTH_ELEMENT, HEIGHT_ELEMENT);
         elementsTreeMap = new HashMap<>();
         defaultTreeForTreeLayout = new DefaultTreeForTreeLayout<>(root);

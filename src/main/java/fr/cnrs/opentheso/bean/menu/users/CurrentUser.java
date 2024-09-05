@@ -3,12 +3,12 @@ package fr.cnrs.opentheso.bean.menu.users;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeProjectThesoRole;
-import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.NodeThesoRole;
-import fr.cnrs.opentheso.bdd.helper.nodes.userpermissions.UserPermissions;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.users.NodeUser;
+import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
+import fr.cnrs.opentheso.models.userpermissions.NodeProjectThesoRole;
+import fr.cnrs.opentheso.models.userpermissions.NodeThesoRole;
+import fr.cnrs.opentheso.models.userpermissions.UserPermissions;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Lazy;
 
 import jakarta.annotation.PreDestroy;
 
-import fr.cnrs.opentheso.services.LdapService;
+import fr.cnrs.opentheso.services.connexion.LdapService;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -76,7 +76,7 @@ public class CurrentUser implements Serializable {
     private ProjectBean projectBean;
     @Autowired @Lazy
     private CurrentUser currentUser;
-    @Autowired @Lazy
+    @Autowired
     private LdapService ldapService;
 
     private NodeUser nodeUser;
@@ -688,7 +688,7 @@ public class CurrentUser implements Serializable {
             allAuthorizedProjectAsAdmin.clear();
         }
         for (NodeUserRoleGroup nodeUserRoleGroup : allAuthorizedProjectAsAdminTemp) {
-            if (nodeUserRoleGroup.isIsAdmin()) {
+            if (nodeUserRoleGroup.isAdmin()) {
                 allAuthorizedProjectAsAdmin.add(nodeUserRoleGroup);
             }
         }

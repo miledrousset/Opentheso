@@ -11,7 +11,7 @@
                 <div class="col-12">
                     <h:panelGroup rendered="#{noteBean.isFacetNote}">
                         <h:outputText value="#{langueBean.getMsg('leftbody.facet')} : " />
-                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />                    
+                        <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="color: #C63632;" />
                     </h:panelGroup>
                     <h:panelGroup rendered="#{noteBean.isGroupNote}">
                         <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.group')} : " />
@@ -19,7 +19,7 @@
                     </h:panelGroup>                    
                     <h:panelGroup rendered="#{!noteBean.isFacetNote and !noteBean.isGroupNote}">
                         <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
-                        <h:outputText value="#{conceptView.nodeConcept.term.lexical_value}" style="color: #C63632;" />                    
+                        <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="color: #C63632;" />
                     </h:panelGroup>                    
                 </div>
             </div>
@@ -30,7 +30,7 @@
                              style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
 
                     <p:column width="90" headerText="Valeur">
-                        <h:outputText value="#{noteToDelete.lexicalvalue}" escape="false" />           
+                        <h:outputText value="#{noteToDelete.lexicalValue}" escape="false" />
                     </p:column>
 
                     <p:column width="10" style="color: black">

@@ -6,41 +6,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
 
 import fr.cnrs.opentheso.utils.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
+
+@Slf4j
+@Service
 public class ImagesHelper {
 
-    private final Log log = LogFactory.getLog(ThesaurusHelper.class);
-
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////// Nouvelles fontions #MR//////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////      
 
     /**
-     *
      * Permet d'ajouter un lien vers une image externe lien de type URI
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesausus
-     * @param imageName
-     * @param copyRight
-     * @param uri
-     * @param idUser
-     * @param creator
-     * @return 
      */
     public boolean addExternalImage(HikariDataSource ds, String idConcept, String idThesausus,
-            String imageName, String copyRight, String uri,String creator, int idUser) {
+            String imageName, String copyRight, String uri, String creator, int idUser) {
 
         boolean status = false;
-
         
         copyRight = StringUtils.convertString(copyRight);
         imageName = StringUtils.convertString(imageName);
@@ -61,24 +45,11 @@ public class ImagesHelper {
 
     /**
      * permet de mettre à jour une Uri
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesausus
-     * @param id
-     * @param uri
-     * @param copyRight
-     * @param name
-     * @param creator
-     * @param idUser
-     * @return
      */
-    public boolean updateExternalImage(HikariDataSource ds, String idConcept, String idThesausus,
-            int id, 
-            String uri, String copyRight, String name, String creator, int idUser) {
+    public boolean updateExternalImage(HikariDataSource ds, String idConcept, String idThesausus, int id,
+            String uri, String copyRight, String name, String creator) {
 
         boolean status = false;
-
         
         uri = StringUtils.convertString(uri);
 
@@ -107,14 +78,7 @@ public class ImagesHelper {
     }
 
     /**
-     * Pemret de supprimer l'URI d'une image, donc la suppression de l'accès à
-     * l'image distante
-     * 
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @param uri
-     * @return 
+     * Pemret de supprimer l'URI d'une image, donc la suppression de l'accès à l'image distante
      */
     public boolean deleteExternalImage(HikariDataSource ds, String idConcept, String idThesaurus, String uri) {
 
@@ -134,11 +98,6 @@ public class ImagesHelper {
     
     /**
      * Pemret de supprimer toutes les images, d'un concept
-     * 
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @return 
      */
     public boolean deleteAllExternalImage(HikariDataSource ds, String idConcept, String idThesaurus) {
 
@@ -157,15 +116,10 @@ public class ImagesHelper {
     }    
 
     /**
-     * Permet de récupérer les URI des images distantes qui sont liées au
-     * concept
-    * 
-    * @param ds
-    * @param idConcept
-    * @param idThesausus
-    * @return 
+     * Permet de récupérer les URI des images distantes qui sont liées au concept
     */
     public ArrayList<NodeImage> getExternalImages(HikariDataSource ds, String idConcept, String idThesausus) {
+
         ArrayList<NodeImage> nodeImageList = null;
 
         try ( Connection conn = ds.getConnection()) {
@@ -192,13 +146,4 @@ public class ImagesHelper {
         }
         return nodeImageList;
     }
-
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////// Fin Nouvelles fontions #MR///////////////////////
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////     
-   
-
-
 }

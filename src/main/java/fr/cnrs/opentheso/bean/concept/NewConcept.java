@@ -1,19 +1,17 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.Concept;
-import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.models.concept.Concept;
+import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeTypeRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.facets.NodeFacet;
+import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
+import fr.cnrs.opentheso.models.group.NodeGroup;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -51,6 +49,12 @@ public class NewConcept implements Serializable {
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
     private Tree tree;
+
+    @Autowired
+    private TermHelper termHelper;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     private String prefLabel;
     private String notation;
@@ -116,7 +120,7 @@ public class NewConcept implements Serializable {
         }
         RelationsHelper relationsHelper = new RelationsHelper();
         typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
-        nodeGroups = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(),
+        nodeGroups = groupHelper.getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 
@@ -181,8 +185,6 @@ public class NewConcept implements Serializable {
         }
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-        TermHelper termHelper = new TermHelper();
-
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
         if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
@@ -246,9 +248,9 @@ public class NewConcept implements Serializable {
         concept.setIdConcept(idNewConcept); // si l'id est null, un nouvel identifiant sera attribué
 
         Term terme = new Term();
-        terme.setId_thesaurus(idTheso);
+        terme.setIdThesaurus(idTheso);
         terme.setLang(idLang);
-        terme.setLexical_value(prefLabel.trim());
+        terme.setLexicalValue(prefLabel.trim());
         if (source == null) {
             source = "";
         }
@@ -318,8 +320,6 @@ public class NewConcept implements Serializable {
             }
             return;
         }
-
-        TermHelper termHelper = new TermHelper();
         
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
@@ -409,9 +409,9 @@ public class NewConcept implements Serializable {
         concept.setIdConcept(idNewConcept); // si l'id est null, un nouvel identifiant sera attribué
 
         Term terme = new Term();
-        terme.setId_thesaurus(idTheso);
+        terme.setIdThesaurus(idTheso);
         terme.setLang(idLang);
-        terme.setLexical_value(prefLabel.trim());
+        terme.setLexicalValue(prefLabel.trim());
         if (source == null) {
             source = "";
         }

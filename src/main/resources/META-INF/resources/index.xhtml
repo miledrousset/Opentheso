@@ -22,9 +22,9 @@
 
         <h:panelGroup id="indexTitle" >
             <title>
-                <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexical_value != ''}"
-                              value="#{conceptView.nodeConcept.term.lexical_value}"/>
-                <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexical_value == ''}"
+                <h:outputText rendered="#{conceptView.nodeConcept != null or conceptView.nodeConcept.term.lexicalValue != ''}"
+                              value="#{conceptView.nodeConcept.term.lexicalValue}"/>
+                <h:outputText rendered="#{conceptView.nodeConcept == null or conceptView.nodeConcept.term.lexicalValue == ''}"
                               value="Opentheso"/>
             </title>
             <meta name="description" content="#{langueBean.getMsg('index.Opentheso_info')}"/>

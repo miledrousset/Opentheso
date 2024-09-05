@@ -5,7 +5,7 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Anchor;
 import com.itextpdf.text.Paragraph;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.exports.UriHelper;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
@@ -87,7 +87,7 @@ public class WriteAlphaPDF {
             addDocuments(paragraphs, concept.getDocumentationsList(), traductions.get(idFromUri), codeLanguage1, codeLanguage2);
             addMatchs(paragraphs, concept.getMatchList());
             addGpsCoordiantes(paragraphs, concept.getGpsCoordinates());
-            addImages(paragraphs, concept.getNodeImage());            
+            addImages(paragraphs, concept.getNodeImages());
         }
     }
 

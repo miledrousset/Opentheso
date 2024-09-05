@@ -7,12 +7,14 @@ package fr.cnrs.opentheso.ws.handle;
 
 import java.util.ArrayList;
 import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import lombok.Data;
 
 /**
  *
  * @author miled.rousset
  */
+@Data
 public class HandleHelper {
     
     private NodePreference nodePreference;
@@ -37,8 +39,6 @@ public class HandleHelper {
 
         HandleClient handleClient = new HandleClient();
         String newId = getNewHandleId();
-        // construction de l'identifiant exp : 20.500.11942/crtQByCq18rkW
-        // prefixHandle = 20.500.11942, privatePrefix = crt, internalId = rtQByCq18rkW
         newId = nodePreference.getPrefixIdHandle() + "/"
                 + nodePreference.getPrivatePrefixHandle() + newId;
 
@@ -56,60 +56,6 @@ public class HandleHelper {
         }
         return idHandle;
     }
-    
-    /**
-     * Permet de mettre à jour l'identifiant Handle
-     *
-     * @param idHandle
-     * @param privateUri
-     * @return
-     */
-    public String updateIdHandle(String idHandle, String privateUri) {
-        if (nodePreference == null) {
-            return null;
-        }
-        if (!nodePreference.isUseHandle()) {
-            return null;
-        }
-        HandleClient handleClient = new HandleClient();
-
-        String jsonData = handleClient.getJsonData(nodePreference.getCheminSite() + privateUri); //"?idc=" + idConcept + "&idt=" + idThesaurus);
-
-        if (idHandle == null || idHandle.isEmpty()) {// cas où le handle n'existe pas dans la base de données locales
-            idHandle = getNewHandleId();
-            // construction de l'identifiant exp : 20.500.11942/crtQByCq18rkW
-            // prefixHandle = 20.500.11942, privatePrefix = crt, internalId = rtQByCq18rkW
-            idHandle = nodePreference.getPrefixIdHandle() + "/"
-                    + nodePreference.getPrivatePrefixHandle() + idHandle;
-
-            idHandle = handleClient.putHandle(
-                    nodePreference.getPassHandle(),
-                    nodePreference.getPathKeyHandle(),
-                    nodePreference.getPathCertHandle(),
-                    nodePreference.getUrlApiHandle(),
-                    idHandle,
-                    jsonData);
-            if (idHandle == null) {
-                message = handleClient.getMessage();
-                return null;
-            }
-        } else { // cas où le handle existe en local
-            // on vérifie si le handle existe à distance, on le met à jour (URL + infos)
-            // sinon, on le créé
-            idHandle = handleClient.putHandle(
-                    nodePreference.getPassHandle(),
-                    nodePreference.getPathKeyHandle(),
-                    nodePreference.getPathCertHandle(),
-                    nodePreference.getUrlApiHandle(),
-                    idHandle,
-                    jsonData);
-            if (idHandle == null) {
-                message = handleClient.getMessage();
-                return null;
-            }
-        }
-        return idHandle;
-    }    
     
     /**
      * permet de genérer un identifiant unique pour Handle on controle la
@@ -139,17 +85,11 @@ public class HandleHelper {
         return idHandle;
     }    
  
-        /**
+    /**
      * Permet de supprimer un identifiant Handle de la
      * plateforme (handle.net) via l'API REST
-     *
-     * @param idHandle
-     * @param idThesaurus
-     * @return
      */
-    public boolean deleteIdHandle(
-            String idHandle,
-            String idThesaurus) {
+    public boolean deleteIdHandle(String idHandle) {
         /**
          * récupération du code Handle via WebServices
          *
@@ -180,9 +120,6 @@ public class HandleHelper {
      * Permet de supprimer tous les identifiants Handle 
      * de la plateforme (handle.net) via l'API REST pour un thésaurus donné
      * suite à une suppression d'un thésaurus
-     *
-     * @param tabIdHandle
-     * @return
      */
     public boolean deleteAllIdHandle(ArrayList<String> tabIdHandle) {
         if (nodePreference == null) {
@@ -212,17 +149,5 @@ public class HandleHelper {
             }
         }
         return true;
-    }    
-    
-    
-    public String getMessage() {
-        return message;
     }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-    
-    
-    
 }

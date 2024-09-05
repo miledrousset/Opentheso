@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.proposition;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 
 
 public class NotePropBean extends NodeNote {

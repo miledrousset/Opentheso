@@ -1,19 +1,19 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.Concept;
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
-import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.models.concept.Concept;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeTypeRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.facets.NodeFacet;
+import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
+import fr.cnrs.opentheso.models.group.NodeGroup;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -29,6 +29,7 @@ import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
@@ -36,6 +37,7 @@ import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 
 
+@Data
 @Named(value = "addConcept")
 @SessionScoped
 public class AddConcept implements Serializable {
@@ -53,7 +55,13 @@ public class AddConcept implements Serializable {
     @Autowired @Lazy
     private EditFacet editFacet;
     @Autowired @Lazy
-    private CurrentUser currentUser;    
+    private CurrentUser currentUser;
+
+    @Autowired
+    private TermHelper termHelper;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     private String prefLabel;
     private String notation;
@@ -71,16 +79,12 @@ public class AddConcept implements Serializable {
     private String idBTfacet;
     private String idFacet;
     private boolean isConceptUnderFacet;
+
+
     /**
      * permet d'ajouter un nouveau concept si le groupe = null, on ajoute un
      * concept sans groupe si l'id du concept est fourni, il faut controler s'il
      * est unique
-     *
-     * @param idConceptParent
-     * @param idLang
-     * @param status // descripteur=D cancdidat = CA
-     * @param idTheso
-     * @param idUser
      */
     public void addNewConcept(
             String idConceptParent,
@@ -111,8 +115,7 @@ public class AddConcept implements Serializable {
                 }                
                 return;
             }
-        }  
-        TermHelper termHelper = new TermHelper();
+        }
 
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
@@ -144,11 +147,6 @@ public class AddConcept implements Serializable {
             
 
         addNewConceptForced(idConceptParent, idLang, status, idTheso, idUser);
-    }
-    
-    public void addMembre(String idConceptParent, String idLang, String status, String idTheso, int idUser) {
-        addNewConcept(idConceptParent, idLang, status, idTheso, idUser);
-        editFacet.initEditFacet(editFacet.getFacetSelected().getIdFacet(), idTheso, idLang);
     }
 
     public void resetForFacet(NodeFacet nodeFacet) {
@@ -213,9 +211,9 @@ public class AddConcept implements Serializable {
         concept.setIdConcept(idNewConcept); // si l'id est null, un nouvel identifiant sera attribué
 
         Term terme = new Term();
-        terme.setId_thesaurus(idTheso);
+        terme.setIdThesaurus(idTheso);
         terme.setLang(idLang);
-        terme.setLexical_value(prefLabel.trim());
+        terme.setLexicalValue(prefLabel.trim());
         if (source == null) {
             source = "";
         }
@@ -251,10 +249,7 @@ public class AddConcept implements Serializable {
         dcElement.setLanguage(null);
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(), dcElement, idNewConcept, idTheso);        
         ///////////////
-        
-        
-        
-        
+
         if (isConceptUnderFacet) {
             FacetHelper facetHelper = new FacetHelper();
             if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(), idFacet, idTheso, idNewConcept)) {
@@ -307,27 +302,8 @@ public class AddConcept implements Serializable {
                 }
                 tree.getSelectedNode().setExpanded(true);
             }
-        }        
-/*        if (CollectionUtils.isNotEmpty(tree.getClickselectedNodes())) {
-            // si le concept en cours n'est pas celui sélectionné dans l'arbre, on se positionne sur le concept en cours dans l'arbre
-            if (!((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).getNodeId().equalsIgnoreCase(idConceptParent)) {
-                tree.expandTreeToPath(idConceptParent, idTheso, idLang);
-            }
+        }
 
-            // cas où l'arbre est déjà déplié ou c'est un concept sans fils
-            /// attention, cette condition permet d'éviter une erreur dans l'arbre si : 
-            // un concept est sélectionné dans l'arbre mais non déployé, puis, on ajoute un TS, alors ca produit une erreur
-            if (tree.getClickselectedNodes().get(0).getChildCount() == 0) {
-                tree.getClickselectedNodes().get(0).setType("concept");
-            }
-            if (tree.getClickselectedNodes().get(0).isExpanded() || tree.getClickselectedNodes().get(0).getChildCount() == 0) {
-                tree.addNewChild(tree.getClickselectedNodes().get(0), idNewConcept, idTheso, idLang);
-                if (pf.isAjaxRequest()) {
-                    pf.executeScript("srollToSelected()");
-                }
-                tree.getClickselectedNodes().get(0).setExpanded(true);
-            }
-        }*/
         conceptBean.getConcept(idTheso, idConceptParent, idLang);
         isCreated = true;
 
@@ -341,6 +317,7 @@ public class AddConcept implements Serializable {
         init();
         update();
     }
+
     private void update(){
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("messageIndex");            
@@ -364,14 +341,15 @@ public class AddConcept implements Serializable {
         }
         
         typesRelationsNT = new RelationsHelper().getTypesRelationsNT(connect.getPoolConnexion());
-        nodeGroups = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(),
+        nodeGroups = groupHelper.getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 
     private void init() {
+
         duplicate = false;
         idNewConcept = null;
-        setPrefLabel("");
+        prefLabel = "";
         notation = "";
     }
 
@@ -382,101 +360,5 @@ public class AddConcept implements Serializable {
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Info !", "Rediger une aide ici pour Add Concept !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-    
-    public String getPrefLabel() {
-        return prefLabel;
-    }
-
-    public void setPrefLabel(String prefLabel) {
-        this.prefLabel = prefLabel;
-    }
-
-    public String getRelationType() {
-        return relationType;
-    }
-
-    public void setRelationType(String relationType) {
-        this.relationType = relationType;
-    }
-
-    public String getNotation() {
-        return notation;
-    }
-
-    public void setNotation(String notation) {
-        this.notation = notation;
-    }
-
-    public String getIdNewConcept() {
-        return idNewConcept;
-    }
-
-    public void setIdNewConcept(String idNewConcept) {
-        this.idNewConcept = idNewConcept;
-    }
-
-    public String getIdGroup() {
-        return idGroup;
-    }
-
-    public void setIdGroup(String idGroup) {
-        this.idGroup = idGroup;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public boolean isIsCreated() {
-        return isCreated;
-    }
-
-    public void setIsCreated(boolean isCreated) {
-        this.isCreated = isCreated;
-    }
-
-    public boolean isDuplicate() {
-        return duplicate;
-    }
-
-    public void setDuplicate(boolean duplicate) {
-        this.duplicate = duplicate;
-    }
-
-    public ArrayList<NodeTypeRelation> getTypesRelationsNT() {
-        return typesRelationsNT;
-    }
-
-    public void setTypesRelationsNT(ArrayList<NodeTypeRelation> typesRelationsNT) {
-        this.typesRelationsNT = typesRelationsNT;
-    }
-
-    public ArrayList<NodeGroup> getNodeGroups() {
-        return nodeGroups;
-    }
-
-    public void setNodeGroups(ArrayList<NodeGroup> nodeGroups) {
-        this.nodeGroups = nodeGroups;
-    }
-
-    public List<NodeSearchMini> getNodeSearchMinis() {
-        return nodeSearchMinis;
-    }
-
-    public void setNodeSearchMinis(List<NodeSearchMini> nodeSearchMinis) {
-        this.nodeSearchMinis = nodeSearchMinis;
-    }
-
-    public boolean isIsConceptUnderFacet() {
-        return isConceptUnderFacet;
-    }
-
-    public void setIsConceptUnderFacet(boolean isConceptUnderFacet) {
-        this.isConceptUnderFacet = isConceptUnderFacet;
     }
 }

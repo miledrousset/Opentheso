@@ -4,7 +4,7 @@ import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
+import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
 
 @FacesConverter("termConverterGroup")
 public class TermeConverterGroup implements Converter{

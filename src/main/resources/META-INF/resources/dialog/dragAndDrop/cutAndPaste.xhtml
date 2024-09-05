@@ -15,7 +15,7 @@
                             <h:outputLabel value="#{cuttedConcept.concept.idConcept}"/>
                         </p:column>
                         <p:column headerText="Label">
-                            <h:outputLabel value="#{cuttedConcept.term.lexical_value}"/>
+                            <h:outputLabel value="#{cuttedConcept.term.lexicalValue}"/>
                         </p:column>
                         <p:column headerText="Collections">
                             <h:outputLabel value="#{cutAndPaste.getLabelOfGroupes()}"/>
@@ -46,12 +46,12 @@
                 </div>
                 <div class="col-3" >
                     <i class="fas fa-cut" style="color: red"/>
-                    <h:outputText value=" #{cutAndPaste.cuttedConcept.term.lexical_value}" title="terme à couper"/>
+                    <h:outputText value=" #{cutAndPaste.cuttedConcept.term.lexicalValue}" title="terme à couper"/>
                 </div>  
 
                 <div class="col-4">
                     <i class="fas fa-arrow-right" style="color: green"/>
-                    <h:outputText value=" #{cutAndPaste.dropppedConcept.term.lexical_value}" title="Vers ce concept"/>
+                    <h:outputText value=" #{cutAndPaste.dropppedConcept.term.lexicalValue}" title="Vers ce concept"/>
                 </div>                
             </div>
             

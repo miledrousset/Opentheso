@@ -3,7 +3,7 @@ package search;
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;

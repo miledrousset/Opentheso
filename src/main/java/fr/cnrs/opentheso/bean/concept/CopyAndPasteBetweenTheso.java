@@ -7,7 +7,7 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.CopyAndPasteBetweenThesoHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -38,7 +38,9 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;    
+    @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+    @Autowired
+    private CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper;
 
 
     private boolean isCopyOn;
@@ -113,7 +115,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                 selectedTheso.getCurrentIdTheso()); 
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Copier "
-                + nodeConceptDrag.getTerm().getLexical_value() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ") Total = " + conceptsToCopy.size());
+                + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ") Total = " + conceptsToCopy.size());
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
     
@@ -165,14 +167,14 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         
         if(isDropToRoot)
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
-                    nodeConceptDrag.getTerm().getLexical_value()
+                    nodeConceptDrag.getTerm().getLexicalValue()
                             + " -> "
                             + "Root");
         else
                 msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
-                nodeConceptDrag.getTerm().getLexical_value()
+                nodeConceptDrag.getTerm().getLexicalValue()
                         + " -> "
-                        + conceptBean.getNodeConcept().getTerm().getLexical_value());
+                        + conceptBean.getNodeConcept().getTerm().getLexicalValue());
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
     }    
@@ -183,14 +185,14 @@ public class CopyAndPasteBetweenTheso implements Serializable {
      */
     private boolean copyToConcept(){
         // cas de déplacement d'un concept/branche d'un autre thésaurus vers un concept
-        CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper = new CopyAndPasteBetweenThesoHelper();
         
         if(nodeConceptDrag.getConcept() == null) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                 "", "Erreur de copie"));
             return false;
         }
-            if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(connect.getPoolConnexion(),
+
+        if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(connect.getPoolConnexion(),
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     idThesoOrigin,
@@ -198,15 +200,13 @@ public class CopyAndPasteBetweenTheso implements Serializable {
                     identifierType, 
                     currentUser.getNodeUser().getIdUser(),
                     roleOnThesoBean.getNodePreference())) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "", "Erreur de copie"));
-            } 
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de copie"));
+        }
         return true;
     }
     
     private boolean copyToRoot(){
         // cas de déplacement d'un concept/branche d'un autre thésaurus à la racine
-        CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper = new CopyAndPasteBetweenThesoHelper();
         
             if(!copyAndPasteBetweenThesoHelper.pasteBranchToRoot(connect.getPoolConnexion(),
                     selectedTheso.getCurrentIdTheso(),

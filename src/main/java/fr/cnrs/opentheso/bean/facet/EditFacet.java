@@ -4,11 +4,11 @@ import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.models.facets.NodeFacet;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -144,7 +144,7 @@ public class EditFacet implements Serializable {
                 idTheso,
                 idLang, 21, 0);
 
-        conceptParentTerme = concepParent.getTerm().getLexical_value();
+        conceptParentTerme = concepParent.getTerm().getLexicalValue();
 
         facetTraductions = facetHelper.getAllTraductionsFacet(connect.getPoolConnexion(), facetId,
                 idTheso, idLang);
@@ -167,7 +167,7 @@ public class EditFacet implements Serializable {
     private void setAllNotes(ArrayList<NodeNote> nodeNotes) {
         clearNotes();
         for (NodeNote nodeNote : nodeNotes) {
-            switch (nodeNote.getNotetypecode()) {
+            switch (nodeNote.getNoteTypeCode()) {
                 case "note":
                     note = nodeNote;
                     break;
@@ -189,6 +189,8 @@ public class EditFacet implements Serializable {
                 case "historyNote":
                     historyNote = nodeNote;
                     break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + nodeNote.getNoteTypeCode());
             }
         }
     }
@@ -527,7 +529,7 @@ public class EditFacet implements Serializable {
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang(), 21, 0);
 
-        conceptParentTerme = concepParent.getTerm().getLexical_value();
+        conceptParentTerme = concepParent.getTerm().getLexicalValue();
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

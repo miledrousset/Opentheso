@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.handlestandard;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

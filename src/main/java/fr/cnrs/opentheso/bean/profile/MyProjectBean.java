@@ -6,9 +6,9 @@
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRole;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserRoleGroup;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.users.NodeUserRole;
+import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import jakarta.inject.Named;
@@ -123,13 +123,13 @@ public class MyProjectBean implements Serializable {
             if (myRoleOnThisProject == null) {
                 return;
             }
-            if (myRoleOnThisProject.isIsAdmin()) {
+            if (myRoleOnThisProject.isAdmin()) {
                 idRoleFrom = 2; // l'utilisateur est Admin            
             }
-            if (myRoleOnThisProject.isIsManager()) {
+            if (myRoleOnThisProject.isManager()) {
                 idRoleFrom = 3; // l'utilisateur est Manager            
             }
-            if (myRoleOnThisProject.isIsContributor()) {
+            if (myRoleOnThisProject.isContributor()) {
                 idRoleFrom = 4; // l'utilisateur est Contributeur / user       
             }
         }

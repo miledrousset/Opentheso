@@ -1,20 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeNT;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeTypeRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.terms.NodeNT;
+import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -32,6 +27,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -40,6 +36,7 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "narrowerBean")
 @SessionScoped
 public class NarrowerBean implements Serializable {
@@ -48,11 +45,14 @@ public class NarrowerBean implements Serializable {
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private CurrentUser currentUser;     
+    @Autowired @Lazy private CurrentUser currentUser;
+
+    @Autowired
+    private ValidateActionHelper validateActionHelper;
 
     private NodeSearchMini searchSelected;
-    private ArrayList<NodeNT> nodeNTs;
-    private ArrayList<NodeTypeRelation> typesRelationsNT;
+    private List<NodeNT> nodeNTs;
+    private List<NodeTypeRelation> typesRelationsNT;
 
     @PreDestroy
     public void destroy(){
@@ -126,7 +126,6 @@ public class NarrowerBean implements Serializable {
         }
 
         /// vérifier la cohérence de la relation
-        ValidateActionHelper validateActionHelper = new ValidateActionHelper();
         if(!validateActionHelper.isAddRelationNTValid(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
@@ -249,13 +248,11 @@ public class NarrowerBean implements Serializable {
                 return;
             }
         }
-     
         
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang());
-
 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
@@ -359,29 +356,5 @@ public class NarrowerBean implements Serializable {
             pf.ajax().update("containerIndex:formRightTab");
             pf.ajax().update("conceptForm:changeRelationForm");
         }  
-    }
-
-    public NodeSearchMini getSearchSelected() {
-        return searchSelected;
-    }
-
-    public void setSearchSelected(NodeSearchMini searchSelected) {
-        this.searchSelected = searchSelected;
-    }
-
-    public ArrayList<NodeNT> getNodeNTs() {
-        return nodeNTs;
-    }
-
-    public void setNodeNTs(ArrayList<NodeNT> nodeNTs) {
-        this.nodeNTs = nodeNTs;
-    }
-
-    public ArrayList<NodeTypeRelation> getTypesRelationsNT() {
-        return typesRelationsNT;
-    }
-
-    public void setTypesRelationsNT(ArrayList<NodeTypeRelation> typesRelationsNT) {
-        this.typesRelationsNT = typesRelationsNT;
     }
 }

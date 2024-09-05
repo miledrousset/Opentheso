@@ -1,28 +1,29 @@
 package fr.cnrs.opentheso.bean.alignment;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
-import fr.cnrs.opentheso.bdd.datas.Term;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.GpsHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
+import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
 import fr.cnrs.opentheso.models.alignment.SelectedResource;
 import fr.cnrs.opentheso.client.alignement.AgrovocHelper;
@@ -34,6 +35,7 @@ import fr.cnrs.opentheso.client.alignement.OntomeHelper;
 import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
 
+import fr.cnrs.opentheso.services.alignements.AlignementAutomatique;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -77,6 +79,10 @@ public class AlignmentBean implements Serializable {
     @Autowired @Lazy private LanguageBean languageBean;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private SetAlignmentSourceBean setAlignmentSourceBean;
+    @Autowired @Lazy private ExternalImagesHelper externalImagesHelper;
+
+    @Autowired
+    private TermHelper termHelper;
 
     private boolean withLang;
     private boolean withNote;
@@ -476,17 +482,15 @@ public class AlignmentBean implements Serializable {
                 alignment.getThesaurus_target(), alignment.getUri_target(), alignment.getAlignement_id_type(),
                 alignment.getInternal_id_concept(), idTheso, alignment.getId_source());
 
-        //addTraductions__(idTheso, idConcept, idUser);
-        TermHelper termHelper = new TermHelper();
         String idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
         if (StringUtils.isNotEmpty(idTerm)) {
             if (CollectionUtils.isNotEmpty(alignment.getSelectedTraductionsList())) {
                 for (SelectedResource selectedResource : alignment.getSelectedTraductionsList()) {
                     Term term = new Term();
-                    term.setId_thesaurus(idTheso);
+                    term.setIdThesaurus(idTheso);
                     term.setLang(selectedResource.getIdLang());
-                    term.setLexical_value(selectedResource.getGettedValue());
-                    term.setId_term(idTerm);
+                    term.setLexicalValue(selectedResource.getGettedValue());
+                    term.setIdTerm(idTerm);
                     term.setContributor(idUser);
                     term.setCreator(idUser);
                     term.setSource("");
@@ -519,8 +523,8 @@ public class AlignmentBean implements Serializable {
         //addImages__(idTheso, idConcept, idUser);
         if (CollectionUtils.isNotEmpty(alignment.getSelectedImagesList())) {
             for (SelectedResource selectedResource : alignment.getSelectedImagesList()) {
-                new ExternalImagesHelper().addExternalImage(connect.getPoolConnexion(), idConcept, idTheso, selectedResource.getLocalValue(),
-                        alignementSource.getSource(), selectedResource.getGettedValue(), "", idUser);
+                externalImagesHelper.addExternalImage(connect.getPoolConnexion(), idConcept, idTheso, selectedResource.getLocalValue(),
+                        alignementSource.getSource(), selectedResource.getGettedValue(), "");
             }
         }
 
@@ -565,7 +569,7 @@ public class AlignmentBean implements Serializable {
 
         //Supprimer définition
         new NoteHelper().deleteNotes(connect.getPoolConnexion().getConnection(),
-                conceptView.getDefinition().getId_note() + "",
+                conceptView.getDefinition().getIdNote() + "",
                 idThesaurus);
 
         //Supprimer l'alignement
@@ -1178,7 +1182,7 @@ public class AlignmentBean implements Serializable {
     private void getValuesOfLocalConcept(String idTheso, String idConcept) {
         nodeTermTraductions = new TermHelper().getAllTraductionsOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
         nodeNotes = new NoteHelper().getListNotesAllLang(connect.getPoolConnexion(), idConcept, idTheso);
-        nodeImages = new ExternalImagesHelper().getExternalImages(connect.getPoolConnexion(), idConcept, idTheso);
+        nodeImages = externalImagesHelper.getExternalImages(connect.getPoolConnexion(), idConcept, idTheso);
         nodeAlignmentSmall = new AlignmentHelper().getAllAlignmentOfConceptNew(connect.getPoolConnexion(), idConcept, idTheso);
     }
 
@@ -1329,15 +1333,14 @@ public class AlignmentBean implements Serializable {
             toIgnore = false;
             // on compare le texte si équivalent, on l'ignore
             for (NodeNote nodeNote : nodeNotes) {
-                switch (nodeNote.getNotetypecode()) {
+                switch (nodeNote.getNoteTypeCode()) {
                     case "definition":
                         if(selectedResource.getIdLang().equalsIgnoreCase(nodeNote.getLang())){
                             // la def existe dans cette langue
                             
-                            if (!selectedResource.getGettedValue().trim().equalsIgnoreCase(nodeNote.getLexicalvalue().trim())) {
+                            if (!selectedResource.getGettedValue().trim().equalsIgnoreCase(nodeNote.getLexicalValue().trim())) {
                                 // la def est diférente, il faut le signaler pour l'accepter ou non 
-                                selectedResource.setLocalValue(nodeNote.getLexicalvalue());
-                        //        descriptionsOfAlignment.add(selectedResource);
+                                selectedResource.setLocalValue(nodeNote.getLexicalValue());
                             } else 
                                 // la def est identique, il faut l'ignorer
                                 toIgnore = true;
@@ -1419,7 +1422,7 @@ public class AlignmentBean implements Serializable {
         }
 
         // ajout des images
-        if (!addImages__(idTheso, idConcept, idUser)) {
+        if (!addImages__(idTheso, idConcept)) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout des images a achoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -1555,10 +1558,10 @@ public class AlignmentBean implements Serializable {
 
         for (SelectedResource selectedResource : traductionsOfAlignment) {
             if (selectedResource.isSelected()) {
-                term.setId_thesaurus(idTheso);
+                term.setIdThesaurus(idTheso);
                 term.setLang(selectedResource.getIdLang());
-                term.setLexical_value(selectedResource.getGettedValue());
-                term.setId_term(idTerm);
+                term.setLexicalValue(selectedResource.getGettedValue());
+                term.setIdTerm(idTerm);
                 term.setContributor(idUser);
                 term.setCreator(idUser);
                 term.setSource("");
@@ -1617,18 +1620,16 @@ public class AlignmentBean implements Serializable {
         return true;
     }
 
-    private boolean addImages__(String idTheso, String idConcept, int idUser) {
-        
-        ExternalImagesHelper imagesHelper = new ExternalImagesHelper();
+    private boolean addImages__(String idTheso, String idConcept) {
+
         for (SelectedResource selectedResource : imagesOfAlignment) {
             if (selectedResource.isSelected()) {
-                if (!imagesHelper.addExternalImage(connect.getPoolConnexion(),
+                if (!externalImagesHelper.addExternalImage(connect.getPoolConnexion(),
                         idConcept, idTheso,
                         conceptValueForAlignment,
                         selectedAlignement,
                         selectedResource.getGettedValue(),
-                        "",
-                        idUser)) {
+                        "")) {
                     error = true;
                     alignementResult = alignementResult + ": Erreur dans l'ajout des images";
                 }

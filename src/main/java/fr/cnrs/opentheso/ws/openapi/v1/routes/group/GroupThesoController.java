@@ -1,7 +1,8 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
+
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,6 +46,9 @@ public class GroupThesoController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private GroupHelper groupHelper;
+
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "Récupère toutes les collections et sous collections d'un thésaurus",
@@ -53,7 +57,6 @@ public class GroupThesoController {
             responses = { @ApiResponse(responseCode = "200", description = "Fichier JSON contenant les collections d'un thésaurus", content = { @Content(mediaType = APPLICATION_JSON_UTF_8)}), @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")})
     public ResponseEntity<Object>  getAllGroupsFromTheso(@Parameter(name = "idTheso", description = "Thésaurus pour lequel on veut récupérer les groupes", schema = @Schema(type = "string")) @PathVariable("idTheso") String idTheso) {
 
-        GroupHelper groupHelper = new GroupHelper();
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(connect.getPoolConnexion(), idTheso);
@@ -123,7 +126,6 @@ public class GroupThesoController {
             @Parameter(name = "idTheso", required = true, description = "Thésaurus pour lequel on veut récupérer les collections") @PathVariable("idTheso") String idTheso,
             @Parameter(name = "idGroup", required = true, description = "Identifiant interne du groupe") @PathVariable("idGroup") String idGroup) {
 
-        GroupHelper groupHelper = new GroupHelper();
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         List<String> listIdSubGroupOfTheso = groupHelper.getListGroupChildIdOfGroup(connect.getPoolConnexion(), idGroup, idTheso);

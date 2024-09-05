@@ -1,21 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.ws.ark;
 
 import java.util.Properties;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeMetaData;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.models.concept.NodeMetaData;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.utils.StringUtils;
-
 import java.util.ArrayList;
 
-/**
- *
- * @author miled.rousset
- */
+
 public class ArkHelper2 {
     
     private NodePreference nodePreference;
@@ -86,7 +77,6 @@ public class ArkHelper2 {
         nodeJson2.setQualifiers(new ArrayList<>()); 
         nodeJson2.setNaan(nodePreference.getIdNaan());
         nodeJson2.setUseHandle(nodePreference.isGenerateHandle());
-//        nodeJson2.setHandle_prefix("20.500.11859");
        
         // récupération du Token
         if(arkClientRest.getLoginJson() == null) return false;

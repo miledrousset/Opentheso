@@ -4,7 +4,7 @@ import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 
 @FacesConverter("searchConverterAdvanced")
 public class SearchConverterAdvanced implements Converter{
@@ -25,9 +25,9 @@ public class SearchConverterAdvanced implements Converter{
         if(o == null) {
             return null;
         } else {
-            if( ((NodeSearchMini)o).isIsGroup())
+            if( ((NodeSearchMini)o).isGroup())
                 return ((NodeSearchMini)o).getIdConcept() + "####" + "isGroup";
-            if( ((NodeSearchMini)o).isIsFacet())
+            if( ((NodeSearchMini)o).isFacet())
                 return ((NodeSearchMini)o).getIdConcept() + "####" + "isFacet";            
             return ((NodeSearchMini)o).getIdConcept();
         }

@@ -6,8 +6,8 @@
 package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;
@@ -86,7 +86,7 @@ public class NoteBeanCandidat implements Serializable {
    
     public void resetEditNode(NodeNote selectedNodeNote) {
         reset();
-        noteValue = selectedNodeNote.getLexicalvalue();
+        noteValue = selectedNodeNote.getLexicalValue();
         selectedTypeNote = selectedNodeNote.getLang();
         this.selectedNodeNote = selectedNodeNote;
         isEditMode = true;
@@ -153,12 +153,12 @@ public class NoteBeanCandidat implements Serializable {
         FacesMessage msg;        
 
         if (!noteHelper.updateNote(connect.getPoolConnexion(),
-                selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                selectedNodeNote.getId_concept(),
+                selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
+                selectedNodeNote.getIdConcept(),
                 selectedNodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
-                selectedNodeNote.getLexicalvalue(),
-                selectedNodeNote.getNotetypecode(),
+                selectedNodeNote.getLexicalValue(),
+                selectedNodeNote.getNoteTypeCode(),
                 idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -182,19 +182,19 @@ public class NoteBeanCandidat implements Serializable {
         FacesMessage msg;
 
         if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
-                selectedNodeNote.getId_note(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                selectedNodeNote.getId_concept(),
+                selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
+                selectedNodeNote.getIdConcept(),
                 selectedNodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
-                selectedNodeNote.getNotetypecode(),
+                selectedNodeNote.getNoteTypeCode(),
                 noteValueToChange, idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        noteHelper.deleteVoteByNoteId(connect.getPoolConnexion(), selectedNodeNote.getId_note(), selectedTheso.getCurrentIdTheso(),
-                selectedNodeNote.getId_concept());
+        noteHelper.deleteVoteByNoteId(connect.getPoolConnexion(), selectedNodeNote.getIdNote(), selectedTheso.getCurrentIdTheso(),
+                selectedNodeNote.getIdConcept());
 
         reset();
         try {          

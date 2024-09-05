@@ -5,14 +5,14 @@
  */
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
-import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.models.languages.Languages_iso639;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -123,7 +123,7 @@ public class NewThesoBean implements Serializable {
             conn = connect.getPoolConnexion().getConnection();
             conn.setAutoCommit(false);
             // création du thésaurus
-            idNewTheso = thesaurusHelper.addThesaurusRollBack(conn, "", false);
+            idNewTheso = thesaurusHelper.addThesaurusRollBack(conn);
             if(idNewTheso == null) {
                 conn.rollback();
                 conn.close();

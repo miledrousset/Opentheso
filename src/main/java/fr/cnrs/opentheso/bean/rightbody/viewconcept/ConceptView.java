@@ -6,17 +6,17 @@ import fr.cnrs.opentheso.bdd.helper.FacetHelper;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.ConceptRelation;
-import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.NodeFullConcept;
-import fr.cnrs.opentheso.bdd.helper.dao.ResourceGPS;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.models.concept.ConceptRelation;
+import fr.cnrs.opentheso.bdd.helper.DaoResourceHelper;
+import fr.cnrs.opentheso.models.concept.NodeFullConcept;
+import fr.cnrs.opentheso.models.concept.ResourceGPS;
+import fr.cnrs.opentheso.models.concept.NodeConceptType;
+import fr.cnrs.opentheso.models.nodes.NodeCorpus;
+import fr.cnrs.opentheso.models.relations.NodeCustomRelation;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.concept.NodePath;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
@@ -74,6 +74,9 @@ public class ConceptView implements Serializable {
     private LanguageBean languageBean;
     @Autowired @Lazy
     private CurrentUser currentUser;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
 
     private NodeConcept nodeConcept;
     
@@ -256,7 +259,6 @@ public class ConceptView implements Serializable {
     public void getConcept(String idTheso, String idConcept, String idLang) {
         offset = 0;
         gpsModeSelected = GpsMode.POINT;
-        ConceptHelper conceptHelper = new ConceptHelper();
         
         if(currentUser != null) {
             nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
@@ -401,10 +403,9 @@ public class ConceptView implements Serializable {
      * @param idLang
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang) {
-//                System.out.println("entree : " + LocalTime.now());
+
         selectedLang = idLang;
         offset = 0;
-        ConceptHelper conceptHelper = new ConceptHelper();
         
         if(currentUser != null) {
             nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
@@ -516,10 +517,7 @@ public class ConceptView implements Serializable {
     }
 
     public void countTheTotalOfBranch(String idThesaurus) {
-        ConceptHelper conceptHelper = new ConceptHelper();
-        List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(
-                connect.getPoolConnexion(),
-                idThesaurus,
+        List<String> listIdsOfBranch = conceptHelper.getIdsOfBranch2(connect.getPoolConnexion(), idThesaurus,
                 nodeFullConcept.getIdentifier());
         this.countOfBranch = listIdsOfBranch.size();
     }
@@ -637,8 +635,8 @@ public class ConceptView implements Serializable {
                     if (note == null) {
                         note = new NodeNote();
                     }
-                    note.setId_note(note1.getIdNote());
-                    note.setLexicalvalue(note1.getLabel());
+                    note.setIdNote(note1.getIdNote());
+                    note.setLexicalValue(note1.getLabel());
                     note.setLang(note1.getIdLang());
                     note.setNoteSource(note1.getNoteSource());
                 });
@@ -652,8 +650,8 @@ public class ConceptView implements Serializable {
                     if (scopeNote == null) {
                         scopeNote = new NodeNote();
                     }
-                    scopeNote.setId_note(note1.getIdNote());
-                    scopeNote.setLexicalvalue(note1.getLabel());
+                    scopeNote.setIdNote(note1.getIdNote());
+                    scopeNote.setLexicalValue(note1.getLabel());
                     scopeNote.setLang(note1.getIdLang());
                     scopeNote.setNoteSource(note1.getNoteSource());
                 });
@@ -667,8 +665,8 @@ public class ConceptView implements Serializable {
                     if (changeNote == null) {
                         changeNote = new NodeNote();
                     }
-                    changeNote.setId_note(note1.getIdNote());
-                    changeNote.setLexicalvalue(note1.getLabel());
+                    changeNote.setIdNote(note1.getIdNote());
+                    changeNote.setLexicalValue(note1.getLabel());
                     changeNote.setLang(note1.getIdLang());
                     changeNote.setNoteSource(note1.getNoteSource());
                 });
@@ -682,8 +680,8 @@ public class ConceptView implements Serializable {
                     if (definition == null) {
                         definition = new NodeNote();
                     }
-                    definition.setId_note(note1.getIdNote());
-                    definition.setLexicalvalue(note1.getLabel());
+                    definition.setIdNote(note1.getIdNote());
+                    definition.setLexicalValue(note1.getLabel());
                     definition.setLang(note1.getIdLang());
                     definition.setNoteSource(note1.getNoteSource());
                 });
@@ -697,8 +695,8 @@ public class ConceptView implements Serializable {
                     if (editorialNote == null) {
                         editorialNote = new NodeNote();
                     }
-                    editorialNote.setId_note(note1.getIdNote());
-                    editorialNote.setLexicalvalue(note1.getLabel());
+                    editorialNote.setIdNote(note1.getIdNote());
+                    editorialNote.setLexicalValue(note1.getLabel());
                     editorialNote.setLang(note1.getIdLang());
                     editorialNote.setNoteSource(note1.getNoteSource());
                 });
@@ -712,8 +710,8 @@ public class ConceptView implements Serializable {
                     if (example == null) {
                         example = new NodeNote();
                     }
-                    example.setId_note(note1.getIdNote());
-                    example.setLexicalvalue(note1.getLabel());
+                    example.setIdNote(note1.getIdNote());
+                    example.setLexicalValue(note1.getLabel());
                     example.setLang(note1.getIdLang());
                     example.setNoteSource(note1.getNoteSource());
                 });
@@ -730,8 +728,8 @@ public class ConceptView implements Serializable {
                     if (historyNote == null) {
                         historyNote = new NodeNote();
                     }
-                    historyNote.setId_note(note1.getIdNote());
-                    historyNote.setLexicalvalue(note1.getLabel());
+                    historyNote.setIdNote(note1.getIdNote());
+                    historyNote.setLexicalValue(note1.getLabel());
                     historyNote.setLang(note1.getIdLang());
                     historyNote.setNoteSource(note1.getNoteSource());
                 });
@@ -745,8 +743,8 @@ public class ConceptView implements Serializable {
             nodeFullConcept.getNotes().stream()
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
-                    nodeNote.setId_note(note1.getIdNote());
-                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
                     return nodeNote;
@@ -757,8 +755,8 @@ public class ConceptView implements Serializable {
             nodeFullConcept.getScopeNotes().stream()
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
-                    nodeNote.setId_note(note1.getIdNote());
-                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
                     return nodeNote;
@@ -769,8 +767,8 @@ public class ConceptView implements Serializable {
             nodeFullConcept.getChangeNotes().stream()
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
-                    nodeNote.setId_note(note1.getIdNote());
-                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
                     return nodeNote;
@@ -781,8 +779,8 @@ public class ConceptView implements Serializable {
             nodeFullConcept.getDefinitions().stream()
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
-                    nodeNote.setId_note(note1.getIdNote());
-                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
                     return nodeNote;
@@ -793,8 +791,8 @@ public class ConceptView implements Serializable {
             nodeFullConcept.getEditorialNotes().stream()
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
-                    nodeNote.setId_note(note1.getIdNote());
-                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
                     return nodeNote;
@@ -805,8 +803,8 @@ public class ConceptView implements Serializable {
             nodeFullConcept.getExamples().stream()
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
-                    nodeNote.setId_note(note1.getIdNote());
-                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
                     return nodeNote;
@@ -817,20 +815,14 @@ public class ConceptView implements Serializable {
             nodeFullConcept.getHistoryNotes().stream()
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
-                    nodeNote.setId_note(note1.getIdNote());
-                    nodeNote.setLexicalvalue(note1.getLabel());
+                    nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
                     return nodeNote;
                 })
                 .forEach(historyNoteAllLang::add);
-        }        
-    }    
-
-    public String getNoteValue(NodeNote nodeNote){
-        if(nodeNote != null)
-            return nodeNote.getLexicalvalue();
-        return "";
+        }
     }
     
     public String getColorOfTypeConcept() {

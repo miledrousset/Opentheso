@@ -1,14 +1,17 @@
 package fr.cnrs.opentheso.ws.ark;
 
-import fr.cnrs.opentheso.bdd.datas.DcElement;
-import fr.cnrs.opentheso.bdd.datas.Qualifier;
-import java.util.ArrayList;
+import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.models.concept.Qualifier;
+import java.util.List;
 import fr.cnrs.opentheso.utils.DateUtils;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
+import lombok.Data;
 
+
+@Data
 public final class NodeJson2 {
 
     private String token;
@@ -20,8 +23,8 @@ public final class NodeJson2 {
     private String creator;
     private boolean useHandle;
     private String modificationDate;
-    private ArrayList <DcElement> dcElements;    
-    private ArrayList<Qualifier> qualifiers;    
+    private List<DcElement> dcElements;
+    private List<Qualifier> qualifiers;
     
     public NodeJson2() {
     }
@@ -90,94 +93,5 @@ public final class NodeJson2 {
             jsonArrayBuilderQual.add(jobLine.build());
         }
         return jsonArrayBuilderQual.build();        
-    }    
-    
-    public String getToken() {
-        return token;
     }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getArk() {
-        return ark;
-    }
-
-    public void setArk(String ark) {
-        this.ark = ark;
-    }
-
-    public String getNaan() {
-        return naan;
-    }
-
-    public void setNaan(String naan) {
-        this.naan = naan;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getUrlTarget() {
-        return urlTarget;
-    }
-
-    public void setUrlTarget(String urlTarget) {
-        this.urlTarget = urlTarget;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public boolean isUseHandle() {
-        return useHandle;
-    }
-
-    public void setUseHandle(boolean useHandle) {
-        this.useHandle = useHandle;
-    }
-
-    public String getModificationDate() {
-        return modificationDate;
-    }
-
-    public void setModificationDate(String modificationDate) {
-        this.modificationDate = modificationDate;
-    }
-
-    public ArrayList<DcElement> getDcElements() {
-        return dcElements;
-    }
-
-    public void setDcElements(ArrayList<DcElement> dcElements) {
-        this.dcElements = dcElements;
-    }
-
-    public ArrayList<Qualifier> getQualifiers() {
-        return qualifiers;
-    }
-
-    public void setQualifiers(ArrayList<Qualifier> qualifiers) {
-        this.qualifiers = qualifiers;
-    }
-
 }

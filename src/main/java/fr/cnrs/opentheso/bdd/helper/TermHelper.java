@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bdd.helper;
 
-//
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,46 +9,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import fr.cnrs.opentheso.bdd.datas.Term;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeTab2Levels;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTerm;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-
+import fr.cnrs.opentheso.models.terms.Term;
+import fr.cnrs.opentheso.models.terms.NodeEM;
+import fr.cnrs.opentheso.models.terms.NodeTerm;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.utils.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author miled.rousset
- */
+
+@Slf4j
+@Service
 public class TermHelper {
-
-    private final Log log = LogFactory.getLog(ThesaurusHelper.class);
-
-    /**
-     * ************************************************************
-     * /**************************************************************
-     * Nouvelles fonctions stables auteur Miled Rousset
-     * /**************************************************************
-     * /*************************************************************
-     */
     
     
     /**
      * Cette fonction permet de récupérer les termes synonymes pour un
      * concept sous forme de classe NodeEM
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @param idLang
-     * @return
-     * #MR
      */
-    public ArrayList<NodeEM> getNonPreferredTerms(HikariDataSource ds,
-            String idConcept, String idThesaurus, String idLang) {
+    public ArrayList<NodeEM> getNonPreferredTerms(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
         ArrayList<NodeEM> nodeEMList = null;
         try (Connection conn = ds.getConnection()) {
@@ -74,7 +47,7 @@ public class TermHelper {
                         nodeEMList = new ArrayList<>();
                         while (resultSet.next()) {
                             NodeEM nodeEM = new NodeEM();
-                            nodeEM.setLexical_value(resultSet.getString("lexical_value"));
+                            nodeEM.setLexicalValue(resultSet.getString("lexical_value"));
                             nodeEM.setCreated(resultSet.getDate("created"));
                             nodeEM.setModified(resultSet.getDate("modified"));
                             nodeEM.setSource(resultSet.getString("source"));
@@ -148,9 +121,7 @@ public class TermHelper {
     /**
      * Permet de modifier le libellé d'un synonyme
      */
-    public boolean updateTermSynonyme(HikariDataSource ds,
-            String oldValue, String newValue,
-            String idTerm, String idLang,
+    public boolean updateTermSynonyme(HikariDataSource ds, String oldValue, String newValue, String idTerm, String idLang,
             String idTheso, boolean isHidden, int idUser) {
 
         Connection conn = null;
@@ -204,18 +175,8 @@ public class TermHelper {
 
     /**
      * Permet de modifier le status du synonyme (caché ou non)
-     *
-     * @param ds
-     * @param idTerm
-     * @param value
-     * @param idLang
-     * @param idTheso
-     * @param isHidden
-     * @param idUser
-     * @return
      */
-    public boolean updateStatus(HikariDataSource ds,
-            String idTerm, String value, String idLang,
+    public boolean updateStatus(HikariDataSource ds, String idTerm, String value, String idLang,
             String idTheso, boolean isHidden, int idUser) {
 
         Connection conn = null;
@@ -265,19 +226,9 @@ public class TermHelper {
 
     /**
      * Cette fonction permet de supprimer un Terme Non descripteur ou synonyme
-     *
-     * @param ds
-     * @param idTerm
-     * @param idLang
-     * @param lexicalValue
-     * @param idTheso
-     * @param status
-     * @param idUser
-     * @return
      */
-    public boolean deleteNonPreferedTerm(HikariDataSource ds,
-            String idTerm, String idLang,
-            String lexicalValue, String idTheso, String status, int idUser) {
+    public boolean deleteNonPreferedTerm(HikariDataSource ds, String idTerm, String idLang,
+            String lexicalValue, String idTheso, int idUser) {
 
         lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue);
         boolean isPassed = false;
@@ -300,15 +251,8 @@ public class TermHelper {
     
     /**
      * Cette fonction permet de supprimer un Terme Non descripteur ou synonyme
-     *
-     * @param ds
-     * @param idConcept
-     * @param idTheso
-     * @param idUser
-     * @return
      */
-    public boolean deleteAllNonPreferedTerm(HikariDataSource ds,
-            String idConcept, String idTheso, int idUser) {
+    public boolean deleteAllNonPreferedTerm(HikariDataSource ds, String idConcept, String idTheso) {
 
         boolean isPassed = false;
         try (Connection conn = ds.getConnection()){
@@ -329,29 +273,10 @@ public class TermHelper {
     }    
 
     /**
-     * Cette fonction permet de rajouter des Termes Non descripteurs ou
-     * synonymes
-     *
-     * @param ds
-     * @param idTerm
-     * @param idUser
-     * @param idLang
-     * @param value
-     * @param idTheso
-     * @param status
-     * @param isHidden
-     * @param source
-     * @return boolean
+     * Cette fonction permet de rajouter des Termes Non descripteurs ou synonymes
      */
-    public boolean addNonPreferredTerm(HikariDataSource ds,
-            String idTerm,
-            String value,
-            String idLang,
-            String idTheso,
-            String source,
-            String status,
-            boolean isHidden,
-            int idUser) {
+    public boolean addNonPreferredTerm(HikariDataSource ds, String idTerm, String value, String idLang, String idTheso,
+            String source, String status, boolean isHidden, int idUser) {
 
         boolean isPassed = false;
         value = fr.cnrs.opentheso.utils.StringUtils.convertString(value);
@@ -377,75 +302,29 @@ public class TermHelper {
         return isPassed;
     }
 
-    /**
-     *
-     * @param conn
-     * @param idUser
-     * @param action
-     * @return idTerm
-     */
-    private boolean addNonPreferredTermHistorique(Connection conn,
-            String idTerm,
-            String value,
-            String idLang,
-            String idTheso,
-            String source,
-            String status,
-            boolean isHidden,
-            String action,
-            int idUser) {
+    private boolean addNonPreferredTermHistorique(Connection conn, String idTerm, String value, String idLang,
+            String idTheso, String source, String status, boolean isHidden, String action, int idUser) {
 
-        boolean isPassed = false;
-        Statement stmt;
-        try {
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "Insert into non_preferred_term_historique "
-                            + "(id_term, lexical_value, lang, "
-                            + "id_thesaurus, source, status, id_user, action, hiden)"
-                            + " values ("
-                            + "'" + idTerm + "'"
-                            + ",'" + value + "'"
-                            + ",'" + idLang + "'"
-                            + ",'" + idTheso + "'"
-                            + ",'" + source + "'"
-                            + ",'" + status + "'"
-                            + ",'" + idUser + "'"
-                            + ",'" + action + "'"
-                            + "," + isHidden + ")";
-
-                    stmt.executeUpdate(query);
-                    isPassed = true;
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                //    conn.close();
-            }
+        try (Statement stmt = conn.createStatement()){
+            stmt.executeUpdate("Insert into non_preferred_term_historique (id_term, lexical_value, lang, id_thesaurus, source, status, id_user, action, hiden)"
+                    + " values ('" + idTerm + "','" + value + "','" + idLang + "','" + idTheso + "','" + source + "'"
+                    + ",'" + status + "','" + idUser + "','" + action + "'," + isHidden + ")");
+            return true;
         } catch (SQLException sqle) {
             // Log exception
             if (sqle.getSQLState().equalsIgnoreCase("23505")) {
-                isPassed = true;
+                return true;
             }
         }
-        return isPassed;
+        return false;
     }
 
     /**
      * Cette fonction permet de supprimer une traduction
-     *
-     * @param ds
-     * @param idLang
-     * @param oldLabel
-     * @param idTerm
-     * @param idTheso
-     * @param idUser
-     * @return
      */
-    public boolean deleteTraductionOfTerm(HikariDataSource ds,
-            String idTerm, String oldLabel,
+    public boolean deleteTraductionOfTerm(HikariDataSource ds, String idTerm, String oldLabel,
             String idLang, String idTheso, int idUser) {
+
         boolean status = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -453,8 +332,6 @@ public class TermHelper {
                         + " id_thesaurus = '" + idTheso + "'"
                         + " and id_term  = '" + idTerm + "'"
                         + " and lang = '" + idLang + "'");
-            }
-            if (addNewTermHistorique(conn, idTerm, oldLabel, idLang, idTheso, "", "Delete", idUser)) {
             }
             status = true;
         } catch (SQLException sqle) {
@@ -465,16 +342,6 @@ public class TermHelper {
 
     /**
      * Permet d'ajouter une traduction à un Terme #MR
-     *
-     * @param ds
-     * @param label
-     * @param idTerm
-     * @param idTheso
-     * @param source
-     * @param status
-     * @param idLang
-     * @param idUser
-     * @return
      */
     public boolean addTraduction(
             HikariDataSource ds,
@@ -517,14 +384,6 @@ public class TermHelper {
 
     /**
      * fonction qui permet de mettre à jour un label
-     *
-     * @param ds
-     * @param label
-     * @param idTerm
-     * @param idLang
-     * @param idTheso
-     * @param idUser
-     * @return
      */
     public boolean updateTraduction(HikariDataSource ds,
             String label,
@@ -549,8 +408,6 @@ public class TermHelper {
                             + " WHERE lang ='" + idLang + "'"
                             + " AND id_term = '" + idTerm + "'"
                             + " AND id_thesaurus = '" + idTheso + "'";
-
-                 //   System.out.println("UPDATE : " + query);
 
                     stmt.executeUpdate(query);
                     if (addNewTermHistorique(conn, idTerm, label, idLang, idTheso, "", "Rename", idUser)) {
@@ -585,12 +442,6 @@ public class TermHelper {
     /**
      * Cette fonction permet de récupérer le nom d'un Concept d'après son idTerm
      * sinon renvoie une chaine vide
-     *
-     * @param ds
-     * @param idTerm
-     * @param idThesaurus
-     * @param idLang
-     * @return Objet class Concept
      */
     public String getLexicalValue(HikariDataSource ds,
             String idTerm, String idThesaurus, String idLang) {
@@ -618,15 +469,9 @@ public class TermHelper {
     /**
      * Cette fonction permet de récupérer les altLabels d'un Concept d'après son idTerm
      * sinon renvoie un tableau vide
-     *
-     * @param ds
-     * @param idTerm
-     * @param idThesaurus
-     * @param idLang
-     * @return Objet class Concept
      */
-    public ArrayList<String> getLexicalValueOfAltLabel(HikariDataSource ds,
-            String idTerm, String idThesaurus, String idLang) {
+    public ArrayList<String> getLexicalValueOfAltLabel(HikariDataSource ds, String idTerm, String idThesaurus, String idLang) {
+
         ArrayList<String> lexicalValues = new ArrayList<>();
 
         try ( Connection conn = ds.getConnection()) {
@@ -652,18 +497,7 @@ public class TermHelper {
         return lexicalValues;
     }
 
-    /**
-     *
-     * @param conn
-     * @param idTerm
-     * @param lexicalValue
-     * @param idLang
-     * @param idTheso
-     * @param idUser
-     * @param action
-     * @param source
-     * @return
-     */
+
     public boolean addNewTermHistorique(Connection conn,
             String idTerm,
             String lexicalValue,
@@ -672,7 +506,7 @@ public class TermHelper {
             String source,
             String action,
             int idUser) {
-        //     Connection conn;
+
         Statement stmt;
         boolean isPassed = false;
         try {
@@ -707,17 +541,9 @@ public class TermHelper {
     }
 
     /**
-     * Cette fonction permet de savoir si le terme existe dans cette langue ou
-     * non
-     *
-     * @param ds
-     * @param idTerm
-     * @param idLang
-     * @param idThesaurus
-     * @return boolean
+     * Permet de savoir si le terme existe dans cette langue ou non
      */
-    public boolean isTermExistInThisLang(HikariDataSource ds,
-            String idTerm, String idLang, String idThesaurus) {
+    public boolean isTermExistInThisLang(HikariDataSource ds, String idTerm, String idLang, String idThesaurus) {
 
         Statement stmt;
         ResultSet resultSet = null;
@@ -753,22 +579,10 @@ public class TermHelper {
         return existe;
     }
 
-    /**
-     * ************************************************************
-     * /**************************************************************
-     * Fin Nouvelles fonctions stables auteur Miled Rousset
-     * /**************************************************************
-     * /*************************************************************
-     */
+
     /**
      * Cette fonction permet d'ajouter un Terme à la table Term, en paramètre un
      * objet Classe Term
-     *
-     * @param conn
-     * @param term
-     * @param idConcept
-     * @param idUser
-     * @return
      */
     public String addTerm(Connection conn, Term term, String idConcept, int idUser) {
 
@@ -778,8 +592,8 @@ public class TermHelper {
             return null;
         }
 
-        term.setId_term(idTerm);
-        if (!addLinkTerm(conn, term, idConcept, idUser)) {
+        term.setIdTerm(idTerm);
+        if (!addLinkTerm(conn, term, idConcept)) {
             return null;
         }
 
@@ -789,11 +603,6 @@ public class TermHelper {
     /**
      * Cette fonction permet d'ajouter un Terme à la table Term, en paramètre un
      * objet Classe Term
-     *
-     * @param ds
-     * @param nodeTerm
-     * @param idUser
-     * @return
      */
     public boolean insertTerm(HikariDataSource ds,
             NodeTerm nodeTerm, int idUser) {
@@ -816,24 +625,14 @@ public class TermHelper {
             );
 
         }
-        insertLinkTerm(ds, nodeTerm.getIdTerm(), nodeTerm.getIdThesaurus(),
-                nodeTerm.getIdConcept(), idUser);
+        insertLinkTerm(ds, nodeTerm.getIdTerm(), nodeTerm.getIdThesaurus(), nodeTerm.getIdConcept());
 
         return true;
     }
 
-    /**
-     *
-     * @param ds
-     * @param idTerm
-     * @param idThesaurus
-     * @param idConcept
-     * @param idUser
-     */
-    public void insertLinkTerm(HikariDataSource ds,
-            String idTerm,
-            String idThesaurus,
-            String idConcept, int idUser) {
+
+    public void insertLinkTerm(HikariDataSource ds, String idTerm, String idThesaurus, String idConcept) {
+
         Connection conn;
         Statement stmt;
 
@@ -868,17 +667,11 @@ public class TermHelper {
 
     /**
      * Cette fonction permet de rajouter une relation Terme Préféré
-     *
-     * @param conn
-     * @param term
-     * @param idConcept
-     * @param idUser
-     * @return
      */
-    public boolean addLinkTerm(Connection conn, Term term, String idConcept, int idUser) {
+    public boolean addLinkTerm(Connection conn, Term term, String idConcept) {
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into preferred_term (id_concept, id_term, id_thesaurus) values ('"
-                    + idConcept + "','" + term.getId_term() + "','" + term.getId_thesaurus() + "')");
+                    + idConcept + "','" + term.getIdTerm() + "','" + term.getIdThesaurus() + "')");
             return true;
         } catch (SQLException sqle) {
             if (sqle.getSQLState().equalsIgnoreCase("23505")) {
@@ -888,16 +681,10 @@ public class TermHelper {
         }
     }
 
-    /**
-     *
-     * @param conn
-     * @param term
-     * @param idUser
-     * @return idTerm
-     */
+
     public String addNewTerm(Connection conn, Term term, int idUser) {
         String idTerm = null;
-        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
+        term.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexicalValue()));
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select max(id) from term");
             try ( ResultSet resultSet = stmt.getResultSet()) {
@@ -906,19 +693,19 @@ public class TermHelper {
                     idTermNum++;
                     idTerm = "" + (idTermNum);
                     // si le nouveau Id existe, on l'incrémente
-                    while (isIdOfTermExist(conn, idTerm, term.getId_thesaurus())) {
+                    while (isIdOfTermExist(conn, idTerm, term.getIdThesaurus())) {
                         idTerm = "" + (++idTermNum);
                     }
                 }
-                term.setId_term(idTerm);
+                term.setIdTerm(idTerm);
             }
-            if (term.getId_term() == null || term.getId_term().isEmpty()) {
+            if (term.getIdTerm() == null || term.getIdTerm().isEmpty()) {
                 return null;
             }
 
             stmt.executeUpdate("Insert into term (id_term, lexical_value, lang, id_thesaurus, source, status, contributor, creator)"
-                    + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
-                    + ",'" + term.getId_thesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
+                    + " values ('" + term.getIdTerm() + "','" + term.getLexicalValue() + "','" + term.getLang() + "'"
+                    + ",'" + term.getIdThesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
                     + ", " + idUser + ", " + idUser + ")");
             if (!addNewTermHistorique(conn, term, idUser, "ADD")) {
                 return null;
@@ -933,14 +720,7 @@ public class TermHelper {
         return idTerm;
     }
 
-    /**
-     *
-     * @param conn
-     * @param term
-     * @param idUser
-     * @param action
-     * @return
-     */
+
     public boolean addNewTermHistorique(Connection conn, Term term, int idUser, String action) {
 
         try ( Statement stmt = conn.createStatement()) {
@@ -948,10 +728,10 @@ public class TermHelper {
                     + "(id_term, lexical_value, lang, "
                     + "id_thesaurus, source, status, id_user, action)"
                     + " values ("
-                    + "'" + term.getId_term() + "'"
-                    + ",'" + term.getLexical_value() + "'"
+                    + "'" + term.getIdTerm() + "'"
+                    + ",'" + term.getLexicalValue() + "'"
                     + ",'" + term.getLang() + "'"
-                    + ",'" + term.getId_thesaurus() + "'"
+                    + ",'" + term.getIdThesaurus() + "'"
                     + ",'" + term.getSource() + "'"
                     + ",'" + term.getStatus() + "'"
                     + "," + idUser
@@ -967,14 +747,8 @@ public class TermHelper {
      * Cette fonction permet de supprimer un Terme avec toutes les dépendances
      * (Prefered term dans toutes les langues) et (nonPreferedTerm dans toutes
      * les langues)
-     *
-     * @param conn
-     * @param idTerm
-     * @param idThesaurus
-     * @param idUser
-     * @return
      */
-    public boolean deleteTerm(Connection conn, String idTerm, String idThesaurus, int idUser) {
+    public boolean deleteTerm(Connection conn, String idTerm, String idThesaurus) {
 
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("delete from term where id_thesaurus = '" + idThesaurus + "' and id_term  = '" + idTerm + "'");
@@ -994,57 +768,14 @@ public class TermHelper {
     }
 
     /**
-     * Cette fonction permet de supprimer les données de la table Permuted pour
-     * un thésaurus donné
-     *
-     * @param ds
-     * @param idThesaurus
-     * @return
-     */
-    public boolean deletePermutedTable(HikariDataSource ds, String idThesaurus) {
-
-        Connection conn;
-        Statement stmt;
-        boolean status = false;
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "delete from permuted where"
-                            + " id_thesaurus = '" + idThesaurus + "'";
-                    stmt.executeUpdate(query);
-
-                    status = true;
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while deleting data from Permuted for thesaurus : " + idThesaurus, sqle);
-        }
-        return status;
-    }
-
-    /**
      * Cette fonction permet de rajouter des Termes Non descripteurs ou
      * synonymes
-     *
-     * @param ds
-     * @param term
-     * @param idUser
-     * @return boolean
      */
     public boolean addNonPreferredTerm(HikariDataSource ds, Term term, int idUser) {
 
         try ( Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
-            if (!addUSE(conn, term, idUser)) {
+            if (!addUSE(conn, term)) {
                 conn.rollback();
                 conn.close();
                 return false;
@@ -1067,25 +798,18 @@ public class TermHelper {
         }
     }
 
-    /**
-     *
-     * @param conn
-     * @param term
-     * @param idUser
-     * @return idTerm
-     */
-    private boolean addUSE(Connection conn, Term term, int idUser) {
+    private boolean addUSE(Connection conn, Term term) {
 
-        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
+        term.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexicalValue()));
         try ( Statement stmt = conn.createStatement()) {
             String query = "Insert into non_preferred_term "
                     + "(id_term, lexical_value, lang, "
                     + "id_thesaurus, source, status, hiden)"
                     + " values ("
-                    + "'" + term.getId_term() + "'"
-                    + ",'" + term.getLexical_value() + "'"
+                    + "'" + term.getIdTerm() + "'"
+                    + ",'" + term.getLexicalValue() + "'"
                     + ",'" + term.getLang() + "'"
-                    + ",'" + term.getId_thesaurus() + "'"
+                    + ",'" + term.getIdThesaurus() + "'"
                     + ",'" + term.getSource() + "'"
                     + ",'" + term.getStatus() + "'"
                     + "," + term.isHidden() + ")";
@@ -1100,26 +824,18 @@ public class TermHelper {
         return false;
     }
 
-    /**
-     *
-     * @param conn
-     * @param term
-     * @param idUser
-     * @param action
-     * @return idTerm
-     */
     private boolean addUSEHistorique(Connection conn, Term term, int idUser, String action) {
 
-        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
+        term.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexicalValue()));
         try ( Statement stmt = conn.createStatement()) {
             String query = "Insert into non_preferred_term_historique "
                     + "(id_term, lexical_value, lang, "
                     + "id_thesaurus, source, status, id_user, action)"
                     + " values ("
-                    + "'" + term.getId_term() + "'"
-                    + ",'" + term.getLexical_value() + "'"
+                    + "'" + term.getIdTerm() + "'"
+                    + ",'" + term.getLexicalValue() + "'"
                     + ",'" + term.getLang() + "'"
-                    + ",'" + term.getId_thesaurus() + "'"
+                    + ",'" + term.getIdThesaurus() + "'"
                     + ",'" + term.getSource() + "'"
                     + ",'" + term.getStatus() + "'"
                     + ",'" + idUser + "'"
@@ -1135,19 +851,14 @@ public class TermHelper {
     /**
      * #### déprécié par MR utiliser la nouvelle fonction Cette fonction permet
      * d'ajouter une traduction à un Terme
-     *
-     * @param conn
-     * @param term
-     * @param idUser
-     * @return
      */
     public boolean addTermTraduction(Connection conn, Term term, int idUser) {
 
-        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
+        term.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexicalValue()));
         try ( Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into term (id_term, lexical_value, lang, id_thesaurus, source, status,contributor, creator)"
-                    + " values ('" + term.getId_term() + "','" + term.getLexical_value() + "','" + term.getLang() + "'"
-                    + ",'" + term.getId_thesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
+                    + " values ('" + term.getIdTerm() + "','" + term.getLexicalValue() + "','" + term.getLang() + "'"
+                    + ",'" + term.getIdThesaurus() + "','" + term.getSource() + "','" + term.getStatus() + "'"
                     + ", " + term.getContributor() + ", " + term.getCreator() + ")");
             addNewTermHistorique(conn, term, idUser, "ADD");
         } catch (SQLException sqle) {
@@ -1163,28 +874,9 @@ public class TermHelper {
     /**
      * Cette fonction permet d'ajouter une traduction à un Terme cette fonction
      * est utilisée pour les imports
-     *
-     * @param ds
-     * @param idTerm
-     * @param idConcept
-     * @param lexicalValue
-     * @param lang
-     * @param idThesaurus
-     * @param created
-     * @param modified
-     * @param status
-     * @param source
-     * @param idUser
-     * @return
      */
-    public boolean insertTermTraduction(HikariDataSource ds,
-            String idTerm,
-            String idConcept,
-            String lexicalValue,
-            String lang, String idThesaurus,
-            Date created,
-            Date modified,
-            String source, String status, int idUser) {
+    public boolean insertTermTraduction(HikariDataSource ds, String idTerm, String idConcept, String lexicalValue,
+            String lang, String idThesaurus, Date created, Date modified, String source, String status, int idUser) {
 
         Connection conn;
         Statement stmt;
@@ -1275,7 +967,6 @@ public class TermHelper {
         lexicalValue = lexicalValue.replaceAll("\\(", " ");
         lexicalValue = lexicalValue.replaceAll("\\)", " ");
         lexicalValue = lexicalValue.replaceAll("\\/", " ");
-//        lexicalValue = lexicalValue.replaceAll("'", " ");
         lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue.trim());
         String tabMots[] = lexicalValue.split(" ");
 
@@ -1318,88 +1009,14 @@ public class TermHelper {
     }
 
     /**
-     * Cette fonction permet de découper les mots Synonymes d'un concept
-     * (phrase) pour remplir la table Non permutée
-     *
-     * @param ds
-     * @param idConcept
-     * @param idGroup
-     * @param lexicalValue
-     * @param idLang
-     * @param idThesaurus
+     * Fonction qui permet de mettre à jour une traduction
      */
-    public void splitConceptForNonPermuted(HikariDataSource ds,
-            String idConcept, String idGroup,
-            String idThesaurus, String idLang,
-            String lexicalValue) {
+    public boolean updateTermTraduction(HikariDataSource ds, Term term, int idUser) {
 
-        Connection conn;
-        Statement stmt;
-
-        //ici c'est la fonction qui découpe la phrase en mots séparé pour la recherche permutée
-        lexicalValue = lexicalValue.replaceAll("-", " ");
-        lexicalValue = lexicalValue.replaceAll("\\(", " ");
-        lexicalValue = lexicalValue.replaceAll("\\)", " ");
-        lexicalValue = lexicalValue.replaceAll("\\/", " ");
-//        lexicalValue = lexicalValue.replaceAll("'", " ");
-
-        lexicalValue = fr.cnrs.opentheso.utils.StringUtils.convertString(lexicalValue.trim());
-
-        String tabMots[] = lexicalValue.split(" ");
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    int index = 1;
-                    for (String value : tabMots) {
-                        String query = "Insert into permuted"
-                                + " (ord, id_concept, id_group, id_thesaurus,"
-                                + " id_lang, lexical_value, ispreferredterm, original_value)"
-                                + " values ("
-                                + "" + index++ + ""
-                                + ",'" + idConcept + "'"
-                                + ",'" + idGroup + "'"
-                                + ",'" + idThesaurus + "'"
-                                + ",'" + idLang + "'"
-                                + ",'" + value + "'"
-                                + "," + false
-                                + ",'" + lexicalValue + "')";
-
-                        stmt.executeUpdate(query);
-                    }
-
-                } finally {
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            if (!sqle.getSQLState().equalsIgnoreCase("23505")) {
-                //  if (!sqle.getMessage().contains("duplicate key value violates unique constraint")) {
-                log.error("Error while adding values in table Permuted for Non_Preferred_term : " + idConcept, sqle);
-            }
-        }
-    }
-
-    /**
-     * fonction qui permet de mettre à jour une traduction
-     *
-     * @param ds
-     * @param term
-     * @param idUser
-     * @return
-     */
-    public boolean updateTermTraduction(HikariDataSource ds,
-            Term term, int idUser) {
         Connection conn;
         Statement stmt;
         boolean status = false;
-        term.setLexical_value(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexical_value()));
+        term.setLexicalValue(StringUtils.convertString(term.getLexicalValue()));
         try {
             // Get connection from pool
             conn = ds.getConnection();
@@ -1407,12 +1024,12 @@ public class TermHelper {
                 stmt = conn.createStatement();
                 try {
                     String query = "UPDATE term set"
-                            + " lexical_value = '" + term.getLexical_value() + "',"
+                            + " lexical_value = '" + term.getLexicalValue() + "',"
                             + " modified = current_date ,"
                             + " contributor = " + idUser
                             + " WHERE lang ='" + term.getLang() + "'"
-                            + " AND id_term = '" + term.getId_term() + "'"
-                            + " AND id_thesaurus = '" + term.getId_thesaurus() + "'";
+                            + " AND id_term = '" + term.getIdTerm() + "'"
+                            + " AND id_thesaurus = '" + term.getIdThesaurus() + "'";
 
                     stmt.executeUpdate(query);
                     status = true;
@@ -1426,7 +1043,7 @@ public class TermHelper {
             }
         } catch (SQLException sqle) {
             // Log exception
-            log.error("Error while updating Term Traduction : " + term.getId_term(), sqle);
+            log.error("Error while updating Term Traduction : " + term.getIdTerm(), sqle);
         }
         return status;
     }
@@ -1434,15 +1051,8 @@ public class TermHelper {
     /**
      * Cette fonction permet de récupérer un Term par son id et son thésaurus et
      * sa langue sous forme de classe Term (sans les relations)
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @param idLang
-     * @return Objet class Concept
      */
-    public Term getThisTerm(HikariDataSource ds,
-            String idConcept, String idThesaurus, String idLang) {
+    public Term getThisTerm(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
         Connection conn;
         Statement stmt;
@@ -1464,19 +1074,14 @@ public class TermHelper {
                                 + " and term.id_thesaurus = '" + idThesaurus + "'"
                                 + " order by lexical_value DESC";
 
-                        /* query = "select * from term where id_concept = '"
-                         + idConcept + "'"
-                         + " and id_thesaurus = '" + idThesaurus + "'"
-                         + " and lang = '" + idLang + "'"
-                         + " and prefered = true";*/
                         stmt.executeQuery(query);
                         resultSet = stmt.getResultSet();
                         if (resultSet.next()) {
                             term = new Term();
-                            term.setId_term(resultSet.getString("id_term"));
-                            term.setLexical_value(resultSet.getString("lexical_value"));
+                            term.setIdTerm(resultSet.getString("id_term"));
+                            term.setLexicalValue(resultSet.getString("lexical_value"));
                             term.setLang(idLang);
-                            term.setId_thesaurus(idThesaurus);
+                            term.setIdThesaurus(idThesaurus);
                             term.setCreated(resultSet.getDate("created"));
                             term.setModified(resultSet.getDate("modified"));
                             term.setSource(resultSet.getString("source"));
@@ -1513,10 +1118,10 @@ public class TermHelper {
                         resultSet = stmt.getResultSet();
                         if (resultSet.next()) {
                             term = new Term();
-                            term.setId_term("");
-                            term.setLexical_value("");
+                            term.setIdTerm("");
+                            term.setLexicalValue("");
                             term.setLang(idLang);
-                            term.setId_thesaurus(idThesaurus);
+                            term.setIdThesaurus(idThesaurus);
                             term.setCreated(resultSet.getDate("created"));
                             term.setModified(resultSet.getDate("modified"));
                             term.setStatus(resultSet.getString("status"));
@@ -1543,11 +1148,6 @@ public class TermHelper {
 
     /**
      * Cette fonction permet de retourner l'id du terme d'après un concept
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @return idTermCandidat
      */
     public String getIdTermOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
@@ -1572,12 +1172,6 @@ public class TermHelper {
     /**
      * Cette fonction permet de récupérer les termes synonymes suivant un
      * id_term et son thésaurus et sa langue sous forme de classe NodeEM
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @param idLang
-     * @return Objet class Concept
      */
     public ArrayList<String> getNonPreferredTermsLabel(HikariDataSource ds,
             String idConcept, String idThesaurus, String idLang) {
@@ -1615,11 +1209,6 @@ public class TermHelper {
     /**
      * Cette fonction permet de récupérer les termes synonymes suivant un
      * id_term et son thésaurus et sa langue sous forme de classe NodeEM
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @return Objet class Concept #MR
      */
     public ArrayList<NodeEM> getAllNonPreferredTerms(HikariDataSource ds, String idConcept, String idThesaurus) {
 
@@ -1639,7 +1228,7 @@ public class TermHelper {
                     nodeEMList = new ArrayList<>();
                     while (resultSet.next()) {
                         NodeEM nodeEM = new NodeEM();
-                        nodeEM.setLexical_value(resultSet.getString("lexical_value"));
+                        nodeEM.setLexicalValue(resultSet.getString("lexical_value"));
                         nodeEM.setCreated(resultSet.getDate("created"));
                         nodeEM.setModified(resultSet.getDate("modified"));
                         nodeEM.setSource(resultSet.getString("source"));
@@ -1659,132 +1248,9 @@ public class TermHelper {
     }
 
     /**
-     * Cette fonction permet de récupérer la liste de idTermes des
-     * NonPreferredTerm (synonymes) pour un Thésaurus
-     *
-     * @param ds
-     * @param idThesaurus
-     * @return ArrayList (idConcept, idTerm)
-     */
-    public ArrayList<NodeTab2Levels> getAllIdOfNonPreferredTerms(HikariDataSource ds,
-            String idThesaurus) {
-
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-
-        ArrayList<NodeTab2Levels> tabIdNonPreferredTerm = new ArrayList<>();
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT DISTINCT preferred_term.id_concept,"
-                            + " preferred_term.id_term FROM"
-                            + " non_preferred_term, preferred_term WHERE"
-                            + " preferred_term.id_term = non_preferred_term.id_term AND"
-                            + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
-                            + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "'";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    while (resultSet.next()) {
-                        NodeTab2Levels nodeTab2Levels = new NodeTab2Levels();
-                        nodeTab2Levels.setIdConcept(resultSet.getString("id_concept"));
-                        nodeTab2Levels.setIdTerm(resultSet.getString("id_term"));
-                        tabIdNonPreferredTerm.add(nodeTab2Levels);
-                    }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting All Id of NonPreferedTerm of Thesaurus : " + idThesaurus, sqle);
-        }
-
-        return tabIdNonPreferredTerm;
-    }
-
-    /**
-     * Cette fonction permet de récupérer la liste de idTermes des
-     * NonPreferredTerm (synonymes) pour un Thésaurus en filtrant par Group
-     *
-     * @param ds
-     * @param idThesaurus
-     * @param idGroup
-     * @return ArrayList (idConcept, idTerm)
-     */
-    public ArrayList<NodeTab2Levels> getAllIdOfNonPreferredTermsByGroup(HikariDataSource ds,
-            String idThesaurus, String idGroup) {
-
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-
-        ArrayList<NodeTab2Levels> tabIdNonPreferredTerm = new ArrayList<>();
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT DISTINCT preferred_term.id_concept,"
-                            + " preferred_term.id_term FROM"
-                            + " non_preferred_term, preferred_term, concept_group_concept WHERE"
-                            + " preferred_term.id_term = non_preferred_term.id_term AND"
-                            + " concept_group_concept.idconcept = preferred_term.id_concept AND"
-                            + " concept_group_concept.idthesaurus = preferred_term.id_thesaurus AND"
-                            + " preferred_term.id_thesaurus = non_preferred_term.id_thesaurus"
-                            + " and non_preferred_term.id_thesaurus = '" + idThesaurus + "' AND"
-                            + " concept_group_concept.idgroup = '" + idGroup + "' order by id_concept ASC";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    while (resultSet.next()) {
-                        NodeTab2Levels nodeTab2Levels = new NodeTab2Levels();
-                        nodeTab2Levels.setIdConcept(resultSet.getString("id_concept"));
-                        nodeTab2Levels.setIdTerm(resultSet.getString("id_term"));
-                        tabIdNonPreferredTerm.add(nodeTab2Levels);
-                    }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting All Id of NonPreferedTerm of Thesaurus : " + idThesaurus, sqle);
-        }
-
-        return tabIdNonPreferredTerm;
-    }
-
-    /**
      * Cette fonction permet de savoir si le terme existe ou non
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @param idLang
-     * @return Objet class NodeConceptTree
      */
-    public boolean isTraductionExistOfConcept(HikariDataSource ds,
-            String idConcept, String idThesaurus, String idLang) {
+    public boolean isTraductionExistOfConcept(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
         Connection conn;
         Statement stmt;
@@ -1829,15 +1295,8 @@ public class TermHelper {
     /**
      * Cette fonction permet de retourner les traductions d'un term sauf la
      * langue en cours
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @param idLang
-     * @return Objet class NodeConceptTree
      */
-    public ArrayList<NodeTermTraduction> getTraductionsOfConcept(HikariDataSource ds,
-            String idConcept, String idThesaurus, String idLang) {
+    public ArrayList<NodeTermTraduction> getTraductionsOfConcept(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
 
         ArrayList<NodeTermTraduction> nodeTraductionsList = null;
 
@@ -1876,11 +1335,6 @@ public class TermHelper {
 
     /**
      * Cette fonction permet de retourner toutes les traductions d'un concept
-     *
-     * @param ds
-     * @param idConcept
-     * @param idThesaurus
-     * @return Objet class NodeConceptTree
      */
     public ArrayList<NodeTermTraduction> getAllTraductionsOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
 
@@ -1907,52 +1361,6 @@ public class TermHelper {
             log.error("Error while getting All Traductions of Concept  : " + idConcept, sqle);
         }
         return nodeTraductionsList;
-    }
-
-    /**
-     * Cette fonction permet de retourner le nombre de traductions pour un
-     * concept
-     */
-    public int getCountOfTraductions(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
-
-        Connection conn;
-        Statement stmt;
-        ResultSet resultSet = null;
-        int count = 0;
-
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "SELECT count(term.id_term) FROM"
-                            + " term, preferred_term WHERE"
-                            + " term.id_term = preferred_term.id_term"
-                            + " and term.id_thesaurus = preferred_term.id_thesaurus"
-                            + " and preferred_term.id_concept = '" + idConcept + "'"
-                            + " and term.id_thesaurus = '" + idThesaurus + "'"
-                            + " and term.lang != '" + idLang + "'";
-
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    if (resultSet.next()) {
-                        count = resultSet.getInt(1);
-                    }
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
-                }
-            } finally {
-                conn.close();
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting Count of Traductions of Concept  : " + idConcept, sqle);
-        }
-        return count;
     }
 
     /**
@@ -2031,12 +1439,6 @@ public class TermHelper {
 
     /**
      * Cette fonction permet de retourner l'ID du createur
-     *
-     * @param ds
-     * @param idThesaurus
-     * @param idTerm
-     * @param idLang
-     * @return
      */
     public int getCreator(HikariDataSource ds, String idThesaurus, String idTerm, String idLang) {
         int idCreator = -1;
@@ -2059,12 +1461,7 @@ public class TermHelper {
 
     /**
      * Cette fonction permet de retourner l'ID du contributeur
-     *
-     * @param ds
-     * @param idThesaurus
-     * @param idTerm
-     * @param idLang
-     * @return
+
      */
     public int getContributor(HikariDataSource ds, String idThesaurus, String idTerm, String idLang) {
         int idContributor = -1;

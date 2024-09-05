@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import io.swagger.v3.oas.annotations.Operation;

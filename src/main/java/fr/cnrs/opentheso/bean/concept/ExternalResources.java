@@ -1,25 +1,27 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-
+import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
+import fr.cnrs.opentheso.utils.StringUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
-import fr.cnrs.opentheso.utils.StringUtils;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -28,6 +30,7 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "externalResources")
 @SessionScoped
 public class ExternalResources implements Serializable {
@@ -40,8 +43,8 @@ public class ExternalResources implements Serializable {
     private String uri;
     private String description;
     
-    private ArrayList<NodeImage> nodeImages;
-    private ArrayList<NodeImage> nodeImagesForEdit;    
+    private List<NodeImage> nodeImages;
+    private List<NodeImage> nodeImagesForEdit;
 
     @PreDestroy
     public void destroy(){
@@ -250,41 +253,5 @@ public class ExternalResources implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex:formRightTab");
         }        
-    }    
-
-    public String getUri() {
-        return uri;
     }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public ArrayList<NodeImage> getNodeImages() {
-        return nodeImages;
-    }
-
-    public void setNodeImages(ArrayList<NodeImage> nodeImages) {
-        this.nodeImages = nodeImages;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-
-    public ArrayList<NodeImage> getNodeImagesForEdit() {
-        return nodeImagesForEdit;
-    }
-
-    public void setNodeImagesForEdit(ArrayList<NodeImage> nodeImagesForEdit) {
-        this.nodeImagesForEdit = nodeImagesForEdit;
-    }
-
-
-
 }

@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.models.languages.Languages_iso639;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
 
 import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
@@ -122,11 +122,9 @@ public class ThesaurusHelper {
      * ou null
      *
      * @param conn
-     * @param urlSite
-     * @param isArkActive
      * @return String Id du thésaurus rajouté
      */
-    public String addThesaurusRollBack(Connection conn, String urlSite, boolean isArkActive) {
+    public String addThesaurusRollBack(Connection conn) {
 
         String idThesaurus = null;
         String idArk = "";
@@ -366,47 +364,6 @@ public class ThesaurusHelper {
     }
 
     /**
-     * Retourne la liste des langues sous forme de MAP (nom + id) si le
-     * thesaurus n'existe pas dans la langue demandée, on récupère seulement son
-     * id
-     * @param ds
-     * @param idLang
-     * @return 
-     */
-    public Map getListThesaurus(HikariDataSource ds, String idLang) {
-
-        Map map = new HashMap();
-        ArrayList tabIdThesaurus = new ArrayList();
-
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select DISTINCT id_thesaurus from thesaurus");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        tabIdThesaurus.add(resultSet.getString("id_thesaurus"));
-                    }
-                }
-                for (Object tabIdThesauru : tabIdThesaurus) {
-                    stmt.executeQuery("select title from thesaurus_label where"
-                            + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
-                    try ( ResultSet resultSet = stmt.getResultSet()) {
-                        if(resultSet.next()) {
-                            if (resultSet.getRow() == 0) {
-                                map.put("(" + tabIdThesauru + ")", tabIdThesauru);
-                            } else {
-                                map.put(resultSet.getString("title") + "(" + tabIdThesauru + ")", tabIdThesauru);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting Map of thesaurus : " + map.toString(), sqle);
-        }
-        return map;
-    }
-
-    /**
      * Retourne la liste des Ids des thésaurus existants
      * @param ds
      * @param withPrivateTheso
@@ -434,107 +391,6 @@ public class ThesaurusHelper {
             log.error("Error while getting All ids of thesaurus : ", sqle);
         }
         return tabIdThesaurus;
-    }
-
-    /**
-     * retourne la liste des thésaurus d'un utilisateur
-     * @param ds
-     * @param idUser
-     * @param idLang
-     * @return 
-     */
-    public Map getListThesaurusOfUser(HikariDataSource ds, int idUser, String idLang) {
-        Map map = new HashMap();
-        ArrayList tabIdThesaurus = new ArrayList();
-        
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT DISTINCT user_role.id_thesaurus FROM user_role, thesaurus WHERE "
-                        + "thesaurus.id_thesaurus = user_role.id_thesaurus and id_user = " + idUser);
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        if (!resultSet.getString("id_thesaurus").isEmpty()) {
-                            tabIdThesaurus.add(resultSet.getString("id_thesaurus"));
-                        }
-                    }
-                }
-                for (Object tabIdThesauru : tabIdThesaurus) {
-                    stmt.executeQuery("select title from thesaurus_label where"
-                            + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
-                    try ( ResultSet resultSet = stmt.getResultSet()) {
-                        if (resultSet.next()) {
-                            if (resultSet.getRow() == 0) {
-                                map.put("(" + tabIdThesauru + ")", tabIdThesauru);
-                            } else {
-                                map.put(resultSet.getString("title") + "(" + tabIdThesauru + ")", tabIdThesauru);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting Map of thesaurus : " + map.toString(), sqle);
-        }
-        return map;
-    }
-
-    public Map getListThesaurusOfAllTheso(HikariDataSource ds, String idLang) {
-
-        Map map = new HashMap();
-        boolean withPrivateTheso = true;
-        List tabIdThesaurus = getAllIdOfThesaurus(ds, withPrivateTheso);
-
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                for (Object tabIdThesauru : tabIdThesaurus) {
-                    stmt.executeQuery("select title from thesaurus_label where"
-                            + " id_thesaurus = '" + tabIdThesauru + "'" + " and lang = '" + idLang + "'");
-                    try ( ResultSet resultSet = stmt.getResultSet()) {
-                        if (resultSet != null) {
-                            resultSet.next();
-                            if (resultSet.getRow() == 0) {
-                                map.put("(" + tabIdThesauru + ")", tabIdThesauru);
-                            } else {
-                                map.put(resultSet.getString("title") + "(" + tabIdThesauru + ")", tabIdThesauru);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            // Log exception
-            log.error("Error while getting Map of thesaurus : " + map.toString(), sqle);
-        }
-        return map;
-    }
-
-    /**
-     * Retourne la liste des traductions d'un thesaurus sous forme de MAP (lang
-     * + title)
-     * @param ds
-     * @param idThesaurus
-     * @return 
-     */
-    public Map getMapTraduction(HikariDataSource ds, String idThesaurus) {
-
-        Map map = new HashMap();
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select lang, title from thesaurus_label where id_thesaurus = '" + idThesaurus + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        map.put(
-                                resultSet.getString("lang"),
-                                resultSet.getString("title")
-                        );
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while getting Map of thesaurus : " + map.toString(), sqle);
-        }
-        return map;
     }
 
     /**

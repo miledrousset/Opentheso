@@ -44,13 +44,13 @@
                                         value="#{modifyGroupBean.selectedNodeAutoCompletionGroup}"
                                         completeMethod="#{modifyGroupBean.getAutoCompletCollection}" var="group"
                                         forceSelection="true" active="true" 
-                                        itemLabel="#{group.groupLexicalValue}" itemValue="#{group}" converter="termConverterGroup"
+                                        itemLabel="#{group.grouplexicalValue}" itemValue="#{group}" converter="termConverterGroup"
                                         scrollHeight="400" 
                                         inputStyle="font-size: 12px; width: 100%; box-shadow: none;border-color: #43B572; color: #000"
                                         style="font-size: 12px; width: 100%; border-color: #43B572;">
 
                             <p:column>
-                                <h:outputText value="#{group.groupLexicalValue}" style="font-size: 12px;" />
+                                <h:outputText value="#{group.grouplexicalValue}" style="font-size: 12px;" />
                             </p:column>
 
                             <p:column> 

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import javax.net.ssl.HttpsURLConnection;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.utils.JsonHelper;
 import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;

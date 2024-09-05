@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -29,6 +30,9 @@ public class ConceptSearchController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private GroupHelper groupHelper;
+
 
     @GetMapping("/{idThesaurus}/{input}")
     public ResponseEntity<Object> searchAutocompleteV2(@PathVariable("input") String input,
@@ -45,7 +49,7 @@ public class ConceptSearchController {
     public ResponseEntity<Object> getGroupsByThesaurus(@PathVariable("idThesaurus") String idThesaurus,
                                          @PathVariable("idLang") String idLang) throws JsonProcessingException {
 
-        var groups = new GroupHelper().getListRootConceptGroup(connect.getPoolConnexion(), idThesaurus, idLang, true);
+        var groups = groupHelper.getListRootConceptGroup(connect.getPoolConnexion(), idThesaurus, idLang, true);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(groups));
     }
 }

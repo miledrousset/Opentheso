@@ -65,17 +65,17 @@ public class HistoryBean implements Serializable {
     public void reset() {
         HistoryHelper historyHelper = new HistoryHelper();
         historyLabels = historyHelper.getLabelHistory(connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getTerm().getId_term(),
+                conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedTheso.getCurrentIdTheso());
         historySynonyms = historyHelper.getSynonymHistory(connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getTerm().getId_term(),
+                conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedTheso.getCurrentIdTheso());
         historyRelations = historyHelper.getRelationsHistory(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());        
         historyNotes = historyHelper.getNotesHistory(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getNodeConcept().getTerm().getId_term(),
+                conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedTheso.getCurrentIdTheso());             
     }
    

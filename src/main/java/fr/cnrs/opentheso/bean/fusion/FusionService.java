@@ -1,38 +1,45 @@
 package fr.cnrs.opentheso.bean.fusion;
 
-import fr.cnrs.opentheso.bdd.datas.Term;
-import fr.cnrs.opentheso.bdd.helper.*;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
+import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bdd.helper.NoteHelper;
+import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.models.terms.Term;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
+import fr.cnrs.opentheso.models.terms.NodeEM;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.services.imports.rdf4j.helper.AddConceptsStruct;
-import fr.cnrs.opentheso.services.imports.rdf4j.helper.ImportRdf4jHelper;
-import fr.cnrs.opentheso.services.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
+import fr.cnrs.opentheso.models.imports.AddConceptsStruct;
+import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
+import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
-import jakarta.faces.view.ViewScoped;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
+import org.springframework.stereotype.Service;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
+@Data
 @Named
-@ViewScoped
+@Service
 public class FusionService implements Serializable {
 
     @Autowired @Lazy
@@ -40,6 +47,12 @@ public class FusionService implements Serializable {
 
     @Autowired @Lazy
     private CurrentUser currentUser;
+
+    @Autowired
+    private ImportRdf4jHelper importRdf4jHelper;
+
+    @Autowired
+    private TermHelper termHelper;
 
     private SKOSXmlDocument sourceSkos;
     private boolean loadDone, fusionDone, fusionBtnEnable;
@@ -67,13 +80,9 @@ public class FusionService implements Serializable {
             conceptsExists.clear();
         }
 
-        ArrayList<NodeNote> nodeNotesLocal;
         ArrayList<NodeEM> nodeEMsLocal;
 
-        ConceptHelper conceptHelper = new ConceptHelper();
-        ImportRdf4jHelper importRdf4jHelper = new ImportRdf4jHelper();
         importRdf4jHelper.setDs(connect.getPoolConnexion());
-        TermHelper termHelper = new TermHelper();
         AlignmentHelper alignmentHelper = new AlignmentHelper();
         NoteHelper noteHelper = new NoteHelper();
         PreferencesHelper preferencesHelper = new PreferencesHelper();
@@ -89,7 +98,7 @@ public class FusionService implements Serializable {
                 importRdf4jHelper.addRelation(acs, thesoSelected.getId());
 
                 // récupération du concept Local
-                NodeConcept conceptFound = conceptHelper.getConcept(connect.getPoolConnexion(),
+                NodeConcept conceptFound = new ConceptHelper().getConcept(connect.getPoolConnexion(),
                         conceptSource.getIdentifier(),
                         thesoSelected.getId(),
                         workLang, -1, -1);
@@ -129,11 +138,11 @@ public class FusionService implements Serializable {
                         for (NodeEM nodeEM : acs.nodeEMList) {
                             if (!isSynonymeExist(nodeEM, nodeEMsLocal)) {
                                 Term term = new Term();
-                                term.setId_term(conceptFound.getTerm().getId_term());
-                                term.setId_concept(conceptFound.getConcept().getIdConcept());
-                                term.setLexical_value(nodeEM.getLexical_value());
+                                term.setIdTerm(conceptFound.getTerm().getIdTerm());
+                                term.setIdConcept(conceptFound.getConcept().getIdConcept());
+                                term.setLexicalValue(nodeEM.getLexicalValue());
                                 term.setLang(nodeEM.getLang());
-                                term.setId_thesaurus(conceptFound.getConcept().getIdThesaurus());
+                                term.setIdThesaurus(conceptFound.getConcept().getIdThesaurus());
                                 term.setSource(nodeEM.getSource());
                                 term.setStatus(nodeEM.getStatus());
                                 term.setHidden(nodeEM.isHiden());
@@ -149,14 +158,14 @@ public class FusionService implements Serializable {
                         for (NodeTermTraduction nodeTermTraduction : acs.nodeTermTraductionList) {
                             if (!isTraductionExist(nodeTermTraduction, conceptFound)) {
                                 Term term = new Term();
-                                term.setId_term(conceptFound.getTerm().getId_term());
-                                term.setId_concept(conceptFound.getConcept().getIdConcept());
-                                term.setLexical_value(nodeTermTraduction.getLexicalValue());
+                                term.setIdTerm(conceptFound.getTerm().getIdTerm());
+                                term.setIdConcept(conceptFound.getConcept().getIdConcept());
+                                term.setLexicalValue(nodeTermTraduction.getLexicalValue());
                                 term.setLang(nodeTermTraduction.getLang());
-                                term.setId_thesaurus(conceptFound.getConcept().getIdThesaurus());
+                                term.setIdThesaurus(conceptFound.getConcept().getIdThesaurus());
                                 if (termHelper.isTermExistInThisLang(connect.getPoolConnexion(),
-                                                term.getId_term(), nodeTermTraduction.getLang(),
-                                                term.getId_thesaurus())) {
+                                                term.getIdTerm(), nodeTermTraduction.getLang(),
+                                                term.getIdThesaurus())) {
                                     termHelper.updateTermTraduction(connect.getPoolConnexion(),
                                             term,
                                             currentUser.getNodeUser().getIdUser());
@@ -178,20 +187,19 @@ public class FusionService implements Serializable {
                     // OK validé par #MR
                     //Definition
                     if (!CollectionUtils.isEmpty(acs.nodeNotes)) {
-                        nodeNotesLocal = noteHelper.getListNotesAllLang(connect.getPoolConnexion(), acs.concept.getIdConcept(), conceptFound.getConcept().getIdThesaurus());
                         for (NodeNote nodeNote : acs.nodeNotes) {
                             /// détecter le type de note avant 
-                            if (nodeNote.getNotetypecode().equalsIgnoreCase("definition")) {
+                            if (nodeNote.getNoteTypeCode().equalsIgnoreCase("definition")) {
                                 if (!noteHelper.isNoteExist(connect.getPoolConnexion(),
                                         acs.concept.getIdConcept(), 
                                         conceptFound.getConcept().getIdThesaurus(),
-                                        nodeNote.getLang(), nodeNote.getLexicalvalue(), "definition")) {
+                                        nodeNote.getLang(), nodeNote.getLexicalValue(), "definition")) {
                                     noteHelper.addNote(connect.getPoolConnexion(),
                                             acs.concept.getIdConcept(),
                                             nodeNote.getLang(),
                                             conceptFound.getConcept().getIdThesaurus(),
-                                            nodeNote.getLexicalvalue(),
-                                            nodeNote.getNotetypecode(),
+                                            nodeNote.getLexicalValue(),
+                                            nodeNote.getNoteTypeCode(),
                                             "",
                                             nodeNote.getIdUser());
                                     isUpdated = true;
@@ -221,9 +229,6 @@ public class FusionService implements Serializable {
     
     /**
      * pour comparer la traduction locale à la traduction importée
-     * @param nodeTermTraductionImport
-     * @return 
-     * #MR
      */
     private boolean isTraductionExist(NodeTermTraduction nodeTermTraductionImport, NodeConcept nodeConceptLocal) {
         if (nodeConceptLocal == null)
@@ -231,7 +236,7 @@ public class FusionService implements Serializable {
         
         // comparaison avec le prefLabel 
         if(nodeConceptLocal.getTerm() != null) {
-            if (nodeTermTraductionImport.getLexicalValue().equalsIgnoreCase(nodeConceptLocal.getTerm().getLexical_value())
+            if (nodeTermTraductionImport.getLexicalValue().equalsIgnoreCase(nodeConceptLocal.getTerm().getLexicalValue())
                 && (nodeTermTraductionImport.getLang().equalsIgnoreCase(nodeConceptLocal.getTerm().getLang()))) {
                 return true;
             }
@@ -246,39 +251,6 @@ public class FusionService implements Serializable {
         }
         return false;
     }
-    /**
-     * pour comparer savoir si la langue existe ou non pour appliquer un ipdate ou instert
-     * @param langToFind
-     * @param nodeTermTraductionLocal
-     * @return 
-     * #MR
-     */    
-    private boolean isExistLang(String langToFind, ArrayList<NodeTermTraduction> nodeTermTraductionLocal) {
-        if (nodeTermTraductionLocal == null || nodeTermTraductionLocal.isEmpty())
-            return false;
-        
-        for(NodeTermTraduction existingTranslation  : nodeTermTraductionLocal){
-            if (langToFind.equalsIgnoreCase(existingTranslation.getLang())) {
-                return true;
-            }
-        }
-        return false;
-    }    
-    
-    private boolean isDefinitionExist(NodeNote nodeNoteImport, ArrayList<NodeNote> nodeNoteTermLocal) {
-        if (nodeNoteTermLocal == null || nodeNoteTermLocal.isEmpty())
-            return false;
-        
-        for(NodeNote nodeNoteTermLocal1  : nodeNoteTermLocal){
-            if(nodeNoteTermLocal1.getNotetypecode().equalsIgnoreCase("definition")) {
-                if (nodeNoteImport.getLexicalvalue().equalsIgnoreCase(nodeNoteTermLocal1.getLexicalvalue())
-                    && (nodeNoteImport.getLang().equalsIgnoreCase(nodeNoteTermLocal1.getLang())) ) {
-                    return true;    
-                }
-            }
-        }
-        return false;
-    }    
 
     /**
      * permet de vérifier si l'alignement existe ou non  
@@ -286,7 +258,7 @@ public class FusionService implements Serializable {
      * @param nodeAlignmentsLocal
      * @return 
      */
-    private boolean isAlignementExist(NodeAlignment nodeAlignementImport, ArrayList<NodeAlignment> nodeAlignmentsLocal) {
+    private boolean isAlignementExist(NodeAlignment nodeAlignementImport, List<NodeAlignment> nodeAlignmentsLocal) {
         if (nodeAlignmentsLocal == null || nodeAlignmentsLocal.isEmpty())
             return false;        
 
@@ -299,25 +271,12 @@ public class FusionService implements Serializable {
         return false;
     }
 
-    private boolean isDefinitionExist(NodeNote nodeNote, NodeConcept concept) {
-        if (CollectionUtils.isEmpty(concept.getNodeEM()))
-            return false;
-
-        for(NodeNote node : concept.getNodeNotesTerm()){
-            if ("definition".equalsIgnoreCase(node.getNotetypecode())
-                    && node.getLexicalvalue().equals(nodeNote.getLexicalvalue())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private boolean isSynonymeExist(NodeEM nodeEMimport, ArrayList<NodeEM> nodeEMLocal) {
         if (nodeEMLocal == null || nodeEMLocal.isEmpty())
             return false;
 
         for(NodeEM existingNodeEM  : nodeEMLocal){
-            if (nodeEMimport.getLexical_value().equalsIgnoreCase(existingNodeEM.getLexical_value())
+            if (nodeEMimport.getLexicalValue().equalsIgnoreCase(existingNodeEM.getLexicalValue())
                 && (nodeEMimport.getLang().equalsIgnoreCase(existingNodeEM.getLang()))) {
                 return true;
             }
@@ -337,64 +296,8 @@ public class FusionService implements Serializable {
         PrimeFaces.current().ajax().update("statistiques");
     }
 
-    public boolean isLoadDone() {
-        return loadDone;
-    }
-
-    public void setLoadDone(boolean loadDone) {
-        this.loadDone = loadDone;
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public double getTotal() {
-        return total;
-    }
-
-    public List<String> getConceptsAjoutes() {
-        return conceptsAjoutes;
-    }
-
-    public List<String> getConceptsModifies() {
-        return conceptsModifies;
-    }
-
-    public boolean isFusionDone() {
-        return fusionDone;
-    }
-
-    public void setFusionDone(boolean fusionDone) {
-        this.fusionDone = fusionDone;
-    }
-
-    public List<String> getConceptsExists() {
-        return conceptsExists;
-    }
-
-    public boolean isFusionBtnEnable() {
-        return fusionBtnEnable;
-    }
-
     public void initFusionResult() {
         fusionBtnEnable = false;
         fusionDone = false;
-    }
-
-    public void setConceptsAjoutes(List<String> conceptsAjoutes) {
-        this.conceptsAjoutes = conceptsAjoutes;
-    }
-
-    public void setConceptsModifies(List<String> conceptsModifies) {
-        this.conceptsModifies = conceptsModifies;
-    }
-
-    public void setConceptsExists(List<String> conceptsExists) {
-        this.conceptsExists = conceptsExists;
-    }
-
-    public void setFusionBtnEnable(boolean fusionBtnEnable) {
-        this.fusionBtnEnable = fusionBtnEnable;
     }
 }

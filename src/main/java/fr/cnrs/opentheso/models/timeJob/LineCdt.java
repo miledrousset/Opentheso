@@ -2,8 +2,8 @@ package fr.cnrs.opentheso.models.timeJob;
 
 import java.util.ArrayList;
 import java.util.Date;
-import fr.cnrs.opentheso.bdd.helper.nodes.candidat.NodeProposition;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.models.candidats.NodeProposition;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import lombok.Data;
 
 /**

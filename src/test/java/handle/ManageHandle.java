@@ -7,7 +7,7 @@ package handle;
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.ws.handlestandard.HandleService;
 import java.io.UnsupportedEncodingException;
 import net.handle.hdllib.HandleException;

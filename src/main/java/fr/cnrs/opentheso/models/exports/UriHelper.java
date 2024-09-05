@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.models.exports;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
 import jakarta.faces.context.FacesContext;
 import org.apache.commons.lang3.StringUtils;
 

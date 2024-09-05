@@ -51,12 +51,12 @@
                                             icon="fas fa-pencil-alt" update="containerIndex:modifierFacet"/>
                             </p:menuButton>
 
-                            <h:outputText rendered="#{editFacet.concepParent.term.lexical_value == ''}"
+                            <h:outputText rendered="#{editFacet.concepParent.term.lexicalValue == ''}"
                                           value="(#{editFacet.concepParent.concept.idConcept})"
                                           title="#{editFacet.concepParent.concept.idConcept}" />
 
-                            <h:outputText rendered="#{editFacet.concepParent.term.lexical_value != ''}"
-                                          value="#{editFacet.concepParent.term.lexical_value}"
+                            <h:outputText rendered="#{editFacet.concepParent.term.lexicalValue != ''}"
+                                          value="#{editFacet.concepParent.term.lexicalValue}"
                                           title="#{editFacet.concepParent.concept.idConcept}" />  
                         </div>
                     </div>
@@ -234,7 +234,7 @@
                                                     update="containerIndex:idDeleteNote" oncomplete="PF('deleteNote').show();" icon="fas fa-minus"/>
                                     </p:menuButton>
                                 </h:panelGroup>                                        
-                                <h:outputText value="#{editFacet.note.lexicalvalue} #{editFacet.getNoteSource(editFacet.note.noteSource)}" 
+                                <h:outputText value="#{editFacet.note.lexicalValue} #{editFacet.getNoteSource(editFacet.note.noteSource)}"
                                               escape="false" style="font-size: 14px;"/>                                
                             </div>
                         </div>
@@ -267,7 +267,7 @@
                                                 action = "#{noteBean.setSelectedTypeNote('changeNote')}" oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />                                        
                                 </p:menuButton>
-                                <h:outputText value="#{editFacet.changeNote.lexicalvalue} #{editFacet.getNoteSource(editFacet.changeNote.noteSource)}" 
+                                <h:outputText value="#{editFacet.changeNote.lexicalValue} #{editFacet.getNoteSource(editFacet.changeNote.noteSource)}"
                                               escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
@@ -300,7 +300,7 @@
                                                 oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote"
                                                 icon="fas fa-minus"/>
                                 </p:menuButton>
-                                <h:outputText value="#{editFacet.definition.lexicalvalue} #{editFacet.getNoteSource(editFacet.definition.noteSource)}" 
+                                <h:outputText value="#{editFacet.definition.lexicalValue} #{editFacet.getNoteSource(editFacet.definition.noteSource)}"
                                               escape="false" style="font-size: 14px;"/>
                             </div>
                         </div>
@@ -335,7 +335,7 @@
                                                 action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
                                                 oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote" />
                                 </p:menuButton> 
-                                <h:outputText value="#{editFacet.editorialNote.lexicalvalue} #{editFacet.getNoteSource(editFacet.editorialNote.noteSource)}" 
+                                <h:outputText value="#{editFacet.editorialNote.lexicalValue} #{editFacet.getNoteSource(editFacet.editorialNote.noteSource)}"
                                               escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
@@ -370,7 +370,7 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <h:outputText value="#{editFacet.example.lexicalvalue} #{editFacet.getNoteSource(editFacet.example.noteSource)}" 
+                                <h:outputText value="#{editFacet.example.lexicalValue} #{editFacet.getNoteSource(editFacet.example.noteSource)}"
                                               escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
@@ -405,7 +405,7 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <h:outputText value="#{editFacet.historyNote.lexicalvalue} #{editFacet.getNoteSource(editFacet.historyNote.noteSource)}" 
+                                <h:outputText value="#{editFacet.historyNote.lexicalValue} #{editFacet.getNoteSource(editFacet.historyNote.noteSource)}"
                                               escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>
@@ -440,7 +440,7 @@
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 
-                                <h:outputText value="#{editFacet.scopeNote.lexicalvalue} #{editFacet.getNoteSource(editFacet.scopeNote.noteSource)}" 
+                                <h:outputText value="#{editFacet.scopeNote.lexicalValue} #{editFacet.getNoteSource(editFacet.scopeNote.noteSource)}"
                                               escape="false" style="font-size: 14px;"/>  
                             </div>
                         </div>

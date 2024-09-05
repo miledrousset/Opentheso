@@ -1,13 +1,13 @@
 package fr.cnrs.opentheso.services.imports.csv;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentImport;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeReplaceValueByValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.models.alignment.NodeAlignmentImport;
+import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
+import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
+import fr.cnrs.opentheso.models.relations.NodeDeprecated;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.models.relations.NodeReplaceValueByValue;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;

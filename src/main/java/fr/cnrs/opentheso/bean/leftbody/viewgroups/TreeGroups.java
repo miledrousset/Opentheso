@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -66,15 +67,8 @@ public class TreeGroups implements Serializable {
     private String idTheso, idLang;
     private boolean sortByNotation;
 
-    @PostConstruct
-    public void postInit() {
-        sortByNotation = false;
-    }
-
-    @PreDestroy
-    public void destroy() {
-        reset();
-    }
+    @Autowired
+    private GroupHelper groupHelper;
 
     public void reset() {
         root = null;
@@ -95,7 +89,7 @@ public class TreeGroups implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = new GroupHelper().getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang, isSortByNotation());
+        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang, isSortByNotation());
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(
@@ -108,7 +102,7 @@ public class TreeGroups implements Serializable {
                     false,//isTopConcept
                     "group"
             );
-            if (nodeGroup.isIsHaveChildren()) {
+            if (nodeGroup.isHaveChildren()) {
                 dataService.addNodeWithChild("group", data, root);
             } else {
                 dataService.addNodeWithoutChild("group", data, root);
@@ -140,7 +134,7 @@ public class TreeGroups implements Serializable {
 
     private boolean addGroupsChild(TreeNode parent) {
 
-        ArrayList<NodeGroup> listeSubGroup = new GroupHelper().getListChildsOfGroup(
+        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(
                 connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 idTheso,
@@ -161,7 +155,7 @@ public class TreeGroups implements Serializable {
                     false,//isTopConcept                    
                     "subGroup"
             );
-            if (nodeGroup.isIsHaveChildren()) {
+            if (nodeGroup.isHaveChildren()) {
                 dataService.addNodeWithChild("subGroup", data, parent);
             } else {
                 dataService.addNodeWithoutChild("subGroup", data, parent);
@@ -214,75 +208,6 @@ public class TreeGroups implements Serializable {
             i++;
         }
         return true;
-    }
-
-    /**
-     * pour l'ajout d'un nouveau Group après le chargement de l'arbre
-     *
-     * @param idGroup
-     * @param idTheso
-     * @param idLang
-     */
-    public void addNewGroupToTree(String idGroup, String idTheso, String idLang) {
-
-        NodeGroup nodeGroup = new GroupHelper().getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
-        if (nodeGroup == null) {
-            return;
-        }
-
-        String label;
-        if (nodeGroup.getLexicalValue().isEmpty()) {
-            label = "(" + idGroup + ")";
-        } else {
-            label = nodeGroup.getLexicalValue();
-        }
-
-        TreeNodeData data = new TreeNodeData(
-                idGroup,
-                label,
-                nodeGroup.getConceptGroup().getNotation(),
-                true,//isgroup
-                false,//isSubGroup
-                false,//isConcept
-                false,//isTopConcept
-                "group"
-        );
-        dataService.addNodeWithoutChild("group", data, root);
-    }
-
-    /**
-     * pour l'ajout d'un nouveau Group après le chargement de l'arbre
-     *
-     * @param parent
-     * @param idGroup
-     * @param idTheso
-     * @param idLang
-     */
-    public void addNewSubGroupToTree(TreeNode parent, String idGroup, String idTheso, String idLang) {
-
-        NodeGroup nodeGroup = new GroupHelper().getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
-        if (nodeGroup == null) {
-            return;
-        }
-
-        String label;
-        if (nodeGroup.getLexicalValue().isEmpty()) {
-            label = "(" + idGroup + ")";
-        } else {
-            label = nodeGroup.getLexicalValue();
-        }
-
-        TreeNodeData data = new TreeNodeData(
-                idGroup,
-                label,
-                nodeGroup.getConceptGroup().getNotation(),
-                false,//isgroup
-                true,//isSubGroup
-                false,//isConcept
-                false,//isTopConcept
-                "group"
-        );
-        dataService.addNodeWithoutChild("group", data, parent);
     }
 
     public void expandGroupToPath(String idGroup, String idTheso, String idLang) {
@@ -410,21 +335,6 @@ public class TreeGroups implements Serializable {
 
     public void setSortByNotation(boolean sortByNotation) {
         this.sortByNotation = sortByNotation;
-    }
-
-    /**
-     * permet de savoir si le groupe/collection a un sous group/collection
-     *
-     * @return
-     */
-    public boolean isIsThisGroupHaveSubGroup() {
-        if (selectedNode == null) {
-            return false;
-        }
-        GroupHelper groupHelper = new GroupHelper();
-        return groupHelper.isHaveSubGroup(connect.getPoolConnexion(),
-                idTheso,
-                ((TreeNodeData) selectedNode.getData()).getNodeId());
     }
 
 }

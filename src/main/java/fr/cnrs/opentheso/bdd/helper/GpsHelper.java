@@ -13,20 +13,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import fr.cnrs.opentheso.models.nodes.NodeGps;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author Miled.Rousset
  */
+@Slf4j
 public class GpsHelper {
-
-    private final Log log = LogFactory.getLog(ThesaurusHelper.class);
-
-    public GpsHelper() {
-    }
 
     
     /**
@@ -134,35 +129,6 @@ public class GpsHelper {
         }
         return existe;
     }
-
-    /**
-     * permet de retourner les coordonnées GPS d'un concept
-     * 
-     * @param ds
-     * @param id_concept
-     * @param id_theso
-     * @return 
-     */
-    /*
-    public NodeGps getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
-        NodeGps coordonnees = null;
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select latitude, longitude from gps where id_concept ='"
-                        + id_concept + "' and id_theso = '" + id_theso + "'");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        coordonnees = new NodeGps();
-                        coordonnees.setLatitude(resultSet.getDouble("latitude"));
-                        coordonnees.setLongitude(resultSet.getDouble("longitude"));
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            log.error("Error while Add coordonnes : " + id_concept, sqle);
-        }
-        return coordonnees;
-    }*/
 
     public List<NodeGps> getCoordinate(HikariDataSource ds, String id_concept, String id_theso) {
         List<NodeGps> coordonnees = null;

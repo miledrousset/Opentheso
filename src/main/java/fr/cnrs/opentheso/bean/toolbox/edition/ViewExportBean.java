@@ -1,12 +1,13 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
+
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.importexport.ExportFileBean;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -30,10 +31,14 @@ import org.primefaces.event.ToggleSelectEvent;
 @Named(value = "viewExportBean")
 @SessionScoped
 public class ViewExportBean implements Serializable {
+
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private ExportFileBean downloadBean;
     @Autowired @Lazy private LanguageBean languageBean;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<NodeGroup> groupList;
@@ -136,7 +141,7 @@ public class ViewExportBean implements Serializable {
         types = Arrays.asList(languageBean.getMsg("export.hierarchical"), languageBean.getMsg("export.alphabetical"));//"Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);
 
-        groupList = new GroupHelper().getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
+        groupList = groupHelper.getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
 
         toogleFilterByGroup = false;
         toogleExportByGroup = false;

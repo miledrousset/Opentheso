@@ -2,25 +2,25 @@ package fr.cnrs.opentheso.services.exports.rdf4j;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.bdd.helper.*;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignmentSmall;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeFacet;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeGps;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptExport;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupLabel;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.helper.nodes.status.NodeStatus;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
-import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.bean.candidat.dto.MessageDto;
-import fr.cnrs.opentheso.bean.candidat.dto.VoteDto;
+import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
+import fr.cnrs.opentheso.models.terms.NodeEM;
+import fr.cnrs.opentheso.models.facets.NodeFacet;
+import fr.cnrs.opentheso.models.nodes.NodeGps;
+import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.concept.NodeUri;
+import fr.cnrs.opentheso.models.concept.NodeConceptExport;
+import fr.cnrs.opentheso.models.group.NodeGroupLabel;
+import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.models.status.NodeStatus;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import fr.cnrs.opentheso.models.thesaurus.NodeThesaurus;
+import fr.cnrs.opentheso.models.candidats.MessageDto;
+import fr.cnrs.opentheso.models.candidats.VoteDto;
 import fr.cnrs.opentheso.models.skosapi.SKOSDiscussion;
 import fr.cnrs.opentheso.models.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
@@ -76,8 +76,7 @@ public class ExportRdf4jHelperNew {
     public void addSignleConceptByLang(HikariDataSource ds, String idTheso, String idConcept, String idLang, boolean showLabels) {
 
         SKOSResource sKOSResource = new SKOSResource();
-        NodeConceptExport nodeConcept = new ConceptHelper().getConceptForExport(ds, idConcept, idTheso,
-                false, false);
+        NodeConceptExport nodeConcept = new ConceptHelper().getConceptForExport(ds, idConcept, idTheso, false);
 
         if (nodeConcept == null) {
             return;
@@ -96,9 +95,9 @@ public class ExportRdf4jHelperNew {
         for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
             if(nodeEM.getLang().equalsIgnoreCase(idLang)) {
                 if(nodeEM.isHiden())
-                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.HIDDEN_LABEL);
+                    sKOSResource.addLabel(nodeEM.getLexicalValue(), nodeEM.getLang(), SKOSProperty.HIDDEN_LABEL);
                 else
-                    sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.ALT_LABEL);   
+                    sKOSResource.addLabel(nodeEM.getLexicalValue(), nodeEM.getLang(), SKOSProperty.ALT_LABEL);
             }
         }
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
@@ -106,10 +105,7 @@ public class ExportRdf4jHelperNew {
             if(nodeNote.getLang().equalsIgnoreCase(idLang))
                 nodeNotes.add(nodeNote);
         }
-/*        for (NodeNote nodeNote : nodeConcept.getNodeNoteTerm()) {
-            if(nodeNote.getLang().equalsIgnoreCase(idLang))
-                nodeNotes.add(nodeNote);
-        }        */
+
         addNoteGiven(nodeNotes, sKOSResource);
         addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
         addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
@@ -381,7 +377,7 @@ public class ExportRdf4jHelperNew {
 
         SKOSResource sKOSResource = new SKOSResource();
         ConceptHelper conceptHelper = new ConceptHelper();
-        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, false, isCandidatExport);
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, isCandidatExport);
 
         if (nodeConcept == null) {
             messages = messages + ("Erreur concept non exporté importé: " + idConcept + "\n");
@@ -422,16 +418,14 @@ public class ExportRdf4jHelperNew {
         // altLabel
         for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
             if (nodeEM.isHiden()) {
-                sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.HIDDEN_LABEL);
+                sKOSResource.addLabel(nodeEM.getLexicalValue(), nodeEM.getLang(), SKOSProperty.HIDDEN_LABEL);
             } else {
-                sKOSResource.addLabel(nodeEM.getLexical_value(), nodeEM.getLang(), SKOSProperty.ALT_LABEL);
+                sKOSResource.addLabel(nodeEM.getLexicalValue(), nodeEM.getLang(), SKOSProperty.ALT_LABEL);
             }
         }
         //ArrayList<NodeNote> nodeNotes = new ArrayList<>();//nodeConcept.getNodeNoteConcept();
         
-        ArrayList<NodeNote> nodeNotes = nodeConcept.getNodeNotes();
-//        nodeNotes.addAll(nodeConcept.getNodeNoteTerm());
-//        nodeNotes.addAll(nodeConcept.getNodeNoteConcept());        
+        List<NodeNote> nodeNotes = nodeConcept.getNodeNotes();
         addNoteGiven(nodeNotes, sKOSResource);
         addGPSGiven(nodeConcept.getNodeGps(), sKOSResource);
         addAlignementGiven(nodeConcept.getNodeAlignmentsList(), sKOSResource);
@@ -541,10 +535,10 @@ public class ExportRdf4jHelperNew {
         return allPath;
     }
     
-    private void addNoteGiven(ArrayList<NodeNote> nodeNotes, SKOSResource resource) {
+    private void addNoteGiven(List<NodeNote> nodeNotes, SKOSResource resource) {
         for (NodeNote note : nodeNotes) {
             int prop;
-            switch (note.getNotetypecode()) {
+            switch (note.getNoteTypeCode()) {
                 case "note":
                     prop = SKOSProperty.NOTE;
                     break;                  
@@ -570,7 +564,7 @@ public class ExportRdf4jHelperNew {
                     prop = SKOSProperty.NOTE;
                     break;
             }
-            resource.addDocumentation(note.getLexicalvalue(), note.getLang(), prop);
+            resource.addDocumentation(note.getLexicalValue(), note.getLang(), prop);
         }
     }
 
@@ -598,7 +592,7 @@ public class ExportRdf4jHelperNew {
                 String htmlTagsRegEx = "<[^>]*>";
                 NodeNote nodeNote = new NoteHelper().getNoteByIdNote(ds, Integer.parseInt(vote.getIdNote()));
                 if (nodeNote != null) {
-                    String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalvalue());
+                    String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalValue());
                     skosVote.setValueNote(str.replaceAll(htmlTagsRegEx, ""));
                 }
             }
@@ -620,7 +614,7 @@ public class ExportRdf4jHelperNew {
     }
 
 
-    private void addAlignementGiven(ArrayList<NodeAlignmentSmall> nodeAlignments, SKOSResource resource) {
+    private void addAlignementGiven(List<NodeAlignmentSmall> nodeAlignments, SKOSResource resource) {
         for (NodeAlignmentSmall alignment : nodeAlignments) {
 
             int prop = -1;
@@ -645,8 +639,8 @@ public class ExportRdf4jHelperNew {
             resource.addMatch(alignment.getUri_target(), prop);
         }
     }
-    private void addRelationGiven(ArrayList<NodeHieraRelation> btList, ArrayList<NodeHieraRelation> ntList,
-            ArrayList<NodeHieraRelation> rtList, SKOSResource resource, String idTheso) {
+    private void addRelationGiven(List<NodeHieraRelation> btList, List<NodeHieraRelation> ntList,
+                                  List<NodeHieraRelation> rtList, SKOSResource resource, String idTheso) {
         for (NodeHieraRelation rt : rtList) {
             int prop;
 
@@ -700,8 +694,7 @@ public class ExportRdf4jHelperNew {
     }    
     
     // ajoute les données de remplacement des concepts dépréciés dans les 2 sens (Replaced et Replace)
-    private void addReplaces(ArrayList<NodeHieraRelation> replaces,
-             SKOSResource resource, String idTheso) {
+    private void addReplaces(List<NodeHieraRelation> replaces, SKOSResource resource, String idTheso) {
         for (NodeHieraRelation uriReplace : replaces) {
             int prop;
 

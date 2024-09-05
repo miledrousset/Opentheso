@@ -1,30 +1,26 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.datas.Concept;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeHieraRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
+import fr.cnrs.opentheso.models.concept.Concept;
+import fr.cnrs.opentheso.models.relations.NodeHieraRelation;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.concept.NodeUri;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author Miled.Rousset
- */
+
+@Slf4j
+@Service
 public class DeprecateHelper {
-
-    private final Log log = LogFactory.getLog(ThesaurusHelper.class);
 
     /**
      * permet de retourner les concepts qui remplacent ce concept déprécié
@@ -35,13 +31,9 @@ public class DeprecateHelper {
     * @param idLang
     * @return 
     */ 
-    public ArrayList<NodeIdValue> getAllReplacedBy(HikariDataSource ds,
-            String idTheso, String idConcept, String idLang) {
+    public ArrayList<NodeIdValue> getAllReplacedBy(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        ConceptHelper conceptHelper = new ConceptHelper();
-        String label;
-
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept2 from concept_replacedby where "
@@ -54,8 +46,8 @@ public class DeprecateHelper {
                     }
 
                     for (NodeIdValue nodeIdValue : nodeIdValues) {
-                        label = conceptHelper.getLexicalValueOfConcept(ds, nodeIdValue.getId(), idTheso, idLang);
-                        if (label == null || label.isEmpty()) {
+                        var label = new ConceptHelper().getLexicalValueOfConcept(ds, nodeIdValue.getId(), idTheso, idLang);
+                        if (StringUtils.isEmpty(label)) {
                             nodeIdValue.setValue("");
                         } else {
                             nodeIdValue.setValue(label);
@@ -76,12 +68,11 @@ public class DeprecateHelper {
     * @param idConcept
     * @return 
     */
-    public ArrayList<NodeHieraRelation> getAllReplacedByWithArk(HikariDataSource ds,
-            String idTheso, String idConcept) {
+    public ArrayList<NodeHieraRelation> getAllReplacedByWithArk(HikariDataSource ds, String idTheso, String idConcept) {
 
         ArrayList<NodeHieraRelation> nodeRelations = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept2, id_ark, id_handle, id_doi "
                         + " from concept_replacedby, concept"
                         + " where concept.id_concept = concept_replacedby.id_concept2"
@@ -128,7 +119,6 @@ public class DeprecateHelper {
     public ArrayList<NodeIdValue> getAllReplaces(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
-        String label;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept1 from concept_replacedby where "
@@ -140,7 +130,7 @@ public class DeprecateHelper {
                         nodeIdValues.add(nodeIdValue);
                     }
                     for (NodeIdValue nodeIdValue : nodeIdValues) {
-                        label = new ConceptHelper().getLexicalValueOfConcept(ds, nodeIdValue.getId(), idTheso, idLang);
+                        var label = new ConceptHelper().getLexicalValueOfConcept(ds, nodeIdValue.getId(), idTheso, idLang);
                         if (label == null || label.isEmpty()) {
                             nodeIdValue.setValue("");
                         } else {
@@ -164,15 +154,15 @@ public class DeprecateHelper {
     */
     public ArrayList<NodeHieraRelation> getAllReplacesWithArk(HikariDataSource ds, String idTheso, String idConcept) {
         ArrayList<NodeHieraRelation> nodeRelations = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept1, id_ark, id_handle, id_doi "
                         + " from concept_replacedby, concept"
                         + " where concept.id_concept = concept_replacedby.id_concept1"
                         + " and concept.id_thesaurus = concept_replacedby.id_thesaurus"
                         + " and concept_replacedby.id_concept2 = '" + idConcept + "'"
                         + " and concept_replacedby.id_thesaurus = '" + idTheso + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeHieraRelation nodeHieraRelation = new NodeHieraRelation();
                         NodeUri nodeUri = new NodeUri();
@@ -215,7 +205,7 @@ public class DeprecateHelper {
      * @return 
      */
     public boolean deprecateConcept(HikariDataSource ds, String idConcept, String idTheso, int idUser) {
-        try ( Connection conn = ds.getConnection()) {
+        try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
             try ( Statement stmt = conn.createStatement()) {
                 ConceptHelper conceptHelper = new ConceptHelper();
@@ -245,10 +235,9 @@ public class DeprecateHelper {
             conn.setAutoCommit(false);
             try ( Statement stmt = conn.createStatement()) {
                 ConceptHelper conceptHelper = new ConceptHelper();
-                stmt.executeUpdate("UPDATE concept set status='D' WHERE id_concept ='"
-                        + idConcept + "' AND id_thesaurus='" + idTheso + "'");
+                stmt.executeUpdate("UPDATE concept set status='D' WHERE id_concept ='" + idConcept + "' AND id_thesaurus='" + idTheso + "'");
                 conn.commit();
-                Concept concept = conceptHelper.getThisConcept(ds, idConcept, idTheso);
+                var concept = conceptHelper.getThisConcept(ds, idConcept, idTheso);
                 if (!conceptHelper.addConceptHistorique(conn, concept, idUser)) {
                     conn.rollback();
                     conn.close();
@@ -281,8 +270,7 @@ public class DeprecateHelper {
     /**
      * permet de supprimer un concept qui remplace celui qui est déprécié
      */
-    public boolean deleteReplacedBy(HikariDataSource ds, String idConcept, String idTheso,
-            String idConceptReplaceBy) {
+    public boolean deleteReplacedBy(HikariDataSource ds, String idConcept, String idTheso, String idConceptReplaceBy) {
         boolean status = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
@@ -300,8 +288,7 @@ public class DeprecateHelper {
     /**
      * permet d'ajouter les concepts qui remplacent celui qui a été déprécié
      */
-    public boolean addReplacedBy(HikariDataSource ds, String idConcept, String idTheso,
-            String idConceptReplaceBy, int id_user) {
+    public boolean addReplacedBy(HikariDataSource ds, String idConcept, String idTheso, String idConceptReplaceBy, int id_user) {
 
         boolean status = false;
         try ( Connection conn = ds.getConnection()) {

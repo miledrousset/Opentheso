@@ -6,10 +6,10 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePath;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUri;
-import fr.cnrs.opentheso.bdd.helper.nodes.Path;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.models.concept.NodePath;
+import fr.cnrs.opentheso.models.concept.NodeUri;
+import fr.cnrs.opentheso.models.concept.Path;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -157,7 +157,7 @@ public class PathHelper {
                 if(label.isEmpty())
                     label = "("+ idConcept+")";
                 nodePath.setTitle(label);
-                nodePath.setIsStartOfPath(isStartNewPath);
+                nodePath.setStartOfPath(isStartNewPath);
                 nodePaths.add(nodePath);
                 isStartNewPath = false;
             }
@@ -190,7 +190,7 @@ public class PathHelper {
                     if(label.isEmpty())
                         label = "("+ idConcept+")";
                     nodePath.setTitle(label);
-                    nodePath.setIsStartOfPath(isStartNewPath);
+                    nodePath.setStartOfPath(isStartNewPath);
                     pathLabel1.add(nodePath);
                     isStartNewPath = false;
                 }

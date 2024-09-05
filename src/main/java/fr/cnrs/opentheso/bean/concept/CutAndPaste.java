@@ -8,9 +8,9 @@ package fr.cnrs.opentheso.bean.concept;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
+import fr.cnrs.opentheso.models.terms.NodeBT;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -42,14 +42,9 @@ public class CutAndPaste implements Serializable {
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private Tree tree;
 
+    @Autowired
+    private ValidateActionHelper validateActionHelper;
 
-    /*   private String movedFromId;
-    private boolean isBranch = true;
-    
-    // pour distinguer un group d'un concept 
-    private boolean isCopyOfGroup = false;
-
-     */
     private boolean isCopyOn;
     private boolean isValidPaste;
     private NodeConcept nodeConceptDrag;
@@ -110,7 +105,7 @@ public class CutAndPaste implements Serializable {
             NodeBT nodeBT1 = new NodeBT();
             nodeBT1.setIdConcept(nodeBT.getIdConcept());
             nodeBT1.setTitle(nodeBT.getTitle());
-            nodeBT1.setIsSelected(true);
+            nodeBT1.setSelected(true);
             nodeBTsToCut.add(nodeBT1);
         }
     }    
@@ -155,7 +150,7 @@ public class CutAndPaste implements Serializable {
         setBTsToCut();
         
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
-                + nodeConceptDrag.getTerm().getLexical_value() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
+                + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
     
@@ -186,7 +181,7 @@ public class CutAndPaste implements Serializable {
                 return;
             }
         }
-        ValidateActionHelper validateActionHelper = new ValidateActionHelper();
+
         if(!validateActionHelper.isMoveConceptToConceptValid(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
@@ -212,7 +207,7 @@ public class CutAndPaste implements Serializable {
         ArrayList<String> oldBtToDelete = new ArrayList<>();
         ConceptHelper conceptHelper = new ConceptHelper();
         for (NodeBT nodeBT : nodeBTsToCut) {
-            if (nodeBT.isIsSelected()) {
+            if (nodeBT.isSelected()) {
                 // on prépare les BT sélectionné pour la suppression
                 oldBtToDelete.add(nodeBT.getIdConcept());
             }
@@ -358,14 +353,14 @@ public class CutAndPaste implements Serializable {
         
         if(isDropToRoot)
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
-                    nodeConceptDrag.getTerm().getLexical_value()
+                    nodeConceptDrag.getTerm().getLexicalValue()
                             + " -> "
                             + "Root");
         else
                 msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ",
-                nodeConceptDrag.getTerm().getLexical_value()
+                nodeConceptDrag.getTerm().getLexicalValue()
                         + " -> "
-                        + nodeConceptDrop.getTerm().getLexical_value());
+                        + nodeConceptDrop.getTerm().getLexicalValue());
                 
         FacesContext.getCurrentInstance().addMessage(null, msg);        
         PrimeFaces.current().executeScript("PF('cutAndPaste').hide();");

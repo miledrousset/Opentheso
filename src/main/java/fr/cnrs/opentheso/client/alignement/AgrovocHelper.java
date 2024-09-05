@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.client.alignement;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.client.CurlHelper;
 import fr.cnrs.opentheso.models.alignment.SelectedResource;
-import fr.cnrs.opentheso.services.imports.rdf4j.nouvelle.ReadRDF4JNewGen;
+import fr.cnrs.opentheso.services.imports.rdf4j.ReadRDF4JNewGen;
 import fr.cnrs.opentheso.models.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.models.skosapi.SKOSLabel;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;

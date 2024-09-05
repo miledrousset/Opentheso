@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.ws.api;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -10,27 +5,30 @@ import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
 import jakarta.json.JsonArray;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.ExportHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+
 import fr.cnrs.opentheso.bdd.helper.PathHelper;
 import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAutoCompletion;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
-import fr.cnrs.opentheso.bdd.helper.nodes.Path;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConceptTree;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.bdd.helper.DaoResourceHelper;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
+import fr.cnrs.opentheso.models.concept.NodeAutoCompletion;
+import fr.cnrs.opentheso.models.terms.NodeEM;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.terms.NodeRT;
+import fr.cnrs.opentheso.models.concept.Path;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.concept.NodeConceptTree;
+import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.services.exports.rdf4j.WriteRdf4j;
 import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 import fr.cnrs.opentheso.utils.JsonHelper;
@@ -45,12 +43,16 @@ import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- *
- * @author miled.rousset
- */
+
 public class RestRDFHelper {
+
+    @Autowired
+    private TermHelper termHelper;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     private enum Choix {
             CONCEPT,
@@ -85,7 +87,6 @@ public class RestRDFHelper {
         
         if(StringUtils.isEmpty(idTheso)) {
             // cas où c'est l'identifiant d'un groupe
-            GroupHelper groupHelper = new GroupHelper();
             idTheso = groupHelper.getIdThesaurusFromArkId(ds, naan + "/" + idArk);  
             choix = Choix.GROUP;
         }        
@@ -246,12 +247,12 @@ public class RestRDFHelper {
         }
 
         // label
-        job.add("label", nodeConcept.getTerm().getLexical_value());
+        job.add("label", nodeConcept.getTerm().getLexicalValue());
 
         // synonymes
         JsonArrayBuilder jsonArrayBuilderSyno = Json.createArrayBuilder();
         for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
-            jsonArrayBuilderSyno.add(nodeEM.getLexical_value());
+            jsonArrayBuilderSyno.add(nodeEM.getLexicalValue());
         }
         if (jsonArrayBuilderSyno != null) {
             job.add("altLabel", jsonArrayBuilderSyno.build());
@@ -299,8 +300,8 @@ public class RestRDFHelper {
         // définitions 
         JsonArrayBuilder jsonArrayBuilderDef = Json.createArrayBuilder();
         for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
-            if ("definition".equalsIgnoreCase(nodeNote.getNotetypecode())) {
-                jsonArrayBuilderDef.add(nodeNote.getLexicalvalue());
+            if ("definition".equalsIgnoreCase(nodeNote.getNoteTypeCode())) {
+                jsonArrayBuilderDef.add(nodeNote.getLexicalValue());
             }
         }
         if (jsonArrayBuilderDef != null) {
@@ -879,17 +880,6 @@ public class RestRDFHelper {
 
         SearchHelper searchHelper = new SearchHelper();
 
-
-    /*    ArrayList<String> idConcepts1 = searchHelper.searchExactTermNew(ds, value, lang, idTheso, groups);
-
-        if (idConcepts1 != null) {
-            idConcepts.addAll(idConcepts1);
-        }
-
-        ArrayList<String> idConcepts2 = searchHelper.searchTermNew(ds, value, lang, idTheso, groups);
-        if (idConcepts2 != null) {
-            idConcepts.addAll(idConcepts2);
-        }*/
         ArrayList<String> idConcepts = null;
         if(StringUtils.isEmpty(match)){
             idConcepts = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
@@ -1058,7 +1048,7 @@ public class RestRDFHelper {
             uri = getUri(nodePreference, nodeAutoCompletion1, idTheso);
             if (withNotes) {
                 jsonHelper.addJsonDataFull(uri, nodeAutoCompletion1.getPrefLabel(),
-                        nodeAutoCompletion1.getDefinition(), nodeAutoCompletion1.isIsAltLabel());
+                        nodeAutoCompletion1.getDefinition(), nodeAutoCompletion1.isAltLabel());
             } else {
                 jsonHelper.addJsonData(uri, nodeAutoCompletion1.getPrefLabel());
             }
@@ -1519,7 +1509,6 @@ public class RestRDFHelper {
                 jsonArrayBuilderLine.add(jobLine.build());
             }
         } else {
-            TermHelper termHelper = new TermHelper();
             ArrayList<NodeTermTraduction> termTraductions;
             for (String idConcept : idConcepts) {
                 JsonObjectBuilder jobLine = Json.createObjectBuilder();

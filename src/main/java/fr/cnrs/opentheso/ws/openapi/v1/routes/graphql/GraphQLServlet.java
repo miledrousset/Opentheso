@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.dao.DaoResourceHelper;
+import fr.cnrs.opentheso.bdd.helper.DaoResourceHelper;
 
 
 @WebServlet(name = "GraphQLServlet", urlPatterns = {"/graphql"})

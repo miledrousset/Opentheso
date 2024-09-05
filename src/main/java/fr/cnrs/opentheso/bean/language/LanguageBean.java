@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.language;
 
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bean.candidat.enumeration.LanguageEnum;
+import fr.cnrs.opentheso.models.candidats.LanguageEnum;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.ResourceBundle;

@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

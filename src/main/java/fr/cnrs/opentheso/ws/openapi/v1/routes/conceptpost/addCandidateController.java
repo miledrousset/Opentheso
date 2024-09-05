@@ -42,6 +42,9 @@ public class addCandidateController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private CandidateHelper candidateHelper;
+
     /**
      * Route qui permet d'ajouter un candidat à partir d'un JSON
      */
@@ -82,7 +85,7 @@ public class addCandidateController {
         JsonNode candidateJson = new ObjectMapper().readTree(candidate);
 
         Map<String, Object> successResponse = new HashMap<>();
-        if (!new CandidateHelper().saveCandidat(connect.getPoolConnexion(), candidate, userId)){
+        if (!candidateHelper.saveCandidat(connect.getPoolConnexion(), candidate, userId)){
             return ResponseEntity.badRequest().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body("");
         }
         successResponse.put("candidate", candidateJson);

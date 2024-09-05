@@ -7,7 +7,7 @@ package querysql;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.datas.Concept;
+import fr.cnrs.opentheso.models.concept.Concept;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

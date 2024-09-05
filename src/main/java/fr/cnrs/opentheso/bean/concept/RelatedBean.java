@@ -1,17 +1,18 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
+import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
 import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
 import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+
 import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeConceptType;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCustomRelation;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeRT;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.concept.NodeConceptType;
+import fr.cnrs.opentheso.models.relations.NodeCustomRelation;
+import fr.cnrs.opentheso.models.terms.NodeRT;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -31,6 +32,7 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,6 +43,7 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "relatedBean")
 @SessionScoped
 public class RelatedBean implements Serializable {
@@ -48,10 +51,19 @@ public class RelatedBean implements Serializable {
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private Tree tree;
-    @Autowired @Lazy private CurrentUser currentUser;    
+    @Autowired @Lazy private CurrentUser currentUser;
+
+    @Autowired
+    private ValidateActionHelper validateActionHelper;
+
+    @Autowired
+    private TermHelper termHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
 
     private NodeSearchMini searchSelected;
-    private ArrayList<NodeRT> nodeRTs;
+    private List<NodeRT> nodeRTs;
     private boolean tagPrefLabel = false;
 
     @PreDestroy
@@ -262,7 +274,6 @@ public class RelatedBean implements Serializable {
         }
 
         /// vérifier la cohérence de la relation
-        ValidateActionHelper validateActionHelper = new ValidateActionHelper();
         if (!validateActionHelper.isAddRelationRTValid(
                 connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
@@ -299,15 +310,13 @@ public class RelatedBean implements Serializable {
 
         // mettre à jour le label du concept si l'option TAG est activée
         if (tagPrefLabel) {
-            TermHelper termHelper = new TermHelper();
-            ConceptHelper conceptHelper = new ConceptHelper();
             String taggedValue = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(),
                     searchSelected.getIdConcept(),
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getSelectedLang());
             termHelper.updateTraduction(connect.getPoolConnexion(),
-                    conceptBean.getNodeConcept().getTerm().getLexical_value() + " (" + taggedValue + ")",
-                    conceptBean.getNodeConcept().getTerm().getId_term(),
+                    conceptBean.getNodeConcept().getTerm().getLexicalValue() + " (" + taggedValue + ")",
+                    conceptBean.getNodeConcept().getTerm().getIdTerm(),
                     conceptBean.getSelectedLang(),
                     selectedTheso.getCurrentIdTheso(),
                     idUser);
@@ -344,7 +353,7 @@ public class RelatedBean implements Serializable {
                             selectedTheso.getCurrentIdTheso(),
                             conceptBean.getSelectedLang());
                 }
-                ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(conceptBean.getNodeConcept().getTerm().getLexical_value());
+                ((TreeNodeData) tree.getClickselectedNodes().get(0).getData()).setName(conceptBean.getNodeConcept().getTerm().getLexicalValue());
                 if (pf.isAjaxRequest()) {
                     pf.ajax().update("formLeftTab:tabTree:tree");
                 }
@@ -412,29 +421,4 @@ public class RelatedBean implements Serializable {
             pf.executeScript("PF('deleteRelatedLink').show();");
         }
     }
-    
-    public NodeSearchMini getSearchSelected() {
-        return searchSelected;
-    }
-
-    public void setSearchSelected(NodeSearchMini searchSelected) {
-        this.searchSelected = searchSelected;
-    }
-
-    public ArrayList<NodeRT> getNodeRTs() {
-        return nodeRTs;
-    }
-
-    public void setNodeRTs(ArrayList<NodeRT> nodeRTs) {
-        this.nodeRTs = nodeRTs;
-    }
-
-    public boolean isTagPrefLabel() {
-        return tagPrefLabel;
-    }
-
-    public void setTagPrefLabel(boolean tagPrefLabel) {
-        this.tagPrefLabel = tagPrefLabel;
-    }
-
 }

@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.setting;
 
 import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
+import fr.cnrs.opentheso.models.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import jakarta.inject.Named;
@@ -16,6 +11,7 @@ import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -24,6 +20,7 @@ import org.primefaces.PrimeFaces;
  *
  * @author miledrousset
  */
+@Data
 @Named(value = "corpusBean")
 @SessionScoped
 public class CorpusBean implements Serializable {
@@ -87,17 +84,13 @@ public class CorpusBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI du lien est obligatoire !");
             return;
         }
-    /*    if (!UrlUtils.isAPIAvailable(nodeCorpusForEdit.getUriLink())) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "L'URI n'est pas valide !");
-            return;
-        }*/
 
         //Vérification de l'URI du comptage
-        if(!nodeCorpusForEdit.isIsOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
+        if(!nodeCorpusForEdit.isOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
             return;
         }
-        if (nodeCorpusForEdit.isIsOnlyUriLink() ) {
+        if (nodeCorpusForEdit.isOnlyUriLink() ) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
             return;
         }
@@ -145,11 +138,11 @@ public class CorpusBean implements Serializable {
         }*/
 
         //Vérification de l'URI du comptage
-        if(!nodeCorpusForEdit.isIsOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
+        if(!nodeCorpusForEdit.isOnlyUriLink() && nodeCorpusForEdit.getUriCount().isEmpty()) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI pour le comptage est obligatoire !");
             return;
         }
-        if (nodeCorpusForEdit.isIsOnlyUriLink() ) {
+        if (nodeCorpusForEdit.isOnlyUriLink() ) {
             showMessage(FacesMessage.SEVERITY_ERROR, "L'URI de comptage n'est pas valide !");
             return;
         }
@@ -202,33 +195,11 @@ public class CorpusBean implements Serializable {
         
         nodeCorpusForEdit.setActive(nodeCorpus.isActive());
         nodeCorpusForEdit.setCorpusName(nodeCorpus.getCorpusName());
-        nodeCorpusForEdit.setIsOnlyUriLink(nodeCorpus.isIsOnlyUriLink());
+        nodeCorpusForEdit.setOnlyUriLink(nodeCorpus.isOnlyUriLink());
         nodeCorpusForEdit.setUriLink(nodeCorpus.getUriLink());
         nodeCorpusForEdit.setUriCount(nodeCorpus.getUriCount());
-        
-        
-//        nodeCorpusForEdit = nodeCorpus;
+
         oldName = nodeCorpus.getCorpusName();
-    }
-
-    public void setCorpusForNew() {
-        nodeCorpusForEdit = new NodeCorpus();
-    }
-
-    public ArrayList<NodeCorpus> getNodeCorpuses() {
-        return nodeCorpuses;
-    }
-
-    public void setNodeCorpuses(ArrayList<NodeCorpus> nodeCorpuses) {
-        this.nodeCorpuses = nodeCorpuses;
-    }
-
-    public NodeCorpus getNodeCorpusForEdit() {
-        return nodeCorpusForEdit;
-    }
-
-    public void setNodeCorpusForEdit(NodeCorpus nodeCorpusForEdit) {
-        this.nodeCorpusForEdit = nodeCorpusForEdit;
     }
 
 }

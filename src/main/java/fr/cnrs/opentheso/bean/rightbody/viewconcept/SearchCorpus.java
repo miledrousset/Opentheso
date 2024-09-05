@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCorpus;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
+import fr.cnrs.opentheso.models.nodes.NodeCorpus;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -30,12 +30,12 @@ public class SearchCorpus implements Callable<NodeCorpus> {
     @Override
     public NodeCorpus call() throws Exception {
         // cas où on compose uniquement une URL de lien vers les notices
-        if (nodeCorpus.isIsOnlyUriLink()) {
+        if (nodeCorpus.isOnlyUriLink()) {
             if (nodeCorpus.getUriLink().contains("##id##")) {
                 nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##id##", nodeConcept.getConcept().getIdConcept()));
             }
             if (nodeCorpus.getUriLink().contains("##value##")) {
-                nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeConcept.getTerm().getLexicalValue()));
             }
         } else {
             // recherche par Id
@@ -64,11 +64,11 @@ public class SearchCorpus implements Callable<NodeCorpus> {
             // recherche par value
             if (nodeCorpus.getUriCount().contains("##value##")) {
                 if (nodeCorpus.getUriCount() != null && !nodeCorpus.getUriCount().isEmpty()) {
-                    nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                    nodeCorpus.setUriCount(nodeCorpus.getUriCount().replace("##value##", nodeConcept.getTerm().getLexicalValue()));
                 }
             }
             if (nodeCorpus.getUriLink().contains("##value##")) {
-                nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeConcept.getTerm().getLexical_value()));
+                nodeCorpus.setUriLink(nodeCorpus.getUriLink().replace("##value##", nodeConcept.getTerm().getLexicalValue()));
             }
             setCorpusCount(nodeCorpus);
         }

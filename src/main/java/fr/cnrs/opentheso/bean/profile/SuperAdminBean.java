@@ -1,10 +1,10 @@
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupThesaurus;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUserGroupUser;
+import fr.cnrs.opentheso.models.users.NodeUser;
+import fr.cnrs.opentheso.models.users.NodeUserGroup;
+import fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus;
+import fr.cnrs.opentheso.models.users.NodeUserGroupUser;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;

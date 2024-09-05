@@ -5,13 +5,13 @@ import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
 import fr.cnrs.opentheso.bdd.helper.SearchHelper;
 import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.UserHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeBT;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodePreference;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.helper.nodes.search.NodeSearchMini;
+import fr.cnrs.opentheso.models.terms.NodeBT;
+import fr.cnrs.opentheso.models.terms.NodeEM;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -36,6 +36,7 @@ import org.primefaces.event.FileUploadEvent;
 @Named
 @ViewScoped
 public class AtelierThesService implements Serializable {
+    
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private LanguageBean languageBean;
     @Autowired @Lazy private CurrentUser currentUser;
@@ -66,16 +67,16 @@ public class AtelierThesService implements Serializable {
                         conceptResultNode.setIdOrigine(data.get(0));
                     conceptResultNode.setPrefLabelOrigine(data.get(position));
                     conceptResultNode.setIdConcept(concept.getConcept().getIdConcept());
-                    conceptResultNode.setPrefLabelConcept(concept.getTerm().getLexical_value());
+                    conceptResultNode.setPrefLabelConcept(concept.getTerm().getLexicalValue());
 
                     if(concept.getNodeEM() == null || concept.getNodeEM().isEmpty())
                         conceptResultNode.setAltLabelConcept("");
                     else {
                         for (NodeEM nodeEM : concept.getNodeEM()) {
                             if(conceptResultNode.getAltLabelConcept() == null)
-                                conceptResultNode.setAltLabelConcept(nodeEM.getLexical_value());
+                                conceptResultNode.setAltLabelConcept(nodeEM.getLexicalValue());
                             else 
-                                conceptResultNode.setAltLabelConcept(conceptResultNode.getAltLabelConcept() + " ## " + nodeEM.getLexical_value());
+                                conceptResultNode.setAltLabelConcept(conceptResultNode.getAltLabelConcept() + " ## " + nodeEM.getLexicalValue());
                         }                        
                     }
                     for (NodeBT nodeBT : concept.getNodeBT()) {
@@ -105,11 +106,11 @@ public class AtelierThesService implements Serializable {
         return list;
     }
     
-    private String getDefinition(ArrayList<NodeNote> notes) {
+    private String getDefinition(List<NodeNote> notes) {
         String definition = "";
         for (NodeNote note : notes) {
-            if ("definition".equals(note.getNotetypecode())) {
-                definition = note.getLexicalvalue();
+            if ("definition".equals(note.getNoteTypeCode())) {
+                definition = note.getLexicalValue();
             }
         }
         return definition;
@@ -127,9 +128,7 @@ public class AtelierThesService implements Serializable {
             }
             br.close();
             reader.close();
-        } catch (IOException e) {
-
-        }
+        } catch (IOException e) {}
         return values;
     }
     

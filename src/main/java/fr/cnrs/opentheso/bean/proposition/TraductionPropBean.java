@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.proposition;
 
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

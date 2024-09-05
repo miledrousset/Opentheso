@@ -6,12 +6,13 @@
 package fr.cnrs.opentheso.bean.rightbody.viewgroup;
 
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+
 import fr.cnrs.opentheso.bdd.helper.GroupHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeGroupType;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroup;
-import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
+import fr.cnrs.opentheso.models.group.NodeGroupType;
+import fr.cnrs.opentheso.models.group.NodeGroup;
+import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
+import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
@@ -31,10 +32,14 @@ import org.springframework.context.annotation.Lazy;
 @Named(value = "groupView")
 @SessionScoped
 public class GroupView implements Serializable {
+
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private IndexSetting indexSetting;     
     @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
-    @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;       
+    @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
+
+    @Autowired
+    private GroupHelper groupHelper;
 
     private NodeGroup nodeGroup;
     private ArrayList<NodeGroupTraductions> nodeGroupTraductions;
@@ -88,7 +93,7 @@ public class GroupView implements Serializable {
      * @param idLang
      */
     public void getGroup(String idTheso, String idGroup, String idLang) {
-        GroupHelper groupHelper = new GroupHelper();
+
         nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
         
         nodeGroupTraductions = groupHelper.getGroupTraduction(connect.getPoolConnexion(), idGroup, idTheso, idLang);
@@ -115,7 +120,7 @@ public class GroupView implements Serializable {
     private void setAllNotes(ArrayList<NodeNote> nodeNotes) {
         clearNotes();
         for (NodeNote nodeNote : nodeNotes) {
-            switch (nodeNote.getNotetypecode()) {
+            switch (nodeNote.getNoteTypeCode()) {
                 case "note":
                     note  = nodeNote;
                     break;

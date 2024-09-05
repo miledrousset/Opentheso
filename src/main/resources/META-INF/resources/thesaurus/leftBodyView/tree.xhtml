@@ -53,7 +53,7 @@
 
                     <p:menuitem disabled="false" styleClass="buttonIconOrange"
                                 rendered="#{(copyAndPasteBetweenTheso.isCopyOn) and (copyAndPasteBetweenTheso.idThesoOrigin != selectedTheso.currentIdTheso) }"
-                                value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexical_value}) #{langueBean.getMsg('rightbody.concept.at_the_root')} !!" 
+                                value="#{langueBean.getMsg('rightbody.concept.paste')} (#{copyAndPasteBetweenTheso.nodeConceptDrag.term.lexicalValue}) #{langueBean.getMsg('rightbody.concept.at_the_root')} !!"
                                 actionListener="#{copyAndPasteBetweenTheso.validatePaste()}"
                                 action="#{copyAndPasteBetweenTheso.setIsDropToRoot(true)}"
                                 update="containerIndex:idCopyAndPasteBetweenThesoToTop"

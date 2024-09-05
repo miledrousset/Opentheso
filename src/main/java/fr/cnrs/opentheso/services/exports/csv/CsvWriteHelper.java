@@ -2,16 +2,16 @@ package fr.cnrs.opentheso.services.exports.csv;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeCompareTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeDeprecated;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeEM;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeLangTheso;
-import fr.cnrs.opentheso.bdd.helper.nodes.concept.NodeConcept;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bean.candidat.dto.CandidatDto;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
+import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
+import fr.cnrs.opentheso.models.relations.NodeDeprecated;
+import fr.cnrs.opentheso.models.terms.NodeEM;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.models.skosapi.SKOSDate;
 import fr.cnrs.opentheso.models.skosapi.SKOSDocumentation;
 import fr.cnrs.opentheso.models.skosapi.SKOSGPSCoordinates;
@@ -337,7 +337,7 @@ public class CsvWriteHelper {
         record.add(getReplaceBy(skosResource.getsKOSReplaces()));    
         
         // foaf:Image pour les images
-        record.add(getImages(skosResource.getNodeImage()));          
+        record.add(getImages(skosResource.getNodeImages()));
         
         //dcterms:source
         if (CollectionUtils.isNotEmpty(skosResource.getExternalResources())) {
@@ -583,25 +583,25 @@ public class CsvWriteHelper {
                         record.add(nodeConcept.getConcept().getIdConcept());
                         record.add(nodeConcept.getConcept().getIdArk());
                         record.add(nodeConcept.getConcept().getIdHandle());
-                        record.add(nodeConcept.getTerm().getLexical_value());
+                        record.add(nodeConcept.getTerm().getLexicalValue());
                         for (NodeEM nodeEM : nodeConcept.getNodeEM()) {
                             if (first) {
-                                repeatedValue = nodeEM.getLexical_value();
+                                repeatedValue = nodeEM.getLexicalValue();
                                 first = false;
                             } else {
-                                repeatedValue = repeatedValue + delim_multi_datas + nodeEM.getLexical_value();
+                                repeatedValue = repeatedValue + delim_multi_datas + nodeEM.getLexicalValue();
                             }
                         }
                         first = true;
                         record.add(repeatedValue);
                         repeatedValue = "";
                         for (NodeNote nodeNote : nodeConcept.getNodeNotesTerm()) {
-                            if ("definition".equalsIgnoreCase(nodeNote.getNotetypecode())) {
+                            if ("definition".equalsIgnoreCase(nodeNote.getNoteTypeCode())) {
                                 if (first) {
-                                    repeatedValue = nodeNote.getLexicalvalue();
+                                    repeatedValue = nodeNote.getLexicalValue();
                                     first = false;
                                 } else {
-                                    repeatedValue = repeatedValue + delim_multi_datas + nodeNote.getLexicalvalue();
+                                    repeatedValue = repeatedValue + delim_multi_datas + nodeNote.getLexicalValue();
                                 }
                             }
                         }
@@ -702,7 +702,7 @@ public class CsvWriteHelper {
      * @param header2
      * @return
      */
-    public byte[] writeCsvResultProcess(ArrayList<NodeIdValue> nodeIdValues, String header1, String header2) {
+    public byte[] writeCsvResultProcess(List<NodeIdValue> nodeIdValues, String header1, String header2) {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             try (OutputStreamWriter out = new OutputStreamWriter(os, Charset.forName("UTF-8")); CSVPrinter csvFilePrinter = new CSVPrinter(out, CSVFormat.RFC4180.builder().build())) {

@@ -61,7 +61,7 @@ smpt:
   protocol: smtp
   hostname: smtprelay.cnrs.fr
   portNumber: 25
-  authorization: false$
+  authorization: false
   mailFrom: opentheso@mom.fr
   transportMail: smtp
 

@@ -29,8 +29,12 @@ public class ViewEditorHomeBean implements Serializable {
 
     @Autowired @Lazy
     private Connect connect;
+
     @Autowired @Lazy
     private LanguageBean languageBean;
+
+    @Autowired
+    private HtmlPageHelper htmlPageHelper;
 
     private boolean isViewPlainText = false;
     private String text;
@@ -76,9 +80,8 @@ public class ViewEditorHomeBean implements Serializable {
         if (lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         }
-        HtmlPageHelper copyrightHelper = new HtmlPageHelper();
-        text = copyrightHelper.getHomePage(
-                connect.getPoolConnexion(), lang);
+
+        text = htmlPageHelper.getHomePage(connect.getPoolConnexion(), lang);
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
@@ -118,13 +121,11 @@ public class ViewEditorHomeBean implements Serializable {
     }
 
     public String getHomePage(String idLang) {
-        HtmlPageHelper copyrightHelper = new HtmlPageHelper();
         String lang = languageBean.getIdLangue().toLowerCase();
         if (lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         }
-        String homePage = copyrightHelper.getHomePage(
-                connect.getPoolConnexion(), lang);
+        String homePage = htmlPageHelper.getHomePage(connect.getPoolConnexion(), lang);
         return homePage;
     }
 
@@ -138,11 +139,7 @@ public class ViewEditorHomeBean implements Serializable {
         if (lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         }
-        HtmlPageHelper htmlPageHelper = new HtmlPageHelper();
-        if (!htmlPageHelper.setHomePage(
-                connect.getPoolConnexion(),
-                text,
-                lang)) {
+        if (!htmlPageHelper.setHomePage(connect.getPoolConnexion(), text, lang)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
 

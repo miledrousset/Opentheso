@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
-import fr.cnrs.opentheso.bdd.datas.Languages_iso639;
+import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
 import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeIdValue;
+import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;

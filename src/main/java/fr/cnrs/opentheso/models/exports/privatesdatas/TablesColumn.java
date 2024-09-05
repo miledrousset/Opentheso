@@ -1,34 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.models.exports.privatesdatas;
 
-/**
- *
- * @author antonio.perez
- */
+import lombok.Data;
+
+
+@Data
 public class TablesColumn {
     
     private String columnName;
     private String columnType;
 
-    public String getColumnName() {
-        return columnName;
-    }
-
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
-
-    public String getColumnType() {
-        return columnType;
-    }
-
-    public void setColumnType(String columnType) {
-        this.columnType = columnType;
-    }
-    
-    
 }

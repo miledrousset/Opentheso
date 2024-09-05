@@ -20,11 +20,8 @@ import org.apache.commons.logging.LogFactory;
  * @author miledrousset
  */
 public class HistoryHelper {
+
     private final Log log = LogFactory.getLog(ConceptHelper.class);
-//    private ArrayList<HistoryValue> historyValue;
-    
-    public HistoryHelper() {
-    }
     
     public ArrayList<HistoryValue> getLabelHistory(HikariDataSource ds,
             String idTerm, String idTheso){
@@ -219,12 +216,7 @@ public class HistoryHelper {
             log.error("Error while getting history of notes : " + idConcept, sqle);
         }
         return historyValues;
-    }      
-    
-    
-    
-    
-    
+    }
     
     /**
      * Classe pour les attribus du tableau historique

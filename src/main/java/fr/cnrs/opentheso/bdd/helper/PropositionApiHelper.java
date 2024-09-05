@@ -1,17 +1,17 @@
 package fr.cnrs.opentheso.bdd.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeUser;
+import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.proposition.NotePropBean;
 import fr.cnrs.opentheso.bean.proposition.SynonymPropBean;
-import fr.cnrs.opentheso.bean.proposition.dao.PropositionDao;
-import fr.cnrs.opentheso.bean.proposition.dao.PropositionDetailDao;
-import fr.cnrs.opentheso.bean.proposition.helper.PropositionDetailHelper;
-import fr.cnrs.opentheso.bean.proposition.helper.PropositionHelper;
-import fr.cnrs.opentheso.bean.proposition.model.PropositionActionEnum;
-import fr.cnrs.opentheso.bean.proposition.model.PropositionCategoryEnum;
-import fr.cnrs.opentheso.bean.proposition.model.PropositionFromApi;
-import fr.cnrs.opentheso.bean.proposition.model.PropositionStatusEnum;
+import fr.cnrs.opentheso.models.propositions.PropositionDao;
+import fr.cnrs.opentheso.models.propositions.PropositionDetailDao;
+import fr.cnrs.opentheso.repositories.propositions.PropositionDetailHelper;
+import fr.cnrs.opentheso.repositories.propositions.PropositionHelper;
+import fr.cnrs.opentheso.models.propositions.PropositionActionEnum;
+import fr.cnrs.opentheso.models.propositions.PropositionCategoryEnum;
+import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
+import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -139,7 +139,7 @@ public class PropositionApiHelper {
                         .action(action.name())
                         .categorie(PropositionCategoryEnum.SYNONYME.name())
                         .lang(synonymProp.getLang())
-                        .value(synonymProp.getLexical_value())
+                        .value(synonymProp.getLexicalValue())
                         .oldValue(synonymProp.getOldValue())
                         .status(synonymProp.getStatus())
                         .hiden(synonymProp.isHiden())
@@ -156,7 +156,7 @@ public class PropositionApiHelper {
             PropositionActionEnum action;
             if (note.isToAdd()) {
                 action = PropositionActionEnum.ADD;
-                propositionDetail.setOldValue(note.getLexicalvalue());
+                propositionDetail.setOldValue(note.getLexicalValue());
             } else if (note.isToRemove()) {
                 action = PropositionActionEnum.DELETE;
                 propositionDetail.setOldValue(note.getOldValue());
@@ -169,8 +169,8 @@ public class PropositionApiHelper {
             propositionDetail.setAction(action.name());
             propositionDetail.setCategorie(category);
             propositionDetail.setLang(note.getLang());
-            propositionDetail.setValue(note.getLexicalvalue());
-            propositionDetail.setIdTerm(note.getId_term());
+            propositionDetail.setValue(note.getLexicalValue());
+            propositionDetail.setIdTerm(note.getIdTerm());
             new PropositionDetailHelper().createNewPropositionDetail(connexion, propositionDetail);
         }
     }

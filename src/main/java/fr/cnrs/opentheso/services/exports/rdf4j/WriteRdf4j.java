@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.services.exports.rdf4j;
 
-import fr.cnrs.opentheso.bdd.datas.DCMIResource;
-import fr.cnrs.opentheso.bdd.datas.DcElement;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
+import fr.cnrs.opentheso.models.concept.DCMIResource;
+import fr.cnrs.opentheso.models.nodes.DcElement;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
 
 import fr.cnrs.opentheso.models.skosapi.SKOSAgent;
 import fr.cnrs.opentheso.models.skosapi.SKOSDate;
@@ -112,7 +112,7 @@ public class WriteRdf4j {
     }
 
     private void writeNodeImage(SKOSResource resource) {
-        for (NodeImage nodeImage : resource.getNodeImage()) {
+        for (NodeImage nodeImage : resource.getNodeImages()) {
             if (StringUtils.isEmpty(nodeImage.getUri())) {
                 continue;
             }

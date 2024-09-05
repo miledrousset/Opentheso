@@ -4,16 +4,16 @@ import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.helper.ExternalImagesHelper;
 import fr.cnrs.opentheso.bdd.helper.NoteHelper;
 import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeAlignment;
-import fr.cnrs.opentheso.bdd.helper.nodes.NodeImage;
-import fr.cnrs.opentheso.bdd.helper.nodes.notes.NodeNote;
-import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
+import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.SelectedResource;
 import fr.cnrs.opentheso.client.alignement.AgrovocHelper;
 import fr.cnrs.opentheso.client.alignement.GemetHelper;
 import fr.cnrs.opentheso.client.alignement.GeoNamesHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
+import fr.cnrs.opentheso.models.nodes.NodeImage;
+import fr.cnrs.opentheso.models.notes.NodeNote;
+import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpHead;
@@ -225,8 +225,8 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         for (SelectedResource selectedResource : definitionOfAlignmentTemp) {
             boolean added = false;
             for (NodeNote nodeNote : terms) {
-                if (!selectedResource.getGettedValue().trim().equalsIgnoreCase(nodeNote.getLexicalvalue().trim())) {
-                    selectedResource.setLocalValue(nodeNote.getLexicalvalue());
+                if (!selectedResource.getGettedValue().trim().equalsIgnoreCase(nodeNote.getLexicalValue().trim())) {
+                    selectedResource.setLocalValue(nodeNote.getLexicalValue());
                     selectedDefinitionsList.add(selectedResource);
                     added = true;
                     break;
