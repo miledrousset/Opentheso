@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserRole;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
@@ -17,20 +12,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import jakarta.annotation.PreDestroy;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
 @Named(value = "myProjectBean")
 @SessionScoped
 public class MyProjectBean implements Serializable {
 
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private CurrentUser currentUser;
-    
+
+    @Autowired
+    private UserHelper userHelper;
+
     private ArrayList<NodeIdValue> listeThesoOfProject;
     private Map<String, String> listeGroupsOfUser;
     private ArrayList<NodeUserRole> listeUser; // la liste des utilisateur du groupe    
@@ -104,7 +101,6 @@ public class MyProjectBean implements Serializable {
     
     private void initMyAuthorizedRoleOnThisGroup(){
         if(selectedProject.isEmpty()) return;
-        UserHelper userHelper = new UserHelper();        
         myRoleOnThisProject = userHelper.getUserRoleOnThisGroup(
                 connect.getPoolConnexion(),
                 currentUser.getNodeUser().getIdUser(),
@@ -133,17 +129,13 @@ public class MyProjectBean implements Serializable {
                 idRoleFrom = 4; // l'utilisateur est Contributeur / user       
             }
         }
- //       roleAdded = idRoleFrom;
-        UserHelper userHelper = new UserHelper();
-        myAuthorizedRoles = userHelper.getMyAuthorizedRoles(connect.getPoolConnexion(),
-                idRoleFrom);
+        myAuthorizedRoles = userHelper.getMyAuthorizedRoles(connect.getPoolConnexion(), idRoleFrom);
     }     
 
     /**
      * permet de récupérer la liste des groupes/projets d'un utilisateur #MR
      */
     private void getGroupsOfUser() {
-        UserHelper userHelper = new UserHelper();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             listeGroupsOfUser = userHelper.getAllGroups(connect.getPoolConnexion());
             return;
@@ -191,8 +183,7 @@ public class MyProjectBean implements Serializable {
         
         int idGroup = Integer.parseInt(selectedProject);
         
-        listeThesoOfProject = new UserHelper().getThesaurusOfProject(connect.getPoolConnexion(), idGroup,
-                connect.getWorkLanguage());
+        listeThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idGroup, connect.getWorkLanguage());
     } 
     
     /**
@@ -202,7 +193,7 @@ public class MyProjectBean implements Serializable {
         if (selectedProject == null || selectedProject.isEmpty()) {
             return;
         }
-        UserHelper userHelper = new UserHelper();
+
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
@@ -230,14 +221,9 @@ public class MyProjectBean implements Serializable {
         if (selectedProject == null || selectedProject.isEmpty()) {
             return;
         }
-        UserHelper userHelper = new UserHelper();
+
         int idGroup = Integer.parseInt(selectedProject);
-//        setUserRoleOnThisGroup();
-        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(),
-                idGroup);
-    /*    if (listeUserLimitedRole != null) {
-            listeUserLimitedRole.clear(); //cas où on supprime l'utilisateur en cours
-        }*/
+        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(), idGroup);
     }    
     
     /**
@@ -254,8 +240,7 @@ public class MyProjectBean implements Serializable {
         if (selectedProject.isEmpty()) {
             return;
         }
-        int idGroup = Integer.parseInt(selectedProject);        
-        UserHelper userHelper = new UserHelper();
+        int idGroup = Integer.parseInt(selectedProject);
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             nodeUserRoleSuperAdmin = userHelper.getUserRoleForSuperAdmin(
                     connect.getPoolConnexion());
@@ -282,89 +267,16 @@ public class MyProjectBean implements Serializable {
             return false;
         }
         int idGroup = Integer.parseInt(selectedProject);
-        UserHelper userHelper = new UserHelper();
         return userHelper.isAdminOnThisGroup(connect.getPoolConnexion(),
                 currentUser.getNodeUser().getIdUser(), idGroup);
     }
     
     public String getSelectedProjectName() {
-        UserHelper userHelper = new UserHelper();
         if(selectedProject != null) 
             if(!selectedProject.isEmpty())
                 selectedProjectName = userHelper.getGroupName(connect.getPoolConnexion(), Integer.parseInt(selectedProject));
             else
                 selectedProjectName = selectedProject;
         return selectedProjectName;
-    }    
-
-    public ArrayList<NodeIdValue> getListeThesoOfProject() {
-        return listeThesoOfProject;
     }
-
-    public void setListeThesoOfProject(ArrayList<NodeIdValue> listeThesoOfProject) {
-        this.listeThesoOfProject = listeThesoOfProject;
-    }
-
-
-
-    public String getSelectedProject() {
-        return selectedProject;
-    }
-
-    public void setSelectedProject(String selectedProject) {
-        this.selectedProject = selectedProject;
-    }
-
-
-
-    public Map<String, String> getListeGroupsOfUser() {
-        return listeGroupsOfUser;
-    }
-
-    public void setListeGroupsOfUser(Map<String, String> listeGroupsOfUser) {
-        this.listeGroupsOfUser = listeGroupsOfUser;
-    }
-
-    public ArrayList<NodeUserRole> getListeUser() {
-        return listeUser;
-    }
-
-    public void setListeUser(ArrayList<NodeUserRole> listeUser) {
-        this.listeUser = listeUser;
-    }
-
-    public ArrayList<NodeIdValue> getMyAuthorizedRoles() {
-        return myAuthorizedRoles;
-    }
-
-    public void setMyAuthorizedRoles(ArrayList<NodeIdValue> myAuthorizedRoles) {
-        this.myAuthorizedRoles = myAuthorizedRoles;
-    }
-
-    public NodeUserRoleGroup getMyRoleOnThisProject() {
-        return myRoleOnThisProject;
-    }
-
-    public void setMyRoleOnThisProject(NodeUserRoleGroup myRoleOnThisProject) {
-        this.myRoleOnThisProject = myRoleOnThisProject;
-    }
-
-    public ArrayList<NodeUserRole> getListeUserLimitedRole() {
-        return listeUserLimitedRole;
-    }
-
-    public void setListeUserLimitedRole(ArrayList<NodeUserRole> listeUserLimitedRole) {
-        this.listeUserLimitedRole = listeUserLimitedRole;
-    }
-
-    public String getSelectedIndex() {
-        return selectedIndex;
-    }
-
-    public void setSelectedIndex(String selectedIndex) {
-        this.selectedIndex = selectedIndex;
-    }
- 
-    
-    
 }

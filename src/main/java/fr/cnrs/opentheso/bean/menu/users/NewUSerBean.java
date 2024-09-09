@@ -5,7 +5,7 @@
  */
 package fr.cnrs.opentheso.bean.menu.users;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
@@ -38,6 +38,10 @@ public class NewUSerBean implements Serializable {
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private SuperAdminBean superAdminBean;
+
+    @Autowired
+    private UserHelper userHelper;
+
     private NodeUser nodeUser;
     private String passWord1;
     private String passWord2; 
@@ -87,7 +91,6 @@ public class NewUSerBean implements Serializable {
         nodeUser = new NodeUser();
         passWord1 = null;
         passWord2 = null;
-        UserHelper userHelper = new UserHelper();
         nodeAllProjects = userHelper.getAllProject(connect.getPoolConnexion());
         nodeAllRoles = userHelper.getAllRole(connect.getPoolConnexion());
         
@@ -132,9 +135,7 @@ public class NewUSerBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         } 
-        
-        
-        UserHelper userHelper = new UserHelper();
+
         if(userHelper.isMailExist(connect.getPoolConnexion(), nodeUser.getMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Email existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -227,7 +228,6 @@ public class NewUSerBean implements Serializable {
             return;
         }
         if(idProject == -1) return;
-        UserHelper userHelper = new UserHelper();
         listThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idProject, connect.getWorkLanguage());
     }
     
@@ -260,10 +260,8 @@ public class NewUSerBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Mot de passe non identique !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
-        } 
-        
-        
-        UserHelper userHelper = new UserHelper();
+        }
+
         if(userHelper.isMailExist(connect.getPoolConnexion(), nodeUser.getMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Email existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);

@@ -1,8 +1,7 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.candidats.NodeVote;
 import fr.cnrs.opentheso.models.candidats.NodeCandidateOld;
 import fr.cnrs.opentheso.models.candidats.NodeProposition;
@@ -11,6 +10,8 @@ import fr.cnrs.opentheso.models.candidats.NodeTraductionCandidat;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.models.candidats.VoteDto;
 import fr.cnrs.opentheso.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -24,78 +25,54 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+
+@Slf4j
+@Service
 public class CandidatDao {
 
 
     protected final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    public List<CandidatDto> searchAllCondidats(HikariDataSource hikariDataSource, String idThesaurus,
-            String lang) throws SQLException {
-
-        List<CandidatDto> temps = new ArrayList<>();
-
-        try (Connection conn = hikariDataSource.getConnection()) {
-            try (Statement stmt = conn.createStatement()){
-        
-                stmt.executeQuery(new StringBuffer("SELECT term.lang, term.id_term,")
-                    .append(" term.lexicalValue, con.id_concept,")
-                    .append(" con.id_thesaurus, con.created,")
-                    .append(" users.username, term.contributor")
-
-                    .append(" FROM preferred_term preTer, concept con, term, users")
-                    .append(" WHERE")
-                    .append(" con.id_concept = preTer.id_concept")
-                    .append(" AND term.id_term = preTer.id_term")
-                    .append(" AND con.id_thesaurus = preTer.id_thesaurus")
-                    .append(" AND preTer.id_thesaurus = term.id_thesaurus")
-                    .append(" AND con.status = 'CA'")
-                    .append(" AND users.id_user = term.contributor")
-
-                    .append(" AND term.lang = '").append(lang).append("' ")
-                    .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
-                    .append(" ORDER BY term.lexicalValue ASC").toString());
-
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        CandidatDto candidatDto = new CandidatDto();
-                        candidatDto.setIdTerm(resultSet.getString("id_term"));
-                        candidatDto.setNomPref(resultSet.getString("lexical_value"));
-                        candidatDto.setIdConcepte(resultSet.getString("id_concept"));
-                        candidatDto.setIdThesaurus(resultSet.getString("id_thesaurus"));
-                        candidatDto.setCreationDate(resultSet.getDate("created"));
-                        candidatDto.setUser(resultSet.getString("username"));
-                        candidatDto.setUserId(resultSet.getInt("contributor"));
-                        temps.add(candidatDto);
-                    }
-                }
-            }
-        }
-        return temps;
-    }
     
     /**
      * permet de récupérer la liste des candidats qui sont en attente
-     * @param hikariDataSource
-     * @param idThesaurus
-     * @param lang
-     * @param etat
-     * @param statut
-     * @return
-     * @throws SQLException 
      */
     public List<CandidatDto> getCandidatsByStatus(HikariDataSource hikariDataSource, String idThesaurus,
-            String lang, int etat, String statut) throws SQLException {
+            String lang, int etat) throws SQLException {
 
         List<CandidatDto> candidatDtos = new ArrayList<>();
 
         getAllIdOfCandidate(hikariDataSource, idThesaurus, etat, candidatDtos);
-        ConceptHelper conceptHelper = new ConceptHelper();
 
         for (CandidatDto candidatDto : candidatDtos) {
-            candidatDto.setNomPref(conceptHelper.getLexicalValueOfConcept(hikariDataSource, candidatDto.getIdConcepte(), idThesaurus, lang));
+            candidatDto.setNomPref(getLexicalValueOfConcept(hikariDataSource, candidatDto.getIdConcepte(), idThesaurus, lang));
         }
         return candidatDtos;
     }
+
+    private String getLexicalValueOfConcept(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+
+        String lexicalValue = "";
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select lexical_value from term, preferred_term where"
+                        + " preferred_term.id_term = term.id_term AND"
+                        + " preferred_term.id_thesaurus = term.id_thesaurus"
+                        + " and term.id_thesaurus = '" + idThesaurus + "'"
+                        + " and preferred_term.id_concept = '" + idConcept + "'"
+                        + " and term.lang = '" + idLang + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        lexicalValue = resultSet.getString("lexical_value");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting LexicalValue of Concept : " + idConcept, sqle);
+        }
+        return lexicalValue.trim();
+    }
+
     
     private void getAllIdOfCandidate(HikariDataSource hikariDataSource,
             String idTheso, int etat, List<CandidatDto> candidatDtos) throws SQLException{
@@ -127,11 +104,29 @@ public class CandidatDao {
                 }
             }
         }
-        UserHelper userHelper = new UserHelper();
         candidatDtos.forEach(candidatDto -> {
-            candidatDto.setCreatedBy(userHelper.getNameUser(hikariDataSource, candidatDto.getCreatedById()));
-            candidatDto.setCreatedByAdmin(userHelper.getNameUser(hikariDataSource, candidatDto.getCreatedByIdAdmin()));
+            candidatDto.setCreatedBy(getNameUser(hikariDataSource, candidatDto.getCreatedById()));
+            candidatDto.setCreatedByAdmin(getNameUser(hikariDataSource, candidatDto.getCreatedByIdAdmin()));
         });
+    }
+
+    private String getNameUser(HikariDataSource ds, int userId) {
+        String name = "";
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT username from users "
+                        + " WHERE id_user =" + userId);
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    if (resultSet.next()) {
+                        name = resultSet.getString("username");
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return name;
     }
     
     /**
@@ -171,37 +166,6 @@ public class CandidatDao {
         }
         return temps;
     }
-
-    private String createRequest(String lang, String idThesaurus, int etat, String statut) {
-
-        StringBuffer request = new StringBuffer("SELECT DISTINCT term.lang, term.id_term,")
-                .append(" term.lexicalValue, con.id_concept,")
-                .append(" con.id_thesaurus, con.created,")
-                .append(" users.username, term.contributor")
-
-                .append(" FROM preferred_term preTer, concept con, term, users, candidat_status")
-                .append(" WHERE con.id_concept = candidat_status.id_concept")
-                .append(" AND con.id_thesaurus = candidat_status.id_thesaurus")
-                .append(" AND con.id_concept = preTer.id_concept")
-                .append(" AND term.id_term = preTer.id_term")
-                .append(" AND con.id_thesaurus = preTer.id_thesaurus")
-                .append(" AND preTer.id_thesaurus = term.id_thesaurus");
-
-        if ("CA".equals(statut)) {
-            request.append(" AND con.status = 'CA'");
-        } else {
-            request.append(" AND con.status <> 'CA'");
-        }
-
-        request.append(" AND users.id_user = term.contributor")
-                .append(" AND candidat_status.id_status = ").append(etat)
-                .append(" AND term.lang = '").append(lang).append("' ")
-                .append(" AND con.id_thesaurus = '").append(idThesaurus).append("'")
-                .append(" ORDER BY term.lexicalValue ASC");
-
-        return request.toString();
-
-    }    
     
     private String createRequestSearchValue(String lang, String value, String idThesaurus, int etat, String statut) {
         
@@ -487,7 +451,7 @@ public class CandidatDao {
     }
 
     public boolean insertCandidate(HikariDataSource hikariDataSource, CandidatDto candidatDto, String adminMessage, int idUser) {
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         try (Connection conn = hikariDataSource.getConnection()) {
             conn.setAutoCommit(false);
             try (Statement stmt = conn.createStatement()){
@@ -506,16 +470,41 @@ public class CandidatDao {
             return false;
         }
         if(candidatDto.getTermesGenerique().isEmpty()) {
-            if(!conceptHelper.setTopConcept(hikariDataSource, candidatDto.getIdConcepte(), candidatDto.getIdThesaurus())){
+            if(!setTopConcept(hikariDataSource, candidatDto.getIdConcepte(), candidatDto.getIdThesaurus())){
                 return false;
             }
         } else {
-            if(!conceptHelper.setNotTopConcept(hikariDataSource, candidatDto.getIdConcepte(), candidatDto.getIdThesaurus())){
+            if(!setNotTopConcept(hikariDataSource, candidatDto.getIdConcepte(), candidatDto.getIdThesaurus())){
                 return false;
             }                    
         }        
         return true;
-    }     
+    }
+
+    private boolean setTopConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept set top_concept = true WHERE id_concept ='"
+                        + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {
+
+        }
+        return false;
+    }
+
+    private boolean setNotTopConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("UPDATE concept set top_concept = false WHERE id_concept ='" + idConcept
+                        + "' AND id_thesaurus='" + idThesaurus + "'");
+                return true;
+            }
+        } catch (SQLException sqle) {}
+        return false;
+    }
     
     public boolean rejectCandidate(HikariDataSource hikariDataSource, CandidatDto candidatDto, String adminMessage, int idUser) {
 

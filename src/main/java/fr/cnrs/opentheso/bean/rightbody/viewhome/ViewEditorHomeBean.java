@@ -5,8 +5,8 @@
  */
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
-import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.HtmlPageHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
@@ -35,6 +35,9 @@ public class ViewEditorHomeBean implements Serializable {
 
     @Autowired
     private HtmlPageHelper htmlPageHelper;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
 
     private boolean isViewPlainText = false;
     private String text;
@@ -92,7 +95,7 @@ public class ViewEditorHomeBean implements Serializable {
     }
 
     public void initGoogleAnalytics() {
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
+
         codeGoogleAnalitics = preferencesHelper.getCodeGoogleAnalytics(
                 connect.getPoolConnexion());
         isInEditing = true;
@@ -103,7 +106,6 @@ public class ViewEditorHomeBean implements Serializable {
     }
 
     public void updateGoogleAnalytics() {
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
 
         preferencesHelper.setCodeGoogleAnalytics(
                 connect.getPoolConnexion(), codeGoogleAnalitics);

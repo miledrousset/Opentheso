@@ -33,8 +33,6 @@ public class Corpus {
     @Test
     public void getCount() {
         int count = getCountOfResourcesFromHttp("https://pro.frantiq.fr/es/koha_frantiq_biblios/_count?q=koha-auth-number:\"26678/pcrtSkipOsBGML\"");
-        System.out.println("" + count);
-        
     }
     
     private int getCountOfResourcesFromHttp(String uri) {
@@ -84,7 +82,6 @@ public class Corpus {
         try {
             JsonReader reader = Json.createReader(new StringReader(jsonText));
             jsonObject = reader.readObject();
-            //         System.err.println(jsonText + " #### " + nodeConcept.getConcept().getIdConcept());
             int count = jsonObject.getInt("count");
             return count;
         } catch (Exception e) {

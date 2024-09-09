@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.setting;
 
-import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
+import fr.cnrs.opentheso.repositories.CorpusHelper;
 import fr.cnrs.opentheso.models.nodes.NodeCorpus;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -13,7 +13,6 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -25,10 +24,14 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CorpusBean implements Serializable {
 
-    @Autowired @Lazy
+    @Autowired
     private Connect connect;
-    @Autowired @Lazy
+
+    @Autowired
     private SelectedTheso selectedTheso;
+
+    @Autowired
+    private CorpusHelper corpusHelper;
 
     private ArrayList<NodeCorpus> nodeCorpuses;
 
@@ -53,11 +56,7 @@ public class CorpusBean implements Serializable {
     }
 
     public void init() {
-        // récupération des informations sur les corpus liés 
-        CorpusHelper corpusHelper = new CorpusHelper();
-        nodeCorpuses = corpusHelper.getAllCorpus(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso());
+        nodeCorpuses = corpusHelper.getAllCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         nodeCorpusForEdit = new NodeCorpus();
         oldName = "";
     }
@@ -95,7 +94,6 @@ public class CorpusBean implements Serializable {
             return;
         }
 
-        CorpusHelper corpusHelper = new CorpusHelper();
         if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
                 nodeCorpusForEdit.getCorpusName()) && !nodeCorpusForEdit.getCorpusName().equalsIgnoreCase(oldName)) {
             showMessage(FacesMessage.SEVERITY_INFO, "Ce corpus existe déjà, changez de nom !");
@@ -147,12 +145,12 @@ public class CorpusBean implements Serializable {
             return;
         }
 
-        if (new CorpusHelper().isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
+        if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Ce corpus existe déjà, changez de nom !");
             return;
         }
 
-        if (!new CorpusHelper().addNewCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit)) {
+        if (!corpusHelper.addNewCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de création du corpus !");
             return;
         }
@@ -177,7 +175,7 @@ public class CorpusBean implements Serializable {
             return;
         }
 
-        if (!new CorpusHelper().deleteCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
+        if (!corpusHelper.deleteCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression de corpus !");
             return;
         }

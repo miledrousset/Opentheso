@@ -171,7 +171,7 @@
 
                             <h:panelGroup>
                                 <div class="col-xl-9 col-lg-8 col-md-7 col-sm-6" style="margin-left: -10px; width: 100%">
-                                    <h:panelGroup rendered="#{!conceptView.isGpsDisable()}">
+                                    <h:panelGroup rendered="#{!conceptView.isGpsDisable(currentUser)}">
                                         <div class="ui-inputgroup" style="width: 100%">
                                             <p:inputText placeholder="#{langueBean.getMsg('example')} : (48.922548 2.145240, 48.897888 2.242193, ...)"
                                                          style="width: 100%"
@@ -188,7 +188,7 @@
                                                            onclick="PF('dlg1').show()"/>
                                         </div>
                                     </h:panelGroup>
-                                    <h:panelGroup rendered="#{conceptView.isGpsDisable()}">
+                                    <h:panelGroup rendered="#{conceptView.isGpsDisable(currentUser)}">
                                         <h:outputText value="#{conceptView.gpsList}"/>
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{conceptView.isMapVisible()}">

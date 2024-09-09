@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.rightbody.viewgroup;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupType;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
@@ -40,6 +34,12 @@ public class GroupView implements Serializable {
 
     @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private NoteHelper noteHelper;
 
     private NodeGroup nodeGroup;
     private ArrayList<NodeGroupTraductions> nodeGroupTraductions;
@@ -99,13 +99,10 @@ public class GroupView implements Serializable {
         nodeGroupTraductions = groupHelper.getGroupTraduction(connect.getPoolConnexion(), idGroup, idTheso, idLang);
         nodeGroupType = groupHelper.getGroupType(
                 connect.getPoolConnexion(), nodeGroup.getConceptGroup().getIdtypecode());
-        
-        
-        NoteHelper noteHelper = new NoteHelper();
+
         ArrayList<NodeNote> nodeNotes = noteHelper.getListNotes(connect.getPoolConnexion(), idGroup, idTheso, idLang);
-        setAllNotes(nodeNotes);        
-        
-        ConceptHelper conceptHelper = new ConceptHelper();
+        setAllNotes(nodeNotes);
+
         count = conceptHelper.getCountOfConceptsOfGroup(connect.getPoolConnexion(), idTheso, idGroup);
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();

@@ -1,9 +1,8 @@
 package fr.cnrs.opentheso.bean.alignment;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.ExternalImagesHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.SelectedResource;
@@ -14,6 +13,7 @@ import fr.cnrs.opentheso.client.alignement.WikidataHelper;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpHead;
@@ -21,11 +21,16 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 
+@Slf4j
 public class SearchSingleAllignementCallable implements Callable<NodeAlignment> {
 
     private AlignementSource alignementSource;
@@ -191,7 +196,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
                                                      HikariDataSource connection, String idConcept, String idTheso) {
 
         List<SelectedResource> selectedTraductionsList = new ArrayList<>();
-        List<NodeTermTraduction> termTraductions = new TermHelper().getAllTraductionsOfConcept(connection, idConcept, idTheso);
+        List<NodeTermTraduction> termTraductions = getAllTraductionsOfConcept(connection, idConcept, idTheso);
 
         for (SelectedResource selectedResource : traductionsoOfAlignmentTemp) {
             boolean added = false;
@@ -215,12 +220,39 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         return selectedTraductionsList;
     }
 
+    private ArrayList<NodeTermTraduction> getAllTraductionsOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+
+        ArrayList<NodeTermTraduction> nodeTraductionsList = new ArrayList<>();
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT term.id_term, term.lexical_value, term.lang FROM"
+                        + " term, preferred_term WHERE term.id_term = preferred_term.id_term"
+                        + " and term.id_thesaurus = preferred_term.id_thesaurus"
+                        + " and preferred_term.id_concept = '" + idConcept + "'"
+                        + " and term.id_thesaurus = '" + idThesaurus + "' order by term.lexical_value");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeTermTraduction nodeTraductions = new NodeTermTraduction();
+                        nodeTraductions.setLang(resultSet.getString("lang"));
+                        nodeTraductions.setLexicalValue(resultSet.getString("lexical_value"));
+                        nodeTraductionsList.add(nodeTraductions);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            // Log exception
+            log.error("Error while getting All Traductions of Concept  : " + idConcept, sqle);
+        }
+        return nodeTraductionsList;
+    }
+
     private List<SelectedResource> searchDefinitions(List<SelectedResource> definitionOfAlignmentTemp,
                                                      HikariDataSource connection, String idConcept, String idTheso) {
 
         List<SelectedResource> selectedDefinitionsList = new ArrayList<>();
 
-        var terms = new NoteHelper().getListNotesAllLang(connection, idConcept, idTheso);
+        var terms = getListNotesAllLang(connection, idConcept, idTheso);
 
         for (SelectedResource selectedResource : definitionOfAlignmentTemp) {
             boolean added = false;
@@ -244,10 +276,42 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         return selectedDefinitionsList;
     }
 
+    private ArrayList<NodeNote> getListNotesAllLang(HikariDataSource ds, String identifier, String idThesaurus) {
+
+        ArrayList<NodeNote> nodeNotes = new ArrayList<>();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang, note.notesource"
+                        + " FROM note"
+                        + " WHERE "
+                        + " note.identifier = '" + identifier + "'"
+                        + " AND note.id_thesaurus = '" + idThesaurus + "'");
+                try (ResultSet resultSet = stmt.getResultSet()) {
+                    while (resultSet.next()) {
+                        NodeNote nodeNote = new NodeNote();
+                        nodeNote.setIdTerm(identifier);
+                        nodeNote.setIdNote(resultSet.getInt("id"));
+                        nodeNote.setLang(resultSet.getString("lang"));
+                        nodeNote.setLexicalValue(resultSet.getString("lexicalvalue"));
+                        nodeNote.setModified(resultSet.getDate("modified"));
+                        nodeNote.setCreated(resultSet.getDate("created"));
+                        nodeNote.setNoteTypeCode(resultSet.getString("notetypecode"));
+                        nodeNote.setNoteSource(resultSet.getString("notesource"));
+                        nodeNotes.add(nodeNote);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting All Notes of Term : " + identifier, sqle);
+        }
+        return nodeNotes;
+    }
+
     private List<SelectedResource> searchImages(List<SelectedResource> imagesOfAlignmentTemp,
                                                 HikariDataSource connection, String idConcept, String idTheso) {
 
-        List<NodeImage> images = new ExternalImagesHelper().getExternalImages(connection, idConcept, idTheso);
+        List<NodeImage> images = getExternalImages(connection, idConcept, idTheso);
         List<SelectedResource> selectedImages = new ArrayList<>();
 
         for (SelectedResource selectedResource : imagesOfAlignmentTemp) {
@@ -270,5 +334,32 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         }
 
         return selectedImages;
+    }
+
+    private ArrayList<NodeImage> getExternalImages(HikariDataSource ds, String idConcept, String idThesausus) {
+
+        ArrayList<NodeImage> nodeImageList = null;
+
+        try ( Connection conn = ds.getConnection()) {
+            try ( Statement stmt = conn.createStatement()) {
+                stmt.executeQuery("select * from external_images where id_concept = '"
+                        + idConcept + "' and id_thesaurus = '" + idThesausus + "'");
+                try ( ResultSet resultSet = stmt.getResultSet()) {
+                    nodeImageList = new ArrayList<>();
+                    while (resultSet.next()) {
+                        NodeImage nodeImage = new NodeImage();
+                        nodeImage.setIdConcept(resultSet.getString("id_concept"));
+                        nodeImage.setIdThesaurus(resultSet.getString("id_thesaurus"));
+                        nodeImage.setImageName(resultSet.getString("image_name"));
+                        nodeImage.setCopyRight(resultSet.getString("image_copyright"));
+                        nodeImage.setUri(resultSet.getString("external_uri"));
+                        nodeImageList.add(nodeImage);
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting image of Concept : " + idConcept, sqle);
+        }
+        return nodeImageList;
     }
 }

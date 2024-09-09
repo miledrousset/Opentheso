@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
@@ -22,7 +22,6 @@ import java.util.Objects;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
-import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.getDatas;
 
 
 @Slf4j
@@ -37,6 +36,9 @@ public class ConcepThesoSearchController {
 
     @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private RestRDFHelper restRDFHelper;
 
 
     @GetMapping(produces = {APPLICATION_RDF_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_TURTLE_UTF_8})
@@ -141,7 +143,7 @@ public class ConcepThesoSearchController {
         }
 
         var fullFormat = full ? "full" : null;
-        var datas = new RestRDFHelper().findDatasForWidget(connect.getPoolConnexion(), idTheso, lang, groups, q, HeaderHelper.removeCharset(fullFormat), exactMatch);
+        var datas = restRDFHelper.findDatasForWidget(connect.getPoolConnexion(), idTheso, lang, groups, q, HeaderHelper.removeCharset(fullFormat), exactMatch);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)));
     }
 
@@ -153,6 +155,20 @@ public class ConcepThesoSearchController {
             i++;
         }
         return groups;
+    }
+
+    private String getDatas(HikariDataSource ds,
+                                   String idTheso, String idLang,
+                                   String [] groups,
+                                   String value,
+                                   String format, String filter,
+                                   String match) {
+
+        format = HeaderHelper.removeCharset(format);
+        if (filter != null && filter.equalsIgnoreCase("notation:")) {
+            return restRDFHelper.findNotation(ds, idTheso, value, format);
+        }
+        return restRDFHelper.findConcepts(ds, idTheso, idLang, groups, value, format, match);
     }
 }
 

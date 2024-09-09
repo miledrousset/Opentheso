@@ -5,6 +5,7 @@ import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Service
 public class TermeDao extends BasicDao {
 
 
@@ -23,7 +25,7 @@ public class TermeDao extends BasicDao {
         term.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexicalValue()));
         try {
             openDataBase(hikariDataSource);
-            stmt.executeUpdate("INSERT INTO term (id_term, lexicalValue, lang, id_thesaurus, status, contributor, creator) VALUES ('"
+            stmt.executeUpdate("INSERT INTO term (id_term, lexical_value, lang, id_thesaurus, status, contributor, creator) VALUES ('"
                     +term.getIdTerm()+"', '"+term.getLexicalValue()+"', '"+term.getLang()+"', '"+term.getIdThesaurus()+"', '"
                     +term.getStatus()+"', "+term.getContributor()+", "+term.getCreator()+")");
             closeDataBase();
@@ -41,7 +43,7 @@ public class TermeDao extends BasicDao {
         intitule = fr.cnrs.opentheso.utils.StringUtils.convertString(intitule);
         
         // insert in non_preferred_term      
-        stmt.executeUpdate(new StringBuffer("INSERT INTO non_preferred_term(lexicalValue, lang, id_thesaurus, hiden, id_term) VALUES ('"
+        stmt.executeUpdate(new StringBuffer("INSERT INTO non_preferred_term(lexical_value, lang, id_thesaurus, hiden, id_term) VALUES ('"
                     +intitule+"', '"+lang+"', '"+idThesaurus+"', false, '"+idTerm+"')").toString());
         
         stmt.close(); 
@@ -69,7 +71,7 @@ public class TermeDao extends BasicDao {
         try {
             intitule = fr.cnrs.opentheso.utils.StringUtils.convertString(intitule);
             openDataBase(hikariDataSource);
-            stmt.executeUpdate("update term set lexicalValue = '" + intitule + "'"
+            stmt.executeUpdate("update term set lexical_value = '" + intitule + "'"
                     + " WHERE id_term = '" + idTerm + "'" 
                     + " AND lang = '" + lang + "'"
                     + " AND id_thesaurus = '" + idThesaurus + "'");

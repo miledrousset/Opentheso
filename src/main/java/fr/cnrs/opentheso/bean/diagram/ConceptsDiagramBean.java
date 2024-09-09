@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.diagram;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -33,7 +33,6 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 
 
 @Named("conceptsDiagramBean")
@@ -48,20 +47,18 @@ public class ConceptsDiagramBean implements Serializable {
 
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private SelectedTheso selectedTheso;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
     
     private String elementSelected;
-    private ConceptHelper conceptHelper;
     private DefaultDiagramModel model;
     private NodeConcept nodeConceptSelected;
     private List<ElementDiagram> elements;
     private Map<TextInBox, List> elementsTreeMap;
     private DefaultTreeForTreeLayout<TextInBox> defaultTreeForTreeLayout;
 
-    
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
+
     public void clear(){
         if(nodeConceptSelected != null){
             nodeConceptSelected.clear();
@@ -78,7 +75,6 @@ public class ConceptsDiagramBean implements Serializable {
         elementSelected = null;
         model = null;
         defaultTreeForTreeLayout = null;
-        conceptHelper = null;
     }     
     
     @PostConstruct
@@ -95,8 +91,7 @@ public class ConceptsDiagramBean implements Serializable {
      * @param idLang
      */
     public void init(String conceptId, String idTheso, String idLang) {
-        if(conceptHelper == null) 
-            conceptHelper = new ConceptHelper();
+
         nodeConceptSelected = conceptHelper.getConcept(connect.getPoolConnexion(), conceptId, idTheso, idLang, -1, -1);
         elementSelected = nodeConceptSelected.getTerm().getLexicalValue();
         TextInBox root = new TextInBox(nodeConceptSelected.getTerm().getLexicalValue(),

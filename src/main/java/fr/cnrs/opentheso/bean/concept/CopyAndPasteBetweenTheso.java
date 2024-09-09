@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.CopyAndPasteBetweenThesoHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.CopyAndPasteBetweenThesoHelper;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -39,8 +34,12 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private Tree tree;
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
+
     @Autowired
     private CopyAndPasteBetweenThesoHelper copyAndPasteBetweenThesoHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
 
 
     private boolean isCopyOn;
@@ -91,10 +90,8 @@ public class CopyAndPasteBetweenTheso implements Serializable {
      */
     public void onStartCopy() {
         
-        // controler les déplacements non autorisés 
-        
+        // controler les déplacements non autorisés
         FacesMessage msg;
-        ConceptHelper conceptHelper = new ConceptHelper();
 
         // aprsè l'initialisation du conceptBean, cette variable est aussi initialisée
         // pour éviter cela, on construi un nouvel objet
@@ -129,7 +126,6 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         
         FacesMessage msg;
         isValidPaste = false;
-        ConceptHelper conceptHelper = new ConceptHelper();
 
         // on vérifie si les ids des concepts à copier n'existent pas déjà dans le thésaurus cible.
         for (String idConcept : conceptsToCopy) {

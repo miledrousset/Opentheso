@@ -39,6 +39,9 @@ public class GraphController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private GraphD3jsHelper graphD3jsHelper;
+
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "Permet d'obtenir les données d'un thésaurus ou branche pour graphe D3js",
@@ -72,8 +75,7 @@ public class GraphController {
                 idValuePairs.add(idValuePair);
             }            
         }
-        
-        GraphD3jsHelper graphD3jsHelper = new GraphD3jsHelper();
+
         graphD3jsHelper.initGraph();        
 
         for (IdValuePair idValuePair : idValuePairs) {

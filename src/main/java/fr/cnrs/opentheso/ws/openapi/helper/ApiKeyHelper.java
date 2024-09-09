@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.helper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
+import fr.cnrs.opentheso.repositories.ToolsHelper;
 import fr.cnrs.opentheso.utils.MD5Password;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,13 +9,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import jakarta.ws.rs.core.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 /**
  * Helper permettant de vérifier l'existence d'une clé API dans la table useres
  */
+@Service
 public class ApiKeyHelper {
+
+    @Autowired
+    private ToolsHelper toolsHelper;
 
     /**
      * Génère une clé API d'une longueur choisie avec le header voulu
@@ -25,7 +31,7 @@ public class ApiKeyHelper {
      */
     public String generateApiKey(String header, int keyLength) {
         final String timestamp = String.valueOf(System.currentTimeMillis());
-        final String randomKey = header.length() + timestamp.length() < keyLength ? new ToolsHelper().getNewId(keyLength-header.length()-timestamp.length(), false, false) : "";
+        final String randomKey = header.length() + timestamp.length() < keyLength ? toolsHelper.getNewId(keyLength-header.length()-timestamp.length(), false, false) : "";
         String apiKey= header + timestamp + randomKey;
         if (apiKey.length() > keyLength) {
             apiKey = apiKey.substring(0, keyLength);

@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.bean.graph;
 
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
@@ -47,6 +47,12 @@ public class DataGraphView implements Serializable {
 
     @Autowired @Lazy
     private GraphService graphService;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
+    @Autowired
+    private SearchHelper searchHelper;
 
     @Value("${neo4j.serverName}")
     private String serverNameNeo4j;
@@ -94,8 +100,6 @@ public class DataGraphView implements Serializable {
      */
     public List<NodeSearchMini> getAutoComplete(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
-        SearchHelper searchHelper = new SearchHelper();
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         String idLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), selectedIdTheso);
         
         if (selectedIdTheso != null && idLang != null) {
@@ -135,7 +139,6 @@ public class DataGraphView implements Serializable {
     }
 
     public void redirectToGraphVisualization(String viewId) throws IOException {
-        System.out.println("visualisation " + viewId);
         GraphObject view = graphService.getView(viewId);
 
         if (view == null) {
@@ -188,7 +191,6 @@ public class DataGraphView implements Serializable {
 
         try (var driver = GraphDatabase.driver(dbUri, AuthTokens.basic(dbUser, dbPassword))) {
             driver.verifyConnectivity();
-            //System.out.println("Connection estabilished.");
 
             StringBuilder builder = new StringBuilder();
             view.getExportedData().forEach((data) -> {
@@ -224,7 +226,6 @@ public class DataGraphView implements Serializable {
     }
 
     public void removeView(String viewId) {
-        System.out.println("suppression " + viewId);
         graphService.deleteView(viewId);
         showMessage(FacesMessage.SEVERITY_INFO, "Vue supprimée avec succès");
         init();

@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -17,14 +12,12 @@ import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+
 @Named(value = "moveThesoToProjectBean")
 @SessionScoped
 public class MoveThesoToProjectBean implements Serializable {
@@ -32,6 +25,9 @@ public class MoveThesoToProjectBean implements Serializable {
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private SuperAdminBean superAdminBean;
+
+    @Autowired
+    private UserHelper userHelper;
     
     private NodeIdValue selectedThesoToMove;
     private String currentProject;
@@ -73,7 +69,6 @@ public class MoveThesoToProjectBean implements Serializable {
     }       
     
     public ArrayList<NodeUserGroup> autoCompleteProject(String projectName) {
-        UserHelper userHelper = new UserHelper();
         ArrayList<NodeUserGroup> nodeProjects = null;
         if(currentUser.getNodeUser().isSuperAdmin()) {
             nodeProjects = userHelper.searchAllProject(
@@ -95,9 +90,8 @@ public class MoveThesoToProjectBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de projet sélectioné !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
-        }   
+        }
 
-        UserHelper userHelper = new UserHelper();
         if(!userHelper.moveThesoToGroup(
                 connect.getPoolConnexion(),
                 selectedThesoToMove.getId(),
@@ -126,9 +120,8 @@ public class MoveThesoToProjectBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas de projet sélectioné !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
-        }   
+        }
 
-        UserHelper userHelper = new UserHelper();
         if(!userHelper.moveThesoToGroup(
                 connect.getPoolConnexion(),
                 selectedThesoToMove.getId(),

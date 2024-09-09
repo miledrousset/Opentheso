@@ -46,8 +46,8 @@
             <p:commandButton value="#{langueBean.getMsg('candidat.remove')}" icon="pi pi-check" 
                              update="containerIndex messageIndex" styleClass="ui-button-success" 
                              oncomplete="PF('confirmDelete').hide();"
-                             actionListener="#{deleteThesoBean.deleteTheso()}"
-                             action="#{roleOnTheso.showListTheso()}"/>
+                             actionListener="#{deleteThesoBean.deleteTheso(currentUser)}"
+                             action="#{roleOnTheso.showListTheso(currentUser)}"/>
         </div> 
             </h:form>
     </p:dialog>     

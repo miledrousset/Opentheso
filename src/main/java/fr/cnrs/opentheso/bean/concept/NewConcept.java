@@ -1,13 +1,15 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.models.nodes.NodePreference;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.facets.NodeFacet;
 import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -48,13 +50,27 @@ public class NewConcept implements Serializable {
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
+    private CurrentUser currentUser;
+    @Autowired @Lazy
     private Tree tree;
+
+    @Autowired
+    private FacetHelper facetHelper;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
 
     @Autowired
     private TermHelper termHelper;
 
     @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private SearchHelper searchHelper;
 
     private String prefLabel;
     private String notation;
@@ -118,7 +134,7 @@ public class NewConcept implements Serializable {
                 }                
             }
         }
-        RelationsHelper relationsHelper = new RelationsHelper();
+
         typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
         nodeGroups = groupHelper.getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
@@ -173,7 +189,6 @@ public class NewConcept implements Serializable {
             return;
         }
 
-        ConceptHelper conceptHelper = new ConceptHelper();
         if (roleOnThesoBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
@@ -187,10 +202,7 @@ public class NewConcept implements Serializable {
 
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
-        if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
-                prefLabel.trim(),
-                idTheso,
-                idLang)) {
+        if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), prefLabel.trim(), idTheso, idLang)) {
             duplicate = true;
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un TopTerme existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -274,7 +286,7 @@ public class NewConcept implements Serializable {
             return;
         }
 
-        conceptBean.getConcept(idTheso, idNewConcept, idLang);
+        conceptBean.getConcept(idTheso, idNewConcept, idLang, currentUser);
         isCreated = true;
         duplicate = false;
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le top concept a bien été ajouté");
@@ -342,8 +354,7 @@ public class NewConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
-                
+
         if ((notation != null) && (!notation.isEmpty())) {
             if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
@@ -365,17 +376,12 @@ public class NewConcept implements Serializable {
      * @param idTheso
      * @param idUser
      */
-    public void addNewConceptForced(
-            String idConceptParent,
-            String idLang,
-            String status, // CA ou D
-            String idTheso,
-            int idUser) {
+    public void addNewConceptForced(String idConceptParent, String idLang, String status, String idTheso,int idUser) {
+
         isCreated = false;
         duplicate = false;
         FacesMessage msg;
 
-        ConceptHelper conceptHelper = new ConceptHelper();
         if (roleOnThesoBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
@@ -438,7 +444,7 @@ public class NewConcept implements Serializable {
             return;
         }
         if (isConceptUnderFacet) {
-            FacetHelper facetHelper = new FacetHelper();
+
             if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(), idFacet, idTheso, idNewConcept)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le concept n'a pas été ajouté à la facette");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -490,7 +496,7 @@ public class NewConcept implements Serializable {
             }
             tree.getClickselectedNodes().get(0).setExpanded(true);
         }
-        conceptBean.getConcept(idTheso, idConceptParent, idLang);
+        conceptBean.getConcept(idTheso, idConceptParent, idLang, currentUser);
         isCreated = true;
 
         if (pf.isAjaxRequest()) {
@@ -524,8 +530,6 @@ public class NewConcept implements Serializable {
 
     // à activer s'il faut faire un controle en temps réel de l'existance d'un terme avant la création
     public List<NodeSearchMini> completExactTerm(String value) {
-
-        SearchHelper searchHelper = new SearchHelper();
 
         if (selectedTheso.getCurrentIdTheso() == null) {
             return null;

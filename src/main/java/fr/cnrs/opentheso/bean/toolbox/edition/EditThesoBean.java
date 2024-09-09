@@ -8,9 +8,9 @@ package fr.cnrs.opentheso.bean.toolbox.edition;
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import fr.cnrs.opentheso.repositories.AccessThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.LanguageHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
@@ -47,8 +47,18 @@ public class EditThesoBean implements Serializable {
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy private MenuBean menuBean;
     @Autowired @Lazy private ThesaurusMetadataAdd thesaurusMetadataAdd;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
     @Autowired
     private AccessThesaurusHelper accessThesaurusHelper;
+
+    @Autowired
+    private LanguageHelper languageHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
 
     private NodeLangTheso langSelected;
     private ArrayList<Languages_iso639> allLangs;
@@ -92,19 +102,13 @@ public class EditThesoBean implements Serializable {
 
         this.nodeIdValueOfTheso.setId(idTheso);
 
-        LanguageHelper languageHelper = new LanguageHelper();
         // toutes les langues Iso
         allLangs = languageHelper.getAllLanguages(connect.getPoolConnexion());
-
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
-        // les langues du thésaurus
-
 
         isPrivateTheso = thesaurusHelper.isThesoPrivate(
                 connect.getPoolConnexion(),
                 nodeIdValueOfTheso.getId());
         // langue par defaut
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
                 connect.getPoolConnexion(),
                 nodeIdValueOfTheso.getId());
@@ -127,19 +131,13 @@ public class EditThesoBean implements Serializable {
     public void init(NodeIdValue nodeIdValueOfTheso) {
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
 
-        LanguageHelper languageHelper = new LanguageHelper();
         // toutes les langues Iso
         allLangs = languageHelper.getAllLanguages(connect.getPoolConnexion());
-
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         // les langues du thésaurus
-
-
         isPrivateTheso = thesaurusHelper.isThesoPrivate(
                 connect.getPoolConnexion(),
                 nodeIdValueOfTheso.getId());
         // langue par defaut
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
                 connect.getPoolConnexion(),
                 nodeIdValueOfTheso.getId());
@@ -174,8 +172,6 @@ public class EditThesoBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         
         if (!preferencesHelper.setWorkLanguageOfTheso(
                 connect.getPoolConnexion(), preferredLang, nodeIdValueOfTheso.getId())) {
@@ -206,7 +202,7 @@ public class EditThesoBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le thésaurus est maintenant public");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init(nodeIdValueOfTheso);
-        roleOnThesoBean.showListTheso();
+        roleOnThesoBean.showListTheso(currentUser);
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("toolBoxForm:idLangToModify");
@@ -236,7 +232,6 @@ public class EditThesoBean implements Serializable {
         }
 
         Connection conn;
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         try {
             conn = connect.getPoolConnexion().getConnection();
             conn.setAutoCommit(false);
@@ -285,19 +280,18 @@ public class EditThesoBean implements Serializable {
         thesaurus.setId_thesaurus(nodeIdValueOfTheso.getId());
         thesaurus.setTitle(langSelected.getLabelTheso());
         thesaurus.setLanguage(NodeLangThesoSelected.getCode());
-        if (!new ThesaurusHelper().UpdateThesaurus(connect.getPoolConnexion(), thesaurus)) {
+        if (!thesaurusHelper.UpdateThesaurus(connect.getPoolConnexion(), thesaurus)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        roleOnThesoBean.showListTheso();
+        roleOnThesoBean.showListTheso(currentUser);
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         String sourceLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
         
-        languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), sourceLang);
         
         PrimeFaces pf = PrimeFaces.current();
@@ -320,7 +314,6 @@ public class EditThesoBean implements Serializable {
             return;
         }
 
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         if (!thesaurusHelper.deleteThesaurusTraduction(
                 connect.getPoolConnexion(),
                 nodeIdValueOfTheso.getId(),

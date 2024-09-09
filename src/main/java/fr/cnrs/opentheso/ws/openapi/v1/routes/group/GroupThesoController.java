@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
@@ -48,6 +48,9 @@ public class GroupThesoController {
 
     @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private RestRDFHelper restRDFHelper;
 
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
@@ -104,7 +107,7 @@ public class GroupThesoController {
             @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
 
-        var datas = new RestRDFHelper().exportGroup(connect.getPoolConnexion(), idTheso, idGroup, removeCharset(acceptHeader));
+        var datas = restRDFHelper.exportGroup(connect.getPoolConnexion(), idTheso, idGroup, removeCharset(acceptHeader));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 
@@ -179,7 +182,7 @@ public class GroupThesoController {
             return ResponseEntity.badRequest().contentType(MediaType.parseMediaType(acceptHeader)).body("No group id");
         }
         
-        var datas = new RestRDFHelper().brancheOfGroup(connect.getPoolConnexion(), groups, idTheso, removeCharset(acceptHeader));
+        var datas = restRDFHelper.brancheOfGroup(connect.getPoolConnexion(), groups, idTheso, removeCharset(acceptHeader));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 
@@ -208,7 +211,7 @@ public class GroupThesoController {
             return ResponseEntity.badRequest().contentType(MediaType.parseMediaType(acceptHeader)).body("No group id");
         }
 
-        var datas = new RestRDFHelper().brancheOfGroupAsTree(connect.getPoolConnexion(), groups, idTheso, lang);
+        var datas = restRDFHelper.brancheOfGroupAsTree(connect.getPoolConnexion(), groups, idTheso, lang);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }    
     

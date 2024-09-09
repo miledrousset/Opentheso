@@ -2,9 +2,9 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.ImagesHelper;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -42,6 +42,12 @@ public class ImageBean implements Serializable {
 
     @Autowired
     private ImagesHelper imagesHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
 
     private String uri;
     private String copyright;
@@ -116,13 +122,13 @@ public class ImageBean implements Serializable {
         }
         
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
+                conceptBean.getSelectedLang(), currentUser);
 
-        new ConceptHelper().updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
 
-        new DcElementHelper().addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
 
@@ -165,18 +171,14 @@ public class ImageBean implements Serializable {
             return;
         }
         
-        conceptBean.getConcept(
-                selectedTheso.getCurrentIdTheso(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
+        conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                conceptBean.getSelectedLang(), currentUser);
 
-        ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);  
         ///// insert DcTermsData to add contributor
-        DcElementHelper dcElmentHelper = new DcElementHelper();                
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
@@ -213,15 +215,13 @@ public class ImageBean implements Serializable {
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
+                conceptBean.getSelectedLang(), currentUser);
 
-        ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);   
         ///// insert DcTermsData to add contributor
-        DcElementHelper dcElmentHelper = new DcElementHelper();                
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        

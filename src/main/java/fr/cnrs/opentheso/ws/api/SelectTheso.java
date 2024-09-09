@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +30,15 @@ public class SelectTheso {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
     // Cette fonction permet de se diriger vers le bon thésaurus en passant par son nom VIA REST ceci permet de gérer
     // les noms de domaines et filtrer les thésaurus dans un parc important
     @GetMapping(value = "{theso}", produces = "application/xml;charset=UTF-8")
-    public ResponseEntity<Object> getThesoUri(@PathVariable("theso") String name,
-                                      @Context UriInfo uriInfo)
-            throws URISyntaxException {
+    public ResponseEntity<Object> getThesoUri(@PathVariable("theso") String name, @Context UriInfo uriInfo) throws URISyntaxException {
 
-        var idTheso = new PreferencesHelper().getIdThesaurusFromName(connect.getPoolConnexion(), name);
+        var idTheso = preferencesHelper.getIdThesaurusFromName(connect.getPoolConnexion(), name);
         var path = uriInfo.getBaseUriBuilder().toString().replaceAll("/api/", "/") + "?idt=" + idTheso;
 
         return ResponseEntity.status(307) // 307 corresponds to temporary redirect

@@ -5,7 +5,7 @@
  */
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -30,6 +30,9 @@ public class NewProjectBean implements Serializable {
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private CurrentUser currentUser;
+
+    @Autowired
+    private UserHelper userHelper;
  
     private String projectName;
     private ArrayList<NodeUserGroup> listeProjectOfUser;
@@ -56,8 +59,6 @@ public class NewProjectBean implements Serializable {
      */
     public void init() {
         projectName = null;
-        
-        UserHelper userHelper = new UserHelper();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             listeProjectOfUser = userHelper.getAllProject(connect.getPoolConnexion());
             return;
@@ -78,9 +79,6 @@ public class NewProjectBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }
-
-        
-        UserHelper userHelper = new UserHelper();
         
         if(userHelper.isUserGroupExist(
                 connect.getPoolConnexion(),
@@ -136,7 +134,6 @@ public class NewProjectBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }
-        UserHelper userHelper = new UserHelper();
         
         if(userHelper.isUserGroupExist(
                 connect.getPoolConnexion(),
@@ -173,7 +170,7 @@ public class NewProjectBean implements Serializable {
      */
     public void deleteProject(NodeUserGroup nodeUserGroup) {
         FacesMessage msg;
-        UserHelper userHelper = new UserHelper();
+
         if (!userHelper.deleteProjectGroup(connect.getPoolConnexion(), nodeUserGroup.getIdGroup())) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur :", nodeUserGroup.getGroupName()));

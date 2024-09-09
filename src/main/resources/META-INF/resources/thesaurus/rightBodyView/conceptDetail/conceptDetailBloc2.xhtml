@@ -42,7 +42,7 @@
                                 <p:tooltip style="font-size: 12px;" position="bottom"/>
                                 <p:commandLink id="toolTipBT1" rendered="#{value.label != ''}" value="#{value.label}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" 
+                                                         value.idConcept, conceptView.selectedLang, currentUser)}"
                                                update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex">
 
                                 </p:commandLink>    
@@ -50,7 +50,8 @@
                                 <p:commandLink id="toolTipBT2" rendered="#{value.label == ''}" value="(#{value.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"/>  
+                                                         value.idConcept, conceptView.selectedLang, currentUser)}"
+                                               update="containerIndex:formRightTab containerIndex:formLeftTab indexTitle messageIndex"/>
 
                                 <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/> 
                                 <p:tooltip for="toolTipBT1" value="#{value.idConcept}" style="font-size: 12px;" position="bottom" showDelay="500" />
@@ -105,11 +106,12 @@
                                 <p:commandLink rendered="#{value.label != ''}" value="#{value.label}"
                                                title="#{value.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
+                                                         value.idConcept, conceptView.selectedLang, currentUser)}"
+                                               update="containerIndex:formRightTab indexTitle"/>
                                 <p:commandLink rendered="#{value.label == ''}" value="(#{value.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/> 
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, value.idConcept, conceptView.selectedLang, currentUser)}"
+                                               update="containerIndex:formRightTab indexTitle"/>
                                 <h:outputText rendered="#{!status1.last}" value=", " style="color: #FF7979"/>    
                             </ui:repeat>
 
@@ -118,15 +120,14 @@
                                        value="#{conceptView.nodeFullConcept.narrowers}" size="#{conceptView.nodeFullConcept.narrowers.size()}">
                                 <p:commandLink rendered="#{value.label != ''}" value="#{value.label}"
                                                title="#{value.idConcept}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" 
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, value.idConcept, conceptView.selectedLang, currentUser)}"
                                                update="containerIndex:formRightTab indexTitle"/>
 
                                 <p:commandLink rendered="#{value.label == ''}" value="(#{value.idConcept})" 
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                style="color: #FF7979; font-size: 14px;"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab"/>  
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, value.idConcept, conceptView.selectedLang, currentUser)}"
+                                               update="containerIndex:formRightTab"/>
                                 <h:outputText value=", " style="color: #FF7979; font-size: 14px;"/>
                             </ui:repeat>
 
@@ -173,12 +174,12 @@
                                 <p:commandLink rendered="#{rt.label != ''}" value="#{rt.label}"
                                                title="#{rt.idConcept}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>
+                                                         rt.idConcept, conceptView.selectedLang, currentUser)}" update="containerIndex:formRightTab indexTitle"/>
 
                                 <p:commandLink rendered="#{rt.label == ''}" value="(#{rt.idConcept})"
                                                title="#{langueBean.getMsg('rightbody.concept.no_translation_in_this_language')}"
                                                action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         rt.idConcept, conceptView.selectedLang)}" update="containerIndex:formRightTab indexTitle"/> 
+                                                         rt.idConcept, conceptView.selectedLang, currentUser)}" update="containerIndex:formRightTab indexTitle"/>
 
                                 <h:outputText rendered="#{!status.last}" value=", " style="color: #FF7979"/>
                             </ui:repeat>             
@@ -236,7 +237,7 @@
 
 
                                         <p:commandLink value="#{customRelation.targetLabel} " title="#{customRelation.targetConcept}"
-                                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, customRelation.targetConcept, conceptView.selectedLang)}"
+                                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, customRelation.targetConcept, conceptView.selectedLang, currentUser)}"
                                                        update="containerIndex:formRightTab indexTitle"/>
                                         
                                         <p:tag styleClass="mr-2" 
@@ -281,7 +282,7 @@
                                         <h:outputText value="#{conceptView.nodeFullConcept.prefLabel.label}" style="color: #78261f; font-size: 14px;"/>
                                         <i class="fas fa-arrows-alt-h" style="color: #78261f; margin-right: 10px; margin-left: 10px"/>                                        
                                         <p:commandLink value="#{customRelation.targetLabel} " title="#{customRelation.targetConcept}"
-                                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, customRelation.targetConcept, conceptView.selectedLang)}"
+                                                       action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, customRelation.targetConcept, conceptView.selectedLang, currentUser)}"
                                                        update="containerIndex:formRightTab indexTitle"/>
 
                                         
@@ -351,7 +352,7 @@
                                 <img src="#{conceptView.getDrapeauImgLocal(trad.codeFlag)}" width="20" height="15" style="margin-right: 7px"/>
 
                                 <p:commandLink value="#{trad.label} " title="#{conceptView.nodeFullConcept.identifier}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeFullConcept.identifier, trad.idLang)}"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, conceptView.nodeFullConcept.identifier, trad.idLang, currentUser)}"
                                                update="containerIndex:contentConcept containerIndex:thesoSelect 
                                                containerIndex:sideBarSearch 
                                                containerIndex:searchBar indexTitle"/>

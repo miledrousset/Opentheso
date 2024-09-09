@@ -1,11 +1,11 @@
 package fr.cnrs.opentheso.bean.rightbody.viewhome;
 
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.HtmlPageHelper;
-import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.HtmlPageHelper;
+import fr.cnrs.opentheso.repositories.StatisticHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
@@ -34,7 +34,19 @@ public class ViewEditorThesoHomeBean implements Serializable {
     private Connect connect;
 
     @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
+    private StatisticHelper statisticHelper;
+
+    @Autowired
     private HtmlPageHelper htmlPageHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private UserHelper userHelper;
 
     private boolean isViewPlainText;
     private boolean isInEditing;
@@ -91,7 +103,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     
     public List<DcElement> meta(String idThesaurus){
 
-        List<DcElement> dcElements = new DcElementHelper().getDcElementOfThesaurus(connect.getPoolConnexion(), idThesaurus);
+        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idThesaurus);
         if(dcElements == null || dcElements.isEmpty())
             dcElements = new ArrayList<>();           
         return dcElements;
@@ -121,13 +133,12 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
 
     public String getTotalConceptOfTheso(String idThesaurus){
-        StatisticHelper statisticHelper = new StatisticHelper();
+
         int count = statisticHelper.getNbCpt(connect.getPoolConnexion(), idThesaurus);
         return "" + count;
     }
 
     public String getLastModifiedDate(String idThesaurus){
-        ConceptHelper conceptHelper = new ConceptHelper();
         Date date = conceptHelper.getLastModification(connect.getPoolConnexion(), idThesaurus);
         if(date != null)
             return date.toString();
@@ -135,7 +146,6 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
 
     public String getProjectName(String idThesaurus){
-        UserHelper userHelper = new UserHelper();
         int idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), idThesaurus);
         if(idProject != -1) {
             return userHelper.getGroupName(connect.getPoolConnexion(), idProject);
@@ -144,7 +154,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     }
 
     public ArrayList<NodeIdValue> getLastModifiedConcepts(String idThesaurus, String idLanguage){
-        return new ConceptHelper().getLastModifiedConcept(connect.getPoolConnexion(), idThesaurus, idLanguage);
+        return conceptHelper.getLastModifiedConcept(connect.getPoolConnexion(), idThesaurus, idLanguage);
     }        
     
     public void setViewPlainTextTo(boolean status){

@@ -13,7 +13,11 @@ import java.util.List;
 import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Service;
 
+
+
+@Service
 public class PropositionHelper {
 
     private final Log log = LogFactory.getLog(PropositionHelper.class);

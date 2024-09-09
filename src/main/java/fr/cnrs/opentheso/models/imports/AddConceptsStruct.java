@@ -1,9 +1,11 @@
 package fr.cnrs.opentheso.models.imports;
 
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.GpsHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.relations.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.bdd.helper.*;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
@@ -20,17 +22,16 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class AddConceptsStruct {
 
     public Concept concept;
-    public ConceptHelper conceptHelper = new ConceptHelper();
     public String conceptStatus = "";
     public SKOSResource conceptResource;
     public NodeStatus status;
     public String collectionToAdd;
     // pour intégrer les coordonnées GPS
     public List<NodeGps> nodeGps = new ArrayList<>();
-    public GpsHelper gpsHelper = new GpsHelper();
     //ajout des termes et traductions
     public NodeTerm nodeTerm = new NodeTerm();
     public ArrayList<NodeTermTraduction> nodeTermTraductionList = new ArrayList<>();
@@ -52,10 +53,7 @@ public class AddConceptsStruct {
 
     // ajout des alignements
     public ArrayList<NodeAlignment> nodeAlignments = new ArrayList<>();
-    public TermHelper termHelper = new TermHelper();
-    public NoteHelper noteHelper = new NoteHelper();
     public boolean isTopConcept = false;
-    public AlignmentHelper alignmentHelper = new AlignmentHelper();
     public List<VoteDto> votes = new ArrayList<>();
     public List<MessageDto> messages = new ArrayList<>();
 

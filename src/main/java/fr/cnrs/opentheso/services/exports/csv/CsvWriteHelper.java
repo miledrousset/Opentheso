@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.services.exports.csv;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.concept.NodeCompareTheso;
 import fr.cnrs.opentheso.models.relations.NodeDeprecated;
@@ -36,22 +36,20 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author miledrousset
- */
+
+@Service
 public class CsvWriteHelper {
 
     private final String delim_multi_datas = "##";
 
+    @Autowired
+    private ConceptHelper conceptHelper;
+
     /**
      * Export en CSV avec tous les champs
-     *
-     * @param xmlDocument
-     * @param selectedLanguages
-     * @param delimiter
-     * @return
      */
     public byte[] writeCsv(SKOSXmlDocument xmlDocument, List<NodeLangTheso> selectedLanguages, char delimiter) {
         if (selectedLanguages == null || selectedLanguages.isEmpty()) {
@@ -550,7 +548,6 @@ public class CsvWriteHelper {
                 header.add("alignment");
                 csvFilePrinter.printRecord(header);
 
-                ConceptHelper conceptHelper = new ConceptHelper();
                 ArrayList<String> idConcepts = null;
                 if (idGroups == null || idGroups.isEmpty()) {
                     idConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
@@ -840,9 +837,7 @@ public class CsvWriteHelper {
                 
                 csvFilePrinter.printRecord(header);
 
-                ConceptHelper conceptHelper = new ConceptHelper();
-                ArrayList<NodeDeprecated> nodeDeprecateds;
-                nodeDeprecateds = conceptHelper.getAllDeprecatedConceptOfThesaurus(ds, idTheso, idLang);
+                ArrayList<NodeDeprecated> nodeDeprecateds = conceptHelper.getAllDeprecatedConceptOfThesaurus(ds, idTheso, idLang);
                 if (nodeDeprecateds == null) {
                     return null;
                 }

@@ -5,8 +5,8 @@
  */
 package fr.cnrs.opentheso.bean.candidat;
 
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.candidats.NodeTabVote;
 import fr.cnrs.opentheso.models.candidats.NodeVote;
 import fr.cnrs.opentheso.models.notes.NodeNote;
@@ -35,6 +35,15 @@ public class showVoteNote implements Serializable {
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private SelectedTheso selectedTheso;
 
+    @Autowired
+    private UserHelper userHelper;
+
+    @Autowired
+    private CandidatDao candidatDao;
+
+    @Autowired
+    private NoteHelper noteHelper;
+
     private String userName;
     private String candidat;
     private ArrayList<NodeTabVote> nodeTabVotes;
@@ -62,17 +71,12 @@ public class showVoteNote implements Serializable {
     public void prepareVoteNote(CandidatDto selectedCandidate){
         String idCandidate = selectedCandidate.getIdConcepte();
         nodeTabVotes = new ArrayList<>();
-        
-        UserHelper userHelper = new UserHelper();
-        NoteHelper noteHelper = new NoteHelper();
+
         NodeNote nodeNote;
-        
- //       int createdBy = selectedCandidate.getCreatedById();
- //       userName = userHelper.getNameUser(connect.getPoolConnexion(), createdBy);
+
         userName = selectedCandidate.getCreatedBy();
         candidat = selectedCandidate.getNomPref();
-        
-        CandidatDao candidatDao = new CandidatDao();
+
         ArrayList<NodeVote> nodeVotes = candidatDao.getAllVoteNotes(connect.getPoolConnexion(), idCandidate, selectedTheso.getCurrentIdTheso());
         
         for (NodeVote nodeVote : nodeVotes) {

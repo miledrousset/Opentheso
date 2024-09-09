@@ -2,9 +2,9 @@ package fr.cnrs.opentheso.bean.candidat;
 
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
@@ -27,16 +27,16 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
-/**
- *
- * @author miledrousset
- */
+@Slf4j
+@Data
 @Named(value = "processCandidateBean")
 @SessionScoped
 public class ProcessCandidateBean implements Serializable {
@@ -46,6 +46,21 @@ public class ProcessCandidateBean implements Serializable {
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private MailBean mailBean;  
     @Autowired @Lazy private CurrentUser currentUser;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private CandidatService candidatService;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
+    private CsvWriteHelper csvWriteHelper;
+
+    @Autowired
+    private UserHelper userHelper;
     
     private CandidatDto selectedCandidate;
     private String adminMessage;
@@ -73,7 +88,7 @@ public class ProcessCandidateBean implements Serializable {
     }
 
     public StreamedContent exportProcessedCandidates(List<CandidatDto> candidatDtos) {
-        CsvWriteHelper csvWriteHelper = new CsvWriteHelper();
+
         byte[] datas;
         
         datas = csvWriteHelper.writeProcessedCandidates(candidatDtos, ';');
@@ -95,8 +110,7 @@ public class ProcessCandidateBean implements Serializable {
         PrimeFaces.current().executeScript("PF('waitDialog').hide();");
         return new DefaultStreamedContent();
 
-    }    
-    
+    }
     
     
     public void insertCandidat(int idUser, NodePreference nodePreference) {
@@ -104,25 +118,23 @@ public class ProcessCandidateBean implements Serializable {
             printErreur("Pas de candidat sélectionné");
             return;
         }
-        CandidatService candidatService = new CandidatService();
 
         if (!candidatService.insertCandidate(connect, selectedCandidate, adminMessage, idUser)) {
             printErreur("Erreur d'insertion");
             return;
         }
         // envoie de mail au créateur du candidat si l'option mail est activée
-        UserHelper userHelper = new UserHelper();
         NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
         if(nodeUser.isAlertMail())
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
         
         generateArk(nodePreference, selectedCandidate);
         
-        new ConceptHelper().updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate.getIdThesaurus(),
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate.getIdThesaurus(),
                 selectedCandidate.getIdConcepte(), idUser);
 
         ///// insert DcTermsData to add contributor
-        new DcElementHelper().addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 selectedCandidate.getIdConcepte(), selectedCandidate.getIdThesaurus());
         ///////////////             
@@ -146,7 +158,6 @@ public class ProcessCandidateBean implements Serializable {
     
     private void generateArk(NodePreference nodePreference, CandidatDto selectedCandidateTemp){
         if (nodePreference != null) {
-            ConceptHelper conceptHelper = new ConceptHelper();
             conceptHelper.setNodePreference(nodePreference);
 
             // création de l'identifiant Handle
@@ -154,7 +165,7 @@ public class ProcessCandidateBean implements Serializable {
                 if (!conceptHelper.generateIdHandle(connect.getPoolConnexion(), selectedCandidateTemp.getIdConcepte(),
                         selectedCandidateTemp.getIdThesaurus())) {
                     printErreur("La création Handle a échouée");
-                    Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Handle a échoué");
+                    log.error("La création Handle a échoué");
                 }
             }     
             // serveur Ark
@@ -162,8 +173,7 @@ public class ProcessCandidateBean implements Serializable {
                 if (!conceptHelper.generateArkId(connect.getPoolConnexion(), 
                         selectedCandidateTemp.getIdThesaurus(), selectedCandidateTemp.getIdConcepte(),
                         selectedCandidateTemp.getLang())) {
-                    printErreur("La création Ark a échoué");
-                    Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création Ark a échoué");
+                    log.error("La création Ark a échoué");
                 }
             }
             // ark Local
@@ -174,7 +184,7 @@ public class ProcessCandidateBean implements Serializable {
                         selectedCandidateTemp.getIdThesaurus(),
                         idConcepts)) {
                     printErreur("La création du Ark local a échoué");
-                    Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, "La création du Ark local a échoué");
+                    log.error("La création du Ark local a échoué");
                 }
             }                
         }          
@@ -185,7 +195,6 @@ public class ProcessCandidateBean implements Serializable {
             printErreur("Pas de candidat sélectionné");
             return;
         }
-        CandidatService candidatService = new CandidatService();
 
         if (!candidatService.rejectCandidate(connect, selectedCandidate, adminMessage, idUser)) {
             printErreur("Erreur d'insertion");
@@ -193,8 +202,7 @@ public class ProcessCandidateBean implements Serializable {
         }
 
         // envoie de mail au créateur du candidat si l'option mail est activée
-        
-        UserHelper userHelper = new UserHelper();
+
         NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
         if(nodeUser.isAlertMail())
             sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate);
@@ -221,12 +229,8 @@ public class ProcessCandidateBean implements Serializable {
             printErreur("Pas de candidat sélectionné");
             return;
         }
-        CandidatService candidatService = new CandidatService();
-        ConceptHelper conceptHelper = new ConceptHelper();
-        DcElementHelper dcElmentHelper = new DcElementHelper();        
         
         // envoie de mail au créateur du candidat si l'option mail est activée
-        UserHelper userHelper = new UserHelper();
         NodeUser nodeUser;
 
         
@@ -240,7 +244,7 @@ public class ProcessCandidateBean implements Serializable {
                     selectedCandidate1.getIdConcepte(), idUser);
             
             ///// insert DcTermsData to add contributor
-            dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
             ///////////////              
@@ -268,12 +272,8 @@ public class ProcessCandidateBean implements Serializable {
             printErreur("Pas de candidat sélectionné");
             return;
         }
-        CandidatService candidatService = new CandidatService();
-        ConceptHelper conceptHelper = new ConceptHelper();
-        DcElementHelper dcElmentHelper = new DcElementHelper();          
+
         // envoie de mail au créateur du candidat si l'option mail est activée
-        UserHelper userHelper = new UserHelper();
-        
         NodeUser nodeUser;
         
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
@@ -288,7 +288,7 @@ public class ProcessCandidateBean implements Serializable {
             conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate1.getIdThesaurus(),
                     selectedCandidate1.getIdConcepte(), idUser); 
             ///// insert DcTermsData to add contributor
-            dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
             ///////////////               
@@ -389,22 +389,6 @@ public class ProcessCandidateBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
-    }
-
-    public CandidatDto getSelectedCandidate() {
-        return selectedCandidate;
-    }
-
-    public void setSelectedCandidate(CandidatDto selectedCandidate) {
-        this.selectedCandidate = selectedCandidate;
-    }
-
-    public String getAdminMessage() {
-        return adminMessage;
-    }
-
-    public void setAdminMessage(String adminMessage) {
-        this.adminMessage = adminMessage;
     }
 
 }

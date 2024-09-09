@@ -5,8 +5,8 @@
  */
 package fr.cnrs.opentheso.bean.setting;
 
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -40,6 +40,12 @@ public class PreferenceBean implements Serializable {
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
 
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
     private String uriType;
     private NodePreference nodePreference;
     private ArrayList<NodeLangTheso> languagesOfTheso;
@@ -69,7 +75,6 @@ public class PreferenceBean implements Serializable {
             return;
         }
         nodePreference = roleOnThesoBean.getNodePreference();
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         // les langues du thésaurus
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
@@ -88,7 +93,6 @@ public class PreferenceBean implements Serializable {
     }
 
     public void updateSelectedServer(String selectedServer){
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
        
         switch (selectedServer) {
             case "ark":
@@ -112,7 +116,6 @@ public class PreferenceBean implements Serializable {
     }
     
     public String getGoogleAnalytics() {
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         if(connect == null || connect.getPoolConnexion() == null) return "";
         return preferencesHelper.getCodeGoogleAnalytics(
                 connect.getPoolConnexion());
@@ -123,7 +126,6 @@ public class PreferenceBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
 
         FacesMessage msg;
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         
         if (!preferencesHelper.updateAllPreferenceUser(connect.getPoolConnexion(),
                 nodePreference, selectedTheso.getCurrentIdTheso())) {

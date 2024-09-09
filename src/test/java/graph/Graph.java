@@ -3,10 +3,10 @@ package graph;
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.PathHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.PathHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
 import fr.cnrs.opentheso.models.concept.ConceptLabel;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
@@ -57,11 +57,6 @@ public class Graph {
         
         getGraphByConcept(ds, idTheso, idConcept, idLang);
         
-//        idTheso = "th12";
-//        idConcept = "4";
-//        idLang = "fr";
-//        getGraphByConcept(ds, idTheso, idConcept, idLang);
-        
         String json = getJsonFromNodeGraphD3js();
     }
     
@@ -92,7 +87,6 @@ public class Graph {
     private void getGraphByTheso(HikariDataSource ds, String idTheso, String idLang){
         ConceptHelper conceptHelper = new ConceptHelper();
         nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
-        uriHelper = new UriHelper(ds, nodePreference, idTheso);
         
         // récupérer les conceptScheme
         ThesaurusHelper thesaurusHelper = new ThesaurusHelper();

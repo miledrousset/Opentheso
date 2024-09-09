@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.alignment;
 
-import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
 import fr.cnrs.opentheso.models.alignment.NodeSelectedAlignment;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -20,10 +20,10 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.primefaces.PrimeFaces;
+import org.springframework.context.annotation.Lazy;
 
 
 @Data
@@ -31,32 +31,27 @@ import org.primefaces.PrimeFaces;
 @Named(value = "setAlignmentSourceBean")
 public class SetAlignmentSourceBean implements Serializable {
 
-    @Autowired @Lazy
+    @Autowired
     private Connect connect;
-    @Autowired @Lazy
+
+    @Autowired
     private ConceptView conceptView;
-    @Autowired @Lazy
+
+    @Autowired
     private SelectedTheso selectedTheso;
+
     @Autowired @Lazy
     private AlignmentBean alignmentBean;
+    
+    @Autowired
+    private AlignmentHelper alignmentHelper;
 
-    private ArrayList<AlignementSource> allAlignementSources;
+    private List<AlignementSource> allAlignementSources;
     private List<NodeSelectedAlignment> selectedAlignments = new ArrayList<>();
-    private ArrayList<NodeSelectedAlignment> selectedAlignmentsOfTheso;
+    private List<NodeSelectedAlignment> selectedAlignmentsOfTheso, nodeSelectedAlignmentsAll, sourcesSelected;
     private NodeSelectedAlignment selectedSource;
-
-    private List<NodeSelectedAlignment> nodeSelectedAlignmentsAll, sourcesSelected;
-
-    //// pour l'ajout d'une nouvelle source
-    private String sourceName;
-    private String sourceUri;
-    private String sourceIdTheso;
-    private String description;
-
-    private AlignementSource selectedAlignementSource;
-    private AlignementSource alignementSourceToUpdate;
-
-    private String sourceSelectedName;
+    private String sourceName, sourceUri, sourceIdTheso, description, sourceSelectedName;
+    private AlignementSource selectedAlignementSource, alignementSourceToUpdate;
     
 
     public void init() {
@@ -72,7 +67,7 @@ public class SetAlignmentSourceBean implements Serializable {
     }
     
     public void initForUpdate(NodeSelectedAlignment nodeSelectedAlignment){
-        alignementSourceToUpdate= new AlignmentHelper().getThisAlignementSource(connect.getPoolConnexion(), nodeSelectedAlignment.getIdAlignmentSource());
+        alignementSourceToUpdate= alignmentBean.getThisAlignementSource(connect.getPoolConnexion(), nodeSelectedAlignment.getIdAlignmentSource());
     }
 
     public void initAlignementAutomatique(String alignementMode) {
@@ -110,10 +105,10 @@ public class SetAlignmentSourceBean implements Serializable {
     public void updateSelectedSource(NodeSelectedAlignment selectedAlignment) throws SQLException {
 
         if (selectedAlignment.isSelected()) {
-            new AlignmentHelper().addSourceAlignementToTheso(connect.getPoolConnexion(),
+            alignmentHelper.addSourceAlignementToTheso(connect.getPoolConnexion(),
                     selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
         } else {
-            new AlignmentHelper().deleteSourceAlignementFromTheso(connect.getPoolConnexion().getConnection(),
+            alignmentHelper.deleteSourceAlignementFromTheso(connect.getPoolConnexion().getConnection(),
                     selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
         }
         showMessage(FacesMessage.SEVERITY_INFO, "Source mise à jour !");
@@ -141,7 +136,6 @@ public class SetAlignmentSourceBean implements Serializable {
     }
 
     public void initSourcesList() {
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
 
         // toutes les sources d'alignements
         allAlignementSources = alignmentHelper.getAlignementSourceSAdmin(connect.getPoolConnexion());
@@ -192,7 +186,7 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        if (!new AlignmentHelper().deleteAlignmentSource(connect.getPoolConnexion(), alignment.getIdAlignmentSource())) {
+        if (!alignmentHelper.deleteAlignmentSource(connect.getPoolConnexion(), alignment.getIdAlignmentSource())) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la suppression de la source !");
             return;
         }
@@ -207,7 +201,7 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        if (!new AlignmentHelper().updateAlignmentSource(connect.getPoolConnexion(), alignementSourceToUpdate)) {
+        if (!alignmentHelper.updateAlignmentSource(connect.getPoolConnexion(), alignementSourceToUpdate)) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la mise à jour de la source !");
             return;
         }
@@ -252,7 +246,7 @@ public class SetAlignmentSourceBean implements Serializable {
         alignementSource.setSource(sourceName);
         alignementSource.setTypeRequete("REST");
 
-        if (!new AlignmentHelper().addNewAlignmentSource(connect.getPoolConnexion(), alignementSource, idUser, selectedTheso.getCurrentIdTheso())) {
+        if (!alignmentHelper.addNewAlignmentSource(connect.getPoolConnexion(), alignementSource, idUser, selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur côté base de données !");
             return;
         }

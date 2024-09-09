@@ -12,6 +12,6 @@ public class NodeTree {
     private String idConcept;
     private String preferredTerm;
     private String idParent;
-    private List<NodeTree> children = new ArrayList<>();
+    private List<NodeTree> childrens = new ArrayList<>();
 
 }

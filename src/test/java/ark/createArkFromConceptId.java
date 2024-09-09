@@ -7,7 +7,7 @@ package ark;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 

@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
@@ -39,6 +39,12 @@ public class ViewExportBean implements Serializable {
 
     @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
 
     private ArrayList<NodeLangTheso> languagesOfTheso;
     private ArrayList<NodeGroup> groupList;
@@ -116,7 +122,7 @@ public class ViewExportBean implements Serializable {
     
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
-        nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+        nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
 
         selectedLang1_PDF = nodePreference.getSourceLang();
         selectedLang2_PDF = null;
@@ -127,8 +133,6 @@ public class ViewExportBean implements Serializable {
         
         this.formatFile = format;
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
-
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
 
 
         String idLang = selectedTheso.getCurrentLang();

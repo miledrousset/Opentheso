@@ -608,7 +608,7 @@ public class SKOSResource {
                 ArrayList<TermTemp> conceptIdsTemps = new ArrayList<>();
                 for (String child : childs) {
                     String idTheso = resource.getLocalUri().substring(resource.getLocalUri().indexOf("idt=") + 4); 
-                    Term term = null;//TODO Firas new TermHelper().getThisTerm(hikariDataSource, child, idTheso, langCode);
+                    Term term = null;
                     if (term != null) {
                         TermTemp termTemp = new TermTemp();
                         termTemp.idConcept = child;

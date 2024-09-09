@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.models.users.NodeUserGroupThesaurus;
@@ -27,6 +27,9 @@ public class SuperAdminBean implements Serializable {
 
     @Autowired @Lazy 
     private Connect connect;
+
+    @Autowired
+    private UserHelper userHelper;
     
     @Autowired @Lazy 
     private CurrentUser currentUser;
@@ -82,14 +85,13 @@ public class SuperAdminBean implements Serializable {
      * permet de récupérer la liste de tous les utilisateurs (Pour SuperAdmin)
      */
     private void listAllUsers(){
-        allUsers = new UserHelper().getAllUsers(connect.getPoolConnexion()); 
+        allUsers = userHelper.getAllUsers(connect.getPoolConnexion());
     }    
     
     /**
      * permet de récupérer la liste de tous les utilisateurs avec les roles pour chaque projet
      */
     private void listAllUsersProjectRole(){
-        UserHelper userHelper = new UserHelper();
         String idLang = connect.getWorkLanguage();
         if(selectedTheso.getCurrentLang() != null)
             idLang = selectedTheso.getCurrentLang();
@@ -105,12 +107,11 @@ public class SuperAdminBean implements Serializable {
      * permet de retourner la liste de tous les projets
      */
     private void listAllProjects(){
-        allProjects = new UserHelper().getAllProject(connect.getPoolConnexion());
+        allProjects = userHelper.getAllProject(connect.getPoolConnexion());
     }
     
     private void listAllThesaurus(){
         allThesoProject = new ArrayList<>();
-        UserHelper userHelper = new UserHelper();
         String idLang = connect.getWorkLanguage();
         if(selectedTheso.getCurrentLang() != null)
             idLang = selectedTheso.getCurrentLang();

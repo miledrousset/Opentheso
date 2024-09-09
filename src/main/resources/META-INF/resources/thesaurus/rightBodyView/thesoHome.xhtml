@@ -96,8 +96,8 @@
                                 <p:commandLink rendered="#{value1.value != ''}" value="#{value1.value}"
                                                style="font-size: 13px; color: #601e18;"
                                                title="#{value1.id}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                                         value1.id, selectedTheso.selectedLang)}" update="containerIndex:formRightTab indexTitle"/>                           
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, value1.id, selectedTheso.selectedLang, currentUser)}"
+                                               update="containerIndex:formRightTab indexTitle"/>
                                 <h:outputText rendered="#{!status1.last}" value=", " style="color: #FF7979"/>
                             </ui:repeat>
                         </div>                

@@ -2,20 +2,20 @@ package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import fr.cnrs.opentheso.bdd.helper.FacetHelper;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.PathHelper;
-import fr.cnrs.opentheso.bdd.helper.DaoResourceHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.PathHelper;
+import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodeTree;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.concept.Path;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
 import fr.cnrs.opentheso.bean.alignment.AlignmentBean;
-import fr.cnrs.opentheso.bean.alignment.AlignmentManualBean;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -80,13 +80,25 @@ public class Tree implements Serializable {
     private EditFacet editFacet;
 
     @Autowired @Lazy
+    private CurrentUser currentUser;
+
+    @Autowired @Lazy
     private AlignmentBean alignmentBean;
 
     @Autowired @Lazy
     private PropositionBean propositionBean;
 
-    @Autowired @Lazy
-    private AlignmentManualBean alignmentManualBean;
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private PathHelper pathHelper;
+
+    @Autowired
+    private FacetHelper facetHelper;
+
+    @Autowired
+    private DaoResourceHelper daoResourceHelper;
 
     private DataService dataService;
     private TreeNode selectedNode;
@@ -150,9 +162,8 @@ public class Tree implements Serializable {
     }
 
     private boolean addFirstNodes() {
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         TreeNodeData data;
-        FacetHelper facetHelper = new FacetHelper();
         // la liste est triée par alphabétique ou notation
         ArrayList<NodeConceptTree> nodeConceptTrees
                 = conceptHelper.getListOfTopConcepts(connect.getPoolConnexion(),
@@ -234,7 +245,6 @@ public class Tree implements Serializable {
         if (node.getChildCount() == 1 && ((TreeNode) node.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             node.getChildren().remove(0);
             idConceptParent = ((TreeNodeData) node.getData()).getNodeId();
-    //        FacetHelper facetHelper = new FacetHelper();
             if ("facet".equals(node.getType())) {
                 addMembersOfFacet(node);
             } else {
@@ -258,11 +268,11 @@ public class Tree implements Serializable {
     }
 
     private void addMembersOfFacet(TreeNode parent) {
-        ArrayList<NodeIdValue> nodeIdValues = new FacetHelper().getAllMembersOfFacetSorted(connect.getPoolConnexion(),
+        ArrayList<NodeIdValue> nodeIdValues = facetHelper.getAllMembersOfFacetSorted(connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 selectedTheso.getCurrentLang(),
                 idTheso);
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         for (NodeIdValue nodeIdValue : nodeIdValues) {
             TreeNodeData data = new TreeNodeData(
                     nodeIdValue.getId(),
@@ -299,7 +309,6 @@ public class Tree implements Serializable {
      * #MR
      */
     private boolean addConceptsChild(TreeNode parent) {
-        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
 
         List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(
                 connect.getPoolConnexion(),
@@ -362,55 +371,7 @@ public class Tree implements Serializable {
         return true;
     }
 
-    private boolean addConceptsChildWithFacets(TreeNode parent) {
-        ConceptHelper conceptHelper = new ConceptHelper();
-        addFacettes(parent);
-
-        ArrayList<NodeConceptTree> nodeConceptTrees = conceptHelper.getListConceptsIgnoreConceptsInFacets(
-                connect.getPoolConnexion(),
-                ((TreeNodeData) parent.getData()).getNodeId(),
-                idTheso,
-                selectedTheso.getCurrentLang(),
-                selectedTheso.isSortByNotation());
-
-        for (NodeConceptTree nodeConceptTree : nodeConceptTrees) {
-            if (nodeConceptTree.getIdConcept() == null) {
-                continue;
-            }
-
-            TreeNodeData data = new TreeNodeData(
-                    nodeConceptTree.getIdConcept(),
-                    nodeConceptTree.getTitle().isEmpty() ? "(" + nodeConceptTree.getIdConcept() + ")" : nodeConceptTree.getTitle(),
-                    nodeConceptTree.getNotation(),
-                    false,//isgroup
-                    false,//isSubGroup
-                    true,//isConcept
-                    false,//isTopConcept
-                    "term"
-            );
-
-            boolean haveConceptChild = conceptHelper.haveChildren(connect.getPoolConnexion(), idTheso,
-                    nodeConceptTree.getIdConcept());
-            if (haveConceptChild) {
-                if (nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) {
-                    dataService.addNodeWithChild("deprecated", data, parent);
-                } else {
-                    dataService.addNodeWithChild("concept", data, parent);
-                }
-            } else {
-                if (nodeConceptTree.getStatusConcept().equalsIgnoreCase("dep")) {
-                    dataService.addNodeWithoutChild("deprecated", data, parent);
-                } else {
-                    dataService.addNodeWithoutChild("file", data, parent);
-                }
-            }
-        }
-
-        return true;
-    }
-
     public List<NodeTree> searchAllConceptChilds(HikariDataSource connexion, String conceptParentId, String idTheso, String idLang) {
-        ConceptHelper conceptHelper = new ConceptHelper();
 
         List<NodeTree> enfants = new ArrayList<>();
 
@@ -440,7 +401,7 @@ public class Tree implements Serializable {
 
     public List<NodeTree> searchFacettesForTree(HikariDataSource connexion, String conceptParentId, String idTheso, String idLang) {
         List<NodeTree> facaets = new ArrayList<>();
-        List<NodeIdValue> nodeIdValues = new FacetHelper().getAllIdValueFacetsOfConcept(
+        List<NodeIdValue> nodeIdValues = facetHelper.getAllIdValueFacetsOfConcept(
                 connexion,
                 conceptParentId,
                 idTheso,
@@ -468,7 +429,7 @@ public class Tree implements Serializable {
 
     /////// pour l'ajout d'un fils supplementaire après un ajout de concept
     public void addNewChild(TreeNode parent, String idConcept, String idTheso, String idLang, String notation) {
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         TreeNodeData data;
         String label = conceptHelper.getLexicalValueOfConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang);
         if (label == null || label.isEmpty()) {
@@ -510,7 +471,6 @@ public class Tree implements Serializable {
     }
 
     private void addFacettes(TreeNode parent) {
-        FacetHelper facetHelper = new FacetHelper();
         List<NodeIdValue> nodeIdValues = facetHelper.getAllIdValueFacetsOfConcept(
                 connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
@@ -538,7 +498,6 @@ public class Tree implements Serializable {
 
     public void selectThisFacet(String idFacet) {
         /// chargement de l'arbre jusqu'au concept Parent de la Facette
-        FacetHelper facetHelper = new FacetHelper();
         String idConceptParentOfFacet = facetHelper.getIdConceptParentOfFacet(connect.getPoolConnexion(), idFacet, idTheso);
         expandTreeToPath(idConceptParentOfFacet, idTheso, idLang);
         onNodeExpand_((DefaultTreeNode) selectedNode);
@@ -596,7 +555,7 @@ public class Tree implements Serializable {
 
             rightBodySetting.setShowConceptToOn();
             conceptBean.getConceptForTree(idTheso,
-                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang, currentUser);
 
             idConceptSelected = ((TreeNodeData) selectedNode.getData()).getNodeId();
             if (rightBodySetting.getIndex().equalsIgnoreCase("2")) {
@@ -668,7 +627,7 @@ public class Tree implements Serializable {
         if (event.getTab().getId().equals("viewTabConcept")) {
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                    conceptBean.getSelectedLang());
+                    conceptBean.getSelectedLang(), currentUser);
 
             rightBodySetting.setIndex("0");
             indexSetting.setIsValueSelected(true);
@@ -710,7 +669,6 @@ public class Tree implements Serializable {
      * @param idLang #MR
      */
     public void expandTreeToPath(String idConcept, String idTheso, String idLang) {
-        PathHelper pathHelper = new PathHelper();
         List<String> graphPaths = pathHelper.getGraphOfConcept(
                 connect.getPoolConnexion(), idConcept, idTheso);
         List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);  
@@ -765,8 +723,7 @@ public class Tree implements Serializable {
 
     public void expandTreeToPath2(String idConcept, String idTheso, String idLang, String idFacette) {
 
-        List<Path> paths = new PathHelper().getPathOfConcept(
-                connect.getPoolConnexion(), idConcept, idTheso);
+        List<Path> paths = pathHelper.getPathOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
         
         paths.get(0).getPath().add(idFacette);
 
@@ -836,13 +793,9 @@ public class Tree implements Serializable {
      * @param idTheso
      * @param idLang #MR
      */
-    public void initAndExpandTreeToPath(
-            String idConcept,
-            String idTheso,
-            String idLang) {
+    public void initAndExpandTreeToPath(String idConcept, String idTheso, String idLang) {
 
-        List<Path> paths = new PathHelper().getPathOfConcept(
-                connect.getPoolConnexion(), idConcept, idTheso);
+        List<Path> paths = pathHelper.getPathOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
 
         initialise(idTheso, idLang);
 
@@ -854,12 +807,6 @@ public class Tree implements Serializable {
             if (selectedNode != null) {
                 selectedNode.setSelected(false);
             }
-            /*
-            if (CollectionUtils.isNotEmpty(clickselectedNodes)) {
-                for (TreeNode treeNode : clickselectedNodes) {
-                    treeNode.setSelected(false);
-                }
-            }*/
             selectedNodes.clear();
         }
 
@@ -898,19 +845,13 @@ public class Tree implements Serializable {
      */
     private TreeNode selectChildNode(TreeNode treeNodeParent, String idConceptChildToFind) {
         // test si les fils ne sont pas construits
-        FacetHelper facetHelper = new FacetHelper();
         if (treeNodeParent.getChildCount() == 1 && ((TreeNode) treeNodeParent.getChildren().get(0)).getData().toString().equals("DUMMY")) {
             treeNodeParent.getChildren().remove(0);
 
             if ("facet".equals(treeNodeParent.getType())) {
                 addMembersOfFacet(treeNodeParent);
             } else {
-              //  if (facetHelper.isConceptHaveFacet(connect.getPoolConnexion(),
-              //          ((TreeNodeData) treeNodeParent.getData()).getNodeId(), idTheso)) {
-              //      addConceptsChildWithFacets(treeNodeParent);
-              //  } else {
-                    addConceptsChild(treeNodeParent);
-              //  }
+                addConceptsChild(treeNodeParent);
             }
         }
         List<TreeNode> treeNodes = treeNodeParent.getChildren();

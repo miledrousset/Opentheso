@@ -3,8 +3,8 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +33,9 @@ public class ConceptSearchController {
     @Autowired
     private GroupHelper groupHelper;
 
+    @Autowired
+    private SearchHelper searchHelper;
+
 
     @GetMapping("/{idThesaurus}/{input}")
     public ResponseEntity<Object> searchAutocompleteV2(@PathVariable("input") String input,
@@ -40,7 +43,7 @@ public class ConceptSearchController {
                                                @RequestParam("lang") String lang,
                                                @RequestParam("group") String idGroup) throws JsonProcessingException {
 
-        var concepts = new SearchHelper().searchConceptWSV2(connect.getPoolConnexion(), input, lang, idGroup, idThesaurus);
+        var concepts = searchHelper.searchConceptWSV2(connect.getPoolConnexion(), input, lang, idGroup, idThesaurus);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(concepts));
     }
 

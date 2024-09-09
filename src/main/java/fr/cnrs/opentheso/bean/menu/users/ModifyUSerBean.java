@@ -5,7 +5,7 @@
  */
 package fr.cnrs.opentheso.bean.menu.users;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -30,9 +30,13 @@ import org.primefaces.PrimeFaces;
 @Named(value = "modifyUSerBean")
 @SessionScoped
 public class ModifyUSerBean implements Serializable {
+
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private SuperAdminBean superAdminBean;
+
+    @Autowired
+    private UserHelper userHelper;
     
     private NodeUser nodeUser;
     private String passWord1;
@@ -75,7 +79,6 @@ public class ModifyUSerBean implements Serializable {
      * @param idUser
      */
     public void selectUser(int idUser) {
-        UserHelper userHelper = new UserHelper();
         nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
         passWord1 = null;
         passWord2 = null;
@@ -107,8 +110,7 @@ public class ModifyUSerBean implements Serializable {
         } catch (NumberFormatException e) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-        }            
-        UserHelper userHelper = new UserHelper();
+        }
         nodeUser = userHelper.getUser(connect.getPoolConnexion(), id);
         hasKey = hasKey();
         apiKeyExpireDate = nodeUser.getApiKeyExpireDate();
@@ -119,7 +121,6 @@ public class ModifyUSerBean implements Serializable {
      * Permet de supprimer un utilisateur
      */
     public void deleteUser() {
-        UserHelper userHelper = new UserHelper();
         FacesMessage msg;
         if(nodeUser.getIdUser() == -1) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
@@ -147,8 +148,8 @@ public class ModifyUSerBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
-        }           
-        UserHelper userHelper = new UserHelper();
+        }
+
         if(!userHelper.updateUser(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
@@ -181,8 +182,8 @@ public class ModifyUSerBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
-        }           
-        UserHelper userHelper = new UserHelper();
+        }
+
         nodeUser.setName(nodeUser.getName().trim());
         if(!userHelper.updateUser(
                 connect.getPoolConnexion(),
@@ -203,7 +204,7 @@ public class ModifyUSerBean implements Serializable {
     
     public void updatePassword(){
         FacesMessage msg;
-        UserHelper userHelper = new UserHelper();
+
         if(passWord1 == null || passWord1.isEmpty()) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -238,7 +239,6 @@ public class ModifyUSerBean implements Serializable {
      * Permet de sauvegarder les informations concernant la clé  d'API
      */
     public void updateApiKey() {
-        UserHelper userHelper = new UserHelper();
         Boolean keyNeverExpireValue = nodeUser.isKeyNeverExpire();
         LocalDate apiKeyExpireDateValue = null;
 

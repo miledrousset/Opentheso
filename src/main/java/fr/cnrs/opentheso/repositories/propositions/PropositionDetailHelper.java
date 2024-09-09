@@ -11,12 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cnrs.opentheso.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Service;
 
+
+@Slf4j
+@Service
 public class PropositionDetailHelper {
-
-    private final Log log = LogFactory.getLog(PropositionDetailHelper.class);
 
     public List<PropositionDetailDao> getPropositionDetail(HikariDataSource ds, int propositionId) {
 

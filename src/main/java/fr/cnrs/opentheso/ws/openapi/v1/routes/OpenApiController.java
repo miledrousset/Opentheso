@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
@@ -38,6 +38,13 @@ public class OpenApiController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private ApiKeyHelper apiKeyHelper;
+
+    @Autowired
+    private UserHelper userHelper;
+
+
     @GetMapping(value = "/Auth", produces = CustomMediaType.APPLICATION_JSON_UTF_8)
     @Operation(
             summary = "Vérification du système d'authentification",
@@ -65,7 +72,7 @@ public class OpenApiController {
     )
     public ResponseEntity<Object> testAuth(@RequestHeader(value = "API-KEY") String apiKey)  {
 
-        var keyState = new ApiKeyHelper().checkApiKey(connect.getPoolConnexion(), apiKey);
+        var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);
         if (keyState != ApiKeyState.VALID) {
             return errorResponse(keyState);
         }
@@ -74,8 +81,7 @@ public class OpenApiController {
         builder.add("valid", true);
         builder.add("key", apiKey);
 
-        var userId = new ApiKeyHelper().getIdUser(connect.getPoolConnexion(), apiKey);
-        UserHelper userHelper = new UserHelper();
+        var userId = apiKeyHelper.getIdUser(connect.getPoolConnexion(), apiKey);
         var userGroupId = userHelper.getUserGroupId(connect.getPoolConnexion(), userId, apiKey);
         var roleId = userHelper.getRoleOnThisTheso(connect.getPoolConnexion(), userId, userGroupId.orElse(0), "th2");
         builder.add("Roles", roleId);

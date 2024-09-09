@@ -5,10 +5,11 @@
  */
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -44,6 +45,18 @@ public class DeleteThesoBean implements Serializable {
     
     @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private UserHelper userHelper;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
     
     private String idThesoToDelete;
     private String valueOfThesoToDelelete;
@@ -83,13 +96,11 @@ public class DeleteThesoBean implements Serializable {
     /**
      * Permet de supprimer un thésaurus 
      */
-    public void deleteTheso() throws IOException {
+    public void deleteTheso(CurrentUser currentUser) throws IOException {
         if(idThesoToDelete == null) return;
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoToDelete);
         if(nodePreference != null) {
             // suppression des Identifiants Handle
-            ConceptHelper conceptHelper = new ConceptHelper();
             conceptHelper.setNodePreference(nodePreference);
             if(deletePerennialIdentifiers) {
                 conceptHelper.deleteAllIdHandle(connect.getPoolConnexion(), idThesoToDelete);
@@ -98,7 +109,6 @@ public class DeleteThesoBean implements Serializable {
         FacesMessage msg;
         
         // supression des droits
-        UserHelper userHelper = new UserHelper();
         try {
             try (Connection conn = connect.getPoolConnexion().getConnection()) {
                 conn.setAutoCommit(false);
@@ -115,8 +125,7 @@ public class DeleteThesoBean implements Serializable {
             Logger.getLogger(DeleteThesoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        // suppression complète du thésaurus        
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        // suppression complète du thésaurus
         if(!thesaurusHelper.deleteThesaurus(connect.getPoolConnexion(), idThesoToDelete)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -134,8 +143,7 @@ public class DeleteThesoBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Thesaurus supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         init();
-        //viewEditionBean.init();
-        roleOnThesoBean.showListTheso();
+        roleOnThesoBean.showListTheso(currentUser);
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
             pf.ajax().update("messageIndex");

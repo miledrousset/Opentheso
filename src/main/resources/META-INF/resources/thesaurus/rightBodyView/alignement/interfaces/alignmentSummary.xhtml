@@ -68,7 +68,7 @@
             <p:column headerText="#{langueBean.getMsg('alignment.source')}"
                       style="width: 15%; border: 0.5px solid green;">
                 <h:panelGroup rendered="#{alignement.targetUri != null}">
-                    <h:outputText value="#{alignmentBean.getSourceAlignement(alignement)}" />
+                    <h:outputText value="#{alignmentBean.getSourceAlignement(alignement, setAlignmentSourceBean)}" />
                 </h:panelGroup>
             </p:column>
 

@@ -31,7 +31,7 @@
                     <p:selectOneMenu value="#{editConcept.selectedConceptType}" 
                                      style="font-size: 12px; background: white; border-color: #43B572; width: 100%; color: #000">
                         <f:selectItems value="#{editConcept.nodeConceptTypes}" var="conceptTypes"
-                                       itemLabel="#{conceptTypes.label_en} (#{conceptTypes.code}#{conceptView.geLabelReciprocal(conceptTypes)})" itemValue="#{conceptTypes.code}"/>
+                                       itemLabel="#{conceptTypes.labelEn} (#{conceptTypes.code}#{conceptView.geLabelReciprocal(conceptTypes)})" itemValue="#{conceptTypes.code}"/>
                     </p:selectOneMenu>  
                 </div>
             </div>

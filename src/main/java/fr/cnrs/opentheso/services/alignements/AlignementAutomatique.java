@@ -1,15 +1,17 @@
 package fr.cnrs.opentheso.services.alignements;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.alignment.AlignementElement;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,7 +25,17 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 
+@Service
 public class AlignementAutomatique {
+
+    @Autowired
+    private AlignmentHelper alignmentHelper;
+
+    @Autowired
+    private NoteHelper noteHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
 
 
     public List<NodeAlignment> searchAlignementsAutomatique(HikariDataSource connection, String idTheso, String idCurrentLang,
@@ -33,9 +45,9 @@ public class AlignementAutomatique {
 
         List<NodeAlignment> allAlignementFound = new ArrayList<>();
 
-        var thesaurusLangs = new ThesaurusHelper().getIsoLanguagesOfThesaurus(connection, idTheso);
+        var thesaurusLangs = thesaurusHelper.getIsoLanguagesOfThesaurus(connection, idTheso);
         thesaurusLangs.remove(idCurrentLang);
-        var allLangsTheso = new ThesaurusHelper().getIsoLanguagesOfThesaurus(connection, idTheso);
+        var allLangsTheso = thesaurusHelper.getIsoLanguagesOfThesaurus(connection, idTheso);
 
         var listConcepts = new HashSet<>(allignementsList);
 
@@ -46,7 +58,7 @@ public class AlignementAutomatique {
             //Supprimer l'alignement déjà ajouté dans la liste des alignements proposés
             idsAndValues = idsAndValues.stream()
                     .peek(element -> {
-                        var alignements = new AlignmentHelper().getAllAlignmentOfConcept(connection, element.getId(), idTheso)
+                        var alignements = alignmentHelper.getAllAlignmentOfConcept(connection, element.getId(), idTheso)
                                 .stream()
                                 .filter(alignement -> StringUtils.isEmpty(alignement.getThesaurus_target())
                                         || alignement.getThesaurus_target().equalsIgnoreCase(alignementSource.getSource())
@@ -59,7 +71,7 @@ public class AlignementAutomatique {
                     .collect(Collectors.toList());
 
             for (NodeIdValue concept : idsAndValues) {
-                var definitions = new NoteHelper().getDefinition(connection, concept.getId(), idTheso, idCurrentLang);
+                var definitions = noteHelper.getDefinition(connection, concept.getId(), idTheso, idCurrentLang);
                 var definition = "";
                 if (CollectionUtils.isNotEmpty(definitions)) {
                     definition = definitions.get(0);

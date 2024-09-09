@@ -2,11 +2,11 @@ package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
+import fr.cnrs.opentheso.repositories.ValidateActionHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
@@ -21,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
+
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
@@ -48,22 +47,22 @@ public class BroaderBean implements Serializable {
     @Autowired @Lazy private CurrentUser currentUser;
 
     @Autowired
+    private RelationsHelper relationsHelper;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
     private ValidateActionHelper validateActionHelper;
+
+    @Autowired
+    private SearchHelper searchHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
 
     private NodeSearchMini searchSelected;
     private List<NodeBT> nodeBTs;
-
-    public BroaderBean() {
-    }
-
-    @PostConstruct
-    public void init() {
-    }
-
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
 
     public void clear() {
         searchSelected = null;
@@ -93,7 +92,6 @@ public class BroaderBean implements Serializable {
      */
     public List<NodeSearchMini> getAutoComplet(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
-        SearchHelper searchHelper = new SearchHelper();
         if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null) {
             liste = searchHelper.searchAutoCompletionForRelation(
                     connect.getPoolConnexion(),
@@ -137,7 +135,6 @@ public class BroaderBean implements Serializable {
             return;
         }
 
-        RelationsHelper relationsHelper = new RelationsHelper();
         try {
             Connection conn = connect.getPoolConnexion().getConnection();
             conn.setAutoCommit(false);
@@ -166,7 +163,6 @@ public class BroaderBean implements Serializable {
             }
             return;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
 
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
         if (conceptHelper.isTopConcept(
@@ -188,14 +184,14 @@ public class BroaderBean implements Serializable {
         conceptBean.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
+                conceptBean.getSelectedLang(), currentUser);
 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        DcElementHelper dcElmentHelper = new DcElementHelper();                
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
@@ -237,7 +233,6 @@ public class BroaderBean implements Serializable {
             return;
         }
 
-        RelationsHelper relationsHelper = new RelationsHelper();
         if (!relationsHelper.deleteRelationBT(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
@@ -250,7 +245,6 @@ public class BroaderBean implements Serializable {
             }
             return;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
 
         // on vérifie si le concept en cours n'a plus de BT, on le rend TopTerme
         if (!relationsHelper.isConceptHaveRelationBT(connect.getPoolConnexion(),
@@ -272,14 +266,14 @@ public class BroaderBean implements Serializable {
 
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                conceptBean.getSelectedLang());
+                conceptBean.getSelectedLang(), currentUser);
 
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        DcElementHelper dcElmentHelper = new DcElementHelper();                
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////          

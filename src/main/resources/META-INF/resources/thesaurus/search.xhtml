@@ -165,33 +165,33 @@
                                                         style="background-color: transparent; border-color: transparent; width: 100%; font-size: 12px;">
 
                                             <!-- Type prefLabel -->
-                                            <p:column rendered="#{values.isConcept}">
-                                                <h:panelGroup rendered="#{values.isDeprecated}">
+                                            <p:column rendered="#{values.isConcept()}">
+                                                <h:panelGroup rendered="#{values.isDeprecated()}">
                                                     <i class="fa fa-solid fa-ban fa_custom_ban"></i>
                                                     <h:outputText title="#{values.idConcept}" value=" #{values.prefLabel}"  style="font-size: 12px;color: #C63632; font-weight: bold; font-style: italic"/>
                                                 </h:panelGroup>
-                                                <h:outputText rendered="#{!values.isDeprecated}" title="#{values.idConcept}" value="#{values.prefLabel}"  style="font-size: 12px;"/>
+                                                <h:outputText rendered="#{!values.isDeprecated()}" title="#{values.idConcept}" value="#{values.prefLabel}"  style="font-size: 12px;"/>
                                             </p:column>
 
                                             <!-- Type altLabel -->
-                                            <p:column rendered="#{values.isAltLabel}">
+                                            <p:column rendered="#{values.isAltLabel()}">
                                                 <h:outputText title="#{values.idConcept}" value="#{values.altLabel} -> "  style="font-style: italic;font-size: 12px;color: blue;" />
-                                                <h:panelGroup rendered="#{values.isDeprecated}">
+                                                <h:panelGroup rendered="#{values.isDeprecated()}">
                                                     <i class="fa fa-solid fa-ban fa_custom_ban"></i>
                                                     <h:outputText title="#{values.idConcept}" value=" #{values.prefLabel}"  style="font-size: 12px;color: #C63632; font-weight: bold; font-style: italic"/>
                                                 </h:panelGroup>
-                                                <h:outputText rendered="#{!values.isDeprecated}" title="#{values.idConcept}" value="#{values.prefLabel}" style="font-size: 12px;" />
+                                                <h:outputText rendered="#{!values.isDeprecated()}" title="#{values.idConcept}" value="#{values.prefLabel}" style="font-size: 12px;" />
                                             </p:column>
 
                                             <!-- Type Collection -->
-                                            <p:column rendered="#{values.isGroup}">
+                                            <p:column rendered="#{values.isGroup()}">
                                                 <i class="fa fa-folder fa_custom_collapse" />
                                                 <h:outputText title="#{values.idConcept}" value=" #{values.prefLabel}"
                                                               style="font-size: 12px; color: #093b29; font-weight: bold; font-style: italic"/>
                                             </p:column>
 
                                             <!-- Type Facette -->
-                                            <p:column rendered="#{values.isFacet}">
+                                            <p:column rendered="#{values.isFacet()}">
                                                 <i class="fa fa-magnet fa_custom_magnet" />
                                                 <h:outputText title="#{values.idConcept}" value=" #{values.prefLabel}"
                                                               style="font-size: 12px; color: #78261f; font-weight: bold; font-style: italic"/>

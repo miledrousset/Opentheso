@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
@@ -47,6 +47,15 @@ public class ThesaurusIdController {
     @Autowired
     private TermHelper termHelper;
 
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private RestRDFHelper restRDFHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
 
     @GetMapping(produces = {APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(summary = "Permet de  récupérer un thesaurus entier",
@@ -66,7 +75,7 @@ public class ThesaurusIdController {
     public ResponseEntity<Object> getThesoFromId(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus à récupérer", required = true) @PathVariable("thesaurusId") String thesaurusId,
                                          @RequestHeader(value = "accept", required = false) String format) {
 
-        var datas = new RestRDFHelper().getTheso(connect.getPoolConnexion(), thesaurusId, HeaderHelper.removeCharset(format));
+        var datas = restRDFHelper.getTheso(connect.getPoolConnexion(), thesaurusId, HeaderHelper.removeCharset(format));
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -80,7 +89,7 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getThesoGroupsFromId(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus à récupérer", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        var listIdTopConceptOfTheso = new ConceptHelper().getAllTopTermOfThesaurus(connect.getPoolConnexion(), thesaurusId);
+        var listIdTopConceptOfTheso = conceptHelper.getAllTopTermOfThesaurus(connect.getPoolConnexion(), thesaurusId);
 
         ArrayList<NodeTermTraduction> nodeTermTraductions;
 
@@ -120,7 +129,7 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getInfoLastUpdate(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus à récupérer.", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        var date = new ConceptHelper().getLastModification(connect.getPoolConnexion(), thesaurusId);
+        var date = conceptHelper.getLastModification(connect.getPoolConnexion(), thesaurusId);
         var datas = "{\"lastUpdate\":\"" + date.toString() + "\"}";
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
@@ -140,7 +149,7 @@ public class ThesaurusIdController {
     public ResponseEntity<Object> getThesoFromIdFlat(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus à récupérer", required = true) @PathVariable("thesaurusId") String thesaurusId,
             @Parameter(name = "lang", description = "Langue des termes à  récupérer.", required = true) @RequestParam(value = "lang", required = false, defaultValue = "fr") String lang) {
 
-        var datas = new RestRDFHelper().getThesoIdValue(connect.getPoolConnexion(), thesaurusId, lang);
+        var datas = restRDFHelper.getThesoIdValue(connect.getPoolConnexion(), thesaurusId, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -157,7 +166,7 @@ public class ThesaurusIdController {
             })
     public ResponseEntity<Object> getListLang(@Parameter(name = "thesaurusId", description = "Identifiant du thesaurus", required = true) @PathVariable("thesaurusId") String thesaurusId) {
 
-        ArrayList<String> listLangOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurus(connect.getPoolConnexion(), thesaurusId);
+        ArrayList<String> listLangOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurus(connect.getPoolConnexion(), thesaurusId);
         JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
         for (String idLang : listLangOfTheso) {
             JsonObjectBuilder jobLang = Json.createObjectBuilder();

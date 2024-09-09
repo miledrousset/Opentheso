@@ -3,8 +3,8 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +42,12 @@ public class ConceptAutocompleteController {
     @Autowired
     private GroupHelper groupHelper;
 
+    @Autowired
+    private RestRDFHelper restRDFHelper;
+
+    @Autowired
+    private SearchHelper searchHelper;
+
 
     @GetMapping(value = "/{input}", produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "Recherche les termes proches de du terme entré",
@@ -60,7 +66,7 @@ public class ConceptAutocompleteController {
 
         var groups = groupsString != null ? groupsString.split(",") : null;
         var full = fullString != null && fullString.equalsIgnoreCase("true");
-        var datas = new RestRDFHelper().findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, lang, groups, input, full);
+        var datas = restRDFHelper.findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, lang, groups, input, full);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -70,7 +76,7 @@ public class ConceptAutocompleteController {
                                                @RequestParam("lang") String lang,
                                                @RequestParam("group") String idGroup) throws JsonProcessingException {
 
-        var concepts = new SearchHelper().searchConceptWSV2(connect.getPoolConnexion(), input, lang, idGroup, idTheso);
+        var concepts = searchHelper.searchConceptWSV2(connect.getPoolConnexion(), input, lang, idGroup, idTheso);
         var jsonString = new ObjectMapper().writeValueAsString(concepts);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jsonString);
     }

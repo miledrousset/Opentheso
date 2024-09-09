@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.services.exports.rdf4j;
 import com.zaxxer.hikari.HikariDataSource;
 
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.*;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.facets.NodeFacet;
@@ -28,6 +27,12 @@ import fr.cnrs.opentheso.models.skosapi.SKOSResource;
 import fr.cnrs.opentheso.models.skosapi.SKOSStatus;
 import fr.cnrs.opentheso.models.skosapi.SKOSVote;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,12 +42,33 @@ import java.util.ArrayList;
 
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author MiledRousset
  */
+@Service
 public class ExportRdf4jHelperNew {
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private GroupHelper groupHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private FacetHelper facetHelper;
+
+    @Autowired
+    private NoteHelper noteHelper;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
 
     private NodePreference nodePreference;
     private SKOSXmlDocument skosXmlDocument;
@@ -76,7 +102,7 @@ public class ExportRdf4jHelperNew {
     public void addSignleConceptByLang(HikariDataSource ds, String idTheso, String idConcept, String idLang, boolean showLabels) {
 
         SKOSResource sKOSResource = new SKOSResource();
-        NodeConceptExport nodeConcept = new ConceptHelper().getConceptForExport(ds, idConcept, idTheso, false);
+        NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, false);
 
         if (nodeConcept == null) {
             return;
@@ -139,7 +165,7 @@ public class ExportRdf4jHelperNew {
     public void addSingleGroup(HikariDataSource ds, String idThesaurus, String idGroup) {
 
         NodeGroupLabel nodeGroupLabel;
-        nodeGroupLabel = new GroupHelper().getNodeGroupLabel(ds, idGroup, idThesaurus);
+        nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idThesaurus);
         SKOSResource sKOSResource = new SKOSResource();
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);
@@ -161,7 +187,7 @@ public class ExportRdf4jHelperNew {
         
         // pour exporter les membres (tous les concepts du group
 
-        ArrayList<String> childURI = new GroupHelper().getListGroupChildIdOfGroup(ds, idGroup, idThesaurus);
+        ArrayList<String> childURI = groupHelper.getListGroupChildIdOfGroup(ds, idGroup, idThesaurus);
         HashMap<String, String> superGroupHashMapTemp = new HashMap();
         for (String id : childURI) {
             sKOSResource.addRelation(id, getUriFromId(id), SKOSProperty.SUBGROUP);
@@ -187,7 +213,7 @@ public class ExportRdf4jHelperNew {
      */
     public void exportTheso(HikariDataSource ds, String idTheso, NodePreference nodePreference) {
         this.nodePreference = nodePreference;
-        NodeThesaurus nodeThesaurus = new ThesaurusHelper().getNodeThesaurus(ds, idTheso);
+        NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(ds, idTheso);
         
         SKOSResource conceptScheme = new SKOSResource(getUriFromId(nodeThesaurus.getIdThesaurus()), SKOSProperty.CONCEPT_SCHEME);
         
@@ -215,10 +241,9 @@ public class ExportRdf4jHelperNew {
         }
         
         /// ajout des DCMI
-        conceptScheme.getThesaurus().setDcElement(new DcElementHelper().getDcElementOfThesaurus(ds, idTheso));        
+        conceptScheme.getThesaurus().setDcElement(dcElementHelper.getDcElementOfThesaurus(ds, idTheso));
 
         //liste top concept
-        ConceptHelper conceptHelper = new ConceptHelper();
         nodeTTs = conceptHelper.getAllTopConcepts(ds, idTheso);
 
         nodeTTs.forEach((nodeTT) -> {
@@ -228,7 +253,6 @@ public class ExportRdf4jHelperNew {
     }
     
     public void exportSelectedCollections(HikariDataSource ds, String idTheso, List<String> selectedGroups){
-        GroupHelper groupHelper = new GroupHelper();
         NodeGroupLabel nodeGroupLabel;
         for (String idGroup : selectedGroups) {
             nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
@@ -239,7 +263,6 @@ public class ExportRdf4jHelperNew {
     }
 
     public void exportFacettes(HikariDataSource ds, String idTheso){
-        FacetHelper facetHelper = new FacetHelper();
         
         ArrayList<NodeFacet> facets = facetHelper.getAllFacetsDetailsOfThesaurus(ds, idTheso);
         
@@ -259,22 +282,20 @@ public class ExportRdf4jHelperNew {
 
         List<String> members = facetHelper.getAllMembersOfFacet(ds, nodeFacet.getIdFacet(), idTheso);
         for (String idConcept : members) {
-            NodeUri nodeUri = new ConceptHelper().getNodeUriOfConcept(ds, idConcept, idTheso);
+            NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(ds, idConcept, idTheso);
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
         }
     }
 
     public void exportThisCollection(HikariDataSource ds, String idTheso, String idGroup){
-        GroupHelper groupHelper = new GroupHelper();
-        NodeGroupLabel nodeGroupLabel;
-        nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
+
+        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idGroup, idTheso);
         SKOSResource sKOSResource = new SKOSResource(getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
         sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
         writeGroupInfo(ds, sKOSResource, idTheso, idGroup);
     }    
     
     public void exportCollections(HikariDataSource ds, String idTheso){
-        GroupHelper groupHelper = new GroupHelper();
         ArrayList<String> rootGroupList = groupHelper.getListIdOfRootGroup(ds, idTheso);
         NodeGroupLabel nodeGroupLabel;
         for (String idGroup : rootGroupList) {
@@ -285,11 +306,7 @@ public class ExportRdf4jHelperNew {
             addChildsGroupRecursive(ds, idTheso, idGroup, sKOSResource);
         }
     }
-    public void addChildsGroupRecursive(HikariDataSource ds,
-            String idTheso,
-            String idParent,
-            SKOSResource sKOSResource) {
-        GroupHelper groupHelper = new GroupHelper();
+    public void addChildsGroupRecursive(HikariDataSource ds, String idTheso, String idParent, SKOSResource sKOSResource) {
 
         ArrayList<String> listIdsOfGroupChilds = groupHelper.getListGroupChildIdOfGroup(ds, idParent, idTheso);
         writeGroupInfo(ds, sKOSResource, idTheso, idParent);
@@ -303,13 +320,10 @@ public class ExportRdf4jHelperNew {
 
     private void writeGroupInfo(HikariDataSource ds, SKOSResource sKOSResource, String idTheso, String idOfGroupChild) {
 
-        GroupHelper groupHelper = new GroupHelper();
-        NodeGroupLabel nodeGroupLabel;
-        nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idOfGroupChild, idTheso);
+        NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(ds, idOfGroupChild, idTheso);
 
         sKOSResource.setUri(getUriFromGroup(nodeGroupLabel));
         sKOSResource.setProperty(SKOSProperty.CONCEPT_GROUP);
-    //    sKOSResource.setIdentifier(idOfGroupChild);
 
         //dates
         String created = null;
@@ -330,7 +344,7 @@ public class ExportRdf4jHelperNew {
         }
 
         ArrayList<NodeUri> childURIs = groupHelper.getListGroupChildOfGroup(ds, idTheso, idOfGroupChild);
-        ArrayList<NodeUri> nodeUris = new ConceptHelper().getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
+        ArrayList<NodeUri> nodeUris = conceptHelper.getListConceptsOfGroup(ds, idTheso, idOfGroupChild);
 
         for (NodeUri nodeUri : nodeUris) {
             sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(nodeUri, idTheso), SKOSProperty.MEMBER);
@@ -357,7 +371,6 @@ public class ExportRdf4jHelperNew {
         }
         
         /// Ajout des notes
-        NoteHelper noteHelper = new NoteHelper();
         ArrayList<NodeNote> nodeNotes = noteHelper.getListNotesAllLang(ds, idOfGroupChild, idTheso);
         addNoteGiven(nodeNotes, sKOSResource);
         
@@ -376,7 +389,6 @@ public class ExportRdf4jHelperNew {
     public void exportConcept(HikariDataSource ds, String idTheso, String idConcept, boolean isCandidatExport) {
 
         SKOSResource sKOSResource = new SKOSResource();
-        ConceptHelper conceptHelper = new ConceptHelper();
         NodeConceptExport nodeConcept = conceptHelper.getConceptForExport(ds, idConcept, idTheso, isCandidatExport);
 
         if (nodeConcept == null) {
@@ -457,17 +469,6 @@ public class ExportRdf4jHelperNew {
                 sKOSResource.addRelation(idFacette, getUriForFacette(idFacette, idTheso), prop);
             }
         }
-
-    /*    ArrayList<String> first = new ArrayList<>();
-        first.add(idConcept);
-        ArrayList<ArrayList<String>> paths = new ArrayList<>();
-
-        paths = new ConceptHelper().getPathOfConceptWithoutGroup(ds, idConcept, idTheso, first, paths);
-        ArrayList<String> pathFromArray = getPathFromArray(paths);
-        if (!pathFromArray.isEmpty()) {
-            sKOSResource.setPaths(pathFromArray);
-        }
-        */
         
         // les images
         if(nodeConcept.getNodeImages() != null || (!nodeConcept.getNodeImages().isEmpty())) {
@@ -590,7 +591,7 @@ public class ExportRdf4jHelperNew {
             skosVote.setTypeVote(vote.getTypeVote());
             if (!StringUtils.isEmpty(vote.getIdNote()) && !"null".equalsIgnoreCase(vote.getIdNote())) {
                 String htmlTagsRegEx = "<[^>]*>";
-                NodeNote nodeNote = new NoteHelper().getNoteByIdNote(ds, Integer.parseInt(vote.getIdNote()));
+                NodeNote nodeNote = noteHelper.getNoteByIdNote(ds, Integer.parseInt(vote.getIdNote()));
                 if (nodeNote != null) {
                     String str = ConceptHelper.formatLinkTag(nodeNote.getLexicalValue());
                     skosVote.setValueNote(str.replaceAll(htmlTagsRegEx, ""));

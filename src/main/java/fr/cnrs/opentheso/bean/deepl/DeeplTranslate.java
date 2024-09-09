@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.bean.deepl;
 
 import com.deepl.api.Language;
-import fr.cnrs.opentheso.bdd.helper.DeeplHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
+import fr.cnrs.opentheso.repositories.DeeplHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
@@ -29,7 +29,11 @@ public class DeeplTranslate implements Serializable {
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private SelectedTheso selectedTheso;
-    
+
+    @Autowired
+    private NoteHelper noteHelper;
+
+    @Autowired
     private DeeplHelper deeplHelper;
 
     private String fromLang;
@@ -49,9 +53,8 @@ public class DeeplTranslate implements Serializable {
 
     public void init() {
         String keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
-        deeplHelper = new DeeplHelper(keyApi);
-        sourceLangs = deeplHelper.getSourceLanguages();
-        targetLangs = deeplHelper.getTargetLanguages();
+        sourceLangs = deeplHelper.getSourceLanguages(keyApi);
+        targetLangs = deeplHelper.getTargetLanguages(keyApi);
 
         translatingText = "";
     }
@@ -74,11 +77,12 @@ public class DeeplTranslate implements Serializable {
     }
 
     public void translate() {
-        translatingText = deeplHelper.translate(textToTranslate, fromLang, toLang);
+
+        String keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
+        translatingText = deeplHelper.translate(keyApi, textToTranslate, fromLang, toLang);
     }
 
     public void retrieveExistingTranslatedText() {
-        NoteHelper noteHelper = new NoteHelper();
         existingTranslatedText = noteHelper.getLabelOfNote(connect.getPoolConnexion(),
                // conceptView.getNodeConcept().getConcept().getIdConcept(),
                 nodeNote.getIdConcept(),
@@ -95,7 +99,6 @@ public class DeeplTranslate implements Serializable {
         LocalDate currentDate = LocalDate.now();
         String source = "traduit par Deepl le " + currentDate;
 
-        NoteHelper noteHelper = new NoteHelper();
         if (!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 translatingText, nodeNote.getNoteTypeCode(),
@@ -113,7 +116,6 @@ public class DeeplTranslate implements Serializable {
     }
 
     public void saveExistingTranslatedText() {
-        NoteHelper noteHelper = new NoteHelper();
         if (!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 existingTranslatedText, nodeNote.getNoteTypeCode(),

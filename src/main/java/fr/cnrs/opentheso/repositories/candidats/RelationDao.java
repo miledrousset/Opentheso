@@ -1,10 +1,12 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,20 +14,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Service
 public class RelationDao extends BasicDao {
-    
-   /**
-     * 
-     * @param connect
-     * @param idConceptSelected
-     * @param idThesaurus
-     * @param idUser 
-     * @return  
-     */
+
+    @Autowired
+    private RelationsHelper relationsHelper;
+
+
+
     public boolean deleteAllRelations(Connect connect, String idConceptSelected, 
                     String idThesaurus, int idUser) {
         Connection conn = null;
-        RelationsHelper relationsHelper = new RelationsHelper();
         try {
             conn = connect.getPoolConnexion().getConnection();
             conn.setAutoCommit(false);
@@ -87,7 +86,7 @@ public class RelationDao extends BasicDao {
     public List<NodeIdValue> getCandidatRelationsBT(HikariDataSource hikariDataSource,
                                                     String idConceptSelected, String idThesaurus, String lang) throws SQLException {
         
-        var nodeBTs = new RelationsHelper().getListBT(hikariDataSource, idConceptSelected, idThesaurus, lang);
+        var nodeBTs = relationsHelper.getListBT(hikariDataSource, idConceptSelected, idThesaurus, lang);
         
         if(CollectionUtils.isNotEmpty(nodeBTs)) {
             return nodeBTs.stream()
@@ -103,7 +102,7 @@ public class RelationDao extends BasicDao {
     public List<NodeIdValue> getCandidatRelationsRT(HikariDataSource hikariDataSource, String idConceptSelected,
             String idThesaurus, String lang) throws SQLException {
         
-        var nodeRTs = new RelationsHelper().getListRT(hikariDataSource, idConceptSelected, idThesaurus, lang);
+        var nodeRTs = relationsHelper.getListRT(hikariDataSource, idConceptSelected, idThesaurus, lang);
         
         if(CollectionUtils.isNotEmpty(nodeRTs)) {
             return nodeRTs.stream()

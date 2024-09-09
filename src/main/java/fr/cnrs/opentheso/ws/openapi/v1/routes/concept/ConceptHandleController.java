@@ -32,6 +32,10 @@ public class ConceptHandleController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private RestRDFHelper restRDFHelper;
+
+
     @GetMapping(produces = {APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(summary = "${getConceptByHandle.summary}$",
             description = "${getConceptByHandle.description}$",
@@ -51,7 +55,7 @@ public class ConceptHandleController {
                                              @RequestParam(name = "idHandle") String idHandle,
                                              @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
-        var datas = new RestRDFHelper().exportConceptHdl(connect.getPoolConnexion(), handle + "/" + idHandle, acceptHeader);
+        var datas = restRDFHelper.exportConceptHdl(connect.getPoolConnexion(), handle + "/" + idHandle, acceptHeader);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }    
 

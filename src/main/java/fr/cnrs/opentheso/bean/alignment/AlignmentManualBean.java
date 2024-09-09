@@ -1,18 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.alignment;
 
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentType;
-
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -22,7 +16,8 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -44,8 +39,17 @@ public class AlignmentManualBean implements Serializable {
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private CandidatBean candidatBean;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
+    private AlignmentHelper alignmentHelper;
     
-    private ArrayList<NodeAlignmentType> nodeAlignmentTypes;
+    private List<NodeAlignmentType> nodeAlignmentTypes;
     
     // pour l'aligenement manuel
     private String manualAlignmentSource;
@@ -55,7 +59,7 @@ public class AlignmentManualBean implements Serializable {
     @PreDestroy
     public void destroy(){
         clear();
-        nodeAlignmentTypes = new AlignmentHelper().getAlignmentsType(connect.getPoolConnexion());
+        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.getPoolConnexion());
     }  
     public void clear(){
         if(nodeAlignmentTypes!= null){
@@ -70,7 +74,7 @@ public class AlignmentManualBean implements Serializable {
     }
 
     public void reset() {
-        nodeAlignmentTypes = new AlignmentHelper().getAlignmentsType(connect.getPoolConnexion());
+        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.getPoolConnexion());
         manualAlignmentSource = "";
         manualAlignmentUri = "";
         manualAlignmentType = -1;
@@ -85,9 +89,7 @@ public class AlignmentManualBean implements Serializable {
         
         if(nodeAlignment == null) return;
 
-        if(!new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
-                nodeAlignment.getId_alignement(),
-                selectedTheso.getCurrentIdTheso())) {
+        if(!alignmentHelper.deleteAlignment(connect.getPoolConnexion(), nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
@@ -98,7 +100,7 @@ public class AlignmentManualBean implements Serializable {
         conceptView.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
-                conceptView.getSelectedLang());
+                conceptView.getSelectedLang(), currentUser);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "alignement supprimé avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -112,8 +114,6 @@ public class AlignmentManualBean implements Serializable {
 
     public void updateAlignement(){
         if(alignmentBean.getAlignementElementSelected() == null) return;
-        
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
 
         FacesMessage msg;
 
@@ -133,7 +133,7 @@ public class AlignmentManualBean implements Serializable {
         conceptView.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
-                conceptView.getSelectedLang());
+                conceptView.getSelectedLang(), currentUser);
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "alignement modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -148,7 +148,7 @@ public class AlignmentManualBean implements Serializable {
     }
 
     public void updateAlignementFromConceptInterface(){
-        if(!new AlignmentHelper().updateAlignment(connect.getPoolConnexion(),
+        if(!alignmentHelper.updateAlignment(connect.getPoolConnexion(),
                 alignmentBean.getAlignementElementSelected().getIdAlignment(),
                 alignmentBean.getAlignementElementSelected().getConceptTarget(),
                 alignmentBean.getAlignementElementSelected().getThesaurus_target(),
@@ -168,7 +168,7 @@ public class AlignmentManualBean implements Serializable {
         conceptView.getConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
-                conceptView.getSelectedLang());
+                conceptView.getSelectedLang(), currentUser);
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement modifié avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -199,7 +199,7 @@ public class AlignmentManualBean implements Serializable {
             return;            
         }
 
-        if(!new AlignmentHelper().addNewAlignment(
+        if(!alignmentHelper.addNewAlignment(
                 connect.getPoolConnexion(),
                 currentUser.getNodeUser().getIdUser(),
                 "",
@@ -218,10 +218,10 @@ public class AlignmentManualBean implements Serializable {
 
         if (isFromConceptView) {
             conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
-                    conceptView.getSelectedLang());
+                    conceptView.getSelectedLang(), currentUser);
         } else {
-            candidatBean.getCandidatSelected().setAlignments(new AlignmentHelper()
-                    .getAllAlignmentOfConcept(connect.getPoolConnexion(), idConcept, selectedTheso.getCurrentIdTheso()));
+            candidatBean.getCandidatSelected().setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(),
+                    idConcept, selectedTheso.getCurrentIdTheso()));
         }
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement ajouté avec succès");
@@ -243,24 +243,23 @@ public class AlignmentManualBean implements Serializable {
      * @param idUser 
      */
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 idTheso,
                 idConcept, idUser);      
         ///// insert DcTermsData to add contributor
-        DcElementHelper dcElmentHelper = new DcElementHelper();                
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConcept, idTheso);
         ///////////////        
     }
     
 
-    public ArrayList<NodeAlignmentType> getNodeAlignmentTypes() {
+    public List<NodeAlignmentType> getNodeAlignmentTypes() {
         return nodeAlignmentTypes;
     }
 
-    public void setNodeAlignmentTypes(ArrayList<NodeAlignmentType> nodeAlignmentTypes) {
+    public void setNodeAlignmentTypes(List<NodeAlignmentType> nodeAlignmentTypes) {
         this.nodeAlignmentTypes = nodeAlignmentTypes;
     }
 

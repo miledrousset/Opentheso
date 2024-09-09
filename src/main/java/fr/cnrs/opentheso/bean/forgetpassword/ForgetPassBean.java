@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.forgetpassword;
 
-import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.ToolsHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.utils.MD5Password;
 import fr.cnrs.opentheso.bean.mail.MailBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -18,22 +13,25 @@ import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-/**
- *
- * @author miledrousset
- */
+
 @Named(value = "forgetPassBean")
 @RequestScoped
 public class ForgetPassBean implements Serializable {
 
     @Autowired @Lazy
     private Connect connect;
-    @Autowired @Lazy
-    private MailBean mailBean;    
+
+    @Autowired
+    private MailBean mailBean;
+
+    @Autowired
+    private ToolsHelper toolsHelper;
+
+    @Autowired
+    private UserHelper userHelper;
 
     private String sendTo;
-    public ForgetPassBean() {
-    }
+
 
     public void sendMail() {
         if (sendTo == null || sendTo.isEmpty()) {
@@ -41,9 +39,7 @@ public class ForgetPassBean implements Serializable {
             return;
         }
 
-        UserHelper userHelper = new UserHelper();
         if (userHelper.isUserMailExist(connect.getPoolConnexion(), sendTo)) {
-            ToolsHelper toolsHelper = new ToolsHelper();
             String password = toolsHelper.getNewId(10, false, false);
             String passwordMD5 = MD5Password.getEncodedPassword(password);
             String pseudo = userHelper.getNameUser(connect.getPoolConnexion(), sendTo);

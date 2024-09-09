@@ -4,7 +4,7 @@ import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.Gps;
-import fr.cnrs.opentheso.repositories.GpsRepository;
+import fr.cnrs.opentheso.repositories.GpsHelper;
 
 import java.io.Serializable;
 import jakarta.enterprise.context.SessionScoped;
@@ -26,15 +26,17 @@ public class GpsBean implements Serializable {
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private SelectedTheso selectedTheso;
 
+    @Autowired
+    private GpsHelper gpsHelper;
+
     private Gps gpsSelected;
 
 
     public void addNewCoordinateGps() {
 
-        var gpsRepository = new GpsRepository();
-        gpsRepository.saveNewGps(connect.getPoolConnexion(), gpsSelected);
+        gpsHelper.saveNewGps(connect.getPoolConnexion(), gpsSelected);
 
-        conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
+        conceptView.getNodeConcept().setNodeGps(gpsHelper.getGpsByConceptAndThesorus(
                 connect.getPoolConnexion(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
@@ -54,15 +56,14 @@ public class GpsBean implements Serializable {
      */
     public void updateCoordinateGps(Gps gps) {
 
-        var gpsRepository = new GpsRepository();
-        gpsRepository.saveNewGps(connect.getPoolConnexion(), Gps.builder()
+        gpsHelper.saveNewGps(connect.getPoolConnexion(), Gps.builder()
                 .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
                 .idTheso(selectedTheso.getCurrentIdTheso())
                 .latitude(gps.getLatitude())
                 .longitude(gps.getLongitude())
                 .build());
 
-        conceptView.getNodeConcept().setNodeGps(gpsRepository.getGpsByConceptAndThesorus(
+        conceptView.getNodeConcept().setNodeGps(gpsHelper.getGpsByConceptAndThesorus(
                 connect.getPoolConnexion(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
@@ -85,7 +86,7 @@ public class GpsBean implements Serializable {
 
         if(gps == null) return;
 
-        new GpsRepository().removeGps(connect.getPoolConnexion(), gps);
+        gpsHelper.removeGps(connect.getPoolConnexion(), gps);
 
         conceptView.createMap(selectedTheso.getCurrentIdTheso());
 

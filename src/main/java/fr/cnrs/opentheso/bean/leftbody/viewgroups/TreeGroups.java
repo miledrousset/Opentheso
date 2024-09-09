@@ -1,18 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.leftbody.viewgroups;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.PathHelper;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.PathHelper;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -25,13 +20,11 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
-import org.springframework.beans.factory.annotation.Autowired;import org.springframework.context.annotation.Lazy;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
@@ -44,13 +37,14 @@ import org.primefaces.model.TreeNode;
  */
 @Named(value = "treeGroups")
 @SessionScoped
-
 public class TreeGroups implements Serializable {
 
     @Autowired @Lazy
     private Connect connect;
     @Autowired @Lazy
     private RightBodySetting rightBodySetting;
+    @Autowired @Lazy
+    private CurrentUser currentUser;
     @Autowired @Lazy
     private ConceptView conceptView;
     @Autowired @Lazy
@@ -62,13 +56,19 @@ public class TreeGroups implements Serializable {
     @Autowired @Lazy
     private PropositionBean propositionBean;
 
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private GroupHelper groupHelper;
+
+    @Autowired
+    private PathHelper pathHelper;
+
     private DataService dataService;
     private TreeNode root, selectedNode;
     private String idTheso, idLang;
     private boolean sortByNotation;
-
-    @Autowired
-    private GroupHelper groupHelper;
 
     public void reset() {
         root = null;
@@ -165,7 +165,6 @@ public class TreeGroups implements Serializable {
     }
 
     private boolean addConceptsChild(TreeNode parent) {
-        ConceptHelper conceptHelper = new ConceptHelper();
         TreeNodeData data;
 
         ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListConceptsOfGroup(
@@ -212,7 +211,7 @@ public class TreeGroups implements Serializable {
 
     public void expandGroupToPath(String idGroup, String idTheso, String idLang) {
 
-        ArrayList<String> path = new PathHelper().getPathOfGroup(
+        ArrayList<String> path = pathHelper.getPathOfGroup(
                 connect.getPoolConnexion(), idGroup, idTheso);
 
         if (root == null) {
@@ -248,6 +247,75 @@ public class TreeGroups implements Serializable {
         treeNodeParent.setSelected(true);
         selectedNode = treeNodeParent;
         PrimeFaces.current().executeScript("srollGroupToSelected();");        
+    }
+
+    /**
+     * pour l'ajout d'un nouveau Group après le chargement de l'arbre
+     *
+     * @param idGroup
+     * @param idTheso
+     * @param idLang
+     */
+    public void addNewGroupToTree(String idGroup, String idTheso, String idLang) {
+
+        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        if (nodeGroup == null) {
+            return;
+        }
+
+        String label;
+        if (nodeGroup.getLexicalValue().isEmpty()) {
+            label = "(" + idGroup + ")";
+        } else {
+            label = nodeGroup.getLexicalValue();
+        }
+
+        TreeNodeData data = new TreeNodeData(
+                idGroup,
+                label,
+                nodeGroup.getConceptGroup().getNotation(),
+                true,//isgroup
+                false,//isSubGroup
+                false,//isConcept
+                false,//isTopConcept
+                "group"
+        );
+        dataService.addNodeWithoutChild("group", data, root);
+    }
+
+    /**
+     * pour l'ajout d'un nouveau Group après le chargement de l'arbre
+     *
+     * @param parent
+     * @param idGroup
+     * @param idTheso
+     * @param idLang
+     */
+    public void addNewSubGroupToTree(TreeNode parent, String idGroup, String idTheso, String idLang) {
+
+        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        if (nodeGroup == null) {
+            return;
+        }
+
+        String label;
+        if (nodeGroup.getLexicalValue().isEmpty()) {
+            label = "(" + idGroup + ")";
+        } else {
+            label = nodeGroup.getLexicalValue();
+        }
+
+        TreeNodeData data = new TreeNodeData(
+                idGroup,
+                label,
+                nodeGroup.getConceptGroup().getNotation(),
+                false,//isgroup
+                true,//isSubGroup
+                false,//isConcept
+                false,//isTopConcept
+                "group"
+        );
+        dataService.addNodeWithoutChild("group", data, parent);
     }
 
     /**
@@ -298,7 +366,7 @@ public class TreeGroups implements Serializable {
         if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
             rightBodySetting.setShowConceptToOn();
             conceptView.getConceptForTree(idTheso,
-                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang, currentUser);
             rightBodySetting.setIndex("0");
         }
         if (((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup()) {
@@ -335,6 +403,21 @@ public class TreeGroups implements Serializable {
 
     public void setSortByNotation(boolean sortByNotation) {
         this.sortByNotation = sortByNotation;
+    }
+
+    /**
+     * permet de savoir si le groupe/collection a un sous group/collection
+     *
+     * @return
+     */
+    public boolean isIsThisGroupHaveSubGroup() {
+        if (selectedNode == null) {
+            return false;
+        }
+        GroupHelper groupHelper = new GroupHelper();
+        return groupHelper.isHaveSubGroup(connect.getPoolConnexion(),
+                idTheso,
+                ((TreeNodeData) selectedNode.getData()).getNodeId());
     }
 
 }

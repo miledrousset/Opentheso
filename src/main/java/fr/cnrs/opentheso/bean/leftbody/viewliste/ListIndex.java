@@ -5,7 +5,8 @@
  */
 package fr.cnrs.opentheso.bean.leftbody.viewliste;
 
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -36,6 +37,8 @@ public class ListIndex implements Serializable {
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
+    private CurrentUser currentUser;
+    @Autowired @Lazy
     private RightBodySetting rightBodySetting;
     @Autowired @Lazy 
     private LeftBodySetting leftBodySetting;
@@ -43,6 +46,9 @@ public class ListIndex implements Serializable {
     private ConceptView conceptBean;
     @Autowired @Lazy
     private PropositionBean propositionBean;
+
+    @Autowired
+    private SearchHelper searchHelper;
 
     private String searchValue;
     private NodeIdValue selectedNode;
@@ -78,7 +84,6 @@ public class ListIndex implements Serializable {
             return;
         }
 
-        SearchHelper searchHelper = new SearchHelper();
         nodeIdValues = searchHelper.searchTermForIndex(
                 connect.getPoolConnexion(),
                 searchValue,
@@ -94,7 +99,7 @@ public class ListIndex implements Serializable {
     public void onRowSelect(SelectEvent event) {
         rightBodySetting.setShowConceptToOn();
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
-                ((NodeIdValue) event.getObject()).getId(), selectedTheso.getCurrentLang());
+                ((NodeIdValue) event.getObject()).getId(), selectedTheso.getCurrentLang(), currentUser);
 
         rightBodySetting.setIndex("0");
         propositionBean.setRubriqueVisible(false);

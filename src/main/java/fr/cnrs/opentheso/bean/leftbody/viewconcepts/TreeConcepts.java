@@ -1,9 +1,10 @@
 package fr.cnrs.opentheso.bean.leftbody.viewconcepts;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.terms.NodeNT;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -38,8 +39,10 @@ import jakarta.annotation.PreDestroy;
 @Named(value = "treeConcepts")
 @SessionScoped
 public class TreeConcepts implements Serializable {
+
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private RightBodySetting rightBodySetting;
+    @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private GroupView groupView;
     @Autowired @Lazy private SelectedTheso selectedTheso;
@@ -47,6 +50,12 @@ public class TreeConcepts implements Serializable {
 
     @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
 
     private DataService dataService;
     private TreeNode root, selectedNode;
@@ -137,13 +146,9 @@ public class TreeConcepts implements Serializable {
     }
 
     private boolean addConceptsChild(TreeNode parent) {
-
-        // déséctivé par Miled 
-/*        ArrayList<NodeIdValue> listeConceptsOfGroup = new ConceptHelper().getListConceptsOfGroup(connect.getPoolConnexion(),
-                idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), false);*/
         
         // il faut ici récupérer les Topterms de la collection #MR        
-        ArrayList<NodeIdValue> listeConceptsOfGroup = new ConceptHelper().getListTopConceptsOfGroup(
+        ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListTopConceptsOfGroup(
                 connect.getPoolConnexion(),
                 idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), selectedTheso.isSortByNotation());
         
@@ -157,7 +162,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeGroup.getId(), nodeGroup.getValue(), "", false, false,
                     true, false, "concept");
 
-            ArrayList<NodeNT> childs = new RelationsHelper().getListNT(connect.getPoolConnexion(), nodeGroup.getId(), idTheso, idLang, -1, -1);
+            ArrayList<NodeNT> childs = relationsHelper.getListNT(connect.getPoolConnexion(), nodeGroup.getId(), idTheso, idLang, -1, -1);
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);
             } else {
@@ -171,7 +176,7 @@ public class TreeConcepts implements Serializable {
 
     private boolean addConceptSpecifique(TreeNode parent) {
 
-        ArrayList<NodeNT> ConceptsId = new RelationsHelper().getListNT(connect.getPoolConnexion(),
+        ArrayList<NodeNT> ConceptsId = relationsHelper.getListNT(connect.getPoolConnexion(),
                 ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
 
         if (ConceptsId == null || ConceptsId.isEmpty()) {
@@ -183,7 +188,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeNT.getIdConcept(), nodeNT.getTitle(),"", false,
                     false, true, true,"concept" );
             
-            ArrayList<NodeNT> childs = new RelationsHelper().getListNT(connect.getPoolConnexion(), nodeNT.getIdConcept(),
+            ArrayList<NodeNT> childs = relationsHelper.getListNT(connect.getPoolConnexion(), nodeNT.getIdConcept(),
                     idTheso, idLang, -1, -1);
 
             if (CollectionUtils.isEmpty(childs)) {
@@ -205,7 +210,7 @@ public class TreeConcepts implements Serializable {
         if (((TreeNodeData) selectedNode.getData()).isIsConcept()) {
             rightBodySetting.setShowConceptToOn();
             conceptView.getConceptForTree(idTheso,
-                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
+                    ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang, currentUser);
             rightBodySetting.setIndex("0");
         }
         if (((TreeNodeData) selectedNode.getData()).isIsGroup() || ((TreeNodeData) selectedNode.getData()).isIsSubGroup()) {

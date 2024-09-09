@@ -40,6 +40,9 @@ public class GroupController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private RestRDFHelper restRDFHelper;
+
 
     @GetMapping(value = "/ark:/{naan}/{ark}", produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "Permet de récupérer un ID de groupe associé à un identifiant ARK",
@@ -53,7 +56,6 @@ public class GroupController {
     public ResponseEntity<Object>  getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "Identifiant naan") @PathVariable("naan") String naan,
                                                      @Parameter(name = "ark", required = true, description = "ARK id") @PathVariable("ark") String arkId) {
 
-        var restRDFHelper = new RestRDFHelper();
         var datas = restRDFHelper.exportGroup(connect.getPoolConnexion(), naan + "/" + arkId, HeaderHelper.removeCharset(APPLICATION_JSON_UTF_8));
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

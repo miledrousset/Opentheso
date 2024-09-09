@@ -1,15 +1,15 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.facets.NodeFacet;
 import fr.cnrs.opentheso.models.relations.NodeTypeRelation;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -58,10 +58,22 @@ public class AddConcept implements Serializable {
     private CurrentUser currentUser;
 
     @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
+    private FacetHelper facetHelper;
+
+    @Autowired
     private TermHelper termHelper;
 
     @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
 
     private String prefLabel;
     private String notation;
@@ -104,7 +116,7 @@ public class AddConcept implements Serializable {
             }
             return;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         if ((notation != null) && (!notation.isEmpty())) {
             if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
@@ -179,7 +191,6 @@ public class AddConcept implements Serializable {
         duplicate = false;
         FacesMessage msg;
 
-        ConceptHelper conceptHelper = new ConceptHelper();
         if (roleOnThesoBean.getNodePreference() == null) {
             // erreur de préférences de thésaurusa
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le thésaurus n'a pas de préférences !");
@@ -242,16 +253,15 @@ public class AddConcept implements Serializable {
         
         /////////////////////////
         ///// insert DcTermsData
-        DcElementHelper dcElmentHelper = new DcElementHelper();
         DcElement dcElement = new DcElement();
         dcElement.setName(DCMIResource.CREATOR);
         dcElement.setValue(currentUser.getNodeUser().getName());
         dcElement.setLanguage(null);
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(), dcElement, idNewConcept, idTheso);        
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(), dcElement, idNewConcept, idTheso);
         ///////////////
 
         if (isConceptUnderFacet) {
-            FacetHelper facetHelper = new FacetHelper();
+
             if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(), idFacet, idTheso, idNewConcept)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le concept n'a pas été ajouté à la facette");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -261,8 +271,6 @@ public class AddConcept implements Serializable {
                     false, true, false, "term");
             data.setIdFacetParent(idFacet);
             tree.getDataService().addNodeWithoutChild("file", data, tree.getSelectedNode());
-            
-           // tree.getDataService().addNodeWithoutChild("file", data, tree.getClickselectedNodes().get(0));
 
             tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
             tree.expandTreeToPath2(idBTfacet,
@@ -304,7 +312,7 @@ public class AddConcept implements Serializable {
             }
         }
 
-        conceptBean.getConcept(idTheso, idConceptParent, idLang);
+        conceptBean.getConcept(idTheso, idConceptParent, idLang, currentUser);
         isCreated = true;
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a bien été ajouté");
@@ -340,7 +348,7 @@ public class AddConcept implements Serializable {
             }
         }
         
-        typesRelationsNT = new RelationsHelper().getTypesRelationsNT(connect.getPoolConnexion());
+        typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
         nodeGroups = groupHelper.getListConceptGroup(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }

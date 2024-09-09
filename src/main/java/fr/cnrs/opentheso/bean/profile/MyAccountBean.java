@@ -5,7 +5,7 @@
  */
 package fr.cnrs.opentheso.bean.profile;
 
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.utils.MD5Password;
@@ -35,11 +35,19 @@ import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 @SessionScoped
 public class MyAccountBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
-    @Autowired @Lazy private CurrentUser currentUser;
+    @Autowired @Lazy
+    private Connect connect;
+
+    @Autowired
+    private CurrentUser currentUser;
+
+    @Autowired
+    private UserHelper userHelper;
+
+    @Autowired
+    private ApiKeyHelper apiKeyHelper;
 
     private NodeUser nodeUser;
-    private ApiKeyHelper apiKeyHelper = new ApiKeyHelper();
     private String passWord1;
     private String passWord2;
     private String displayedKey;
@@ -64,7 +72,6 @@ public class MyAccountBean implements Serializable {
      * Réinitialise les informations de profil de l'utilisateur.
      */
     public void reset(){
-        UserHelper userHelper = new UserHelper();
         currentUser.reGetUser();
         nodeUser = currentUser.getNodeUser();
         displayedKey=nodeUser.getApiKey() == null ? null : new String(new char[64]).replace("\0", "*");
@@ -111,7 +118,6 @@ public class MyAccountBean implements Serializable {
      * Initialise la liste des rôles et projets pour l'utilisateur.
      */
     private void initAllMyRoleProject() {
-        UserHelper userHelper = new UserHelper();
         allMyRoleProject = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
     }
 
@@ -126,11 +132,7 @@ public class MyAccountBean implements Serializable {
             return;
         }
 
-        UserHelper userHelper = new UserHelper();
-        if (!userHelper.updatePseudo(
-                connect.getPoolConnexion(),
-                nodeUser.getIdUser(),
-                nodeUser.getName())) {
+        if (!userHelper.updatePseudo(connect.getPoolConnexion(), nodeUser.getIdUser(), nodeUser.getName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de pseudo !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -151,8 +153,6 @@ public class MyAccountBean implements Serializable {
      */
     public void updateAlertEmail() {
         FacesMessage msg;
-
-        UserHelper userHelper = new UserHelper();
         if (!userHelper.setAlertMailForUser(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
@@ -179,7 +179,7 @@ public class MyAccountBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        UserHelper userHelper = new UserHelper();
+
         if (!userHelper.updateMail(
                 connect.getPoolConnexion(),
                 nodeUser.getIdUser(),
@@ -222,7 +222,7 @@ public class MyAccountBean implements Serializable {
             return;
         }
 
-        if (!new UserHelper().updatePwd(connect.getPoolConnexion(), nodeUser.getIdUser(),
+        if (!userHelper.updatePwd(connect.getPoolConnexion(), nodeUser.getIdUser(),
                 MD5Password.getEncodedPassword(passWord2))) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de passe !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);

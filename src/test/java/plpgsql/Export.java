@@ -3,8 +3,8 @@ package plpgsql;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DaoResourceHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
@@ -87,12 +87,6 @@ public class Export {
         
         String idTheso = "th134";
         String idConcept = "1027237";
-       
-        
-/*        ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
-*/
-  //      System.out.println("total = " + idConcepts.size());
 
   
         System.out.println("start at =  " + LocalDateTime.now());

@@ -37,6 +37,13 @@ public class ConceptThesoController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private D3jsHelper d3jsHelper;
+
+    @Autowired
+    private RestRDFHelper restRDFHelper;
+    
+
 
     @GetMapping(value = "/{idConcept}", produces = {APPLICATION_JSON_LD_UTF_8, APPLICATION_JSON_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(summary = "Récupère un concept d'après son ID et le  récupérer dans un format spécifié",
@@ -56,7 +63,7 @@ public class ConceptThesoController {
                                          @Parameter(name = "idConcept", description = "Identifiant du concept à récupérer.", required = true) @PathVariable("idConcept") String idConcept,
                                          @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
-        var datas = new RestRDFHelper().exportConceptFromId(connect.getPoolConnexion(), idConcept, idThesaurus, removeCharset(acceptHeader));
+        var datas = restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idThesaurus, removeCharset(acceptHeader));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 
@@ -78,7 +85,7 @@ public class ConceptThesoController {
             @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true) @PathVariable("idConcept") String idConcept,
             @Parameter(name = "lang", description = "Langue du concept à  récupérer") @RequestParam(value = "lang", required = false, defaultValue = "fr") String lang) {
 
-        var datas = new RestRDFHelper().getInfosOfConcept(connect.getPoolConnexion(), idTheso, idConcept, lang);
+        var datas = restRDFHelper.getInfosOfConcept(connect.getPoolConnexion(), idTheso, idConcept, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
 
     }
@@ -101,7 +108,7 @@ public class ConceptThesoController {
             @Parameter(name = "idArk", description = "ID du concept à récupérer", required = true) @PathVariable("idConcept") String idConcept,
             @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang) {
 
-        var datas = new D3jsHelper().findDatasForGraph__(connect.getPoolConnexion(), idConcept, idThesaurus, lang);
+        var datas = d3jsHelper.findDatasForGraph__(connect.getPoolConnexion(), idConcept, idThesaurus, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -122,7 +129,7 @@ public class ConceptThesoController {
             @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept", required = true) @PathVariable("idTheso") String idThesaurus,
             @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang) {
 
-        var datas = new D3jsHelper().findDatasForGraph__(connect.getPoolConnexion(), null, idThesaurus, lang);
+        var datas = d3jsHelper.findDatasForGraph__(connect.getPoolConnexion(), null, idThesaurus, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }    
 
@@ -155,10 +162,10 @@ public class ConceptThesoController {
 
     private String getBranchOfConcepts(String idConcept, String idTheso, String way, String format) {
         if (way.equalsIgnoreCase("top")) {
-            return new RestRDFHelper().brancheOfConceptsTop(connect.getPoolConnexion(), idConcept, idTheso, format);
+            return restRDFHelper.brancheOfConceptsTop(connect.getPoolConnexion(), idConcept, idTheso, format);
         } else {
             // sens de récupération des concepts vers le bas
-            return new RestRDFHelper().brancheOfConceptsDown(connect.getPoolConnexion(), idConcept, idTheso, format);
+            return restRDFHelper.brancheOfConceptsDown(connect.getPoolConnexion(), idConcept, idTheso, format);
         }
     }
 
@@ -180,7 +187,7 @@ public class ConceptThesoController {
             @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true, example = "3") @PathVariable("idConcept") String idConcept,
             @Parameter(name = "lang", description = "Langue du concept à  récupérer", required = true, example = "fr") @PathVariable("lang") String lang) {
 
-        var datas = new RestRDFHelper().getNarrower(connect.getPoolConnexion(), idTheso, idConcept, lang);
+        var datas = restRDFHelper.getNarrower(connect.getPoolConnexion(), idTheso, idConcept, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -205,7 +212,7 @@ public class ConceptThesoController {
             @Parameter(name = "date", description = "Date de la dernière modification des concepts à récupérer à format YYYY-MM-DD", required = true, schema = @Schema(type = "string", format = "date"), example = "2014-07-21") @PathVariable("date") String date,
             @RequestHeader(value = "accept", required = false) String format) {
 
-        var datas = new RestRDFHelper().getIdConceptFromDate(connect.getPoolConnexion(), idTheso, date, removeCharset(format));
+        var datas = restRDFHelper.getIdConceptFromDate(connect.getPoolConnexion(), idTheso, date, removeCharset(format));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(format)).body(datas);
     }
 
@@ -227,9 +234,9 @@ public class ConceptThesoController {
     ) {
         String datas;
         if (cidocClass == null || cidocClass.isEmpty()) {
-            datas = new RestRDFHelper().getAllLinkedConceptsWithOntome__(connect.getPoolConnexion(), idTheso);
+            datas = restRDFHelper.getAllLinkedConceptsWithOntome__(connect.getPoolConnexion(), idTheso);
         } else {
-            datas = new RestRDFHelper().getLinkedConceptWithOntome__(connect.getPoolConnexion(), idTheso, cidocClass);
+            datas = restRDFHelper.getLinkedConceptWithOntome__(connect.getPoolConnexion(), idTheso, cidocClass);
         }
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }

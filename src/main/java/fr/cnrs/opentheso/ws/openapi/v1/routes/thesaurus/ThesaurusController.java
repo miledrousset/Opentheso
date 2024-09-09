@@ -1,7 +1,7 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.thesaurus;
 
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,6 +35,9 @@ public class ThesaurusController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
 
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "Permet de récupérer tous les thesaurus publiques",
@@ -47,7 +50,7 @@ public class ThesaurusController {
     )
     public ResponseEntity<Object>  getListAllPublicTheso() {
 
-        var listPublicTheso = new ThesaurusHelper().getAllIdOfThesaurus(connect.getPoolConnexion(), false);
+        var listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), false);
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -56,7 +59,7 @@ public class ThesaurusController {
             job.add("idTheso", idTheso);
             var jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            var nodeThesaurus = new ThesaurusHelper().getNodeThesaurus(connect.getPoolConnexion(), idTheso);
+            var nodeThesaurus = thesaurusHelper.getNodeThesaurus(connect.getPoolConnexion(), idTheso);
             for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
                 var jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", thesaurus.getLanguage());

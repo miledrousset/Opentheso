@@ -1,8 +1,8 @@
 package fr.cnrs.opentheso.repositories;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.entites.ProjectDescription;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+@Service
 public class ProjectDescriptionRepository {
 
     public void saveProjectDescription(HikariDataSource ds, ProjectDescription projectDescription) {

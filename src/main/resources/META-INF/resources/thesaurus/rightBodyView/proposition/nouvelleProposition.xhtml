@@ -96,7 +96,7 @@
         
 
         <!-- valider ou refuser une propostion -->
-        <h:panelGroup rendered="#{propositionBean.isSameUser()}">
+        <h:panelGroup rendered="#{propositionBean.isSameUser(currentUser)}">
             <div class="row" style="margin-left: 15px; margin-right: 15px">
                 <div class="col-12">
                     <h:outputText value="#{langueBean.getMsg('proposition.alertSameUser')} !! " style="font-size: 14px; font-weight: bold;color: #D32F2F"/>
@@ -104,7 +104,7 @@
             </div>
         </h:panelGroup>        
         
-        <h:panelGroup rendered="#{propositionBean.isCanMakeAction()}">
+        <h:panelGroup rendered="#{propositionBean.isCanMakeAction(currentUser)}">
             <div class="card mb-4 py-3 border-left-success" style="margin: 10px;">
                 <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                     <div class="row" style="margin-left: 15px; margin-right: 15px">

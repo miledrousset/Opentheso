@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.candidat;
 
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -15,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -39,6 +33,9 @@ public class NoteBeanCandidat implements Serializable {
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CandidatBean candidatBean;
 
+    @Autowired
+    private NoteHelper noteHelper;
+
     private String selectedLang;
     private ArrayList<NoteHelper.NoteType> noteTypes;
     private ArrayList<NodeLangTheso> nodeLangs;
@@ -51,10 +48,7 @@ public class NoteBeanCandidat implements Serializable {
     private boolean visible;
     private boolean isEditMode;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
+
     public void clear(){
         if(noteTypes!= null){
             noteTypes.clear();
@@ -76,7 +70,7 @@ public class NoteBeanCandidat implements Serializable {
 
     public void reset() {
         visible = true;
-        noteTypes = new NoteHelper().getNotesType(connect.getPoolConnexion());
+        noteTypes = noteHelper.getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = candidatBean.getCandidatSelected().getLang();
         noteValue = "";
@@ -142,14 +136,13 @@ public class NoteBeanCandidat implements Serializable {
             pf.ajax().update("candidatForm");
         }
         visible = false;
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note ajoutée avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
     }
 
     
     public void updateNote(int idUser){
-        NoteHelper noteHelper = new NoteHelper();
-     
+
         FacesMessage msg;        
 
         if (!noteHelper.updateNote(connect.getPoolConnexion(),
@@ -178,7 +171,6 @@ public class NoteBeanCandidat implements Serializable {
     }
     
     public void deleteNote(int idUser) {
-        NoteHelper noteHelper = new NoteHelper();
         FacesMessage msg;
 
         if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
@@ -216,7 +208,6 @@ public class NoteBeanCandidat implements Serializable {
     }
 
     private boolean addNote(int idUser) {
-        NoteHelper noteHelper = new NoteHelper();
         return noteHelper.addNote(
                 connect.getPoolConnexion(),
                 candidatBean.getCandidatSelected().getIdConcepte(),

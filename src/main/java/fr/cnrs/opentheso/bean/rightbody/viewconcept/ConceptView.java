@@ -1,13 +1,14 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.CorpusHelper;
-import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bdd.helper.LanguageHelper;
-import fr.cnrs.opentheso.bdd.helper.PathHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.CorpusHelper;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.GpsHelper;
+import fr.cnrs.opentheso.repositories.LanguageHelper;
+import fr.cnrs.opentheso.repositories.PathHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
-import fr.cnrs.opentheso.bdd.helper.DaoResourceHelper;
+import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.models.concept.ResourceGPS;
 import fr.cnrs.opentheso.models.concept.NodeConceptType;
@@ -27,7 +28,6 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorThesoHomeBean;
 import fr.cnrs.opentheso.entites.Gps;
-import fr.cnrs.opentheso.repositories.GpsRepository;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -72,11 +72,30 @@ public class ConceptView implements Serializable {
     private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy
     private LanguageBean languageBean;
-    @Autowired @Lazy
-    private CurrentUser currentUser;
+
+    @Autowired
+    private DaoResourceHelper daoResourceHelper;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
+
+    @Autowired
+    private FacetHelper facetHelper;
 
     @Autowired
     private ConceptHelper conceptHelper;
+
+    @Autowired
+    private CorpusHelper corpusHelper;
+
+    @Autowired
+    private PathHelper pathHelper;
+
+    @Autowired
+    private GpsHelper gpsHelper;
+
+    @Autowired
+    private LanguageHelper languageHelper;
 
     private NodeConcept nodeConcept;
     
@@ -223,7 +242,6 @@ public class ConceptView implements Serializable {
     }
     
     public String getFlagFromCodeLang(String idLang){
-        LanguageHelper languageHelper = new LanguageHelper();
         String flag = languageHelper.getFlagFromIdLang(connect.getPoolConnexion(), idLang);
         return FacesContext.getCurrentInstance().getExternalContext()
                 .getRequestContextPath() + "/resources/img/flag/" + flag + ".png";        
@@ -237,10 +255,8 @@ public class ConceptView implements Serializable {
      * @return
      */
     public String getLabelOfConceptType(String conceptType, String idTheso) {
-        String idLang;
-        RelationsHelper relationsHelper = new RelationsHelper();
-        idLang = getIdLangOfInterface();
 
+        String idLang = getIdLangOfInterface();
         return relationsHelper.getLabelOfTypeConcept(connect.getPoolConnexion(),
                 conceptType,
                 idTheso,
@@ -256,7 +272,7 @@ public class ConceptView implements Serializable {
      * @param idConcept
      * @param idLang
      */
-    public void getConcept(String idTheso, String idConcept, String idLang) {
+    public void getConcept(String idTheso, String idConcept, String idLang, CurrentUser currentUser) {
         offset = 0;
         gpsModeSelected = GpsMode.POINT;
         
@@ -280,7 +296,7 @@ public class ConceptView implements Serializable {
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             String interfaceLang = getIdLangOfInterface();
 
-            nodeCustomRelations = new RelationsHelper().getAllNodeCustomRelation(
+            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(
                     connect.getPoolConnexion(), idConcept, idTheso, idLang, interfaceLang);
             setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
@@ -329,7 +345,7 @@ public class ConceptView implements Serializable {
     public void searchCorpus(String idThesaurus) {
         searchedForCorpus = true;
         SearchCorpus2 searchCorpus2 = new SearchCorpus2();
-        nodeCorpuses = new CorpusHelper().getAllActiveCorpus(connect.getPoolConnexion(), idThesaurus);
+        nodeCorpuses = corpusHelper.getAllActiveCorpus(connect.getPoolConnexion(), idThesaurus);
         nodeCorpuses = searchCorpus2.SearchCorpus(nodeCorpuses, nodeFullConcept);
         haveCorpus = searchCorpus2.isHaveCorpus();
         if(!haveCorpus) {
@@ -377,7 +393,7 @@ public class ConceptView implements Serializable {
     }      
     
 
-    public boolean isGpsDisable() {
+    public boolean isGpsDisable(CurrentUser currentUser) {
         return currentUser.getNodeUser() == null || (currentUser.getNodeUser() != null &&
                 !(roleOnThesoBean.isManagerOnThisTheso() || roleOnThesoBean.isAdminOnThisTheso() || roleOnThesoBean.isSuperAdmin()));
     }
@@ -402,7 +418,7 @@ public class ConceptView implements Serializable {
      * @param idConcept
      * @param idLang
      */
-    public void getConceptForTree(String idTheso, String idConcept, String idLang) {
+    public void getConceptForTree(String idTheso, String idConcept, String idLang, CurrentUser currentUser) {
 
         selectedLang = idLang;
         offset = 0;
@@ -419,7 +435,7 @@ public class ConceptView implements Serializable {
         
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
-            nodeCustomRelations = new RelationsHelper().getAllNodeCustomRelation(
+            nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(
                     connect.getPoolConnexion(), idConcept, idTheso, idLang, getIdLangOfInterface());
             setNodeCustomRelationWithReciprocal(nodeCustomRelations);
         }
@@ -489,7 +505,7 @@ public class ConceptView implements Serializable {
     }      
 
     private void setFacetsOfConcept(String idConcept, String idTheso, String idLang) {
-        FacetHelper facetHelper = new FacetHelper();
+
         List<String> facetIds = facetHelper.getAllIdFacetsConceptIsPartOf(connect.getPoolConnexion(), idConcept, idTheso);
         if (nodeFacets == null)
             nodeFacets = new ArrayList<>();
@@ -534,7 +550,7 @@ public class ConceptView implements Serializable {
 
     public void getNextNT(String idTheso, String idConcept, String idLang) {
         if (tree != null && tree.getSelectedNode() != null && tree.getSelectedNode().getData() != null) {
-            List<ConceptRelation> conceptRelations = new DaoResourceHelper().getListNT(connect.getPoolConnexion(),
+            List<ConceptRelation> conceptRelations = daoResourceHelper.getListNT(connect.getPoolConnexion(),
                     idTheso,
                     ((TreeNodeData) tree.getSelectedNode().getData()).getNodeId(),
                     idLang, offset, step + 1);
@@ -547,24 +563,6 @@ public class ConceptView implements Serializable {
         }
     }
 
-/*    private void pathOfConcept(String idTheso, String idConcept, String idLang) {
-        PathHelper pathHelper = new PathHelper();
-        List<Path> paths = pathHelper.getPathOfConcept(
-                connect.getPoolConnexion(), idConcept, idTheso);
-        if (pathHelper.getMessage() != null) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
-        if (paths == null) {
-            System.out.println("Erreur de path pour le concept :" + idConcept);
-            if (pathLabel != null) {
-                pathLabel.clear();
-            }
-            return;
-        }
-        pathLabel = pathHelper.getPathWithLabel(connect.getPoolConnexion(), paths, idTheso, idLang, idConcept);
-    }*/
-
     /**
      * méthode pour construire le graphe pour représenter tous les chemins vers la racine
      * @param idTheso
@@ -573,20 +571,7 @@ public class ConceptView implements Serializable {
      * #MR
      */
     private void pathOfConcept2(String idTheso, String idConcept, String idLang) {
-        PathHelper pathHelper = new PathHelper();
-        List<String> graphPaths = pathHelper.getGraphOfConcept(
-                connect.getPoolConnexion(), idConcept, idTheso);
-        /*if (pathHelper.getMessage() != null) {
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", pathHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }*/
-        /*if (paths == null) {
-            System.out.println("Erreur de path pour le concept :" + idConcept);
-            if (pathLabel != null) {
-                pathLabel.clear();
-            }
-            return;
-        }*/
+        List<String> graphPaths = pathHelper.getGraphOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
         List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);        
         pathLabel2 = pathHelper.getPathWithLabel2(connect.getPoolConnexion(), paths, idTheso, idLang);
     }    
@@ -879,7 +864,7 @@ public class ConceptView implements Serializable {
         gps.setIdConcept(nodeFullConcept.getIdentifier());
         gps.setPosition(nodeFullConcept.getGps().size() + 1);
 
-        new GpsRepository().saveNewGps(connect.getPoolConnexion(), gps);
+        gpsHelper.saveNewGps(connect.getPoolConnexion(), gps);
         mapScripte = createMap(idThesaurus);
 
         FacesMessage msg = new FacesMessage("Nouvelle coordonnée ajoutée avec succès");
@@ -892,16 +877,16 @@ public class ConceptView implements Serializable {
 
         if (StringUtils.isEmpty(gpsList)) {
             nodeFullConcept.setGps(null);
-            new GpsRepository().removeGpsByConcept(connect.getPoolConnexion(), nodeFullConcept.getIdentifier(), idThesaurus);
+            gpsHelper.removeGpsByConcept(connect.getPoolConnexion(), nodeFullConcept.getIdentifier(), idThesaurus);
         } else {
             List<Gps> gpsListTmps = readGps(gpsList, idThesaurus, nodeFullConcept.getIdentifier());
 
             if (ObjectUtils.isNotEmpty(gpsListTmps)) {
                 nodeFullConcept.setGps(getResourceGpsFromGps(gpsListTmps));
                 gpsModeSelected = getGpsMode(gpsListTmps);
-                new GpsRepository().removeGpsByConcept(connect.getPoolConnexion(), nodeFullConcept.getIdentifier(), idThesaurus);
+                gpsHelper.removeGpsByConcept(connect.getPoolConnexion(), nodeFullConcept.getIdentifier(), idThesaurus);
                 for (Gps gps : gpsListTmps) {
-                    new GpsRepository().saveNewGps(connect.getPoolConnexion(), gps);
+                    gpsHelper.saveNewGps(connect.getPoolConnexion(), gps);
                 }
             } else {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Aucune coordonnée GPS trouvée !");

@@ -36,6 +36,10 @@ public class ConceptController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private RestRDFHelper restRDFHelper;
+
+
     @GetMapping(produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "Permet d'obtenir le chemin complet d'un concept à partir de son ID Ark",
             description = "Ancienne version : `/api/searchwidgetbyark?q={idArks}&lang={lang}`<br/>Permet d'obtenir le chemin complet d'un concept représenté dans un fichier JSON",
@@ -62,7 +66,7 @@ public class ConceptController {
 
         var full = fullString != null && fullString.equalsIgnoreCase("true");
         var fullFormat = full ? "full" : null;
-        var datas = new RestRDFHelper().findDatasForWidgetByArk(connect.getPoolConnexion(), lang, idArks, fullFormat);
+        var datas = restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), lang, idArks, fullFormat);
         return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
     }
 }

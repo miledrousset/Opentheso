@@ -205,12 +205,13 @@
 
                     <p:commandLink rendered="#{subPath.startOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
                                    value=" #{subPath.title}" actionListener="#{conceptView.getConcept(selectedTheso.selectedIdTheso,
-                                             subPath.idConcept, selectedTheso.currentLang)}" update="containerIndex" process="@form" ajax="true" /> 
+                                             subPath.idConcept, selectedTheso.currentLang, currentUser)}"
+                                   update="containerIndex" process="@form" ajax="true" />
                     
 
                         <h:panelGroup rendered="#{!substatus.last}" >
                             <p:commandLink rendered="#{!subPath.startOfPath}" style="color:#164A78; background: none; border: none; box-shadow: none; font-size: 13px"
-                                           value="#{subPath.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, subPath.idConcept, selectedTheso.currentLang)}"
+                                           value="#{subPath.title}" action="#{conceptView.getConcept(selectedTheso.selectedIdTheso, subPath.idConcept, selectedTheso.currentLang, currentUser)}"
                                            update="containerIndex" process="@form" ajax="true"/>                          
                             <h:outputText rendered="#{!substatus.last}" value=" > " style="font-size: 13px; font-weight: bold"/>                        
                         </h:panelGroup>

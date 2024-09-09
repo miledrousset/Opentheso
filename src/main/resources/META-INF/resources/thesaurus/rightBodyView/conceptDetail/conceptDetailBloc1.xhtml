@@ -87,11 +87,11 @@
                                 <ui:repeat var="replace" value="#{conceptView.nodeFullConcept.replacedBy}" varStatus="status">
                                     <p:commandLink rendered="#{replace.label != ''}" value="#{replace.label}"
                                                    title="#{replace.identifier}"  style="font-size: 1rem;"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.identifier, conceptView.selectedLang)}"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.identifier, conceptView.selectedLang, currentUser)}"
                                                    update="containerIndex:formRightTab indexTitle" />
 
                                     <p:commandLink rendered="#{replace.label == ''}" value="(#{replace.identifier})"
-                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.identifier, conceptView.selectedLang)}"
+                                                   action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replace.identifier, conceptView.selectedLang, currentUser)}"
                                                    update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
                                                    style="color: #C63632;font-size: 1rem;" />
 
@@ -116,11 +116,11 @@
                             <ui:repeat var="replaces" value="#{conceptView.nodeFullConcept.replaces}" varStatus="status" rendered="#{conceptView.nodeFullConcept.replaces.size() != 0}">
                                 <p:commandLink rendered="#{replaces.label != ''}" value="#{replaces.label}"
                                                title="#{replaces.identifier}"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang)}"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang, currentUser)}"
                                                update="containerIndex:formRightTab indexTitle" style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;text-decoration:line-through"
                                                />
                                 <p:commandLink rendered="#{replaces.label == ''}" value="(#{replaces.identifier})"
-                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang)}"
+                                               action="#{conceptView.getConcept(selectedTheso.selectedIdTheso,replaces.identifier, conceptView.selectedLang, currentUser)}"
                                                update="containerIndex:formLeftTab containerIndex:formRightTab indexTitle"
                                                style="color: #C63632;font-weight: bold;font-style: italic;font-size: 1rem;"
                                                />

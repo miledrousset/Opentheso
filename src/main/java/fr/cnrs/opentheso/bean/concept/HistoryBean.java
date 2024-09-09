@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.helper.HistoryHelper;
+import fr.cnrs.opentheso.repositories.HistoryHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -16,13 +11,12 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
 @Named(value = "historyBean")
 @SessionScoped
 public class HistoryBean implements Serializable {
@@ -30,6 +24,9 @@ public class HistoryBean implements Serializable {
     @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
+
+    @Autowired
+    private HistoryHelper historyHelper;
 
     private ArrayList<HistoryHelper.HistoryValue> historyLabels;
     private ArrayList<HistoryHelper.HistoryValue> historySynonyms;
@@ -57,13 +54,9 @@ public class HistoryBean implements Serializable {
             historyNotes.clear();
             historyNotes = null;
         }        
-    }       
-    
-    public HistoryBean() {
     }
 
     public void reset() {
-        HistoryHelper historyHelper = new HistoryHelper();
         historyLabels = historyHelper.getLabelHistory(connect.getPoolConnexion(),
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedTheso.getCurrentIdTheso());
@@ -78,49 +71,10 @@ public class HistoryBean implements Serializable {
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedTheso.getCurrentIdTheso());             
     }
-   
- 
     
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour images !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-
-    public ArrayList<HistoryHelper.HistoryValue> getHistoryLabels() {
-        return historyLabels;
-    }
-
-    public void setHistoryLabels(ArrayList<HistoryHelper.HistoryValue> historyLabels) {
-        this.historyLabels = historyLabels;
-    }
-
-    public ArrayList<HistoryHelper.HistoryValue> getHistorySynonyms() {
-        return historySynonyms;
-    }
-
-    public void setHistorySynonyms(ArrayList<HistoryHelper.HistoryValue> historySynonyms) {
-        this.historySynonyms = historySynonyms;
-    }
-
-    public ArrayList<HistoryHelper.HistoryValue> getHistoryRelations() {
-        return historyRelations;
-    }
-
-    public void setHistoryRelations(ArrayList<HistoryHelper.HistoryValue> historyRelations) {
-        this.historyRelations = historyRelations;
-    }
-
-    public ArrayList<HistoryHelper.HistoryValue> getHistoryNotes() {
-        return historyNotes;
-    }
-
-    public void setHistoryNotes(ArrayList<HistoryHelper.HistoryValue> historyNotes) {
-        this.historyNotes = historyNotes;
-    }
-
-
-
-    
-
 
 }

@@ -1,11 +1,11 @@
 package fr.cnrs.opentheso.repositories;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
 import fr.cnrs.opentheso.models.releases.ReleaseDto;
 import fr.cnrs.opentheso.entites.Release;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+@Service
 public class ReleaseRepository {
 
 

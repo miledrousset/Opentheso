@@ -2,27 +2,26 @@
 package fr.cnrs.opentheso.models.exports;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
+@Service
 public class UriHelper {
+
+    @Autowired
+    private ConceptHelper conceptHelper;
 
     private NodePreference nodePreference;
     private String idTheso;
     private HikariDataSource ds;
-    
-    public UriHelper(HikariDataSource ds, NodePreference nodePreference, String idTheso) {
-        this.nodePreference = nodePreference;
-        this.idTheso = idTheso;
-        this.ds = ds;
-    }
-    
+
     
     /**
      * Cette fonction permet de retourner l'URI du thesaurus
@@ -153,7 +152,6 @@ public class UriHelper {
     
     public String getIdArk(String idConcept) {
         if(nodePreference.isOriginalUriIsArk()){
-            ConceptHelper conceptHelper = new ConceptHelper();
             return conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso);
         }
         return null;

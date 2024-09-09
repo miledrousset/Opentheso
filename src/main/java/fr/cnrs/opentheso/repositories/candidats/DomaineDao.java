@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,6 +22,7 @@ import java.util.List;
 
 
 @Slf4j
+@Service
 public class DomaineDao extends BasicDao {
 
     public void addNewDomaine(Connect connect, String idgroup, String idthesaurus, String idconcept) throws SQLException {

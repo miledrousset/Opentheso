@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.ws.api;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.DaoResourceHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.DaoResourceHelper;
 import fr.cnrs.opentheso.models.concept.NodeConceptGraph;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import java.util.ArrayList;
@@ -18,12 +13,25 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author miledrousset
- */
+
+@Service
 public class D3jsHelper {
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private DaoResourceHelper daoResourceHelper;
+
 
     private int count = 0;
     private NodePreference nodePreference;
@@ -37,12 +45,10 @@ public class D3jsHelper {
         if(StringUtils.isEmpty(idLang)) {
             return null;
         }
-        nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
+        nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
         if (nodePreference == null) {
             return null;
         }
-
-        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
         
         List<NodeConceptGraph> nodeConceptGraphs_childs;
         
@@ -93,7 +99,6 @@ public class D3jsHelper {
 
     private NodeDatas getNode(HikariDataSource ds, NodeConceptGraph nodeConceptGraph, String idTheso, String idLang){
         NodeDatas nodeDatas = getNodeDatas(nodeConceptGraph);
-        DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
         count++;
         //Children
         List<NodeDatas> childrens = new ArrayList<>();
@@ -211,9 +216,8 @@ public class D3jsHelper {
     }    
 
 
-    private NodeDatas getTopNodeDatas(HikariDataSource ds,
-                                   String idConcept, String idTheso, String idLang){
-        ConceptHelper conceptHelper = new ConceptHelper();
+    private NodeDatas getTopNodeDatas(HikariDataSource ds, String idConcept, String idTheso, String idLang){
+
         conceptHelper.setNodePreference(nodePreference);
 
         NodeDatas nodeDatas = conceptHelper.getConceptForGraph(ds, idConcept, idTheso, idLang);
@@ -224,9 +228,8 @@ public class D3jsHelper {
         return nodeDatas;
     }
     
-    private NodeDatas getTopNodeDatasForTheso(HikariDataSource ds,
-                                   String idTheso, String idLang){
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+    private NodeDatas getTopNodeDatasForTheso(HikariDataSource ds, String idTheso, String idLang){
+
         String title = thesaurusHelper.getTitleOfThesaurus(ds, idTheso, idLang);
         NodeDatas nodeDatas = new NodeDatas();
         

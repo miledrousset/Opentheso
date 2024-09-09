@@ -1,35 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.ws.handle;
 
 import java.util.ArrayList;
-import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
+import fr.cnrs.opentheso.repositories.ToolsHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author miled.rousset
- */
+
 @Data
+@Service
 public class HandleHelper {
-    
-    private NodePreference nodePreference;
+
+    @Autowired
+    private ToolsHelper toolsHelper;
+
     private String message;
-    
-    public HandleHelper(NodePreference nodePreference) {
-        this.nodePreference = nodePreference;
-    }
     
     /**
      * Permet d'ajouter un identifiant Handle
      * @param privateUri
      * @return
      */
-    public String addIdHandle(String privateUri) {
+    public String addIdHandle(String privateUri, NodePreference nodePreference) {
         if (nodePreference == null) {
             return null;
         }
@@ -38,7 +31,7 @@ public class HandleHelper {
         }
 
         HandleClient handleClient = new HandleClient();
-        String newId = getNewHandleId();
+        String newId = getNewHandleId(nodePreference);
         newId = nodePreference.getPrefixIdHandle() + "/"
                 + nodePreference.getPrivatePrefixHandle() + newId;
 
@@ -60,19 +53,16 @@ public class HandleHelper {
     /**
      * permet de genérer un identifiant unique pour Handle on controle la
      * présence de l'identifiant sur handle.net si oui, on regénère un autre.
-     *
-     * @return
      */
-    private String getNewHandleId() {
-        ToolsHelper toolsHelper = new ToolsHelper();
+    private String getNewHandleId(NodePreference nodePreference) {
+
         boolean duplicateId = true;
         String idHandle = null;
         HandleClient handleClient = new HandleClient();
 
         while (duplicateId) {
             idHandle = toolsHelper.getNewId(10, false, false);
-            if (!handleClient.isHandleExist(
-                    nodePreference.getUrlApiHandle(),
+            if (!handleClient.isHandleExist(nodePreference.getUrlApiHandle(),
                     nodePreference.getPrefixIdHandle() + "/" + idHandle)) {
                 duplicateId = false;
             }
@@ -89,7 +79,7 @@ public class HandleHelper {
      * Permet de supprimer un identifiant Handle de la
      * plateforme (handle.net) via l'API REST
      */
-    public boolean deleteIdHandle(String idHandle) {
+    public boolean deleteIdHandle(String idHandle, NodePreference nodePreference) {
         /**
          * récupération du code Handle via WebServices
          *
@@ -121,7 +111,7 @@ public class HandleHelper {
      * de la plateforme (handle.net) via l'API REST pour un thésaurus donné
      * suite à une suppression d'un thésaurus
      */
-    public boolean deleteAllIdHandle(ArrayList<String> tabIdHandle) {
+    public boolean deleteAllIdHandle(ArrayList<String> tabIdHandle, NodePreference nodePreference) {
         if (nodePreference == null) {
             return false;
         }

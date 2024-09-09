@@ -90,7 +90,7 @@ public class WriteHierachiquePDF {
         for (SKOSResource concept : concepts) {
 
             boolean isAtRoot = true;
-            String conceptID = concept.getIdentifier();//uriHelper.getUriForConcept(concept.getIdentifier(), concept.getArkId(), concept.getArkId());//writePdfSettings.getIdFromUri(concept.getUri());
+            String conceptID = concept.getIdentifier();
             Iterator i = idToChildId.keySet().iterator();
             while (i.hasNext()) {
                 ArrayList<String> valeur = (ArrayList<String>) idToChildId.get((String) i.next());

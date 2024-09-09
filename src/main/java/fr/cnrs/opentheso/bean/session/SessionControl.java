@@ -54,7 +54,7 @@ public class SessionControl implements Serializable {
             treeGroups.reset();
             treeConcepts.reset();
             viewEditorThesoHomeBean.reset();
-            roleOnThesoBean.showListTheso();
+            roleOnThesoBean.showListTheso(currentUser);
             copyAndPasteBetweenTheso.reset();
             indexSetting.setIsThesoActive(true);
             roleOnThesoBean.setAndClearThesoInAuthorizedList();

@@ -8,23 +8,26 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GpsHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.ImagesHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.relations.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.DeprecateHelper;
-import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
-import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.DeprecateHelper;
+import fr.cnrs.opentheso.repositories.ExternalResourcesHelper;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
@@ -87,7 +90,47 @@ public class ImportRdf4jHelper {
     private ImagesHelper imagesHelper;
 
     @Autowired
+    private CandidatDao candidatDao;
+
+    @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private GpsHelper gpsHelper;
+
+    @Autowired
+    private AlignmentHelper alignmentHelper;
+
+    @Autowired
+    private NoteHelper noteHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private TermHelper termHelper;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
+    @Autowired
+    private ExternalResourcesHelper externalResourcesHelper;
+
+    @Autowired
+    private UserHelper userHelper;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private FacetHelper facetHelper;
+
 
     private ArrayList<String> idGroups; // tous les idGroupes du thésaurus
     private String langueSource;
@@ -170,9 +213,7 @@ public class ImportRdf4jHelper {
         thesaurus.setCreator(creator);
         thesaurus.setContributor(contributor);
 
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         thesaurusHelper.setIdentifierType("2");
-        DcElementHelper dcElementHelper = new DcElementHelper();
 
         String idTheso1;
         try (Connection conn = ds.getConnection()) {
@@ -220,7 +261,7 @@ public class ImportRdf4jHelper {
 
             // ajouter le thésaurus dans le group de l'utilisateur
             if (idGroupUser != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
-                if (!new UserHelper().addThesoToGroup(conn, thesaurus.getId_thesaurus(), idGroupUser)) {
+                if (!userHelper.addThesoToGroup(conn, thesaurus.getId_thesaurus(), idGroupUser)) {
                     conn.rollback();
                     conn.close();
                     message.append("Erreur lors de l'ajout du thésaurus au projet");
@@ -239,7 +280,6 @@ public class ImportRdf4jHelper {
 
     private void setPreferences(String idTheso, String uri) {
 
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         if (nodePreference == null) {
             preferencesHelper.initPreferences(ds, idTheso, langueSource);
             nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
@@ -276,7 +316,7 @@ public class ImportRdf4jHelper {
     }
 
     private void setOriginalUri(String idTheso, String uri) {
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
+
         if (nodePreference == null) {
             return;
         }
@@ -289,7 +329,6 @@ public class ImportRdf4jHelper {
     }
 
     public void addFacets(ArrayList<SKOSResource> facetResources, String idTheso) {
-        FacetHelper facetHelper = new FacetHelper();
 
         boolean first = true;
         for (SKOSResource facetSKOSResource : facetResources) {
@@ -455,7 +494,6 @@ public class ImportRdf4jHelper {
                 groupHelper.addGroupTraduction(ds, conceptGroupLabel, idUser);
             }
 
-            NoteHelper noteHelper = new NoteHelper();
             for (SKOSDocumentation documentation : group.getDocumentationsList()) {
                 String noteTypeCode = "";
                 int prop = documentation.getProperty();
@@ -509,13 +547,12 @@ public class ImportRdf4jHelper {
 
     public void addConcept(SKOSResource conceptResource, String idTheso, boolean isCandidatImport) {
         if (isCandidatImport) {
-            if (new ConceptHelper().isIdExiste(ds, conceptResource.getIdentifier(), idTheso)) {
+            if (conceptHelper.isIdExiste(ds, conceptResource.getIdentifier(), idTheso)) {
                 return;
             }
         }
 
         AddConceptsStruct acs = new AddConceptsStruct();
-        acs.conceptHelper = new ConceptHelper();
         initAddConceptsStruct(acs, conceptResource, idTheso, isCandidatImport);
         addRelation(acs, idTheso);
 
@@ -895,8 +932,6 @@ public class ImportRdf4jHelper {
     }
 
     private void addExternalResources(String idTheso, String idConcept, ArrayList<String> externalRelations) {
-        
-        ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();
 
         for (String externalRelation : externalRelations) {
             if (externalRelation == null || externalRelation.isEmpty()) {
@@ -910,8 +945,7 @@ public class ImportRdf4jHelper {
                     idConcept,
                     idTheso,
                     "",
-                    externalRelation,
-                    idUser)) {
+                    externalRelation)) {
             }
         }
     }
@@ -1138,12 +1172,11 @@ public class ImportRdf4jHelper {
     }
 
     public void addConceptToBdd(AddConceptsStruct acs, String idTheso, boolean isCandidatImport) {
-        if (!acs.conceptHelper.insertConceptInTable(ds, acs.concept, idUser)) {
+
+        if (!conceptHelper.insertConceptInTable(ds, acs.concept, idUser)) {
             System.out.println("Erreur sur le Concept = " + acs.concept.getIdConcept());
         }
-        acs.termHelper.insertTerm(ds, acs.nodeTerm, idUser);
-
-        RelationsHelper relationsHelper = new RelationsHelper();
+        termHelper.insertTerm(ds, acs.nodeTerm, idUser);
 
         for (HierarchicalRelationship hierarchicalRelationship : acs.hierarchicalRelationships) {
             switch (hierarchicalRelationship.getRole()) {
@@ -1313,12 +1346,12 @@ public class ImportRdf4jHelper {
         }
 
         for (NodeNote nodeNoteList1 : acs.nodeNotes) {
-            acs.noteHelper.addNote(ds, acs.concept.getIdConcept(), nodeNoteList1.getLang(),
+            noteHelper.addNote(ds, acs.concept.getIdConcept(), nodeNoteList1.getLang(),
                     idTheso, nodeNoteList1.getLexicalValue(), nodeNoteList1.getNoteTypeCode(), "", idUser);
         }
 
         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
-            acs.alignmentHelper.addNewAlignment(ds, nodeAlignment);
+            alignmentHelper.addNewAlignment(ds, nodeAlignment);
         }
         for (NodeEM nodeEMList1 : acs.nodeEMList) {
             acs.term.setIdConcept(acs.concept.getIdConcept());
@@ -1329,21 +1362,21 @@ public class ImportRdf4jHelper {
             acs.term.setSource(nodeEMList1.getSource());
             acs.term.setStatus(nodeEMList1.getStatus());
             acs.term.setHidden(nodeEMList1.isHiden());
-            acs.termHelper.addNonPreferredTerm(ds, acs.term, idUser);
+            termHelper.addNonPreferredTerm(ds, acs.term, idUser);
         }
 
         if (CollectionUtils.isNotEmpty(acs.nodeGps)) {
             for (NodeGps nodeGps : acs.nodeGps) {
                 if (nodeGps.getLatitude() != 0.0 && nodeGps.getLongitude() != 0.0) {
                     // insertion des données GPS
-                    acs.gpsHelper.insertCoordonees(ds, acs.concept.getIdConcept(), idTheso,
+                    gpsHelper.insertCoordonees(ds, acs.concept.getIdConcept(), idTheso,
                             nodeGps.getLatitude(), nodeGps.getLongitude());
                 }
             }
         }
 
         if (acs.isTopConcept) {
-            if (!acs.conceptHelper.setTopConcept(ds, acs.concept.getIdConcept(), idTheso)) {//thesaurus.getId_thesaurus())) {
+            if (!conceptHelper.setTopConcept(ds, acs.concept.getIdConcept(), idTheso)) {//thesaurus.getId_thesaurus())) {
                 // erreur;
             }
         }
@@ -1354,14 +1387,16 @@ public class ImportRdf4jHelper {
         }
 
         if (acs.conceptStatus.equalsIgnoreCase("dep")) {
+            deprecateHelper.setConceptHelper(conceptHelper);
             deprecateHelper.deprecateConcept(ds, acs.concept.getIdConcept(), idTheso, idUser);
         }
         /// ajout des relations de concepts dépréciés
         for (NodeIdValue nodeIdValue : acs.replacedBy) {
+            deprecateHelper.setConceptHelper(conceptHelper);
             deprecateHelper.addReplacedBy(ds, acs.concept.getIdConcept(), idTheso, nodeIdValue.getId(), idUser);
         }
         if (isCandidatImport) {
-            new CandidatDao().setStatutForCandidat(ds, 1, acs.concept.getIdConcept(), idTheso, "" + idUser);
+            candidatDao.setStatutForCandidat(ds, 1, acs.concept.getIdConcept(), idTheso, "" + idUser);
         }
 
         // initialisation des variables
@@ -1482,7 +1517,7 @@ public class ImportRdf4jHelper {
             if (!StringUtils.isEmpty(vote.getIdNote())) {
                 String str = formatLinkToHtmlTag(vote.getIdNote());
                 str = str.replaceAll("'", "''");
-                NodeNote nodeNote = new NoteHelper().getNoteByValue(ds, str);
+                NodeNote nodeNote = noteHelper.getNoteByValue(ds, str);
                 if (nodeNote != null) {
                     voteDto.setIdNote(nodeNote.getIdNote() + "");
                 }
@@ -1830,7 +1865,6 @@ public class ImportRdf4jHelper {
 
     public void addLangsToThesaurus(HikariDataSource ds, String idTheso) {
 
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         for (String idLang : idLangsFound) {
             if (!thesaurusHelper.isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
                 Thesaurus thesaurus1 = new Thesaurus();

@@ -45,6 +45,9 @@ public class NewVersionService implements Serializable {
     @Autowired @Lazy
     private Connect connect;
 
+    @Autowired
+    private ReleaseRepository releaseRepository;
+
     private Release release;
     private boolean isAlreadyLoaded, newVersionExist;
 
@@ -78,7 +81,6 @@ public class NewVersionService implements Serializable {
 
     private Release rechercherReleases() throws IOException {
 
-        var releaseRepository = new ReleaseRepository();
         List<TagDto> tags = new Gson().fromJson(GitHubClient.getResponse(GitHubClient.TAGS_API_URL),
                 new TypeToken<List<TagDto>>() {}.getType());
 

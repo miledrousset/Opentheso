@@ -48,14 +48,14 @@
                                            rendered="#{proposition.isEnvoyer()}"  
                                            style="font-size: 14px; font-weight: bold; color: #8f8f8f" 
                                            ajax="true" process="@this"
-                                           actionListener="#{propositionBean.onSelectConcept(proposition)}"
+                                           actionListener="#{propositionBean.onSelectConcept(proposition, conceptView, currentUser)}"
                                            update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp 
                                            containerIndex:notificationPanel containerIndex:notificationPanel" />
 
                             <p:commandLink value="#{proposition.nomConcept}"
                                            rendered="#{proposition.isLu() or proposition.isApprouver() or proposition.isRefuser()}"  
                                            style="font-size: 14px; color: #8f8f8f" ajax="true" process="@this"
-                                           actionListener="#{propositionBean.onSelectConcept(proposition)}"
+                                           actionListener="#{propositionBean.onSelectConcept(proposition, conceptView, currentUser)}"
                                            update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp 
                                            containerIndex:notificationPanel containerIndex:notificationPanel" />
                         </div>

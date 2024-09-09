@@ -29,7 +29,7 @@ public class NoteDao extends BasicDao {
                 nodeNote.setNoteTypeCode(resultSet.getString("notetypecode"));
                 nodeNote.setIdConcept(idconcept);
                 nodeNote.setLang(resultSet.getString("lang"));
-                nodeNote.setLexicalValue(resultSet.getString("lexical_value"));
+                nodeNote.setLexicalValue(resultSet.getString("lexicalvalue"));
                 nodeNote.setIdUser(resultSet.getInt("id_user"));
                 
                 nodeNotes.add(nodeNote);

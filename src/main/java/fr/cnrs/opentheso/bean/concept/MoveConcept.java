@@ -1,13 +1,13 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
@@ -51,6 +51,30 @@ public class MoveConcept implements Serializable {
     @Autowired @Lazy
     private CandidatBean candidatBean;
 
+    @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
+
+    @Autowired
+    private SearchHelper searchHelper;
+
+    @Autowired
+    private GroupHelper groupHelper;
+
+    @Autowired
+    private UserHelper userHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
     private String idThesoFrom, idThesoTo;
     
     private String idConceptFrom;
@@ -68,7 +92,6 @@ public class MoveConcept implements Serializable {
     public void initForConcept(String idConcept, String idThesoFrom) {
         idConceptsToMove = new ArrayList<>();        
         this.idConceptFrom = idConcept;
-        ConceptHelper conceptHelper = new ConceptHelper();
         idConceptsToMove = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(),
                 idConcept, selectedTheso.getCurrentIdTheso());
         this.idThesoFrom = idThesoFrom;
@@ -85,7 +108,7 @@ public class MoveConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         for (String idConcept : idConceptsToMove) {
             if(!conceptHelper.moveConceptToAnotherTheso(connect.getPoolConnexion(), idConcept, idThesoFrom, idThesoTo)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le déplacement a échoué !");
@@ -96,8 +119,7 @@ public class MoveConcept implements Serializable {
                     currentUser.getNodeUser().getIdUser());
 
             ///// insert DcTermsData to add contributor
-            DcElementHelper dcElmentHelper = new DcElementHelper();
-            dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     idConcept, idThesoTo);
             ///////////////
@@ -121,13 +143,11 @@ public class MoveConcept implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
-        GroupHelper groupHelper = new GroupHelper();
+
         ArrayList<String> lisIdGroup;
         String idArk;
         ArrayList<String> idConcepts = new ArrayList<>();
 
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoTo);
         for (String idConcept : idConceptsToMove) {
             if(!conceptHelper.moveConceptToAnotherTheso(connect.getPoolConnexion(), idConcept, idThesoFrom, idThesoTo)) {
@@ -139,8 +159,7 @@ public class MoveConcept implements Serializable {
                     currentUser.getNodeUser().getIdUser());
 
             ///// insert DcTermsData to add contributor
-            DcElementHelper dcElmentHelper = new DcElementHelper();
-            dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     idConcept, idThesoTo);
             ///////////////
@@ -158,8 +177,6 @@ public class MoveConcept implements Serializable {
                 conceptHelper.generateArkId(connect.getPoolConnexion(), idThesoTo, idConcepts, selectedTheso.getCurrentLang());
             }
         }
-
-        RelationsHelper relationsHelper = new RelationsHelper();
 
         // suppression des BT du concept de tête à déplacer
         ArrayList<String> listBt = relationsHelper.getListIdBT(connect.getPoolConnexion(), idConceptFrom, idThesoTo);
@@ -186,8 +203,6 @@ public class MoveConcept implements Serializable {
 
     public List<NodeIdValue> getListThesoAsAdmin(){
         if(currentUser.getNodeUser() == null) return null;
-        UserHelper userHelper = new UserHelper();
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         List<String> authorizedThesoAsAdmin;
         if(currentUser.getNodeUser().isSuperAdmin()) {
             authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), true);
@@ -195,7 +210,6 @@ public class MoveConcept implements Serializable {
             authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
         }
         List<NodeIdValue> nodeIdValues = new ArrayList<>();
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
 
         authorizedThesoAsAdmin.remove(selectedTheso.getCurrentIdTheso());
         for (String idTheso : authorizedThesoAsAdmin) {
@@ -216,7 +230,6 @@ public class MoveConcept implements Serializable {
 
     public List<NodeSearchMini> getAutoComplet(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
-        SearchHelper searchHelper = new SearchHelper();
         if (!StringUtils.isEmpty(idThesoTo)) {
             liste = searchHelper.searchAutoCompletionForRelation(
                     connect.getPoolConnexion(),

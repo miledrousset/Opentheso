@@ -1,9 +1,8 @@
-
 package fr.cnrs.opentheso.bean.toolbox.edition;
 
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,16 +10,15 @@ import java.util.List;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.RowEditEvent;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
 @Named(value = "thesaurusMetadataAdd")
 @SessionScoped
 public class ThesaurusMetadataAdd implements Serializable{
@@ -29,10 +27,14 @@ public class ThesaurusMetadataAdd implements Serializable{
     private List<String> dcmiTypes;     
     private String idTheso;
     
-    @Autowired @Lazy private Connect connect;
+    @Autowired @Lazy
+    private Connect connect;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
     
     public void init(String idTheso1) {
-        DcElementHelper dcElementHelper = new DcElementHelper();
+
         dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idTheso1);
         if(dcElements == null || dcElements.isEmpty())
             dcElements = new ArrayList<>();
@@ -47,7 +49,6 @@ public class ThesaurusMetadataAdd implements Serializable{
      * @return 
      */
     public List<DcElement> getThesaurusMetadata(String idTheso){
-        DcElementHelper dcElementHelper = new DcElementHelper();
         return dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idTheso);
     }
     
@@ -58,33 +59,9 @@ public class ThesaurusMetadataAdd implements Serializable{
     public void initType(DcElement dcElement){
         if(!StringUtils.isEmpty(dcElement.getLanguage()))
             dcElement.setType("");
-    }    
-
-    public List<DcElement> getDcElements() {
-        return dcElements;
-    }
-    public void setDcElements(List<DcElement> dcElements) {
-        this.dcElements = dcElements;
-    }
-
-    public List<String> getDcmiResource() {
-        return dcmiResource;
-    }
-
-    public void setDcmiResource(List<String> dcmiResource) {
-        this.dcmiResource = dcmiResource;
-    }
-
-    public List<String> getDcmiTypes() {
-        return dcmiTypes;
-    }
-
-    public void setDcmiTypes(List<String> dcmiTypes) {
-        this.dcmiTypes = dcmiTypes;
     }
 
     public void deleteThesoMetadata(DcElement dcElement){
-        DcElementHelper dcElementHelper = new DcElementHelper();
         dcElementHelper.deleteDcElementThesaurus(connect.getPoolConnexion(), dcElement, idTheso);
         init(idTheso);
         FacesMessage msg = new FacesMessage("Dcterms deleted", "");
@@ -92,13 +69,13 @@ public class ThesaurusMetadataAdd implements Serializable{
     }
     
     public void onRowEdit(RowEditEvent<DcElement> event) {
-        DcElement dcElementTemp = (DcElement)event.getObject();
+        DcElement dcElementTemp = event.getObject();
         if(StringUtils.isEmpty(dcElementTemp.getValue())){
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Value required", "" + dcElementTemp.getId());
             FacesContext.getCurrentInstance().addMessage(null, msg);         
             return;
         }
-        DcElementHelper dcElementHelper = new DcElementHelper();
+
         if(dcElementTemp.getId() == -1) {
             int id = dcElementHelper.addDcElementThesaurus(connect.getPoolConnexion(), dcElementTemp, idTheso);
             if(id != -1) {

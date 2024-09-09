@@ -7,23 +7,21 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.group.ConceptGroupLabel;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.ExternalResourcesHelper;
-import fr.cnrs.opentheso.bdd.helper.GpsHelper;
-
-import fr.cnrs.opentheso.bdd.helper.ImagesHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
-import fr.cnrs.opentheso.bdd.helper.UserHelper;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ExternalResourcesHelper;
+import fr.cnrs.opentheso.repositories.GpsHelper;
+import fr.cnrs.opentheso.repositories.ImagesHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.nodes.NodeGps;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -47,6 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Data
 @Service
 @NoArgsConstructor
@@ -61,6 +60,30 @@ public class CsvImportHelper {
     @Autowired
     private GroupHelper groupHelper;
 
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private GpsHelper gpsHelper;
+
+    @Autowired
+    private AlignmentHelper alignmentHelper;
+
+    @Autowired
+    private UserHelper userHelper;
+
+    @Autowired
+    private NoteHelper noteHelper;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private ExternalResourcesHelper externalResourcesHelper;
+
     private final static String SEPERATEUR = "##";
     private final static String SOUS_SEPERATEUR = "@@";
 
@@ -68,10 +91,6 @@ public class CsvImportHelper {
     private NodePreference nodePreference;
     private String langueSource, formatDate;
     private int idUser;
-
-    public CsvImportHelper(NodePreference nodePreference) {
-        this.nodePreference = nodePreference;
-    }
     
 
     /**
@@ -87,7 +106,6 @@ public class CsvImportHelper {
             thesaurus.setContributor(nodeUser.getName());
             thesaurus.setLanguage(idLang);
 
-            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
             thesaurusHelper.setIdentifierType("2");
             conn.setAutoCommit(false);
 
@@ -113,7 +131,6 @@ public class CsvImportHelper {
 
             // ajouter le thésaurus dans le group de l'utilisateur
             if (idProject != -1) { // si le groupeUser = - 1, c'est le cas d'un SuperAdmin, alors on n'intègre pas le thésaurus dans un groupUser
-                UserHelper userHelper = new UserHelper();
                 if (!userHelper.addThesoToGroup(conn, thesaurus.getId_thesaurus(), idProject)) {
                     conn.rollback();
                     conn.close();
@@ -131,7 +148,7 @@ public class CsvImportHelper {
     public void addLangsToThesaurus(HikariDataSource ds, ArrayList<String> langs, String idTheso) {
 
         for (String idLang : langs) {
-            if (!new ThesaurusHelper().isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
+            if (!thesaurusHelper.isLanguageExistOfThesaurus(ds, idTheso, idLang)) {
                 Thesaurus thesaurus1 = new Thesaurus();
                 thesaurus1.setId_thesaurus(idTheso);
                 thesaurus1.setContributor("");
@@ -147,20 +164,18 @@ public class CsvImportHelper {
                 thesaurus1.setSubject("");
                 thesaurus1.setTitle("theso_" + idTheso + "_" + idLang);
                 thesaurus1.setType("");
-                new ThesaurusHelper().addThesaurusTraduction(ds, thesaurus1);
+                thesaurusHelper.addThesaurusTraduction(ds, thesaurus1);
             }
         }
     }
 
     public void addSingleConcept(HikariDataSource ds, String idTheso, String idConceptPere, String idGroup, int idUser,
             CsvReadHelper.ConceptObject conceptObject) {
-
         boolean first = true;
         String idConcept = null;
         String idTerm = null;
 
         // ajout du concept
-        ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.setNodePreference(nodePreference);
         Concept concept = new Concept();
 
@@ -290,7 +305,7 @@ public class CsvImportHelper {
 
     public boolean addConcept(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        conceptObject.setIdTerm(new TermHelper().getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso));
+        conceptObject.setIdTerm(termHelper.getIdTermOfConcept(ds, conceptObject.getIdConcept(), idTheso));
 
         if (!addPrefLabel(ds, idTheso, conceptObject)) {
             return false;
@@ -707,8 +722,6 @@ public class CsvImportHelper {
     }
     
     private void addExternalResources(HikariDataSource ds, String idTheso, String idConcept, ArrayList<String> externalResources) {
-      
-        ExternalResourcesHelper externalResourcesHelper = new ExternalResourcesHelper();
         
         for (String externalResource : externalResources) {
             if(externalResource == null || externalResource.isEmpty()) {
@@ -722,8 +735,7 @@ public class CsvImportHelper {
                     idConcept,
                     idTheso,
                     "",
-                    externalResource,
-                    idUser)) {
+                    externalResource)) {
             }
         }
     }
@@ -792,9 +804,6 @@ public class CsvImportHelper {
             message = message + "\n" + "concept sans identifiant : " + conceptObject.getPrefLabels().toString();
             return false;
         }
-
-        // ajout du concept
-        ConceptHelper conceptHelper = new ConceptHelper();
 
         conceptHelper.setNodePreference(nodePreference);
         Concept concept = new Concept();
@@ -877,7 +886,6 @@ public class CsvImportHelper {
      */
     private boolean addAltLabels(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
         Term term = new Term();
-        TermHelper termHelper = new TermHelper();
         for (CsvReadHelper.Label altLabel : conceptObject.getAltLabels()) {
             term.setIdTerm(conceptObject.getIdTerm());
             term.setIdThesaurus(idTheso);
@@ -912,7 +920,6 @@ public class CsvImportHelper {
      */
     private boolean addNotes(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        NoteHelper noteHelper = new NoteHelper();
         for (CsvReadHelper.Label note : conceptObject.getNote()) {
             noteHelper.addNote(ds, conceptObject.getIdConcept(), note.getLang(), idTheso, note.getLabel(),
                     "note","", idUser);
@@ -946,8 +953,6 @@ public class CsvImportHelper {
 
     private boolean addRelations(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        RelationsHelper relationsHelper = new RelationsHelper();
-
         for (String idConcept2 : conceptObject.getBroaders()) {
             if (!relationsHelper.insertHierarchicalRelation(ds, conceptObject.getIdConcept(), idTheso, "BT", idConcept2)) {
                 message = message + "\n" + "erreur dans de la relation BT: " + conceptObject.getIdConcept();
@@ -956,7 +961,7 @@ public class CsvImportHelper {
             if (!relationsHelper.insertHierarchicalRelation(ds, idConcept2, idTheso, "NT", conceptObject.getIdConcept())) {
                 message = message + "\n" + "erreur dans de la relation BT: " + conceptObject.getIdConcept();
             }
-            new ConceptHelper().setNotTopConcept(ds, conceptObject.getIdConcept(), idTheso);
+            conceptHelper.setNotTopConcept(ds, conceptObject.getIdConcept(), idTheso);
         }
 
         for (String idConcept2 : conceptObject.getNarrowers()) {
@@ -983,7 +988,6 @@ public class CsvImportHelper {
 
     private boolean addAlignments(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
         NodeAlignment nodeAlignment = new NodeAlignment();
         nodeAlignment.setId_author(idUser);
         nodeAlignment.setConcept_target("");
@@ -1045,7 +1049,7 @@ public class CsvImportHelper {
             String[] values = conceptObject.getGps().split("##");
             for (String value1 : values) {
                 String[] gps = value1.split("@@");
-                new GpsHelper().insertCoordonees(ds, conceptObject.getIdConcept(), idTheso,
+                gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso,
                         Double.valueOf(gps[1]), Double.valueOf(gps[2]));
             }
             return true;
@@ -1073,10 +1077,8 @@ public class CsvImportHelper {
         } catch (Exception e) {
             return true;
         }
-        GpsHelper gpsHelper = new GpsHelper();
-        gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(),
-                idTheso,
-                latitude, longitude);
+
+        gpsHelper.insertCoordonees(ds, conceptObject.getIdConcept(), idTheso, latitude, longitude);
         return true;
     }
     
@@ -1085,7 +1087,7 @@ public class CsvImportHelper {
 
         if (!conceptObject.getMembers().isEmpty()) {
             for (String member : conceptObject.getMembers()) {
-                new GroupHelper().addConceptGroupConcept(ds, member.trim(), conceptObject.getIdConcept(), idTheso);
+                groupHelper.addConceptGroupConcept(ds, member.trim(), conceptObject.getIdConcept(), idTheso);
             }
         }
         return true;
@@ -1169,7 +1171,7 @@ public class CsvImportHelper {
             addMessage("concept sans identifiant :", nodeReplaceValueByValue);
             return false;
         }
-        TermHelper termHelper = new TermHelper();
+
         String idTerm = termHelper.getIdTermOfConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
         if (idTerm == null || idTerm.isEmpty()) {
             return false;
@@ -1202,7 +1204,6 @@ public class CsvImportHelper {
             addMessage("concept sans identifiant :", nodeReplaceValueByValue);
             return false;
         }
-        NoteHelper noteHelper = new NoteHelper();
        
         // si l'ancienne valeur et la nouvelle valeur sont présente
         if(!StringUtils.isEmpty(nodeReplaceValueByValue.getOldValue())) {
@@ -1255,8 +1256,7 @@ public class CsvImportHelper {
             addMessage("concept sans identifiant :", nodeReplaceValueByValue);
             return false;
         }
-        
-        RelationsHelper relationsHelper = new RelationsHelper();
+
         if(!StringUtils.isEmpty( nodeReplaceValueByValue.getOldValue())){
             if(!relationsHelper.deleteRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getOldValue(), idUser1)) {
                 addMessage("Rename error :", nodeReplaceValueByValue);
@@ -1265,8 +1265,7 @@ public class CsvImportHelper {
         if(!relationsHelper.addRelationBT(ds, nodeReplaceValueByValue.getIdConcept(), idTheso, nodeReplaceValueByValue.getNewValue(), idUser1)) {
             addMessage("Rename error :", nodeReplaceValueByValue);
         }
-        new ConceptHelper().setNotTopConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
-
+        conceptHelper.setNotTopConcept(ds, nodeReplaceValueByValue.getIdConcept(), idTheso);
         return true;
     }      
     private void addMessage(String error, NodeReplaceValueByValue nodeReplaceValueByValue) {
@@ -1385,9 +1384,6 @@ public class CsvImportHelper {
      */
     private boolean updateNotes(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
 
-        NoteHelper noteHelper = new NoteHelper();
-        //    ArrayList<NodeNote> oldNotes;     
-
         // suppression des Notes  par langue
         ArrayList<String> langs = getLangs(conceptObject.getNote());
         for (String lang : langs) {
@@ -1484,7 +1480,6 @@ public class CsvImportHelper {
 
     private boolean updateAlignments(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject, int idUser1) {
 
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
         NodeAlignment nodeAlignment = new NodeAlignment();
         nodeAlignment.setId_author(idUser1);
         nodeAlignment.setConcept_target("");
@@ -1568,7 +1563,6 @@ public class CsvImportHelper {
 
     private boolean updateGeoLocalisation(HikariDataSource ds, String idTheso, CsvReadHelper.ConceptObject conceptObject) {
 
-        GpsHelper gpsHelper = new GpsHelper();
         if (conceptObject.getLatitude() == null || conceptObject.getLongitude() == null) {
             if(conceptObject.getGps() == null || conceptObject.getGps().isEmpty())
                 return true;

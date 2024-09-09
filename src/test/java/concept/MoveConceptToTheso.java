@@ -6,7 +6,7 @@ package concept;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 import org.junit.jupiter.api.Test;
 
 /**

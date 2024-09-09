@@ -1,22 +1,18 @@
 package fr.cnrs.opentheso.bean.toolbox.statistique;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.StatisticHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
+import fr.cnrs.opentheso.repositories.StatisticHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.exports.csv.StatistiquesRapportCSV;
-import fr.cnrs.opentheso.services.exports.rdf4j.ExportRdf4jHelperNew;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
@@ -49,6 +45,18 @@ public class StatistiqueBean implements Serializable {
 
     @Autowired
     private GroupHelper groupHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private StatistiqueService statistiqueService;
+
+    @Autowired
+    private StatisticHelper statisticHelper;
 
     private boolean genericTypeVisible, conceptTypeVisible;
     private String selectedStatistiqueTypeCode, selectedCollection, nbrResultat;
@@ -167,7 +175,7 @@ public class StatistiqueBean implements Serializable {
     }
     
     private void initChamps() {
-        languagesOfTheso = new ThesaurusHelper().getAllUsedLanguagesOfThesaurusNode(
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
                 connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
 
         groupList = groupHelper.getAllGroupsByThesaurusAndLang(connect, selectedTheso.getSelectedIdTheso(),
@@ -222,16 +230,13 @@ public class StatistiqueBean implements Serializable {
         return langLabel.substring(0, 1).toUpperCase() + langLabel.substring(1, langLabel.length());
     }
 
-    public void onSelectLanguageType() throws SQLException {
+    public void onSelectLanguageType() {
         onSelectStatType();
         clearFilter();
 
         if ("0".equals(selectedStatistiqueTypeCode)) {
 
-            ConceptHelper conceptHelper = new ConceptHelper();
-            StatisticHelper statisticHelper = new StatisticHelper();
-
-            genericStatistiques = new StatistiqueService().searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage);
+            genericStatistiques = statistiqueService.searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage);
 
             nbrCanceptByThes = statisticHelper.getNbCpt(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
             
@@ -262,7 +267,7 @@ public class StatistiqueBean implements Serializable {
     }
 
     public void getStatisticByConcept() {
-        conceptStatistic = new StatistiqueService().searchAllConceptsByThesaurus(this, 
+        conceptStatistic = statistiqueService.searchAllConceptsByThesaurus(this,
                 connect, selectedTheso.getCurrentIdTheso(),
                 selectedLanguage, dateDebut, dateFin,
                 searchGroupIdFromLabel(selectedCollection), nbrResultat);
@@ -283,25 +288,6 @@ public class StatistiqueBean implements Serializable {
                 .stream(() -> new ByteArrayInputStream(statistiquesRapportCSV.getOutput().toByteArray()))
                 .build();
 
-    }
-    
-    private ExportRdf4jHelperNew getThesorusDatas(String idTheso) {
-
-        NodePreference nodePreference = new PreferencesHelper().getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
-
-        if (nodePreference == null) {
-            return null;
-        }
-
-        ExportRdf4jHelperNew resources = new ExportRdf4jHelperNew();
-        resources.setInfos(nodePreference);
-        resources.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
-        ArrayList<String> allConcepts = new ConceptHelper().getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
-        for (String idConcept : allConcepts) {
-            resources.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
-        }
-
-        return resources;
     }
     
     public void setConceptSelected(ConceptStatisticData canceptStatistiqueSelected) {

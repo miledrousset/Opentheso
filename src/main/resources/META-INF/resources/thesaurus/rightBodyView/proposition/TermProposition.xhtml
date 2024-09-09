@@ -87,12 +87,12 @@
                                         oncomplete="PF('renameSynonymProp').show();" 
                                         update="containerIndex:rightTab:renameSynonymFormProp" 
                                         icon="fas fa-edit"
-                                        disabled="#{(propositionBean.proposition.synonymsProp == null) or (propositionBean.proposition.synonymsProp.size() == 0)}" />
+                                        disabled="#{synonymBean.isVarianteMenuDisable()}" />
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" ajax="true" process="@this"
                                         actionListener="#{synonymBean.reset()}" oncomplete="PF('deleteSynonymProp').show();"
                                         update="containerIndex:rightTab:idDeleteSynonymProp" icon="fas fa-minus"
-                                        disabled="#{(propositionBean.proposition.synonymsProp == null) or (propositionBean.proposition.synonymsProp.size() == 0)}" />
+                                        disabled="#{synonymBean.isVarianteMenuDisable()}" />
                         </p:menuButton> 
 
                         <h:panelGroup rendered="#{(propositionBean.proposition.synonymsProp == null) or (propositionBean.proposition.synonymsProp.size() == 0)}" >
@@ -224,39 +224,39 @@
         <h:form id="addSynonymFormProp">
             <div class="row">
                 <div class="col-12">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " />
                     <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="color: #C63632;" />
                 </div>
             </div>
 
             <div class="row" style="margin-top: 5px">
                 <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('candidat.value')}: " /> 
+                    <h:outputText value="#{langueBean.getMsg('candidat.value')}: " />
                 </div>
                 <div class="col-7">
                     <p:inputText label="#{langueBean.getMsg('rightbody.concept.synonym')}"
-                                 placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."  
+                                 placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')} ..."
                                  value="#{synonymBean.value}" style="width: 100%">
                         <p:focus rendered="true" />
                     </p:inputText>
-                </div>
-            </div>       
-
-            <div class="row" style="margin-top: 5px">
-                <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}: " /> 
-                </div>
-                <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{synonymBean.selectedLang}" 
-                                     style="width: 100%">
-                        <f:selectItems  value="#{synonymBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code.toUpperCase()}" />
-                    </p:selectOneMenu> 
                 </div>
             </div>
 
             <div class="row" style="margin-top: 5px">
                 <div class="col-5" style="margin-top: 3px">
-                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')}: " /> 
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.language')}: " />
+                </div>
+                <div class="col-7">
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" value="#{synonymBean.selectedLang}"
+                                     style="width: 100%">
+                        <f:selectItems  value="#{synonymBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code.toUpperCase()}" />
+                    </p:selectOneMenu>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 5px">
+                <div class="col-5" style="margin-top: 3px">
+                    <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.hidden')}: " />
                 </div>
                 <div class="col-7">
                     <p:inputSwitch value="#{synonymBean.hidden}" style="margin-top: 10px"/>
@@ -266,17 +266,16 @@
             <div style="width: 100%; text-align: right; margin-top: 25px; margin-bottom: 5px;">
 
                 <p:commandButton value="#{langueBean.getMsg('candidat.close')}" styleClass="ui-button-secondary button"
-                                 style="margin-right: 10px" actionListener="PF('addSynonymProp').hide();" 
+                                 style="margin-right: 10px" actionListener="PF('addSynonymProp').hide();"
                                  update="containerIndex:rightTab messageIndex" icon="fas fa-undo-alt"
                                  ajax="true" process="@form"/>
 
-                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex:rightTab messageIndex"
-                                 styleClass="ui-button-success" ajax="true" 
-                                 process="@form" icon="pi pi-check"
-                                 oncomplete="PF('addSynonymProp').hide();" 
-                                 action="#{synonymBean.addPropSynonym()}"/>  
+                <p:commandButton value="#{langueBean.getMsg('btnValidate')}" update="containerIndex messageIndex"
+                                 styleClass="ui-button-success" ajax="true" process="@form" icon="pi pi-check"
+                                 oncomplete="PF('addSynonymProp').hide();"
+                                 action="#{synonymBean.addPropSynonym()}"/>
             </div>
-        </h:form>            
+        </h:form>
     </p:dialog>
 
 

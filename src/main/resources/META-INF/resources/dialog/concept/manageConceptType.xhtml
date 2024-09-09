@@ -28,11 +28,11 @@
                     <p:column headerText="#{langueBean.getMsg('concept.code')}" width="15%">
                         <h:outputText value="#{nodeConceptType.code}" style="font-size: 14px;"/>
                     </p:column>
-                    <p:column headerText="label_fr" width="20%">
-                        <p:inputText value="#{nodeConceptType.label_fr}" style="font-size: 14px;" disabled="#{nodeConceptType.permanent}"/>
+                    <p:column headerText="labelFr" width="20%">
+                        <p:inputText value="#{nodeConceptType.labelFr}" style="font-size: 14px;" disabled="#{nodeConceptType.permanent}"/>
                     </p:column>    
-                    <p:column headerText="label_en" width="20%">
-                        <p:inputText value="#{nodeConceptType.label_en}" style="font-size: 14px;" disabled="#{nodeConceptType.permanent}"/>
+                    <p:column headerText="labelEn" width="20%">
+                        <p:inputText value="#{nodeConceptType.labelEn}" style="font-size: 14px;" disabled="#{nodeConceptType.permanent}"/>
                     </p:column>   
                     <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.relationship')}" width="30%">
                         <p:selectBooleanCheckbox value="#{nodeConceptType.reciprocal}"

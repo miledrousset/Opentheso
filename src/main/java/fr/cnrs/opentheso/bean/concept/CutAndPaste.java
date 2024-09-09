@@ -1,13 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -18,22 +11,19 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
-import jakarta.annotation.PreDestroy;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
-/**
- *
- * @author miledrousset
- */
+
+@Data
 @Named(value = "cutAndPaste")
 @SessionScoped
-//@ViewScoped
 public class CutAndPaste implements Serializable {
 
     @Autowired @Lazy private Connect connect;
@@ -43,7 +33,7 @@ public class CutAndPaste implements Serializable {
     @Autowired @Lazy private Tree tree;
 
     @Autowired
-    private ValidateActionHelper validateActionHelper;
+    private ConceptHelper conceptHelper;
 
     private boolean isCopyOn;
     private boolean isValidPaste;
@@ -54,10 +44,6 @@ public class CutAndPaste implements Serializable {
 
     private boolean isDropToRoot;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }  
     public void clear(){
         nodeConceptDrag = null;
         nodeConceptDrop = null;        
@@ -65,16 +51,9 @@ public class CutAndPaste implements Serializable {
             nodeBTsToCut.clear();
             nodeBTsToCut = null;
         }    
-    }      
-    
-    public CutAndPaste() {
     }
 
     public void reset() {
-//        movedFromId = null;
-//        isBranch = true;
-//        isCopyOfGroup = false;
-
         if(nodeBTsToCut != null)
             nodeBTsToCut.clear();
         isCopyOn = false;
@@ -89,31 +68,9 @@ public class CutAndPaste implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Copy and paste !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-
-    public void initInfo() {
-
-    }
-
-
-    public void setBTsToCut() {
-        if (nodeConceptDrag == null) {
-            return;
-        }
-        if(nodeBTsToCut == null)
-            nodeBTsToCut = new ArrayList<>();
-        for (NodeBT nodeBT : nodeConceptDrag.getNodeBT()) {
-            NodeBT nodeBT1 = new NodeBT();
-            nodeBT1.setIdConcept(nodeBT.getIdConcept());
-            nodeBT1.setTitle(nodeBT.getTitle());
-            nodeBT1.setSelected(true);
-            nodeBTsToCut.add(nodeBT1);
-        }
-    }    
-    
  
     /**
-     * permet de retourner les noms des collections/groupes 
-     * @return 
+     * permet de retourner les noms des collections/groupes
      */
     public String getLabelOfGroupes() {
         if (nodeConceptDrag == null) {
@@ -131,81 +88,14 @@ public class CutAndPaste implements Serializable {
         }
         return labels;
     }
-
-    /**
-     * permet de préparer le concept ou la branche pour le déplacement vers un autre endroit #MR
-     *
-     * @param nodeConcept
-     */
-    public void onStartCut(NodeConcept nodeConcept) {
-        if (nodeConcept == null) {
-            return;
-        }
-        
-        // controler les déplacements non autorisés 
-        
-        FacesMessage msg;
-        nodeConceptDrag = nodeConcept;
-        isCopyOn = true;
-        setBTsToCut();
-        
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
-                + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-    
-    public void validatePaste() {
-        FacesMessage msg;
-        isValidPaste = false;
-        ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> descendingConcepts = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
-                nodeConceptDrag.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
-        if((descendingConcepts != null) && (!descendingConcepts.isEmpty())) {
-            if(descendingConcepts.contains(nodeConceptDrop.getConcept().getIdConcept())){
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Opération non autorisée, elle peut provoquer des boucles infinies !!! ");
-                FacesContext.getCurrentInstance().addMessage(null, msg);            
-                return;
-            }
-        }
-        
-        RelationsHelper relationsHelper = new RelationsHelper();
-        ArrayList<String> listBT = relationsHelper.getListIdOfBT(connect.getPoolConnexion(),
-                nodeConceptDrag.getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso());
-        if((listBT != null) && (!listBT.isEmpty())) {
-            if(listBT.contains(nodeConceptDrop.getConcept().getIdConcept())){
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Opération non autorisée, elle peut provoquer des boucles infinies !!! ");
-                FacesContext.getCurrentInstance().addMessage(null, msg);            
-                return;
-            }
-        }
-
-        if(!validateActionHelper.isMoveConceptToConceptValid(
-                connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
-                nodeConceptDrag.getConcept().getIdConcept(),
-                nodeConceptDrop.getConcept().getIdConcept())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);            
-            isValidPaste = false;
-            return;
-        }
-        isValidPaste = true;
-    }
     
     /**
      * deplacement entre concepts
-     * @return 
      */
     private boolean moveFromConceptToConcept(){
         // cas de déplacement d'un concept à concept
         FacesMessage msg;
         ArrayList<String> oldBtToDelete = new ArrayList<>();
-        ConceptHelper conceptHelper = new ConceptHelper();
         for (NodeBT nodeBT : nodeBTsToCut) {
             if (nodeBT.isSelected()) {
                 // on prépare les BT sélectionné pour la suppression
@@ -232,7 +122,6 @@ public class CutAndPaste implements Serializable {
     
     private boolean moveFromRootToConcept() {
         FacesMessage msg;
-        ConceptHelper conceptHelper = new ConceptHelper();        
         if (!conceptHelper.moveBranchFromRootToConcept(connect.getPoolConnexion(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 nodeConceptDrop.getConcept().getIdConcept(),
@@ -247,7 +136,6 @@ public class CutAndPaste implements Serializable {
     
     private boolean moveFromConceptToRoot(){
         FacesMessage msg;
-        ConceptHelper conceptHelper = new ConceptHelper();         
         ArrayList<String> oldBtToDelete = new ArrayList<>();
         
         for (NodeBT nodeBT : nodeBTsToCut) {
@@ -286,7 +174,7 @@ public class CutAndPaste implements Serializable {
         if(conceptBean.getNodeConcept() != null){
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                     nodeConceptDrag.getConcept().getIdConcept(),
-                    conceptBean.getSelectedLang());
+                    conceptBean.getSelectedLang(), currentUser);
             if (pf.isAjaxRequest()) {
                 pf.ajax().update("containerIndex:formRightTab");
             }
@@ -372,71 +260,5 @@ public class CutAndPaste implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().executeScript("PF('cutAndPaste').hide();");
     }
-
-    public boolean isIsCopyOn() {
-        return isCopyOn;
-    }
-
-    public void setIsCopyOn(boolean isCopyOn) {
-        this.isCopyOn = isCopyOn;
-    }
-
-    public NodeConcept getCuttedConcept() {
-        return nodeConceptDrag;
-    }
-
-    public void setCuttedConcept(NodeConcept cuttedConcept) {
-        this.nodeConceptDrag = cuttedConcept;
-    }
-
-    public ArrayList<NodeBT> getNodeBTsToCut() {
-        return nodeBTsToCut;
-    }
-
-    public void setNodeBTsToCut(ArrayList<NodeBT> nodeBTsToCut) {
-        this.nodeBTsToCut = nodeBTsToCut;
-    }
-
-    public NodeConcept getDropppedConcept() {
-        return nodeConceptDrop;
-    }
-
-    public void setDropppedConcept(NodeConcept dropppedConcept) {
-        this.nodeConceptDrop = dropppedConcept;
-    }
-
-    public NodeConcept getNodeConceptDrag() {
-        return nodeConceptDrag;
-    }
-
-    public void setNodeConceptDrag(NodeConcept nodeConceptDrag) {
-        this.nodeConceptDrag = nodeConceptDrag;
-    }
-
-    public NodeConcept getNodeConceptDrop() {
-        return nodeConceptDrop;
-    }
-
-    public void setNodeConceptDrop(NodeConcept nodeConceptDrop) {
-        this.nodeConceptDrop = nodeConceptDrop;
-    }
-
-    public boolean isIsDropToRoot() {
-        return isDropToRoot;
-    }
-
-    public void setIsDropToRoot(boolean isDropToRoot) {
-        this.isDropToRoot = isDropToRoot;
-    }
-
-    public boolean isIsValidPaste() {
-        return isValidPaste;
-    }
-
-    public void setIsValidPaste(boolean isValidPaste) {
-        this.isValidPaste = isValidPaste;
-    }
-
-
 
 }

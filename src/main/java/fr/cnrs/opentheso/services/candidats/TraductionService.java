@@ -1,9 +1,9 @@
 package fr.cnrs.opentheso.services.candidats;
 
 import fr.cnrs.opentheso.models.terms.Term;
-
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
+import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.candidats.TermeDao;
 import fr.cnrs.opentheso.models.candidats.TraductionDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
@@ -19,20 +19,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
+
+@Data
 @Named(value = "traductionService")
 @SessionScoped
 public class TraductionService implements Serializable {
 
-    @Autowired @Lazy
+    @Autowired
     private CandidatBean candidatBean;
-    @Autowired @Lazy
+
+    @Autowired
     private LanguageBean languageBean;
-    @Autowired @Lazy
+
+    @Autowired
     private SelectedTheso selectedTheso;
+
+    @Autowired
+    private TermHelper termHelper;
+
+    @Autowired
+    private TermeDao termeDao;
 
     private String langage;
     private String traduction;
@@ -125,7 +136,6 @@ public class TraductionService implements Serializable {
      * permet de supprimer une tradcution #MR
      */
     public void deleteTraduction() {
-        TermeDao termeDao = new TermeDao();
         try {
             termeDao.deleteTermByIdTermAndLang(candidatBean.getConnect().getPoolConnexion(),
                     candidatBean.getCandidatSelected().getIdTerm(),
@@ -147,7 +157,6 @@ public class TraductionService implements Serializable {
      * permet de modifier une traduction #MR
      */
     public void updateTraduction() {
-        TermeDao termeDao = new TermeDao();
         try {
             termeDao.updateIntitule(candidatBean.getConnect().getPoolConnexion(),
                     traduction,
@@ -166,63 +175,41 @@ public class TraductionService implements Serializable {
         pf.ajax().update("containerIndex");
     }
 
-    public String getLangage() {
-        return langage;
-    }
+    public void addTraductionCandidat() {
+        if (termHelper.isTermExistIgnoreCase(candidatBean.getConnect().getPoolConnexion(), newTraduction,
+                candidatBean.getCandidatSelected().getIdThesaurus(), newLangage)) {
+            messages = new StringBuilder();
+            messages.append("Un label existe dans le thésaurus pour : ").append(candidatBean.getCandidatSelected().getIdConcepte())
+                    .append("#").append(newTraduction).append(" (").append(langage).append(")");
+            candidatBean.showMessage(FacesMessage.SEVERITY_ERROR, messages.toString());
+            return;
+        }
 
-    public void setLangage(String langage) {
-        this.langage = langage;
-    }
+        Term term = new Term();
+        term.setStatus("D");
+        term.setSource("Candidat");
+        term.setLang(newLangage);
+        term.setLexicalValue(newTraduction);
+        term.setIdThesaurus(candidatBean.getCandidatSelected().getIdThesaurus());
+        term.setContributor(candidatBean.getCandidatSelected().getUserId());
+        term.setCreator(candidatBean.getCandidatSelected().getUserId());
+        term.setIdTerm(candidatBean.getCandidatSelected().getIdTerm());
 
-    public String getTraduction() {
-        return traduction;
-    }
+        try {
+            termeDao.addNewTerme(candidatBean.getConnect().getPoolConnexion(), term);
+            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
+            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
 
-    public void setTraduction(String traduction) {
-        this.traduction = traduction;
-    }
+            messages.append("erreur pour :").append(newTraduction).append(" (").append(langage).append(")");
+            messages.append('\n');
+        }
 
-    public String getLangageOld() {
-        return langageOld;
-    }
+        PrimeFaces pf = PrimeFaces.current();
+        pf.ajax().update("messageIndex");
+        pf.ajax().update("containerIndex");
 
-    public void setLangageOld(String langageOld) {
-        this.langageOld = langageOld;
-    }
-
-    public String getTraductionOld() {
-        return traductionOld;
-    }
-
-    public void setTraductionOld(String traductionOld) {
-        this.traductionOld = traductionOld;
-    }
-
-    public String getNewLangage() {
-        return newLangage;
-    }
-
-    public void setNewLangage(String newLangage) {
-        this.newLangage = newLangage;
-    }
-
-    public String getNewTraduction() {
-        return newTraduction;
-    }
-
-    public void setNewTraduction(String newTraduction) {
-        this.newTraduction = newTraduction;
-    }
-
-    public ArrayList<NodeLangTheso> getNodeLangsFiltered() {
-        return nodeLangsFiltered;
-    }
-
-    public void setNodeLangsFiltered(ArrayList<NodeLangTheso> nodeLangsFiltered) {
-        this.nodeLangsFiltered = nodeLangsFiltered;
-    }
-
-    public String getMessages() {
-        return messages.toString();
     }
 }

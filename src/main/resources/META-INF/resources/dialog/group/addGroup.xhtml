@@ -28,7 +28,7 @@
                 <div class="col-7">
                     <p:selectOneMenu value="#{addGroupBean.selectedGroupType}" 
                                      style="width: 100%; background: white; border-color: #43B572">
-                        <f:selectItems value="#{addGroupBean.listGroupType}" var="groupType" itemLabel="#{groupType}" itemValue="#{groupType}"/>
+                        <f:selectItems value="#{addGroupBean.listGroupType}" var="groupType" itemLabel="#{groupType.label}" itemValue="#{groupType.label}"/>
                     </p:selectOneMenu>  
                 </div>
             </div>

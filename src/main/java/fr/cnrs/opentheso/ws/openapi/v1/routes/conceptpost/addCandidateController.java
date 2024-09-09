@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.cnrs.opentheso.bdd.helper.CandidateHelper;
+import fr.cnrs.opentheso.repositories.CandidateHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
@@ -45,6 +45,10 @@ public class addCandidateController {
     @Autowired
     private CandidateHelper candidateHelper;
 
+    @Autowired
+    private ApiKeyHelper apiKeyHelper;
+
+
     /**
      * Route qui permet d'ajouter un candidat à partir d'un JSON
      */
@@ -74,7 +78,6 @@ public class addCandidateController {
     )
     public ResponseEntity<Object> addCandidate(@RequestHeader(value = "API-KEY") String apiKey, @RequestBody String candidate) throws JsonProcessingException {
 
-        var apiKeyHelper = new ApiKeyHelper();
         var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);
 
         if (keyState != ApiKeyState.VALID){

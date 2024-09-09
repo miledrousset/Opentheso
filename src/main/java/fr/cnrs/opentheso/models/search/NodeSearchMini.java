@@ -10,10 +10,10 @@ public class NodeSearchMini {
     private String prefLabel;
     private String altLabelValue;
     private String conceptType;
-    private boolean isConcept;
-    private boolean isAltLabel;
-    private boolean isGroup;
-    private boolean isFacet;
-    private boolean isDeprecated;
+    private boolean concept;
+    private boolean altLabel;
+    private boolean group;
+    private boolean facet;
+    private boolean deprecated;
 
 }

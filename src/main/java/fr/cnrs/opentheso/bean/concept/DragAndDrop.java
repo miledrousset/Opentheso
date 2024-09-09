@@ -1,14 +1,13 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.FacetHelper;
-
-import fr.cnrs.opentheso.bdd.helper.RelationsHelper;
-import fr.cnrs.opentheso.bdd.helper.ValidateActionHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.FacetHelper;
+import fr.cnrs.opentheso.repositories.RelationsHelper;
+import fr.cnrs.opentheso.repositories.ValidateActionHelper;
 import fr.cnrs.opentheso.models.terms.NodeBT;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -22,7 +21,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PostConstruct;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -55,6 +54,9 @@ public class DragAndDrop implements Serializable {
     private Tree tree;
 
     @Autowired
+    private FacetHelper facetHelper;
+
+    @Autowired
     private ConceptHelper conceptHelper;
 
     @Autowired
@@ -62,6 +64,12 @@ public class DragAndDrop implements Serializable {
 
     @Autowired
     private ValidateActionHelper validateActionHelper;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
+    private RelationsHelper relationsHelper;
 
     private boolean isCopyOn;
     private boolean isValidPaste;
@@ -111,10 +119,6 @@ public class DragAndDrop implements Serializable {
         
         dragNode = null;
         dropNode = null;        
-    } 
-    
-    @PostConstruct
-    public void init(){
     }
 
     public void reset() {
@@ -143,12 +147,6 @@ public class DragAndDrop implements Serializable {
     public void infos() {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Copy and paste !");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    private void showMessage(FacesMessage.Severity severity, String message) {
-        FacesMessage msg = new FacesMessage(severity, "", message);
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().ajax().update("messageIndex");
     }
 
     public void setBTsToCut() {
@@ -280,8 +278,7 @@ public class DragAndDrop implements Serializable {
         
         /// préparer les collections à couper        
         setGroupsToCut();
-        
-        FacetHelper facetHelper = new FacetHelper();
+
         // cas de déplacement vers une facette 
         if(((TreeNodeData) dropNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
             // cas d'une branche, pas permis
@@ -427,7 +424,7 @@ public class DragAndDrop implements Serializable {
     public void validatePaste() {
         FacesMessage msg;
         isValidPaste = false;
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         ArrayList<String> descendingConcepts = conceptHelper.getIdsOfBranch(
                 connect.getPoolConnexion(),
                 nodeConceptDrag.getConcept().getIdConcept(),
@@ -439,8 +436,7 @@ public class DragAndDrop implements Serializable {
                 return;
             }
         }
-        
-        RelationsHelper relationsHelper = new RelationsHelper();
+
         ArrayList<String> listBT = relationsHelper.getListIdOfBT(connect.getPoolConnexion(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
@@ -587,7 +583,6 @@ public class DragAndDrop implements Serializable {
         // cas de déplacement d'un concept à concept
         FacesMessage msg;
         ArrayList<String> oldBtToDelete = new ArrayList<>();
-        ConceptHelper conceptHelper = new ConceptHelper();
         for (NodeBT nodeBT : nodeBTsToCut) {
             if (nodeBT.isSelected()) {
                 // on prépare les BT sélectionné pour la suppression
@@ -614,7 +609,6 @@ public class DragAndDrop implements Serializable {
     
     private boolean moveFromRootToConcept() {
         FacesMessage msg;
-        ConceptHelper conceptHelper = new ConceptHelper();        
         if (!conceptHelper.moveBranchFromRootToConcept(connect.getPoolConnexion(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 nodeConceptDrop.getConcept().getIdConcept(),
@@ -629,7 +623,6 @@ public class DragAndDrop implements Serializable {
     
     private boolean moveFromConceptToRoot(){
         FacesMessage msg;
-        ConceptHelper conceptHelper = new ConceptHelper();         
         ArrayList<String> oldBtToDelete = new ArrayList<>();
         
         for (NodeBT nodeBT : nodeBTsToCut) {
@@ -663,14 +656,11 @@ public class DragAndDrop implements Serializable {
 
     private void reloadConcept(){
         PrimeFaces pf = PrimeFaces.current();
-
-        ConceptHelper conceptHelper = new ConceptHelper();
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());  
         ///// insert DcTermsData to add contributor
-        DcElementHelper dcElmentHelper = new DcElementHelper();                
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 
@@ -679,9 +669,8 @@ public class DragAndDrop implements Serializable {
         if(conceptBean.getNodeConcept() != null){
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
                     nodeConceptDrag.getConcept().getIdConcept(),
-                    conceptBean.getSelectedLang());
+                    conceptBean.getSelectedLang(), currentUser);
             if (pf.isAjaxRequest()) {
-               // pf.ajax().update("containerIndex:formRightTab");
                 pf.ajax().update("containerIndex:rightTab:conceptView");
             }
         }      
@@ -707,7 +696,6 @@ public class DragAndDrop implements Serializable {
     }
 
     private void addAndCutGroup() {
-        ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> allId = conceptHelper.getIdsOfBranch(
                     connect.getPoolConnexion(),
                     nodeConceptDrag.getConcept().getIdConcept(),
@@ -759,10 +747,9 @@ public class DragAndDrop implements Serializable {
     }
   
     public void rollBackAfterErrorOrCancelDragDrop() {
-       // if (isdragAndDrop) {
-            reloadTree();
-            reset();
-       // }
+
+        reloadTree();
+        reset();
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, " ", "Déplacement annulé ");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().executeScript("PF('dragAndDrop').hide();");

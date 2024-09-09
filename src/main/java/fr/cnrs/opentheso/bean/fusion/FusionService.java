@@ -1,10 +1,10 @@
 package fr.cnrs.opentheso.bean.fusion;
 
-import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.terms.NodeEM;
@@ -54,6 +54,19 @@ public class FusionService implements Serializable {
     @Autowired
     private TermHelper termHelper;
 
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private AlignmentHelper alignmentHelper;
+
+    @Autowired
+    private NoteHelper noteHelper;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
+
     private SKOSXmlDocument sourceSkos;
     private boolean loadDone, fusionDone, fusionBtnEnable;
     private String uri;
@@ -83,9 +96,6 @@ public class FusionService implements Serializable {
         ArrayList<NodeEM> nodeEMsLocal;
 
         importRdf4jHelper.setDs(connect.getPoolConnexion());
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-        NoteHelper noteHelper = new NoteHelper();
-        PreferencesHelper preferencesHelper = new PreferencesHelper();
         String workLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), thesoSelected.getId());
 
         for (SKOSResource conceptSource : sourceSkos.getConceptList()) {
@@ -98,7 +108,7 @@ public class FusionService implements Serializable {
                 importRdf4jHelper.addRelation(acs, thesoSelected.getId());
 
                 // récupération du concept Local
-                NodeConcept conceptFound = new ConceptHelper().getConcept(connect.getPoolConnexion(),
+                NodeConcept conceptFound = conceptHelper.getConcept(connect.getPoolConnexion(),
                         conceptSource.getIdentifier(),
                         thesoSelected.getId(),
                         workLang, -1, -1);

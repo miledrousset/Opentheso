@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.proposition;
 
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
 import fr.cnrs.opentheso.models.propositions.Proposition;
@@ -43,12 +43,6 @@ public class PropositionBean implements Serializable {
     private Connect connect;
 
     @Autowired @Lazy
-    private CurrentUser currentUser;
-
-    @Autowired @Lazy
-    private ConceptView conceptView;
-
-    @Autowired @Lazy
     private IndexSetting indexSetting;
 
     @Autowired @Lazy
@@ -68,6 +62,10 @@ public class PropositionBean implements Serializable {
 
     @Autowired @Lazy
     private LanguageBean languageBean;
+
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
 
     private boolean isRubriqueVisible, isNewProposition, isConsultation;
     private Proposition proposition;
@@ -95,11 +93,11 @@ public class PropositionBean implements Serializable {
         propositions = null;
     }
 
-    public void onSelectConcept(PropositionDao propositionDao) throws IOException {
+    public void onSelectConcept(PropositionDao propositionDao, ConceptView conceptView, CurrentUser currentUser) throws IOException {
 
         this.propositionSelected = propositionDao;
 
-        NodePreference preference = new PreferencesHelper().getThesaurusPreferences(
+        NodePreference preference = preferencesHelper.getThesaurusPreferences(
                 connect.getPoolConnexion(), propositionDao.getIdTheso());
         if (!preference.isSuggestion()) {
             showMessage(FacesMessage.SEVERITY_WARN,
@@ -115,7 +113,7 @@ public class PropositionBean implements Serializable {
         indexSetting.setIsSelectedTheso(true);
         isRubriqueVisible = true;
 
-        conceptView.getConcept(propositionDao.getIdTheso(), propositionDao.getIdConcept(), propositionDao.getLang());
+        conceptView.getConcept(propositionDao.getIdTheso(), propositionDao.getIdConcept(), propositionDao.getLang(), currentUser);
 
         proposition = new Proposition();
         propositionService.preparerPropositionSelect(proposition, propositionDao);
@@ -327,7 +325,7 @@ public class PropositionBean implements Serializable {
         PrimeFaces.current().executeScript("PF('confirmDialog').hide();");
     }
 
-    public void switchToNouvelleProposition(NodeConcept nodeConcept) {
+    public void switchToNouvelleProposition(NodeConcept nodeConcept, CurrentUser currentUser) {
         init();
 
         isNewProposition = true;
@@ -519,12 +517,12 @@ public class PropositionBean implements Serializable {
         PrimeFaces.current().ajax().update("messageIndex");
     }
 
-    public Boolean isCanMakeAction() {
+    public Boolean isCanMakeAction(CurrentUser currentUser) {
         return (currentUser.getNodeUser() != null && !currentUser.getNodeUser().getMail().equalsIgnoreCase(email))
                 && (currentUser.getNodeUser().isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso());
     }
 
-    public boolean isSameUser() {
+    public boolean isSameUser(CurrentUser currentUser) {
         if (currentUser.getNodeUser() != null) {
             return currentUser.getNodeUser().getMail().equalsIgnoreCase(email);
         }

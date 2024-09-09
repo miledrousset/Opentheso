@@ -2,7 +2,7 @@ package search;
 
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
-import fr.cnrs.opentheso.bdd.helper.SearchHelper;
+import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import java.time.LocalTime;
 import java.util.ArrayList;

@@ -1,16 +1,17 @@
 package fr.cnrs.opentheso.bean.alignment;
 
-import fr.cnrs.opentheso.bdd.helper.TermHelper;
+import com.zaxxer.hikari.HikariDataSource;
+import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.models.terms.Term;
-import fr.cnrs.opentheso.bdd.helper.AlignmentHelper;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
-import fr.cnrs.opentheso.bdd.helper.DcElementHelper;
-import fr.cnrs.opentheso.bdd.helper.ExternalImagesHelper;
-import fr.cnrs.opentheso.bdd.helper.GpsHelper;
-import fr.cnrs.opentheso.bdd.helper.NoteHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.AlignmentHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
+import fr.cnrs.opentheso.repositories.DcElementHelper;
+import fr.cnrs.opentheso.repositories.ExternalImagesHelper;
+import fr.cnrs.opentheso.repositories.GpsHelper;
+import fr.cnrs.opentheso.repositories.NoteHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.NodeAlignmentSmall;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
@@ -34,15 +35,18 @@ import fr.cnrs.opentheso.client.alignement.IdRefHelper;
 import fr.cnrs.opentheso.client.alignement.OntomeHelper;
 import fr.cnrs.opentheso.client.alignement.OpenthesoHelper;
 import fr.cnrs.opentheso.client.alignement.WikidataHelper;
-
 import fr.cnrs.opentheso.services.alignements.AlignementAutomatique;
+
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,8 +55,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -66,23 +70,59 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 
 
+@Slf4j
 @Data
 @Named(value = "alignmentBean")
 @SessionScoped
 public class AlignmentBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
-    @Autowired @Lazy private ConceptView conceptView;
-    @Autowired @Lazy private SelectedTheso selectedTheso;
-    @Autowired @Lazy private ConceptView conceptBean;
-    @Autowired @Lazy private AlignmentManualBean alignmentManualBean;
-    @Autowired @Lazy private LanguageBean languageBean;
-    @Autowired @Lazy private CurrentUser currentUser;
-    @Autowired @Lazy private SetAlignmentSourceBean setAlignmentSourceBean;
-    @Autowired @Lazy private ExternalImagesHelper externalImagesHelper;
+    @Autowired
+    private Connect connect;
+
+    @Autowired
+    private ConceptView conceptView;
+
+    @Autowired
+    private SelectedTheso selectedTheso;
+
+    @Autowired
+    private ConceptView conceptBean;
+
+    @Autowired
+    private AlignmentManualBean alignmentManualBean;
+
+    @Autowired
+    private LanguageBean languageBean;
+
+    @Autowired
+    private CurrentUser currentUser;
+
+    @Autowired
+    private ExternalImagesHelper externalImagesHelper;
 
     @Autowired
     private TermHelper termHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private AlignementAutomatique alignementAutomatique;
+
+    @Autowired
+    private AlignmentHelper alignmentHelper;
+
+    @Autowired
+    private DcElementHelper dcElementHelper;
+
+    @Autowired
+    private NoteHelper noteHelper;
+
+    @Autowired
+    private GpsHelper gpsHelper;
 
     private boolean withLang;
     private boolean withNote;
@@ -164,7 +204,7 @@ public class AlignmentBean implements Serializable {
     private String manualAlignmentUri;
 
     public void deleteAlignment(AlignementElement alignement) {
-        new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
+        alignmentHelper.deleteAlignment(connect.getPoolConnexion(),
                 alignement.getIdAlignment(),
                 selectedTheso.getCurrentIdTheso());
 
@@ -203,7 +243,7 @@ public class AlignmentBean implements Serializable {
         if (idsToGet == null) {
             return;
         }
-        ConceptHelper conceptHelper = new ConceptHelper();
+
         idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(
                 connect.getPoolConnexion(),
                 idsToGet,
@@ -215,8 +255,7 @@ public class AlignmentBean implements Serializable {
 
         for (NodeIdValue idsAndValue : idsAndValues) {
 
-            ArrayList<NodeAlignment> alignements = new AlignmentHelper()
-                    .getAllAlignmentOfConcept(connect.getPoolConnexion(), idsAndValue.getId(), idTheso);
+            ArrayList<NodeAlignment> alignements = alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(), idsAndValue.getId(), idTheso);
 
             if (!CollectionUtils.isEmpty(alignements)) {
                 for (NodeAlignment alignement : alignements) {
@@ -250,15 +289,14 @@ public class AlignmentBean implements Serializable {
      */
     public void getIdsAndValues2(String idLang, String idTheso) {
 
-        idsAndValues = new ConceptHelper().getIdsAndValuesOfConcepts2(connect.getPoolConnexion(), allIdsOfBranch, idLang, idTheso);
+        idsAndValues = conceptHelper.getIdsAndValuesOfConcepts2(connect.getPoolConnexion(), allIdsOfBranch, idLang, idTheso);
         selectConceptForAlignment(idConceptSelectedForAlignment);
 
         allignementsList = new ArrayList<>();
 
         for (NodeIdValue concept : idsAndValues) {
 
-            ArrayList<NodeAlignment> alignements = new AlignmentHelper()
-                    .getAllAlignmentOfConcept(connect.getPoolConnexion(), concept.getId(), idTheso);
+            ArrayList<NodeAlignment> alignements = alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(), concept.getId(), idTheso);
 
             if (!CollectionUtils.isEmpty(alignements)) {
                 for (NodeAlignment alignement : alignements) {
@@ -293,14 +331,12 @@ public class AlignmentBean implements Serializable {
 
     public void checkAlignement(String idConceptOrig) {
 
-        var alignementHelper = new AlignmentHelper();
-
         allignementsList.stream()
                 .filter(element -> element.getIdConceptOrig().equalsIgnoreCase(idConceptOrig))
                 .forEach(alignement -> {
                     var isValide = isReachable(alignement.getTargetUri());
                     if (isValide != alignement.isValide()) {
-                        alignementHelper.updateAlignmentUrlStatut(connect.getPoolConnexion(), alignement.getIdAlignment(),
+                        alignmentHelper.updateAlignmentUrlStatut(connect.getPoolConnexion(), alignement.getIdAlignment(),
                                 isValide, idConceptOrig, selectedTheso.getCurrentIdTheso());
                         alignement.setValide(isValide);
                     }
@@ -403,7 +439,7 @@ public class AlignmentBean implements Serializable {
         this.alignementSource = alignementSource;
         selectAlignementForAdd = new ArrayList<>();
 
-        allAlignementFound = new AlignementAutomatique().searchAlignementsAutomatique(connect.getPoolConnexion(),
+        allAlignementFound = alignementAutomatique.searchAlignementsAutomatique(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getSelectedLang(),
                 allignementsList,
@@ -471,14 +507,14 @@ public class AlignmentBean implements Serializable {
     }
 
     public void openEditAlignementWindow(AlignementElement alignement) {
-        alignementSources = new AlignmentHelper().getAlignementSource(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        alignementSources = alignmentHelper.getAlignementSource(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
         selectConceptForAlignment(alignement.getIdConceptOrig());
         PrimeFaces.current().executeScript("PF('searchAlignement').show();");
     }
 
     public void addSingleAlignment(NodeAlignment alignment, String idTheso, String idConcept, int idUser) {
 
-        new AlignmentHelper().addNewAlignment(connect.getPoolConnexion(), idUser, alignment.getConcept_target(),
+        alignmentHelper.addNewAlignment(connect.getPoolConnexion(), idUser, alignment.getConcept_target(),
                 alignment.getThesaurus_target(), alignment.getUri_target(), alignment.getAlignement_id_type(),
                 alignment.getInternal_id_concept(), idTheso, alignment.getId_source());
 
@@ -507,7 +543,6 @@ public class AlignmentBean implements Serializable {
 
             //addDefinitions__(idTheso, idConcept, idUser);
             if (CollectionUtils.isNotEmpty(alignment.getSelectedDefinitionsList())) {
-                NoteHelper noteHelper = new NoteHelper();
                 // ajout de la note avec prefix de la source (wikidata)
                 for (SelectedResource selectedResource : alignment.getSelectedDefinitionsList()) {
                     if(!noteHelper.isNoteExist(connect.getPoolConnexion(),
@@ -529,7 +564,7 @@ public class AlignmentBean implements Serializable {
         }
 
         if (alignment.getThesaurus_target().equalsIgnoreCase("GeoNames")) {
-            new GpsHelper().insertCoordonees(connect.getPoolConnexion(), idConcept, idTheso, alignment.getLat(), alignment.getLng());
+            gpsHelper.insertCoordonees(connect.getPoolConnexion(), idConcept, idTheso, alignment.getLat(), alignment.getLng());
         }
     }
 
@@ -568,19 +603,13 @@ public class AlignmentBean implements Serializable {
     public void supprimerAlignementLocal(NodeAlignment selectedAlignement, String idThesaurus) throws SQLException {
 
         //Supprimer définition
-        new NoteHelper().deleteNotes(connect.getPoolConnexion().getConnection(),
-                conceptView.getDefinition().getIdNote() + "",
-                idThesaurus);
+        noteHelper.deleteNotes(connect.getPoolConnexion().getConnection(), conceptView.getDefinition().getIdNote() + "", idThesaurus);
 
         //Supprimer l'alignement
-        new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
-                selectedAlignement.getId_alignement(),
-                idThesaurus);
+        alignmentHelper.deleteAlignment(connect.getPoolConnexion(), selectedAlignement.getId_alignement(), idThesaurus);
 
-        new AlignmentHelper().deleteAlignment(connect.getPoolConnexion(),
-                selectedAlignement.getInternal_id_concept(),
-                idThesaurus,
-                selectedAlignement.getUri_target());
+        alignmentHelper.deleteAlignment(connect.getPoolConnexion(), selectedAlignement.getInternal_id_concept(),
+                idThesaurus, selectedAlignement.getUri_target());
     }
 
     public String getDefinitionFromAlignement(NodeAlignment alignement) {
@@ -672,10 +701,7 @@ public class AlignmentBean implements Serializable {
     }
 
     public void setExistingAlignment(String idConcept, String idTheso) {
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
-        existingAlignments = alignmentHelper.getAllAlignmentOfConcept(
-                connect.getPoolConnexion(),
-                idConcept, idTheso);
+        existingAlignments = alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
     }
 
     public void prepareValuesForIdRef() {
@@ -699,7 +725,7 @@ public class AlignmentBean implements Serializable {
      * permet d'initialiser le tableau des concepts à aligner
      */
     public void initAlignementByStep(String idTheso, String idConcept, String currentLang) {
-        allIdsOfBranch = new ConceptHelper().getIdsOfBranchLimited(connect.getPoolConnexion(), idConcept, idTheso, 2000);
+        allIdsOfBranch = conceptHelper.getIdsOfBranchLimited(connect.getPoolConnexion(), idConcept, idTheso, 2000);
         idConceptSelectedForAlignment = idConcept;
         idsToGet = new ArrayList<>();
         listAlignValues = null;
@@ -714,11 +740,10 @@ public class AlignmentBean implements Serializable {
         viewSetting = false;
         viewAddNewSource = false;
 
-        alignementSources = new AlignmentHelper().getAlignementSource(connect.getPoolConnexion(), idTheso);
+        alignementSources = alignmentHelper.getAlignementSource(connect.getPoolConnexion(), idTheso);
 
         initAlignmentType();
 
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         thesaurusUsedLanguage = thesaurusHelper.getIsoLanguagesOfThesaurus(connect.getPoolConnexion(), idTheso);
 
         thesaurusUsedLanguageWithoutCurrentLang = thesaurusHelper.getIsoLanguagesOfThesaurus(connect.getPoolConnexion(), idTheso);
@@ -741,7 +766,7 @@ public class AlignmentBean implements Serializable {
     
     public void initAlignmentType(){
         alignmentTypes = new ArrayList<>();
-        HashMap<String, String> map = new AlignmentHelper().getAlignmentType(connect.getPoolConnexion());
+        HashMap<String, String> map = alignmentHelper.getAlignmentType(connect.getPoolConnexion());
         alignmentTypes.addAll(map.entrySet());           
     }
  
@@ -1180,10 +1205,10 @@ public class AlignmentBean implements Serializable {
      * initialisation des valeurs du concept local pour comparaison avec leconcept à aligner
      */
     private void getValuesOfLocalConcept(String idTheso, String idConcept) {
-        nodeTermTraductions = new TermHelper().getAllTraductionsOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
-        nodeNotes = new NoteHelper().getListNotesAllLang(connect.getPoolConnexion(), idConcept, idTheso);
+        nodeTermTraductions = termHelper.getAllTraductionsOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
+        nodeNotes = noteHelper.getListNotesAllLang(connect.getPoolConnexion(), idConcept, idTheso);
         nodeImages = externalImagesHelper.getExternalImages(connect.getPoolConnexion(), idConcept, idTheso);
-        nodeAlignmentSmall = new AlignmentHelper().getAllAlignmentOfConceptNew(connect.getPoolConnexion(), idConcept, idTheso);
+        nodeAlignmentSmall = alignmentHelper.getAllAlignmentOfConceptNew(connect.getPoolConnexion(), idConcept, idTheso);
     }
 
     /**
@@ -1437,7 +1462,7 @@ public class AlignmentBean implements Serializable {
             }
         }
 
-        alignementResult = alignementResult + new AlignmentHelper().getMessage();
+        alignementResult = alignementResult + alignmentHelper.getMessage();
         selectedNodeAlignment = null;
         alignmentInProgress = false;
 
@@ -1463,7 +1488,6 @@ public class AlignmentBean implements Serializable {
      */
     public void addManualAlignement(String idTheso, String idConcept, int idUser) {
 
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
         // ajout de l'alignement séléctionné
         if (!alignmentHelper.addNewAlignment(connect.getPoolConnexion(), idUser, "", selectedAlignement,
                 manualAlignmentUri, selectedAlignementType, idConcept, idTheso, -1)) {
@@ -1495,12 +1519,11 @@ public class AlignmentBean implements Serializable {
 
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
 
-        new ConceptHelper().updateDateOfConcept(connect.getPoolConnexion(), idTheso, idConcept, idUser);
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idTheso, idConcept, idUser);
         ///// insert DcTermsData to add contributor
-        new DcElementHelper().addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConcept, idTheso);
-        ///////////////        
     }
 
     /**
@@ -1509,7 +1532,7 @@ public class AlignmentBean implements Serializable {
     private boolean addGps__(String idTheso, String idConcept) {
 
         // ajout de l'alignement séléctionné
-        if (!new GpsHelper().insertCoordonees(connect.getPoolConnexion(), idConcept, idTheso, selectedNodeAlignment.getLat(),
+        if (!gpsHelper.insertCoordonees(connect.getPoolConnexion(), idConcept, idTheso, selectedNodeAlignment.getLat(),
                 selectedNodeAlignment.getLng())) {
 
             alignementResult = "Erreur pendant l'ajout des coordonnées GPS : ";
@@ -1526,7 +1549,6 @@ public class AlignmentBean implements Serializable {
      * Permet d'ajouter l'alignement choisi dans la base de données
      */
     private boolean addAlignment__(String idTheso, String idConcept, int idUser) {
-        AlignmentHelper alignmentHelper = new AlignmentHelper();
 
         // ajout de l'alignement séléctionné
         if (!alignmentHelper.addNewAlignment(connect.getPoolConnexion(),
@@ -1549,7 +1571,7 @@ public class AlignmentBean implements Serializable {
     }
 
     private boolean addTraductions__(String idTheso, String idConcept, int idUser) {
-        TermHelper termHelper = new TermHelper();
+
         Term term = new Term();
         String idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
         if (idTerm == null) {
@@ -1594,7 +1616,6 @@ public class AlignmentBean implements Serializable {
     }
 
     private boolean addDefinitions__(String idTheso, String idConcept, int idUser) {
-        NoteHelper noteHelper = new NoteHelper();
 
         // ajout de la note avec prefix de la source (wikidata)
         for (SelectedResource selectedResource : descriptionsOfAlignment) {
@@ -1691,7 +1712,7 @@ public class AlignmentBean implements Serializable {
         }
     }
 
-    public String getSourceAlignement(AlignementElement alignment) {
+    public String getSourceAlignement(AlignementElement alignment, SetAlignmentSourceBean setAlignmentSourceBean) {
         if (StringUtils.isEmpty(alignment.getThesaurus_target())) {
             if (CollectionUtils.isEmpty(setAlignmentSourceBean.getAllAlignementSources())) {
                 setAlignmentSourceBean.initSourcesList();
@@ -1712,6 +1733,33 @@ public class AlignmentBean implements Serializable {
         } catch (MalformedURLException e) {
             return "";
         }
+    }
+
+    public AlignementSource getThisAlignementSource(HikariDataSource ds, int id) {
+
+        AlignementSource alignementSource = new AlignementSource();
+
+        try (Connection conn = ds.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                String query = "select * from alignement_source where id = " + id;
+
+                try (ResultSet resultSet = stmt.executeQuery(query)) {
+                    while (resultSet.next()) {
+                        alignementSource.setSource(resultSet.getString("source"));
+                        alignementSource.setRequete(resultSet.getString("requete"));
+                        alignementSource.setTypeRequete(resultSet.getString("type_rqt"));
+                        alignementSource.setAlignement_format(resultSet.getString("alignement_format"));
+                        alignementSource.setId(resultSet.getInt("id"));
+                        alignementSource.setDescription(resultSet.getString("description"));
+                        alignementSource.setSource_filter(resultSet.getString("source_filter"));
+                        alignementSource.setGps(resultSet.getBoolean("gps"));
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            log.error("Error while getting alignement source : ", sqle);
+        }
+        return alignementSource;
     }
     
 }

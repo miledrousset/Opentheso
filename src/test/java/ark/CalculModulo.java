@@ -1,7 +1,7 @@
 
 package ark;
 
-import fr.cnrs.opentheso.bdd.helper.ToolsHelper;
+import fr.cnrs.opentheso.repositories.ToolsHelper;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import org.junit.jupiter.api.Test;
 

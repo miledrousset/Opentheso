@@ -29,6 +29,11 @@ public class RedirectController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private RestRDFHelper restRDFHelper;
+
+
+
     @GetMapping(value = "/ark:/{naan}/{idArk}", produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "Redirige vers la page de la ressource correspondant à l'identifiant ARK entré",
             description = "Ancienne version : `/api/ark:/{naan}/{idArk}`\\n\\nRedirige vers la page de la ressource correspondant à l'identifiant ARK entré",
@@ -42,7 +47,7 @@ public class RedirectController {
             })
     public ResponseEntity<Object> getUriFromArk(@PathVariable("naan") String naan, @PathVariable("idArk") String arkId) throws URISyntaxException {
 
-        var webUrl = new RestRDFHelper().getUrlFromIdArk(connect.getPoolConnexion(), naan, arkId);
+        var webUrl = restRDFHelper.getUrlFromIdArk(connect.getPoolConnexion(), naan, arkId);
         return ResponseEntity.status(307).location(new URI(webUrl)).build();
     }
     

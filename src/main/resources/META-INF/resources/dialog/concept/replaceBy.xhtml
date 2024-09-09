@@ -29,13 +29,13 @@
                                     minQueryLength="1" itemLabel="#{values.prefLabel}" itemValue="#{values}" converter="searchConverter"
                                     scrollHeight="600" inputStyle="font-size: 12px; min-width: 300px; height: 28px;box-shadow: none;border-color: #43B572"
                                     style="font-size: 12px;">
-                        <p:column rendered="#{values.isAltLabel}" style="font-size: 12px;">
+                        <p:column rendered="#{values.isAltLabel()}" style="font-size: 12px;">
                             <h:outputText title="#{values.idConcept}" value="#{values.altLabel}"
                                           style="font-style: italic;" />
                             <h:outputText title="#{values.idConcept}" value=" -> #{values.prefLabel}" style="color: blue" />                                        
                         </p:column>
 
-                        <p:column rendered="#{!values.isAltLabel}" style="font-size: 12px;">
+                        <p:column rendered="#{!values.isAltLabel()}" style="font-size: 12px;">
                             <h:outputText title="#{values.idConcept}" value="#{values.prefLabel}" />
                         </p:column>
                     </p:autoComplete>                    

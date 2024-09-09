@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cnrs.opentheso.bdd.helper.PropositionApiHelper;
+import fr.cnrs.opentheso.repositories.PropositionApiHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
@@ -34,12 +34,17 @@ public class PropositionsController {
     @Autowired
     private Connect connect;
 
+    @Autowired
+    private ApiKeyHelper apiKeyHelper;
+
+    @Autowired
+    private PropositionApiHelper propositionApiHelper;
+
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON)
     public ResponseEntity<Object> createProposition(@RequestHeader(value = "API-KEY") String apiKey,
                                             @RequestBody String propositionJson) throws JsonProcessingException {
 
-        var apiKeyHelper = new ApiKeyHelper();
         var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);
 
         if (keyState != ApiKeyState.VALID) {
@@ -49,7 +54,7 @@ public class PropositionsController {
         var proposition = new ObjectMapper().readValue(propositionJson, PropositionFromApi.class);
         var userId = apiKeyHelper.getIdUser(connect.getPoolConnexion(), apiKey);
 
-        new PropositionApiHelper().createProposition(connect.getPoolConnexion(), proposition, userId);
+        propositionApiHelper.createProposition(connect.getPoolConnexion(), proposition, userId);
         return ResponseEntity.status(201).build();
     }
 }

@@ -1,13 +1,12 @@
-
 package fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph;
 
 import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bdd.helper.GroupHelper;
+import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
-import fr.cnrs.opentheso.bdd.helper.ConceptHelper;
+import fr.cnrs.opentheso.repositories.ConceptHelper;
 
-import fr.cnrs.opentheso.bdd.helper.PreferencesHelper;
-import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
+import fr.cnrs.opentheso.repositories.PreferencesHelper;
+import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.concept.ConceptIdLabel;
 import fr.cnrs.opentheso.models.concept.ConceptLabel;
 import fr.cnrs.opentheso.models.concept.ConceptRelation;
@@ -25,19 +24,29 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- *
- * @author miledrousset
- */
+
+@Service
 public class GraphD3jsHelper {
 
     @Autowired
     private GroupHelper groupHelper;
 
+    @Autowired
+    private ConceptHelper conceptHelper;
+
+    @Autowired
+    private UriHelper uriHelper;
+
+    @Autowired
+    private ThesaurusHelper thesaurusHelper;
+    
+    @Autowired
+    private PreferencesHelper preferencesHelper;
+
     private NodeGraphD3js nodeGraphD3js;
     private NodePreference nodePreference;
-    private UriHelper uriHelper;    
     
     public void initGraph(){
         nodeGraphD3js = new NodeGraphD3js();
@@ -46,12 +55,13 @@ public class GraphD3jsHelper {
     }
     
     public void getGraphByTheso(HikariDataSource ds, String idTheso, String idLang){
-        ConceptHelper conceptHelper = new ConceptHelper();
-        nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
-        uriHelper = new UriHelper(ds, nodePreference, idTheso);
+
+        nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
+
+        uriHelper.setIdTheso(idTheso);
+        uriHelper.setNodePreference(nodePreference);
         
         // récupérer les conceptScheme
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
         NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(ds, idTheso);
         if(nodeThesaurus == null){
             return;
@@ -75,14 +85,13 @@ public class GraphD3jsHelper {
     }     
     
     
-    public void getGraphByConcept(HikariDataSource ds, String idTheso, String idConcept,
-                        String idLang){
-        ConceptHelper conceptHelper = new ConceptHelper();
+    public void getGraphByConcept(HikariDataSource ds, String idTheso, String idConcept, String idLang){
         
-        nodePreference = new PreferencesHelper().getThesaurusPreferences(ds, idTheso);
-        uriHelper = new UriHelper(ds, nodePreference, idTheso);        
+        nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
 
-        ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+        uriHelper.setIdTheso(idTheso);
+        uriHelper.setNodePreference(nodePreference);
+
         NodeThesaurus nodeThesaurus = thesaurusHelper.getNodeThesaurus(ds, idTheso);
         if(nodeThesaurus == null){
             return;
@@ -180,18 +189,13 @@ public class GraphD3jsHelper {
         node.setProperties(getPropertiesOfExternalLink(id));
         return node;
     }
+    
     private Properties getPropertiesOfExternalLink(String id){
         Properties properties = new Properties();
         properties.setUri(id);
         return properties;
     } 
     
-    
-    /**
-     * Datas for Concepts
-     * @param nodeFullConcept
-     * @return 
-     */
     private Node getDatasOfNode(NodeFullConcept nodeFullConcept){
         Node node = new Node();
         node.setId(nodeFullConcept.getUri());//idTheso + "." + nodeFullConcept.getIdentifier());
@@ -199,7 +203,6 @@ public class GraphD3jsHelper {
         node.setProperties(getPropertiesOfNode(nodeFullConcept));
         return node;
     }
-    
     
     private Properties getPropertiesOfNode(NodeFullConcept nodeFullConcept){
         Properties properties = new Properties();
@@ -215,7 +218,8 @@ public class GraphD3jsHelper {
         }
         properties.setPrefLabels(prefLabels);
         return properties;
-    }       
+    }  
+    
     private List<String> getNodeLabel(NodeFullConcept nodeFullConcept){
         List<String> labels = new ArrayList<>();
         labels.add("Resource");
@@ -306,8 +310,7 @@ public class GraphD3jsHelper {
                 nodeGraphD3js.addNewNode(node);
             }
         }           
-        
-        
+
         if(nodeFullConcept.getExactMatchs()!= null){
             for (String exactMatch : nodeFullConcept.getExactMatchs()) {
                 Relationship relationship = new Relationship();
@@ -329,12 +332,7 @@ public class GraphD3jsHelper {
 
         return relationships;
     }
-    
-    
-    
-    
-    
-    
+
     public String getJsonFromNodeGraphD3js(){
         if(nodeGraphD3js == null) return null;
         
@@ -375,7 +373,6 @@ public class GraphD3jsHelper {
     
         // add nodes
         nodeRoot.add("nodes", jsonArrayNodes.build());        
-        
         
         
         // add relationships

@@ -2,7 +2,7 @@ package fr.cnrs.opentheso.services.candidats;
 
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.bean.candidat.CandidatBean;
-import fr.cnrs.opentheso.repositories.candidats.MessageDao;
+import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.mail.MailBean;
@@ -52,6 +52,9 @@ public class DiscussionService implements Serializable {
     @Autowired @Lazy
     private LanguageBean languageBean;
 
+    @Autowired
+    private MessageCandidatHelper messageCandidatHelper;
+
     @Autowired @Lazy
     private MailBean mailBean;
 
@@ -76,10 +79,6 @@ public class DiscussionService implements Serializable {
     private String email;
     private List<NodeUser> nodeUsers;
 
-    @PreDestroy
-    public void destroy() {
-        clear();
-    }
 
     public void clear() {
         if (nodeUsers != null) {
@@ -100,7 +99,7 @@ public class DiscussionService implements Serializable {
     }
     
     private void setListUsersForMail(){
-        nodeUsers = new MessageDao().getParticipantsByCandidat(
+        nodeUsers = messageCandidatHelper.getParticipantsByCandidat(
                 connect.getPoolConnexion(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());        
@@ -124,8 +123,7 @@ public class DiscussionService implements Serializable {
         messageDto.setNom(candidatBean.getCurrentUser().getUsername().toUpperCase());
         messageDto.setMsg(candidatBean.getMessage());
 
-        MessageDao messageDao = new MessageDao();
-        messageDao.addNewMessage(connect.getPoolConnexion(),
+        messageCandidatHelper.addNewMessage(connect.getPoolConnexion(),
                 candidatBean.getMessage(),
                 candidatBean.getCurrentUser().getNodeUser().getIdUser(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
@@ -137,10 +135,6 @@ public class DiscussionService implements Serializable {
         String message = "Vous avez participé à la discussion pour ce candidat "
                 + candidatBean.getCandidatSelected().getNomPref() + ", " 
                 + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
-//                + " (concept : <a href=\"" + getPath() + "/?idc=" + propositionDao.getIdConcept()
-//                + "&idt=" + propositionDao.getIdTheso() + "\">" + proposition.getNomConcept().getlexicalValue() + "</a>)                
-                
-                
                 + ". Sachez qu’un nouveau message a été posté.";
         
         setListUsersForMail();
@@ -158,7 +152,7 @@ public class DiscussionService implements Serializable {
      
 
     public void reloadMessage() {
-        candidatBean.getCandidatSelected().setMessages(new MessageDao().getAllMessagesByCandidat(
+        candidatBean.getCandidatSelected().setMessages(messageCandidatHelper.getAllMessagesByCandidat(
                 connect.getPoolConnexion(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus(),
