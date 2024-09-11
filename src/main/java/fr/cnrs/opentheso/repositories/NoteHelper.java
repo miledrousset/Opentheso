@@ -93,9 +93,7 @@ public class NoteHelper {
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE note set lexicalvalue = '" + note + "',"
-                        + " modified = current_date WHERE id = " + idNote
-                        + " and noteTypeCode = '" + noteTypeCode + "'"
-                        + " AND id_thesaurus = '" + idThesaurus + "'");   
+                        + " modified = current_date WHERE id = " + idNote + " AND id_thesaurus = '" + idThesaurus + "'");
                 addConceptNoteHistorique(ds, idConcept, idLang, idThesaurus, note, noteTypeCode, "update", idUser);
                 status = true;
             }
@@ -129,7 +127,7 @@ public class NoteHelper {
                             + " and id_thesaurus = '" + idThesaurus + "'"
                             + " and lang ='" + idLang + "'"
                             + " and lexicalvalue = '" + fr.cnrs.opentheso.utils.StringUtils.convertString(note) + "'"
-                            + " and noteTypeCode = '" + noteTypeCode + "'";
+                            + " and notetypecode = '" + noteTypeCode + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {
@@ -179,7 +177,7 @@ public class NoteHelper {
                             + " where identifier = '" + identifier + "'"
                             + " and id_thesaurus = '" + idThesaurus + "'"
                             + " and lang ='" + idLang + "'"
-                            + " and noteTypeCode = '" + noteTypeCode + "'";
+                            + " and notetypecode = '" + noteTypeCode + "'";
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     if (resultSet != null) {
@@ -474,8 +472,7 @@ public class NoteHelper {
                             + " where id = '" + idNote + "'"
                             + " and id_thesaurus = '" + idThesaurus + "'";
                     stmt.executeUpdate(query);
-                    addConceptNoteHistorique(ds, identifier, idLang, idThesaurus, oldNote,
-                            noteTypeCode, "delete", idUser);
+                    addConceptNoteHistorique(ds, identifier, idLang, idThesaurus, oldNote, noteTypeCode, "delete", idUser);
                     status = true;
 
                 } finally {

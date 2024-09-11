@@ -122,6 +122,11 @@ public class SearchAllignementByConceptCallable implements Callable<List<NodeAli
     private List<NodeAlignment> searchAlignmentsV2(AlignementSource alignementSource, String idTheso, NodeIdValue concept,
                                                    String idLang, String nom, String prenom) {
 
+        if ("WIKIDATA_SPARQL".equalsIgnoreCase(alignementSource.getSource_filter())) {
+            alignementSource.setRequete(alignementSource.getRequete().replaceAll("##lang##", idLang));
+            alignementSource.setRequete(alignementSource.getRequete().replaceAll("##value##", concept.getValue()));
+        }
+
         return switch (alignementSource.getSource_filter().toUpperCase()) {
             case "WIKIDATA_SPARQL" ->
                     new WikidataHelper().queryWikidata_sparql(concept.getId(), idTheso, alignementSource.getRequete(), alignementSource.getSource());

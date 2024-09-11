@@ -358,8 +358,7 @@ public class TermHelper {
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into term "
-                        + "(id_term, lexical_value, lang, "
-                        + "id_thesaurus, source, status,contributor, creator)"
+                        + "(id_term, lexical_value, lang, id_thesaurus, source, status,contributor, creator)"
                         + " values ("
                         + "'" + idTerm + "'"
                         + ",'" + label + "'"

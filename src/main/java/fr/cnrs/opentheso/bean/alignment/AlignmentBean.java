@@ -584,14 +584,12 @@ public class AlignmentBean implements Serializable {
 
         // Mettre à jour la valeur de local libelle et local definition par rapport au nouveau alignement
         allAlignementFound.stream().forEach(element -> {
-            if (element.getConceptOrigin().equals(alignementSelect.getConceptOrigin())) {
+            if (isEquals(element, alignementSelect)) {
                 element.setLabelLocal(alignementSelect.getConcept_target());
                 var definitionFound = alignementSelect.getSelectedDefinitionsList().stream()
                         .filter(definition -> definition.getIdLang().equalsIgnoreCase(selectedTheso.getSelectedLang()))
                         .findFirst();
-                if (definitionFound.isPresent()) {
-                    element.setDefinitionLocal(definitionFound.get().getGettedValue());
-                }
+                definitionFound.ifPresent(selectedResource -> element.setDefinitionLocal(selectedResource.getGettedValue()));
             }
         });
 
@@ -600,10 +598,17 @@ public class AlignmentBean implements Serializable {
 
     }
 
+    private boolean isEquals(NodeAlignment element, NodeAlignment alignementSelect) {
+        return (ObjectUtils.isNotEmpty(element.getConceptOrigin()) && element.getConceptOrigin().equals(alignementSelect.getConceptOrigin()))
+                || element.getUri_target().equals(alignementSelect.getUri_target());
+    }
+
     public void supprimerAlignementLocal(NodeAlignment selectedAlignement, String idThesaurus) throws SQLException {
 
         //Supprimer définition
-        noteHelper.deleteNotes(connect.getPoolConnexion().getConnection(), conceptView.getDefinition().getIdNote() + "", idThesaurus);
+        if (ObjectUtils.isNotEmpty(conceptView.getDefinition())) {
+            noteHelper.deleteNotes(connect.getPoolConnexion().getConnection(), conceptView.getDefinition().getIdNote() + "", idThesaurus);
+        }
 
         //Supprimer l'alignement
         alignmentHelper.deleteAlignment(connect.getPoolConnexion(), selectedAlignement.getId_alignement(), idThesaurus);
@@ -1349,7 +1354,7 @@ public class AlignmentBean implements Serializable {
      * différente, on l'ajoute à l'objet pour correction
      */
     private void setObjectDefinitions(List<SelectedResource> descriptionsOfAlignmentTemp) {
-        boolean toIgnore = false;
+        boolean toIgnore;
         if (descriptionsOfAlignmentTemp == null) {
             return;
         }
