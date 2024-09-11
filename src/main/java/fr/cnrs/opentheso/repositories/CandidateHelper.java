@@ -1,15 +1,13 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
-
+import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Candidate;
+import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Element;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -45,68 +43,50 @@ public class CandidateHelper {
 
 
     //Sauvegarde un candidat en base à partir d'un JSON
-    public boolean saveCandidat (HikariDataSource ds, String candidate, int userId) throws JsonProcessingException {
-
-        var candidateJson = new ObjectMapper().readTree(candidate);
-        var thesoId = candidateJson.path("thesoId").asText();
-        var collectionId = candidateJson.path("collectionId").asText();
-
-        // Champs non obligatoires
-        var source = candidateJson.has("source") ? candidateJson.path("source").asText() : "";
+    public boolean saveCandidat (HikariDataSource ds, Candidate candidate, int userId) {
 
         try (Connection conn = ds.getConnection()){
             conn.setAutoCommit(false);
 
             var idTerm = conceptHelper.getNumericConceptId(conn);
             var idConcept = conceptHelper.getNumericConceptId(conn);
-            if (ObjectUtils.isNotEmpty(candidateJson.path("terme"))) {
-                for (int i = 0; i < candidateJson.path("terme").size(); i++) {
-                    insertTerm(conn, thesoId, userId,
-                            candidateJson.get("terme").get(i).get("lang").asText(),
-                            idTerm,
-                            candidateJson.get("terme").get(i).get("value").asText());
+            if (CollectionUtils.isNotEmpty(candidate.getTerme())) {
+                for (Element term : candidate.getTerme()) {
+                    insertTerm(conn, candidate.getThesoId(), userId, term.getLang(), idTerm, term.getValue());
                 }
             }
 
-            insertConcept(conn, thesoId, userId, idConcept);
+            insertConcept(conn, candidate.getThesoId(), userId, idConcept);
 
-            insertCollection(conn, collectionId, thesoId, idConcept);
+            insertCollection(conn, candidate.getCollectionId(), candidate.getThesoId(), idConcept);
 
-            if (ObjectUtils.isNotEmpty(candidateJson.path("definition"))) {
-                for (int i = 0; i < candidateJson.path("definition").size(); i++) {
-                    insertNoteInCandidat(conn, "definition", thesoId, idTerm,
-                            candidateJson.get("definition").get(i).get("lang").asText(),
-                            candidateJson.get("definition").get(i).get("value").asText(),
-                            userId, source, idConcept);
+            if (CollectionUtils.isNotEmpty(candidate.getDefinition())) {
+                for (Element definition : candidate.getDefinition()) {
+                    insertNoteInCandidat(conn, "definition", candidate.getThesoId(), idTerm, definition.getLang(),
+                            definition.getValue(), userId, candidate.getSource(), idConcept);
                 }
             }
 
-            if (ObjectUtils.isNotEmpty(candidateJson.path("note"))) {
-                for (int i = 0; i < candidateJson.path("note").size(); i++) {
-                    insertNoteInCandidat(conn, "note", thesoId, idTerm,
-                            candidateJson.get("note").get(i).get("lang").asText(),
-                            candidateJson.get("note").get(i).get("value").asText(),
-                            userId, source, idConcept);
+            if (CollectionUtils.isNotEmpty(candidate.getNote())) {
+                for (Element note : candidate.getNote()) {
+                    insertNoteInCandidat(conn, "note", candidate.getThesoId(), idTerm, note.getLang(),
+                            note.getValue(), userId, candidate.getSource(), idConcept);
                 }
             }
 
-            var comment = candidateJson.path("comment").asText();
-            if (StringUtils.isNotEmpty(comment)) {
-                insertComment(conn, comment, userId, idConcept, thesoId);
+            if (StringUtils.isNotEmpty(candidate.getComment())) {
+                insertComment(conn, candidate.getComment(), userId, idConcept, candidate.getThesoId());
             }
 
-            insertPreferredTerm(conn, thesoId, idTerm, idConcept);
-
-            if (ObjectUtils.isNotEmpty(candidateJson.path("synonymes")) && candidateJson.path("synonymes").size() > 0) {
-                for (int i = 0; i < candidateJson.path("synonymes").size(); i++) {
-                    insertSynonymes(conn,
-                            candidateJson.path("synonymes").get(i).get("value").asText(),
-                            candidateJson.path("synonymes").get(i).get("lang").asText(),
-                            thesoId, idTerm);
+            if (CollectionUtils.isNotEmpty(candidate.getSynonymes())) {
+                for (Element synonyme : candidate.getSynonymes()) {
+                    insertSynonymes(conn, synonyme.getValue(), synonyme.getLang(), candidate.getThesoId(), idTerm);
                 }
             }
 
-            insertCandidat(conn, idConcept, thesoId, userId);
+            insertPreferredTerm(conn, candidate.getThesoId(), idTerm, idConcept);
+
+            insertCandidat(conn, idConcept, candidate.getThesoId(), userId);
 
             conn.commit();
         }catch (SQLException e) {

@@ -15,7 +15,6 @@ import fr.cnrs.opentheso.models.propositions.PropositionStatusEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,12 +45,12 @@ public class PropositionApiHelper {
 
 
 
-    public Response createProposition(HikariDataSource connexion, PropositionFromApi proposition, int userId) {
+    public void createProposition(HikariDataSource connexion, PropositionFromApi proposition, int userId) {
 
         var user = userHelper.getUser(connexion, userId);
         var thesaurusLang = preferencesHelper.getWorkLanguageOfTheso(connexion, proposition.getIdTheso());
 
-        var propositionId = saveProposition(connexion, proposition, thesaurusLang, user);
+        int propositionId = saveProposition(connexion, proposition, thesaurusLang, user);
 
         saveTerme(proposition, connexion, propositionId, thesaurusLang);
 
@@ -64,7 +63,7 @@ public class PropositionApiHelper {
         }
 
         if (CollectionUtils.isNotEmpty(proposition.getNotes())) {
-            for (NotePropBean note : proposition.getDefinitions()) {
+            for (NotePropBean note : proposition.getNotes()) {
                 noteManagement(connexion, propositionId, note, PropositionCategoryEnum.NOTE.name());
             }
         }
@@ -74,7 +73,6 @@ public class PropositionApiHelper {
                 noteManagement(connexion, propositionId, definition, PropositionCategoryEnum.DEFINITION.name());
             }
         }
-        return Response.status(Response.Status.CREATED).build();
     }
 
     private Integer saveProposition(HikariDataSource ds, PropositionFromApi proposition, String thesaurusLang, NodeUser user) {
