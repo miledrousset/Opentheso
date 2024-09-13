@@ -27,7 +27,7 @@
         </div> 
 
         <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">         
-            <p:dataTable var="narrower" value="#{narrowerBean.nodeNTs}" size="small" 
+            <p:dataTable var="narrower" value="#{conceptView.nodeFullConcept.narrowers}" size="small"
                          style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
                 <p:column>
                     <p:selectOneMenu id="relationTypeNT" value="#{narrower.role}" 
@@ -38,7 +38,7 @@
                 </p:column>
                 
                 <p:column>
-                    <p:inputText disabled="true" value="#{narrower.title}" 
+                    <p:inputText disabled="true" value="#{narrower.label}"
                                  style="color: #43B572; font-size: 12px; width: 100%; color: #000; border-color: #43B572"/>
                 </p:column>
                 

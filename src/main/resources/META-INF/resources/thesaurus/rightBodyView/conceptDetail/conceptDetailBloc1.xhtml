@@ -151,13 +151,11 @@
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.modify_synonym')}" 
                                             actionListener="#{synonymBean.reset()}" oncomplete="PF('renameSynonym').show();" 
-                                            update="containerIndex:idRenameSynonym" icon="fas fa-edit"
-                                            disabled="#{(conceptView.nodeFullConcept.altLabels == null) or (conceptView.nodeFullConcept.altLabels.size() == 0)}" />
+                                            update="containerIndex:idRenameSynonym" icon="fas fa-edit"/>
 
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_synonym')}" 
                                             actionListener="#{synonymBean.reset()}" oncomplete="PF('deleteSynonym').show();"
-                                            update="containerIndex:idDeleteSynonym" icon="fas fa-minus"
-                                            disabled="#{(conceptView.nodeFullConcept.altLabels == null) or (conceptView.nodeFullConcept.altLabels.size() == 0)}" />
+                                            update="containerIndex:idDeleteSynonym" icon="fas fa-minus" />
                             </p:menuButton>
                         </h:panelGroup>
 

@@ -1,25 +1,12 @@
 package fr.cnrs.opentheso.ws.handlestandard;
 
 import fr.cnrs.opentheso.models.nodes.NodePreference;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.security.PrivateKey;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jakarta.json.Json;
 import net.handle.hdllib.AbstractMessage;
 import net.handle.hdllib.AbstractResponse;
-import net.handle.hdllib.AddValueRequest;
 import net.handle.hdllib.AdminRecord;
 import net.handle.hdllib.CreateHandleRequest;
 import net.handle.hdllib.DeleteHandleRequest;
@@ -27,11 +14,8 @@ import net.handle.hdllib.HandleException;
 import net.handle.hdllib.HandleResolver;
 import net.handle.hdllib.HandleValue;
 import net.handle.hdllib.PublicKeyAuthenticationInfo;
-import net.handle.hdllib.RemoveValueRequest;
 import net.handle.hdllib.Util;
 
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
 
 public class HandleService {
 
@@ -51,12 +35,8 @@ public class HandleService {
     private HandleResolver resolver;
 
     private String message;
-    
-    /**
-     * retourne le constructeur
-     * 
-     * @return 
-     */
+
+
     public static HandleService getInstance() {
         return hs;
     }
@@ -181,48 +161,6 @@ public class HandleService {
     }
 
     /**
-     * peut mettre à jour l'url d'un Handle
-     * 
-     * @param handle
-     * @param newUrl
-     * @return
-     * @throws HandleException
-     * @throws UnsupportedEncodingException 
-     */
-    public boolean updateHandleUrl(String handle, String newUrl) throws HandleException, UnsupportedEncodingException {
-
-        String handleId = getPrefix() + "/" + handle;
-
-        if (!newUrl.startsWith("http://") && !newUrl.startsWith("https://")) {
-            //prefix by http by default
-            newUrl = "http://" + newUrl;
-        }
-
-        HandleValue[] val = {new HandleValue(100, "URL", newUrl)};
-        RemoveValueRequest removeValueRequest = new RemoveValueRequest(Util.encodeString(handleId), 100, auth);
-
-        AbstractResponse removeValueResponse = resolver.processRequest(removeValueRequest);
-        if (removeValueResponse == null || removeValueResponse.responseCode != AbstractMessage.RC_SUCCESS) {
-            System.out.println("error removing previous value '" + handle + "': " + removeValueResponse);
-
-        } else {
-            AddValueRequest addValueRequest = new AddValueRequest(handleId.getBytes("UTF8"), val, auth);
-
-            AbstractResponse addValueResponse = resolver.processRequest(addValueRequest);
-            if (addValueResponse.responseCode == AbstractMessage.RC_SUCCESS) {
-                System.out.println("\nGot Response: \n" + addValueResponse);
-                return true;
-            } else {
-                System.out.println("\nGot Error: \n" + addValueResponse);
-                this.setResponseMsg(addValueResponse.responseCode);
-            }
-
-        }
-        return false;
-
-    }
-
-    /**
      * peut supprimer un Handle
      * 
      * @param handleId
@@ -240,98 +178,6 @@ public class HandleService {
             return true;
         }
         return false;
-    }
-
-    /**
-     * peut récupérer un Handle
-     * 
-     * @param handle
-     * @return 
-     */
-    public String getHandle(String handle) {
-        String output;
-        String xmlRecord = "";
-        try {
-            URL url = new URL(serverHandle + prefix + "/" + handle);
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setUseCaches(false);
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            int status = conn.getResponseCode();
-            InputStream in = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-
-            try ( BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-                while ((output = br.readLine()) != null) {
-                    xmlRecord += output;
-                }
-                byte[] bytes = xmlRecord.getBytes();
-                xmlRecord = new String(bytes, Charset.forName("UTF-8"));
-                
-                message = "";
-                switch (status) {
-                    case 200:
-                        message = "Récupération du Handle réussie";
-                        break;
-                    default:
-                        message = "Handle n'existe pas";
-                        break;
-                }
-                conn.disconnect();
-                br.close();
-            }
-
-            if (status == 200) {
-                return xmlRecord;
-            } else {
-                return null;
-            }
-
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(HandleService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(HandleService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(HandleService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(HandleService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    /**
-     * peut vérifier si l'id handle existe
-     * 
-     * @param handle_id
-     * @return 
-     */
-    public boolean handleExist(String handle_id) {
-        try {
-            JsonObject jsonObject;
-            try (JsonReader reader = Json.createReader(new StringReader(handle_id))) {
-                jsonObject = reader.readObject();        
-            }
-            if (jsonObject.getInt("responseCode") == 1) {
-                return true;
-            }        
-        } catch (NullPointerException ex) {
-        }        
-        return false;
-        
-        /*
-        String res = getHandle(handle_id);
-        JsonObject json;
-        try {
-            json = new JsonObject(res);
-        } catch (NullPointerException ex) {
-            return false;
-        }
-        if (json.getInt("responseCode") == 1) {
-            return true;
-        }
-        return true;*/
     }
 
     /**

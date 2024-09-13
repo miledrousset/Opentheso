@@ -343,45 +343,8 @@ public class NoteBean implements Serializable {
                 selectedTypeNote,
                 "",
                 idUser);
-    }    
-    
+    }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     public void addNewNoteProp() {
 

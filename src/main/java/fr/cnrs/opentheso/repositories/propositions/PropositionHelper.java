@@ -1,6 +1,8 @@
 package fr.cnrs.opentheso.repositories.propositions;
 
+import fr.cnrs.opentheso.utils.StringUtils;
 import fr.cnrs.opentheso.models.propositions.PropositionDao;
+
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,43 +11,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.cnrs.opentheso.utils.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 
-
+@Slf4j
 @Service
 public class PropositionHelper {
-
-    private final Log log = LogFactory.getLog(PropositionHelper.class);
-
-    public List<PropositionDao> getAllProposition(HikariDataSource ds, String idTheso) {
-
-        List<PropositionDao> propositions = new ArrayList<>();
-
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT pro.*, term.lexical_value, code_pays " 
-                        + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
-                        + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " 
-                        + "LEFT JOIN languages_iso639 ON iso639_1 = term.lang "
-                        + "WHERE term.id_thesaurus like '" + idTheso + "' "
-                        + "ORDER BY pro.id DESC");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        propositions.add(toPropositionDao(resultSet));
-                    }
-                }
-            }
-        } catch (SQLException sqle) {
-            System.out.println("Erreur : " + sqle.getMessage());
-        }
-
-        return propositions;
-    }
 
     public List<PropositionDao> getAllPropositionByStatus(HikariDataSource ds, String status, String idTheso) {
 

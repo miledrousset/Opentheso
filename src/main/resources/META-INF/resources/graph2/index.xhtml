@@ -70,10 +70,8 @@
                 var language = document.getElementById("formId:langue").value;
                 var baseUrl = document.getElementById("formId:base_url").value;
                 
-            //    window.alert(baseUrl + 'api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language);
-                
                 dataLoading({
-                    url: baseUrl + 'openapi/v1/concept/' + idTheso + '/thesoGraph?lang=' + language
+                    url: baseUrl + 'concept/' + idTheso + '/thesoGraph?lang=' + language
                 });
             </script>
             

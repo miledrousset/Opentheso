@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.models.concept.ConceptRelation;
 import fr.cnrs.opentheso.models.concept.DCMIResource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
@@ -214,7 +215,7 @@ public class NarrowerBean implements Serializable {
      * @param nodeNT
      * @param idUser 
      */
-    public void deleteNarrowerLink(NodeNT nodeNT, int idUser){
+    public void deleteNarrowerLink(ConceptRelation nodeNT, int idUser){
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();    
         
@@ -280,7 +281,7 @@ public class NarrowerBean implements Serializable {
     }
 
     
-    public void updateRelation(NodeNT nodeNT, int idUser){
+    public void updateRelation(ConceptRelation nodeNT, int idUser){
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();            
 

@@ -280,8 +280,7 @@ public class ConceptView implements Serializable {
             nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
             if (nodeConcept == null) return;
         }        
-        
-        nodeFullConcept = null;
+
         nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
         if(nodeFullConcept == null) return;
         
@@ -427,9 +426,7 @@ public class ConceptView implements Serializable {
             nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
             if (nodeConcept == null) return;
         }
-        
-        nodeFullConcept = null;
-        
+
         nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step+1);
         if(nodeFullConcept == null) return;
         

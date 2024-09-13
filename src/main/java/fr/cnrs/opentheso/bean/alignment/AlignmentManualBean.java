@@ -147,6 +147,40 @@ public class AlignmentManualBean implements Serializable {
         }
     }
 
+    public void updateAlignement(NodeAlignment nodeAlignment){
+
+        if(nodeAlignment == null) return;
+
+        if(!new AlignmentHelper().updateAlignment(connect.getPoolConnexion(),
+                nodeAlignment.getId_alignement(),
+                nodeAlignment.getConcept_target(),
+                nodeAlignment.getThesaurus_target(),
+                nodeAlignment.getUri_target(),
+                nodeAlignment.getAlignement_id_type(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso())) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de mofication !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+        updateDateOfConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());
+
+        conceptView.getConcept(selectedTheso.getCurrentIdTheso(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(),
+                conceptView.getSelectedLang(),
+                currentUser);
+
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement modifié avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        PrimeFaces pf = PrimeFaces.current();
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+        }
+    }
+
     public void updateAlignementFromConceptInterface(){
         if(!alignmentHelper.updateAlignment(connect.getPoolConnexion(),
                 alignmentBean.getAlignementElementSelected().getIdAlignment(),

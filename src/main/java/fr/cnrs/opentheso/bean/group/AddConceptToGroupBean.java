@@ -86,26 +86,23 @@ public class AddConceptToGroupBean implements Serializable {
         // selectedAtt.getIdConcept() est le terme TG à ajouter
         // terme.getIdC() est le terme séléctionné dans l'arbre
         // terme.getIdTheso() est l'id du thésaurus
-        FacesMessage msg;
+
         if (selectedNodeAutoCompletionGroup == null || selectedNodeAutoCompletionGroup.getIdGroup() == null
                 || selectedNodeAutoCompletionGroup.getIdGroup().equals("")) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Aucune sélection !!");
+            var msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Aucune sélection !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
         // addConceptToGroup
-        if (!groupHelper.addConceptGroupConcept(connect.getPoolConnexion(),
-                selectedNodeAutoCompletionGroup.getIdGroup(),
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
+        if (!groupHelper.addConceptGroupConcept(connect.getPoolConnexion(), selectedNodeAutoCompletionGroup.getIdGroup(),
+                conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
+            var msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso(),
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
         dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
@@ -116,7 +113,7 @@ public class AddConceptToGroupBean implements Serializable {
         conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                 conceptView.getSelectedLang(), currentUser);
 
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a été ajouté à la collection");
+        var msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Le concept a été ajouté à la collection");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces.current().executeScript("PF('addConceptToGroup').hide();");
 
