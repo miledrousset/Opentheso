@@ -59,7 +59,7 @@
             <f:viewParam name="idc" value="#{selectedTheso.idConceptFromUri}"/>
             <f:viewParam name="idg" value="#{selectedTheso.idGroupFromUri}"/>
             <f:viewParam name="idt" value="#{selectedTheso.idThesoFromUri}"/>
-            <f:viewAction action="#{selectedTheso.preRenderView}"/>
+            <f:viewAction action="#{selectedTheso.preRenderView(selectedTheso)}"/>
         </f:metadata>
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true" />

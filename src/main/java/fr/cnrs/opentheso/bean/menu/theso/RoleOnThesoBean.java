@@ -26,8 +26,6 @@ import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import java.io.Serializable;
-
-import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
@@ -91,10 +89,6 @@ public class RoleOnThesoBean implements Serializable {
 
     private NodeUserRoleGroup nodeUserRoleGroup;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }      
     public void clear(){
         nodeUserRoleGroup = null;
         nodePreference = null;

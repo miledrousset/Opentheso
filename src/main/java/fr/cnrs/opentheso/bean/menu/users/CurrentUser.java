@@ -537,12 +537,38 @@ public class CurrentUser implements Serializable {
             resetUserPermissionsForThisTheso();
         }   
     }
+
+    public boolean isHasRoleAsContributor(){
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) &&
+                (
+                (userPermissions.isContributor()) || (userPermissions.isManager()) || (userPermissions.isAdmin()) || (nodeUser.isSuperAdmin())
+                ) ;
+    }
+
+    public boolean isHasRoleAsManager(){
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) &&
+                (
+                (userPermissions.isManager()) || (userPermissions.isAdmin()) || (nodeUser.isSuperAdmin())
+                );
+    }
     
     public boolean isHasRoleAsAdmin(){
         return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
                 (  
                 (userPermissions.isAdmin()) || (nodeUser.isSuperAdmin()) 
                 );
+    }
+
+    public boolean isHasRoleAsSuperAdmin(){
+        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) &&
+                (
+                (nodeUser.isSuperAdmin())
+                );
+    }
+
+
+    public boolean isAlertVisible() {
+        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
     }
     
     private void showErrorMessage(String msg) {
