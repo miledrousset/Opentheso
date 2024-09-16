@@ -337,10 +337,8 @@ public class SelectedTheso implements Serializable {
             currentUser.resetUserPermissionsForThisProject();
             currentUser.reloadAllThesoOfAllProject();
             roleOnThesoBean.showListTheso(currentUser);
-           // currentIdTheso = null;
-           // selectedIdTheso = "";
-           if(StringUtils.isEmpty(selectedIdTheso))
-                indexSetting.setSelectedTheso(false); 
+            if(StringUtils.isEmpty(selectedIdTheso))
+                indexSetting.setSelectedTheso(false);
             indexSetting.setProjectSelected(false);
         } else {
             currentUser.initUserPermissionsForThisProject(Integer.parseInt(projectIdSelected));
@@ -555,6 +553,8 @@ public class SelectedTheso implements Serializable {
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      */
     public void preRenderView() throws IOException {
+
+        roleOnThesoBean.setPublicThesos(currentUser);
 
         if (idThesoFromUri == null) {
             isFromUrl = false;

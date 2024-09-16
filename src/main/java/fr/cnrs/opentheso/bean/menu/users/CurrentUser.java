@@ -23,6 +23,7 @@ import fr.cnrs.opentheso.bean.rightbody.viewhome.ViewEditorHomeBean;
 import fr.cnrs.opentheso.bean.search.SearchBean;
 import fr.cnrs.opentheso.entites.UserGroupLabel;
 import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
+import fr.cnrs.opentheso.services.connexion.LdapService;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,10 +36,6 @@ import jakarta.faces.context.FacesContext;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-
-import jakarta.annotation.PreDestroy;
-
-import fr.cnrs.opentheso.services.connexion.LdapService;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -97,13 +94,7 @@ public class CurrentUser implements Serializable {
     
     // nouvel objet pour gérer les permissions
     private UserPermissions userPermissions;
-    
 
-    @PreDestroy
-    public void destroy() {
-        /// c'est le premier composant qui se détruit
-        clear();
-    }
 
     public void clear() {
         if (allAuthorizedProjectAsAdmin != null) {
@@ -127,15 +118,13 @@ public class CurrentUser implements Serializable {
 
         // initialisation des permissions
         resetPermissionsAfterLogout();
-       
-       
         
         // tester si le thésaurus en cours est privé, alors après une déconnexion, on devrait plus l'afficher
         roleOnThesoBean.setAndClearThesoInAuthorizedList();
         indexSetting.setIsThesoActive(true);
         rightBodySetting.setIndex("0");
 
-        initHtmlPages();
+        viewEditorHomeBean.reset();
 
         selectedTheso.loadProject();
         selectedTheso.setSelectedProject();
@@ -247,7 +236,7 @@ public class CurrentUser implements Serializable {
         if ("index".equals(menuBean.getActivePageName())) {
             menuBean.setNotificationPannelVisible(true);
         }
-      //  initUserPermissions();
+
         setInfos();
         //// Nouvelle gestion des droits pour l'utilisateur avec l'Objet UserPermissions
 
@@ -264,8 +253,7 @@ public class CurrentUser implements Serializable {
 
         if ("-1".equals(selectedTheso.getProjectIdSelected()) || StringUtils.isEmpty(selectedTheso.getProjectIdSelected())) {
             indexSetting.setProjectSelected(false);
-            if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
-            } else {
+            if(!StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
                 if (!thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
                     indexSetting.setSelectedTheso(true);
                 } else {
@@ -479,7 +467,6 @@ public class CurrentUser implements Serializable {
         }           
         userPermissions.setSelectedProject(-1);
         userPermissions.setSelectedProjectName("");
-      //  userPermissions.setListThesos(null);
     }      
     
     /**
@@ -490,8 +477,6 @@ public class CurrentUser implements Serializable {
         userPermissions.setNodeProjectsWithThesosRoles(null);
         
         resetUserPermissionsForThisTheso();
-
-        //resetUserPermissionsForThisProject();        
     }
     
     /**
@@ -552,20 +537,6 @@ public class CurrentUser implements Serializable {
             resetUserPermissionsForThisTheso();
         }   
     }
-
-    public boolean isHasRoleAsContributor(){
-        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) &&
-                ( 
-                (userPermissions.isContributor()) || (userPermissions.isManager()) || (userPermissions.isAdmin()) || (nodeUser.isSuperAdmin())
-                ) ;
-    }
-    
-    public boolean isHasRoleAsManager(){
-        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
-                (  
-                (userPermissions.isManager()) || (userPermissions.isAdmin()) || (nodeUser.isSuperAdmin()) 
-                );
-    }    
     
     public boolean isHasRoleAsAdmin(){
         return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
@@ -574,26 +545,10 @@ public class CurrentUser implements Serializable {
                 );
     }
     
-    public boolean isHasRoleAsSuperAdmin(){
-        return ObjectUtils.isNotEmpty(nodeUser) && ObjectUtils.isNotEmpty(userPermissions) && 
-                (  
-                (nodeUser.isSuperAdmin())
-                );
-    }    
-    
-    
-    public boolean isAlertVisible() {
-        return ObjectUtils.isNotEmpty(nodeUser) && (nodeUser.isSuperAdmin() || roleOnThesoBean.isAdminOnThisTheso()) && nodeUser.isActive();
-    }
-    
     private void showErrorMessage(String msg) {
         // utilisateur ou mot de passe n'existent pas
         FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_WARN, "Login Error!", msg);
         FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-    }
-
-    private void initHtmlPages() {
-        viewEditorHomeBean.reset();
     }
 
     /**

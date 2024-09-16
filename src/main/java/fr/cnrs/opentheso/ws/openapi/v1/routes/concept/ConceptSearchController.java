@@ -1,8 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
@@ -41,18 +38,18 @@ public class ConceptSearchController {
     public ResponseEntity<Object> searchAutocompleteV2(@PathVariable("input") String input,
                                                @PathVariable("idThesaurus") String idThesaurus,
                                                @RequestParam("lang") String lang,
-                                               @RequestParam("group") String idGroup) throws JsonProcessingException {
+                                               @RequestParam(value = "group", required = false) String idGroup) {
 
         var concepts = searchHelper.searchConceptWSV2(connect.getPoolConnexion(), input, lang, idGroup, idThesaurus);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(concepts));
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(concepts);
     }
 
 
     @GetMapping("/groups/{idThesaurus}/{idLang}")
     public ResponseEntity<Object> getGroupsByThesaurus(@PathVariable("idThesaurus") String idThesaurus,
-                                         @PathVariable("idLang") String idLang) throws JsonProcessingException {
+                                         @PathVariable("idLang") String idLang) {
 
         var groups = groupHelper.getListRootConceptGroup(connect.getPoolConnexion(), idThesaurus, idLang, true);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(groups));
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(groups);
     }
 }
