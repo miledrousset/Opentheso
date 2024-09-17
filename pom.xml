@@ -127,7 +127,6 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>
             <version>${javax.json.version}</version>
-            <type>jar</type>
         </dependency>
 
         <dependency>
