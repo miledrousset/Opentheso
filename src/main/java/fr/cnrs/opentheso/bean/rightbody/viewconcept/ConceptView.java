@@ -274,7 +274,7 @@ public class ConceptView implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         
         if(currentUser != null) {
-            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
+            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
             if (nodeConcept == null) return;
         }        
         
@@ -426,7 +426,7 @@ public class ConceptView implements Serializable {
         ConceptHelper conceptHelper = new ConceptHelper();
         
         if(currentUser != null) {
-            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
+            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
             if (nodeConcept == null) return;
         }
         
