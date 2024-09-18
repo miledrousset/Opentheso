@@ -7,6 +7,8 @@ package fr.cnrs.opentheso.ws.api;
 
 import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.bdd.datas.Thesaurus;
+
+import java.io.StringReader;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,16 +27,16 @@ import fr.cnrs.opentheso.bdd.helper.ThesaurusHelper;
 import fr.cnrs.opentheso.bdd.helper.nodes.group.NodeGroupTraductions;
 import fr.cnrs.opentheso.bdd.helper.nodes.term.NodeTermTraduction;
 import fr.cnrs.opentheso.bdd.helper.nodes.thesaurus.NodeThesaurus;
-import fr.cnrs.opentheso.core.json.helper.JsonHelper;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonObjectBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.HttpHeaders;
@@ -99,11 +101,11 @@ public class Rest_new {
     @Consumes("application/json;charset=UTF-8")
     @Produces("application/json;charset=UTF-8")
     public String addArk(String content) {
-        JsonHelper jsonHelper = new JsonHelper();
-        JsonObject jo;
         try {
-            jo = jsonHelper.getJsonObject(content);
-            return jo.toString();
+            JsonReader reader = Json.createReader(new StringReader(content));
+            JsonObject jsonObject = reader.readObject();
+            reader.close();
+            return jsonObject.toString();
         } catch (Exception e) {
             return "Erreur";
         }
