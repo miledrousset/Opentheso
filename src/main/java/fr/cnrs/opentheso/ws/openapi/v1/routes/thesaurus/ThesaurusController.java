@@ -28,7 +28,8 @@ import static fr.cnrs.opentheso.ws.openapi.helper.DataHelper.connect;
 @Path("/thesaurus")
 public class ThesaurusController {
 
-    @Path("/")
+    /** Ca ne focntionne pas avec Java 17 sous Linux **/
+    /*    @Path("/")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "${getListAllPublicTheso.summary}$",
@@ -81,5 +82,81 @@ public class ThesaurusController {
         } else {
             return null;
         }
+    }*/
+    @Path("/")
+    @GET
+    @Produces({APPLICATION_JSON_UTF_8})
+    @Operation(summary = "${getListAllPublicTheso.summary}$",
+            description = "${getListAllPublicTheso.description}$",
+            tags = {"Thesaurus"},
+            responses = {
+                @ApiResponse(responseCode = "200", description = "${getListAllPublicTheso.200.description}$", content = {
+            @Content(mediaType = APPLICATION_JSON_UTF_8)
+        }),
+                @ApiResponse(responseCode = "404", description = "${responses.theso.404.description}$")
+            }
+    )
+    public Response getListAllPublicTheso() {
+        StringBuilder jsonArrayBuilder = new StringBuilder();
+        jsonArrayBuilder.append("[");
+
+        try (HikariDataSource ds = connect()) {
+
+            if (ds == null) {
+                return ResponseHelper.errorResponse(Response.Status.SERVICE_UNAVAILABLE, "Serveur unavailable", APPLICATION_JSON_UTF_8);
+            }
+
+            ThesaurusHelper thesaurusHelper = new ThesaurusHelper();
+            List<String> listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(ds, false);
+
+            NodeThesaurus nodeThesaurus;
+
+            for (int i = 0; i < listPublicTheso.size(); i++) {
+                String idTheso = listPublicTheso.get(i);
+                StringBuilder job = new StringBuilder();
+                job.append("{");
+                job.append("\"idTheso\":\"").append(idTheso).append("\"");
+
+                nodeThesaurus = thesaurusHelper.getNodeThesaurus(ds, idTheso);
+
+                if (!nodeThesaurus.getListThesaurusTraduction().isEmpty()) {
+                    StringBuilder jsonArrayBuilderLang = new StringBuilder();
+                    jsonArrayBuilderLang.append("[");
+
+                    for (int j = 0; j < nodeThesaurus.getListThesaurusTraduction().size(); j++) {
+                        Thesaurus thesaurus = nodeThesaurus.getListThesaurusTraduction().get(j);
+                        jsonArrayBuilderLang.append("{");
+                        jsonArrayBuilderLang.append("\"lang\":\"").append(thesaurus.getLanguage()).append("\",");
+                        jsonArrayBuilderLang.append("\"title\":\"").append(thesaurus.getTitle()).append("\"");
+                        jsonArrayBuilderLang.append("}");
+
+                        if (j < nodeThesaurus.getListThesaurusTraduction().size() - 1) {
+                            jsonArrayBuilderLang.append(",");
+                        }
+                    }
+
+                    jsonArrayBuilderLang.append("]");
+                    job.append(",\"labels\":").append(jsonArrayBuilderLang.toString());
+                }
+
+                job.append("}");
+                jsonArrayBuilder.append(job.toString());
+
+                if (i < listPublicTheso.size() - 1) {
+                    jsonArrayBuilder.append(",");
+                }
+            }
+
+            jsonArrayBuilder.append("]");
+        }
+
+        String datasJson = jsonArrayBuilder.toString();
+
+        if (datasJson != null) {
+            return ResponseHelper.response(Response.Status.OK, datasJson, APPLICATION_JSON_UTF_8);
+        } else {
+            return null;
+        }
     }
+
 }
