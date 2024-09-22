@@ -107,14 +107,22 @@
 
                                         <div class="row">
                                             <div class="col-6">
-
                                                 <p:commandButton value="#{langueBean.getMsg('graphdialog.manage_view.DisplayWithD3')}"
                                                                  styleClass="ui-button-success"
                                                                  icon="fa fa-diagram-project"
-                                                                 style="margin-left: 0px; "
+                                                                 style="margin-left: 0px;" ajax="false" process="@this"
                                                                  rendered="#{!graph_view.exportedData.isEmpty()}"
-                                                                 actionListener="#{dataGraphView.redirectToGraphVisualization(graph_view.id)}" >
-                                                </p:commandButton>                                                
+                                                                 onclick="openInNewTab('#{dataGraphView.generateGraphVisualizationUrl(graph_view.id)}'); return false;" />
+
+                                                <script type="text/javascript">
+                                                    function openInNewTab(url) {
+                                                        if (url) {
+                                                            window.open(url, '_blank');
+                                                        } else {
+                                                            alert('URL not found');
+                                                        }
+                                                    }
+                                                </script>
                                             </div>
 
                                             <div class="col-6" style="text-align: right">                                            
@@ -122,11 +130,9 @@
                                                 <p:commandButton value="#{langueBean.getMsg('graphdialog.manage_view.ExportToNeo4j')}"
                                                                  styleClass="ui-button-secondary"
                                                                  icon="fa fa-paper-plane"
-
                                                                  rendered="#{!graph_view.exportedData.isEmpty()}"
                                                                  actionListener="#{dataGraphView.exportToNeo4J(graph_view.id)}"
-                                                                 update="messageIndex" >
-                                                </p:commandButton>
+                                                                 update="messageIndex" />
                                             </div>
                                         </div>                                            
 

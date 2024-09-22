@@ -5,7 +5,6 @@ import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,6 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
-import jakarta.ws.rs.core.UriBuilder;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +30,8 @@ import org.neo4j.driver.EagerResult;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.QueryConfig;
 import org.primefaces.PrimeFaces;
+import org.apache.http.client.utils.URIBuilder;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -138,12 +138,13 @@ public class DataGraphView implements Serializable {
         newViewExportedData = viewToEdit.getExportedData();
     }
 
-    public void redirectToGraphVisualization(String viewId) throws IOException {
+    public String generateGraphVisualizationUrl(String viewId) throws URISyntaxException {
         GraphObject view = graphService.getView(viewId);
 
         if (view == null) {
-            return;
+            return null;
         }
+
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
 
         String opethesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName()
@@ -151,16 +152,26 @@ public class DataGraphView implements Serializable {
                 + context.getApplicationContextPath();
 
         final String baseDataURL = opethesoUrl + "/openapi/v1/graph/getData";
-        UriBuilder url = UriBuilder.fromUri(baseDataURL);
-        url.queryParam("lang", "fr");
+
+        // Utilisation de URIBuilder pour construire l'URL
+        URIBuilder uriBuilder = new URIBuilder(baseDataURL);
+        uriBuilder.addParameter("lang", "fr");
+
         if (!view.getExportedData().isEmpty()) {
             view.getExportedData().forEach(data -> {
-                url.queryParam("idThesoConcept", data.getRight() == null ? data.getLeft() : data.getLeft() + "," + data.getRight());
+                String idThesoConcept = data.getRight() == null ? data.getLeft() : data.getLeft() + "," + data.getRight();
+                uriBuilder.addParameter("idThesoConcept", idThesoConcept);
             });
         }
 
-        String urlString = url.build().toString();
-        context.redirect(UriBuilder.fromUri(context.getRequestContextPath() + "/d3js/index.xhtml").queryParam("dataUrl", urlString).queryParam("format", "opentheso").build().toString());
+        String urlString = uriBuilder.build().toString();
+
+        // Construit l'URL de redirection
+        URIBuilder redirectUrlBuilder = new URIBuilder(context.getRequestContextPath() + "/d3js/index.xhtml");
+        redirectUrlBuilder.addParameter("dataUrl", urlString);
+        redirectUrlBuilder.addParameter("format", "opentheso");
+
+        return redirectUrlBuilder.build().toString();
     }
 
     public void exportToNeo4J(String viewId) {
