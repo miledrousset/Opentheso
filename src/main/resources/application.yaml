@@ -4,7 +4,7 @@
 server:
   port: 8099
   servlet:
-    context-path: /opentheso2
+    context-path: /opentheso
     session:
       timeout: 125m
   tomcat:
@@ -16,9 +16,9 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     platform: postgres
-    url: jdbc:postgresql://localhost:5432/opentheso2
-    password: postgres
-    username: postgres
+    url: jdbc:postgresql://localhost:5432/opentheso
+    password: opentheso
+    username: opentheso
     dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
     maxPoolSize: 1000
     minIdle: 1
