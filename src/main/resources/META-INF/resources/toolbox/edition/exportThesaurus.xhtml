@@ -62,7 +62,7 @@
                     <h:outputLabel style="color: #000;" value="#{langueBean.getMsg('statistique.type')}:"/>
                     <p:dataTable id="listType" var="type" value="#{viewExportBean.types}"
                                  selection="#{viewExportBean.typeSelected}" rowKey="#{type}" style="margin-bottom:0" lazy="false">
-                        <p:column selectionMode="single" style="width:16px;text-align:center" width="40"/>
+                        <p:column selectionBox="true" style="width:16px;text-align:center" width="40"/>
                         <p:column >
                             <h:outputText value="#{type}" />
                         </p:column>

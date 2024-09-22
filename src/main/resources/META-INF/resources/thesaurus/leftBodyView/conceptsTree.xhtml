@@ -20,7 +20,7 @@
     <p:tree id="conceptTree" value="#{treeConcepts.root}"  dynamic="true" var="treeConcept" selectionMode="single"  selection="#{treeConcepts.selectedNode}"
             style="width: auto; border: none; font-size: 13px; min-height: 700px; max-height: 925px;overflow-y:scroll; " 
             widgetVar="conceptTreeWidget" >
-        <p:ajax event="expand"  listener="#{treeConcepts.onNodeExpand}"/>
+        <p:ajax event="expand" listener="#{treeConcepts.onNodeExpand}"/>
         <p:ajax event="select" listener="#{treeConcepts.onNodeSelect}" />
 
         <p:treeNode expandedIcon="pi pi-folder-open pi_custom_open" collapsedIcon="pi pi-folder pi_custom_collapse" >

@@ -26,14 +26,13 @@ import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import lombok.Data;
+import org.primefaces.event.TreeDragDropEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 
 
-@Data
 @Named(value = "dragAndDrop")
 @SessionScoped
 public class DragAndDrop implements Serializable {
@@ -232,7 +231,24 @@ public class DragAndDrop implements Serializable {
         }
         return groupsToAdd;
     }
-    
+
+    /**
+     * permet de préparer le concept ou la branche pour le déplacement vers un autre endroit #MR
+     *
+     * @param nodeConcept
+     */
+    public void onStartCut(NodeConcept nodeConcept) {
+        reset();
+        if (nodeConcept == null) {
+            return;
+        }
+        nodeConceptDrag = nodeConcept;
+        isCopyOn = true;
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
+                + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
     /**
      * permet de coller la branche copiée précédement sous le concept en cours
      * déplacements valides: - d'un concept à un concept - de la racine à un
@@ -461,7 +477,349 @@ public class DragAndDrop implements Serializable {
         }
         isValidPaste = true;
     }
-    
+
+    /**
+     * Fonction pour récupérer l'évènement drag drop de l'arbre
+     *
+     * @param event
+     */
+    public void onDragDrop(TreeDragDropEvent event) {
+        reset();
+        dragNode = (TreeNode) event.getDragNode();
+        dropNode = (TreeNode) event.getDropNode();
+
+        //       TreeNode[] dragNodes = (TreeNode[]) event.getDragNodes();
+
+
+        FacesMessage msg;
+
+        // à corriger pour traiter le déplacement des facettes par Drag and Drop
+        if("facet".equalsIgnoreCase(dragNode.getType())){
+            if("facet".equalsIgnoreCase(dropNode.getType())){
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " déplacement non permis !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                isValidPaste = false;
+                return;
+            }
+            new FacetHelper().updateFacetParent(connect.getPoolConnexion(),
+                    ((TreeNodeData) dropNode.getData()).getNodeId(),//termeParentAssocie.getId(),
+                    ((TreeNodeData) dragNode.getData()).getNodeId(),//facetSelected.getIdFacet(),
+                    selectedTheso.getCurrentIdTheso());
+
+            tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+            tree.expandTreeToPath2(
+                    ((TreeNodeData) dropNode.getParent().getData()).getNodeId(),//facetSelected.getIdConceptParent(),
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getSelectedLang(),
+                    ((TreeNodeData) dragNode.getData()).getNodeId() + "");
+            PrimeFaces pf = PrimeFaces.current();
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("formRightTab:facetView");
+                pf.ajax().update("formLeftTab:tabTree:tree");
+            }
+
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Facette déplacée avec succès !!!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+
+
+        ConceptHelper conceptHelper = new ConceptHelper();
+        nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
+                ((TreeNodeData) dragNode.getData()).getNodeId(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang(), -1, -1);
+
+        isdragAndDrop = true;
+
+        /// préparer le noeud à couper
+        setBTsToCut();
+
+
+        if (dropNode.getParent() == null) {
+            // déplacement à la racine
+            isDropToRoot = true;
+        } else {
+            nodeConceptDrop = conceptHelper.getConcept(connect.getPoolConnexion(),
+                    ((TreeNodeData) dropNode.getData()).getNodeId(),
+                    selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(), -1, -1);
+            /// Vérifier si le dépalcement est valide (controle des relations interdites)
+            ValidateActionHelper validateActionHelper = new ValidateActionHelper();
+            if(nodeConceptDrop != null) {
+                if(!validateActionHelper.isMoveConceptToConceptValid(
+                        connect.getPoolConnexion(),
+                        selectedTheso.getCurrentIdTheso(),
+                        nodeConceptDrag.getConcept().getIdConcept(),
+                        nodeConceptDrop.getConcept().getIdConcept())) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Relation non permise !");
+
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", validateActionHelper.getMessage());
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    isValidPaste = false;
+                    reloadTree();
+                    return;
+                }
+            }
+        }
+
+
+        /// préparer les collections à couper
+        setGroupsToCut();
+
+        FacetHelper facetHelper = new FacetHelper();
+        // cas de déplacement vers une facette
+        if(((TreeNodeData) dropNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
+            // cas d'une branche, pas permis
+            if(!nodeConceptDrag.getNodeNT().isEmpty()) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                rollBackAfterErrorOrCancelDragDrop();
+                updateMessage();
+                return;
+            }
+            String idFacet = ((TreeNodeData) dropNode.getData()).getNodeId();
+
+            if(idFacet == null) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                rollBackAfterErrorOrCancelDragDrop();
+                updateMessage();
+                return;
+            }
+
+            if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+                    idFacet,
+                    selectedTheso.getCurrentIdTheso(),
+                    ((TreeNodeData) dragNode.getData()).getNodeId())){
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur dans le déplacement !!!");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                rollBackAfterErrorOrCancelDragDrop();
+                return;
+            }
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Concept ajouté à la facette");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        } else {
+            // on vérifie si le noeud à déplacer est un membre d'une facette, alors on supprime cette appartenance
+            if(((TreeNodeData) dragNode.getData()).getNodeType().equalsIgnoreCase("facetmember")){
+                try {
+                    String idFacetParent = ((TreeNodeData) dragNode.getData()).getIdFacetParent();
+                    if(!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                            idFacetParent,
+                            ((TreeNodeData) dragNode.getData()).getNodeId(),
+                            selectedTheso.getCurrentIdTheso())) {
+                        msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                        FacesContext.getCurrentInstance().addMessage(null, msg);
+                        rollBackAfterErrorOrCancelDragDrop();
+                        return;
+                    }
+                } catch (Exception e) {
+                    msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Action non permise !!!");
+                    FacesContext.getCurrentInstance().addMessage(null, msg);
+                    rollBackAfterErrorOrCancelDragDrop();
+                    return;
+                }
+
+            }
+
+            // cas de changement de groupe, on propose de garder / supprimer / ajouter le groupe
+            if(isDroppedToAnotherGroup()) {
+                // si oui, on affiche une boite de dialogue pour choisir les branches à couper
+                ///choix de l'option pour deplacer la collection ou non
+                isGroupToCut = true;
+                PrimeFaces pf = PrimeFaces.current();
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("containerIndex:formLeftTab:idDragAndDrop");
+                    //      pf.ajax().update("containerIndex:formLeftTab:dragAndDropForm");
+                }
+                pf.executeScript("PF('dragAndDrop').show();");
+                return;
+            }
+
+            // on controle s'il y a plusieurs branches,
+            if (nodeConceptDrag.getNodeBT().size() < 2) {
+                // sinon, on applique le changement direct
+                drop();
+            } else {
+                // si oui, on affiche une boite de dialogue pour choisir les branches à couper
+                PrimeFaces pf = PrimeFaces.current();
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("idDragAndDrop");
+                    //        pf.ajax().update("dragAndDropForm");
+                }
+                pf.executeScript("PF('dragAndDrop').show();");
+            }
+        }
+    }
+
+    public void onDragDropMultiple(TreeDragDropEvent event) {
+        reset();
+        dragNode = (TreeNode) event.getDragNode();
+        dropNode = (TreeNode) event.getDropNode();
+
+
+        nodesToConfirme = new ArrayList<>();
+
+        List<TreeNode> nodes = tree.getClickselectedNodes();
+        groupNodeToAdd = new ArrayList<>();
+        groupNodeToCut = new ArrayList<>();
+        groupNodeBtToCut = new ArrayList<>();
+
+        for (TreeNode node : tree.getClickselectedNodes()) {
+            // à corriger pour traiter le déplacement des facettes par Drag and Drop
+            if ("facet".equalsIgnoreCase(node.getType())) {
+                if ("facet".equalsIgnoreCase(dropNode.getType())) {
+                    showMessage(FacesMessage.SEVERITY_ERROR, "Déplacement non permis !");
+                    isValidPaste = false;
+                    return;
+                }
+                new FacetHelper().updateFacetParent(connect.getPoolConnexion(),
+                        ((TreeNodeData) dropNode.getData()).getNodeId(),
+                        ((TreeNodeData) node.getData()).getNodeId(),
+                        selectedTheso.getCurrentIdTheso());
+
+                tree.initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
+                tree.expandTreeToPath2(((TreeNodeData) dropNode.getParent().getData()).getNodeId(),
+                        selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang(),
+                        ((TreeNodeData) node.getData()).getNodeId());
+
+                PrimeFaces.current().ajax().update("formRightTab:facetView");
+                PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
+                showMessage(FacesMessage.SEVERITY_WARN, "Facette déplacée avec succès !!!");
+                return;
+            }
+
+            ConceptHelper conceptHelper = new ConceptHelper();
+            nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
+                    ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(), -1, -1);
+
+            isdragAndDrop = true;
+            nodesToConfirme.add(node);
+
+            /// préparer le noeud à couper
+            setBTsToCut();
+            //setBTsToCut();
+            List<NodeBT> nodeBTs = setBTsToCut(nodeConceptDrag);
+            for (NodeBT nodeBT : nodeBTs) {
+                groupNodeBtToCut.add(new BTNode(node, nodeBT));
+            }
+
+            if (dropNode.getParent() == null) {
+                // déplacement à la racine
+                isDropToRoot = true;
+            } else {
+                nodeConceptDrop = conceptHelper.getConcept(connect.getPoolConnexion(),
+                        ((TreeNodeData) dropNode.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
+                        selectedTheso.getCurrentLang(), -1, -1);
+                /// Vérifier si le dépalcement est valide (controle des relations interdites)
+                ValidateActionHelper validateActionHelper = new ValidateActionHelper();
+                if (nodeConceptDrop != null) {
+                    if (!validateActionHelper.isMoveConceptToConceptValid(
+                            connect.getPoolConnexion(),
+                            selectedTheso.getCurrentIdTheso(),
+                            nodeConceptDrag.getConcept().getIdConcept(),
+                            nodeConceptDrop.getConcept().getIdConcept())) {
+
+                        showMessage(FacesMessage.SEVERITY_ERROR, "Relation non permise : "
+                                + validateActionHelper.getMessage());
+                        isValidPaste = false;
+                        reloadTree();
+                        return;
+                    }
+                }
+            }
+
+            // préparer les collections à couper
+            setGroupsToCut();
+            //setGroupsToCut();
+            List<NodeGroup> groupsToCut = setGroupsToCut(nodeConceptDrag);
+            for (NodeGroup nodeGroup : groupsToCut) {
+                groupNodeToCut.add(new GroupNode(node, nodeGroup));
+            }
+            List<NodeGroup> groupsToAdd = setGroupsToAdd(nodeConceptDrag);
+            for (NodeGroup nodeGroup : groupsToAdd) {
+                groupNodeToAdd.add(new GroupNode(node, nodeGroup));
+            }
+
+            FacetHelper facetHelper = new FacetHelper();
+            // cas de déplacement vers une facette
+            if (((TreeNodeData) dropNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
+                // cas d'une branche, pas permis
+                if (!nodeConceptDrag.getNodeNT().isEmpty()) {
+
+                    showMessage(FacesMessage.SEVERITY_WARN, "Action non permise !!!");
+                    rollBackAfterErrorOrCancelDragDrop();
+                    return;
+                }
+                String idFacet = ((TreeNodeData) dropNode.getData()).getNodeId();
+
+                if (idFacet == null) {
+
+                    showMessage(FacesMessage.SEVERITY_WARN, "Action non permise !!!");
+                    rollBackAfterErrorOrCancelDragDrop();
+                    return;
+                }
+
+                if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+                        idFacet,
+                        selectedTheso.getCurrentIdTheso(),
+                        ((TreeNodeData) node.getData()).getNodeId())) {
+
+                    showMessage(FacesMessage.SEVERITY_WARN, "Erreur dans le déplacement !!!");
+                    rollBackAfterErrorOrCancelDragDrop();
+                    return;
+                }
+
+                showMessage(FacesMessage.SEVERITY_INFO, "Concept ajouté à la facette");
+            } else {
+                // on vérifie si le noeud à déplacer est un membre d'une facette, alors on supprime cette appartenance
+                if (((TreeNodeData) node.getData()).getNodeType().equalsIgnoreCase("facetmember")) {
+                    try {
+                        String idFacetParent = ((TreeNodeData) node.getData()).getIdFacetParent();
+                        if (!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                                idFacetParent, ((TreeNodeData) node.getData()).getNodeId(),
+                                selectedTheso.getCurrentIdTheso())) {
+
+                            showMessage(FacesMessage.SEVERITY_WARN, "Action non permise !!!");
+                            rollBackAfterErrorOrCancelDragDrop();
+                            return;
+                        }
+                    } catch (Exception e) {
+                        showMessage(FacesMessage.SEVERITY_WARN, "Action non permise !!!");
+                        rollBackAfterErrorOrCancelDragDrop();
+                        return;
+                    }
+
+                }
+
+                // cas de changement de groupe, on propose de garder / supprimer / ajouter le groupe
+                if (isDroppedToAnotherGroup()) {
+                    // si oui, on affiche une boite de dialogue pour choisir les branches à couper
+                    ///choix de l'option pour deplacer la collection ou non
+                    isGroupToCut = true;
+                    nodesToConfirme.add(node);
+                    PrimeFaces.current().ajax().update("containerIndex:formLeftTab:idDragAndDropMultiple");
+                    PrimeFaces.current().executeScript("PF('dragAndDropMultiple').show();");
+                    continue;
+                }
+
+                // on controle s'il y a plusieurs branches,
+                if (nodeConceptDrag.getNodeBT().size() < 2) {
+                    // sinon, on applique le changement direct
+                    drop();
+                } else {
+                    nodesToConfirme.add(node);
+                    // si oui, on affiche une boite de dialogue pour choisir les branches à couper
+                    PrimeFaces.current().ajax().update("idDragAndDropMultiple");
+                    PrimeFaces.current().executeScript("PF('dragAndDropMultiple').show();");
+                }
+            }
+        }
+    }
+
+
     /**
      * permet de déposer la branche copiée précédement par Drag and Drop
      *
@@ -525,6 +883,55 @@ public class DragAndDrop implements Serializable {
         PrimeFaces.current().executeScript("PF('dragAndDrop').hide();");
         reset();
     }
+
+    public void dropMultiple() {
+
+        for (TreeNode node : nodesToConfirme) {
+
+            nodeConceptDrag = nodeConceptDrop = new ConceptHelper().getConcept(connect.getPoolConnexion(),
+                    ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
+                    selectedTheso.getCurrentLang(), -1, -1);
+
+            if (nodeConceptDrop == null) {
+                continue;
+            }
+
+            if (dropNode.getParent() == null) {
+                // cas de déplacement d'un concept à la racine
+                if (!moveFromConceptToRootMultiple()) {
+                    return;
+                }
+            } else {
+                /// Vérifier si le dépalcement est valide (controle des relations interdites)
+                // cas de déplacement d'un concept à concept
+                if ((!nodeConceptDrag.getConcept().isTopConcept())) {
+                    if (!moveFromConceptToConcept()) {
+                        continue;
+                    }
+                }
+
+                // cas de déplacement de la racine à un concept
+                if ((nodeConceptDrag.getConcept().isTopConcept())) {
+                    if (!moveFromRootToConcept()) {
+                        continue;
+                    }
+                }
+            }
+
+            addAndCutGroupMultiple();
+
+            if (dropNode.getParent() == null) {
+                showMessage(FacesMessage.SEVERITY_INFO, nodeConceptDrag.getTerm().getLexicalValue() + " -> Root");
+            } else {
+                showMessage(FacesMessage.SEVERITY_INFO, nodeConceptDrag.getTerm().getLexicalValue()
+                        + " -> " + nodeConceptDrop.getTerm().getLexicalValue());
+            }
+        }
+
+        reloadConcept();
+        reloadTree();
+        PrimeFaces.current().executeScript("PF('dragAndDrop').hide();");
+    }
     
     private boolean isDroppedToAnotherGroup(){
         if(nodeConceptDrag == null || nodeConceptDrop == null) return false;
@@ -573,6 +980,136 @@ public class DragAndDrop implements Serializable {
             }
         }
         return labels;
+    }
+
+    private boolean moveFromConceptToConceptMultiple(){
+        // cas de déplacement d'un concept à concept
+        ArrayList<String> oldBtToDelete = new ArrayList<>();
+        ConceptHelper conceptHelper = new ConceptHelper();
+        for (BTNode nodeBT : groupNodeBtToCut) {
+            if (((TreeNodeData) nodeBT.getNode().getData()).getNodeId().equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && nodeBT.nodeBT.isSelected()) {
+                // on prépare les BT sélectionné pour la suppression
+                oldBtToDelete.add(nodeBT.nodeBT.getIdConcept());
+            }
+        }
+        if (oldBtToDelete.isEmpty()) {
+            showMessage(FacesMessage.SEVERITY_WARN, nodeConceptDrag.getTerm().getLexicalValue()
+                    + " - Aucun parent n'est sélectionné pour déplacement");
+            return false;
+        }
+        if (!conceptHelper.moveBranchFromConceptToConcept(connect.getPoolConnexion(),
+                nodeConceptDrag.getConcept().getIdConcept(),
+                oldBtToDelete,
+                nodeConceptDrop.getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                currentUser.getNodeUser().getIdUser())) {
+
+            showMessage(FacesMessage.SEVERITY_ERROR, nodeConceptDrag.getTerm().getLexicalValue()
+                    + " - Erreur pendant la suppression des branches !!");
+        }
+        return true;
+    }
+
+    private boolean moveFromConceptToRootMultiple(){
+        FacesMessage msg;
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> oldBtToDelete = new ArrayList<>();
+
+        for (BTNode nodeBT : groupNodeBtToCut) {
+            if (((TreeNodeData) nodeBT.getNode().getData()).getNodeId()
+                    .equals(nodeConceptDrag.getConcept().getIdConcept())) {
+                oldBtToDelete.add(nodeConceptDrag.getConcept().getIdConcept());
+            }
+        }
+        // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
+        if (oldBtToDelete.isEmpty()) {
+            if (!conceptHelper.setTopConcept(connect.getPoolConnexion(),
+                    nodeConceptDrag.getConcept().getIdConcept(),
+                    selectedTheso.getCurrentIdTheso())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return false;
+            }
+            return true;
+        }
+
+        for (String oldIdBT : oldBtToDelete) {
+            if (!conceptHelper.moveBranchFromConceptToRoot(connect.getPoolConnexion(),
+                    nodeConceptDrag.getConcept().getIdConcept(),
+                    oldIdBT,
+                    selectedTheso.getCurrentIdTheso(),
+                    currentUser.getNodeUser().getIdUser())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur pendant le déplacement dans la base de données ");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void addAndCutGroupMultiple() {
+        GroupHelper groupHelper = new GroupHelper();
+        ConceptHelper conceptHelper = new ConceptHelper();
+        ArrayList<String> allId = conceptHelper.getIdsOfBranch(
+                connect.getPoolConnexion(),
+                nodeConceptDrop.getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso());
+        if( (allId == null) || (allId.isEmpty())) return;
+
+        for (GroupNode nodeGroup : groupNodeToCut) {
+            if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId()
+                    .equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && nodeGroup.getNodeGroup().isSelected()) {
+                for (String idConcept : allId) {
+                    groupHelper.deleteRelationConceptGroupConcept(
+                            connect.getPoolConnexion(),
+                            nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                            idConcept,
+                            selectedTheso.getCurrentIdTheso(),
+                            currentUser.getNodeUser().getIdUser());
+                }
+            }
+            if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId().equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && !nodeGroup.getNodeGroup().isSelected()) {
+                for (String idConcept : allId) {
+                    groupHelper.addConceptGroupConcept(
+                            connect.getPoolConnexion(),
+                            nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                            idConcept,
+                            selectedTheso.getCurrentIdTheso());
+                }
+            }
+        }
+        for (GroupNode nodeGroup : groupNodeToAdd) {
+            if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId().equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && !nodeGroup.getNodeGroup().isSelected()) {
+                for (String idConcept : allId) {
+                    groupHelper.deleteRelationConceptGroupConcept(
+                            connect.getPoolConnexion(),
+                            nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                            idConcept,
+                            selectedTheso.getCurrentIdTheso(),
+                            currentUser.getNodeUser().getIdUser());
+                }
+            }
+            if (((TreeNodeData) nodeGroup.getNode().getData()).getNodeId().equals(nodeConceptDrag.getConcept().getIdConcept())
+                    && nodeGroup.getNodeGroup().isSelected()) {
+                for (String idConcept : allId) {
+                    groupHelper.addConceptGroupConcept(
+                            connect.getPoolConnexion(),
+                            nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
+                            idConcept,
+                            selectedTheso.getCurrentIdTheso());
+                }
+            }
+        }
+    }
+
+    private void showMessage(FacesMessage.Severity severity, String message) {
+        FacesMessage msg = new FacesMessage(severity, "", message);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        PrimeFaces.current().ajax().update("messageIndex");
     }
 
     /**

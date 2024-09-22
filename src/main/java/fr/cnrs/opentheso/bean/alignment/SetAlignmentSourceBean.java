@@ -116,6 +116,7 @@ public class SetAlignmentSourceBean implements Serializable {
 
     public void startAlignementAutomatique() {
         if (!ObjectUtils.isEmpty(selectedSource)) {
+            alignmentBean.setAlignementSources(alignmentHelper.getAlignementSource(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso()));
             var sourceFound = alignmentBean.getAlignementSources().stream()
                     .filter(source -> source.getId() == selectedSource.getIdAlignmentSource())
                     .findFirst();

@@ -20,7 +20,7 @@ public class UserGroupLabelRepository {
 
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT * FROM user_group_label label ORDER BY lower(label.label_group) ASC");
+                stmt.executeQuery("SELECT DISTINCT label.*, lower(label.label_group) AS sorted_label_group FROM user_group_label label ORDER BY lower(label.label_group) ASC");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         UserGroupLabel userGroupLabel = new UserGroupLabel();
@@ -40,7 +40,7 @@ public class UserGroupLabelRepository {
         List<UserGroupLabel> projects = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT * "
+                stmt.executeQuery("SELECT DISTINCT the.*, grp.*, label.*, lower(label.label_group) AS sorted_label_group "
                         + "FROM thesaurus the, user_group_thesaurus grp, user_group_label label "
                         + "WHERE the.private = " + status + " "
                         + "AND grp.id_thesaurus = the.id_thesaurus "
