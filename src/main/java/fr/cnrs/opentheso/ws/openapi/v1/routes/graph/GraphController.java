@@ -31,7 +31,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 
 @Slf4j
 @RestController
-@RequestMapping("/graph/getData")
+@RequestMapping("/openapi/v1/graph/getData")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Graphe", description = "Actions pour récupérer les données au format graphe")
 public class GraphController {

@@ -22,7 +22,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 
 @Slf4j
 @RestController
-@RequestMapping("/redirect")
+@RequestMapping("/openapi/v1/redirect")
 @CrossOrigin(methods = { RequestMethod.GET })
 public class RedirectController {
 

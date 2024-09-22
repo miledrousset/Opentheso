@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/concepts/propositions")
+@RequestMapping("/openapi/v1/concepts/propositions")
 @CrossOrigin(methods = { RequestMethod.POST })
 @Tag(name = "Proposition", description = "Ajouter une proposition")
 public class PropositionsController {

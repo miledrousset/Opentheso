@@ -29,7 +29,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 
 @Slf4j
 @RestController
-@RequestMapping("/concept/{idTheso}")
+@RequestMapping("/openapi/v1/concept/{idTheso}")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConceptThesoController {

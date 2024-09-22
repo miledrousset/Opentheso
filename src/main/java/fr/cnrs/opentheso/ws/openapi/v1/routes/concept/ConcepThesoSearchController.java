@@ -26,7 +26,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/concept/{idTheso}/search")
+@RequestMapping("/openapi/v1/concept/{idTheso}/search")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConcepThesoSearchController {

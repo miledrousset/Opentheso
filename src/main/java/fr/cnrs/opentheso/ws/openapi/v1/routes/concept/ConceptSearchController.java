@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/concept/search")
+@RequestMapping("/openapi/v1/concept/search")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConceptSearchController {

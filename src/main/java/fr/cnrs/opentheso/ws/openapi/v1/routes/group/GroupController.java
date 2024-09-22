@@ -32,7 +32,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
  */
 @Slf4j
 @RestController
-@RequestMapping("/group")
+@RequestMapping("/openapi/v1/group")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Group", description = "Contient les actions en lien avec les groupes.")
 public class GroupController {

@@ -36,7 +36,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/thesaurus/{thesaurusId}")
+@RequestMapping("/openapi/v1/thesaurus/{thesaurusId}")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Thesaurus", description = "Contient toutes les actions en liens avec les thesaurus.")
 public class ThesaurusIdController {

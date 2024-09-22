@@ -38,7 +38,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
 
 @Slf4j
 @RestController
-@RequestMapping("/group/{idTheso}")
+@RequestMapping("/openapi/v1/group/{idTheso}")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Group", description = "4. Contient les actions en lien avec les groupes.")
 public class GroupThesoController {

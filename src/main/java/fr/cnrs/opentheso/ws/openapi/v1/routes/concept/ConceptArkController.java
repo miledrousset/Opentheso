@@ -29,7 +29,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
 
 @Slf4j
 @RestController
-@RequestMapping("/concept/ark:")
+@RequestMapping("/openapi/v1/concept/ark:")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Concept", description = "Contient les opérations en lien avec les identifiants ARK. Un identifiant ark est formatté de la manière suivante : ark:/{naan}/{ark}.")
 public class ConceptArkController {

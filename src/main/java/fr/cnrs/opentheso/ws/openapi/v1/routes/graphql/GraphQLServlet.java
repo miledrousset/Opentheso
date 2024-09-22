@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 
 @RestController
-@RequestMapping("/graphql")
+@RequestMapping("/openapi/v1/graphql")
 public class GraphQLServlet {
 
     @Autowired

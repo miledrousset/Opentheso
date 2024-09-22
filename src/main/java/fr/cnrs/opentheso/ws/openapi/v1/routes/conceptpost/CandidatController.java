@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/candidate")
+@RequestMapping("/openapi/v1/candidate")
 @CrossOrigin(methods = { RequestMethod.POST })
 @Tag(name = "Candidat", description = "Ajouter des candidats")
 public class CandidatController {

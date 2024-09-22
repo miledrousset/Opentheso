@@ -31,7 +31,7 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 
 @Slf4j
 @RestController
-@RequestMapping("/concept/{idTheso}/autocomplete")
+@RequestMapping("/openapi/v1/concept/{idTheso}/autocomplete")
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConceptAutocompleteController {
