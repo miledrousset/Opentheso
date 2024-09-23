@@ -67,7 +67,7 @@ public class ExportHelper {
                                     idConcept, nodePreference, nodeUri),  SKOSProperty.MEMBER);
                         }
         
-                        sKOSResource.addLabel(resultSet.getString("lexical_value"), resultSet.getString("lang"), SKOSProperty.PREF_LABEL);
+                        sKOSResource.addLabel(resultSet.getString("lexicalValue"), resultSet.getString("lang"), SKOSProperty.PREF_LABEL);
                         sKOSResource.addDate(resultSet.getString("created"), SKOSProperty.CREATED);
                         sKOSResource.addDate(resultSet.getString("modified"), SKOSProperty.MODIFIED);
         
