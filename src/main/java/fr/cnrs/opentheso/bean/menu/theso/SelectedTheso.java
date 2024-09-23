@@ -29,6 +29,8 @@ import fr.cnrs.opentheso.repositories.UserGroupLabelRepository;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
@@ -130,6 +132,21 @@ public class SelectedTheso implements Serializable {
         thesoName = null;   
         localUri = null;
         projectIdSelected = "-1";
+    }
+
+    @PostConstruct
+    public void initializing() {
+
+        if (!connect.isConnected()) {
+            System.err.println("Erreur de connexion BDD");
+            return;
+        }
+
+        isNetworkAvailable = true;
+        roleOnThesoBean.showListTheso(currentUser);
+        sortByNotation = false;
+
+        loadProject();
     }
 
 

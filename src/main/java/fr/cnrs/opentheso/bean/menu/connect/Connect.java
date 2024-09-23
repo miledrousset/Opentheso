@@ -107,4 +107,8 @@ public class Connect implements Serializable{
         return timeoutMin * 60 * 1000;
     }
 
+    public boolean isConnected(){
+        return poolConnexion != null;
+    }
+
 }
