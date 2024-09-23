@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.MessageHelper.emptyMessage;
@@ -60,9 +62,9 @@ public class ConcepThesoSearchController {
                            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Langue dans laquelle on recherche") @RequestParam(value = "lang", required = false) String lang,
                            @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Groupe dans lequel on effectue la recherche") @RequestParam(value = "group", required = false) String group,
                            @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), description = "-`exact` limitera la recherche aux termes exacts.\n<br>-`exactone` limitera la recherche aux termes exacts mais en envoyant une seule réponse.") @RequestParam(value = "match", required = false) String match,
-                           @RequestHeader(value = "accept", required = false) String format) {
+                                         @RequestHeader(value = "Accept", required = false, defaultValue = APPLICATION_JSON_UTF_8) String acceptHeader) {
 
-        return searchFilter(idTheso, format, q, lang, group, match, null);
+        return searchFilter(idTheso, acceptHeader, q, lang, group, match, null);
     }
 
 
@@ -84,12 +86,11 @@ public class ConcepThesoSearchController {
                                    @Parameter(name = "q", in = ParameterIn.QUERY, schema = @Schema(type = "string"), required = true, description = "L'entrée correspondant au terme recherché") @RequestParam("q") String q,
                                    @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Langue dans laquelle on recherche") @RequestParam(value = "lang", required = false) String lang,
                                    @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Groupe dans lequel on effectue la recherche") @RequestParam(value = "group", required = false) String group,
-                                   @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), description = "-`exact` limitera la recherche aux termes exacts.\n<br>-`exactone` limitera la recherche aux termes exacts mais en envoyant une seule réponse.") @RequestParam(value = "match", required = false) String match,
-                                                 @RequestHeader(value = "accept", required = false) String format) {
+                                   @Parameter(name = "match", in = ParameterIn.QUERY, schema = @Schema(type = "string", allowableValues = {"exact", "exactone"}), description = "-`exact` limitera la recherche aux termes exacts.\n<br>-`exactone` limitera la recherche aux termes exacts mais en envoyant une seule réponse.") @RequestParam(value = "match", required = false) String match, @RequestHeader(value = "accept", required = false) String format) {
         return searchFilter(idTheso, format, q, lang, group, match, "notation:");
     }
 
-    private ResponseEntity searchFilter(String idTheso, String format, String q, String lang, String groupsString, String match, String filter) {
+    private ResponseEntity searchFilter(String idTheso, String acceptHeader, String q, String lang, String groupsString, String match, String filter) {
 
         String datas;
         String[] groups = null;
@@ -106,8 +107,24 @@ public class ConcepThesoSearchController {
             match = null;
         }
 
-        datas = getDatas(connect.getPoolConnexion(), idTheso, lang, groups, q, format, filter, match);
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(format)).body(datas);
+        var selectedMediaType = getMediaTypeFromRequest(acceptHeader);
+
+        datas = getDatas(connect.getPoolConnexion(), idTheso, lang, groups, q, acceptHeader, filter, match);
+        return ResponseEntity.ok().contentType(selectedMediaType).body(datas);
+    }
+
+    private MediaType getMediaTypeFromRequest(String acceptHeader) {
+        List<MediaType> acceptableMediaTypes = MediaType.parseMediaTypes(acceptHeader);
+        List<MediaType> supportedMediaTypes = Arrays.asList(
+                MediaType.parseMediaType(APPLICATION_RDF_UTF_8),
+                MediaType.parseMediaType(APPLICATION_JSON_LD_UTF_8),
+                MediaType.parseMediaType(APPLICATION_JSON_UTF_8),
+                MediaType.parseMediaType(APPLICATION_TURTLE_UTF_8)
+        );
+        return acceptableMediaTypes.stream()
+                .filter(supportedMediaTypes::contains)  // Vérifie si c'est un type supporté
+                .findFirst()  // Prends le premier trouvé
+                .orElse(MediaType.APPLICATION_JSON);  // Par défaut à JSON si rien n'est trouvé
     }
 
 
