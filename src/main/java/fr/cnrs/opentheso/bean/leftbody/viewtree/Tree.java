@@ -535,6 +535,7 @@ public class Tree implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {
         DefaultTreeNode node = (DefaultTreeNode) event.getTreeNode();
         onNodeSelectByNode(node);
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     /**

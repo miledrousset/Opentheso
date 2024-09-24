@@ -82,7 +82,7 @@
                                 <h:outputText value="#{group.lexicalValue}" />
                             </p:column>
                             <p:column headerText="à supprimer" width="80"  >
-                                <p:selectBooleanCheckbox value="#{group.isSelected}" >
+                                <p:selectBooleanCheckbox value="#{group.selected}" >
                                     <p:ajax listener="#{dragAndDrop.validateCheck()}"/>
                                 </p:selectBooleanCheckbox> 
                             </p:column>
@@ -110,7 +110,7 @@
                                 <h:outputText value="#{group.lexicalValue}"/>
                             </p:column>
                             <p:column headerText="à ajouter" width="80">
-                                <p:selectBooleanCheckbox value="#{group.isSelected}">
+                                <p:selectBooleanCheckbox value="#{group.selected}">
                                     <p:ajax listener="#{dragAndDrop.validateCheck()}"/>
                                 </p:selectBooleanCheckbox>
                             </p:column>

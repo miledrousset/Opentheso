@@ -18,7 +18,7 @@ public class NodeGroup implements Serializable, Comparable<NodeGroup> {
     private String idUser;
     private int orde;
     private String original_value;
-    private boolean  ispreferredterm;
+    private boolean ispreferredterm;
     private String notation;
     private boolean isHaveChildren;
     private boolean isSelected;

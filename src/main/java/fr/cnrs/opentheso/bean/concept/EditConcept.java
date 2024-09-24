@@ -148,6 +148,8 @@ public class EditConcept implements Serializable {
         reciprocalRelationship = false;
         nodeConceptTypeToDelete = null;
         nodeConceptTypeToAdd = null;
+
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     public void infos() {
@@ -922,6 +924,8 @@ public class EditConcept implements Serializable {
         String message = "Permet de supprimer un identifiant Handle, il sera définitivement supprimé !!";
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", message);
         FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     /**
@@ -997,6 +1001,8 @@ public class EditConcept implements Serializable {
         }
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
         generateHandleIds(conceptHelper, idConcepts);
+
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     /**
@@ -1016,6 +1022,8 @@ public class EditConcept implements Serializable {
 
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
         generateHandleIds(conceptHelper, idConcepts);
+
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     /**
@@ -1031,6 +1039,8 @@ public class EditConcept implements Serializable {
 
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
         generateHandleIds(conceptHelper, idConcepts);
+
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     private void generateHandleIds(ConceptHelper conceptHelper, ArrayList<String> idConcepts) {

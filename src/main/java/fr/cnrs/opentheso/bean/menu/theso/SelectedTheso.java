@@ -425,6 +425,7 @@ public class SelectedTheso implements Serializable {
         treeGroups.reset();
         treeGroups.initialise(selectedIdTheso, selectedLang);   
         rightBodySetting.setIndex("1");
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
     
     /**
@@ -459,6 +460,8 @@ public class SelectedTheso implements Serializable {
         indexSetting.setIsHomeSelected(true);
 
         menuBean.redirectToThesaurus();
+
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     /**
