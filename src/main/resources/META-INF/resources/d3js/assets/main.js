@@ -18,7 +18,7 @@ document.querySelector("#settings-button").addEventListener("click", () => {
 });
 
 document.querySelector("#back-button").addEventListener("click", () => {
-    history.go(-1)
+    window.close();
 });
 //Event Bouton pour charger les donnée
 document.querySelector("#show-data").addEventListener("click", (event) => {
