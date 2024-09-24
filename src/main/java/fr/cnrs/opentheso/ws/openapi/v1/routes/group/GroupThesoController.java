@@ -34,7 +34,77 @@ import javax.ws.rs.QueryParam;
 @Path("/group/{idTheso}")
 public class GroupThesoController {
     
-    @Path("/")
+    
+@Path("/")
+@GET
+@Produces({APPLICATION_JSON_UTF_8})
+@Operation(summary = "${getAllGroupsFromTheso.summary}$",
+        description = "${getAllGroupsFromTheso.description}$",
+        tags = {"Group"},
+        responses = {
+            @ApiResponse(responseCode = "200", description = "${getAllGroupsFromTheso.200.description}$", content = {
+        @Content(mediaType = APPLICATION_JSON_UTF_8)}),
+            @ApiResponse(responseCode = "500", description = "${responses.500.description}$")
+        })
+public Response getAllGroupsFromTheso(
+    @Parameter(name = "idTheso", description = "${getAllGroupsFromTheso.idTheso.description}$", schema = @Schema(type = "string")) 
+    @PathParam("idTheso") String idTheso) {
+
+    GroupHelper groupHelper = new GroupHelper();
+    ArrayList<NodeGroupTraductions> nodeGroupTraductions;
+
+    StringBuilder jsonArrayBuilder = new StringBuilder();
+    jsonArrayBuilder.append("[");  // Begin the JSON array
+
+    try (HikariDataSource ds = connect()) {
+
+        List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(ds, idTheso);
+
+        boolean isFirstGroup = true;
+        for (String idGroup : listIdGroupOfTheso) {
+            if (!isFirstGroup) {
+                jsonArrayBuilder.append(",");  // Add a comma between JSON objects
+            }
+            isFirstGroup = false;
+
+            jsonArrayBuilder.append("{");
+            jsonArrayBuilder.append("\"idGroup\":\"").append(idGroup).append("\"");
+
+            nodeGroupTraductions = groupHelper.getAllGroupTraduction(ds, idGroup, idTheso);
+
+            if (!nodeGroupTraductions.isEmpty()) {
+                jsonArrayBuilder.append(",\"labels\":[");
+                
+                boolean isFirstLabel = true;
+                for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
+                    if (!isFirstLabel) {
+                        jsonArrayBuilder.append(",");
+                    }
+                    isFirstLabel = false;
+
+                    jsonArrayBuilder.append("{");
+                    jsonArrayBuilder.append("\"lang\":\"").append(nodeGroupTraduction.getIdLang()).append("\",");
+                    jsonArrayBuilder.append("\"title\":\"").append(nodeGroupTraduction.getTitle()).append("\"");
+                    jsonArrayBuilder.append("}");
+                }
+                jsonArrayBuilder.append("]");
+            }
+
+            jsonArrayBuilder.append("}");
+        }
+        
+        jsonArrayBuilder.append("]");  // End the JSON array
+
+        String datasJson = jsonArrayBuilder.toString();
+        return ResponseHelper.response(Response.Status.OK, datasJson, APPLICATION_JSON_UTF_8);
+
+    } catch (Exception e) {
+        return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
+    }
+}    
+    
+    
+/*    @Path("/")
     @GET
     @Produces({APPLICATION_JSON_UTF_8})
     @Operation(summary = "${getAllGroupsFromTheso.summary}$",
@@ -79,7 +149,7 @@ public class GroupThesoController {
         }
         
         return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
-    }
+    }*/
     
     @Path("/{idGroup}")
     @GET
@@ -115,7 +185,11 @@ public class GroupThesoController {
         return ResponseHelper.response(Response.Status.OK, datas, format);
     }
     
-    @Path("/{idGroup}/subgroup")
+    
+    
+    /** ne focntionne pas avec Java17 sous linux **/ 
+    
+/*    @Path("/{idGroup}/subgroup")
     @GET
     @Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
     @Operation(
@@ -171,8 +245,81 @@ public class GroupThesoController {
         
         return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
     }
+*/
 
+    
+@Path("/{idGroup}/subgroup")
+@GET
+@Produces({APPLICATION_JSON_UTF_8, APPLICATION_JSON_LD_UTF_8, APPLICATION_TURTLE_UTF_8, APPLICATION_RDF_UTF_8})
+@Operation(
+        summary = "${getSubGroupsFromTheso.summary}$",
+        description = "",
+        tags = {"Group"},
+        responses = {
+                @ApiResponse(responseCode = "200", description = "${getSubGroupsFromTheso.200.description}$", content = {
+                        @Content(mediaType = APPLICATION_JSON_UTF_8),
+                        @Content(mediaType = APPLICATION_JSON_LD_UTF_8),
+                        @Content(mediaType = APPLICATION_TURTLE_UTF_8),
+                        @Content(mediaType = APPLICATION_RDF_UTF_8)
+                }),
+                @ApiResponse(responseCode = "404", description = "${responses.group.404.description}$"),
+                @ApiResponse(responseCode = "503", description = "${responses.503.description}$")
+        })
+public Response getSubGroupFromIdThesoIdGroup(
+        @Parameter(name = "idTheso", required = true, description = "${getSubGroupsFromTheso.idTheso.description}$") @PathParam("idTheso") String idTheso,
+        @Parameter(name = "idGroup", required = true, description = "${getGroupFromIdThesoIdGroup.idGroup.description}$") @PathParam("idGroup") String idGroup,
+        @Context HttpHeaders headers
+        ) {
+    GroupHelper groupHelper = new GroupHelper();
+    ArrayList<NodeGroupTraductions> nodeGroupTraductions;
 
+    StringBuilder jsonArray = new StringBuilder();
+    jsonArray.append("[");
+    
+    try (HikariDataSource ds = connect()) {
+
+        List<String> listIdSubGroupOfTheso = groupHelper.getListGroupChildIdOfGroup(ds, idGroup, idTheso);
+        
+        boolean firstGroup = true;
+        for (String idSubGroup : listIdSubGroupOfTheso) {
+            if (!firstGroup) {
+                jsonArray.append(",");
+            }
+            firstGroup = false;
+
+            jsonArray.append("{");
+            jsonArray.append("\"idGroup\":\"").append(idSubGroup).append("\"");
+
+            nodeGroupTraductions = groupHelper.getAllGroupTraduction(ds, idSubGroup, idTheso);
+            if (!nodeGroupTraductions.isEmpty()) {
+                jsonArray.append(",\"labels\":[");
+                
+                boolean firstLabel = true;
+                for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
+                    if (!firstLabel) {
+                        jsonArray.append(",");
+                    }
+                    firstLabel = false;
+                    
+                    jsonArray.append("{");
+                    jsonArray.append("\"lang\":\"").append(nodeGroupTraduction.getIdLang()).append("\",");
+                    jsonArray.append("\"title\":\"").append(nodeGroupTraduction.getTitle()).append("\"");
+                    jsonArray.append("}");
+                }
+                
+                jsonArray.append("]");
+            }
+            jsonArray.append("}");
+        }
+        
+        jsonArray.append("]");
+        String datasJson = jsonArray.toString();
+
+        return ResponseHelper.response(Response.Status.OK, datasJson, APPLICATION_JSON_UTF_8);
+    } catch (Exception e) {
+        return ResponseHelper.errorResponse(Response.Status.INTERNAL_SERVER_ERROR, "Internal server error", APPLICATION_JSON_UTF_8);
+    }
+}    
 
     
 
