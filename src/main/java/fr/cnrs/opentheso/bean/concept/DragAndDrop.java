@@ -501,7 +501,7 @@ public class DragAndDrop implements Serializable {
                 isValidPaste = false;
                 return;
             }
-            new FacetHelper().updateFacetParent(connect.getPoolConnexion(),
+            facetHelper.updateFacetParent(connect.getPoolConnexion(),
                     ((TreeNodeData) dropNode.getData()).getNodeId(),//termeParentAssocie.getId(),
                     ((TreeNodeData) dragNode.getData()).getNodeId(),//facetSelected.getIdFacet(),
                     selectedTheso.getCurrentIdTheso());
@@ -523,8 +523,6 @@ public class DragAndDrop implements Serializable {
             return;
         }
 
-
-        ConceptHelper conceptHelper = new ConceptHelper();
         nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
                 ((TreeNodeData) dragNode.getData()).getNodeId(),
                 selectedTheso.getCurrentIdTheso(),
@@ -545,7 +543,6 @@ public class DragAndDrop implements Serializable {
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), -1, -1);
             /// Vérifier si le dépalcement est valide (controle des relations interdites)
-            ValidateActionHelper validateActionHelper = new ValidateActionHelper();
             if(nodeConceptDrop != null) {
                 if(!validateActionHelper.isMoveConceptToConceptValid(
                         connect.getPoolConnexion(),
@@ -568,7 +565,6 @@ public class DragAndDrop implements Serializable {
         /// préparer les collections à couper
         setGroupsToCut();
 
-        FacetHelper facetHelper = new FacetHelper();
         // cas de déplacement vers une facette
         if(((TreeNodeData) dropNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
             // cas d'une branche, pas permis
@@ -674,7 +670,7 @@ public class DragAndDrop implements Serializable {
                     isValidPaste = false;
                     return;
                 }
-                new FacetHelper().updateFacetParent(connect.getPoolConnexion(),
+                facetHelper.updateFacetParent(connect.getPoolConnexion(),
                         ((TreeNodeData) dropNode.getData()).getNodeId(),
                         ((TreeNodeData) node.getData()).getNodeId(),
                         selectedTheso.getCurrentIdTheso());
@@ -690,7 +686,6 @@ public class DragAndDrop implements Serializable {
                 return;
             }
 
-            ConceptHelper conceptHelper = new ConceptHelper();
             nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
                     ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), -1, -1);
@@ -714,7 +709,6 @@ public class DragAndDrop implements Serializable {
                         ((TreeNodeData) dropNode.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                         selectedTheso.getCurrentLang(), -1, -1);
                 /// Vérifier si le dépalcement est valide (controle des relations interdites)
-                ValidateActionHelper validateActionHelper = new ValidateActionHelper();
                 if (nodeConceptDrop != null) {
                     if (!validateActionHelper.isMoveConceptToConceptValid(
                             connect.getPoolConnexion(),
@@ -722,8 +716,7 @@ public class DragAndDrop implements Serializable {
                             nodeConceptDrag.getConcept().getIdConcept(),
                             nodeConceptDrop.getConcept().getIdConcept())) {
 
-                        showMessage(FacesMessage.SEVERITY_ERROR, "Relation non permise : "
-                                + validateActionHelper.getMessage());
+                        showMessage(FacesMessage.SEVERITY_ERROR, "Relation non permise : " + validateActionHelper.getMessage());
                         isValidPaste = false;
                         reloadTree();
                         return;
@@ -743,7 +736,6 @@ public class DragAndDrop implements Serializable {
                 groupNodeToAdd.add(new GroupNode(node, nodeGroup));
             }
 
-            FacetHelper facetHelper = new FacetHelper();
             // cas de déplacement vers une facette
             if (((TreeNodeData) dropNode.getData()).getNodeType().equalsIgnoreCase("facet")) {
                 // cas d'une branche, pas permis
@@ -888,7 +880,7 @@ public class DragAndDrop implements Serializable {
 
         for (TreeNode node : nodesToConfirme) {
 
-            nodeConceptDrag = nodeConceptDrop = new ConceptHelper().getConcept(connect.getPoolConnexion(),
+            nodeConceptDrag = nodeConceptDrop = conceptHelper.getConcept(connect.getPoolConnexion(),
                     ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), -1, -1);
 
@@ -985,7 +977,6 @@ public class DragAndDrop implements Serializable {
     private boolean moveFromConceptToConceptMultiple(){
         // cas de déplacement d'un concept à concept
         ArrayList<String> oldBtToDelete = new ArrayList<>();
-        ConceptHelper conceptHelper = new ConceptHelper();
         for (BTNode nodeBT : groupNodeBtToCut) {
             if (((TreeNodeData) nodeBT.getNode().getData()).getNodeId().equals(nodeConceptDrag.getConcept().getIdConcept())
                     && nodeBT.nodeBT.isSelected()) {
@@ -1013,7 +1004,6 @@ public class DragAndDrop implements Serializable {
 
     private boolean moveFromConceptToRootMultiple(){
         FacesMessage msg;
-        ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> oldBtToDelete = new ArrayList<>();
 
         for (BTNode nodeBT : groupNodeBtToCut) {
@@ -1049,8 +1039,6 @@ public class DragAndDrop implements Serializable {
     }
 
     private void addAndCutGroupMultiple() {
-        GroupHelper groupHelper = new GroupHelper();
-        ConceptHelper conceptHelper = new ConceptHelper();
         ArrayList<String> allId = conceptHelper.getIdsOfBranch(
                 connect.getPoolConnexion(),
                 nodeConceptDrop.getConcept().getIdConcept(),
