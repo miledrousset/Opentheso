@@ -277,7 +277,7 @@ public class ConceptView implements Serializable {
         gpsModeSelected = GpsMode.POINT;
         
         if(currentUser != null) {
-            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
+            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
             if (nodeConcept == null) return;
         }        
 
@@ -423,7 +423,7 @@ public class ConceptView implements Serializable {
         offset = 0;
         
         if(currentUser != null) {
-            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
+            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang,  step + 1, offset);
             if (nodeConcept == null) return;
         }
 
