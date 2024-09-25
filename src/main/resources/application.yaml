@@ -3,22 +3,20 @@
 #######################
 server:
   port: 8099
+  forward-headers-strategy: native
   servlet:
     context-path: /opentheso
     session:
       timeout: 125m
-  tomcat:
-    remote_ip_header: x-forwarded-for
-    protocol_header: x-forwarded-proto
 
 spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
  #   platform: postgres
-    url: jdbc:postgresql://localhost:5432/opentheso
-    password: opentheso
-    username: opentheso
+    url: jdbc:postgresql://localhost:5432/opentheso2
+    password: postgres
+    username: postgres
     dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
     maxPoolSize: 1000
     minIdle: 1
