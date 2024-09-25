@@ -25,7 +25,7 @@ public class UserGroupLabelRepository {
                     while (resultSet.next()) {
                         UserGroupLabel userGroupLabel = new UserGroupLabel();
                         userGroupLabel.setId(resultSet.getInt("id_group"));
-                        userGroupLabel.setLabel(resultSet.getString("label_group"));
+                        userGroupLabel.setLabel(resultSet.getString("sorted_label_group"));
                         projects.add(userGroupLabel);
                     }
                 }
@@ -50,7 +50,7 @@ public class UserGroupLabelRepository {
                     while (resultSet.next()) {
                         UserGroupLabel userGroupLabel = new UserGroupLabel();
                         userGroupLabel.setId(resultSet.getInt("id_group"));
-                        userGroupLabel.setLabel(resultSet.getString("label_group"));
+                        userGroupLabel.setLabel(resultSet.getString("sorted_label_group"));
                         projects.add(userGroupLabel);
                     }
                 }
