@@ -3,6 +3,9 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
+    <!-- create database if not exist -->
+    <include file="/changelog/database/createdb.xml"/>
+
 
     <include file="/changelog/v23.05.1/001-create-release-table.xml"/>
     <include file="/changelog/v23.07.2/001-drop-primaryKey-concept_type.xml"/>
@@ -11,15 +14,15 @@
     </changeSet>
     <changeSet id="executeScriptOriginal6" author="Miled">
         <sqlFile path="../install/maj_bdd_current2.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>    
-    
+    </changeSet>
+
     <include file="/changelog/v23.07.3/001-update_concept_dcterms.xml"/>
     <include file="/changelog/v23.07.3/001-update_thesaurus_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-update_dcterms.xml"/>
     <include file="/changelog/v23.07.3/002-add-projet-description-table.xml"/>
     <!--<include file="/changelog/v23.07.3/003-update-primary-key-gps-table.xml"/>-->
 
-    <!-- changelog pour la v23.09 --> 
+    <!-- changelog pour la v23.09 -->
     <include file="/changelog/v23.09/001-delete-table-pref-gps.xml"/>
     <include file="/changelog/v23.09/002-add-apikey-user.xml"/>
     <!--<include file="/changelog/v23.09/003-add-position-gps-table.xml"/>-->
@@ -31,49 +34,49 @@
     <!-- changelog pour la v23.10 -->
     <include file="/changelog/v23.10/001-table-roleonly.xml"/>
     <include file="/changelog/v23.10/002-update-primary-key-ceoncept_group_label-table.xml"/>
-    
+
      <!-- changelog pour la v23.12 -->
-    <include file="/changelog/v23.12/23-12_001.xml"/>    
+    <include file="/changelog/v23.12/23-12_001.xml"/>
     <changeSet id="23.12.002" author="Miled">
         <sqlFile path="../changelog/v23.12/23-12_002.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>    
+    </changeSet>
     <changeSet id="23.12.003" author="Miled">
         <sqlFile path="../changelog/v23.12/23-12_003.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>        
-    <include file="/changelog/v23.12/23-12_004.xml"/> 
-    
+    </changeSet>
+    <include file="/changelog/v23.12/23-12_004.xml"/>
+
     <changeSet id="23.12.005" author="Miled">
         <sqlFile path="../changelog/v23.12/23-12_005.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>     
-    
+    </changeSet>
+
     <changeSet id="24.01.001" author="Miled">
         <sqlFile path="../changelog/v24.01/24-01_001.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>       
-    <include file="/changelog/v24.01/24-01_002.xml"/>      
+    </changeSet>
+    <include file="/changelog/v24.01/24-01_002.xml"/>
     <changeSet id="24.01.003" author="Miled">
         <sqlFile path="../changelog/v24.01/24-01_003.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>     
-    
-     <include file="/changelog/v24.01/24-01_004.xml"/>  
-     
+    </changeSet>
+
+     <include file="/changelog/v24.01/24-01_004.xml"/>
+
     <changeSet id="24.01.007" author="Miled">
         <sqlFile path="../changelog/v24.01/24-01_007.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>        
- 
- 
- 
-    <include file="/changelog/v24.02/24-02_001.xml"/>  
-    <include file="/changelog/v24.02/24-02_0014.xml"/>  
+    </changeSet>
+
+
+
+    <include file="/changelog/v24.02/24-02_001.xml"/>
+    <include file="/changelog/v24.02/24-02_0014.xml"/>
     <include file="/changelog/v24.02/24-02_0015.xml"/>
-    <include file="/changelog/v24.02/24-02_0016.xml"/>    
-    
+    <include file="/changelog/v24.02/24-02_0016.xml"/>
+
     <changeSet id="24.02.017" author="Miled">
         <sqlFile path="../changelog/v24.02/24-02_017.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>  
-    
-    <include file="/changelog/v24.03/24-03_001.xml"/>      
-    <include file="/changelog/v24.03/24-03_002.xml"/>                 
- 
+    </changeSet>
+
+    <include file="/changelog/v24.03/24-03_001.xml"/>
+    <include file="/changelog/v24.03/24-03_002.xml"/>
+
    <changeSet id="24.04.01" author="Miled">
         <sqlFile path="../changelog/v24.04/24-04_01.sql" relativeToChangelogFile="true" splitStatements="false"/>
    </changeSet>
@@ -85,17 +88,17 @@
 
     <changeSet id="24.07.02" author="Miled">
         <sqlFile path="../changelog/v24.07/24-07_02.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>      
-    
+    </changeSet>
+
     <changeSet id="24.07.03" author="Miled">
         <sqlFile path="../changelog/v24.07/24-07_03.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>      
-    
+    </changeSet>
+
     <changeSet id="24.07.04" author="Miled">
         <sqlFile path="../changelog/v24.07/24-07_04.sql" relativeToChangelogFile="true" splitStatements="false"/>
-    </changeSet>       
-    <include file="/changelog/v24.07/24-07_05.xml"/>    
-    
+    </changeSet>
+    <include file="/changelog/v24.07/24-07_05.xml"/>
+
     <changeSet id="24.07.06" author="Miled">
         <sqlFile path="../changelog/v24.07/24-07_06.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
@@ -106,4 +109,6 @@
     <changeSet id="24.09.02" author="Miled">
         <sqlFile path="../changelog/v24.09/24-09_02.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
+
+
 </databaseChangeLog>

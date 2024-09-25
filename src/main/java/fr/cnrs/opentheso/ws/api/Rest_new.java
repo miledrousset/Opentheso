@@ -113,11 +113,6 @@ public class Rest_new {
         return "pong";
     }
     
-    @PutMapping("/testput")
-    public String addArk(String content) {
-        return new JsonHelper().getJsonObject(content).toString();
-    }
-
     @GetMapping(value = "/{naan}/{idArk}.rdf", produces = CustomMediaType.APPLICATION_RDF)
     public ResponseEntity<String> getSkosFromArk(@PathVariable("naan") String naan,
                                                  @PathVariable("idArk") String arkId) {

@@ -14,9 +14,9 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
  #   platform: postgres
-    url: jdbc:postgresql://localhost:5432/opentheso2
-    password: postgres
-    username: postgres
+    url: jdbc:postgresql://localhost:5433/test
+    password: opentheso
+    username: opentheso
     dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
     maxPoolSize: 1000
     minIdle: 1
