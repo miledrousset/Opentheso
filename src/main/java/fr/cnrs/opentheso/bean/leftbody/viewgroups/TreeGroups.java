@@ -246,7 +246,7 @@ public class TreeGroups implements Serializable {
         }
         treeNodeParent.setSelected(true);
         selectedNode = treeNodeParent;
-        PrimeFaces.current().executeScript("srollGroupToSelected();");        
+        PrimeFaces.current().executeScript("srollGroupToSelected();");
     }
 
     /**
@@ -374,6 +374,8 @@ public class TreeGroups implements Serializable {
             groupView.getGroup(idTheso, ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
             rightBodySetting.setIndex("1");
         }
+
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     public String getNodeLabel() {
@@ -390,7 +392,7 @@ public class TreeGroups implements Serializable {
         return ((TreeNodeData) selectedNode.getData()).getNodeId();
     }
 
-    public boolean isIsGroupNode() {
+    public boolean isGroupNode() {
         if (selectedNode == null) {
             return false;
         }
@@ -410,14 +412,21 @@ public class TreeGroups implements Serializable {
      *
      * @return
      */
-    public boolean isIsThisGroupHaveSubGroup() {
+    public boolean isThisGroupHaveSubGroup() {
         if (selectedNode == null) {
             return false;
         }
-        GroupHelper groupHelper = new GroupHelper();
         return groupHelper.isHaveSubGroup(connect.getPoolConnexion(),
                 idTheso,
                 ((TreeNodeData) selectedNode.getData()).getNodeId());
+    }
+
+    public boolean deleteGroupDisable() {
+        return selectedNode == null || !isGroupNode() || isThisGroupHaveSubGroup();
+    }
+
+    public boolean menuDisable() {
+        return currentUser.getNodeUser() != null && selectedTheso.getCurrentIdTheso() != null && currentUser.isHasRoleAsManager();
     }
 
 }

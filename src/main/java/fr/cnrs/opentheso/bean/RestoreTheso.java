@@ -26,6 +26,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import lombok.Data;
+import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
 
@@ -172,7 +173,7 @@ public class RestoreTheso implements Serializable {
     }
 
     /**
-     * permet de supprimer les relations de type (a -> BT -> b et b -> BT -> a )
+     * Permet de supprimer les relations de type (a -> BT -> b et b -> BT -> a )
      * parcours toute la bracnche en partant du concept en paramètre
      * @param idTheso
      * @param idConcept
@@ -191,6 +192,7 @@ public class RestoreTheso implements Serializable {
         }
         fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction terminée"));
 
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     public void reorganizing(String idTheso) {

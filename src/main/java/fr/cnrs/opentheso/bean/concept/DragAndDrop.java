@@ -247,6 +247,8 @@ public class DragAndDrop implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
                 + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     /**
@@ -275,7 +277,9 @@ public class DragAndDrop implements Serializable {
 
        isdragAndDrop = false;        
        pasteWithTreeControl();
-     }
+
+       PrimeFaces.current().executeScript("window.location.reload();");
+    }
     
     
     private void pasteWithTreeControl(){

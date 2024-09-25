@@ -6,12 +6,12 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import io.swagger.v3.oas.models.servers.Server;
-import java.util.Collections;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 
 
@@ -29,12 +29,11 @@ import java.util.Collections;
 public class OpenApiConfig {
 
     @Bean
-    public OpenApiCustomiser openApiCustomiser(HttpServletRequest request) {
-        return openApi -> {
-            var scheme = request.getScheme();  // Récupère "http" ou "https"
-            var serverUrl = scheme + "://" + request.getServerName() + ":" + request.getServerPort();
-            var server = new Server().url(serverUrl);
-            openApi.setServers(Collections.singletonList(server));
-        };
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("fr.cnrs.opentheso.config"))
+                .paths(PathSelectors.any())
+                .build();
     }
 }

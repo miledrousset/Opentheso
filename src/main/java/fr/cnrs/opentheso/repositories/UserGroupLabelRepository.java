@@ -40,7 +40,7 @@ public class UserGroupLabelRepository {
         List<UserGroupLabel> projects = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT DISTINCT the.*, grp.*, label.*, lower(label.label_group) AS sorted_label_group "
+                stmt.executeQuery("SELECT DISTINCT grp.id_group, lower(label.label_group) AS sorted_label_group "
                         + "FROM thesaurus the, user_group_thesaurus grp, user_group_label label "
                         + "WHERE the.private = " + status + " "
                         + "AND grp.id_thesaurus = the.id_thesaurus "

@@ -6,58 +6,59 @@
         <div style="width: 50%;" />
 
         <div style="width: 75%; text-align: right;">
-            <p:commandLink action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar containerIndex:formLeftTab:tabTree:treeGroups" 
+            <p:commandLink action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar"
                            ajax="true" process="@form"
                            title="#{langueBean.getMsg('tree.relaod')}">
                 <i class="fas fa-refresh" style=" color: #F47B2A; margin-right: 20px; font-size: 14px; " />
-            </p:commandLink>            
+            </p:commandLink>
 
-            <h:panelGroup id="menuCollection">
-                <!-- ajout des collections et sous collections -->
-                <p:menuButton icon="pi pi-align-justify"
-                              rendered="#{(currentUser.nodeUser != null) and (selectedTheso.currentIdTheso!= null) 
-                                          and (currentUser.hasRoleAsManager)}"
-                              style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
-                              class="dropdown-submenu pull-left">
+            <!-- ajout des collections et sous collections -->
+            <p:menuButton icon="pi pi-align-justify"
+                          rendered="#{treeGroups.menuDisable()}"
+                          style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
+                          class="dropdown-submenu pull-left">
 
-                    <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
-                                oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
+                <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}"
+                            actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
+                            oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
 
-                    <p:menuitem disabled="#{(!treeGroups.isGroupNode)}" process="@this"
-                                value="#{langueBean.getMsg('leftbody.group.addSubGroup')}" actionListener="#{addGroupBean.init()}"
-                                oncomplete="PF('addSubGroup').show();" update="containerIndex:idAddSubGroup" 
-                                icon="far fa-object-ungroup"/>
+                <p:menuitem disabled="#{!treeGroups.isGroupNode()}" process="@this"
+                            value="#{langueBean.getMsg('leftbody.group.addSubGroup')}" actionListener="#{addGroupBean.init()}"
+                            oncomplete="PF('addSubGroup').show();" update="containerIndex:idAddSubGroup"
+                            icon="far fa-object-ungroup"/>
 
-                    <p:menuitem disabled="#{((treeGroups.selectedNode == null) or (!treeGroups.isGroupNode) or (treeGroups.isThisGroupHaveSubGroup))}"
-                                value="#{langueBean.getMsg('leftbody.group.deleteGroup')}" actionListener="#{addGroupBean.init()}"  process="@this"
-                                oncomplete="PF('deleteGroup').show();" update="containerIndex:idDeleteGroup"
-                                icon="fas fa-minus"/>       
-                    
-                    <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>  
-                    
-                    <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
-                                actionListener="#{treeGroups.setSortByNotation(false)}" ajax="true"
-                                action="#{selectedTheso.reloadGroups()}"
-                                process="@this" 
-                                disabled="#{!treeGroups.sortByNotation}"
-                                update="containerIndex menuBar containerIndex:formLeftTab:tabTree:treeGroups" icon="fas fa-sort-alpha-down"/>                    
-                    
-                    <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
-                                actionListener="#{treeGroups.setSortByNotation(true)}" ajax="true"
-                                action="#{selectedTheso.reloadGroups()}"
-                                disabled="#{treeGroups.sortByNotation}" icon="fas fa-sort-numeric-down"
-                                process="@this" update="containerIndex menuBar containerIndex:formLeftTab:tabTree:treeGroups" />                    
-                    
-                </p:menuButton>
-            </h:panelGroup>
+                <p:menuitem disabled="#{treeGroups.deleteGroupDisable()}"
+                            value="#{langueBean.getMsg('leftbody.group.deleteGroup')}"
+                            actionListener="#{addGroupBean.init()}"  process="@this"
+                            oncomplete="PF('deleteGroup').show();" update="containerIndex:idDeleteGroup"
+                            icon="fas fa-minus"/>
+
+                <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
+
+                <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
+                            actionListener="#{treeGroups.setSortByNotation(false)}" ajax="true"
+                            action="#{selectedTheso.reloadGroups()}"
+                            process="@this"
+                            disabled="#{!treeGroups.sortByNotation}"
+                            update="containerIndex menuBar" icon="fas fa-sort-alpha-down"/>
+
+                <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
+                            actionListener="#{treeGroups.setSortByNotation(true)}" ajax="true" process="@this"
+                            action="#{selectedTheso.reloadGroups()}"
+                            disabled="#{treeGroups.sortByNotation}" icon="fas fa-sort-numeric-down"
+                            update="containerIndex menuBar" />
+
+            </p:menuButton>
         </div>
     </div>
+
     <p:separator style="color: #F47B2A"/>
+
     <p:tree id="treeGroups" value="#{treeGroups.root}" dynamic="true" var="node" selectionMode="single" selection="#{treeGroups.selectedNode}"
             style="width: auto; border: none; font-size: 13px; min-height: 700px; max-height: 925px; overflow-y:scroll;"
             widgetVar="groupWidget">
 
-        <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}"/>
+        <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}" update="containerIndex:formLeftTab"/>
         <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formLeftTab"/>
 
         <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
