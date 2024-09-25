@@ -487,15 +487,11 @@ public class UserHelper {
 
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT"
-                        + "  user_group_label.id_group,"
-                        + "  user_group_label.label_group"
-                        + " FROM"
-                        + "  user_role_group,"
-                        + "  user_group_label"
-                        + " WHERE"
-                        + "  user_role_group.id_group = user_group_label.id_group AND"
-                        + "  user_role_group.id_user = " + idUser + " order by label_group");
+                stmt.executeQuery("SELECT DISTINCT user_group_label.id_group, user_group_label.label_group"
+                        + " FROM user_role_group, user_group_label"
+                        + " WHERE user_role_group.id_group = user_group_label.id_group"
+                        + " AND user_role_group.id_user = " + idUser
+                        + " ORDER BY label_group");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         UserGroupLabel userGroupLabel = new UserGroupLabel();
