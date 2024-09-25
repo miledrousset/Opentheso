@@ -3,6 +3,9 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
+    <!-- create database if not exist -->
+    <include file="/changelog/database/createdb.xml"/>
+
 
     <include file="/changelog/v23.05.1/001-create-release-table.xml"/>
     <include file="/changelog/v23.07.2/001-drop-primaryKey-concept_type.xml"/>
@@ -106,4 +109,6 @@
     <changeSet id="24.09.02" author="Miled">
         <sqlFile path="../changelog/v24.09/24-09_02.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
+
+
 </databaseChangeLog>

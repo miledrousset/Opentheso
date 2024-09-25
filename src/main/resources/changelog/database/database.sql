@@ -1,0 +1,2 @@
+
+INSERT INTO public.databasechangelog (id, author, filename, dateexecuted, orderexecuted, exectype, md5sum, description, comments, tag, liquibase, contexts, labels, deployment_id) VALUES ('004', 'Gabsi', 'changelog/v23.07.3/004-update-import-export-functions.xml', '2023-09-11 12:26:32.247858', 1, 'EXECUTED', '8:bdd6d94867601041d475fcf63dd06b48', 'sqlFile', '', NULL, '4.4.3', NULL, NULL, '4427991907');
