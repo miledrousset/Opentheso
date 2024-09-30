@@ -2,6 +2,7 @@ package fr.cnrs.opentheso.bean.leftbody.viewtree;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import fr.cnrs.opentheso.bean.concept.DragAndDrop;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.FacetHelper;
 import fr.cnrs.opentheso.bean.facet.EditFacet;
@@ -109,6 +110,8 @@ public class Tree implements Serializable {
     private ArrayList<TreeNode> selectedNodes; // enregistre les noeuds séléctionnés apres une recherche
 
     private boolean manySiblings = false;
+    @Autowired
+    private DragAndDrop dragAndDrop;
 
     @PreDestroy
     public void destroy() {
@@ -535,7 +538,9 @@ public class Tree implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {
         DefaultTreeNode node = (DefaultTreeNode) event.getTreeNode();
         onNodeSelectByNode(node);
-        PrimeFaces.current().executeScript("window.location.reload();");
+        if(dragAndDrop.isIsCopyOn())
+            PrimeFaces.current().executeScript("window.location.reload();");
+    //    PrimeFaces.current().ajax().update("containerIndex");
     }
 
     /**
