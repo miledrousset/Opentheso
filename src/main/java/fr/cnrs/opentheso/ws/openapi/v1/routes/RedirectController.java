@@ -3,12 +3,17 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JSON_UTF_8;
+import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 
 
 @Slf4j
@@ -33,7 +38,9 @@ public class RedirectController {
     private RestRDFHelper restRDFHelper;
 
 
-
+    /**
+     * permet de rediriger les URI ARK vers la bonne URL
+     */
     @GetMapping(value = "/ark:/{naan}/{idArk}", produces = APPLICATION_JSON_UTF_8)
     @Operation(summary = "Redirige vers la page de la ressource correspondant à l'identifiant ARK entré",
             description = "Ancienne version : `/api/ark:/{naan}/{idArk}`\\n\\nRedirige vers la page de la ressource correspondant à l'identifiant ARK entré",
@@ -50,5 +57,53 @@ public class RedirectController {
         var webUrl = restRDFHelper.getUrlFromIdArk(connect.getPoolConnexion(), naan, arkId);
         return ResponseEntity.status(307).location(new URI(webUrl)).build();
     }
-    
+
+
+    /**
+     * permet de rediriger une URI Opentheso vers un concept dans le thésaurus, permet d'éviter l'utilisaton des (&)
+     */
+    @GetMapping(value = "/{idTheso}/{idConcept}", produces = {APPLICATION_JSON_UTF_8})
+    @Operation(summary = "Permet de rediriger vers un concept dans un thésaurus donné",
+            description = "",
+            tags = {"Concept"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Une URL de redirection"),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
+            })
+    public ResponseEntity<Object> redirectToConcept(@Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept.", required = true) @PathVariable("idTheso") String idThesaurus,
+                                                       @Parameter(name = "idConcept", description = "Identifiant du concept à récupérer.", required = true) @PathVariable("idConcept") String idConcept,
+                                                       HttpServletRequest request) throws URISyntaxException  {
+        // Récupération de l'URL de la requête
+        String requestUrl = request.getRequestURL().toString();
+        //  String newUrl = StringUtils.substringAfter(requestUrl, "openapi");
+        String newUrl = requestUrl.replace("/openapi/v1/redirect/" +idThesaurus + "/" + idConcept, "/") + "?idc=" + idConcept + "&idt=" + idThesaurus;
+        return ResponseEntity.status(307).location(new URI(newUrl)).build();
+    }
+
+    /**
+     * permet de rediriger une URI Opentheso vers un thésaurus, permet d'éviter l'utilisaton des (&)
+     */
+    @GetMapping(value = "/{idTheso}", produces = {APPLICATION_JSON_UTF_8})
+    @Operation(summary = "Permet de rediriger vers un thésaurus donné",
+            description = "",
+            tags = {"Concept"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Une URL de redirection"),
+                    @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
+                    @ApiResponse(responseCode = "404", description = "Aucun concept n'existe avec cet ID dans le thesaurus choisi"),
+                    @ApiResponse(responseCode = "503", description = "Pas de connexion au serveur")
+            })
+    public ResponseEntity<Object> redirectToTheso(@Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept.", required = true) @PathVariable("idTheso") String idThesaurus,
+                                                        HttpServletRequest request) throws URISyntaxException  {
+        // Récupération de l'URL de la requête
+        String requestUrl = request.getRequestURL().toString();
+        //  String newUrl = StringUtils.substringAfter(requestUrl, "openapi");
+        String newUrl = requestUrl.replace("/openapi/v1/redirect/" +idThesaurus, "/") + "?idt=" + idThesaurus;
+        return ResponseEntity.status(307).location(new URI(newUrl)).build();
+    }
+
+
+
 }
