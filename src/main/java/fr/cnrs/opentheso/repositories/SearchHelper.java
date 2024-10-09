@@ -620,7 +620,7 @@ public class SearchHelper {
                 }
             }
             multiValuesPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
-            multiValuesNPT += " and LOWERconcept_group_concept.idgroup) in (" + groupSearch + ")";
+            multiValuesNPT += " and LOWER(concept_group_concept.idgroup) in (" + groupSearch + ")";
         }
 
         multiValuesPT += " and ("
