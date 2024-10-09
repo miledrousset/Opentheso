@@ -58,7 +58,7 @@
             style="width: auto; border: none; font-size: 13px; min-height: 700px; max-height: 925px; overflow-y:scroll;"
             widgetVar="groupWidget">
 
-        <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}" update="containerIndex:formLeftTab"/>
+        <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}" />
         <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formLeftTab"/>
 
         <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
