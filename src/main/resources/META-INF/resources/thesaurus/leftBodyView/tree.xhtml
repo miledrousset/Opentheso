@@ -74,7 +74,7 @@
     </h:panelGroup>
     
     <p:separator style="color: #F47B2A"/>
-    
+
     <h:panelGroup>
         <div class="row">
             <div class="col-12">
@@ -85,7 +85,7 @@
 
                     <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
                     <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-                    <p:ajax event="select" listener="#{tree.onNodeSelect}" update="messageIndex containerIndex"/>
+                    <p:ajax event="select" listener="#{tree.onNodeSelect}" update="containerIndex"/>
                     <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree messageIndex" />
 
                     <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">

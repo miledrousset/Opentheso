@@ -5,8 +5,13 @@
 
     <div style="width: 100%; display: flex; background-color: #ecf8f1; padding-top: 3px; padding-bottom: 3px;">
         <h:panelGroup id="idConceptViewActions" rendered="#{currentUser.nodeUser != null and (currentUser.hasRoleAsManager)}" >
-            
-            <p:menuButton icon="pi pi-align-justify" >
+
+            <!-- #MR ces actions sont mises à jour avec l'update, mais pas p:menuitem, il faut voir pourquoi, je supçonne les <h:form> qui manque -->
+            <h:outputText rendered="#{(dragAndDrop.isCopyOn)}" value="test" />
+            #{dragAndDrop.cuttedConcept.concept.idConcept}
+            <!-- #MR test -->
+
+            <p:menuButton id="idConceptViewActionsMenuButton" icon="pi pi-align-justify" >
                 
                 <p:menuitem id="newConcept" actionListener="#{addConcept.reset()}" 
                             oncomplete="PF('addNT').show();" icon="fas fa-plus"
@@ -219,6 +224,6 @@
     <ui:include src="../../../dialog/concept/generateAllArk.xhtml" />    
     <ui:include src="../../../dialog/concept/generateArkForThisBranch.xhtml" />
     <ui:include src="../../../dialog/import/listImportCsv.xhtml" />
-    <ui:include src="../../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />    
+    <ui:include src="../../../dialog/copyAndPasteBetweenTheso/copyAndPasteBetweenTheso.xhtml" />
 
 </ui:fragment>

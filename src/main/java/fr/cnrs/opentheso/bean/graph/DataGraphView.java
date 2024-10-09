@@ -20,6 +20,7 @@ import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import lombok.Data;
+import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -32,6 +33,8 @@ import org.neo4j.driver.QueryConfig;
 import org.primefaces.PrimeFaces;
 import org.apache.http.client.utils.URIBuilder;
 import java.net.URISyntaxException;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -80,7 +83,11 @@ public class DataGraphView implements Serializable {
     private List<ImmutablePair<String, String>> newViewExportedData;
     
     private String selectedIdTheso;
-    private NodeSearchMini searchSelected;    
+    private NodeSearchMini searchSelected;
+
+    public void initTest(String text){
+        System.out.println("url : " + text);
+    }
 
     private Properties getPrefOfNeo4j(){
 
@@ -150,6 +157,7 @@ public class DataGraphView implements Serializable {
         String opethesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName()
                 + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
                 + context.getApplicationContextPath();
+        System.out.println("URL = " + opethesoUrl);
 
         final String baseDataURL = opethesoUrl + "/openapi/v1/graph/getData";
 
@@ -168,8 +176,19 @@ public class DataGraphView implements Serializable {
 
         // Construit l'URL de redirection
         URIBuilder redirectUrlBuilder = new URIBuilder(context.getRequestContextPath() + "/d3js/index.xhtml");
+
         redirectUrlBuilder.addParameter("dataUrl", urlString);
+
+        System.out.println("dataURL : " + urlString);
+
         redirectUrlBuilder.addParameter("format", "opentheso");
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+        String scheme = request.getScheme(); // Cela retourne "http" ou "https"
+        System.out.println("context : " + scheme);
+        System.out.println("context : " + request.getRequestURI());
+        System.out.println("context : " + request.getContextPath());
 
         return redirectUrlBuilder.build().toString();
     }

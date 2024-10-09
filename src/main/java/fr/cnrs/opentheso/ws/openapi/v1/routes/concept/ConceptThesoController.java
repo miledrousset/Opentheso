@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.http.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 import static fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper.removeCharset;
@@ -63,6 +66,11 @@ public class ConceptThesoController {
                                          @Parameter(name = "idConcept", description = "Identifiant du concept à récupérer.", required = true) @PathVariable("idConcept") String idConcept,
                                          @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
+        // code qui permet de déctecter si le header vient d'un navigateur wab ou d'un client REST
+        List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
+        if(mediaTypes.size() > 1) {
+            acceptHeader = "application/json";
+        }
         var datas = restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idThesaurus, removeCharset(acceptHeader));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }

@@ -31,7 +31,7 @@
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
 
-
+        #{request.contextPath}
         <p:growl id="messageIndex" globalOnly="true" showDetail="true"/>
 
         <h:panelGroup rendered="#{menuBean.checkIfUserIsConnected()}" id="wrapper" style="height: 100vh;" >
@@ -103,8 +103,6 @@
                                             <p:chip rendered="#{export.right!=null}" label="#{export.left}, #{export.right}" styleClass="mr-2" style="color:#601e18; background-color:#FAEDE5"/>
                                         </p:dataList>
 
-
-
                                         <div class="row">
                                             <div class="col-6">
                                                 <p:commandButton value="#{langueBean.getMsg('graphdialog.manage_view.DisplayWithD3')}"
@@ -112,6 +110,7 @@
                                                                  icon="fa fa-diagram-project"
                                                                  style="margin-left: 0px;" ajax="false" process="@this"
                                                                  rendered="#{!graph_view.exportedData.isEmpty()}"
+                                                                 actionListener="#{dataGraphView.initTest(request.contextPath)}"
                                                                  onclick="openInNewTab('#{dataGraphView.generateGraphVisualizationUrl(graph_view.id)}'); return false;" />
 
                                                 <script type="text/javascript">
