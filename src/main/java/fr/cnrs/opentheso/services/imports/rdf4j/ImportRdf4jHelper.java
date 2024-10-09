@@ -1387,12 +1387,10 @@ public class ImportRdf4jHelper {
         }
 
         if (acs.conceptStatus.equalsIgnoreCase("dep")) {
-            deprecateHelper.setConceptHelper(conceptHelper);
-            deprecateHelper.deprecateConcept(ds, acs.concept.getIdConcept(), idTheso, idUser);
+            deprecateHelper.deprecateConcept(ds, acs.concept.getIdConcept(), idTheso, idUser, conceptHelper);
         }
         /// ajout des relations de concepts dépréciés
         for (NodeIdValue nodeIdValue : acs.replacedBy) {
-            deprecateHelper.setConceptHelper(conceptHelper);
             deprecateHelper.addReplacedBy(ds, acs.concept.getIdConcept(), idTheso, nodeIdValue.getId(), idUser);
         }
         if (isCandidatImport) {

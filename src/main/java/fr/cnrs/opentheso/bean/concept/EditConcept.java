@@ -559,7 +559,7 @@ public class EditConcept implements Serializable {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
-        if (!deprecateHelper.deprecateConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser)) {
+        if (!deprecateHelper.deprecateConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser, conceptHelper)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été déprécié !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -601,7 +601,7 @@ public class EditConcept implements Serializable {
     public void approveConcept(String idConcept, String idTheso, int idUser){
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
-        if (!deprecateHelper.approveConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser)) {
+        if (!deprecateHelper.approveConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser, conceptHelper)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "le concept n'a pas été approuvé !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;

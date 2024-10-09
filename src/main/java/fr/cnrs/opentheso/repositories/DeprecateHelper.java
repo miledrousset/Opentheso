@@ -23,8 +23,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeprecateHelper {
 
-    private ConceptHelper conceptHelper;
-
     /**
      * permet de retourner les concepts qui remplacent ce concept déprécié
     * 
@@ -34,7 +32,7 @@ public class DeprecateHelper {
     * @param idLang
     * @return 
     */ 
-    public ArrayList<NodeIdValue> getAllReplacedBy(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
+    public ArrayList<NodeIdValue> getAllReplacedBy(HikariDataSource ds, String idTheso, String idConcept, String idLang, ConceptHelper conceptHelper) {
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         try ( Connection conn = ds.getConnection()) {
@@ -119,7 +117,7 @@ public class DeprecateHelper {
     /**
      * permet de retourner les concepts dépréciés que ce concept remplace
      */
-    public ArrayList<NodeIdValue> getAllReplaces(HikariDataSource ds, String idTheso, String idConcept, String idLang) {
+    public ArrayList<NodeIdValue> getAllReplaces(HikariDataSource ds, String idTheso, String idConcept, String idLang, ConceptHelper conceptHelper) {
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         try ( Connection conn = ds.getConnection()) {
@@ -207,7 +205,7 @@ public class DeprecateHelper {
      * @param idUser
      * @return 
      */
-    public boolean deprecateConcept(HikariDataSource ds, String idConcept, String idTheso, int idUser) {
+    public boolean deprecateConcept(HikariDataSource ds, String idConcept, String idTheso, int idUser, ConceptHelper conceptHelper) {
         try (Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
             try ( Statement stmt = conn.createStatement()) {
@@ -232,7 +230,7 @@ public class DeprecateHelper {
     /**
      * Cette fonction permet de réactiver un concept
      */
-    public boolean approveConcept(HikariDataSource ds, String idConcept, String idTheso, int idUser) {
+    public boolean approveConcept(HikariDataSource ds, String idConcept, String idTheso, int idUser, ConceptHelper conceptHelper) {
         try ( Connection conn = ds.getConnection()) {
             conn.setAutoCommit(false);
             try ( Statement stmt = conn.createStatement()) {

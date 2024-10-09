@@ -399,7 +399,7 @@ public class ConceptHelper {
                     }
                 }
                 for (NodeDeprecated nodeDeprecated : nodeDeprecateds) {
-                    replacesValues = deprecateHelper.getAllReplacedBy(ds, idTheso, nodeDeprecated.getDeprecatedId(), idLang);
+                    replacesValues = deprecateHelper.getAllReplacedBy(ds, idTheso, nodeDeprecated.getDeprecatedId(), idLang, this);
                     boolean first = true;
                     for (NodeIdValue replacesValue : replacesValues) {
                         if (first) {
@@ -5554,9 +5554,9 @@ public class ConceptHelper {
         nodeConcept.setNodeExternalResources(externalResourcesHelper.getExternalResources(ds, idConcept, idThesaurus));
 
         // concepts qui remplacent un concept déprécié
-        nodeConcept.setReplacedBy(deprecateHelper.getAllReplacedBy(ds, idThesaurus, idConcept, idLang));
+        nodeConcept.setReplacedBy(deprecateHelper.getAllReplacedBy(ds, idThesaurus, idConcept, idLang, this));
         // les concepts dépécés que ce concept remplace
-        nodeConcept.setReplaces(deprecateHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang));
+        nodeConcept.setReplaces(deprecateHelper.getAllReplaces(ds, idThesaurus, idConcept, idLang, this));
 
         /// récupération des Méta-données DC_terms
         nodeConcept.setDcElements(dcElementHelper.getDcElementOfConcept(ds, idThesaurus, idConcept));

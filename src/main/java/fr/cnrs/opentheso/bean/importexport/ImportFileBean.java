@@ -1831,7 +1831,7 @@ public class ImportFileBean implements Serializable {
                 if (!conceptHelper.isIdExiste(connect.getPoolConnexion(), idConcept, idTheso)) {
                     continue;
                 }
-                if (!deprecateHelper.deprecateConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser1)) {
+                if (!deprecateHelper.deprecateConcept(connect.getPoolConnexion(), idConcept, idTheso, idUser1, conceptHelper)) {
                     error.append("ce concept n'a pas été déprécié : ");
                     error.append(idConcept);
                     return;
