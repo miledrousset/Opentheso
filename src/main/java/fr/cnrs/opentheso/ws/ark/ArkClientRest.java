@@ -25,6 +25,15 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
+import java.net.http.HttpRequest.BodyPublishers;
+
+
 
 public final class ArkClientRest {
 
@@ -68,7 +77,56 @@ public final class ArkClientRest {
      * #MR
      */
     public boolean login() {
-        Client client= ClientBuilder.newClient();
+        String serverHost = propertiesArk.getProperty("serverHost");
+        String user = propertiesArk.getProperty("user");
+        String password = propertiesArk.getProperty("password");
+        String idNaan = propertiesArk.getProperty("idNaan");
+
+        // Construction de l'URL avec les paramètres
+        String url = String.format("%s/rest/login/username=%s&password=%s&naan=%s",
+                serverHost, user, password, idNaan);
+
+        try {
+            // Création de l'instance HttpClient
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(10)) // Timeout de connexion
+                    .build();
+
+            // Création de la requête GET
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(10)) // Timeout pour la requête
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
+
+            // Envoi de la requête et récupération de la réponse
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+
+            // Vérification du statut HTTP de la réponse
+            if (response.statusCode() != 200) {
+                message = "Erreur de login: " + response.statusCode();
+                return false;
+            }
+
+            // Lecture du contenu de la réponse (token sous forme de chaîne de caractères)
+            String tokenString = response.body();
+
+            // Traitement du token
+            getTokenFromString(tokenString);
+
+            // Retourne true si le token est valide
+            return token != null;
+
+        } catch (Exception e) {
+            // Gestion des exceptions (timeout, erreurs réseau, etc.)
+            message = "Erreur de connexion: " + e.getMessage();
+            e.printStackTrace();
+            return false;
+        }
+
+
+    /*    Client client= ClientBuilder.newClient();
         WebTarget webTarget = client
                 .target(propertiesArk.getProperty("serverHost"))
                 .path("rest/login/username=" +
@@ -92,7 +150,7 @@ public final class ArkClientRest {
             client.close();
         }          
         getTokenFromString(tokenString);
-        return token != null;
+        return token != null;*/
     }       
     
     private void getTokenFromString(String tokenString){
@@ -226,6 +284,49 @@ public final class ArkClientRest {
      */
     public boolean addArk(String arkString) {
         jsonArk = null;
+
+        // Vérification de la connexion
+        if (loginJson == null) {
+            return false;
+        }
+
+        try {
+            // Création du client HttpClient
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(10)) // Timeout de connexion
+                    .build();
+
+            // Création de la requête PUT avec JSON
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(propertiesArk.getProperty("serverHost") + "/rest/v1/ark/add"))
+                    .timeout(Duration.ofSeconds(10)) // Timeout de la requête
+                    .header("Content-Type", "application/json") // Définition du type de contenu
+                    .PUT(BodyPublishers.ofString(arkString)) // Données à envoyer (corps de la requête)
+                    .build();
+
+            // Envoi de la requête et récupération de la réponse
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+
+            // Vérification du statut de la réponse
+            if (response.statusCode() != 200) {
+                message = "Erreur lors de l'ajout d'un Ark: " + response.statusCode();
+                return false;
+            }
+
+            // Lecture de la réponse (jsonArk)
+            jsonArk = response.body();
+
+        } catch (Exception e) {
+            // Gestion des exceptions (erreurs réseau, timeout, etc.)
+            message = "Exception lors de l'ajout d'un Ark: " + e.getMessage();
+            return false;
+        }
+
+        // Appel de la méthode setIdArkHandle() pour poursuivre le traitement
+        return setIdArkHandle();
+
+        /*
+        jsonArk = null;
        
         // il faut vérifier la connexion avant 
         if(loginJson == null) return false;
@@ -251,6 +352,8 @@ public final class ArkClientRest {
             return false;            
         }
         return setIdArkHandle();
+        */
+
     }
     
     /**

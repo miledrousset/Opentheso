@@ -58,11 +58,12 @@ public class ConceptAutocompleteController {
                     @ApiResponse(responseCode = "400", description = "Erreur dans la synthaxe de la requête"),
                     @ApiResponse(responseCode = "404", description = "${searchAutocomplete.404.description}$")
             })
-    public ResponseEntity<Object> searchAutocomplete(@Parameter(name = "idThesaurus", required = true, description = "Thésaurus dans lequel chercher la saisie de l'utilisateur") @PathVariable("idTheso") String idTheso,
-                                       @Parameter(name = "input", required = true, description = "Saisie de l'utilisateur") @PathVariable("input") String input,
-                                       @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Langue dans laquelle chercher la saisie de l'utilisateur") @RequestParam(value = "lang", required = false) String lang,
-                                       @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Groupe dans lequel chercher la saisie de l'utilisateur") @RequestParam(value = "group", required = false) String groupsString,
-                                       @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), description = "`true` si l'on souhaite retourner plus d'informations sur le concept. Les informations supplémentaires sont le `prefLabel`, `altLabel` et la définition du concept") @RequestParam(value = "full", required = false) String fullString) {
+    public ResponseEntity<Object> searchAutocomplete(
+            @Parameter(name = "idThesaurus", required = true, description = "Thésaurus dans lequel chercher la saisie de l'utilisateur") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "input", required = true, description = "Saisie de l'utilisateur") @PathVariable("input") String input,
+            @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Langue dans laquelle chercher la saisie de l'utilisateur") @RequestParam(value = "lang", required = false) String lang,
+            @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Groupe dans lequel chercher la saisie de l'utilisateur") @RequestParam(value = "group", required = false) String groupsString,
+            @Parameter(name = "full", in = ParameterIn.QUERY, schema = @Schema(type = "boolean"), description = "`true` si l'on souhaite retourner plus d'informations sur le concept. Les informations supplémentaires sont le `prefLabel`, `altLabel` et la définition du concept") @RequestParam(value = "full", required = false) String fullString) {
 
         var groups = groupsString != null ? groupsString.split(",") : null;
         var full = fullString != null && fullString.equalsIgnoreCase("true");
