@@ -38,6 +38,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
@@ -1111,16 +1112,10 @@ public class RestRDFHelper {
      * @param match
      * @return
      */
-    public String findDatasForWidget(HikariDataSource ds,
-            String idTheso, String lang, String[] groups,
+    public String findDatasForWidget(HikariDataSource ds, String idTheso, String lang, String[] groups,
             String value, String format, boolean match) {
 
-        String datas = findDatasForWidget__(ds,
-                value, idTheso, lang, groups, format, match);
-        if (datas == null) {
-            return null;
-        }
-        return datas;
+        return findDatasForWidget__(ds, value, idTheso, lang, groups, format, match);
     }
 
     /**
@@ -1132,53 +1127,45 @@ public class RestRDFHelper {
      * @param lang
      * @return
      */
-    private String findDatasForWidget__(
-            HikariDataSource ds,
-            String value, String idTheso,
+    private String findDatasForWidget__(HikariDataSource ds, String value, String idTheso,
             String lang, String[] groups, String format, boolean match) {
 
         if (value == null || idTheso == null) {
             return null;
         }
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
+
+        var nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
         if (nodePreference == null) {
             return null;
         }
 
-        ArrayList<String> nodeIds;
         // recherche de toutes les valeurs
         value = value.trim();
         // si la valeur est entourée de ("), on fait alors une recherche exacte
         if(StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
             value = value.replaceAll("\"", "");
             match = true;
-        } 
-        
+        }
+
+        ArrayList<String> nodeIds;
         if(match) {
             nodeIds = searchHelper.searchAutoCompletionWSForWidgetMatchExact(ds, value, lang, groups, idTheso);
         } else {
-           nodeIds = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
-        } 
-        if (nodeIds == null || nodeIds.isEmpty()) {
+            nodeIds = searchHelper.searchAutoCompletionWSForWidget(ds, value, lang, groups, idTheso);
+        }
+
+        if (CollectionUtils.isEmpty(nodeIds)) {
             return null;
         }
 
-        // construire le tableau JSON avec le chemin vers la racine pour chaque Id
-        List<Path> paths;
-
-        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-
+        var jsonArrayBuilder = Json.createArrayBuilder();
         for (String idConcept : nodeIds) {
-            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
-            if (paths != null && !paths.isEmpty()) {
+            var paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
+            if (CollectionUtils.isNotEmpty(paths)) {
                 pathHelper.getPathWithLabelAsJson(ds, paths, jsonArrayBuilder, idTheso, lang, format);
             }
         }
-        if (jsonArrayBuilder != null) {
-            return jsonArrayBuilder.build().toString();
-        } else {
-            return null;
-        }
+        return jsonArrayBuilder != null ? jsonArrayBuilder.build().toString() : null;
     }
 
     /**

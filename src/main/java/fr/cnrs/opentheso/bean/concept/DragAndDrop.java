@@ -247,8 +247,8 @@ public class DragAndDrop implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
                 + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().executeScript("window.location.reload();");
-   //    PrimeFaces.current().ajax().update("containerIndex:rightTab:idConceptViewActionsMenuButton");
+        //PrimeFaces.current().executeScript("window.location.reload();");
+        PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     /**
@@ -262,12 +262,17 @@ public class DragAndDrop implements Serializable {
     public void paste(NodeConcept dropppedConcept) {
         if(dropppedConcept != null) {
             this.nodeConceptDrop = dropppedConcept;
-            if(!nodeConceptDrop.getConcept().getIdConcept().equalsIgnoreCase( ((TreeNodeData) dropNode.getData()).getNodeId() )) {
+            if(dropNode != null && !nodeConceptDrop.getConcept().getIdConcept().equalsIgnoreCase(((TreeNodeData) dropNode.getData()).getNodeId() )) {
                 pasteWitoutTreeControl();
                 return;            
-            }            
+            }
         } else
             dropNode = tree.getRoot();
+
+
+        if(isDropToRoot) {
+            dropNode = tree.getRoot();
+        }
 
         // controle de cohérence entre les noeuds sélectionnés dans l'arbre et les concepts à déplacer
         if(!nodeConceptDrag.getConcept().getIdConcept().equalsIgnoreCase( ((TreeNodeData) dragNode.getData()).getNodeId() )) {
