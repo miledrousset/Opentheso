@@ -19,7 +19,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <poi.version>5.3.0</poi.version>
+        <poi.version>4.1.1</poi.version>
         <virtjdbc4.version>4.0</virtjdbc4.version>
         <websocket.version>2.2.0</websocket.version>
         <openapi.version>1.7.0</openapi.version>
@@ -28,13 +28,11 @@
         <commons-io.version>2.16.1</commons-io.version>
         <qrcodegen.version>1.8.0</qrcodegen.version>
         <joinfaces.version>5.3.2</joinfaces.version>
-        <jena-arq.version>5.1.0</jena-arq.version>
         <spring-webmvc.version>6.1.13</spring-webmvc.version>
         <spring-web.version>6.1.13</spring-web.version>
         <xmlunit-core.version>2.10.0</xmlunit-core.version>
-        <postgresql.version>42.5.0</postgresql.version>
+        <postgresql.version>42.7.2</postgresql.version>
         <jsf-api.version>2.2.20</jsf-api.version>
-        <tomcat.version>11.0.0-M22</tomcat.version>
         <primefaces-themes.version>1.0.10</primefaces-themes.version>
         <cdi-api.version>2.0.SP1</cdi-api.version>
         <liquibase.version>4.29.0</liquibase.version>
@@ -42,7 +40,6 @@
         <neo4j.version>5.21.0</neo4j.version>
         <javax.inject.version>1</javax.inject.version>
         <jakarta.ws.rs.version>4.0.0</jakarta.ws.rs.version>
-        <jdom.version>2.0.6.1</jdom.version>
         <jakarta.json.version>2.1.3</jakarta.json.version>
         <commons-csv.version>1.11.0</commons-csv.version>
         <mail.version>1.4.7</mail.version>
@@ -59,9 +56,9 @@
         <virt_jena3.version>3.0</virt_jena3.version>
         <springfox.version>3.0.0</springfox.version>
         <commons-validator.version>1.9.0</commons-validator.version>
+        <jena-arq.version>5.1.0</jena-arq.version>
+        <commons-compress.version>1.27.1</commons-compress.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
-        <jakarta.websocket.version>2.2.0</jakarta.websocket.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tomcat-embed-jasper.version>11.0.0-M22</tomcat-embed-jasper.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -202,6 +199,18 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>${commons-compress.version}</version>
         </dependency>
 
         <dependency>

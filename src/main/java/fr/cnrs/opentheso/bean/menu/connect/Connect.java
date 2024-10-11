@@ -51,14 +51,17 @@ public class Connect implements Serializable{
     @Value("${settings.timeout:10}")
     private int timeoutMin;
 
+    @Value("${build.version}")
+    private String buildVersion;
+
 
     private HikariDataSource poolConnexion;
     private String localUri;
 
 
     //Retourne la version actuelle d'Opentheso d'après le WAR
-    public String getOpenthesoVersionFromWar() {
-        return FacesContext.getCurrentInstance().getExternalContext().getInitParameterMap().get("version");
+    public String getOpenthesoVersion() {
+        return buildVersion;
     }
 
     private void openConnexionPool() {
