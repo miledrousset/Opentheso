@@ -7,26 +7,35 @@
     <p:dialog id="idListArkCsv" header="Importer des IdArk" widgetVar="listArkCsv"  
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="listArkCsvForm">              
+        <h:form id="listArkCsvForm">
 
-            <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px">
-                <div class="row" style="margin-top: 5px;">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="localId" style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="arkId" style="color: #000; " />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-5" offset="5">
-                        <h:outputText value="152645"  style="color: #000; " />
-                    </div>
-                    <div class="col-7">
-                        <h:outputLabel value="26678/crtcg26jeN4R9"  style="color: #000; " />
-                    </div>
-                </div>
-            </p:panel>
+            <p:scrollPanel mode="native">
+                <h:panelGrid columns="2" styleClass="customTable">
+                    <h:outputText value="localId" />
+                    <h:outputText value="arkId" />
+
+                    <h:outputText value="152645" />
+                    <h:outputText value="26678/crtcg26jeN4R9" />
+                </h:panelGrid>
+            </p:scrollPanel>
+
+            <style>
+                .customTable {
+                    border-collapse: collapse;
+                }
+
+                .customTable td, .customTable th {
+                    border: 0.5px solid black; /* Bordure de 0.5px */
+                    padding: 5px; /* Espace intérieur */
+                }
+
+                /* Cible la première ligne du tableau (9 cellules) */
+                .customTable tr:first-child td {
+                    background-color: #f0f0f0; /* Arrière-plan gris clair */
+                    font-weight: bold; /* Texte en gras */
+                    text-align: center; /* Texte centré */
+                }
+            </style>
 
             <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px">
                 Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>

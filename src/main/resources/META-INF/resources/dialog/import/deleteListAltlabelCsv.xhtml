@@ -7,24 +7,37 @@
     <p:dialog id="idDeleteListAltlabelCsv" header="#{langueBean.getMsg('actions.deleteAltlabels')}" widgetVar="deleteListAltlabelCsv"  
               width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
 
-        <h:form id="deleteListAltlabelCsvForm">              
-            <p:scrollPanel mode="native" >
-                <p:panelGrid style="font-size: 12px;">
-                    <f:facet name="header">
-                        <p:row style="font-size: 12px;">
-                            <p:column colspan="1">localId</p:column>
-                            <p:column colspan="1">skos:altLabel@fr</p:column>
-                            <p:column colspan="1">skos:altLabel@en</p:column>
-                        </p:row>
-                    </f:facet>
-                    <p:row style="font-size: 12px;">
-                        <p:column colspan="1">26678/crtcg26jeN4R9</p:column>
-                        <p:column colspan="1">synonyme1##synonyme2</p:column>
-                        <p:column colspan="1">altLabel1##altLabel2</p:column>
-                    </p:row>
-                </p:panelGrid>    
-                <p:spacer/>
-            </p:scrollPanel>  
+        <h:form id="deleteListAltlabelCsvForm">
+
+            <p:scrollPanel mode="native">
+                <h:panelGrid columns="3" styleClass="customTable">
+                    <h:outputText value="localId" />
+                    <h:outputText value="skos:altLabel@fr" />
+                    <h:outputText value="skos:altLabel@en" />
+
+                    <h:outputText value="26678/crtcg26jeN4R9" />
+                    <h:outputText value="synonyme1##synonyme2" />
+                    <h:outputText value="altLabel1##altLabel2" />
+                </h:panelGrid>
+            </p:scrollPanel>
+
+            <style>
+                .customTable {
+                    border-collapse: collapse;
+                }
+
+                .customTable td, .customTable th {
+                    border: 0.5px solid black; /* Bordure de 0.5px */
+                    padding: 5px; /* Espace intérieur */
+                }
+
+                /* Cible la première ligne du tableau (9 cellules) */
+                .customTable tr:first-child td {
+                    background-color: #f0f0f0; /* Arrière-plan gris clair */
+                    font-weight: bold; /* Texte en gras */
+                    text-align: center; /* Texte centré */
+                }
+            </style>
             
             <p:outputPanel deferred="true" style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 5px; font-size: 12px;">
                 Les termes doivent avoir un séparateur (virgule, point-virgule ou tabulé) dans le fichier à uploader.<br/>

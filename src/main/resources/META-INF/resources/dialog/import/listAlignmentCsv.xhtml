@@ -11,39 +11,47 @@
             <div class="row">                
                 <div class="col-12" >
                     <fieldset>
-                        <p:scrollPanel mode="native" >
-                            
-                            
-                            <p:panelGrid style="font-size: 12px;">
-                                <f:facet name="header">
-                                    <p:row style="font-size: 12px;">
-                                        <p:column colspan="1">localId</p:column>
-                                        <p:column colspan="1">Wikidata</p:column>
-                                        <p:column colspan="1">AAT</p:column>
-                                        <p:column colspan="1">BNF</p:column>
-                                        <p:column colspan="1">idRef</p:column>
-                                        <p:column colspan="1">Joconde</p:column>  
-                                        <p:column colspan="1">Pleiades</p:column>
-                                        <p:column colspan="1">PeriodO</p:column>      
-                                        <p:column colspan="1">Geonames</p:column>                                        
-                                    </p:row>
-                                </f:facet>
-                                <p:row style="font-size: 12px;">
-                                    <p:column colspan="1">26678/crtcg26jeN4R9</p:column>
-                                    <p:column colspan="1">https://www.wikidata.org/wiki/Q65955</p:column>
-                                    <p:column colspan="1">http://vocab.getty.edu/aat/300391468##1</p:column>
-                                    <p:column colspan="1">https://catalogue.bnf.fr/ark:/12148/cb13516297v##2</p:column>
-                                    <p:column colspan="1">https://www.idref.fr/241395046</p:column>
-                                    <p:column colspan="1">http://data.culture.fr/thesaurus/page/ark:/67717/9f07583b-1be9-4dab-95d4-c46dce9b20dd</p:column>
-                                    <p:column colspan="1">https://pleiades.stoa.org/places/570577</p:column>
-                                    <p:column colspan="1">http://n2t.net/ark:/99152/6c6g3fz6m</p:column>
-                                    <p:column colspan="1">https://www.geonames.org/9062330</p:column>
-                                </p:row>
-                            </p:panelGrid>    
-                            <p:spacer/>
-                        </p:scrollPanel>    
-              
-                        
+                        <p:scrollPanel mode="native">
+                            <h:panelGrid columns="9" styleClass="customTable">
+                                <h:outputText value="localId" />
+                                <h:outputText value="Wikidata" />
+                                <h:outputText value="AAT" />
+                                <h:outputText value="BNF" />
+                                <h:outputText value="idRef" />
+                                <h:outputText value="Joconde" />
+                                <h:outputText value="Pleiades" />
+                                <h:outputText value="PeriodO" />
+                                <h:outputText value="Geonames" />
+
+                                <h:outputText value="26678/crtcg26jeN4R9" />
+                                <h:outputText value="https://www.wikidata.org/wiki/Q65955" />
+                                <h:outputText value="http://vocab.getty.edu/aat/300391468##1" />
+                                <h:outputText value="https://catalogue.bnf.fr/ark:/12148/cb13516297v##2" />
+                                <h:outputText value="https://www.idref.fr/241395046" />
+                                <h:outputText value="http://data.culture.fr/thesaurus/page/ark:/67717/9f07583b-1be9-4dab-95d4-c46dce9b20dd" />
+                                <h:outputText value="https://pleiades.stoa.org/places/570577" />
+                                <h:outputText value="http://n2t.net/ark:/99152/6c6g3fz6m" />
+                                <h:outputText value="https://www.geonames.org/9062330" />
+                            </h:panelGrid>
+                        </p:scrollPanel>
+
+                        <style>
+                            .customTable {
+                                border-collapse: collapse;
+                            }
+
+                            .customTable td, .customTable th {
+                                border: 0.5px solid black; /* Bordure de 0.5px */
+                                padding: 5px; /* Espace intérieur */
+                            }
+
+                            /* Cible la première ligne du tableau (9 cellules) */
+                            .customTable tr:first-child td {
+                                background-color: #f0f0f0; /* Arrière-plan gris clair */
+                                font-weight: bold; /* Texte en gras */
+                                text-align: center; /* Texte centré */
+                            }
+                        </style>
 
                         <p:panel style="border: 1px solid #43B572; border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px;">
                             <p style="color: #000;">
