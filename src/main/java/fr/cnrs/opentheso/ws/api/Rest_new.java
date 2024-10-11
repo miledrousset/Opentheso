@@ -511,7 +511,7 @@ public class Rest_new {
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = restRDFHelper.findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, true);
+            datas = restRDFHelper.findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, false);
         } else {
             datas = restRDFHelper.findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, false);
         }
