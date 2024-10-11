@@ -237,18 +237,24 @@ public class DragAndDrop implements Serializable {
      *
      * @param nodeConcept
      */
-    public void onStartCut(NodeConcept nodeConcept) {
+    public void onStartCut(NodeConcept nodeConcept, TreeNode dragNode) {
+        this.dragNode = dragNode;
         reset();
         if (nodeConcept == null) {
             return;
         }
         nodeConceptDrag = nodeConcept;
         isCopyOn = true;
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
-                + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-        PrimeFaces.current().executeScript("window.location.reload();");
-        //PrimeFaces.current().ajax().update("containerIndex:formRightTab");
+
+        if (nodeConceptDrag.getTerm() != null) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Couper "
+                    + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+    }
+
+    public void test() {
+        PrimeFaces.current().ajax().update("containerIndex");
     }
 
     /**

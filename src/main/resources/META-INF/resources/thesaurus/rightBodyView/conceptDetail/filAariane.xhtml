@@ -7,25 +7,25 @@
         <h:panelGroup id="idConceptViewActions" rendered="#{currentUser.nodeUser != null and (currentUser.hasRoleAsManager)}" >
 
             <p:menuButton id="idConceptViewActionsMenuButton" icon="pi pi-align-justify" >
-                
-                <p:menuitem id="newConcept" actionListener="#{addConcept.reset()}" 
+
+                <p:menuitem id="newConcept" actionListener="#{addConcept.reset()}"
                             oncomplete="PF('addNT').show();" icon="fas fa-plus"
                             update="containerIndex"
                             value="#{langueBean.getMsg('rightbody.concept.new_concept')}"/>
 
                 <!-- gestion de type de concept -->
                 <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation and conceptView.nodeConcept.nodeCustomRelations.size() == 0}"
-                            value="#{langueBean.getMsg('concept.editConceptType')}" 
+                            value="#{langueBean.getMsg('concept.editConceptType')}"
                             action="#{editConcept.initForConceptType()}" update="containerIndex:idEditConceptType" icon="fas fa-edit"
                             oncomplete="PF('editConceptType').show();"  />
 
                 <p:menuitem rendered="#{roleOnTheso.nodePreference.useCustomRelation}"
-                            value="#{langueBean.getMsg('concept.manageConceptType')}" 
+                            value="#{langueBean.getMsg('concept.manageConceptType')}"
                             action="#{editConcept.initForConceptType()}" update="containerIndex:idManageConceptType containerIndex:manageConceptTypeForm" icon="fas fa-cog"
                             oncomplete="PF('manageConceptType').show();"  />
-                
-                <p:menuitem id="newFacet" oncomplete="PF('addFacet').show();" 
-                            actionListener="#{editFacet.initNewFacet()}" 
+
+                <p:menuitem id="newFacet" oncomplete="PF('addFacet').show();"
+                            actionListener="#{editFacet.initNewFacet()}"
                             update="containerIndex:idAddFacet" icon="fas fa-magnet"
                             value="#{langueBean.getMsg('rightbody.concept.new_facet')}" />
 
@@ -34,8 +34,8 @@
                 <!-- Couper/déplacer -->
                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
                             action="#{dragAndDrop.setDragNode(tree.selectedNode)}"
-                            actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept)}"
-                            ajax="true" icon="fas fa-cut" update="containerIndex:formRightTab messageIndex" />
+                            actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept, tree.selectedNode)}"
+                            ajax="false" icon="fas fa-cut" update="containerIndex:formRightTab messageIndex" />
 
                 <!-- Coller comme terme spécifique -->
                 <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and
@@ -43,13 +43,13 @@
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.as_specific')}"
                             actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
                             action="#{dragAndDrop.paste(conceptView.nodeConcept)}" icon="fas fa-paste"
-                            ajax="true" update="containerIndex:rightTab containerIndex:formLeftTab:idDragAndDrop messageIndex" />
+                            ajax="false" update="containerIndex:rightTab containerIndex:formLeftTab:idDragAndDrop messageIndex" />
 
                 <!-- Coller à la racine -->
                 <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.at_the_root')}"
                             actionListener="#{dragAndDrop.setIsDropToRoot(true)}"
-                            action="#{dragAndDrop.paste(conceptView.nodeConcept)}" ajax="true"
+                            action="#{dragAndDrop.paste(conceptView.nodeConcept)}" ajax="false"
                             update="containerIndex:rightTab messageIndex" />
 
                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_concept')}"
@@ -61,7 +61,7 @@
                             value="#{langueBean.getMsg('rightbody.concept.deprecate_concept')}"
                             icon="fa fa-times-circle"
                             update="containerIndex:idDeprecateConcept" action="#{editConcept.reset('')}"
-                            oncomplete="PF('deprecateConcept').show();"  />                    
+                            oncomplete="PF('deprecateConcept').show();"  />
 
                 <p:menuitem rendered="#{conceptView.nodeConcept.concept.deprecated}"
                             icon="fa fa-check-circle"
@@ -85,21 +85,21 @@
                              value="#{langueBean.getMsg('rightbody.concept.cancel_copy')}"
                              action="#{copyAndPasteBetweenTheso.reset()}" icon="fas fa-ban"
                              update="containerIndex:rightTab messageIndex" />
-                
+
                 <p:separator rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}" style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <p:menuitem  rendered="#{(roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
                              value="#{langueBean.getMsg('concept.moveToAnotherThesoTooltip')}"
                              action="#{moveConcept.initForConcept(conceptView.nodeConcept.concept.idConcept, selectedTheso.currentIdTheso)}"
                              icon="fas fa-truck-moving"
-                             oncomplete="PF('moveToAnotherTheso').show();"                             
-                             update="containerIndex:idMoveToAnotherTheso containerIndex:moveToAnotherThesoForm"/>                
+                             oncomplete="PF('moveToAnotherTheso').show();"
+                             update="containerIndex:idMoveToAnotherTheso containerIndex:moveToAnotherThesoForm"/>
 
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
-                            value="#{langueBean.getMsg('rightbody.concept.generate_ark')}" 
-                            disabled="false"                                      
+                            value="#{langueBean.getMsg('rightbody.concept.generate_ark')}"
+                            disabled="false"
                             actionListener="#{editConcept.infosArk()}"
                             update="idGenerateArk"
                             action="#{editConcept.reset('')}"
@@ -115,7 +115,7 @@
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useArk or roleOnTheso.nodePreference.useArkLocal) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
                             value="#{langueBean.getMsg('rightbody.concept.generate_ark_for_branch')}"
-                            disabled="false" 
+                            disabled="false"
                             oncomplete="PF('generateArkForThisBranch').show();"
                             actionListener="#{editConcept.clear()}"
                             update="idGenerateArkForThisBranch generateArkForThisBranchForm" />
@@ -128,10 +128,10 @@
                             update="idGenerateAllArk generateAllArkForm"/>
 
                 <!-- gestion de Handle -->
-                
+
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
-                            value="#{langueBean.getMsg('rightbody.concept.generate_handle')}" 
-                            disabled="false"                                      
+                            value="#{langueBean.getMsg('rightbody.concept.generate_handle')}"
+                            disabled="false"
                             actionListener="#{editConcept.infosHandle()}"
                             update="idGenerateHandle"
                             action="#{editConcept.reset('')}"
@@ -139,16 +139,16 @@
                             style="font-size: 12px;" />
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
-                            value="#{langueBean.getMsg('rightbody.concept.delete_handle')}" 
-                            disabled="false"                                      
+                            value="#{langueBean.getMsg('rightbody.concept.delete_handle')}"
+                            disabled="false"
                             actionListener="#{editConcept.infosDeleteHandle()}"
                             update="idDeleteHandle"
                             action="#{editConcept.reset('')}"
                             oncomplete="PF('deleteHandle').show();"
-                            style="font-size: 12px;"/>                
+                            style="font-size: 12px;"/>
 
                 <p:menuitem rendered="#{(roleOnTheso.nodePreference.useHandle) and (currentUser.nodeUser.isSuperAdmin() or roleOnTheso.isAdminOnThisTheso())}"
-                            value="#{langueBean.getMsg('rightbody.concept.generate_missing_handle')}" 
+                            value="#{langueBean.getMsg('rightbody.concept.generate_missing_handle')}"
                             disabled="false" action="#{editConcept.generateHandleForConceptWithoutHandle()}"
                             update="messageIndex" />
 
@@ -161,14 +161,14 @@
                             value="#{langueBean.getMsg('rightbody.concept.generate_all_handle')}"
                             disabled="false" action="#{editConcept.generateAllHandle()}"
                             update="messageIndex" />
-                
+
                 <!-- Fin de gestion de Handle -->
 
                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.import_tabulated_list')}"
                             actionListener="#{editConcept.infosDelete()}" icon="fas fa-file-download"
                             update="idListImportCsv listImportCsvForm" action="#{importFileBean.init()}"
                             oncomplete="PF('listImportCsv').show();"/>
-                
+
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <p:menuitem value="#{langueBean.getMsg('actions.repairLoopedRelationships')}"

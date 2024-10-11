@@ -18,16 +18,16 @@
                           style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
                           class="dropdown-submenu pull-left">
 
-                <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}"
+                <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" ajax="false"
                             actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
                             oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
 
-                <p:menuitem disabled="#{!treeGroups.isGroupNode()}" process="@this"
+                <p:menuitem disabled="#{!treeGroups.isGroupNode()}" process="@this" ajax="false"
                             value="#{langueBean.getMsg('leftbody.group.addSubGroup')}" actionListener="#{addGroupBean.init()}"
                             oncomplete="PF('addSubGroup').show();" update="containerIndex:idAddSubGroup"
                             icon="far fa-object-ungroup"/>
 
-                <p:menuitem disabled="#{treeGroups.deleteGroupDisable()}"
+                <p:menuitem disabled="#{treeGroups.deleteGroupDisable()}" ajax="false"
                             value="#{langueBean.getMsg('leftbody.group.deleteGroup')}"
                             actionListener="#{addGroupBean.init()}"  process="@this"
                             oncomplete="PF('deleteGroup').show();" update="containerIndex:idDeleteGroup"
@@ -36,14 +36,14 @@
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
-                            actionListener="#{treeGroups.setSortByNotation(false)}" ajax="true"
+                            actionListener="#{treeGroups.setSortByNotation(false)}" ajax="false"
                             action="#{selectedTheso.reloadGroups()}"
                             process="@this"
                             disabled="#{!treeGroups.sortByNotation}"
                             update="containerIndex menuBar" icon="fas fa-sort-alpha-down"/>
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
-                            actionListener="#{treeGroups.setSortByNotation(true)}" ajax="true" process="@this"
+                            actionListener="#{treeGroups.setSortByNotation(true)}" ajax="false" process="@this"
                             action="#{selectedTheso.reloadGroups()}"
                             disabled="#{treeGroups.sortByNotation}" icon="fas fa-sort-numeric-down"
                             update="containerIndex menuBar" />
