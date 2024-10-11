@@ -288,8 +288,6 @@ public class DragAndDrop implements Serializable {
 
        isdragAndDrop = false;        
        pasteWithTreeControl();
-
-       PrimeFaces.current().executeScript("window.location.reload();");
     }
     
     

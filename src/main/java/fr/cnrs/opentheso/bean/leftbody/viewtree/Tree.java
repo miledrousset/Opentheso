@@ -539,8 +539,7 @@ public class Tree implements Serializable {
         DefaultTreeNode node = (DefaultTreeNode) event.getTreeNode();
         onNodeSelectByNode(node);
         if(dragAndDrop.isIsCopyOn())
-            PrimeFaces.current().executeScript("window.location.reload();");
-    //    PrimeFaces.current().ajax().update("containerIndex");
+            PrimeFaces.current().ajax().update("containerIndex:formRightTab");
     }
 
     /**
