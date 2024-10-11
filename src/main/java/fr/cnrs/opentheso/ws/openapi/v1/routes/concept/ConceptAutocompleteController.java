@@ -59,7 +59,7 @@ public class ConceptAutocompleteController {
                     @ApiResponse(responseCode = "404", description = "${searchAutocomplete.404.description}$")
             })
     public ResponseEntity<Object> searchAutocomplete(
-            @Parameter(name = "idThesaurus", required = true, description = "Thésaurus dans lequel chercher la saisie de l'utilisateur") @PathVariable("idTheso") String idTheso,
+            @Parameter(name = "idTheso", required = true, description = "Thésaurus dans lequel chercher la saisie de l'utilisateur") @PathVariable("idTheso") String idTheso,
             @Parameter(name = "input", required = true, description = "Saisie de l'utilisateur") @PathVariable("input") String input,
             @Parameter(name = "lang", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Langue dans laquelle chercher la saisie de l'utilisateur") @RequestParam(value = "lang", required = false) String lang,
             @Parameter(name = "group", in = ParameterIn.QUERY, schema = @Schema(type = "string"), description = "Groupe dans lequel chercher la saisie de l'utilisateur") @RequestParam(value = "group", required = false) String groupsString,
