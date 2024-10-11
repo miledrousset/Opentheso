@@ -1,9 +1,11 @@
 <configuration>
 
-    <!-- Définir un appender pour la console -->
+    <!-- Définir un appender pour la console avec des couleurs personnalisées -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level){"%cyan","%blue","%yellow","%red","%black"} %logger{36} - %msg%n
+            </pattern>
         </encoder>
     </appender>
 
@@ -29,19 +31,29 @@
             <maxFileSize>200MB</maxFileSize>
         </triggeringPolicy>
 
-        <!-- Format des logs dans le fichier -->
+        <!-- Format des logs dans le fichier (sans couleur) -->
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Définir le niveau de log -->
-    <root level="INFO">
-        <!-- Les logs sont toujours affichés dans la console -->
-        <appender-ref ref="CONSOLE" />
+    <!-- Définir le niveau de log pour les environnements -->
 
-        <!-- Si un fichier de log est précisé, les logs iront aussi dans le fichier -->
-        <appender-ref ref="FILE" />
-    </root>
+    <springProfile name="local">
+        <root level="ERROR, INFO, DEBUG, WARN">
+            <!-- Les logs sont toujours affichés dans la console -->
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="ERROR, INFO, WARN">
+            <!-- Les logs sont toujours affichés dans la console -->
+            <appender-ref ref="CONSOLE" />
+
+            <!-- Si un fichier de log est précisé, les logs iront aussi dans le fichier -->
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
 
 </configuration>
