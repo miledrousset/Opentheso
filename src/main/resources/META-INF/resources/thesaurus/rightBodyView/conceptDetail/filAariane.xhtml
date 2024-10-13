@@ -33,8 +33,7 @@
 
                 <!-- Couper/déplacer -->
                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.cut_move')}"
-                            action="#{dragAndDrop.setDragNode(tree.selectedNode)}"
-                            actionListener="#{dragAndDrop.onStartCut(conceptView.nodeConcept, tree.selectedNode)}"
+                            action="#{dragAndDrop.onStartCut(conceptView.nodeConcept, tree.selectedNode)}"
                             ajax="false" icon="fas fa-cut" update="containerIndex:formRightTab messageIndex" />
 
                 <!-- Coller comme terme spécifique -->
@@ -43,7 +42,7 @@
                             value="#{langueBean.getMsg('rightbody.concept.paste')} #{cutAndPaste.nodeConceptDrag.term.lexicalValue} #{langueBean.getMsg('rightbody.concept.as_specific')}"
                             actionListener="#{dragAndDrop.setDropNode(tree.selectedNode)}"
                             action="#{dragAndDrop.paste(conceptView.nodeConcept)}" icon="fas fa-paste"
-                            ajax="false" update="containerIndex:rightTab containerIndex:formLeftTab:idDragAndDrop messageIndex" />
+                            ajax="false" update="containerIndex:rightTab messageIndex" />
 
                 <!-- Coller à la racine -->
                 <p:menuitem rendered="#{(dragAndDrop.isCopyOn) and (!dragAndDrop.cuttedConcept.concept.topConcept)}"
