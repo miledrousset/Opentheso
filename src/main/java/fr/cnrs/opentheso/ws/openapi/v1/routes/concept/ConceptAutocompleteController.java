@@ -72,7 +72,7 @@ public class ConceptAutocompleteController {
     }
 
     @GetMapping("/{input}/full")
-    public ResponseEntity<Object> searchAutocompleteComplet(@PathVariable("idTheso") String idTheso,
+    public ResponseEntity<Object> searchAutocompleteV2(@PathVariable("idTheso") String idTheso,
                                                @PathVariable("input") String input,
                                                @RequestParam("lang") String lang,
                                                @RequestParam("group") String idGroup) throws JsonProcessingException {

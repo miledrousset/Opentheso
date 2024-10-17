@@ -251,7 +251,6 @@ public class DragAndDrop implements Serializable {
                     + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
-
         PrimeFaces.current().executeScript("srollToSelected();");
     }
 
