@@ -351,12 +351,16 @@ public class Rest_new {
                                     @RequestParam("idLang") String idLang,
                                     @RequestParam("q") String value,
                                     @RequestParam(value = "showLabels", required = false, defaultValue = "false") boolean showLabels,
+                                    @RequestParam(value = "groups", required = false) String groups,
+                                    @RequestParam(value = "match", required = false) String match,
                                     @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
         if (!value.contains("ark:/") && StringUtils.isEmpty(idTheso)) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
+        // match=exact (pour limiter la recherche aux termes exactes) match=exactone (pour chercher les prefLable, s'il n'existe pas, on cherche sur les altLabels
 
+        String [] groupList = null; // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
         String format;
         switch (acceptHeader.toLowerCase()) {
             case CustomMediaType.APPLICATION_JSON_LD:
@@ -372,6 +376,9 @@ public class Rest_new {
                 format= "rdf";
                 break;
         }
+        if(StringUtils.isNotEmpty(groups)){
+            groupList = groups.split(",");
+        }
 
         /// rercherche par idArk
         if (value.contains("ark:/")) {
@@ -382,18 +389,18 @@ public class Rest_new {
             if (value.contains("notation:")) {
                 filter = "notation:";
             }
-            return ResponseEntity.ok(getDatas(idTheso, value, FORMAT_MAP.getOrDefault(format, JSON_FORMAT), filter));
+            return ResponseEntity.ok(getDatas(idTheso, idLang, groupList, value, FORMAT_MAP.getOrDefault(format, JSON_FORMAT), filter, match));
         }
     }
 
-    private String getDatas(String idTheso, String value, String format, String filter) {
-
-        if ("notation:".equalsIgnoreCase(filter)) {
-            value = value.substring(value.indexOf(":") + 1);
-            return restRDFHelper.findNotation(connect.getPoolConnexion(), idTheso, value, format);
-        } else {
-            return null;
+    private String getDatas(String idTheso, String idLang, String [] groups, String value, String format, String filter, String match) {
+        if (filter != null) {
+            if ("notation:".equalsIgnoreCase(filter)) {
+                value = value.substring(value.indexOf(":") + 1);
+                return restRDFHelper.findNotation(connect.getPoolConnexion(), idTheso, value, format);
+            }
         }
+        return restRDFHelper.findConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, match);
     }
 
     private String getDatasFromArk(String idTheso, String idLang, String idArk, boolean showLabels) {
@@ -415,12 +422,12 @@ public class Rest_new {
     @GetMapping(value = "/searchwidget", produces = JSON_FORMAT_LONG)
     public ResponseEntity<Object> searchJsonForWidget(@RequestParam(value = "lang") String idLang,
                                               @RequestParam(value = "theso") String idTheso,
-                                              @RequestParam(value = "group") String groupValue,
-                                              @RequestParam(value = "arkgroup") String arkGroupValue,
-                                              @RequestParam(value = "format") String format,
+                                              @RequestParam(required = false, value = "group") String groupValue,
+                                              @RequestParam(required = false, value = "arkgroup") String arkGroupValue ,
+                                              @RequestParam(required = false, value = "format") String format,
                                               @RequestParam(value = "q") String value,
-                                              @RequestParam(value = "match") boolean match) {
-
+                                              @RequestParam(required = false, value = "match") boolean match) {
+        // format = full (on renvoie les altLabel en plus)
         if (StringUtils.isEmpty(idTheso)) {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("l'Id du Thesaurus est obligatoire"));
         }
@@ -438,7 +445,7 @@ public class Rest_new {
         if (StringUtils.isNotEmpty(arkGroupValue)) {
             arkGroups = arkGroupValue.split(",");
         }
-        if(ArrayUtils.isEmpty(arkGroups)){
+        if(ArrayUtils.isNotEmpty(arkGroups)){
             groups = getIdGroupFromArk(arkGroups, idTheso);
         }
 
@@ -468,9 +475,9 @@ public class Rest_new {
      */
     @GetMapping(value = "/searchwidgetbyark", produces = JSON_FORMAT_LONG)
     public ResponseEntity<Object> searchJsonForWidgetByArk(@RequestParam(value = "lang") String idLang,
-                                                   @RequestParam(value = "format") String format,
+                                                   @RequestParam(required = false, value = "format") String format,
                                                    @RequestParam(value = "q") String query) {
-
+        // format = full (on renvoie les altLabel en plus)
         String[] idArks = StringUtils.isEmpty(query) ? null : query.split(",");
         
         if(ArrayUtils.isEmpty(idArks)) {
@@ -500,10 +507,13 @@ public class Rest_new {
     public ResponseEntity<Object> searchAutocomplete(@PathVariable("value") String value,
                                              @RequestParam(value = "theso") String idTheso,
                                              @RequestParam(value = "lang") String idLang,
-                                             @RequestParam(value = "group") String group,
+                                             @RequestParam(value = "group", required = false) String group,
                                              @RequestParam(value = "format", required = false) String format) {
 
-        var groups = group.split(","); // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
+        String [] groups = null;
+        if(StringUtils.isNotEmpty(group)) {
+            groups = group.split(",");// group peut être de la forme suivante pour multiGroup (G1,G2,G3)
+        }
 
         if (StringUtils.isEmpty(value)) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
@@ -511,9 +521,9 @@ public class Rest_new {
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = restRDFHelper.findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, false);
+            datas = restRDFHelper.findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, true);
         } else {
-            datas = restRDFHelper.findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, false);
+            datas = restRDFHelper.findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, false);
         }
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
@@ -532,11 +542,12 @@ public class Rest_new {
     public ResponseEntity<Object> searchAutocomplete2(@RequestParam(value = "value") String value,
                                         @RequestParam(value = "theso") String idTheso,
                                         @RequestParam(value = "lang") String idLang,
-                                        @RequestParam(value = "group") String group,
+                                        @RequestParam(value = "group", required = false) String group,
                                         @RequestParam(value = "format", required = false) String format) {
-
-        var groups = group.split(",");
-
+        String [] groups = null;
+        if(StringUtils.isNotEmpty(group)) {
+            groups = group.split(",");
+        }
         if (StringUtils.isEmpty(value)) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
         }

@@ -1,6 +1,8 @@
 #######################
 # Server Configuration
 #######################
+build:
+  version: 24.10.02
 server:
   port: 8099
   forward-headers-strategy: native
@@ -18,7 +20,7 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
  #   platform: postgres
-    url: jdbc:postgresql://localhost:5433/opentheso
+    url: jdbc:postgresql://localhost:5432/pactols
     password: opentheso
     username: opentheso
     dataSourceClassName: org.postgresql.ds.PGSimpleDataSource

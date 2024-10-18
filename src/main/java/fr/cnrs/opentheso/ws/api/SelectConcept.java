@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +30,14 @@ public class SelectConcept {
     @GetMapping(value = "{idTheso}.{idConcept}", produces = "application/xml;charset=UTF-8")
     public ResponseEntity<Object> getConcept(@PathVariable("idTheso") String idTheso,
                                      @PathVariable("idConcept") String idConcept,
-                                     @Context UriInfo uriInfo) throws URISyntaxException {
+                                     HttpServletRequest request) throws URISyntaxException {
 
-        var path = uriInfo.getBaseUriBuilder().toString().replaceAll("/api/", "/");
-        return ResponseEntity.status(307) // 307 corresponds to temporary redirect
-                .location(new URI(path + "?idc=" + idConcept +"&"+ "idt=" + idTheso))
-                .build();
+        // Extraire la base de l'URL (jusqu'à "api/concept/") et créer la nouvelle URL avec les bons paramètres
+        String requestUrl = request.getRequestURL().toString();
+
+        // Construire l'URL de redirection avec le format requis
+        String newUrl = requestUrl.replace("/api/concept/" + idTheso + "." + idConcept, "/")
+                + "?idc=" + idConcept + "&idt=" + idTheso;
+        return ResponseEntity.status(307).location(new URI(newUrl)).build();
     }
 }

@@ -86,6 +86,7 @@ public class ExportRdf4jHelperNew {
     }
 
     public boolean setInfos(NodePreference nodePreference) {
+        skosXmlDocument = new SKOSXmlDocument();
         this.nodePreference = nodePreference;
         messages = "";
         return true;
