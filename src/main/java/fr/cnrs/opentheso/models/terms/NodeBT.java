@@ -15,7 +15,7 @@ public class NodeBT implements Comparable {
     private String idConcept;
     private String status;
     private String role;
-    private boolean isSelected;
+    private boolean selected;
 
 
     @Override
