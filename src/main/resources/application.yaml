@@ -1,6 +1,8 @@
 #######################
 # Server Configuration
 #######################
+build:
+  version: 24.10.02
 server:
   port: 8099
   forward-headers-strategy: native

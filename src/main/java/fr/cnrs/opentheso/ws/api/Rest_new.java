@@ -507,10 +507,13 @@ public class Rest_new {
     public ResponseEntity<Object> searchAutocomplete(@PathVariable("value") String value,
                                              @RequestParam(value = "theso") String idTheso,
                                              @RequestParam(value = "lang") String idLang,
-                                             @RequestParam(value = "group") String group,
+                                             @RequestParam(value = "group", required = false) String group,
                                              @RequestParam(value = "format", required = false) String format) {
 
-        var groups = group.split(","); // group peut être de la forme suivante pour multiGroup (G1,G2,G3)
+        String [] groups = null;
+        if(StringUtils.isNotEmpty(group)) {
+            groups = group.split(",");// group peut être de la forme suivante pour multiGroup (G1,G2,G3)
+        }
 
         if (StringUtils.isEmpty(value)) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
@@ -539,11 +542,12 @@ public class Rest_new {
     public ResponseEntity<Object> searchAutocomplete2(@RequestParam(value = "value") String value,
                                         @RequestParam(value = "theso") String idTheso,
                                         @RequestParam(value = "lang") String idLang,
-                                        @RequestParam(value = "group") String group,
+                                        @RequestParam(value = "group", required = false) String group,
                                         @RequestParam(value = "format", required = false) String format) {
-
-        var groups = group.split(",");
-
+        String [] groups = null;
+        if(StringUtils.isNotEmpty(group)) {
+            groups = group.split(",");
+        }
         if (StringUtils.isEmpty(value)) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
         }
