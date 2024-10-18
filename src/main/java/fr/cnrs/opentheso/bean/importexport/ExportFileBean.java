@@ -134,9 +134,9 @@ public class ExportFileBean implements Serializable {
                 break;
         }
 
-        getCandidatsDatas(true);
+        var skosXmlDocument = getCandidatsDatas(true);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Rio.write(new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument()).getModel(), out, format);
+        Rio.write(new WriteRdf4j(skosXmlDocument).getModel(), out, format);
 
         return DefaultStreamedContent.builder()
                 .contentType("application/xml")
@@ -145,24 +145,25 @@ public class ExportFileBean implements Serializable {
                 .build();
     }
 
-    private void getCandidatsDatas(boolean isCandidatExport) {
+    private SKOSXmlDocument getCandidatsDatas(boolean isCandidatExport) {
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(),
-                selectedTheso.getCurrentIdTheso());
+        var skosXmlDocument = new SKOSXmlDocument();
+        var nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
 
         if (nodePreference == null) {
-            return;
+            return skosXmlDocument;
         }
 
         candidatBean.setProgressBarStep(100 / candidatBean.getCandidatList().size());
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference);
+        skosXmlDocument.setConceptScheme(exportRdf4jHelperNew.exportThesoV2(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference));
 
         for (CandidatDto candidat : candidatBean.getCandidatList()) {
             candidatBean.setProgressBarValue(candidatBean.getProgressBarValue() + candidatBean.getProgressBarStep());
-            exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), candidat.getIdConcepte(), isCandidatExport);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), candidat.getIdConcepte(), isCandidatExport));
         }
+
+        return skosXmlDocument;
     }
 
     public void exportToVertuoso() {
@@ -841,8 +842,8 @@ public class ExportFileBean implements Serializable {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.setConceptScheme(exportRdf4jHelperNew.exportThesoV2(connect.getPoolConnexion(), idTheso, nodePreference));
 
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
@@ -853,11 +854,9 @@ public class ExportFileBean implements Serializable {
         List<SKOSResource> concepts = new ArrayList<>();
 
         NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
-        SKOSResource sKOSResource = new SKOSResource(
-                exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
-        sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
-                exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
-        exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
+        SKOSResource sKOSResource = new SKOSResource(exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
+        sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
+        skosXmlDocument.addGroup(exportRdf4jHelperNew.exportThisCollectionV2(connect.getPoolConnexion(), idTheso, idGroup));
 
         concepts.addAll(exportHelper.getAllConcepts(connect.getPoolConnexion(),
                 idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter()));
@@ -870,15 +869,15 @@ public class ExportFileBean implements Serializable {
         
         for (SKOSResource facette : facettes) {
             if(facetHelper.isFacetInGroups(connect.getPoolConnexion(), idTheso, facette.getIdentifier(),  groups)){
-                exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+                skosXmlDocument.addFacet(facette);
             }
         }              
 
         for (SKOSResource concept : concepts) {
-            exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
+            skosXmlDocument.addconcept(concept);
         }
 
-        return exportRdf4jHelperNew.getSkosXmlDocument();
+        return skosXmlDocument;
     }    
     
 
@@ -915,8 +914,8 @@ public class ExportFileBean implements Serializable {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.setConceptScheme(exportRdf4jHelperNew.exportThesoV2(connect.getPoolConnexion(), idTheso, nodePreference));
 
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
         String serverAdress = FacesContext.getCurrentInstance().getExternalContext().getRequestServerName();
@@ -928,26 +927,28 @@ public class ExportFileBean implements Serializable {
 
         // cas d'export pour tout le thésaurus avec les collections et facettes
         if (!viewExportBean.isToogleFilterByGroup()) {
-            exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
-            concepts = exportHelper.getAllConcepts(connect.getPoolConnexion(), idTheso,
-                    baseUrl, null, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter());
+            var collectionsList = exportRdf4jHelperNew.exportCollectionsV2(connect.getPoolConnexion(), idTheso);
+            for (SKOSResource group : collectionsList) {
+                skosXmlDocument.addGroup(group);
+            }
+
+            concepts = exportHelper.getAllConcepts(connect.getPoolConnexion(), idTheso, baseUrl, null,
+                    nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter());
             
             // export des facettes
             List<SKOSResource> facettes = exportHelper.getAllFacettes(connect.getPoolConnexion(), idTheso, baseUrl,
                     nodePreference.getOriginalUri(), nodePreference);
             for (SKOSResource facette : facettes) {
-                exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+                skosXmlDocument.addFacet(facette);
             }            
             
         } else {
             /// Export filtré par collection, on filtre également les Facettes qui sont dans les collections sélectionnées
             for (String idGroup : viewExportBean.getSelectedIdGroups()) {
                 NodeGroupLabel nodeGroupLabel = groupHelper.getNodeGroupLabel(connect.getPoolConnexion(), idGroup, idTheso);
-                SKOSResource sKOSResource = new SKOSResource(
-                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
-                sKOSResource.addRelation(nodeGroupLabel.getIdGroup(),
-                        exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
-                exportRdf4jHelperNew.exportThisCollection(connect.getPoolConnexion(), idTheso, idGroup);
+                SKOSResource sKOSResource = new SKOSResource(exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.CONCEPT_GROUP);
+                sKOSResource.addRelation(nodeGroupLabel.getIdGroup(), exportRdf4jHelperNew.getUriFromGroup(nodeGroupLabel), SKOSProperty.MICROTHESAURUS_OF);
+                skosXmlDocument.addGroup(exportRdf4jHelperNew.exportThisCollectionV2(connect.getPoolConnexion(), idTheso, idGroup));
 
                 concepts.addAll(exportHelper.getAllConcepts(connect.getPoolConnexion(),
                         idTheso, baseUrl, idGroup, nodePreference.getOriginalUri(), nodePreference, viewExportBean.isToogleClearHtmlCharacter()));
@@ -958,21 +959,17 @@ public class ExportFileBean implements Serializable {
                     nodePreference.getOriginalUri(), nodePreference);
             for (SKOSResource facette : facettes) {
                 if(facetHelper.isFacetInGroups(connect.getPoolConnexion(), idTheso, facette.getIdentifier(),  viewExportBean.getSelectedIdGroups())){
-                    exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+                    skosXmlDocument.addFacet(facette);
                 }
             }              
             
         }
 
-
-
         for (SKOSResource concept : concepts) {
-            exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
+            skosXmlDocument.addconcept(concept);
         }
 
-    //    exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
-
-        return exportRdf4jHelperNew.getSkosXmlDocument();
+        return skosXmlDocument;
     }
 
     private boolean exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String nomGraphe, String url, String login, String password) {
@@ -1041,25 +1038,34 @@ public class ExportFileBean implements Serializable {
         sizeOfTheso = allConcepts.size();
         progressStep = (float) 100 / sizeOfTheso;
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportTheso(connect.getPoolConnexion(), idTheso, nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.setConceptScheme(exportRdf4jHelperNew.exportThesoV2(connect.getPoolConnexion(), idTheso, nodePreference));
 
         if (!viewExportBean.isToogleFilterByGroup()) {
-            exportRdf4jHelperNew.exportCollections(connect.getPoolConnexion(), idTheso);
+            var collectionsList = exportRdf4jHelperNew.exportCollectionsV2(connect.getPoolConnexion(), idTheso);
+            for (SKOSResource group : collectionsList) {
+                skosXmlDocument.addGroup(group);
+            }
         } else {
-            exportRdf4jHelperNew.exportSelectedCollections(connect.getPoolConnexion(), idTheso, selectedGroups);
+            var collections = exportRdf4jHelperNew.exportSelectedCollectionsV2(connect.getPoolConnexion(), idTheso, selectedGroups);
+            for (SKOSResource collection : collections) {
+                skosXmlDocument.addGroup(collection);
+            }
         }
 
-        exportRdf4jHelperNew.exportFacettes(connect.getPoolConnexion(), idTheso);
+        var facettesList = exportRdf4jHelperNew.exportFacettesV2(connect.getPoolConnexion(), idTheso);
+        for (SKOSResource facette : facettesList) {
+            skosXmlDocument.addFacet(facette);
+        }
 
         for (String idConcept : allConcepts) {
             progressBar += progressStep;
-            exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(connect.getPoolConnexion(), idTheso, idConcept, false));
         }
 
         viewExportBean.setExportDone(true);
 
-        return exportRdf4jHelperNew.getSkosXmlDocument();
+        return skosXmlDocument;
     }
 
     public float getProgressBar() {
@@ -1132,10 +1138,10 @@ public class ExportFileBean implements Serializable {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());
-        exportRdf4jHelperNew.exportConcept(connect.getPoolConnexion(), idTheso, idConcept, false);
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(connect.getPoolConnexion(), idTheso, idConcept, false));
         
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        WriteRdf4j writeRdf4j = new WriteRdf4j(skosXmlDocument);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Rio.write(writeRdf4j.getModel(), out, format);

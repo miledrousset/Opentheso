@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import jakarta.json.JsonArray;
 
 import fr.cnrs.opentheso.repositories.AlignmentHelper;
@@ -553,11 +555,9 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
-
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
-        return writeRdf4j;
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
+        return new WriteRdf4j(skosXmlDocument);
 
     }
 
@@ -573,14 +573,13 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-
+        var skosXmlDocument = new SKOSXmlDocument();
         for (String idConcept : ids) {
-            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
         }
 
         RDFFormat rDFFormat = getRDFFormat(format);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        WriteRdf4j writeRdf4j = new WriteRdf4j(skosXmlDocument);
 
         ByteArrayOutputStream out;
         out = new ByteArrayOutputStream();
@@ -628,12 +627,9 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-
-        exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
-
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
-        return writeRdf4j;
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
@@ -683,11 +679,9 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.addSignleConceptByLang(ds, idTheso, idConcept, idLang, showLabels);
-        WriteRdf4j writeRdf4j = new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
-        return writeRdf4j;
-
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.addconcept(exportRdf4jHelperNew.addSingleConceptByLangV2(ds, idTheso, idConcept, idLang, showLabels));
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
@@ -728,9 +722,9 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
@@ -771,9 +765,9 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
@@ -880,12 +874,11 @@ public class RestRDFHelper {
 
         if(idConcepts == null) return null;
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-
+        var skosXmlDocument = new SKOSXmlDocument();
         for (String idConcept : idConcepts) {
-            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
         }
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
@@ -941,11 +934,11 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
         for (String idConcept : idConcepts) {
-            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
         }
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     public String getChildsArkId(HikariDataSource ds, String idArk){
@@ -1221,13 +1214,13 @@ public class RestRDFHelper {
         path.add(idConcept);
         branchs = conceptHelper.getPathOfConceptWithoutGroup(ds, idConcept, idTheso, path, branchs);
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
         for (ArrayList<String> branch : branchs) {
             for (String idc : branch) {
-                exportRdf4jHelperNew.exportConcept(ds, idTheso, idc, false);
+                skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idc, false));
             }
         }
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
@@ -1277,14 +1270,12 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        ArrayList<String> path;// = new ArrayList<>();
-
-        path = conceptHelper.getIdsOfBranch(ds, idConcept, idTheso);
+        var skosXmlDocument = new SKOSXmlDocument();
+        ArrayList<String> path = conceptHelper.getIdsOfBranch(ds, idConcept, idTheso);
         for (String idC : path) {
-            exportRdf4jHelperNew.exportConcept(ds, idTheso, idC, false);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idC, false));
         }
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
@@ -1333,13 +1324,12 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
         ArrayList<String> branchs = conceptHelper.getAllIdConceptOfThesaurusByMultiGroup(ds, idTheso, groups);
         for (String idConcept : branchs) {
-            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
         }
-
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
@@ -1512,13 +1502,12 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
         ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
         allConcepts.forEach(idConcept -> {
-            exportRdf4jHelperNew.exportConcept(ds, idTheso, idConcept, false);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
         });
-
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        return new WriteRdf4j(skosXmlDocument);
     }
     
     /**
@@ -1534,12 +1523,15 @@ public class RestRDFHelper {
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
         if (nodePreference == null) return null;
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportTheso(ds, idTheso, nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.setConceptScheme(exportRdf4jHelperNew.exportThesoV2(ds, idTheso, nodePreference));
         
         String baseUrl = "https" + "://" + nodePreference.getCheminSite();
         
-        exportRdf4jHelperNew.exportCollections(ds, idTheso);
+        var groups = exportRdf4jHelperNew.exportCollectionsV2(ds, idTheso);
+        for (SKOSResource group : groups) {
+            skosXmlDocument.addGroup(group);
+        }
         
         List<SKOSResource> concepts = exportHelper.getAllConcepts(ds, idTheso,
                     baseUrl, null, nodePreference.getOriginalUri(), nodePreference, false);
@@ -1547,15 +1539,18 @@ public class RestRDFHelper {
         List<SKOSResource> facettes = exportHelper.getAllFacettes(ds, idTheso, baseUrl,
                 nodePreference.getOriginalUri(), nodePreference);
         for (SKOSResource facette : facettes) {
-            exportRdf4jHelperNew.getSkosXmlDocument().addFacet(facette);
+            skosXmlDocument.addFacet(facette);
         }
 
         for (SKOSResource concept : concepts) {
-            exportRdf4jHelperNew.getSkosXmlDocument().addconcept(concept);
+            skosXmlDocument.addconcept(concept);
         }
-        
-        exportRdf4jHelperNew.exportFacettes(ds, idTheso);
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+
+        var facetList = exportRdf4jHelperNew.exportFacettesV2(ds, idTheso);
+        for (SKOSResource facette : facetList) {
+            skosXmlDocument.addFacet(facette);
+        }
+        return new WriteRdf4j(skosXmlDocument);
     }    
   
 
@@ -1623,9 +1618,9 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.addSingleGroup(ds, idTheso, idGroup);
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.addGroup(exportRdf4jHelperNew.addSingleGroupV2(ds, idTheso, idGroup));
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     private WriteRdf4j getGroupFromId(HikariDataSource ds,
@@ -1639,10 +1634,9 @@ public class RestRDFHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-
-        exportRdf4jHelperNew.addSingleGroup(ds, idTheso, idGroup);
-        return new WriteRdf4j(exportRdf4jHelperNew.getSkosXmlDocument());
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.addGroup(exportRdf4jHelperNew.addSingleGroupV2(ds, idTheso, idGroup));
+        return new WriteRdf4j(skosXmlDocument);
     }
 
     /**
