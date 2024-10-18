@@ -209,7 +209,7 @@ public class CsvReadHelper {
                 NodeIdValue nodeIdValue = new NodeIdValue();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
-                    value = record.get("localId");
+                    value = record.get("localid");
                     if (value == null) {
                         continue;
                     }
@@ -253,7 +253,7 @@ public class CsvReadHelper {
                 ConceptObject conceptObject = new ConceptObject();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
-                    value = record.get("localId");
+                    value = record.get("localid");
                     if (value == null) {
                         continue;
                     }
@@ -300,7 +300,7 @@ public class CsvReadHelper {
                 ConceptObject conceptObject = new ConceptObject();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
-                    value = record.get("localId");
+                    value = record.get("localid");
                     if (StringUtils.isEmpty(value)) {
                         continue;
                     }
@@ -331,41 +331,50 @@ public class CsvReadHelper {
      */
     public boolean readFileNotation(Reader in) {
         try {
-            CSVFormat cSVFormat = CSVFormat.DEFAULT.builder().setHeader().setDelimiter(delimiter)
-                    .setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).setTrim(true).build();
+            // Configuration du format CSV
+            CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+                    .setHeader()
+                    .setDelimiter(delimiter)
+                    .setIgnoreEmptyLines(true)
+                    .setIgnoreHeaderCase(true)
+                    .setTrim(true)
+                    .build();
 
-            CSVParser cSVParser = cSVFormat.parse(in);
-            String value;
-            nodeIdValues = new ArrayList<>();
-            for (CSVRecord record : cSVParser) {
-                NodeIdValue nodeIdValue = new NodeIdValue();
-                // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
-                try {
-                    value = record.get("localId");
-                    if (value == null) {
-                        continue;
+            // Lecture du fichier CSV
+            try (CSVParser csvParser = csvFormat.parse(in)) {
+                nodeIdValues = new ArrayList<>();
+
+                // Parcourir les enregistrements CSV
+                for (CSVRecord record : csvParser) {
+                    NodeIdValue nodeIdValue = new NodeIdValue();
+
+                    // Récupérer l'identifiant "localId"
+                    String value = record.get("localid");
+                    if (value == null || value.isBlank()) {
+                        continue; // Si vide, passer à l'enregistrement suivant
                     }
                     nodeIdValue.setId(value);
-                } catch (Exception e) {
-                    continue;
-                }
-                // on récupère les uris à supprimer
-                try {
+
+                    // Récupérer la notation "skos:notation"
                     value = record.get("skos:notation");
-                    if (value == null) {
-                        continue;
+                    if (value == null || value.isBlank()) {
+                        continue; // Si vide, passer à l'enregistrement suivant
                     }
                     nodeIdValue.setValue(value.trim());
-                } catch (Exception e) {
-                    continue;
+
+                    // Ajouter l'objet à la liste
+                    nodeIdValues.add(nodeIdValue);
                 }
-                nodeIdValues.add(nodeIdValue);
             }
             return true;
+
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(CsvReadHelper.class.getName()).log(Level.SEVERE, null, ex);
+                log.error("Error reading CSV file", ex);
+        } catch (IllegalArgumentException ex) {
+            log.error("CSV file missing required headers", ex);
         }
         return false;
+
     }    
 
     /**
@@ -386,7 +395,7 @@ public class CsvReadHelper {
                 NodeIdValue nodeIdValue = new NodeIdValue();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
-                    value = record.get("localId");
+                    value = record.get("localid");
                     if (value == null) {
                         continue;
                     }
@@ -422,7 +431,7 @@ public class CsvReadHelper {
 
             ArrayList<String> headerSourceAlign = new ArrayList<>();
             for (String columnName : headers.keySet()) {
-                if (columnName.equalsIgnoreCase("localId")) {
+                if (columnName.equalsIgnoreCase("localid")) {
                     continue;
                 }
                 headerSourceAlign.add(columnName);
@@ -455,7 +464,7 @@ public class CsvReadHelper {
                 NodeAlignmentImport nodeAlignmentImport = new NodeAlignmentImport();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
-                    value = record.get("localId");
+                    value = record.get("localid");
                     if (value == null) {
                         continue;
                     }
@@ -545,7 +554,7 @@ public class CsvReadHelper {
                 ConceptObject conceptObject = new ConceptObject();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
-                    idConcept = record.get("localId");
+                    idConcept = record.get("localid");
                     if (idConcept == null || idConcept.isEmpty()) {
                         continue;
                     }
@@ -586,7 +595,7 @@ public class CsvReadHelper {
                 ConceptObject conceptObject = new ConceptObject();
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
-                    idConcept = record.get("localId");
+                    idConcept = record.get("localid");
                     if (idConcept == null || idConcept.isEmpty()) {
                         continue;
                     }
@@ -628,7 +637,7 @@ public class CsvReadHelper {
             for (CSVRecord record : cSVParser) {
                 // setId, si l'identifiant n'est pas renseigné, on récupère un NULL 
                 try {
-                    idConcept = record.get("localId");
+                    idConcept = record.get("localid");
                     if (idConcept == null || idConcept.isEmpty()) {
                         continue;
                     }
