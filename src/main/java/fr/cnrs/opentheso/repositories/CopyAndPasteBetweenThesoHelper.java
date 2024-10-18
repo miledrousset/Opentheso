@@ -122,15 +122,14 @@ public class CopyAndPasteBetweenThesoHelper {
             return null;
         }
 
-        exportRdf4jHelperNew.setInfos(nodePreference);
-        exportRdf4jHelperNew.exportTheso(ds, fromIdTheso, nodePreference);
+        var skosXmlDocument = new SKOSXmlDocument();
+        skosXmlDocument.setConceptScheme(exportRdf4jHelperNew.exportThesoV2(ds, fromIdTheso, nodePreference));
 
         ArrayList<String> allConcepts = conceptHelper.getIdsOfBranch(ds, fromIdConcept, fromIdTheso);
-        
         for (String idConcept : allConcepts) {
-            exportRdf4jHelperNew.exportConcept(ds, fromIdTheso, idConcept, false);
+            skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, fromIdTheso, idConcept, false));
         }        
-        return exportRdf4jHelperNew.getSkosXmlDocument();
+        return skosXmlDocument;
     }
 
     private boolean addBranch(HikariDataSource ds, SKOSXmlDocument sKOSXmlDocument, NodePreference nodePreference,

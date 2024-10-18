@@ -18,7 +18,7 @@
                           style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
                           class="dropdown-submenu pull-left">
 
-                <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" ajax="false"
+                <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" ajax="true"
                             actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
                             oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
 
@@ -27,7 +27,7 @@
                             oncomplete="PF('addSubGroup').show();" update="containerIndex:idAddSubGroup"
                             icon="far fa-object-ungroup"/>
 
-                <p:menuitem disabled="#{treeGroups.deleteGroupDisable()}" ajax="false"
+                <p:menuitem disabled="#{treeGroups.deleteGroupDisable()}" ajax="true"
                             value="#{langueBean.getMsg('leftbody.group.deleteGroup')}"
                             actionListener="#{addGroupBean.init()}"  process="@this"
                             oncomplete="PF('deleteGroup').show();" update="containerIndex:idDeleteGroup"
