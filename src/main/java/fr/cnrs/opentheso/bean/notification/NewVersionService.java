@@ -2,17 +2,13 @@ package fr.cnrs.opentheso.bean.notification;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
-import fr.cnrs.opentheso.entites.Release;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
-import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
 import java.io.IOException;
@@ -31,15 +27,14 @@ import fr.cnrs.opentheso.repositories.ReleaseRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.entites.Release;
 
 
 @Slf4j
 @Data
-@SessionScoped
+@ApplicationScoped
 @Named(value = "newVersionBean")
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class NewVersionService implements Serializable {
 
     @Autowired @Lazy

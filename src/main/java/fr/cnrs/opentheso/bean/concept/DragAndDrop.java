@@ -502,9 +502,6 @@ public class DragAndDrop implements Serializable {
         dragNode = (TreeNode) event.getDragNode();
         dropNode = (TreeNode) event.getDropNode();
 
-        //       TreeNode[] dragNodes = (TreeNode[]) event.getDragNodes();
-
-
         FacesMessage msg;
 
         // à corriger pour traiter le déplacement des facettes par Drag and Drop
@@ -1217,10 +1214,11 @@ public class DragAndDrop implements Serializable {
     
     private void reloadTree(){
         PrimeFaces pf = PrimeFaces.current();
-        String lang;
+        String lang = null;
         if (conceptBean.getNodeConcept() != null) {
             lang = conceptBean.getSelectedLang();
-        } else {
+        }
+        if (lang == null) {
             lang = selectedTheso.getCurrentLang();
         }
 

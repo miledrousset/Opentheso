@@ -75,19 +75,19 @@
                                                             oncomplete="PF('manageView').show();"
                                                             actionListener="#{dataGraphView.initEditViewDialog(graph_view.id)}"/>  
                                                 <p:menuitem value="#{langueBean.getMsg('graphdialog.manage_view.delete')}"
-                                                            icon="fa fa-trash" update="graph-form">
-                                                    <p:confirm header="#{langueBean.getMsg('profile.confirmation')}" message="#{langueBean.getMsg('graphdialog.manage_view.deleteconfirm')} ?" icon="pi pi-info-circle"/>
+                                                            icon="fa fa-trash" update="graph-form"
+                                                            actionListener="#{dataGraphView.removeView(graph_view.id)}">
+                                                    <p:confirm header="#{langueBean.getMsg('profile.confirmation')}"
+                                                               message="#{langueBean.getMsg('graphdialog.manage_view.deleteconfirm')} ?"
+                                                               icon="pi pi-info-circle"/>
                                                 </p:menuitem>
                                             </p:menuButton>
                                         </div>
                                     </div>
 
                                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                                        <p:commandButton value="#{langueBean.getMsg('no')}" styleClass="ui-confirmdialog-no ui-button-flat"
-                                                         ajax="true" process="@form" update="graph-form"/>
-                                        <p:commandButton value="#{langueBean.getMsg('yes')}" styleClass="ui-confirmdialog-yes"
-                                                         ajax="true" process="@form"
-                                                         actionListener="#{dataGraphView.removeView(graph_view.id)}" update="graph-form"/>
+                                        <p:commandButton value="#{langueBean.getMsg('no')}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                        <p:commandButton value="#{langueBean.getMsg('yes')}" type="button" styleClass="ui-confirmdialog-yes" />
                                     </p:confirmDialog>
 
                                     <div class="card border-1" style="padding: 10px; margin: 1px">
