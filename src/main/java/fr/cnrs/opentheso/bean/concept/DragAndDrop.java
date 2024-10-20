@@ -237,12 +237,15 @@ public class DragAndDrop implements Serializable {
      *
      * @param nodeConcept
      */
-    public void onStartCut(NodeConcept nodeConcept, TreeNode dragNode) {
-        this.dragNode = dragNode;
-        reset();
+    public void onStartCut(NodeConcept nodeConcept) {
+
         if (nodeConcept == null) {
             return;
         }
+
+        reset();
+        this.dragNode = tree.getSelectedNode();
+
         nodeConceptDrag = nodeConcept;
         isCopyOn = true;
 
@@ -251,7 +254,6 @@ public class DragAndDrop implements Serializable {
                     + nodeConceptDrag.getTerm().getLexicalValue() + " (" + nodeConceptDrag.getConcept().getIdConcept() + ")");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
-        PrimeFaces.current().executeScript("srollToSelected();");
     }
 
     public void test() {
