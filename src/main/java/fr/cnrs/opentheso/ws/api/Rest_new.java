@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.DELETE, RequestMethod.PUT })
-@Tag(name = "Nouvelles APIs", description = "Divers API")
+@Tag(name = "Ancienne API", description = "Anciennes requêtes API REST")
 public class Rest_new {
 
     @Autowired
@@ -108,11 +108,6 @@ public class Rest_new {
         return "pong";
     }
 
-    @PostMapping(value = "/post", produces = "text/text;charset=UTF-8")
-    public String testPost(){
-        return "pong";
-    }
-    
     @GetMapping(value = "/{naan}/{idArk}.rdf", produces = CustomMediaType.APPLICATION_RDF)
     public ResponseEntity<String> getSkosFromArk(@PathVariable("naan") String naan,
                                                  @PathVariable("idArk") String arkId) {

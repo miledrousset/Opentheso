@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.ws.api;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,13 +37,17 @@ public class SelectTheso {
     // Cette fonction permet de se diriger vers le bon thésaurus en passant par son nom VIA REST ceci permet de gérer
     // les noms de domaines et filtrer les thésaurus dans un parc important
     @GetMapping(value = "{theso}", produces = "application/xml;charset=UTF-8")
-    public ResponseEntity<Object> getThesoUri(@PathVariable("theso") String name, @Context UriInfo uriInfo) throws URISyntaxException {
+    public ResponseEntity<Object> getThesoUri(@PathVariable("theso") String name,
+
+    // @Context UriInfo uriInfo
+       HttpServletRequest request
+    ) throws URISyntaxException {
 
         var idTheso = preferencesHelper.getIdThesaurusFromName(connect.getPoolConnexion(), name);
-        var path = uriInfo.getBaseUriBuilder().toString().replaceAll("/api/", "/") + "?idt=" + idTheso;
-
-        return ResponseEntity.status(307) // 307 corresponds to temporary redirect
-                .location(new URI(path))
-                .build();
+        // Récupération de l'URL de la requête
+        String requestUrl = request.getRequestURL().toString();
+        //  String newUrl = StringUtils.substringAfter(requestUrl, "openapi");/?idt=th739
+        String newUrl = requestUrl.replace("/api/theso/" +idTheso, "/") + "?idt=" + idTheso;
+        return ResponseEntity.status(307).location(new URI(newUrl)).build();
     }
 }
