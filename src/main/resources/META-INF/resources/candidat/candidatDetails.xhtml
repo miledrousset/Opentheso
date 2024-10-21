@@ -41,9 +41,9 @@
                     <h:panelGroup rendered="#{!candidatBean.isNewCandidatActivate()}">
                         <p:inputText id="inputTextCandidate" readonly="#{!candidatBean.isMyCandidate() }"
                                      value="#{candidatBean.candidatSelected.nomPref}">
-                            <p:ajax event="change" listener="#{candidatBean.changeStateOfLabel()}"
-                                    update="tabViewCandidat:containerIndexCandidat:vote"/>
-                        </p:inputText> 
+                            <p:ajax event="keyup" listener="#{candidatBean.changeStateOfLabel()}"
+                                    update="validateBtn"/>
+                        </p:inputText>
                         <p:tooltip for="inputTextCandidate" value="#{langueBean.getMsg('candidat.term.no_edit')}"
                                    showDelay="1000" position="top"/>
                     </h:panelGroup>
@@ -61,7 +61,7 @@
                                      icon="fas fa-thumbs-down" style="background-color: #888; border: none; color: #FFF;height: 35px"/>
                     
                     
-                    <p:commandButton rendered="#{candidatBean.isMyCandidate() and !candidatBean.isNewCandidatActivate()}"
+                    <p:commandButton id="validateBtn" rendered="#{candidatBean.isMyCandidate() and !candidatBean.isNewCandidatActivate()}"
                                      disabled="#{!candidatBean.isModifiedLabel}"
                                      update="vote"
                                      action="#{candidatBean.updateCandidateLabel()}"
@@ -81,17 +81,15 @@
                         <div class="ui-inputgroup">
                             <p:textEditor id="textEditorDef" widgetVar="DefinitionNew"
                                           value="#{candidatBean.definition}" allowLinks="true"
-                                          secure="false" height="100" style="font-size: 12px; color: black; border-color: #43B572; width: 100%;"
+                                          secure="false" height="100px" style="font-size: 12px; color: black; border-color: #43B572; width: 100%;"
                                           placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />
                         </div>
                     </div>
                 </div>
-            </h:panelGroup>
 
-            <!-- Validation et enregistrement des nouvelles données ci-dessus -->
-            <h:panelGroup rendered="#{candidatBean.isNewCandidatActivate()}" style="margin-top: 20px">
+                <!-- Validation et enregistrement des nouvelles données ci-dessus -->
                 <div class="row">
-                    <div class="col-12" style="text-align: right" >
+                    <div class="col-12" style="text-align: right; margin-top: 10px" >
                         <p:commandButton value="#{langueBean.getMsg('candidat.close')}" style="margin-right: 10px"
                                          icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
                                          actionListener="#{candidatBean.setIsListCandidatsActivate(true)}"
