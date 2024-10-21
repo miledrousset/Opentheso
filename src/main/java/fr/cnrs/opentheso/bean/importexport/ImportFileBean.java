@@ -2964,13 +2964,11 @@ public class ImportFileBean implements Serializable {
                 // sinon, c'est le père du dossier en cours qui est pris en compte
                 if (conceptObject.getBroaders().isEmpty()) {
                     csvImportHelper.addSingleConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
-                            idPere, null/*nodeFullConcept.getMembres()*/, currentUser.getNodeUser().getIdUser(),
-                            conceptObject);
+                            idPere, null, currentUser.getNodeUser().getIdUser(), conceptObject, nodePreference);
                 } else {
                     for (String idBT : conceptObject.getBroaders()) {
                         csvImportHelper.addSingleConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
-                                idBT, null/*nodeFullConcept.getMembres()*/, currentUser.getNodeUser().getIdUser(),
-                                conceptObject);
+                                idBT, null, currentUser.getNodeUser().getIdUser(), conceptObject, nodePreference);
                     }
                 }
             }

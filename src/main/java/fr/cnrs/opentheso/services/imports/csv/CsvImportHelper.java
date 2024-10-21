@@ -170,7 +170,7 @@ public class CsvImportHelper {
     }
 
     public void addSingleConcept(HikariDataSource ds, String idTheso, String idConceptPere, String idGroup, int idUser,
-            CsvReadHelper.ConceptObject conceptObject) {
+            CsvReadHelper.ConceptObject conceptObject, NodePreference nodePreference) {
         boolean first = true;
         String idConcept = null;
         String idTerm = null;
