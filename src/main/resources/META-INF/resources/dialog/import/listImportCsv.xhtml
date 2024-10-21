@@ -17,55 +17,61 @@
                     </div>
                 </div>
 
-                <div class="row" >                
-                    <div class="col-12">
-                        <fieldset>
-                            <p:panelGrid>
-                                <f:facet name="header">
-                                    <p:row style="font-size: 12px;">
-                                        <p:column colspan="1">URI</p:column>
-                                        <p:column colspan="1">skos:prefLabel@fr</p:column>
-                                        <p:column colspan="1">skos:prefLabel@en</p:column>
-                                        <p:column colspan="1">skos:altLabel@fr</p:column>
-                                        <p:column colspan="1">skos:definition@fr</p:column>
-                                        <p:column colspan="1">skos:broader</p:column>
-                                    </p:row>
-                                </f:facet>
-                                <p:row style="font-size: 12px;">
-                                    <p:column>100</p:column>
-                                    <p:column>France</p:column>
-                                    <p:column>France_en</p:column>
-                                    <p:column>l'Hexagone</p:column>
-                                    <p:column>Pays de la liberté##fait partie de l'Europe</p:column>
-                                    <p:column></p:column>
+                <p:scrollPanel mode="native">
+                    <h:panelGrid columns="6" styleClass="customTable">
+                        <h:outputText value="URI" />
+                        <h:outputText value="skos:prefLabel@fr" />
+                        <h:outputText value="skos:prefLabel@en" />
+                        <h:outputText value="skos:altLabel@fr" />
+                        <h:outputText value="skos:definition@fr" />
+                        <h:outputText value="skos:broader" />
 
-                                </p:row>
-                                <p:row style="font-size: 12px;">
-                                    <p:column>101</p:column>
-                                    <p:column>Lyon</p:column>
-                                    <p:column>Lyon_en</p:column>
-                                    <p:column>Lugdunum</p:column>
-                                    <p:column>Ville de la gastronomie</p:column>
-                                    <p:column>100</p:column>
-                                </p:row>  
-                                <p:row style="font-size: 12px;">
-                                    <p:column>102</p:column>
-                                    <p:column>Vaise</p:column>
-                                    <p:column>Vaise_en</p:column>
-                                    <p:column>9 ème</p:column> 
-                                    <p:column>Quartier du 69009</p:column>
-                                    <p:column>101</p:column>
-                                </p:row>                  
-                            </p:panelGrid>     
-                            <br/>
-                            <p:outputPanel deferred="true" style="font-size: 12px; width: 600px;">
-                                <p>
-                                    #{langueBean.getMsg('import.simpleListCsv.help')}
-                                </p>
-                            </p:outputPanel>
-                        </fieldset>
-                    </div>  
-                </div> 
+                        <h:outputText value="100" />
+                        <h:outputText value="France" />
+                        <h:outputText value="France_en" />
+                        <h:outputText value="l'Hexagone" />
+                        <h:outputText value="Pays de la liberté##fait partie de l'Europe" />
+                        <h:outputText value="" />
+
+                        <h:outputText value="101" />
+                        <h:outputText value="Lyon" />
+                        <h:outputText value="Lyon_en" />
+                        <h:outputText value="Lugdunum" />
+                        <h:outputText value="Ville de la gastronomie" />
+                        <h:outputText value="100" />
+
+                        <h:outputText value="102" />
+                        <h:outputText value="Vaise" />
+                        <h:outputText value="Vaise_en" />
+                        <h:outputText value="9 ème" />
+                        <h:outputText value="Quartier du 69009" />
+                        <h:outputText value="101" />
+                    </h:panelGrid>
+                </p:scrollPanel>
+
+                <p:outputPanel deferred="true" style="font-size: 12px; width: 600px;">
+                    <p>
+                        #{langueBean.getMsg('import.simpleListCsv.help')}
+                    </p>
+                </p:outputPanel>
+
+                <style>
+                    .customTable {
+                        border-collapse: collapse;
+                    }
+
+                    .customTable td, .customTable th {
+                        border: 0.5px solid black; /* Bordure de 0.5px */
+                        padding: 5px; /* Espace intérieur */
+                    }
+
+                    /* Cible la première ligne du tableau (9 cellules) */
+                    .customTable tr:first-child td {
+                        background-color: #f0f0f0; /* Arrière-plan gris clair */
+                        font-weight: bold; /* Texte en gras */
+                        text-align: center; /* Texte centré */
+                    }
+                </style>
 
                 <!-- délimiteur CSV -->
                 <div class="row">

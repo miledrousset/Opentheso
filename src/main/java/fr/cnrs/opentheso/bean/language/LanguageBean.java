@@ -50,6 +50,7 @@ public class LanguageBean implements Serializable {
             pf.ajax().update("messageIndex");
             pf.ajax().update("containerIndex");
             pf.ajax().update("menuBar");
+            pf.ajax().update("tabViewCandidat");
         }
     }
 
