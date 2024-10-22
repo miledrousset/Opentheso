@@ -374,8 +374,6 @@ public class TreeGroups implements Serializable {
             groupView.getGroup(idTheso, ((TreeNodeData) selectedNode.getData()).getNodeId(), idLang);
             rightBodySetting.setIndex("1");
         }
-
-        PrimeFaces.current().executeScript("window.location.reload();");
     }
 
     public String getNodeLabel() {

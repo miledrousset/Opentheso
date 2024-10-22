@@ -60,17 +60,16 @@
 
                             <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk}">
                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                <p:link href="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}"
+                                <h:link href="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}"
                                         value="#{selectedTheso.getUriOfTheso(roleOnTheso.nodePreference)}"
-                                        style="color: #164A78; font-size: 13px;color: #F47B2A;" target="_blank">
-                                </p:link>
+                                        style="color: #164A78; font-size: 13px;color: #F47B2A;" target="_blank" />
                             </h:panelGroup>
                             <h:panelGroup rendered="#{!roleOnTheso.nodePreference.originalUriIsArk}">
-                                <p:link href="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
+                                <h:link href="#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
                                         value="#{request.serverName}#{request.contextPath}/?idt=#{selectedTheso.currentIdTheso}"
                                         target="_blank" style="font-size: 13px; color: #F47B2A;" >
                                     <i class="pi pi-link" style="color: #43B572;" />
-                                </p:link>
+                                </h:link>
                             </h:panelGroup>
                         </div>
                     </div>
