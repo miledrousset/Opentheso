@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-
+/*
 @Slf4j
 @RestController
-@RequestMapping("/api")
+//@RequestMapping("/api")
 @CrossOrigin(methods = { RequestMethod.GET })
 public class LangController {
 
@@ -44,4 +44,4 @@ public class LangController {
         
     }
     
-}
+}*/
