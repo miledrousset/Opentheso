@@ -1213,7 +1213,7 @@ public class RestRDFHelper {
 
         path.add(idConcept);
         branchs = conceptHelper.getPathOfConceptWithoutGroup(ds, idConcept, idTheso, path, branchs);
-
+        exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
         for (ArrayList<String> branch : branchs) {
             for (String idc : branch) {
@@ -1269,7 +1269,7 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-
+        exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
         ArrayList<String> path = conceptHelper.getIdsOfBranch(ds, idConcept, idTheso);
         for (String idC : path) {
@@ -1617,7 +1617,7 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-
+        exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
         skosXmlDocument.addGroup(exportRdf4jHelperNew.addSingleGroupV2(ds, idTheso, idGroup));
         return new WriteRdf4j(skosXmlDocument);
@@ -1633,7 +1633,7 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-
+        exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
         skosXmlDocument.addGroup(exportRdf4jHelperNew.addSingleGroupV2(ds, idTheso, idGroup));
         return new WriteRdf4j(skosXmlDocument);

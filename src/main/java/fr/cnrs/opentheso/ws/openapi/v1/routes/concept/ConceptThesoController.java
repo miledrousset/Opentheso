@@ -113,7 +113,7 @@ public class ConceptThesoController {
     )
     public ResponseEntity<Object> getDatasForGraph(
             @Parameter(name = "idTheso", description = "ID du thesaurus dans lequel récupérer le concept.", required = true) @PathVariable("idTheso") String idThesaurus,
-            @Parameter(name = "idArk", description = "ID du concept à récupérer", required = true) @PathVariable("idConcept") String idConcept,
+            @Parameter(name = "idConcept", description = "ID du concept à récupérer", required = true) @PathVariable("idConcept") String idConcept,
             @Parameter(name = "lang", description = "Langue du concept à récupérer", required = true) @RequestParam("lang") String lang) {
 
         var datas = d3jsHelper.findDatasForGraph__(connect.getPoolConnexion(), idConcept, idThesaurus, lang);
