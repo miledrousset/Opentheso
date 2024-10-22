@@ -13,10 +13,10 @@
             </p:commandLink>
 
             <!-- ajout des collections et sous collections -->
-            <p:menuButton icon="pi pi-align-justify"
-                          rendered="#{treeGroups.menuDisable()}"
-                          style="color: #f47b2a; background: none; border: none; box-shadow: none; float: right;"
-                          class="dropdown-submenu pull-left">
+            <p:commandButton id="groupMenuButton" type="button" icon="pi pi-align-justify"
+                             style="width: 1.5rem; height: 1.5rem; margin-left: 5px; margin-right: 5px; background: white; color: #f47b2a; border: 1px solid #ffffff;"/>
+
+            <p:menu rendered="#{treeGroups.menuDisable()}" overlay="true" trigger="groupMenuButton" my="left top" at="left bottom">
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" ajax="true"
                             actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
@@ -48,7 +48,7 @@
                             disabled="#{treeGroups.sortByNotation}" icon="fas fa-sort-numeric-down"
                             update="containerIndex menuBar" />
 
-            </p:menuButton>
+            </p:menu>
         </div>
     </div>
 
