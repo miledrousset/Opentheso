@@ -1,5 +1,6 @@
 package fr.cnrs.opentheso.bean.rightbody.viewconcept;
 
+import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.CorpusHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
@@ -96,6 +97,9 @@ public class ConceptView implements Serializable {
 
     @Autowired
     private LanguageHelper languageHelper;
+
+    @Autowired
+    private SelectedTheso selectedTheso;
 
     private NodeConcept nodeConcept;
     
@@ -275,6 +279,10 @@ public class ConceptView implements Serializable {
     public void getConcept(String idTheso, String idConcept, String idLang, CurrentUser currentUser) {
         offset = 0;
         gpsModeSelected = GpsMode.POINT;
+
+        if (StringUtils.isEmpty(idLang)) {
+            idLang = languageBean.getIdLangue();
+        }
         
         if(currentUser != null) {
             nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
@@ -419,6 +427,9 @@ public class ConceptView implements Serializable {
      */
     public void getConceptForTree(String idTheso, String idConcept, String idLang, CurrentUser currentUser) {
 
+        if (StringUtils.isEmpty(idLang)) {
+            idLang = selectedTheso.getSelectedLang();
+        }
         selectedLang = idLang;
         offset = 0;
         
@@ -569,7 +580,7 @@ public class ConceptView implements Serializable {
      */
     private void pathOfConcept2(String idTheso, String idConcept, String idLang) {
         List<String> graphPaths = pathHelper.getGraphOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
-        List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);        
+        List<List<String>> paths = pathHelper.getPathFromGraph(graphPaths);
         pathLabel2 = pathHelper.getPathWithLabel2(connect.getPoolConnexion(), paths, idTheso, idLang);
     }    
     

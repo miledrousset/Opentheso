@@ -162,8 +162,7 @@ public class PathHelper {
         return pathLabel1;
     }
     
-    public void getPathWithLabelAsJson(HikariDataSource ds, List<Path> paths, JsonArrayBuilder jsonArrayBuilder,
-            String idTheso, String idLang, String format) {
+    public JsonArrayBuilder getPathWithLabelAsJson(HikariDataSource ds, List<Path> paths, String idTheso, String idLang, String format) {
 
         String label;
         int i = 0;
@@ -171,7 +170,8 @@ public class PathHelper {
         if(idLang == null || idLang.isEmpty()) {
             idLang = preferencesHelper.getWorkLanguageOfTheso(ds, idTheso);
         }
-                
+
+        var jsonArrayBuilder = Json.createArrayBuilder();
         for (Path path1 : paths) {
             JsonArrayBuilder jsonArrayBuilderPath = Json.createArrayBuilder();            
             for (String idConcept : path1.getPath()) {
@@ -234,6 +234,8 @@ public class PathHelper {
             jsonArrayBuilder.add(jsonArrayBuilderPath.build());//.toString());
             i = 0;
         }
+
+        return jsonArrayBuilder;
     }
     
     public ArrayList<Path> getPathOfConcept(HikariDataSource ds,
