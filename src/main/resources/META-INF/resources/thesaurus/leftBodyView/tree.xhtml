@@ -88,7 +88,7 @@
 
                     <p:ajax event="expand" listener="#{tree.onNodeExpand}"/>
                     <p:ajax event="collapse" listener="#{tree.onNodeCollapse}" />
-                    <p:ajax event="select" listener="#{tree.onNodeSelect}" update="containerIndex:formRightTab"/>
+                    <p:ajax event="select" listener="#{tree.onNodeSelect}" update="containerIndex:formRightTab containerIndex:formLeftTab"/>
                     <p:ajax event="dragdrop" listener="#{dragAndDrop.onDragDrop}" update="tree messageIndex" />
 
                     <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
