@@ -60,6 +60,7 @@ public class DeeplTranslate implements Serializable {
     }
 
     public void setNoteToTranlate(NodeNote nodeNote) {
+        if(nodeNote == null) return;
         textToTranslate = nodeNote.getLexicalValue();
         this.nodeNote = nodeNote;
         retrieveExistingTranslatedText();

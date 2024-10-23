@@ -2,7 +2,7 @@
 # Server Configuration
 #######################
 build:
-  version: 24.10.02
+  version: ${app.version}
 server:
   port: 8099
   forward-headers-strategy: native
