@@ -1040,15 +1040,9 @@ public class RestRDFHelper {
      * @param format
      * @return
      */
-    public String findDatasForWidgetByArk(HikariDataSource ds,
-            String lang, String[] idArks, String format) {
+    public JsonArrayBuilder findDatasForWidgetByArk(HikariDataSource ds, String lang, String[] idArks, String format) {
 
-        String datas = findDatasForWidgetByArk__(ds,
-                lang, idArks, format);
-        if (datas == null) {
-            return null;
-        }
-        return datas;
+        return findDatasForWidgetByArk__(ds, lang, idArks, format);
     }
 
     /**
@@ -1058,36 +1052,27 @@ public class RestRDFHelper {
      * @param lang
      * @return
      */
-    private String findDatasForWidgetByArk__(HikariDataSource ds, String lang, String[] idArks, String format) {
-
-        String idTheso;
-        String idConcept;
-        NodePreference nodePreference;
-        List<Path> paths;        
+    private JsonArrayBuilder findDatasForWidgetByArk__(HikariDataSource ds, String lang, String[] idArks, String format) {
         
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         for (String idArk : idArks) {
-            idTheso = conceptHelper.getIdThesaurusFromArkId(ds, idArk);
+            var idTheso = conceptHelper.getIdThesaurusFromArkId(ds, idArk);
             if(idTheso == null) continue;
             
-            idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk, idTheso);
+            var idConcept = conceptHelper.getIdConceptFromArkId(ds, idArk, idTheso);
             if(idConcept == null) continue;
             
-            nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
+            var nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
             if (nodePreference == null) continue;
 
-            paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
+            var paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
-                pathHelper.getPathWithLabelAsJson(ds, paths, jsonArrayBuilder, idTheso, lang, format);
+                var element = pathHelper.getPathWithLabelAsJson(ds, paths, idTheso, lang, format);
+                jsonArrayBuilder.add(element);
             }
         }
 
-        //    datasJson = jsonArrayBuilder.build().toString();
-        if (jsonArrayBuilder != null) {
-            return jsonArrayBuilder.build().toString();
-        } else {
-            return null;
-        }
+        return jsonArrayBuilder;
         
     }
 
@@ -1155,7 +1140,7 @@ public class RestRDFHelper {
         for (String idConcept : nodeIds) {
             var paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (CollectionUtils.isNotEmpty(paths)) {
-                pathHelper.getPathWithLabelAsJson(ds, paths, jsonArrayBuilder, idTheso, lang, format);
+                jsonArrayBuilder.add(pathHelper.getPathWithLabelAsJson(ds, paths, idTheso, lang, format));
             }
         }
         return jsonArrayBuilder != null ? jsonArrayBuilder.build().toString() : null;
@@ -1380,7 +1365,7 @@ public class RestRDFHelper {
         for (String idConcept : branchs) {
             paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
-                pathHelper.getPathWithLabelAsJson(ds, paths, jsonArrayBuilder, idTheso, lang, null);
+                jsonArrayBuilder.add(pathHelper.getPathWithLabelAsJson(ds, paths, idTheso, lang, null));
             }
         }
         if (jsonArrayBuilder != null) {

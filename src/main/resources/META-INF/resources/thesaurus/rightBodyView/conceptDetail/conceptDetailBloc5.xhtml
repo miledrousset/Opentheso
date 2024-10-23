@@ -46,9 +46,9 @@
 
                                         <h:outputText value="#{langueBean.getMsg('alignment.exactMatch')} :  " style="font-size: 14px;color: #8f8f8f"/>
                                         <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                        <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" >
+                                        <h:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" >
                                             <i class="pi pi-link" />
-                                        </p:link>
+                                        </h:link>
                                         <br/> 
                                     </ui:repeat>
                                     
@@ -57,9 +57,9 @@
 
                                         <h:outputText value="#{langueBean.getMsg('alignment.closeMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
                                         <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                        <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" >
+                                        <h:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" >
                                             <i class="pi pi-link" />
-                                        </p:link>
+                                        </h:link>
                                         <br/> 
                                     </ui:repeat>                                    
                                 </h:panelGroup>
@@ -75,21 +75,21 @@
     <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
         <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
             <!-- Notation -->
-            <h:panelGroup rendered="#{currentUser.hasRoleAsManager or (conceptView.nodeFullConcept.notation != null and conceptView.nodeFullConcept.notation != '')}">            
+            <h:panelGroup rendered="#{currentUser.hasRoleAsManager or (conceptView.nodeFullConcept.notation != null and conceptView.nodeFullConcept.notation != '')}">
                 <div class="list-group-item list-group-item-action" style=" margin-top: -5px">
                     <div class="row" style="margin-left: 0px;">
                         <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
-                            <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notation')}" 
+                            <h:outputText value=" #{langueBean.getMsg('rightbody.concept.notation')}"
                                           title="#{langueBean.getMsg('rightbody.concept.notation')}"
                                           style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                         </div>
-                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">                        
+                        <div class="col-xl-9 col-lg-8 col-md-7 col-sm-7" style="margin-left: -10px">
                             <p:menuButton rendered="#{currentUser.hasRoleAsManager}"
                                           icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 13px;">
-                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_notation')}" 
+                                <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_edit_notation')}"
                                             action="#{notationBean.reset()}" update="containerIndex:idSetNotation" icon="fas fa-edit"
                                             oncomplete="PF('setNotation').show();"  />
-                            </p:menuButton> 
+                            </p:menuButton>
                             <h:panelGroup rendered="#{(conceptView.nodeFullConcept.notation == null) or (conceptView.nodeFullConcept.notation == '') }">
                                 <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 13px; color: grey; font-style: italic " />
                             </h:panelGroup>
@@ -102,8 +102,8 @@
                 </div>
                 <p:spacer height="1px" width="98%" style="margin-left: 10px; margin-top: 5px;
                           margin-bottom: -5px; background-color: #CBD1DC; font-weight: 100"  />
-            </h:panelGroup>  
-            
+            </h:panelGroup>
+
             <h:form>
                 <div class="list-group-item list-group-item-action" style="margin-top: 10px;">
                     <div class="row">
@@ -118,30 +118,30 @@
                                     </div>
                                     <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="margin-left: 0px">
                                         <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                        <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeFullConcept.identifier}&amp;idt=#{selectedTheso.currentIdTheso}"
+                                        <h:link href="#{request.contextPath}/?idc=#{conceptView.nodeFullConcept.identifier}&amp;idt=#{selectedTheso.currentIdTheso}"
                                                 value="#{conceptView.nodeFullConcept.identifier}" style="color: #164A78; font-size: 13px;">
-                                        </p:link>
+                                        </h:link>
                                     </div>
-                                </div>     
+                                </div>
                             </div>
                             <!-- identifiants pérennes -->
-                            <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle 
+                            <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
                                                       || roleOnTheso.nodePreference.originalUriIsDoi || conceptView.nodeFullConcept.uri != ''}">
                                 <div class="list-group-item list-group-item-action">
                                     <div class="row" style="margin-left: 0px;">
-                                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle 
+                                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
                                                                   || roleOnTheso.nodePreference.originalUriIsDoi}">
-                                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">                            
+                                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
                                                 <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}"
                                                               style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                                             </div>
                                             <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
                                                 <!-- Uri du concept -->
                                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                                <p:link href="#{conceptView.nodeFullConcept.uri}"
-                                                        value="#{conceptView.nodeFullConcept.uri}" 
+                                                <h:link href="#{conceptView.nodeFullConcept.uri}"
+                                                        value="#{conceptView.nodeFullConcept.uri}"
                                                         style="color: #164A78; font-size: 13px;" target="_blank">
-                                                </p:link>
+                                                </h:link>
                                             </div>
                                         </h:panelGroup>
                                     </div>
@@ -160,23 +160,23 @@
                                                             <h:outputText value="#{conceptView.nodeFullConcept.permanentId}" style="font-size: 12px;"/>
                                                         </div>
                                                     </div>
-                                                </h:panelGroup>  
+                                                </h:panelGroup>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </h:panelGroup>                        
+                            </h:panelGroup>
 
                         </div>
 
                         <div class="col-xl-1 col-lg-2 col-md-2 col-sm-2" style="text-align: left;">
                             <!-- QrCode-->
                             <div class="list-group-item list-group-item-action">
-                                <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeFullConcept.permanentId}" 
+                                <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeFullConcept.permanentId}"
                                            rendered="#{conceptView.nodeFullConcept.permanentId != ''}"
                                            type="qr" height="75px;"/>
                             </div>
-                        </div>     
+                        </div>
                     </div>
                 </div>
             </h:form>

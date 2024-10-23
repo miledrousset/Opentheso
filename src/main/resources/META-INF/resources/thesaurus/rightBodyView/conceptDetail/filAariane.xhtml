@@ -6,8 +6,8 @@
     <div style="width: 100%; display: flex; background-color: #ecf8f1; padding-top: 3px; padding-bottom: 3px;">
         <h:panelGroup id="idConceptViewActions" rendered="#{currentUser.nodeUser != null and (currentUser.hasRoleAsManager)}" >
             <p:commandButton id="dynaButton" type="button" icon="pi pi-align-justify"
-                        style="width: 1.5rem; height: 1.5rem; margin-left: 5px; margin-right: 5px;"/>
-            <p:menu id="idConceptViewActionsMenuButton" overlay="true" trigger="dynaButton" my="left top" at="left bottom">
+                             style="width: 1.5rem; height: 1.5rem; margin-left: 5px; margin-right: 5px; background: #ecf8f1; color: #f47b2a; border: 1px solid #ecf8f1;"/>
+            <p:menu overlay="true" trigger="dynaButton" my="left top" at="left bottom">
 
                 <p:menuitem id="newConcept" actionListener="#{addConcept.reset()}"
                             oncomplete="PF('addNT').show();" icon="fas fa-plus"
