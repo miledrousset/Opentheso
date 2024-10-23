@@ -22,7 +22,7 @@
                             actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
                             oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
 
-                <p:menuitem disabled="#{!treeGroups.isGroupNode()}" process="@this" ajax="false"
+                <p:menuitem disabled="#{!treeGroups.isGroupNode()}" process="@this" ajax="true"
                             value="#{langueBean.getMsg('leftbody.group.addSubGroup')}" actionListener="#{addGroupBean.init()}"
                             oncomplete="PF('addSubGroup').show();" update="containerIndex:idAddSubGroup"
                             icon="far fa-object-ungroup"/>
