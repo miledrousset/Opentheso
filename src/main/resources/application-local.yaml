@@ -1,8 +1,7 @@
 #######################
 # Server Configuration
 #######################
-build:
-  version: ${app.version}
+
 server:
   port: 8099
   forward-headers-strategy: native
@@ -14,6 +13,12 @@ server:
     path: /errorPages/error500.xhtml
     whitelabel:
       enabled: false
+
+info:
+  application:
+    name: '@project.name@'
+    description: '@project.description@'
+    version: '@project.version@'
 
 spring:
   main:
