@@ -36,14 +36,14 @@
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
-                            actionListener="#{treeGroups.setSortByNotation(false)}" ajax="false"
+                            actionListener="#{treeGroups.setSortByNotation(false)}" ajax="true"
                             action="#{selectedTheso.reloadGroups()}"
                             process="@this"
                             disabled="#{!treeGroups.sortByNotation}"
                             update="containerIndex menuBar" icon="fas fa-sort-alpha-down"/>
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
-                            actionListener="#{treeGroups.setSortByNotation(true)}" ajax="false" process="@this"
+                            actionListener="#{treeGroups.setSortByNotation(true)}" ajax="true" process="@this"
                             action="#{selectedTheso.reloadGroups()}"
                             disabled="#{treeGroups.sortByNotation}" icon="fas fa-sort-numeric-down"
                             update="containerIndex menuBar" />
