@@ -72,18 +72,14 @@ public class ConceptController {
         }
         if (lang == null) {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(emptyMessage(APPLICATION_JSON_UTF_8));
-
         }
-        String full= null;
+        String full1;
         if(fullbool)
-            full = "full";
-
-        //var full = fullString != null && fullString.equalsIgnoreCase("true");
-        if(StringUtils.isEmpty(full)){
-
-        }
+            full1 = "full";
+        else
+            full1 = null;
     //   var fullFormat = full ? "full" : null;*/
-        var datas = restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), lang, idArks, full);
+        var datas = restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), lang, idArks, full1);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     //    return ResponseHelper.response(Response.Status.OK, datas, APPLICATION_JSON_UTF_8);
     }

@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>cnrs.opentheso2</groupId>
-    <artifactId>opentheso2</artifactId>
-    <version>24.10.01</version>
+    <groupId>cnrs.opentheso</groupId>
+    <artifactId>opentheso</artifactId>
+    <version>${pom.version}</version>
     <packaging>jar</packaging>
-    <name>opentheso2</name>
+    <name>opentheso</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -402,6 +402,7 @@
     </dependencies>
 
     <properties>
+        <pom.version>24.10.03</pom.version>
         <java.version>17</java.version>
         <poi.version>4.1.1</poi.version>
         <virtjdbc4.version>4.0</virtjdbc4.version>

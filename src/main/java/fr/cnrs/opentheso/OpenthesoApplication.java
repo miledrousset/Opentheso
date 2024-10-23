@@ -5,10 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class OpenThesaurus2Application {
+public class OpenthesoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OpenThesaurus2Application.class, args);
+        SpringApplication.run(OpenthesoApplication.class, args);
     }
-
 }

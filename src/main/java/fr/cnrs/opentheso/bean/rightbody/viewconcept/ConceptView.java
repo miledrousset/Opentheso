@@ -618,6 +618,8 @@ public class ConceptView implements Serializable {
                         note = new NodeNote();
                     }
                     note.setIdNote(note1.getIdNote());
+                    note.setIdConcept(nodeFullConcept.getIdentifier());
+                    note.setNoteTypeCode("note");
                     note.setLexicalValue(note1.getLabel());
                     note.setLang(note1.getIdLang());
                     note.setNoteSource(note1.getNoteSource());
@@ -633,6 +635,8 @@ public class ConceptView implements Serializable {
                         scopeNote = new NodeNote();
                     }
                     scopeNote.setIdNote(note1.getIdNote());
+                    scopeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    scopeNote.setNoteTypeCode("scopeNote");
                     scopeNote.setLexicalValue(note1.getLabel());
                     scopeNote.setLang(note1.getIdLang());
                     scopeNote.setNoteSource(note1.getNoteSource());
@@ -648,6 +652,8 @@ public class ConceptView implements Serializable {
                         changeNote = new NodeNote();
                     }
                     changeNote.setIdNote(note1.getIdNote());
+                    changeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    changeNote.setNoteTypeCode("changeNote");
                     changeNote.setLexicalValue(note1.getLabel());
                     changeNote.setLang(note1.getIdLang());
                     changeNote.setNoteSource(note1.getNoteSource());
@@ -663,6 +669,8 @@ public class ConceptView implements Serializable {
                         definition = new NodeNote();
                     }
                     definition.setIdNote(note1.getIdNote());
+                    definition.setIdConcept(nodeFullConcept.getIdentifier());
+                    definition.setNoteTypeCode("definition");
                     definition.setLexicalValue(note1.getLabel());
                     definition.setLang(note1.getIdLang());
                     definition.setNoteSource(note1.getNoteSource());
@@ -678,6 +686,8 @@ public class ConceptView implements Serializable {
                         editorialNote = new NodeNote();
                     }
                     editorialNote.setIdNote(note1.getIdNote());
+                    editorialNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    editorialNote.setNoteTypeCode("editorialNote");
                     editorialNote.setLexicalValue(note1.getLabel());
                     editorialNote.setLang(note1.getIdLang());
                     editorialNote.setNoteSource(note1.getNoteSource());
@@ -693,6 +703,8 @@ public class ConceptView implements Serializable {
                         example = new NodeNote();
                     }
                     example.setIdNote(note1.getIdNote());
+                    example.setIdConcept(nodeFullConcept.getIdentifier());
+                    example.setNoteTypeCode("example");
                     example.setLexicalValue(note1.getLabel());
                     example.setLang(note1.getIdLang());
                     example.setNoteSource(note1.getNoteSource());
@@ -711,6 +723,8 @@ public class ConceptView implements Serializable {
                         historyNote = new NodeNote();
                     }
                     historyNote.setIdNote(note1.getIdNote());
+                    historyNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    historyNote.setNoteTypeCode("historyNote");
                     historyNote.setLexicalValue(note1.getLabel());
                     historyNote.setLang(note1.getIdLang());
                     historyNote.setNoteSource(note1.getNoteSource());
@@ -726,6 +740,8 @@ public class ConceptView implements Serializable {
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
                     nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    nodeNote.setNoteTypeCode("note");
                     nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
@@ -737,6 +753,8 @@ public class ConceptView implements Serializable {
             nodeFullConcept.getScopeNotes().stream()
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
+                    nodeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    nodeNote.setNoteTypeCode("scopeNote");
                     nodeNote.setIdNote(note1.getIdNote());
                     nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
@@ -750,6 +768,8 @@ public class ConceptView implements Serializable {
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
                     nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    nodeNote.setNoteTypeCode("changeNote");
                     nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
@@ -762,6 +782,8 @@ public class ConceptView implements Serializable {
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
                     nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    nodeNote.setNoteTypeCode("definition");
                     nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
@@ -774,6 +796,8 @@ public class ConceptView implements Serializable {
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
                     nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    nodeNote.setNoteTypeCode("editorialNote");
                     nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
@@ -786,6 +810,8 @@ public class ConceptView implements Serializable {
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
                     nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    nodeNote.setNoteTypeCode("example");
                     nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());
@@ -798,6 +824,8 @@ public class ConceptView implements Serializable {
                 .map(note1 -> {
                     NodeNote nodeNote = new NodeNote();
                     nodeNote.setIdNote(note1.getIdNote());
+                    nodeNote.setIdConcept(nodeFullConcept.getIdentifier());
+                    nodeNote.setNoteTypeCode("historyNote");
                     nodeNote.setLexicalValue(note1.getLabel());
                     nodeNote.setLang(note1.getIdLang());
                     nodeNote.setNoteSource(note1.getNoteSource());

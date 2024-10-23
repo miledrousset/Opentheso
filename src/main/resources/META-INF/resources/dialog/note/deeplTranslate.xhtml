@@ -61,12 +61,8 @@
                                          styleClass="rounded-button ui-button-success"
                                          style="font-size: 13px; text-align: right"  ajax="true" process="@form" />                               
                         </div>                        
-                    </div>                      
-                    
-                    <p:spacer height="20px;"/>                    
-                    
-                    
-                    <div class="col-12" style="text-align: center;">  
+                    </div>
+                    <div class="col-12" style="text-align: center; margin-top: 10px">
                         <p:graphicImage value="/resources/img/deepl.png" width="40px"/>
                         <p:commandButton update="containerIndex:deeplTranslateForm:translateResul messageIndex"
                                      action="#{deeplTranslate.translate()}" 
@@ -96,16 +92,7 @@
                         </div>                        
                     </div>                     
                 </h:panelGroup>
-
-
-
-
-     
-                <p:spacer height="20px;"/>
-
-            </h:panelGroup>        
-            
-            <p:spacer height= "20px;"/>  
+            </h:panelGroup>
         </h:form>
     </p:dialog> 
 </ui:fragment>
