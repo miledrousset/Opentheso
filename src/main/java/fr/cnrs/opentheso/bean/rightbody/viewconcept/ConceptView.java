@@ -618,6 +618,7 @@ public class ConceptView implements Serializable {
     /////////////////////////////////
     /////////////////////////////////
     private void setNotesCurrentLang() {
+        clearNotesAllLang();
         clearNotes();
         
         if (CollectionUtils.isNotEmpty(nodeFullConcept.getNotes())) {
@@ -745,7 +746,7 @@ public class ConceptView implements Serializable {
     
     private void setNotesForAllLang() {
         clearNotesAllLang();
-
+        clearNotes();
         if (CollectionUtils.isNotEmpty(nodeFullConcept.getNotes())) {
             nodeFullConcept.getNotes().stream()
                 .map(note1 -> {

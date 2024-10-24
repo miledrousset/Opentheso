@@ -1,129 +1,148 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
-             xmlns:h="http://java.sun.com/jsf/html"  
+             xmlns:h="http://java.sun.com/jsf/html"
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
     <h:panelGroup rendered="#{(currentUser.nodeUser != null)}">
-        <ui:include src="groupActions.xhtml" />
+        <ui:include src="groupActions.xhtml"/>
     </h:panelGroup>
 
     <h:panelGroup id="groupView" rendered="#{groupView.nodeGroup != null}" styleClass="textOpentheso">
 
-        <p:spacer height="20" />
+        <p:spacer height="20"/>
 
         <div class="card mb-4 py-3 border-left-success" style="margin-top: -5px; vertical-align: central">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
 
 
-
-                <!-- ligne Label du groupe -->                
+                <!-- ligne Label du groupe -->
                 <div class="list-group-item list-group-item-action">
                     <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px; height: 30px;">
-                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;" >
-                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.preferred_term')}" 
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                             style="text-align: left;">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.preferred_term')}"
                                           title="#{langueBean.getMsg('rightbody.concept.tooltip_preferred_term')}"
                                           style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
 
                         </div>
                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right" >
+                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
                                 <p:menuButton
-                                    icon="fas fa-cog"
-                                    style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                    <p:menuitem value="#{langueBean.getMsg('candidat.edit')}" action="#{modifyGroupBean.init()}" oncomplete="PF('modifyGroup').show();"
+                                        icon="fas fa-cog"
+                                        style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuitem value="#{langueBean.getMsg('candidat.edit')}"
+                                                action="#{modifyGroupBean.init()}"
+                                                oncomplete="PF('modifyGroup').show();"
                                                 update="containerIndex:idModifyGroup" icon="fas fa-pen"/>
                                 </p:menuButton>
                             </div>
-                        </h:panelGroup>  
-                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="text-align: left; margin-left: -10px">
-                            <h:outputText value="#{groupView.nodeGroup.lexicalValue}" title="#{groupView.nodeGroup.lexicalValue}" 
-                                          style="font-size: 14px; color: #000;" />
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- ligne Type de groupe -->                  
-                <div class="list-group-item list-group-item-action">
-                    <div class="row" style="margin-left: 0px;margin-bottom: 5px;">
-                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="#{langueBean.getMsg('statistique.type')}" title="#{langueBean.getMsg('statistique.type')}" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
-                        </div>
-                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
                         </h:panelGroup>
-                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
-                            <h:outputText value="#{groupView.nodeGroupType.skosLabel}" title="#{groupView.nodeGroupType.label}" 
-                                          style="font-size: 14px; color: #000;" />
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="text-align: left; margin-left: -10px">
+                            <h:outputText value="#{groupView.nodeGroup.lexicalValue}"
+                                          title="#{groupView.nodeGroup.lexicalValue}"
+                                          style="font-size: 14px; color: #000;"/>
                         </div>
                     </div>
                 </div>
 
 
-
-                <!-- ligne Membres -->   
+                <!-- ligne Type de groupe -->
                 <div class="list-group-item list-group-item-action">
-                    <!-- ligne Type de groupe -->    
                     <div class="row" style="margin-left: 0px;margin-bottom: 5px;">
-                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="#{langueBean.getMsg('group.members')}" title="#{langueBean.getMsg('group.membersToolTip')}" 
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                             style="text-align: left; ">
+                            <h:outputText value="#{langueBean.getMsg('statistique.type')}"
+                                          title="#{langueBean.getMsg('statistique.type')}"
                                           style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
                         </h:panelGroup>
                         <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
-                            <h:outputText value="#{groupView.count}" title="#{langueBean.getMsg('group.numberOfConcepts')}"
-                                          style="font-size: 14px; color: #000;" />
+                            <h:outputText value="#{groupView.nodeGroupType.skosLabel}"
+                                          title="#{groupView.nodeGroupType.label}"
+                                          style="font-size: 14px; color: #000;"/>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ligne Membres -->
+                <div class="list-group-item list-group-item-action">
+                    <!-- ligne Type de groupe -->
+                    <div class="row" style="margin-left: 0px;margin-bottom: 5px;">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                             style="text-align: left; ">
+                            <h:outputText value="#{langueBean.getMsg('group.members')}"
+                                          title="#{langueBean.getMsg('group.membersToolTip')}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        </div>
+                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
+                        </h:panelGroup>
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
+                            <h:outputText value="#{groupView.count}"
+                                          title="#{langueBean.getMsg('group.numberOfConcepts')}"
+                                          style="font-size: 14px; color: #000;"/>
                         </div>
                     </div>
                 </div>
 
 
                 <!-- ligne Traductions -->
-                <h:panelGroup rendered="#{(currentUser.nodeUser != null) or (groupView.nodeGroupTraductions.size() !=0)}">
-                    <div class="list-group-item list-group-item-action">   
+                <h:panelGroup
+                        rendered="#{(currentUser.nodeUser != null) or (groupView.nodeGroupTraductions.size() !=0)}">
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}" 
-                                              title="#{langueBean.getMsg('rightbody.concept.traduction')}" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.traduction')}"
+                                              title="#{langueBean.getMsg('rightbody.concept.traduction')}"
+                                              style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
-                                    <p:menuButton 
-                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                    <p:menuButton
+                                            icon="fas fa-cog"
+                                            style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
 
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}" icon="fas fa-plus"
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_traduction')}"
+                                                    icon="fas fa-plus"
                                                     actionListener="#{traductionGroupBean.reset()}"
-                                                    action = "#{traductionGroupBean.setLangWithNoTraduction()}"
+                                                    action="#{traductionGroupBean.setLangWithNoTraduction()}"
                                                     oncomplete="PF('addTraductionGroup').show();"
-                                                    update="containerIndex:idAddTraductionGroup"  />
+                                                    update="containerIndex:idAddTraductionGroup"/>
 
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}" icon="fas fa-pen"
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_traduction')}"
+                                                    icon="fas fa-pen"
                                                     actionListener="#{traductionGroupBean.reset()}"
                                                     oncomplete="PF('renameTraductionGroup').show();"
                                                     disabled="#{groupView.nodeGroupTraductions.size() == 0}"
-                                                    update="containerIndex:idRenameTraductionGroup" />
+                                                    update="containerIndex:idRenameTraductionGroup"/>
 
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}" icon="fas fa-trash-alt"
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_traduction')}"
+                                                    icon="fas fa-trash-alt"
                                                     actionListener="#{traductionGroupBean.reset()}"
                                                     oncomplete="PF('deleteTraductionGroup').show();"
                                                     disabled="#{groupView.nodeGroupTraductions.size() == 0}"
-                                                    update="containerIndex:idDeleteTraductionGroup" />
-                                    </p:menuButton>                             
+                                                    update="containerIndex:idDeleteTraductionGroup"/>
+                                    </p:menuButton>
                                 </div>
                             </h:panelGroup>
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <h:panelGroup rendered="#{groupView.nodeGroupTraductions.size() == 0}">
-                                    <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" style="font-size: 12px; color: grey; font-style: italic " />
+                                    <h:outputText value="....."
+                                                  title="#{langueBean.getMsg('rightbody.concept.no_value')}"
+                                                  style="font-size: 12px; color: grey; font-style: italic "/>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{groupView.nodeGroupTraductions.size() != 0}">
-                                    <ui:repeat var="trad" value="#{groupView.nodeGroupTraductions}" >
+                                    <ui:repeat var="trad" value="#{groupView.nodeGroupTraductions}">
                                         <div class="row">
                                             <div class="col-12">
-                                                <h:outputText value="#{trad.title} (#{trad.idLang})"/>                                
-                                            </div> 
-                                        </div> 
+                                                <h:outputText value="#{trad.title} (#{trad.idLang})"/>
+                                            </div>
+                                        </div>
                                     </ui:repeat>
                                 </h:panelGroup>
                             </div>
@@ -133,66 +152,65 @@
                 </h:panelGroup>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <!-- commande des notes -->
 
                 <div class="row" style="margin-left: 10px; margin-bottom: 5px; margin-top: 20px;">
-                    <h:panelGroup id="notesActionsGroup" rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                <p:spacer height="2px" width="98%" style="margin-left: 0px; margin-bottom: 10px;
-                          background-color: #CBD1DC; font-weight: 100"  />   
-                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.notes')}" title="#{langueBean.getMsg('rightbody.concept.notes')}"
+                    <h:panelGroup id="notesActionsGroup"
+                                  rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                        <p:spacer height="2px" width="98%" style="margin-left: 0px; margin-bottom: 10px;
+                          background-color: #CBD1DC; font-weight: 100"/>
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.notes')}"
+                                      title="#{langueBean.getMsg('rightbody.concept.notes')}"
                                       style="color: #78261f; font-size: 14px; font-weight: bold; margin-right: 5px"/>
 
                         <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
-                                      icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
+                                      icon="pi pi-cog"
+                                      style="background: none; border: none; color: #000; box-shadow: none;">
 
                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_note')}"
-                                        actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}" update="containerIndex:idAddNote"
-                                        oncomplete="PF('addNote').show();" icon="fas fa-plus" />
+                                        actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
+                                        update="containerIndex:idAddNote"
+                                        oncomplete="PF('addNote').show();" icon="fas fa-plus"/>
                         </p:menuButton>
-                    </h:panelGroup>                          
+                    </h:panelGroup>
                 </div>
-
-
-
-
 
 
                 <!-- Note -->
                 <h:panelGroup rendered="#{groupView.note != null}">
-                    <div class="list-group-item list-group-item-action" >
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}" 
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.note')}"
                                               title="#{langueBean.getMsg('rightbody.concept.note')}"
                                               style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action="#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit" />                                            
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
-                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}" action="#{noteBean.setSelectedTypeNote('note')}"
-                                                    update="containerIndex:idDeleteNote" oncomplete="PF('deleteNote').show();" icon="fas fa-minus"/>
+                                    <p:menuButton icon="fas fa-cog"
+                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}"
+                                                    value="#{langueBean.getMsg('deepl.translate')}"
+                                                    actionListener="#{deeplTranslate.init()}"
+                                                    oncomplete="PF('deeplTranslate').show();"
+                                                    update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                    action="#{deeplTranslate.initNoteToTranslate(groupView.nodeGroup.conceptGroup.idgroup, 'note')}"
+                                                    icon="fa-solid fa-language"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
+                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup, 'note')}"
+                                                    oncomplete="PF('editNote').show();"
+                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
+                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'note')}"
+                                                    update="containerIndex:idDeleteNote"
+                                                    oncomplete="PF('deleteNote').show();" icon="fas fa-minus"/>
                                     </p:menuButton>
                                 </div>
-                            </h:panelGroup>    
+                            </h:panelGroup>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <ui:repeat var="note" value="#{groupView.note}" varStatus="status">
                                     <h:outputText value="#{note.lexicalValue}" escape="false" style="font-size: 14px;"/>
@@ -205,33 +223,44 @@
 
                 <!-- ChangeNote -->
                 <h:panelGroup rendered="#{groupView.changeNote != null}">
-                    <div class="list-group-item list-group-item-action" >
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}" 
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.change_note')}"
                                               title="#{langueBean.getMsg('rightbody.concept.change_note')}"
                                               style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">                           
-                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">                              
-                                    <p:menuButton 
-                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
+                                    <p:menuButton
+                                            icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                         box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('changeNote')}"                                          
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                    oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                    action="#{deeplTranslate.initNoteToTranslate(groupView.nodeGroup.conceptGroup.idgroup, 'changeNote')}"
+                                                    icon="fa-solid fa-language"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
+                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
+                                                    action="#{noteBean.sinitNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'changeNote')}"
                                                     oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit" />                                        
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('changeNote')}" oncomplete="PF('deleteNote').show();"
-                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus" />                                        
+                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
+                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'changeNote')}"
+                                                    oncomplete="PF('deleteNote').show();"
+                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus"/>
                                     </p:menuButton>
                                 </div>
-                            </h:panelGroup>                                
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                 
+                            </h:panelGroup>
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <ui:repeat var="changeNote" value="#{groupView.changeNote}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
+                                    <h:outputText rendered="#{status.first}" value="#{changeNote.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{changeNote.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <br/>
                                 </ui:repeat>
                             </div>
                         </div>
@@ -240,33 +269,44 @@
 
                 <!-- Definition -->
                 <h:panelGroup rendered="#{groupView.definition != null}">
-                    <div class="list-group-item list-group-item-action" >
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px; margin-top: 10px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}" 
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.definition')}"
                                               title="#{langueBean.getMsg('rightbody.concept.definition')}"
                                               style="font-size: 14px; margin-right: 10px; color: #8f8f8f;font-weight: bold;"/>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
-                                    <p:menuButton  icon="fas fa-cog"
-                                                   style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
-                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
+                                    <p:menuButton icon="fas fa-cog"
+                                                  style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                    oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                    action="#{deeplTranslate.initNoteToTranslate(groupView.nodeGroup.conceptGroup.idgroup, 'definition')}"
+                                                    icon="fa-solid fa-language"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
+                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'definition')}"
                                                     oncomplete="PF('editNote').show();"
                                                     update="containerIndex:idEditNote" icon="fas fa-edit"/>
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('definition')}"
-                                                    oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote"
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
+                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'definition')}"
+                                                    oncomplete="PF('deleteNote').show();"
+                                                    update="containerIndex:idDeleteNote"
                                                     icon="fas fa-minus"/>
                                     </p:menuButton>
                                 </div>
                             </h:panelGroup>
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <ui:repeat var="def" value="#{groupView.definition}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{def.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{def.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
+                                    <h:outputText rendered="#{status.first}" value="#{def.lexicalValue}" escape="false"
+                                                  style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{def.lexicalValue}" escape="false"
+                                                  style="font-size: 14px;"/>
+                                    <br/>
                                 </ui:repeat>
                             </div>
                         </div>
@@ -275,35 +315,45 @@
 
                 <!-- EditorialNote -->
                 <h:panelGroup rendered="#{groupView.editorialNote != null}">
-                    <div class="list-group-item list-group-item-action" >
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}" 
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
                                               title="#{langueBean.getMsg('rightbody.concept.editorial_note')}"
                                               style="font-size: 14px; margin-right: 10px; color: #8f8f8f; font-weight: bold;"/>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
-                                    <p:menuButton 
-                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                    <p:menuButton
+                                            icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                         box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                    oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                    action="#{deeplTranslate.initNoteToTranslate(groupView.nodeGroup.conceptGroup.idgroup, 'editorialNote')}"
+                                                    icon="fa-solid fa-language"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
                                                     actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'editorialNote')}"
                                                     oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit" />
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
-                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}" icon="fas fa-minus"
-                                                    action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
-                                                    oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote" />
-                                    </p:menuButton> 
+                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
+                                                    actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
+                                                    icon="fas fa-minus"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'editorialNote')}"
+                                                    oncomplete="PF('deleteNote').show();"
+                                                    update="containerIndex:idDeleteNote"/>
+                                    </p:menuButton>
                                 </div>
                             </h:panelGroup>
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <ui:repeat var="editorialNote" value="#{groupView.editorialNote}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
+                                    <h:outputText rendered="#{status.first}" value="#{editorialNote.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{editorialNote.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <br/>
                                 </ui:repeat>
                             </div>
                         </div>
@@ -312,36 +362,44 @@
 
                 <!-- Example -->
                 <h:panelGroup rendered="#{groupView.example != null}">
-                    <div class="list-group-item list-group-item-action" >
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.example_note')}" 
-                                              title="#{langueBean.getMsg('rightbody.concept.example_note')}" 
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.example_note')}"
+                                              title="#{langueBean.getMsg('rightbody.concept.example_note')}"
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
-                                    <p:menuButton 
-                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                    <p:menuButton
+                                            icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                         box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                    oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                    action="#{deeplTranslate.initNoteToTranslate(groupView.nodeGroup.conceptGroup.idgroup, 'example')}"
+                                                    icon="fa-solid fa-language"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
                                                     actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('example')}"                                          
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'example')}"
                                                     oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit" />
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
                                                     actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('example')}"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'example')}"
                                                     oncomplete="PF('deleteNote').show();"
-                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus" />
-                                    </p:menuButton> 
+                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus"/>
+                                    </p:menuButton>
                                 </div>
                             </h:panelGroup>
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <ui:repeat var="example" value="#{groupView.example}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{example.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{example.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
+                                    <h:outputText rendered="#{status.first}" value="#{example.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{example.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <br/>
                                 </ui:repeat>
                             </div>
                         </div>
@@ -350,36 +408,44 @@
 
                 <!-- History -->
                 <h:panelGroup rendered="#{groupView.historyNote != null}">
-                    <div class="list-group-item list-group-item-action" >                        
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}" 
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.history_note')}"
                                               title="#{langueBean.getMsg('rightbody.concept.history_note')}"
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
-                                    <p:menuButton 
-                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                    <p:menuButton
+                                            icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                         box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                    oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                    action="#{deeplTranslate.initNoteToTranslate(groupView.nodeGroup.conceptGroup.idgroup, 'historyNote')}"
+                                                    icon="fa-solid fa-language"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
                                                     actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'historyNote')}"
                                                     oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit" />
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
                                                     actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('historyNote')}"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'historyNote')}"
                                                     oncomplete="PF('deleteNote').show();"
-                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus" />
-                                    </p:menuButton> 
+                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus"/>
+                                    </p:menuButton>
                                 </div>
                             </h:panelGroup>
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <ui:repeat var="historyNote" value="#{groupView.historyNote}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
+                                    <h:outputText rendered="#{status.first}" value="#{historyNote.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{historyNote.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <br/>
                                 </ui:repeat>
                             </div>
                         </div>
@@ -388,93 +454,106 @@
 
                 <!-- ScopeNote -->
                 <h:panelGroup rendered="#{groupView.scopeNote != null}">
-                    <div class="list-group-item list-group-item-action" >
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px; margin-bottom: 5px;margin-top: 10px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}" 
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; ">
+                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.scope_note')}"
                                               title="#{langueBean.getMsg('rightbody.concept.scope_note')}"
                                               style="font-size: 14px; margin-right: 10px; font-weight: bold;color: #8f8f8f"/>
                             </div>
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right">
-                                    <p:menuButton 
-                                        icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
+                                    <p:menuButton
+                                            icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                         box-shadow: none; font-size: 12px;">
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                                    oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
+                                                    action="#{deeplTranslate.initNoteToTranslate(groupView.nodeGroup.conceptGroup.idgroup, 'scopeNote')}"
+                                                    icon="fa-solid fa-language"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
                                                     actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'scopeNote')}"
                                                     oncomplete="PF('editNote').show();"
-                                                    update="containerIndex:idEditNote" icon="fas fa-edit" />
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
+                                                    update="containerIndex:idEditNote" icon="fas fa-edit"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}"
                                                     actionListener="#{noteBean.resetForGroup(groupView.nodeGroup)}"
-                                                    action = "#{noteBean.setSelectedTypeNote('scopeNote')}"
+                                                    action="#{noteBean.initNodeToEdit(groupView.nodeGroup.conceptGroup.idgroup,'scopeNote')}"
                                                     oncomplete="PF('deleteNote').show();"
-                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus" />
-                                    </p:menuButton> 
+                                                    update="containerIndex:idDeleteNote" icon="fas fa-minus"/>
+                                    </p:menuButton>
                                 </div>
                             </h:panelGroup>
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">                                
+                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <ui:repeat var="scopeNote" value="#{groupView.scopeNote}" varStatus="status">
-                                    <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalValue}" escape="false" style="font-size: 14px;"/>
-                                    <br/>                                    
+                                    <h:outputText rendered="#{status.first}" value="#{scopeNote.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <h:outputText rendered="#{!status.first}" value="#{scopeNote.lexicalValue}"
+                                                  escape="false" style="font-size: 14px;"/>
+                                    <br/>
                                 </ui:repeat>
                             </div>
                         </div>
-                    </div>            
+                    </div>
                 </h:panelGroup>
 
 
-
                 <p:spacer height="2px" width="98%" style="margin-left: 10px; margin-bottom: 10px;
-                          background-color: #CBD1DC; font-weight: 100"  />                
+                          background-color: #CBD1DC; font-weight: 100"/>
 
                 <!-- fin de notes -->
 
 
                 <!-- ligne Notation -->
                 <div class="list-group-item list-group-item-action">
-                    <!-- ligne Type de groupe -->    
+                    <!-- ligne Type de groupe -->
                     <div class="row" style="margin-left: 0px;">
-                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.notation')}" 
-                                          title="rightbody.concept.notation" style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                             style="text-align: left; ">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.notation')}"
+                                          title="rightbody.concept.notation"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f"/>
                         </div>
                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
                         </h:panelGroup>
-                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px"> 
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                             <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation == null) 
                                                       or (groupView.nodeGroup.conceptGroup.notation== '')}">
 
-                                <h:outputText  value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
-                                               style="font-size: 12px; color: grey; font-style: italic " />
+                                <h:outputText value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}"
+                                              style="font-size: 12px; color: grey; font-style: italic "/>
                             </h:panelGroup>
 
                             <h:panelGroup rendered="#{(groupView.nodeGroup.conceptGroup.notation != null) 
                                                       and (groupView.nodeGroup.conceptGroup.notation != '')}">
-                                <h:outputText value="#{groupView.nodeGroup.conceptGroup.notation}" style="font-size: 14px; color: #000;" />
+                                <h:outputText value="#{groupView.nodeGroup.conceptGroup.notation}"
+                                              style="font-size: 14px; color: #000;"/>
                             </h:panelGroup>
                         </div>
                     </div>
-                </div>                
-
+                </div>
 
 
                 <!-- ligne URI -->
-                <div class="list-group-item list-group-item-action" style="margin-top: 10px;">  
+                <div class="list-group-item list-group-item-action" style="margin-top: 10px;">
                     <div class="row" style="margin-left: 0px;">
-                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; ">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.identifier')}" style="font-size: 14px; font-weight: bold;color: #8f8f8f; font-style: italic"/>
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                             style="text-align: left; ">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.identifier')}"
+                                          style="font-size: 14px; font-weight: bold;color: #8f8f8f; font-style: italic"/>
                         </div>
                     </div>
                 </div>
 
                 <!-- id interne -->
-                <div class="list-group-item list-group-item-action">  
+                <div class="list-group-item list-group-item-action">
                     <div class="row" style="margin-left: 0px;">
-                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
-                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}" style="font-size: 14px;"/>
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                             style="text-align: left; margin-left: 10px">
+                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}"
+                                          style="font-size: 14px;"/>
                         </div>
                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                             <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
@@ -482,26 +561,28 @@
                         <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                             <h:link href="#{request.contextPath}/?idg=#{groupView.nodeGroup.conceptGroup.idgroup}&amp;idt=#{groupView.nodeGroup.conceptGroup.idthesaurus}"
                                     value="#{groupView.nodeGroup.conceptGroup.idgroup}" style="font-size: 14px;">
-                                <i class="pi pi-link" style="color: #43B572;" />
+                                <i class="pi pi-link" style="color: #43B572;"/>
                             </h:link>
                         </div>
                     </div>
                 </div>
 
                 <h:panelGroup rendered="#{groupView.nodeGroup.conceptGroup.idARk != ''}">
-                    <div class="list-group-item list-group-item-action"> 
+                    <div class="list-group-item list-group-item-action">
                         <div class="row" style="margin-left: 0px;">
-                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
+                            <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                                 style="text-align: left; margin-left: 10px">
                                 <h:outputText value="IdArk" style="font-size: 14px;"/>
                             </div>
-                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
-                        </h:panelGroup>
+                            <h:panelGroup
+                                    rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" style="text-align: right"/>
+                            </h:panelGroup>
                             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                                 <h:link href="#{roleOnTheso.nodePreference.originalUri}/#{groupView.nodeGroup.conceptGroup.idARk}"
                                         value="#{roleOnTheso.nodePreference.originalUri}/#{groupView.nodeGroup.conceptGroup.idARk}"
-                                        target="_blank" style="color: #164A78; font-size: 14px;" >
-                                    <i class="pi pi-link" />
+                                        target="_blank" style="color: #164A78; font-size: 14px;">
+                                    <i class="pi pi-link"/>
                                 </h:link>
                             </div>
                         </div>
@@ -510,7 +591,8 @@
 
                 <h:panelGroup rendered="#{groupView.nodeGroup.conceptGroup.idHandle != ''}">
                     <div class="row" style="margin-left: 0px;">
-                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left; margin-left: 10px">
+                        <div class="col-xl-3 col-lg-4 col-md-5 col-sm-5 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0"
+                             style="text-align: left; margin-left: 10px">
                             <h:outputText value="IdHandle" style="font-size: 14px;"/>
                         </div>
                         <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
@@ -519,40 +601,37 @@
                         <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" style="margin-left: -10px">
                             <h:link href="https://hdl.handle.net/#{groupView.nodeGroup.conceptGroup.idHandle}"
                                     value="https://hdl.handle.net/#{groupView.nodeGroup.conceptGroup.idHandle}"
-                                    target="_blank" style="color: #43B572; font-size: 14px;" >
-                                <i class="pi pi-link" />
+                                    target="_blank" style="color: #43B572; font-size: 14px;">
+                                <i class="pi pi-link"/>
                             </h:link>
                         </div>
-                    </div >
-                </h:panelGroup>  
+                    </div>
+                </h:panelGroup>
             </div>
         </div>
 
-        <p:spacer height="20" />
+        <p:spacer height="20"/>
 
-        <!-- ligne dates -->        
+        <!-- ligne dates -->
         <div class="card mb-4 py-3 border-left-success" style="margin-top: -15px; vertical-align: central">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
-                <div class="row" style="padding-left: 20px">  
+                <div class="row" style="padding-left: 20px">
                     <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
-                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: " />
+                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.created')}: "/>
                         <h:outputText value="#{groupView.nodeGroup.conceptGroup.created} " style="color: #43B572"/>
                     </div>
-                </div>        
-                <div class="row" style="padding-left: 20px">  
+                </div>
+                <div class="row" style="padding-left: 20px">
                     <div class="col-12" style="font-size: 12px; color: grey; font-style: italic ">
                         <h:outputText value=" #{langueBean.getMsg('rightbody.concept.last_modification')}: "/>
-                        <h:outputText value="#{groupView.nodeGroup.conceptGroup.modified} " style="color: #43B572"/>                
+                        <h:outputText value="#{groupView.nodeGroup.conceptGroup.modified} " style="color: #43B572"/>
                     </div>
                 </div>
             </div>
-        </div>        
-
+        </div>
 
 
     </h:panelGroup>
-
-
 
 
 </ui:fragment>

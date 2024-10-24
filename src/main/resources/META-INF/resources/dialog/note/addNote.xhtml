@@ -13,15 +13,15 @@
             
             <div class="row">
                 <div class="col-12" style="margin-top: 3px">
-                    <h:panelGroup rendered="#{noteBean.isFacetNote}">
+                    <h:panelGroup rendered="#{noteBean.facetNote}">
                         <h:outputText value="#{langueBean.getMsg('leftbody.facet')} : " /> 
                         <h:outputText value="#{editFacet.facetSelected.lexicalValue}" style="color: #C63632;"/>
                     </h:panelGroup>     
-                    <h:panelGroup rendered="#{noteBean.isGroupNote}">
+                    <h:panelGroup rendered="#{noteBean.groupNote}">
                         <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.group')} : " /> 
                         <h:outputText value="#{groupView.nodeGroup.lexicalValue}" style="color: #C63632;"/>
                     </h:panelGroup>                      
-                    <h:panelGroup rendered="#{!noteBean.isFacetNote and !noteBean.isGroupNote}">
+                    <h:panelGroup rendered="#{!noteBean.facetNote and !noteBean.groupNote}">
                         <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.nameOfConcept')} : " /> 
                         <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="color: #C63632;"/>
                     </h:panelGroup>                        

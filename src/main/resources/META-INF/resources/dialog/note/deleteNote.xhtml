@@ -9,15 +9,15 @@
         <h:form id="deleteNoteForm" >
             <div class="row">
                 <div class="col-12">
-                    <h:panelGroup rendered="#{noteBean.isFacetNote}">
+                    <h:panelGroup rendered="#{noteBean.facetNote}">
                         <h:outputText value="#{langueBean.getMsg('leftbody.facet')} : " />
                         <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="color: #C63632;" />
                     </h:panelGroup>
-                    <h:panelGroup rendered="#{noteBean.isGroupNote}">
+                    <h:panelGroup rendered="#{noteBean.groupNote}">
                         <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.group')} : " />
                         <h:outputText value="#{groupView.nodeGroup.lexicalValue}" style="color: #C63632;" />                    
                     </h:panelGroup>                    
-                    <h:panelGroup rendered="#{!noteBean.isFacetNote and !noteBean.isGroupNote}">
+                    <h:panelGroup rendered="#{!noteBean.facetNote and !noteBean.groupNote}">
                         <h:outputText value="#{langueBean.getMsg('rightbody.conceptdialog.term')} : " />
                         <h:outputText value="#{conceptView.nodeConcept.term.lexicalValue}" style="color: #C63632;" />
                     </h:panelGroup>                    
@@ -25,23 +25,30 @@
             </div>
             
             <div class="card mb-4 py-3 border-left-success" style="border-color: #43B572; margin-top: 10px">
-                <p:dataTable size="small" var="noteToDelete" value="#{noteBean.nodeToDelete()}"
+                <p:dataTable size="small" var="noteToDelete" value="#{noteBean.noteToEdit}"
                              widgetVar="listThesoTable" styleClass="products-table"
-                             style="margin-bottom: -17px; margin-top: -16px;" lazy="false">
+                             style="margin-left: 10px; margin-right: 10px;"
+                              lazy="false">
 
-                    <p:column width="90" headerText="Valeur">
+                    <p:column width="95%" headerText="Valeur" style="margin-left: 10px;">
                         <h:outputText value="#{noteToDelete.lexicalValue}" escape="false" />
                     </p:column>
 
-                    <p:column width="10" style="color: black">
-                        <p:commandLink style="color: #FF7979" ajax="true" process="@form" 
-                                       action="#{noteBean.deleteNote(noteToDelete, currentUser.nodeUser.idUser)}"
-                                       update="containerIndex:formRightTab containerIndex:idDeleteNote messageIndex">
-                            <i class="pi pi-trash" />
-                        </p:commandLink>
-                    </p:column>                        
+                    <p:column width="5%" style="color: black">
+                        <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger"
+                                         process="@this" ajax="true"
+                                         action="#{noteBean.deleteNote(noteToDelete, currentUser.nodeUser.idUser)}"
+                                         update="containerIndex:formRightTab containerIndex:idDeleteNote messageIndex" />
+                    </p:column>
                 </p:dataTable>
             </div>
-        </h:form>            
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-12" style="text-align: center">
+                    <p:commandButton value="#{langueBean.getMsg('candidat.close')}"
+                                     icon="fas fa-undo-alt" styleClass="ui-button-secondary button"
+                                     oncomplete="PF('deleteNote').hide();" />
+                </div>
+            </div>
+        </h:form>
     </p:dialog> 
 </ui:fragment>
