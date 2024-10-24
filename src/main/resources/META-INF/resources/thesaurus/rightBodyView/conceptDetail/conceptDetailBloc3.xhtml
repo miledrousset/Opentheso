@@ -53,14 +53,15 @@
                                         
                                         <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                     oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                    action="#{deeplTranslate.setNoteToTranlate(conceptView.note)}"
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'note')}"
                                                     icon="fa-solid fa-language"/>                                            
                                         
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.reset()}"
-                                                    action="#{noteBean.setSelectedTypeNote('note')}" oncomplete="PF('editNote').show();"
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
+                                                    actionListener="#{noteBean.reset()}" action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'note')}"
+                                                    oncomplete="PF('editNote').show();"
                                                     update="containerIndex:idEditNote" icon="fas fa-edit" />                                            
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
-                                                    actionListener="#{noteBean.reset()}" action="#{noteBean.setSelectedTypeNote('note')}"
+                                                    actionListener="#{noteBean.reset()}" action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'note')}"
                                                     update="containerIndex:idDeleteNote" oncomplete="PF('deleteNote').show();" icon="fas fa-minus"/>
                                     </p:menuButton>
                                 </h:panelGroup> 
@@ -97,14 +98,14 @@
                                               box-shadow: none; font-size: 12px;">
                                     <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                 oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                action="#{deeplTranslate.setNoteToTranlate(conceptView.changeNote)}"
+                                                action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'changeNote')}"
                                                 icon="fa-solid fa-language"/>                                        
-                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('changeNote')}"                                          
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
+                                                actionListener="#{noteBean.reset()}" action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'changeNote')}"
                                                 oncomplete="PF('editNote').show();"
                                                 update="containerIndex:idEditNote" icon="fas fa-edit" />                                        
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('changeNote')}" oncomplete="PF('deleteNote').show();"
+                                                action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'changeNote')}" oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />                                        
                                 </p:menuButton>
 
@@ -144,19 +145,16 @@
                                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                     <p:menuButton  icon="fas fa-cog"
                                                    style="color: #F7A269; background: none; border: none; box-shadow: none; font-size: 12px;">
-
                                         <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                     oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                    action="#{deeplTranslate.setNoteToTranlate(conceptView.definition)}"
-                                                    icon="fa-solid fa-language"/>         
-
-
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
-                                                    actionListener="#{noteBean.reset()}" action = "#{noteBean.setSelectedTypeNote('definition')}"                                          
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'definition')}"
+                                                    icon="fa-solid fa-language"/>
+                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}"
+                                                    actionListener="#{noteBean.reset()}" action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'definition')}"
                                                     oncomplete="PF('editNote').show();"
                                                     update="containerIndex:idEditNote" icon="fas fa-edit"/>
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('definition')}"
+                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'definition')}"
                                                     oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote"
                                                     icon="fas fa-minus"/>
                                     </p:menuButton>
@@ -198,16 +196,16 @@
                                                   box-shadow: none; font-size: 12px;">
                                         <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                     oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                    action="#{deeplTranslate.setNoteToTranlate(conceptView.editorialNote)}"
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'editorialNote')}"
                                                     icon="fa-solid fa-language"/>                                            
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                     actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('editorialNote')}"                                          
+                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'editorialNote')}"
                                                     oncomplete="PF('editNote').show();"
                                                     update="containerIndex:idEditNote" icon="fas fa-edit" />
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}" icon="fas fa-minus"
-                                                    action = "#{noteBean.setSelectedTypeNote('editorialNote')}"
+                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'editorialNote')}"
                                                     oncomplete="PF('deleteNote').show();" update="containerIndex:idDeleteNote" />
                                     </p:menuButton> 
 
@@ -242,18 +240,19 @@
                                 <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
                                     <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none;
                                                   box-shadow: none; font-size: 12px;">
-                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
+                                        <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}"
+                                                    actionListener="#{deeplTranslate.init()}"
                                                     oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                    action="#{deeplTranslate.setNoteToTranlate(conceptView.example)}"
+                                                    action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'example')}"
                                                     icon="fa-solid fa-language"/>                                            
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                     actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('example')}"                                          
+                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'example')}"
                                                     oncomplete="PF('editNote').show();"
                                                     update="containerIndex:idEditNote" icon="fas fa-edit" />
                                         <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                     actionListener="#{noteBean.reset()}"
-                                                    action = "#{noteBean.setSelectedTypeNote('example')}"
+                                                    action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'example')}"
                                                     oncomplete="PF('deleteNote').show();"
                                                     update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                     </p:menuButton> 
@@ -291,16 +290,16 @@
                                                       box-shadow: none; font-size: 12px;">
                                             <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                         oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                        action="#{deeplTranslate.setNoteToTranlate(conceptView.historyNote)}"
+                                                        action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'historyNote')}"
                                                         icon="fa-solid fa-language"/>                                                
                                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                         actionListener="#{noteBean.reset()}"
-                                                        action = "#{noteBean.setSelectedTypeNote('historyNote')}"                                          
+                                                        action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'historyNote')}"
                                                         oncomplete="PF('editNote').show();"
                                                         update="containerIndex:idEditNote" icon="fas fa-edit" />
                                             <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                         actionListener="#{noteBean.reset()}"
-                                                        action = "#{noteBean.setSelectedTypeNote('historyNote')}"
+                                                        action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'historyNote')}"
                                                         oncomplete="PF('deleteNote').show();"
                                                         update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                         </p:menuButton> 
@@ -339,16 +338,16 @@
                                               box-shadow: none; font-size: 12px;">
                                     <p:menuitem rendered="#{roleOnTheso.nodePreference.use_deepl_translation}" value="#{langueBean.getMsg('deepl.translate')}" actionListener="#{deeplTranslate.init()}"
                                                 oncomplete="PF('deeplTranslate').show();" update="containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm"
-                                                action="#{deeplTranslate.setNoteToTranlate(conceptView.scopeNote)}"
+                                                action="#{deeplTranslate.initNoteToTranslate(conceptView.nodeConcept.concept.idConcept, 'scopeNote')}"
                                                 icon="fa-solid fa-language"/>                                        
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_note')}" 
                                                 actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('scopeNote')}"                                          
+                                                action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'scopeNote')}"
                                                 oncomplete="PF('editNote').show();"
                                                 update="containerIndex:idEditNote" icon="fas fa-edit" />
                                     <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_note')}" 
                                                 actionListener="#{noteBean.reset()}"
-                                                action = "#{noteBean.setSelectedTypeNote('scopeNote')}"
+                                                action="#{noteBean.initNodeToEdit(conceptView.nodeConcept.concept.idConcept, 'scopeNote')}"
                                                 oncomplete="PF('deleteNote').show();"
                                                 update="containerIndex:idDeleteNote" icon="fas fa-minus" />
                                 </p:menuButton> 

@@ -1,6 +1,7 @@
 package fr.cnrs.opentheso.bean.deepl;
 
 import com.deepl.api.Language;
+import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.repositories.DeeplHelper;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.notes.NodeNote;
@@ -15,6 +16,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
@@ -35,6 +37,8 @@ public class DeeplTranslate implements Serializable {
 
     @Autowired
     private DeeplHelper deeplHelper;
+    @Autowired
+    private ConceptView conceptView;
 
     private String fromLang;
     private String fromLangLabel;
@@ -55,16 +59,33 @@ public class DeeplTranslate implements Serializable {
         String keyApi = roleOnThesoBean.getNodePreference().getDeepl_api_key();
         sourceLangs = deeplHelper.getSourceLanguages(keyApi);
         targetLangs = deeplHelper.getTargetLanguages(keyApi);
-
-        translatingText = "";
+        existingTranslatedText = null;
+        sourceTranslatedText = null;
+        translatingText = null;
+        textToTranslate = null;
     }
 
-    public void setNoteToTranlate(NodeNote nodeNote) {
-        if(nodeNote == null) return;
-        textToTranslate = nodeNote.getLexicalValue();
-        this.nodeNote = nodeNote;
+    public void initNoteToTranslate(String identifier, String nodeNoteType) {
+        if(nodeNoteType == null) {
+            init();
+            PrimeFaces.current().executeScript("PF('deeplTranslate').hide();");
+            return;
+        }
+        NodeNote nodeNote1= noteHelper.getNodeNote(connect.getPoolConnexion(),
+                identifier,
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang(),
+                nodeNoteType);
+        if(nodeNote1 == null) {
+            textToTranslate = null;
+            PrimeFaces.current().ajax().update("containerIndex:idDeeplTranslate containerIndex:deeplTranslateForm");
+            PrimeFaces.current().executeScript("PF('deeplTranslate').hide();");
+            return;
+        }
+        textToTranslate = nodeNote1.getLexicalValue();
+        this.nodeNote = nodeNote1;
         retrieveExistingTranslatedText();
-        this.fromLang = nodeNote.getLang();
+        this.fromLang = nodeNote1.getLang();
         fromLangLabel = getLanguage(fromLang);
     }
 
@@ -99,7 +120,7 @@ public class DeeplTranslate implements Serializable {
     public void saveTranslatedText() {
         LocalDate currentDate = LocalDate.now();
         String source = "traduit par Deepl le " + currentDate;
-
+        if(this.nodeNote == null) return;
         if (!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 translatingText, nodeNote.getNoteTypeCode(),
@@ -113,10 +134,19 @@ public class DeeplTranslate implements Serializable {
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         retrieveExistingTranslatedText();
+        updateConcept();
         translatingText = "";
     }
 
+    private void updateConcept() {
+        conceptView.getConceptForTree(selectedTheso.getCurrentIdTheso(),
+                nodeNote.getIdConcept(),
+                nodeNote.getLang(),
+                currentUser);
+    }
+
     public void saveExistingTranslatedText() {
+        if(this.nodeNote == null) return;
         if (!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 existingTranslatedText, nodeNote.getNoteTypeCode(),
@@ -125,6 +155,7 @@ public class DeeplTranslate implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        updateConcept();
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Note mis à jour avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
