@@ -22,7 +22,7 @@
                             actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
                             oncomplete="PF('addGroup').show();" update="containerIndex:idAddGroup" />
 
-                <p:menuitem disabled="#{!treeGroups.isGroupNode()}" process="@this" ajax="false"
+                <p:menuitem disabled="#{!treeGroups.isGroupNode()}" process="@this" ajax="true"
                             value="#{langueBean.getMsg('leftbody.group.addSubGroup')}" actionListener="#{addGroupBean.init()}"
                             oncomplete="PF('addSubGroup').show();" update="containerIndex:idAddSubGroup"
                             icon="far fa-object-ungroup"/>
@@ -36,14 +36,14 @@
                 <p:separator style="border-bottom: 2px solid #d8d8dc; margin-bottom: 5px;"/>
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.alphabetic_sort')}"
-                            actionListener="#{treeGroups.setSortByNotation(false)}" ajax="false"
+                            actionListener="#{treeGroups.setSortByNotation(false)}" ajax="true"
                             action="#{selectedTheso.reloadGroups()}"
                             process="@this"
                             disabled="#{!treeGroups.sortByNotation}"
                             update="containerIndex menuBar" icon="fas fa-sort-alpha-down"/>
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.notation_sort')}"
-                            actionListener="#{treeGroups.setSortByNotation(true)}" ajax="false" process="@this"
+                            actionListener="#{treeGroups.setSortByNotation(true)}" ajax="true" process="@this"
                             action="#{selectedTheso.reloadGroups()}"
                             disabled="#{treeGroups.sortByNotation}" icon="fas fa-sort-numeric-down"
                             update="containerIndex menuBar" />

@@ -51,7 +51,7 @@ public class Connect implements Serializable{
     @Value("${settings.timeout:10}")
     private int timeoutMin;
 
-    @Value("${build.version}")
+    @Value("${info.application.version}")
     private String buildVersion;
 
 
