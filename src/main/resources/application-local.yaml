@@ -14,12 +14,6 @@ server:
     whitelabel:
       enabled: false
 
-info:
-  application:
-    name: '@project.name@'
-    description: '@project.description@'
-    version: '@project.version@'
-
 spring:
   main:
     allow-bean-definition-overriding: true
