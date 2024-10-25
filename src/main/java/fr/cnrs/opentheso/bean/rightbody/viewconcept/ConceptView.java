@@ -981,4 +981,16 @@ public class ConceptView implements Serializable {
 
         return gpsList;
     }
+
+
+
+
+    /**
+     * Méthode temporaire le temps de centraliser toutes les commandes avec NodeFullConcept
+     */
+    private void mapNodeConceptFromNodeFullConcept(){
+        nodeConcept = new NodeConcept();
+
+    }
+
 }

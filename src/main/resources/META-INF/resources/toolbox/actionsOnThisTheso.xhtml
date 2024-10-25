@@ -190,19 +190,6 @@
                         
                         <p:divider style="font-size: 11px; color: #F47B2A; margin-bottom: 5px; margin-top: 5px;"/>                         
                         
-                       
-                        <i class="pi pi-upload"></i>
-                        <p:commandButton value="#{langueBean.getMsg('actions.getIdFromPrefLabel')}" 
-                                         title="#{langueBean.getMsg('actions.getIdFromPrefLabelTooltip')}"
-                                         styleClass="ui-button-flat" 
-                                         oncomplete="PF('getIdFromPrefLabel').show();"
-                                         update="idGetIdFromPrefLabel getIdFromPrefLabelForm"
-                                         process="@this" ajax="true"
-                                         action="#{importFileBean.init()}"
-                                         style="font-size: 12px; color: #601e18" />  
-                        <br/>
-                        
-                        
                         <!-- Compare une liste de mots avec les termes existants du thésaurus (recherche étendue sur altLabel) -->
                         <i class="pi pi-upload"></i>
                         <p:commandButton value="#{langueBean.getMsg('actions.compareListToTheso')}" 
@@ -233,7 +220,6 @@
     <ui:include src="../dialog/import/listReplaceValueByNewValueCsv.xhtml" />  
     <ui:include src="../dialog/import/listDeprecateConceptsCsv.xhtml" />      
     <ui:include src="../dialog/import/listAddConceptsCsv.xhtml" />   
-    <ui:include src="../dialog/actions/getIdFromPrefLabel.xhtml" />     
-    <ui:include src="../dialog/actions/compareListToTheso.xhtml" />       
+    <ui:include src="../dialog/actions/compareListToTheso.xhtml" />
 
 </ui:fragment>

@@ -327,9 +327,9 @@ public class PropositionService implements Serializable {
     }
 
     public void insertProposition(Proposition proposition, PropositionDao propositionSelected,
-            String commentaireAdmin, boolean prefTermeAccepted, boolean varianteAccepted, boolean traductionAccepted,
-            boolean noteAccepted, boolean definitionAccepted, boolean changeNoteAccepted, boolean scopeAccepted,
-            boolean editorialNotesAccepted, boolean examplesAccepted, boolean historyAccepted) throws IOException {
+                                  String commentaireAdmin, boolean prefTermeAccepted, boolean varianteAccepted, boolean traductionAccepted,
+                                  boolean noteAccepted, boolean definitionAccepted, boolean changeNoteAccepted, boolean scopeAccepted,
+                                  boolean editorialNotesAccepted, boolean examplesAccepted, boolean historyAccepted) throws IOException {
 
         if (prefTermeAccepted && proposition.isUpdateNomConcept()) {
             Term term = termHelper.getThisTerm(connect.getPoolConnexion(),
@@ -724,7 +724,7 @@ public class PropositionService implements Serializable {
                     break;
                 case "historyNote":
                     proposition.setHistoryNote(toNotePropBean(nodeNote));
-                    break;                    
+                    break;
             }
         }
      /*   for (NodeNote nodeNote : conceptView.getNodeConcept().getNodeNotesTerm()) {
