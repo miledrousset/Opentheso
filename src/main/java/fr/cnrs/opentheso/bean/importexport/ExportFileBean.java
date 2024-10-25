@@ -102,6 +102,9 @@ public class ExportFileBean implements Serializable {
     @Autowired
     private PreferencesHelper preferencesHelper;
 
+    @Autowired
+    private Tree tree;
+
     // progressBar
     private int sizeOfTheso;
     private float progressBar, progressStep;
@@ -231,7 +234,7 @@ public class ExportFileBean implements Serializable {
             concept.setPreferredTerm(StringUtils.isEmpty(concept.getPreferredTerm()) ? "(" + concept.getIdConcept() + ")" : concept.getPreferredTerm());
             concept.setChildrens(parcourirArbre(thesoId, langId, concept.getIdConcept()));
 
-            List<NodeTree> facettes = new Tree().searchFacettesForTree(connect.getPoolConnexion(), parentId, thesoId, langId);
+            List<NodeTree> facettes = tree.searchFacettesForTree(connect.getPoolConnexion(), parentId, thesoId, langId);
             if (CollectionUtils.isNotEmpty(facettes)) {
                 sizeOfTheso += facettes.size();
                 concept.getChildrens().addAll(facettes);
