@@ -567,7 +567,7 @@ public class Tree implements Serializable {
                 indexSetting.setIsValueSelected(true);
 
                 alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
-                        conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                        conceptBean.getNodeFullConcept().getIdentifier(),
                         conceptBean.getSelectedLang());
                 alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
 
@@ -620,7 +620,7 @@ public class Tree implements Serializable {
             alignmentBean.setComparaisonVisible(false);
 
             alignmentBean.initAlignementByStep(selectedTheso.getCurrentIdTheso(),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getNodeFullConcept().getIdentifier(),
                     conceptBean.getSelectedLang());
 
             alignmentBean.getIdsAndValues2(conceptBean.getSelectedLang(), selectedTheso.getCurrentIdTheso());
@@ -631,7 +631,7 @@ public class Tree implements Serializable {
         }
         if (event.getTab().getId().equals("viewTabConcept")) {
             conceptBean.getConcept(selectedTheso.getCurrentIdTheso(),
-                    conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                    conceptBean.getNodeFullConcept().getIdentifier(),
                     conceptBean.getSelectedLang(), currentUser);
 
             rightBodySetting.setIndex("0");

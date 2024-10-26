@@ -283,19 +283,14 @@ public class ConceptView implements Serializable {
         if (StringUtils.isEmpty(idLang)) {
             idLang = languageBean.getIdLangue();
         }
-        
-        if(currentUser != null) {
-            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang, step + 1, offset);
-            if (nodeConcept == null) return;
-        }        
-
         nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
         if(nodeFullConcept == null) return;
-        
-        
+        if(currentUser.getNodeUser() != null) {
+            nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso);
+            if (nodeConcept == null) return;
+        }        
         searchedForCorpus = false;
-        
-        
+
         // permet de récupérer les qualificatifs
         if(roleOnThesoBean.getNodePreference() == null){
             roleOnThesoBean.initNodePref(idTheso);
@@ -324,9 +319,7 @@ public class ConceptView implements Serializable {
         // récupération des informations sur les corpus liés
         haveCorpus = false;
         setRoles();
-
         setFacetsOfConcept(idConcept, idTheso, idLang);
-
         // deployement de l'arbre si l'option est true
         if (roleOnThesoBean.getNodePreference() != null) {
             if (roleOnThesoBean.getNodePreference().isBreadcrumb())
@@ -344,7 +337,6 @@ public class ConceptView implements Serializable {
                 //selectedTheso.actionFromConceptToOn();
             }
         }
-
         countOfBranch = 0;
     }
 
@@ -432,15 +424,15 @@ public class ConceptView implements Serializable {
         }
         selectedLang = idLang;
         offset = 0;
-        
-        if(currentUser != null) {
-            nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang,  step + 1, offset);
-            if (nodeConcept == null) return;
-        }
 
         nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step+1);
         if(nodeFullConcept == null) return;
-        
+        if(currentUser.getNodeUser() != null) {
+            //nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang,  step + 1, offset);
+            nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idConcept);
+            if (nodeConcept == null) return;
+        }
+
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {
             nodeCustomRelations = relationsHelper.getAllNodeCustomRelation(
@@ -981,4 +973,8 @@ public class ConceptView implements Serializable {
 
         return gpsList;
     }
+
+
+
+
 }
