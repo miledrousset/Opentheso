@@ -190,7 +190,7 @@ public class ExternalResources implements Serializable {
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Image_URI modifiée avec succès");
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "URL modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         reset();
 
