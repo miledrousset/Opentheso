@@ -75,33 +75,20 @@ public class CandidatService implements Serializable {
     /**
      * Permet de récupérer la liste des candidats qui sont en attente
      */
-    public List<CandidatDto> getCandidatsByStatus(Connect connect, String idThesaurus, String lang, int etat, String statut) {
+    public List<CandidatDto> getCandidatsByStatus(Connect connect, String idThesaurus, String lang, int etat) {
         List<CandidatDto> candidatList = new ArrayList<>();
-        HikariDataSource connection = connect.getPoolConnexion();
-        try {
+        try (HikariDataSource connection = connect.getPoolConnexion()) {
             candidatList = candidatDao.getCandidatsByStatus(connection, idThesaurus, lang, etat);
             candidatList.forEach(candidatDto -> {
-                try {
-                    candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(connection, candidatDto.getIdConcepte(),
-                            idThesaurus));
-                    candidatDto.setNbrDemande(candidatDao.searchDemandeCount(connection, candidatDto.getIdConcepte(),
-                            idThesaurus));
-                    candidatDto.setNbrVote(candidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
-                            idThesaurus, VoteType.CANDIDAT.getLabel()));
-                    candidatDto.setNbrNoteVote(candidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(),
-                            idThesaurus, VoteType.NOTE.getLabel()));
-                    candidatDto.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connection, candidatDto.getIdConcepte(), idThesaurus));
-                } catch (SQLException ex) {
-                    Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(connection, candidatDto.getIdConcepte(), idThesaurus));
+                candidatDto.setNbrDemande(candidatDao.searchDemandeCount(connection, candidatDto.getIdConcepte(), idThesaurus));
+                candidatDto.setNbrVote(candidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel()));
+                candidatDto.setNbrNoteVote(candidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(), idThesaurus, VoteType.NOTE.getLabel()));
+                candidatDto.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connection, candidatDto.getIdConcepte(), idThesaurus));
             });
             connection.close();
         } catch (SQLException sqle) {
             log.error(sqle.toString());
-            System.err.println("Error >>> " + sqle);
-            if (!connection.isClosed()) {
-                connection.close();
-            }
         }
         return candidatList;
     }    

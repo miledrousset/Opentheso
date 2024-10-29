@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import org.primefaces.event.TabChangeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
@@ -219,8 +220,8 @@ public class CandidatBean implements Serializable {
         selectedCandidates = new ArrayList<>();
 
         getAllCandidatsByThesoAndLangue();
-        getRejectCandidatByThesoAndLangue();
-        getAcceptedCandidatByThesoAndLangue();
+        //getRejectCandidatByThesoAndLangue();
+        //getAcceptedCandidatByThesoAndLangue();
         tabViewIndexSelected = 0;
 
         alignementSelected = new NodeAlignment();
@@ -238,12 +239,24 @@ public class CandidatBean implements Serializable {
         }
     }
 
+    public void onTabChange(TabChangeEvent event) {
+        switch(event.getTab().getTitle()) {
+            case "Concepts insérés":
+                getAcceptedCandidatByThesoAndLangue();
+                break;
+            case "Concepts rejetés":
+                getRejectCandidatByThesoAndLangue();
+                break;
+            default:
+                getAllCandidatsByThesoAndLangue();
+        }
+    }
+
     public void getAllCandidatsByThesoAndLangue() {
         isModifiedLabel = false;
         tabViewIndexSelected = 0;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
-            candidatList = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
-                    getIdLang(), 1, "CA");
+            candidatList = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(), getIdLang(), 1);
         } else {
             candidatList.clear();
         }
@@ -252,8 +265,7 @@ public class CandidatBean implements Serializable {
     public void getRejectCandidatByThesoAndLangue() {
         tabViewIndexSelected = 2;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
-            rejetCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
-                    getIdLang(), 3, "CA");
+            rejetCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(), getIdLang(), 3);
         } else {
             rejetCadidat.clear();
         }
@@ -262,8 +274,7 @@ public class CandidatBean implements Serializable {
     public void getAcceptedCandidatByThesoAndLangue() {
         tabViewIndexSelected = 1;
         if (!StringUtils.isEmpty(selectedTheso.getSelectedIdTheso())) {
-            acceptedCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(),
-                    getIdLang(), 2, null);
+            acceptedCadidat = candidatService.getCandidatsByStatus(connect, selectedTheso.getSelectedIdTheso(), getIdLang(), 2);
         } else {
             acceptedCadidat.clear();
         }
