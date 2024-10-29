@@ -43,24 +43,18 @@
                                 <h:panelGroup rendered="#{conceptView.haveAlignment}">
                                     <!-- Exact -->
                                     <ui:repeat var="align" value="#{conceptView.nodeFullConcept.exactMatchs}" varStatus="aligStatus" >
-
                                         <h:outputText value="#{langueBean.getMsg('alignment.exactMatch')} :  " style="font-size: 14px;color: #8f8f8f"/>
                                         <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                        <h:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" >
-                                            <i class="pi pi-link" />
-                                        </h:link>
-                                        <br/> 
+                                        <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                        <br/>
                                     </ui:repeat>
                                     
                                     <!-- Close -->
                                     <ui:repeat var="align" value="#{conceptView.nodeFullConcept.closeMatchs}" varStatus="aligStatus" >
-
                                         <h:outputText value="#{langueBean.getMsg('alignment.closeMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
                                         <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                        <h:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" >
-                                            <i class="pi pi-link" />
-                                        </h:link>
-                                        <br/> 
+                                        <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                        <br/>
                                     </ui:repeat>                                    
                                 </h:panelGroup>
                             </div>
@@ -118,9 +112,9 @@
                                     </div>
                                     <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="margin-left: 0px">
                                         <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                        <h:link href="#{request.contextPath}/?idc=#{conceptView.nodeFullConcept.identifier}&amp;idt=#{selectedTheso.currentIdTheso}"
+                                        <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeFullConcept.identifier}&amp;idt=#{selectedTheso.currentIdTheso}"
                                                 value="#{conceptView.nodeFullConcept.identifier}" style="color: #164A78; font-size: 13px;">
-                                        </h:link>
+                                        </p:link>
                                     </div>
                                 </div>
                             </div>
@@ -138,10 +132,10 @@
                                             <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
                                                 <!-- Uri du concept -->
                                                 <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                                <h:link href="#{conceptView.nodeFullConcept.uri}"
+                                                <p:link href="#{conceptView.nodeFullConcept.uri}"
                                                         value="#{conceptView.nodeFullConcept.uri}"
                                                         style="color: #164A78; font-size: 13px;" target="_blank">
-                                                </h:link>
+                                                </p:link>
                                             </div>
                                         </h:panelGroup>
                                     </div>
