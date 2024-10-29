@@ -225,12 +225,11 @@ public class CandidatDao {
         return status;
     }
 
-    public int searchParticipantCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus) throws SQLException {
+    public int searchParticipantCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus) {
         int nbrParticipant = 0;
 
         try (Connection conn = hikariDataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-
                 stmt.executeQuery(new StringBuffer("SELECT count(*) FROM candidat_messages WHERE id_concept = '")
                         .append(idCouncepte).append("' AND id_thesaurus = '")
                         .append(idThesaurus).append("'").toString());
@@ -241,27 +240,29 @@ public class CandidatDao {
                     }
                 }
             }
+        } catch (Exception ex) {
+
         }
 
         return nbrParticipant;
     }
 
-    public int searchDemandeCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus) throws SQLException {
+    public int searchDemandeCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus) {
         int nbrDemande = 0;
 
         try (Connection conn = hikariDataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-
                 stmt.executeQuery(new StringBuffer("SELECT count(*) FROM proposition WHERE id_concept = '")
                         .append(idCouncepte).append("' AND id_thesaurus = '")
                         .append(idThesaurus).append("'").toString());
-
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         nbrDemande = resultSet.getInt("count");
                     }
                 }
             }
+        } catch (Exception ex) {
+
         }
 
         return nbrDemande;
@@ -304,8 +305,7 @@ public class CandidatDao {
     
 /////// ajouté par Miled
     
-    public int searchVoteCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus, String typeVote)
-            throws SQLException {
+    public int searchVoteCount(HikariDataSource hikariDataSource, String idCouncepte, String idThesaurus, String typeVote) {
         int nbrDemande = 0;
 
         try (Connection conn = hikariDataSource.getConnection()) {
@@ -320,8 +320,9 @@ public class CandidatDao {
                     }
                 }
             }
-        }
+        } catch (Exception ex) {
 
+        }
         return nbrDemande;
     }    
     
