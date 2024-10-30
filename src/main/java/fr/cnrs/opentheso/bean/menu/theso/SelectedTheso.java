@@ -136,12 +136,6 @@ public class SelectedTheso implements Serializable {
 
     @PostConstruct
     public void initializing() {
-
-        if (!connect.isConnected()) {
-            System.err.println("Erreur de connexion BDD");
-            return;
-        }
-
         isNetworkAvailable = true;
         roleOnThesoBean.showListTheso(currentUser);
         sortByNotation = false;
@@ -197,7 +191,7 @@ public class SelectedTheso implements Serializable {
             return baseUrl + "/?idt=" + currentIdTheso;
         }
         else {
-            String idArk = thesaurusHelper.getIdArkOfThesaurus(connect.getPoolConnexion(), currentIdTheso);
+            String idArk = thesaurusHelper.getIdArkOfThesaurus(connect.openConnexionPool(), currentIdTheso);
             if(StringUtils.isEmpty(idArk)){
                 return baseUrl + "/?idt=" + currentIdTheso;
             } else {
@@ -207,7 +201,7 @@ public class SelectedTheso implements Serializable {
     }
 
     private void thesoHaveActiveCorpus(){
-        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(connect.getPoolConnexion(), getSelectedIdTheso());
+        haveActiveCorpus = corpusHelper.isHaveActiveCorpus(connect.openConnexionPool(), getSelectedIdTheso());
     }    
     
     /**
@@ -332,12 +326,12 @@ public class SelectedTheso implements Serializable {
             currentUser.initAllTheso();
             projectIdSelected = ""+currentUser.getUserPermissions().getSelectedProject();
             selectedIdTheso = currentUser.getUserPermissions().getSelectedTheso();
-            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(connect.getPoolConnexion(), false);
+            projectsList = userGroupLabelRepository.getProjectsByThesoStatus(connect.openConnexionPool(), false);
         } else {
             if (currentUser.getNodeUser().isSuperAdmin()) {
-                projectsList = userGroupLabelRepository.getAllProjects(connect.getPoolConnexion());
+                projectsList = userGroupLabelRepository.getAllProjects(connect.openConnexionPool());
             } else {
-                projectsList = userGroupLabelRepository.getProjectsByUserId(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+                projectsList = userGroupLabelRepository.getProjectsByUserId(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
             }
         }
         if(projectsList == null || projectsList.isEmpty()) {
@@ -348,7 +342,7 @@ public class SelectedTheso implements Serializable {
     public void setSelectedProject() {
         projectBean.setLangCodeSelected(languageBean.getIdLangue());
         if (CollectionUtils.isEmpty(projectBean.getAllLangs())) {
-            projectBean.setAllLangs(languageHelper.getAllLanguages(connect.getPoolConnexion()));
+            projectBean.setAllLangs(languageHelper.getAllLanguages(connect.openConnexionPool()));
         }
         if ("-1".equals(projectIdSelected)) {
             currentUser.resetUserPermissionsForThisProject();
@@ -506,13 +500,13 @@ public class SelectedTheso implements Serializable {
         }
 
         nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 selectedIdTheso,
                 languageBean.getIdLangue());
 
         currentLang = idLang;
         selectedLang = idLang;
-        thesoName = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(),
+        thesoName = thesaurusHelper.getTitleOfThesaurus(connect.openConnexionPool(),
                 selectedIdTheso, selectedLang);
 
         // initialisation de l'arbre des groupes
@@ -609,7 +603,7 @@ public class SelectedTheso implements Serializable {
             conceptBean.getConcept(selectedIdTheso, idConceptFromUri, currentLang, currentUser);
             actionFromConceptToOn();
             initIdsFromUri();
-            thesoName = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), selectedIdTheso, selectedLang);
+            thesoName = thesaurusHelper.getTitleOfThesaurus(connect.openConnexionPool(), selectedIdTheso, selectedLang);
             return;
         }
 
@@ -650,7 +644,7 @@ public class SelectedTheso implements Serializable {
     }
 
     private boolean isValidTheso(String idTheso) {
-        return !thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso);
+        return !thesaurusHelper.isThesoPrivate(connect.openConnexionPool(), idTheso);
     }
 
     public String getIdConceptFromUri() {

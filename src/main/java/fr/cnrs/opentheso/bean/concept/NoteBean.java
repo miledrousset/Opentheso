@@ -123,7 +123,7 @@ public class NoteBean implements Serializable {
         this.nodeGroup = nodeGroup;
     }    
     private void resetGroup() {
-        noteTypes = noteHelper.getNotesType(connect.getPoolConnexion());
+        noteTypes = noteHelper.getNotesType(connect.openConnexionPool());
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = selectedTheso.getSelectedLang();
         noteValue = "";
@@ -147,7 +147,7 @@ public class NoteBean implements Serializable {
     }
     
     private ArrayList<NoteHelper.NoteType> findNoteTypes(){
-        ArrayList<NoteHelper.NoteType> noteTypes1 = noteHelper.getNotesType(connect.getPoolConnexion());
+        ArrayList<NoteHelper.NoteType> noteTypes1 = noteHelper.getNotesType(connect.openConnexionPool());
         return noteTypes1;
     }
     
@@ -231,7 +231,7 @@ public class NoteBean implements Serializable {
             return;
         }
         this.selectedTypeNote = selectedTypeNote1;
-        noteToEdit = noteHelper.getNodeNote(connect.getPoolConnexion(),
+        noteToEdit = noteHelper.getNodeNote(connect.openConnexionPool(),
                 identifier,
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang(),
@@ -269,12 +269,12 @@ public class NoteBean implements Serializable {
             printErreur();
             return;
         }
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////  
@@ -301,11 +301,11 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        facetHelper.updateDateOfFacet(connect.getPoolConnexion(),
+        facetHelper.updateDateOfFacet(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeFacet.getIdFacet(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 nodeFacet.getIdFacet(), selectedTheso.getCurrentIdTheso());
         ///////////////  
@@ -321,10 +321,10 @@ public class NoteBean implements Serializable {
             printErreur();
             return;
         }
-        groupHelper.updateModifiedDate(connect.getPoolConnexion(), nodeGroup.getConceptGroup().getIdgroup(),
+        groupHelper.updateModifiedDate(connect.openConnexionPool(), nodeGroup.getConceptGroup().getIdgroup(),
                 selectedTheso.getCurrentIdTheso());
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
         ///////////////  
@@ -336,7 +336,7 @@ public class NoteBean implements Serializable {
     
     private boolean addNote(String identifier, int idUser) {
         if (noteHelper.isNoteExist(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 identifier,
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang,
@@ -349,7 +349,7 @@ public class NoteBean implements Serializable {
         }
 
         return noteHelper.addNote(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 identifier,
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),
@@ -373,7 +373,7 @@ public class NoteBean implements Serializable {
         noteValue = StringEscapeUtils.unescapeXml(noteValue);
 
         if (noteHelper.isNoteExist(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang,
@@ -506,7 +506,7 @@ public class NoteBean implements Serializable {
             return;
         }            
         
-        if (!noteHelper.updateNote(connect.getPoolConnexion(),
+        if (!noteHelper.updateNote(connect.openConnexionPool(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 nodeNote.getLang(),
@@ -519,11 +519,11 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
@@ -539,7 +539,7 @@ public class NoteBean implements Serializable {
     // mise à jour des notes pour les facettes
     private void updateFacetNote(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (!noteHelper.updateNote(connect.getPoolConnexion(),
+        if (!noteHelper.updateNote(connect.openConnexionPool(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 nodeFacet.getIdFacet(),
                 nodeNote.getLang(),
@@ -552,11 +552,11 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        facetHelper.updateDateOfFacet(connect.getPoolConnexion(),
+        facetHelper.updateDateOfFacet(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeFacet.getIdFacet(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 nodeFacet.getIdFacet(), selectedTheso.getCurrentIdTheso());
         ///////////////  
@@ -570,7 +570,7 @@ public class NoteBean implements Serializable {
     // mise à jour des notes pour les facettes
     private void updateGroupNote(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (!noteHelper.updateNote(connect.getPoolConnexion(),
+        if (!noteHelper.updateNote(connect.openConnexionPool(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 nodeGroup.getConceptGroup().getIdgroup(),
                 nodeNote.getLang(),
@@ -583,11 +583,11 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        groupHelper.updateModifiedDate(connect.getPoolConnexion(),
+        groupHelper.updateModifiedDate(connect.openConnexionPool(),
                 nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
         
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
         ///////////////  
@@ -609,7 +609,7 @@ public class NoteBean implements Serializable {
             return;
         }
 
-        if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
+        if (!noteHelper.deleteThisNote(connect.openConnexionPool(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeNote.getIdConcept(),
                 nodeNote.getLang(),
@@ -633,7 +633,7 @@ public class NoteBean implements Serializable {
 
     private void deleteThisNoteFacet(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
+        if (!noteHelper.deleteThisNote(connect.openConnexionPool(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeNote.getIdConcept(),
                 nodeNote.getLang(),
@@ -651,7 +651,7 @@ public class NoteBean implements Serializable {
     }
     private void deleteThisNoteGroup(NodeNote nodeNote, int idUser){
         FacesMessage msg;
-        if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
+        if (!noteHelper.deleteThisNote(connect.openConnexionPool(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 nodeGroup.getConceptGroup().getIdgroup(),
                 nodeNote.getLang(),

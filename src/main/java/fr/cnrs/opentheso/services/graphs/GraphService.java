@@ -48,7 +48,7 @@ public class GraphService implements Serializable {
         if (currentUser == null || currentUser.getNodeUser().getIdUser() == -1) {
             return null;
         }
-        HikariDataSource ds = connect.getPoolConnexion();
+        HikariDataSource ds = connect.openConnexionPool();
         Map<Integer, GraphObject> graphviews = new HashMap();
         try (Connection conn = ds.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
@@ -72,7 +72,7 @@ public class GraphService implements Serializable {
         return graphviews;
     }
     private void setObject(GraphObject graphObject) {
-        try (Connection conn = connect.getPoolConnexion().getConnection()) {
+        try (Connection conn = connect.openConnexionPool().getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from graph_view_exported_concept_branch"
                         + " where "
@@ -95,7 +95,7 @@ public class GraphService implements Serializable {
     
 
     public GraphObject getView(String id) {
-        HikariDataSource ds = connect.getPoolConnexion();
+        HikariDataSource ds = connect.openConnexionPool();
         GraphObject view = null;
         try {
             Connection con = ds.getConnection();
@@ -129,7 +129,7 @@ public class GraphService implements Serializable {
     }
 
     public void deleteView(String id) {
-        HikariDataSource ds = connect.getPoolConnexion();
+        HikariDataSource ds = connect.openConnexionPool();
         boolean result = false;
         try {
             Connection con = ds.getConnection();
@@ -153,7 +153,7 @@ public class GraphService implements Serializable {
     }
 
     public boolean saveView(GraphObject view) {
-        HikariDataSource ds = connect.getPoolConnexion();
+        HikariDataSource ds = connect.openConnexionPool();
         boolean result = false;
         try {
             Connection con = ds.getConnection();
@@ -178,7 +178,7 @@ public class GraphService implements Serializable {
     }
 
     public int createView(GraphObject view) {
-        HikariDataSource ds = connect.getPoolConnexion();
+        HikariDataSource ds = connect.openConnexionPool();
         int id = -1;
         try {
             Connection con = ds.getConnection();
@@ -212,7 +212,7 @@ public class GraphService implements Serializable {
     public int addDataToView(int selectedViewId, ImmutablePair<String, String> tuple) {
         int id = -1;
         String concept = tuple.right == null ? null : "'" + tuple.right + "'";
-        try (Connection conn = connect.getPoolConnexion().getConnection()){
+        try (Connection conn = connect.openConnexionPool().getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeQuery("INSERT INTO graph_view_exported_concept_branch (graph_view_id, top_concept_id, top_concept_thesaurus_id) "
                         + " VALUES (" 
@@ -241,7 +241,7 @@ public class GraphService implements Serializable {
      * @return 
      */
     public boolean isExistDatas(int viewId, String idTheso, String idConcept) {
-        try (Connection conn = connect.getPoolConnexion().getConnection()) {
+        try (Connection conn = connect.openConnexionPool().getConnection()) {
             try (Statement stmt = conn.createStatement()) {
 
                 if (StringUtils.isEmpty(idConcept)) {
@@ -275,7 +275,7 @@ public class GraphService implements Serializable {
     }
 
     public void removeDataFromView(int selectedViewId, ImmutablePair<String, String> tuple) {
-        HikariDataSource ds = connect.getPoolConnexion();
+        HikariDataSource ds = connect.openConnexionPool();
         try {
             Connection con = ds.getConnection();
             PreparedStatement stmt;

@@ -139,7 +139,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(connect.getPoolConnexion(),
+        if (groupHelper.isDomainExist(connect.openConnexionPool(),
                 traductionValue,
                 selectedLang,
                 selectedTheso.getCurrentIdTheso())) {
@@ -151,7 +151,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.addGroupTraduction(connect.getPoolConnexion(),
+        if (!groupHelper.addGroupTraduction(connect.openConnexionPool(),
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang,
@@ -163,7 +163,7 @@ public class TraductionGroupBean implements Serializable {
             }
             return;
         }
-        groupHelper.updateModifiedDate(connect.getPoolConnexion(), groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
+        groupHelper.updateModifiedDate(connect.openConnexionPool(), groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),
@@ -199,7 +199,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(connect.getPoolConnexion(),
+        if (groupHelper.isDomainExist(connect.openConnexionPool(),
                 nodeGroupTraductions.getTitle(),
                 nodeGroupTraductions.getIdLang(),
                 selectedTheso.getCurrentIdTheso())) {
@@ -212,7 +212,7 @@ public class TraductionGroupBean implements Serializable {
         }
 
         if (!groupHelper.renameGroup(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeGroupTraductions.getTitle(),
                 nodeGroupTraductions.getIdLang(),
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),
@@ -261,7 +261,7 @@ public class TraductionGroupBean implements Serializable {
         }
 
         if (!groupHelper.deleteGroupTraduction(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeGroupTraductions.getIdLang())) {

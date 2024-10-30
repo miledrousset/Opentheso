@@ -77,7 +77,7 @@ public class CandidatService implements Serializable {
      */
     public List<CandidatDto> getCandidatsByStatus(Connect connect, String idThesaurus, String lang, int etat) {
         List<CandidatDto> candidatList = new ArrayList<>();
-        try (HikariDataSource connection = connect.getPoolConnexion()) {
+        try (HikariDataSource connection = connect.openConnexionPool()) {
             candidatList = candidatDao.getCandidatsByStatus(connection, idThesaurus, lang, etat);
             candidatList.forEach(candidatDto -> {
                 candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(connection, candidatDto.getIdConcepte(), idThesaurus));
@@ -99,7 +99,7 @@ public class CandidatService implements Serializable {
     public List<CandidatDto> searchCandidats(Connect connect, String value,
             String idThesaurus, String lang, int etat, String statut) {
         List<CandidatDto> temps = new ArrayList<>();
-        HikariDataSource ds = connect.getPoolConnexion();
+        HikariDataSource ds = connect.openConnexionPool();
         try {
             temps = candidatDao.searchCandidatsByValue(ds, value, idThesaurus, lang, etat, statut);
             temps.forEach(candidatDto -> {
@@ -134,7 +134,7 @@ public class CandidatService implements Serializable {
         Connection conn = null;
         String idNewCondidat = null;
         try {
-            conn = connect.getPoolConnexion().getConnection();
+            conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
             idNewCondidat = conceptHelper.addConceptInTable(conn, concept, concept.getIdUser());
             if (idNewCondidat == null) {
@@ -154,7 +154,7 @@ public class CandidatService implements Serializable {
             }
         }            
 
-        candidatDao.setStatutForCandidat(connect.getPoolConnexion(), 1, idNewCondidat, concept.getIdThesaurus(),
+        candidatDao.setStatutForCandidat(connect.openConnexionPool(), 1, idNewCondidat, concept.getIdThesaurus(),
                 concept.getIdUser() + "");
         return idNewCondidat;
     }
@@ -164,9 +164,9 @@ public class CandidatService implements Serializable {
         Connection conn = null;
         String idTerm = null;
         try {
-            conn = connect.getPoolConnexion().getConnection();
+            conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
-            idTerm = termHelper.addTerm(connect.getPoolConnexion().getConnection(), term,
+            idTerm = termHelper.addTerm(connect.openConnexionPool().getConnection(), term,
                 idConcept, idUser);
             if (idTerm == null) {
                 conn.rollback();
@@ -188,7 +188,7 @@ public class CandidatService implements Serializable {
     }
 
     public void updateIntitule(Connect connect, String intitule, String idThesaurus, String lang, String idTerm) throws SQLException {
-        termeDao.updateIntitule(connect.getPoolConnexion(),
+        termeDao.updateIntitule(connect.openConnexionPool(),
                 intitule, idTerm, idThesaurus, lang);
     }
 
@@ -230,7 +230,7 @@ public class CandidatService implements Serializable {
         }
 
         // Employé pour
-        termeDao.deleteEMByIdTermAndLang(connect.getPoolConnexion(), candidatSelected.getIdTerm(),
+        termeDao.deleteEMByIdTermAndLang(connect.openConnexionPool(), candidatSelected.getIdTerm(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         
         if(!candidatSelected.getEmployePourList().isEmpty()) {
@@ -249,7 +249,7 @@ public class CandidatService implements Serializable {
 
     public void getCandidatDetails(Connect connect, CandidatDto candidatSelected, String idThesaurus) {
 
-        try (HikariDataSource connection = connect.getPoolConnexion()){
+        try (HikariDataSource connection = connect.openConnexionPool()){
             candidatSelected.setIdTerm(termHelper.getIdTermOfConcept(connection,
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
             
@@ -292,13 +292,13 @@ public class CandidatService implements Serializable {
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), null, 
                     VoteType.CANDIDAT.getLabel()));
 
-            candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(),
+            candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.openConnexionPool(),
                     candidatSelected.getIdConcepte(), idThesaurus));
 
-            candidatSelected.setImages(imagesHelper.getExternalImages(connect.getPoolConnexion(),
+            candidatSelected.setImages(imagesHelper.getExternalImages(connect.openConnexionPool(),
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
-            connect.getPoolConnexion().getConnection().close();
+            connect.openConnexionPool().getConnection().close();
         } catch (SQLException e) {
             log.error(e.toString());
         }
@@ -308,28 +308,28 @@ public class CandidatService implements Serializable {
 ///////// ajouté par Miled
     public void addVote(Connect connect, String idThesaurus, String idConcept, int idUser,
             String idNote, VoteType voteType) throws SQLException {
-        candidatDao.addVote(connect.getPoolConnexion(), idThesaurus, idConcept, idUser, idNote,
+        candidatDao.addVote(connect.openConnexionPool(), idThesaurus, idConcept, idUser, idNote,
                 voteType.getLabel());
     }
 
     public boolean getVote(Connect connect, String idThesaurus, String idConcept, int idUser, String idNote,
             VoteType voteType) throws SQLException {
-        return candidatDao.getVote(connect.getPoolConnexion(), idUser, idConcept, idThesaurus,
+        return candidatDao.getVote(connect.openConnexionPool(), idUser, idConcept, idThesaurus,
                 idNote, voteType.getLabel());
     }
 
     public void removeVote(Connect connect, String idThesaurus, String idConcept, int idUser, String idNote,
             VoteType voteType) throws SQLException {
-        candidatDao.removeVote(connect.getPoolConnexion(), idThesaurus, idConcept, idUser, idNote,
+        candidatDao.removeVote(connect.openConnexionPool(), idThesaurus, idConcept, idUser, idNote,
                 voteType.getLabel());
     }
     
     public boolean insertCandidate(Connect connect, CandidatDto candidatDto, String adminMessage, int idUser) {
-        return candidatDao.insertCandidate(connect.getPoolConnexion(), candidatDto, adminMessage, idUser);
+        return candidatDao.insertCandidate(connect.openConnexionPool(), candidatDto, adminMessage, idUser);
     }
     
     public boolean rejectCandidate(Connect connect, CandidatDto candidatDto, String adminMessage, int idUser) {
-        return candidatDao.rejectCandidate(connect.getPoolConnexion(), candidatDto, adminMessage, idUser);
+        return candidatDao.rejectCandidate(connect.openConnexionPool(), candidatDto, adminMessage, idUser);
     }     
     
     /**
@@ -342,7 +342,7 @@ public class CandidatService implements Serializable {
         //// récupération des anciens candidats
         ArrayList<NodeCandidateOld> nodeCandidateOlds;
         try {
-            nodeCandidateOlds = candidatDao.getCandidatesIdFromOldModule(connect.getPoolConnexion(), idTheso);
+            nodeCandidateOlds = candidatDao.getCandidatesIdFromOldModule(connect.openConnexionPool(), idTheso);
         } catch (SQLException e) {
             messages.append("Erreur : ").append(e.getMessage());
             return messages.toString();
@@ -355,10 +355,10 @@ public class CandidatService implements Serializable {
             try {
                 nodeCandidateOld.setNodeTraductions(
                     candidatDao.getCandidatesTraductionsFromOldModule(
-                            connect.getPoolConnexion(), nodeCandidateOld.getIdCandidate(), idTheso));
+                            connect.openConnexionPool(), nodeCandidateOld.getIdCandidate(), idTheso));
                 nodeCandidateOld.setNodePropositions(
                     candidatDao.getCandidatesMessagesFromOldModule(
-                            connect.getPoolConnexion(), nodeCandidateOld.getIdCandidate(), idTheso));
+                            connect.openConnexionPool(), nodeCandidateOld.getIdCandidate(), idTheso));
             } catch (SQLException e) {
                 messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
                 System.out.println(messages.toString());
@@ -377,7 +377,7 @@ public class CandidatService implements Serializable {
             // ajout du candidat s'il n'existe pas dans le thésaurus en vérifiant langue par langue
             for (NodeTraductionCandidat nodeTraduction : nodeCandidateOld.getNodeTraductions()) {
                 // en cas d'un nouveau candidat, verification dans les prefLabels
-                if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
+                if (termHelper.isPrefLabelExist(connect.openConnexionPool(),
                         nodeTraduction.getTitle().trim(),
                         idTheso,
                         nodeTraduction.getIdLang())) {
@@ -428,7 +428,7 @@ public class CandidatService implements Serializable {
                         first = false;
                     } else {
                         // ajout des traductions
-                        if(!termHelper.addTraduction(connect.getPoolConnexion(),
+                        if(!termHelper.addTraduction(connect.openConnexionPool(),
                                 nodeTraduction.getTitle(),
                                 idNewTerm,
                                 nodeTraduction.getIdLang(),
@@ -443,7 +443,7 @@ public class CandidatService implements Serializable {
                 first = true;
                 // ajout des messages  
                 for (NodeProposition nodeProposition : nodeCandidateOld.getNodePropositions()) {
-                    messageCandidatHelper.addNewMessage(connect.getPoolConnexion(),
+                    messageCandidatHelper.addNewMessage(connect.openConnexionPool(),
                             nodeProposition.getNote(),
                             nodeProposition.getIdUser(),
                             idNewConcept,

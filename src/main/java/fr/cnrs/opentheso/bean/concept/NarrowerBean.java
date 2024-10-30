@@ -82,7 +82,7 @@ public class NarrowerBean implements Serializable {
     }
     
     public void initForChangeRelations(){
-        typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
+        typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.openConnexionPool());
         nodeNTs = conceptBean.getNodeConcept().getNodeNT();        
     }
    
@@ -104,7 +104,7 @@ public class NarrowerBean implements Serializable {
         List<NodeSearchMini> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null){
             liste = searchHelper.searchAutoCompletionForRelation(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     value,
                     conceptBean.getSelectedLang(),
                     selectedTheso.getCurrentIdTheso(), true);
@@ -128,7 +128,7 @@ public class NarrowerBean implements Serializable {
 
         /// vérifier la cohérence de la relation
         if(!validateActionHelper.isAddRelationNTValid(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 searchSelected.getIdConcept())) {
@@ -138,7 +138,7 @@ public class NarrowerBean implements Serializable {
         }        
 
         try {
-            Connection conn = connect.getPoolConnexion().getConnection();
+            Connection conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
             if(!relationsHelper.addRelationNT(
                     conn,
@@ -162,10 +162,10 @@ public class NarrowerBean implements Serializable {
         
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
         if(conceptHelper.isTopConcept(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 searchSelected.getIdConcept(),
                 selectedTheso.getCurrentIdTheso())){
-            if(!conceptHelper.setNotTopConcept(connect.getPoolConnexion(),
+            if(!conceptHelper.setNotTopConcept(connect.openConnexionPool(),
                     searchSelected.getIdConcept(),
                     selectedTheso.getCurrentIdTheso())){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
@@ -180,14 +180,14 @@ public class NarrowerBean implements Serializable {
                 conceptBean.getSelectedLang(), currentUser);
 
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);        
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Relation ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 
@@ -225,7 +225,7 @@ public class NarrowerBean implements Serializable {
             return;
         }
 
-        if(!relationsHelper.deleteRelationNT(connect.getPoolConnexion(),
+        if(!relationsHelper.deleteRelationNT(connect.openConnexionPool(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNT.getIdConcept(),
@@ -236,8 +236,8 @@ public class NarrowerBean implements Serializable {
         }
 
         // on vérifie si le concept qui a été enlevé n'a plus de BT, on le rend TopTerme
-        if(!relationsHelper.isConceptHaveRelationBT(connect.getPoolConnexion(), nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())){
-            if(!conceptHelper.setTopConcept(connect.getPoolConnexion(),nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())){
+        if(!relationsHelper.isConceptHaveRelationBT(connect.openConnexionPool(), nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())){
+            if(!conceptHelper.setTopConcept(connect.openConnexionPool(),nodeNT.getIdConcept(), selectedTheso.getCurrentIdTheso())){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
                         " erreur en passant le concept et TopConcept, veuillez utiliser les outils de coorection de cohérence !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -250,11 +250,11 @@ public class NarrowerBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);     
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
@@ -301,7 +301,7 @@ public class NarrowerBean implements Serializable {
                 break;
         }
         try {
-            Connection conn = connect.getPoolConnexion().getConnection();
+            Connection conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
             if(!relationsHelper.updateRelationNT(conn,
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
@@ -331,11 +331,11 @@ public class NarrowerBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);  
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        

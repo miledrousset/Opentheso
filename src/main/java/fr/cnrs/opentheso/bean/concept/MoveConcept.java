@@ -92,7 +92,7 @@ public class MoveConcept implements Serializable {
     public void initForConcept(String idConcept, String idThesoFrom) {
         idConceptsToMove = new ArrayList<>();        
         this.idConceptFrom = idConcept;
-        idConceptsToMove = conceptHelper.getIdsOfBranch(connect.getPoolConnexion(),
+        idConceptsToMove = conceptHelper.getIdsOfBranch(connect.openConnexionPool(),
                 idConcept, selectedTheso.getCurrentIdTheso());
         this.idThesoFrom = idThesoFrom;
         idThesoTo = null;
@@ -110,16 +110,16 @@ public class MoveConcept implements Serializable {
         }
 
         for (String idConcept : idConceptsToMove) {
-            if(!conceptHelper.moveConceptToAnotherTheso(connect.getPoolConnexion(), idConcept, idThesoFrom, idThesoTo)) {
+            if(!conceptHelper.moveConceptToAnotherTheso(connect.openConnexionPool(), idConcept, idThesoFrom, idThesoTo)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le déplacement a échoué !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
-            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idThesoTo, idConcept,
+            conceptHelper.updateDateOfConcept(connect.openConnexionPool(), idThesoTo, idConcept,
                     currentUser.getNodeUser().getIdUser());
 
             ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     idConcept, idThesoTo);
             ///////////////
@@ -148,48 +148,48 @@ public class MoveConcept implements Serializable {
         String idArk;
         ArrayList<String> idConcepts = new ArrayList<>();
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoTo);
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), idThesoTo);
         for (String idConcept : idConceptsToMove) {
-            if(!conceptHelper.moveConceptToAnotherTheso(connect.getPoolConnexion(), idConcept, idThesoFrom, idThesoTo)) {
+            if(!conceptHelper.moveConceptToAnotherTheso(connect.openConnexionPool(), idConcept, idThesoFrom, idThesoTo)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Le déplacement a échoué !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
-            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), idThesoTo, idConcept,
+            conceptHelper.updateDateOfConcept(connect.openConnexionPool(), idThesoTo, idConcept,
                     currentUser.getNodeUser().getIdUser());
 
             ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     idConcept, idThesoTo);
             ///////////////
 
 
-            lisIdGroup = groupHelper.getListIdGroupOfConcept(connect.getPoolConnexion(), idThesoTo, idConcept);
+            lisIdGroup = groupHelper.getListIdGroupOfConcept(connect.openConnexionPool(), idThesoTo, idConcept);
             for (String idGroup : lisIdGroup) {
-                groupHelper.deleteRelationConceptGroupConcept(connect.getPoolConnexion(), idGroup, idConcept, idThesoTo, currentUser.getNodeUser().getIdUser());
+                groupHelper.deleteRelationConceptGroupConcept(connect.openConnexionPool(), idGroup, idConcept, idThesoTo, currentUser.getNodeUser().getIdUser());
             }
-            idArk = conceptHelper.getIdArkOfConcept(connect.getPoolConnexion(), idConcept, idThesoTo);
+            idArk = conceptHelper.getIdArkOfConcept(connect.openConnexionPool(), idConcept, idThesoTo);
             if(!StringUtils.isEmpty(idArk)) {
                 idConcepts.clear();
                 idConcepts.add(idConcept);
                 conceptHelper.setNodePreference(nodePreference);
-                conceptHelper.generateArkId(connect.getPoolConnexion(), idThesoTo, idConcepts, selectedTheso.getCurrentLang());
+                conceptHelper.generateArkId(connect.openConnexionPool(), idThesoTo, idConcepts, selectedTheso.getCurrentLang());
             }
         }
 
         // suppression des BT du concept de tête à déplacer
-        ArrayList<String> listBt = relationsHelper.getListIdBT(connect.getPoolConnexion(), idConceptFrom, idThesoTo);
+        ArrayList<String> listBt = relationsHelper.getListIdBT(connect.openConnexionPool(), idConceptFrom, idThesoTo);
         for (String idBt : listBt) {
-            relationsHelper.deleteRelationBT(connect.getPoolConnexion(), idConceptFrom, idThesoTo, idBt, currentUser.getNodeUser().getIdUser());
+            relationsHelper.deleteRelationBT(connect.openConnexionPool(), idConceptFrom, idThesoTo, idBt, currentUser.getNodeUser().getIdUser());
         }
 
         if(nodeSearchSelected != null && !StringUtils.isEmpty(nodeSearchSelected.getIdConcept())) {
             //cas où le déplacement est vers un concept, on attache ce nouveau concept au concept cible
-            relationsHelper.addRelationBT(connect.getPoolConnexion(), idConceptFrom, idThesoTo, nodeSearchSelected.getIdConcept(), currentUser.getNodeUser().getIdUser());
-            conceptHelper.setNotTopConcept(connect.getPoolConnexion(), idConceptFrom, idThesoTo);
+            relationsHelper.addRelationBT(connect.openConnexionPool(), idConceptFrom, idThesoTo, nodeSearchSelected.getIdConcept(), currentUser.getNodeUser().getIdUser());
+            conceptHelper.setNotTopConcept(connect.openConnexionPool(), idConceptFrom, idThesoTo);
         } else {
-            conceptHelper.setTopConcept(connect.getPoolConnexion(), idConceptFrom, idThesoTo);
+            conceptHelper.setTopConcept(connect.openConnexionPool(), idConceptFrom, idThesoTo);
         }
 
         try {
@@ -205,9 +205,9 @@ public class MoveConcept implements Serializable {
         if(currentUser.getNodeUser() == null) return null;
         List<String> authorizedThesoAsAdmin;
         if(currentUser.getNodeUser().isSuperAdmin()) {
-            authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), true);
+            authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(connect.openConnexionPool(), true);
         } else {
-            authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
         }
         List<NodeIdValue> nodeIdValues = new ArrayList<>();
 
@@ -217,8 +217,8 @@ public class MoveConcept implements Serializable {
                     .id(idTheso)
                     .value(idTheso)
                     .build();
-            String idLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso);
-            String title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso, idLang);
+            String idLang = preferencesHelper.getWorkLanguageOfTheso(connect.openConnexionPool(), idTheso);
+            String title = thesaurusHelper.getTitleOfThesaurus(connect.openConnexionPool(), idTheso, idLang);
             if(StringUtils.isEmpty(title))
                 nodeIdValue.setValue("");
             else
@@ -232,7 +232,7 @@ public class MoveConcept implements Serializable {
         List<NodeSearchMini> liste = new ArrayList<>();
         if (!StringUtils.isEmpty(idThesoTo)) {
             liste = searchHelper.searchAutoCompletionForRelation(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     value,
                     selectedTheso.getCurrentLang(),
                     idThesoTo, true);

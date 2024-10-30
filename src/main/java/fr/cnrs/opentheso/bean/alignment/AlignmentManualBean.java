@@ -59,7 +59,7 @@ public class AlignmentManualBean implements Serializable {
     @PreDestroy
     public void destroy(){
         clear();
-        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.getPoolConnexion());
+        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.openConnexionPool());
     }  
     public void clear(){
         if(nodeAlignmentTypes!= null){
@@ -74,7 +74,7 @@ public class AlignmentManualBean implements Serializable {
     }
 
     public void reset() {
-        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.getPoolConnexion());
+        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.openConnexionPool());
         manualAlignmentSource = "";
         manualAlignmentUri = "";
         manualAlignmentType = -1;
@@ -89,7 +89,7 @@ public class AlignmentManualBean implements Serializable {
         
         if(nodeAlignment == null) return;
 
-        if(!alignmentHelper.deleteAlignment(connect.getPoolConnexion(), nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
+        if(!alignmentHelper.deleteAlignment(connect.openConnexionPool(), nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
@@ -117,7 +117,7 @@ public class AlignmentManualBean implements Serializable {
 
         FacesMessage msg;
 
-        if(!alignmentHelper.updateAlignment(connect.getPoolConnexion(),
+        if(!alignmentHelper.updateAlignment(connect.openConnexionPool(),
                 alignmentBean.getAlignementElementSelected().getIdAlignment(),
                 alignmentBean.getAlignementElementSelected().getConceptTarget(),
                 alignmentBean.getAlignementElementSelected().getThesaurus_target(),
@@ -151,7 +151,7 @@ public class AlignmentManualBean implements Serializable {
 
         if(nodeAlignment == null) return;
 
-        if(!new AlignmentHelper().updateAlignment(connect.getPoolConnexion(),
+        if(!new AlignmentHelper().updateAlignment(connect.openConnexionPool(),
                 nodeAlignment.getId_alignement(),
                 nodeAlignment.getConcept_target(),
                 nodeAlignment.getThesaurus_target(),
@@ -182,7 +182,7 @@ public class AlignmentManualBean implements Serializable {
     }
 
     public void updateAlignementFromConceptInterface(){
-        if(!alignmentHelper.updateAlignment(connect.getPoolConnexion(),
+        if(!alignmentHelper.updateAlignment(connect.openConnexionPool(),
                 alignmentBean.getAlignementElementSelected().getIdAlignment(),
                 alignmentBean.getAlignementElementSelected().getConceptTarget(),
                 alignmentBean.getAlignementElementSelected().getThesaurus_target(),
@@ -234,7 +234,7 @@ public class AlignmentManualBean implements Serializable {
         }
 
         if(!alignmentHelper.addNewAlignment(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 currentUser.getNodeUser().getIdUser(),
                 "",
                 manualAlignmentSource,
@@ -254,7 +254,7 @@ public class AlignmentManualBean implements Serializable {
             conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                     conceptView.getSelectedLang(), currentUser);
         } else {
-            candidatBean.getCandidatSelected().setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(),
+            candidatBean.getCandidatSelected().setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.openConnexionPool(),
                     idConcept, selectedTheso.getCurrentIdTheso()));
         }
 
@@ -278,11 +278,11 @@ public class AlignmentManualBean implements Serializable {
      */
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 idTheso,
                 idConcept, idUser);      
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConcept, idTheso);
         ///////////////        

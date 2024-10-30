@@ -89,7 +89,7 @@ public class TreeGroups implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang, isSortByNotation());
+        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(connect.openConnexionPool(), idTheso, idLang, isSortByNotation());
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(
@@ -135,7 +135,7 @@ public class TreeGroups implements Serializable {
     private boolean addGroupsChild(TreeNode parent) {
 
         ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 ((TreeNodeData) parent.getData()).getNodeId(),
                 idTheso,
                 idLang, isSortByNotation());
@@ -168,7 +168,7 @@ public class TreeGroups implements Serializable {
         TreeNodeData data;
 
         ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListConceptsOfGroup(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 idTheso,
                 idLang,
                 ((TreeNodeData) parent.getData()).getNodeId(),
@@ -212,7 +212,7 @@ public class TreeGroups implements Serializable {
     public void expandGroupToPath(String idGroup, String idTheso, String idLang) {
 
         ArrayList<String> path = pathHelper.getPathOfGroup(
-                connect.getPoolConnexion(), idGroup, idTheso);
+                connect.openConnexionPool(), idGroup, idTheso);
 
         if (root == null) {
             initialise(idTheso, idLang);
@@ -258,7 +258,7 @@ public class TreeGroups implements Serializable {
      */
     public void addNewGroupToTree(String idGroup, String idTheso, String idLang) {
 
-        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.openConnexionPool(), idGroup, idTheso, idLang);
         if (nodeGroup == null) {
             return;
         }
@@ -293,7 +293,7 @@ public class TreeGroups implements Serializable {
      */
     public void addNewSubGroupToTree(TreeNode parent, String idGroup, String idTheso, String idLang) {
 
-        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.getPoolConnexion(), idGroup, idTheso, idLang);
+        NodeGroup nodeGroup = groupHelper.getThisConceptGroup(connect.openConnexionPool(), idGroup, idTheso, idLang);
         if (nodeGroup == null) {
             return;
         }
@@ -414,7 +414,7 @@ public class TreeGroups implements Serializable {
         if (selectedNode == null) {
             return false;
         }
-        return groupHelper.isHaveSubGroup(connect.getPoolConnexion(),
+        return groupHelper.isHaveSubGroup(connect.openConnexionPool(),
                 idTheso,
                 ((TreeNodeData) selectedNode.getData()).getNodeId());
     }

@@ -67,7 +67,7 @@ public class ConceptAutocompleteController {
 
         var groups = groupsString != null ? groupsString.split(",") : null;
         var full = fullString != null && fullString.equalsIgnoreCase("true");
-        var datas = restRDFHelper.findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, lang, groups, input, full);
+        var datas = restRDFHelper.findAutocompleteConcepts(connect.openConnexionPool(), idTheso, lang, groups, input, full);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -77,7 +77,7 @@ public class ConceptAutocompleteController {
                                                @RequestParam("lang") String lang,
                                                @RequestParam("group") String idGroup) throws JsonProcessingException {
 
-        var concepts = searchHelper.searchConceptWSV2(connect.getPoolConnexion(), input, lang, idGroup, idTheso);
+        var concepts = searchHelper.searchConceptWSV2(connect.openConnexionPool(), input, lang, idGroup, idTheso);
         var jsonString = new ObjectMapper().writeValueAsString(concepts);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(jsonString);
     }
@@ -86,7 +86,7 @@ public class ConceptAutocompleteController {
     public ResponseEntity<Object> getGroupsByThesaurus(@PathVariable("idThesaurus") String idThesaurus,
                                                @PathVariable("idLang") String idLang) throws JsonProcessingException {
 
-        var groups = groupHelper.getListRootConceptGroup(connect.getPoolConnexion(), idThesaurus, idLang, true);
+        var groups = groupHelper.getListRootConceptGroup(connect.openConnexionPool(), idThesaurus, idLang, true);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(new ObjectMapper().writeValueAsString(groups));
     }
 }

@@ -85,7 +85,7 @@ public class ListIndex implements Serializable {
         }
 
         nodeIdValues = searchHelper.searchTermForIndex(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 searchValue,
                 idLang, idTheso,
                 permuted, withAltLabel);

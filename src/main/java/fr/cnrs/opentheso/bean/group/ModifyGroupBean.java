@@ -85,7 +85,7 @@ public class ModifyGroupBean implements Serializable {
         notation = groupView.getNodeGroup().getConceptGroup().getNotation();
         selectedGroupType = groupView.getNodeGroup().getConceptGroup().getIdtypecode();
 
-        listGroupType = groupHelper.getAllGroupType(connect.getPoolConnexion());
+        listGroupType = groupHelper.getAllGroupType(connect.openConnexionPool());
     }
 
     public void infos() {
@@ -101,11 +101,11 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        String idParent = groupHelper.getIdFather(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso());
+        String idParent = groupHelper.getIdFather(connect.openConnexionPool(), idGroup, selectedTheso.getCurrentIdTheso());
 
         if(isMoveToRoot()) {
             if(!StringUtils.isEmpty(idParent)) {
-                if(!groupHelper.removeGroupFromGroup(connect.getPoolConnexion(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
+                if(!groupHelper.removeGroupFromGroup(connect.openConnexionPool(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     return;
@@ -130,7 +130,7 @@ public class ModifyGroupBean implements Serializable {
             }
 
             /// contrôle si le groupe est à déplacer dans la même hiérarchie, c'est interdit
-            if(groupHelper.isMoveToDescending(connect.getPoolConnexion(),
+            if(groupHelper.isMoveToDescending(connect.openConnexionPool(),
                     idGroup, selectedNodeAutoCompletionGroup.getIdGroup(), selectedTheso.getCurrentIdTheso())){
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Déplacement impossible !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -145,13 +145,13 @@ public class ModifyGroupBean implements Serializable {
                     return;
                 }
 
-                if(!groupHelper.removeGroupFromGroup(connect.getPoolConnexion(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
+                if(!groupHelper.removeGroupFromGroup(connect.openConnexionPool(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     return;
                 }
             }
-            groupHelper.addSubGroup(connect.getPoolConnexion(),
+            groupHelper.addSubGroup(connect.openConnexionPool(),
                     selectedNodeAutoCompletionGroup.getIdGroup(), idGroup, selectedTheso.getCurrentIdTheso());
         }
 
@@ -172,7 +172,7 @@ public class ModifyGroupBean implements Serializable {
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
             liste = groupHelper.getAutoCompletionGroup(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(),
                     value);
@@ -198,7 +198,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(connect.getPoolConnexion(),
+        if (groupHelper.isDomainExist(connect.openConnexionPool(),
                 titleGroup,
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang())) {
@@ -209,9 +209,9 @@ public class ModifyGroupBean implements Serializable {
             }
             return;
         }
-        if(groupHelper.isHaveTraduction(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
+        if(groupHelper.isHaveTraduction(connect.openConnexionPool(), idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
             if (!groupHelper.renameGroup(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     titleGroup,
                     selectedTheso.getCurrentLang(),
                     idGroup,
@@ -226,7 +226,7 @@ public class ModifyGroupBean implements Serializable {
             }
         } else {
             if (!groupHelper.addGroupTraduction(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     idGroup,
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(),
@@ -279,7 +279,7 @@ public class ModifyGroupBean implements Serializable {
         }
 
         if (groupHelper.isNotationExist(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 notation,
                 selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
@@ -290,7 +290,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.setNotationOfGroup(connect.getPoolConnexion(),
+        if (!groupHelper.setNotationOfGroup(connect.openConnexionPool(),
                 notation,
                 idGroup,
                 selectedTheso.getCurrentIdTheso())) {
@@ -339,7 +339,7 @@ public class ModifyGroupBean implements Serializable {
         }
 
         if (!groupHelper.updateTypeGroup(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 selectedGroupType,
                 selectedTheso.getCurrentIdTheso(),
                 idGroup)) {

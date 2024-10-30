@@ -176,7 +176,7 @@ public class StatistiqueBean implements Serializable {
     
     private void initChamps() {
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
+                connect.openConnexionPool(), selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
 
         groupList = groupHelper.getAllGroupsByThesaurusAndLang(connect, selectedTheso.getSelectedIdTheso(),
                 languageBean.getIdLangue());
@@ -238,13 +238,13 @@ public class StatistiqueBean implements Serializable {
 
             genericStatistiques = statistiqueService.searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage);
 
-            nbrCanceptByThes = statisticHelper.getNbCpt(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            nbrCanceptByThes = statisticHelper.getNbCpt(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
             
-            nbrCandidateByThes = statisticHelper.getNbCandidate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-            nbrDeprecatedByThes = statisticHelper.getNbOfDeprecatedConcepts(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            nbrCandidateByThes = statisticHelper.getNbCandidate(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
+            nbrDeprecatedByThes = statisticHelper.getNbOfDeprecatedConcepts(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
             
 
-            derniereModification = conceptHelper.getLastModification(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            derniereModification = conceptHelper.getLastModification(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
 
             genericTypeVisible = true;
             conceptTypeVisible = false;

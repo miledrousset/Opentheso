@@ -107,7 +107,7 @@ public class CutAndPaste implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
         }
-        if (!conceptHelper.moveBranchFromConceptToConcept(connect.getPoolConnexion(),
+        if (!conceptHelper.moveBranchFromConceptToConcept(connect.openConnexionPool(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 oldBtToDelete,
                 nodeConceptDrop.getConcept().getIdConcept(),
@@ -122,7 +122,7 @@ public class CutAndPaste implements Serializable {
     
     private boolean moveFromRootToConcept() {
         FacesMessage msg;
-        if (!conceptHelper.moveBranchFromRootToConcept(connect.getPoolConnexion(),
+        if (!conceptHelper.moveBranchFromRootToConcept(connect.openConnexionPool(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 nodeConceptDrop.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
@@ -143,7 +143,7 @@ public class CutAndPaste implements Serializable {
         }
         // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
         if (oldBtToDelete.isEmpty()) {
-            if (!conceptHelper.setTopConcept(connect.getPoolConnexion(),
+            if (!conceptHelper.setTopConcept(connect.openConnexionPool(),
                     nodeConceptDrag.getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
@@ -154,7 +154,7 @@ public class CutAndPaste implements Serializable {
         } 
         
         for (String oldIdBT : oldBtToDelete) {
-            if (!conceptHelper.moveBranchFromConceptToRoot(connect.getPoolConnexion(),
+            if (!conceptHelper.moveBranchFromConceptToRoot(connect.openConnexionPool(),
                     nodeConceptDrag.getConcept().getIdConcept(),
                     oldIdBT,
                     selectedTheso.getCurrentIdTheso(),

@@ -54,7 +54,7 @@ public class RedirectController {
             })
     public ResponseEntity<Object> getUriFromArk(@PathVariable("naan") String naan, @PathVariable("idArk") String arkId) throws URISyntaxException {
 
-        var webUrl = restRDFHelper.getUrlFromIdArk(connect.getPoolConnexion(), naan, arkId);
+        var webUrl = restRDFHelper.getUrlFromIdArk(connect.openConnexionPool(), naan, arkId);
         return ResponseEntity.status(307).location(new URI(webUrl)).build();
     }
 

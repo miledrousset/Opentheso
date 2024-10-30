@@ -140,7 +140,7 @@ public class Rest_new {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(mimeType))
-                .body(restRDFHelper.exportConcept(connect.getPoolConnexion(), naan + "/" + arkId, mimeType));
+                .body(restRDFHelper.exportConcept(connect.openConnexionPool(), naan + "/" + arkId, mimeType));
     }
 
 /////////////////////////////////////////////////////
@@ -160,7 +160,7 @@ public class Rest_new {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        var datas = restRDFHelper.exportConceptDoi(connect.getPoolConnexion(), "doi:" + doi1 + "." + doi2 + "/" + doiId, CustomMediaType.APPLICATION_RDF);
+        var datas = restRDFHelper.exportConceptDoi(connect.openConnexionPool(), "doi:" + doi1 + "." + doi2 + "/" + doiId, CustomMediaType.APPLICATION_RDF);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8)).body(datas);
     }
 
@@ -227,7 +227,7 @@ public class Rest_new {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        var data = restRDFHelper.exportConceptHdl(connect.getPoolConnexion(), hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId, rdfFormat);
+        var data = restRDFHelper.exportConceptHdl(connect.openConnexionPool(), hdl1 + "." + hdl2 + "." + hdl3 + "/" + handleId, rdfFormat);
 
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(rdfFormatLong)).body(data);
     }
@@ -246,7 +246,7 @@ public class Rest_new {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
-                .body(restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, CustomMediaType.APPLICATION_RDF));
+                .body(restRDFHelper.exportConceptFromId(connect.openConnexionPool(), idConcept, idTheso, CustomMediaType.APPLICATION_RDF));
     }
 
     //Produire du Json
@@ -255,7 +255,7 @@ public class Rest_new {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(JSON_FORMAT_LONG))
-                .body(restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, JSON_FORMAT));
+                .body(restRDFHelper.exportConceptFromId(connect.openConnexionPool(), idConcept, idTheso, JSON_FORMAT));
     }
 
     //Produire du Json
@@ -267,7 +267,7 @@ public class Rest_new {
         }
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, JSON_FORMAT));
+                .body(restRDFHelper.exportConceptFromId(connect.openConnexionPool(), idConcept, idTheso, JSON_FORMAT));
     }
 
     /**
@@ -282,7 +282,7 @@ public class Rest_new {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_JSON_LD_UTF_8))
-                .body(restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, "application/ld+json"));
+                .body(restRDFHelper.exportConceptFromId(connect.openConnexionPool(), idConcept, idTheso, "application/ld+json"));
     }
 
     /**
@@ -295,7 +295,7 @@ public class Rest_new {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        var data = restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, CustomMediaType.APPLICATION_TURTLE);
+        var data = restRDFHelper.exportConceptFromId(connect.openConnexionPool(), idConcept, idTheso, CustomMediaType.APPLICATION_TURTLE);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_TURTLE_UTF_8))
                 .body(data);
@@ -321,7 +321,7 @@ public class Rest_new {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(restRDFHelper.getPrefLabelFromArk(connect.getPoolConnexion(), naan, arkId, idLang));
+                .body(restRDFHelper.getPrefLabelFromArk(connect.openConnexionPool(), naan, arkId, idLang));
     }
 
 /////////////////////////////////////////////////////
@@ -392,17 +392,17 @@ public class Rest_new {
         if (filter != null) {
             if ("notation:".equalsIgnoreCase(filter)) {
                 value = value.substring(value.indexOf(":") + 1);
-                return restRDFHelper.findNotation(connect.getPoolConnexion(), idTheso, value, format);
+                return restRDFHelper.findNotation(connect.openConnexionPool(), idTheso, value, format);
             }
         }
-        return restRDFHelper.findConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, match);
+        return restRDFHelper.findConcepts(connect.openConnexionPool(), idTheso, idLang, groups, value, format, match);
     }
 
     private String getDatasFromArk(String idTheso, String idLang, String idArk, boolean showLabels) {
 
         return StringUtils.isEmpty(idLang)
-                ? restRDFHelper.exportConcept(connect.getPoolConnexion(), idArk, JSON_FORMAT)
-                : restRDFHelper.exportConceptFromArkWithLang(connect.getPoolConnexion(), idArk, idTheso, idLang, showLabels, JSON_FORMAT);
+                ? restRDFHelper.exportConcept(connect.openConnexionPool(), idArk, JSON_FORMAT)
+                : restRDFHelper.exportConceptFromArkWithLang(connect.openConnexionPool(), idArk, idTheso, idLang, showLabels, JSON_FORMAT);
     }
     
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -445,14 +445,14 @@ public class Rest_new {
         }
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(restRDFHelper.findDatasForWidget(connect.getPoolConnexion(), idTheso, idLang, groups, value, format, match));
+                .body(restRDFHelper.findDatasForWidget(connect.openConnexionPool(), idTheso, idLang, groups, value, format, match));
     }
 
     private String[] getIdGroupFromArk(String[] arkGroups, String idTheso) {
         String[] groups = new String[arkGroups.length];
         int i=0;
         for (String arkGroup : arkGroups) {
-            groups[i] = groupHelper.getIdGroupFromArkId(connect.getPoolConnexion(), arkGroup, idTheso);
+            groups[i] = groupHelper.getIdGroupFromArkId(connect.openConnexionPool(), arkGroup, idTheso);
             i++;
         }
         return groups;
@@ -480,7 +480,7 @@ public class Rest_new {
         } else {
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), idLang, idArks, format));
+                    .body(restRDFHelper.findDatasForWidgetByArk(connect.openConnexionPool(), idLang, idArks, format));
         }
     }
     
@@ -516,9 +516,9 @@ public class Rest_new {
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = restRDFHelper.findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, true);
+            datas = restRDFHelper.findAutocompleteConcepts(connect.openConnexionPool(), idTheso, idLang, groups, value, true);
         } else {
-            datas = restRDFHelper.findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, false);
+            datas = restRDFHelper.findAutocompleteConcepts(connect.openConnexionPool(), idTheso, idLang, groups, value, false);
         }
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
@@ -549,9 +549,9 @@ public class Rest_new {
 
         String datas;
         if (format != null && format.equalsIgnoreCase("full")) {
-            datas = restRDFHelper.findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, true);
+            datas = restRDFHelper.findAutocompleteConcepts(connect.openConnexionPool(), idTheso, idLang, groups, value, true);
         } else {
-            datas = restRDFHelper.findAutocompleteConcepts(connect.getPoolConnexion(), idTheso, idLang, groups, value, false);
+            datas = restRDFHelper.findAutocompleteConcepts(connect.openConnexionPool(), idTheso, idLang, groups, value, false);
         }
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
@@ -585,7 +585,7 @@ public class Rest_new {
             if (StringUtils.isEmpty(idark)) {
                 return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
             } else {
-                idConcept = conceptHelper.getIdConceptFromArkId(connect.getPoolConnexion(), idark, idTheso);
+                idConcept = conceptHelper.getIdConceptFromArkId(connect.openConnexionPool(), idark, idTheso);
                 if(idConcept == null)
                     return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage(messageEmptyJson()));
             }
@@ -618,10 +618,10 @@ public class Rest_new {
 
     private String getBranchOfConcepts(String idConcept, String idTheso, String way, String format) {
         if (way.equalsIgnoreCase("top")) {
-            return restRDFHelper.brancheOfConceptsTop(connect.getPoolConnexion(), idConcept, idTheso, format);
+            return restRDFHelper.brancheOfConceptsTop(connect.openConnexionPool(), idConcept, idTheso, format);
         }
         if (way.equalsIgnoreCase("down")) {
-            return restRDFHelper.brancheOfConceptsDown(connect.getPoolConnexion(), idConcept, idTheso, format);
+            return restRDFHelper.brancheOfConceptsDown(connect.openConnexionPool(), idConcept, idTheso, format);
         }
         return null;
     }
@@ -653,7 +653,7 @@ public class Rest_new {
             }
         };
 
-        var datas = restRDFHelper.brancheOfGroup(connect.getPoolConnexion(), groups, idTheso, format);
+        var datas = restRDFHelper.brancheOfGroup(connect.openConnexionPool(), groups, idTheso, format);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(formatOutput)).body(datas);
     }
 
@@ -669,7 +669,7 @@ public class Rest_new {
 
         try {
             // Appel à la méthode pour récupérer le Thesaurus
-            String result = restRDFHelper.getTheso(connect.getPoolConnexion(), id, mimeType);
+            String result = restRDFHelper.getTheso(connect.openConnexionPool(), id, mimeType);
             return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).body(result);
         } catch (Exception e) {
             // Gestion d'une exception, peut-être retourner une réponse d'erreur avec un statut approprié
@@ -688,7 +688,7 @@ public class Rest_new {
     public ResponseEntity<Object> getAllIdValueTheso(@RequestParam(value = "id") String idTheso,
                                              @RequestParam(value = "lang") String lang) {
         
-        var datas = restRDFHelper.getThesoIdValue(connect.getPoolConnexion(), idTheso, lang);
+        var datas = restRDFHelper.getThesoIdValue(connect.openConnexionPool(), idTheso, lang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -712,13 +712,13 @@ public class Rest_new {
                                                 @RequestParam(value = "topconcept", required = false) String topconcept) {
 
         if (group == null && topconcept == null) {
-            return ResponseEntity.ok(getlistAllPublicTheso__(connect.getPoolConnexion()));
+            return ResponseEntity.ok(getlistAllPublicTheso__(connect.openConnexionPool()));
         } else {
             if (topconcept != null && topconcept.equalsIgnoreCase("all")) {
-                return ResponseEntity.ok(getlistAllTopConceptOfTheso__(connect.getPoolConnexion(), idTheso));
+                return ResponseEntity.ok(getlistAllTopConceptOfTheso__(connect.openConnexionPool(), idTheso));
             }
 
-            return ResponseEntity.ok(getlistAllGroupOfTheso__(connect.getPoolConnexion(), idTheso));
+            return ResponseEntity.ok(getlistAllGroupOfTheso__(connect.openConnexionPool(), idTheso));
         }
     }
 
@@ -832,7 +832,7 @@ public class Rest_new {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(getlistLangOfTheso__(connect.getPoolConnexion(), idTheso));
+                .body(getlistLangOfTheso__(connect.openConnexionPool(), idTheso));
     }
 
     private String getlistLangOfTheso__(HikariDataSource ds, String idTheso) {
@@ -855,7 +855,7 @@ public class Rest_new {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getInfoLastUpdate__(connect.getPoolConnexion(), idTheso));
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getInfoLastUpdate__(connect.openConnexionPool(), idTheso));
     }
 
     private String getInfoLastUpdate__(HikariDataSource ds, String idTheso) {
@@ -894,7 +894,7 @@ public class Rest_new {
                 format = JSON_FORMAT;
                 formatOutput = JSON_FORMAT_LONG;
         }
-        var datas = restRDFHelper.getIdConceptFromDate(connect.getPoolConnexion(), idTheso, fromDate, format);
+        var datas = restRDFHelper.getIdConceptFromDate(connect.openConnexionPool(), idTheso, fromDate, format);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(formatOutput)).body(datas);
     }
 
@@ -919,9 +919,9 @@ public class Rest_new {
 
         String datas;
         if(StringUtils.isEmpty(cidocClass)) {
-            datas = restRDFHelper.getAllLinkedConceptsWithOntome__(connect.getPoolConnexion(), idTheso);
+            datas = restRDFHelper.getAllLinkedConceptsWithOntome__(connect.openConnexionPool(), idTheso);
         } else {
-            datas = restRDFHelper.getLinkedConceptWithOntome__(connect.getPoolConnexion(), idTheso, cidocClass);
+            datas = restRDFHelper.getLinkedConceptWithOntome__(connect.openConnexionPool(), idTheso, cidocClass);
         }
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
@@ -943,7 +943,7 @@ public class Rest_new {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        var datas = restRDFHelper.getTopTerms(connect.getPoolConnexion(), idTheso, idLang);
+        var datas = restRDFHelper.getTopTerms(connect.openConnexionPool(), idTheso, idLang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -957,7 +957,7 @@ public class Rest_new {
                                       @RequestParam(value = "id") String idConcept,
                                       @RequestParam(value = "lang") String idLang) {
 
-        var datas = restRDFHelper.getNarrower(connect.getPoolConnexion(), idTheso, idConcept, idLang);
+        var datas = restRDFHelper.getNarrower(connect.openConnexionPool(), idTheso, idConcept, idLang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -970,7 +970,7 @@ public class Rest_new {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        var datas = restRDFHelper.getInfosOfConcept(connect.getPoolConnexion(), idTheso, idConcept, "fr");
+        var datas = restRDFHelper.getInfosOfConcept(connect.openConnexionPool(), idTheso, idConcept, "fr");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -988,7 +988,7 @@ public class Rest_new {
     @GetMapping(value = "/ark/allchilds", produces = CustomMediaType.APPLICATION_JSON_LD_UTF_8)
     public ResponseEntity<Object> getIdArkOfConceptNT(@RequestParam(value = "ark") String idArk) {
 
-        var datas = restRDFHelper.getChildsArkId(connect.getPoolConnexion(), idArk);
+        var datas = restRDFHelper.getChildsArkId(connect.openConnexionPool(), idArk);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -1012,7 +1012,7 @@ public class Rest_new {
                                            @RequestParam(value = "id") String idConcept,
                                            @RequestParam(value = "lang") String idLang) {
 
-        var datas = d3jsHelper.findDatasForGraph__(connect.getPoolConnexion(), idConcept, idTheso, idLang);
+        var datas = d3jsHelper.findDatasForGraph__(connect.openConnexionPool(), idConcept, idTheso, idLang);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
 
@@ -1029,7 +1029,7 @@ public class Rest_new {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(messageEmptyJson());
         }
 
-        var webUrl = restRDFHelper.getUrlFromIdArk(connect.getPoolConnexion(), naan, arkId);
+        var webUrl = restRDFHelper.getUrlFromIdArk(connect.openConnexionPool(), naan, arkId);
         if (webUrl == null) {
             return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("Ark ID does not exist"));
         }

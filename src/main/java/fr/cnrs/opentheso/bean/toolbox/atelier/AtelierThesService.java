@@ -59,18 +59,18 @@ public class AtelierThesService implements Serializable {
     
     public ArrayList<ConceptResultNode> comparer(List<List<String>> datas, int position, NodeIdValue thesoSelected) {
 
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), thesoSelected.getId());
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), thesoSelected.getId());
         
         ArrayList<ConceptResultNode> list = new ArrayList<>();
         int limit = 5;
         for (List<String> data : datas) {
             if(data.get(position) == null || data.get(position).isEmpty()) continue;
-            ArrayList<NodeSearchMini> temp = searchHelper.searchFullText(connect.getPoolConnexion(),
+            ArrayList<NodeSearchMini> temp = searchHelper.searchFullText(connect.openConnexionPool(),
                     data.get(position), languageBean.getIdLangue(), thesoSelected.getId(), limit);
             
             if (!CollectionUtils.isEmpty(temp)) {
                 temp.forEach(nodeSearchMini -> {
-                    NodeConcept concept = conceptHelper.getConcept(connect.getPoolConnexion(), nodeSearchMini.getIdConcept(), 
+                    NodeConcept concept = conceptHelper.getConcept(connect.openConnexionPool(), nodeSearchMini.getIdConcept(), 
                             thesoSelected.getId(), languageBean.getIdLangue(), -1, -1);
 
                     ConceptResultNode conceptResultNode = new ConceptResultNode();
@@ -152,9 +152,9 @@ public class AtelierThesService implements Serializable {
 
         List<String> authorizedTheso;
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), true);
+            authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.openConnexionPool(), true);
         } else {
-            authorizedTheso = userHelper.getThesaurusOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            authorizedTheso = userHelper.getThesaurusOfUser(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
         }
         
         if (authorizedTheso == null) {
@@ -166,16 +166,16 @@ public class AtelierThesService implements Serializable {
         String preferredIdLangOfTheso;
         for (String idTheso1 : authorizedTheso) {
             
-            preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1);
+            preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.openConnexionPool(), idTheso1);
             if (preferredIdLangOfTheso == null) {
                 preferredIdLangOfTheso = connect.getWorkLanguage().toLowerCase();
             }
 
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso1);
-            nodeIdValue.setValue(thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), 
+            nodeIdValue.setValue(thesaurusHelper.getTitleOfThesaurus(connect.openConnexionPool(), 
                     idTheso1, preferredIdLangOfTheso));
-            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso1));
+            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.openConnexionPool(), idTheso1));
             nodeListTheso.add(nodeIdValue);
             
         }

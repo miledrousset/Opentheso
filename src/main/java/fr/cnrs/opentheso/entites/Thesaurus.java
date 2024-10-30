@@ -2,14 +2,22 @@ package fr.cnrs.opentheso.entites;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 
 @Setter
@@ -18,23 +26,42 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "thesaurus")
+@EntityListeners(AuditingEntityListener.class)
 public class Thesaurus {
 
     @Id
-    private int id;
+    @Column(name = "id_thesaurus", nullable = false)
+    private String idThesaurus;
 
-    @Column(name = "id_thesaurus")
-    private String thesaurusId;
+    @Column(name = "id_ark", nullable = false)
+    private String idArk;
 
-    @Column(name = "id_ark")
-    private String arkId;
+    @CreatedDate
+    @Column(name = "created", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created;
 
-    @Column(name = "private")
-    private boolean privateTheso;
+    @LastModifiedDate
+    @Column(name = "modified", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modified;
 
-    @Column(name = "created")
-    private LocalDateTime created;
+    @Column(name = "private", nullable = false)
+    private Boolean isPrivate = false;
 
-    @Column(name = "modified")
-    private LocalDateTime modified;
+    @OneToMany(mappedBy = "thesaurus")
+    private List<Concept> concepts;
+
+    @OneToMany(mappedBy = "thesaurus")
+    private List<ConceptFacet> conceptFacets;
+
+    @OneToMany(mappedBy = "thesaurus")
+    private List<ConceptCandidat> candidats;
+
+    @OneToMany(mappedBy = "thesaurus")
+    private List<ConceptGroup> conceptGroups;
+
+    @OneToMany(mappedBy = "thesaurus")
+    private List<ConceptGroupLabel> conceptGroupLabels;
+
 }

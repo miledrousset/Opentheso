@@ -71,7 +71,7 @@ public class DeeplTranslate implements Serializable {
             PrimeFaces.current().executeScript("PF('deeplTranslate').hide();");
             return;
         }
-        NodeNote nodeNote1= noteHelper.getNodeNote(connect.getPoolConnexion(),
+        NodeNote nodeNote1= noteHelper.getNodeNote(connect.openConnexionPool(),
                 identifier,
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang(),
@@ -105,12 +105,12 @@ public class DeeplTranslate implements Serializable {
     }
 
     public void retrieveExistingTranslatedText() {
-        existingTranslatedText = noteHelper.getLabelOfNote(connect.getPoolConnexion(),
+        existingTranslatedText = noteHelper.getLabelOfNote(connect.openConnexionPool(),
                // conceptView.getNodeConcept().getConcept().getIdConcept(),
                 nodeNote.getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 toLang, nodeNote.getNoteTypeCode());
-        sourceTranslatedText = noteHelper.getSourceOfNote(connect.getPoolConnexion(),
+        sourceTranslatedText = noteHelper.getSourceOfNote(connect.openConnexionPool(),
                 //conceptView.getNodeConcept().getConcept().getIdConcept(),
                 nodeNote.getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
@@ -121,7 +121,7 @@ public class DeeplTranslate implements Serializable {
         LocalDate currentDate = LocalDate.now();
         String source = "traduit par Deepl le " + currentDate;
         if(this.nodeNote == null) return;
-        if (!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getIdConcept(), toLang,
+        if (!noteHelper.addNote(connect.openConnexionPool(), nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 translatingText, nodeNote.getNoteTypeCode(),
                 source,//nodeNote.getNoteSource(),
@@ -147,7 +147,7 @@ public class DeeplTranslate implements Serializable {
 
     public void saveExistingTranslatedText() {
         if(this.nodeNote == null) return;
-        if (!noteHelper.addNote(connect.getPoolConnexion(), nodeNote.getIdConcept(), toLang,
+        if (!noteHelper.addNote(connect.openConnexionPool(), nodeNote.getIdConcept(), toLang,
                 selectedTheso.getCurrentIdTheso(),
                 existingTranslatedText, nodeNote.getNoteTypeCode(),
                 nodeNote.getNoteSource(), currentUser.getNodeUser().getIdUser())) {

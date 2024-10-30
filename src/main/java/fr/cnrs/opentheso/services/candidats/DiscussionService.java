@@ -100,7 +100,7 @@ public class DiscussionService implements Serializable {
     
     private void setListUsersForMail(){
         nodeUsers = messageCandidatHelper.getParticipantsByCandidat(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());        
     }
@@ -123,7 +123,7 @@ public class DiscussionService implements Serializable {
         messageDto.setNom(candidatBean.getCurrentUser().getUsername().toUpperCase());
         messageDto.setMsg(candidatBean.getMessage());
 
-        messageCandidatHelper.addNewMessage(connect.getPoolConnexion(),
+        messageCandidatHelper.addNewMessage(connect.openConnexionPool(),
                 candidatBean.getMessage(),
                 candidatBean.getCurrentUser().getNodeUser().getIdUser(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
@@ -153,7 +153,7 @@ public class DiscussionService implements Serializable {
 
     public void reloadMessage() {
         candidatBean.getCandidatSelected().setMessages(messageCandidatHelper.getAllMessagesByCandidat(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus(),
                 candidatBean.getCurrentUser().getNodeUser().getIdUser()));

@@ -34,10 +34,10 @@ public class GpsBean implements Serializable {
 
     public void addNewCoordinateGps() {
 
-        gpsHelper.saveNewGps(connect.getPoolConnexion(), gpsSelected);
+        gpsHelper.saveNewGps(connect.openConnexionPool(), gpsSelected);
 
         conceptView.getNodeConcept().setNodeGps(gpsHelper.getGpsByConceptAndThesorus(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
@@ -56,7 +56,7 @@ public class GpsBean implements Serializable {
      */
     public void updateCoordinateGps(Gps gps) {
 
-        gpsHelper.saveNewGps(connect.getPoolConnexion(), Gps.builder()
+        gpsHelper.saveNewGps(connect.openConnexionPool(), Gps.builder()
                 .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
                 .idTheso(selectedTheso.getCurrentIdTheso())
                 .latitude(gps.getLatitude())
@@ -64,7 +64,7 @@ public class GpsBean implements Serializable {
                 .build());
 
         conceptView.getNodeConcept().setNodeGps(gpsHelper.getGpsByConceptAndThesorus(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
@@ -86,7 +86,7 @@ public class GpsBean implements Serializable {
 
         if(gps == null) return;
 
-        gpsHelper.removeGps(connect.getPoolConnexion(), gps);
+        gpsHelper.removeGps(connect.openConnexionPool(), gps);
 
         conceptView.createMap(selectedTheso.getCurrentIdTheso());
 

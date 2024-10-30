@@ -35,7 +35,7 @@ public class ThesaurusMetadataAdd implements Serializable{
     
     public void init(String idTheso1) {
 
-        dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idTheso1);
+        dcElements = dcElementHelper.getDcElementOfThesaurus(connect.openConnexionPool(), idTheso1);
         if(dcElements == null || dcElements.isEmpty())
             dcElements = new ArrayList<>();
         dcmiResource = new DCMIResource().getAllResources();
@@ -49,7 +49,7 @@ public class ThesaurusMetadataAdd implements Serializable{
      * @return 
      */
     public List<DcElement> getThesaurusMetadata(String idTheso){
-        return dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idTheso);
+        return dcElementHelper.getDcElementOfThesaurus(connect.openConnexionPool(), idTheso);
     }
     
     public void initlanguage(DcElement dcElement){
@@ -62,7 +62,7 @@ public class ThesaurusMetadataAdd implements Serializable{
     }
 
     public void deleteThesoMetadata(DcElement dcElement){
-        dcElementHelper.deleteDcElementThesaurus(connect.getPoolConnexion(), dcElement, idTheso);
+        dcElementHelper.deleteDcElementThesaurus(connect.openConnexionPool(), dcElement, idTheso);
         init(idTheso);
         FacesMessage msg = new FacesMessage("Dcterms deleted", "");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
@@ -77,7 +77,7 @@ public class ThesaurusMetadataAdd implements Serializable{
         }
 
         if(dcElementTemp.getId() == -1) {
-            int id = dcElementHelper.addDcElementThesaurus(connect.getPoolConnexion(), dcElementTemp, idTheso);
+            int id = dcElementHelper.addDcElementThesaurus(connect.openConnexionPool(), dcElementTemp, idTheso);
             if(id != -1) {
                 dcElementTemp.setId(id);
             } else {
@@ -85,7 +85,7 @@ public class ThesaurusMetadataAdd implements Serializable{
                 FacesContext.getCurrentInstance().addMessage(null, msg);                
             }
         } else {
-            dcElementHelper.updateDcElementThesaurus(connect.getPoolConnexion(), dcElementTemp, idTheso);
+            dcElementHelper.updateDcElementThesaurus(connect.openConnexionPool(), dcElementTemp, idTheso);
         } 
         FacesMessage msg = new FacesMessage("Dcterms updated", dcElementTemp.getValue());
         FacesContext.getCurrentInstance().addMessage(null, msg);

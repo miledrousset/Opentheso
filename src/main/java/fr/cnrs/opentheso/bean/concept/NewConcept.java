@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
@@ -135,8 +134,8 @@ public class NewConcept implements Serializable {
             }
         }
 
-        typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.getPoolConnexion());
-        nodeGroups = groupHelper.getListConceptGroup(connect.getPoolConnexion(),
+        typesRelationsNT = relationsHelper.getTypesRelationsNT(connect.openConnexionPool());
+        nodeGroups = groupHelper.getListConceptGroup(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
     }
 
@@ -202,7 +201,7 @@ public class NewConcept implements Serializable {
 
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
-        if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), prefLabel.trim(), idTheso, idLang)) {
+        if (termHelper.isPrefLabelExist(connect.openConnexionPool(), prefLabel.trim(), idTheso, idLang)) {
             duplicate = true;
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", "un TopTerme existe déjà avec ce nom !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -212,7 +211,7 @@ public class NewConcept implements Serializable {
             return;
         }
         // verification dans les altLabels
-        if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
+        if (termHelper.isAltLabelExist(connect.openConnexionPool(),
                 prefLabel.trim(),
                 idTheso,
                 idLang)) {
@@ -226,7 +225,7 @@ public class NewConcept implements Serializable {
         }
                 
         if ((notation != null) && (!notation.isEmpty())) {
-            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+            if (conceptHelper.isNotationExist(connect.openConnexionPool(), idTheso, notation.trim())) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
@@ -234,7 +233,7 @@ public class NewConcept implements Serializable {
         }          
 
         if ((idNewConcept != null) && (!idNewConcept.isEmpty())) {
-            if (conceptHelper.isIdExiste(connect.getPoolConnexion(), idNewConcept, idTheso)) {
+            if (conceptHelper.isIdExiste(connect.openConnexionPool(), idNewConcept, idTheso)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Identifiant déjà attribué, veuillez choisir un autre ou laisser vide !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 if (pf.isAjaxRequest()) {
@@ -271,7 +270,7 @@ public class NewConcept implements Serializable {
         terme.setStatus(status);
         concept.setTopConcept(false);
         idNewConcept = conceptHelper.addConcept(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 null, null,
                 concept,
                 terme,
@@ -335,7 +334,7 @@ public class NewConcept implements Serializable {
         
         // vérification si le term à ajouter existe déjà 
         // verification dans les prefLabels
-        if (termHelper.isPrefLabelExist(connect.getPoolConnexion(),
+        if (termHelper.isPrefLabelExist(connect.openConnexionPool(),
                 prefLabel.trim(),
                 idTheso,
                 idLang)) {
@@ -345,7 +344,7 @@ public class NewConcept implements Serializable {
             return;
         }
         // verification dans les altLabels
-        if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
+        if (termHelper.isAltLabelExist(connect.openConnexionPool(),
                 prefLabel.trim(),
                 idTheso,
                 idLang)) {
@@ -356,7 +355,7 @@ public class NewConcept implements Serializable {
         }
 
         if ((notation != null) && (!notation.isEmpty())) {
-            if (conceptHelper.isNotationExist(connect.getPoolConnexion(), idTheso, notation.trim())) {
+            if (conceptHelper.isNotationExist(connect.openConnexionPool(), idTheso, notation.trim())) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Notation existe déjà, veuillez choisir une autre!!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
@@ -391,7 +390,7 @@ public class NewConcept implements Serializable {
         conceptHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
         if ((idNewConcept != null) && (!idNewConcept.isEmpty())) {
-            if (conceptHelper.isIdExiste(connect.getPoolConnexion(), idNewConcept, idTheso)) {
+            if (conceptHelper.isIdExiste(connect.openConnexionPool(), idNewConcept, idTheso)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Attention!", "Identifiant déjà attribué, veuillez choisir un autre ou laisser vide !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
@@ -432,7 +431,7 @@ public class NewConcept implements Serializable {
         }
 
         idNewConcept = conceptHelper.addConcept(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 idConceptParent, relationType,
                 concept,
                 terme,
@@ -445,7 +444,7 @@ public class NewConcept implements Serializable {
         }
         if (isConceptUnderFacet) {
 
-            if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(), idFacet, idTheso, idNewConcept)) {
+            if (!facetHelper.addConceptToFacet(connect.openConnexionPool(), idFacet, idTheso, idNewConcept)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "le concept n'a pas été ajouté à la facette");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
@@ -538,7 +537,7 @@ public class NewConcept implements Serializable {
             return null;
         }
 
-        List<NodeSearchMini> liste = searchHelper.searchExactTermForAutocompletion(connect.getPoolConnexion(),
+        List<NodeSearchMini> liste = searchHelper.searchExactTermForAutocompletion(connect.openConnexionPool(),
                 value,
                 selectedTheso.getCurrentLang(),
                 selectedTheso.getCurrentIdTheso());

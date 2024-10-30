@@ -70,7 +70,7 @@ public class NoteBeanCandidat implements Serializable {
 
     public void reset() {
         visible = true;
-        noteTypes = noteHelper.getNotesType(connect.getPoolConnexion());
+        noteTypes = noteHelper.getNotesType(connect.openConnexionPool());
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = candidatBean.getCandidatSelected().getLang();
         noteValue = "";
@@ -145,7 +145,7 @@ public class NoteBeanCandidat implements Serializable {
 
         FacesMessage msg;        
 
-        if (!noteHelper.updateNote(connect.getPoolConnexion(),
+        if (!noteHelper.updateNote(connect.openConnexionPool(),
                 selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 selectedNodeNote.getIdConcept(),
                 selectedNodeNote.getLang(),
@@ -173,7 +173,7 @@ public class NoteBeanCandidat implements Serializable {
     public void deleteNote(int idUser) {
         FacesMessage msg;
 
-        if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
+        if (!noteHelper.deleteThisNote(connect.openConnexionPool(),
                 selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 selectedNodeNote.getIdConcept(),
                 selectedNodeNote.getLang(),
@@ -185,7 +185,7 @@ public class NoteBeanCandidat implements Serializable {
             return;
         }
 
-        noteHelper.deleteVoteByNoteId(connect.getPoolConnexion(), selectedNodeNote.getIdNote(), selectedTheso.getCurrentIdTheso(),
+        noteHelper.deleteVoteByNoteId(connect.openConnexionPool(), selectedNodeNote.getIdNote(), selectedTheso.getCurrentIdTheso(),
                 selectedNodeNote.getIdConcept());
 
         reset();
@@ -209,7 +209,7 @@ public class NoteBeanCandidat implements Serializable {
 
     private boolean addNote(int idUser) {
         return noteHelper.addNote(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 selectedLang,
                 selectedTheso.getCurrentIdTheso(),

@@ -77,7 +77,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
             idLanguage = connect.getWorkLanguage();
         }
 
-        text = htmlPageHelper.getThesoHomePage(connect.getPoolConnexion(), idThesaurus, idLanguage);
+        text = htmlPageHelper.getThesoHomePage(connect.openConnexionPool(), idThesaurus, idLanguage);
         isInEditing = true;
         isViewPlainText = false;
         colorOfHtmlButton = "#F49F66;";
@@ -90,7 +90,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
             idLanguage = connect.getWorkLanguage();
         }
         String homePage = htmlPageHelper.getThesoHomePage(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 idThesaurus,
                 idLanguage);
         if (PrimeFaces.current().isAjaxRequest()) {
@@ -103,7 +103,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
     
     public List<DcElement> meta(String idThesaurus){
 
-        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(connect.getPoolConnexion(), idThesaurus);
+        List<DcElement> dcElements = dcElementHelper.getDcElementOfThesaurus(connect.openConnexionPool(), idThesaurus);
         if(dcElements == null || dcElements.isEmpty())
             dcElements = new ArrayList<>();           
         return dcElements;
@@ -118,7 +118,7 @@ public class ViewEditorThesoHomeBean implements Serializable {
         }
 
         if (!htmlPageHelper.setThesoHomePage(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 text,
                 idThesaurus,
                 idLanguage)){
@@ -134,27 +134,27 @@ public class ViewEditorThesoHomeBean implements Serializable {
 
     public String getTotalConceptOfTheso(String idThesaurus){
 
-        int count = statisticHelper.getNbCpt(connect.getPoolConnexion(), idThesaurus);
+        int count = statisticHelper.getNbCpt(connect.openConnexionPool(), idThesaurus);
         return "" + count;
     }
 
     public String getLastModifiedDate(String idThesaurus){
-        Date date = conceptHelper.getLastModification(connect.getPoolConnexion(), idThesaurus);
+        Date date = conceptHelper.getLastModification(connect.openConnexionPool(), idThesaurus);
         if(date != null)
             return date.toString();
         return "";
     }
 
     public String getProjectName(String idThesaurus){
-        int idProject = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), idThesaurus);
+        int idProject = userHelper.getGroupOfThisTheso(connect.openConnexionPool(), idThesaurus);
         if(idProject != -1) {
-            return userHelper.getGroupName(connect.getPoolConnexion(), idProject);
+            return userHelper.getGroupName(connect.openConnexionPool(), idProject);
         } else
             return "";
     }
 
     public ArrayList<NodeIdValue> getLastModifiedConcepts(String idThesaurus, String idLanguage){
-        return conceptHelper.getLastModifiedConcept(connect.getPoolConnexion(), idThesaurus, idLanguage);
+        return conceptHelper.getLastModifiedConcept(connect.openConnexionPool(), idThesaurus, idLanguage);
     }        
     
     public void setViewPlainTextTo(boolean status){

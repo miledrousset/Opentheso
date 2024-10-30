@@ -85,7 +85,7 @@ public class SuperAdminBean implements Serializable {
      * permet de récupérer la liste de tous les utilisateurs (Pour SuperAdmin)
      */
     private void listAllUsers(){
-        allUsers = userHelper.getAllUsers(connect.getPoolConnexion());
+        allUsers = userHelper.getAllUsers(connect.openConnexionPool());
     }    
     
     /**
@@ -97,9 +97,9 @@ public class SuperAdminBean implements Serializable {
             idLang = selectedTheso.getCurrentLang();
         
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            nodeUserGroupUsers = userHelper.getAllGroupUser(connect.getPoolConnexion(), idLang);
-            nodeUserGroupUsers.addAll(userHelper.getAllGroupUserWithoutGroup(connect.getPoolConnexion(), idLang));
-            nodeUserGroupUsers.addAll(userHelper.getAllUsersSuperadmin(connect.getPoolConnexion()));
+            nodeUserGroupUsers = userHelper.getAllGroupUser(connect.openConnexionPool(), idLang);
+            nodeUserGroupUsers.addAll(userHelper.getAllGroupUserWithoutGroup(connect.openConnexionPool(), idLang));
+            nodeUserGroupUsers.addAll(userHelper.getAllUsersSuperadmin(connect.openConnexionPool()));
         } 
     }      
     
@@ -107,7 +107,7 @@ public class SuperAdminBean implements Serializable {
      * permet de retourner la liste de tous les projets
      */
     private void listAllProjects(){
-        allProjects = userHelper.getAllProject(connect.getPoolConnexion());
+        allProjects = userHelper.getAllProject(connect.openConnexionPool());
     }
     
     private void listAllThesaurus(){
@@ -115,8 +115,8 @@ public class SuperAdminBean implements Serializable {
         String idLang = connect.getWorkLanguage();
         if(selectedTheso.getCurrentLang() != null)
             idLang = selectedTheso.getCurrentLang();
-        ArrayList<NodeUserGroupThesaurus> allThesoWithProject = userHelper.getAllGroupTheso(connect.getPoolConnexion(), idLang);
-        ArrayList<NodeUserGroupThesaurus> allThesoWithoutProject = userHelper.getAllThesoWithoutGroup(connect.getPoolConnexion(), idLang);
+        ArrayList<NodeUserGroupThesaurus> allThesoWithProject = userHelper.getAllGroupTheso(connect.openConnexionPool(), idLang);
+        ArrayList<NodeUserGroupThesaurus> allThesoWithoutProject = userHelper.getAllThesoWithoutGroup(connect.openConnexionPool(), idLang);
         allThesoProject.addAll(allThesoWithProject);
         allThesoProject.addAll(allThesoWithoutProject);
     }

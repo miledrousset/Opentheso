@@ -84,7 +84,7 @@ public class ViewEditorHomeBean implements Serializable {
             lang = connect.getWorkLanguage();
         }
 
-        text = htmlPageHelper.getHomePage(connect.getPoolConnexion(), lang);
+        text = htmlPageHelper.getHomePage(connect.openConnexionPool(), lang);
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
@@ -97,7 +97,7 @@ public class ViewEditorHomeBean implements Serializable {
     public void initGoogleAnalytics() {
 
         codeGoogleAnalitics = preferencesHelper.getCodeGoogleAnalytics(
-                connect.getPoolConnexion());
+                connect.openConnexionPool());
         isInEditing = true;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = true;
@@ -108,7 +108,7 @@ public class ViewEditorHomeBean implements Serializable {
     public void updateGoogleAnalytics() {
 
         preferencesHelper.setCodeGoogleAnalytics(
-                connect.getPoolConnexion(), codeGoogleAnalitics);
+                connect.openConnexionPool(), codeGoogleAnalitics);
         isInEditing = false;
         isViewPlainText = false;
         isInEditingGoogleAnalytics = false;
@@ -127,7 +127,7 @@ public class ViewEditorHomeBean implements Serializable {
         if (lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         }
-        String homePage = htmlPageHelper.getHomePage(connect.getPoolConnexion(), lang);
+        String homePage = htmlPageHelper.getHomePage(connect.openConnexionPool(), lang);
         return homePage;
     }
 
@@ -141,7 +141,7 @@ public class ViewEditorHomeBean implements Serializable {
         if (lang == null || lang.isEmpty()) {
             lang = connect.getWorkLanguage();
         }
-        if (!htmlPageHelper.setHomePage(connect.getPoolConnexion(), text, lang)) {
+        if (!htmlPageHelper.setHomePage(connect.openConnexionPool(), text, lang)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " l'ajout a échoué !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
 

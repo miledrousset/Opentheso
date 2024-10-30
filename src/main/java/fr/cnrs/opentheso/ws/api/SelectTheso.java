@@ -43,7 +43,7 @@ public class SelectTheso {
        HttpServletRequest request
     ) throws URISyntaxException {
 
-        var idTheso = preferencesHelper.getIdThesaurusFromName(connect.getPoolConnexion(), name);
+        var idTheso = preferencesHelper.getIdThesaurusFromName(connect.openConnexionPool(), name);
         // Récupération de l'URL de la requête
         String requestUrl = request.getRequestURL().toString();
         //  String newUrl = StringUtils.substringAfter(requestUrl, "openapi");/?idt=th739

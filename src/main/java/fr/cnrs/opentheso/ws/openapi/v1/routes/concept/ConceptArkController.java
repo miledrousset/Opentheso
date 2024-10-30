@@ -60,7 +60,7 @@ public class ConceptArkController {
             @Parameter(name = "ark", description = "Identifiant Ark du concept", required = true, example = "lkp6ure1g7b6") @PathVariable("ark") String idArk,
             @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
-        var datas = restRDFHelper.exportConcept(connect.getPoolConnexion(), naan + "/" + idArk, HeaderHelper.removeCharset(acceptHeader));
+        var datas = restRDFHelper.exportConcept(connect.openConnexionPool(), naan + "/" + idArk, HeaderHelper.removeCharset(acceptHeader));
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)));
@@ -81,7 +81,7 @@ public class ConceptArkController {
                 @Parameter(name = "ark", description = "ID Ark du concept pour lequel on veut trouver les fils", example = "lkhsq27fw3z6") @PathVariable("ark") String arkLocalId) {
 
         var arkId = naan + "/" + arkLocalId;
-        var datas = restRDFHelper.getChildsArkId(connect.getPoolConnexion(), arkId);
+        var datas = restRDFHelper.getChildsArkId(connect.openConnexionPool(), arkId);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)));
@@ -105,7 +105,7 @@ public class ConceptArkController {
             @Parameter(name = "ark", description = "Identifiant Ark du concept", required = true, example = "lkp6ure1g7b6") @PathVariable("ark") String idArk,
             @Parameter(name = "lang", description = "Langue du `prefLabel`", required = true, example = "fr") @PathVariable("lang") String lang) {
 
-        String datas = restRDFHelper.getPrefLabelFromArk(connect.getPoolConnexion(), naan, idArk, lang);
+        String datas = restRDFHelper.getPrefLabelFromArk(connect.openConnexionPool(), naan, idArk, lang);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)));

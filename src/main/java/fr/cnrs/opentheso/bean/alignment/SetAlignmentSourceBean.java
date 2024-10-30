@@ -67,7 +67,7 @@ public class SetAlignmentSourceBean implements Serializable {
     }
     
     public void initForUpdate(NodeSelectedAlignment nodeSelectedAlignment){
-        alignementSourceToUpdate= alignmentBean.getThisAlignementSource(connect.getPoolConnexion(), nodeSelectedAlignment.getIdAlignmentSource());
+        alignementSourceToUpdate= alignmentBean.getThisAlignementSource(connect.openConnexionPool(), nodeSelectedAlignment.getIdAlignmentSource());
     }
 
     public void initAlignementAutomatique(String alignementMode) {
@@ -105,10 +105,10 @@ public class SetAlignmentSourceBean implements Serializable {
     public void updateSelectedSource(NodeSelectedAlignment selectedAlignment) throws SQLException {
 
         if (selectedAlignment.isSelected()) {
-            alignmentHelper.addSourceAlignementToTheso(connect.getPoolConnexion(),
+            alignmentHelper.addSourceAlignementToTheso(connect.openConnexionPool(),
                     selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
         } else {
-            alignmentHelper.deleteSourceAlignementFromTheso(connect.getPoolConnexion().getConnection(),
+            alignmentHelper.deleteSourceAlignementFromTheso(connect.openConnexionPool().getConnection(),
                     selectedTheso.getCurrentIdTheso(), selectedAlignment.getIdAlignmentSource());
         }
         showMessage(FacesMessage.SEVERITY_INFO, "Source mise à jour !");
@@ -116,7 +116,7 @@ public class SetAlignmentSourceBean implements Serializable {
 
     public void startAlignementAutomatique() {
         if (!ObjectUtils.isEmpty(selectedSource)) {
-            alignmentBean.setAlignementSources(alignmentHelper.getAlignementSource(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso()));
+            alignmentBean.setAlignementSources(alignmentHelper.getAlignementSource(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso()));
             var sourceFound = alignmentBean.getAlignementSources().stream()
                     .filter(source -> source.getId() == selectedSource.getIdAlignmentSource())
                     .findFirst();
@@ -139,11 +139,11 @@ public class SetAlignmentSourceBean implements Serializable {
     public void initSourcesList() {
 
         // toutes les sources d'alignements
-        allAlignementSources = alignmentHelper.getAlignementSourceSAdmin(connect.getPoolConnexion());
+        allAlignementSources = alignmentHelper.getAlignementSourceSAdmin(connect.openConnexionPool());
         nodeSelectedAlignmentsAll = new ArrayList<>();
 
         // la liste des sources séléctionnées pour le thésaurus en cours
-        selectedAlignmentsOfTheso = alignmentHelper.getSelectedAlignementOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        selectedAlignmentsOfTheso = alignmentHelper.getSelectedAlignementOfThisTheso(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
 
         // intégrer les éléments dans un vecteur global pour la modifiation
         for (AlignementSource allAlignementSource : allAlignementSources) {
@@ -187,7 +187,7 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        if (!alignmentHelper.deleteAlignmentSource(connect.getPoolConnexion(), alignment.getIdAlignmentSource())) {
+        if (!alignmentHelper.deleteAlignmentSource(connect.openConnexionPool(), alignment.getIdAlignmentSource())) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la suppression de la source !");
             return;
         }
@@ -202,7 +202,7 @@ public class SetAlignmentSourceBean implements Serializable {
             return;
         }
 
-        if (!alignmentHelper.updateAlignmentSource(connect.getPoolConnexion(), alignementSourceToUpdate)) {
+        if (!alignmentHelper.updateAlignmentSource(connect.openConnexionPool(), alignementSourceToUpdate)) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur pendant la mise à jour de la source !");
             return;
         }
@@ -247,7 +247,7 @@ public class SetAlignmentSourceBean implements Serializable {
         alignementSource.setSource(sourceName);
         alignementSource.setTypeRequete("REST");
 
-        if (!alignmentHelper.addNewAlignmentSource(connect.getPoolConnexion(), alignementSource, idUser, selectedTheso.getCurrentIdTheso())) {
+        if (!alignmentHelper.addNewAlignmentSource(connect.openConnexionPool(), alignementSource, idUser, selectedTheso.getCurrentIdTheso())) {
             showMessage(FacesMessage.SEVERITY_ERROR,"Erreur côté base de données !");
             return;
         }

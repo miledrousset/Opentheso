@@ -81,7 +81,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
 
         ArrayList<String> allId  = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
@@ -89,7 +89,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
 
         for (String idConcept : allId) {
             if (!groupHelper.deleteRelationConceptGroupConcept(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     idGroup,
                     idConcept,
                     selectedTheso.getCurrentIdTheso(),
@@ -120,7 +120,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
     public void deleteGroup(String idGroup, int idUser){
         FacesMessage msg;
         try {
-            Connection conn = connect.getPoolConnexion().getConnection();
+            Connection conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
             if(!groupHelper.deleteConceptGroupRollBack(conn, idGroup, selectedTheso.getCurrentIdTheso(), idUser)) {
                 conn.rollback();
@@ -131,7 +131,7 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
             }
             conn.commit();
             conn.close();
-            if(!groupHelper.removeAllConceptsFromThisGroup(connect.getPoolConnexion(), idGroup, selectedTheso.getCurrentIdTheso())){
+            if(!groupHelper.removeAllConceptsFromThisGroup(connect.openConnexionPool(), idGroup, selectedTheso.getCurrentIdTheso())){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de l'appartenance des concepts à la collection !!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
             }

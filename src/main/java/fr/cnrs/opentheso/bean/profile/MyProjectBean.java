@@ -102,7 +102,7 @@ public class MyProjectBean implements Serializable {
     private void initMyAuthorizedRoleOnThisGroup(){
         if(selectedProject.isEmpty()) return;
         myRoleOnThisProject = userHelper.getUserRoleOnThisGroup(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 currentUser.getNodeUser().getIdUser(),
                 Integer.parseInt(selectedProject));
     }    
@@ -129,7 +129,7 @@ public class MyProjectBean implements Serializable {
                 idRoleFrom = 4; // l'utilisateur est Contributeur / user       
             }
         }
-        myAuthorizedRoles = userHelper.getMyAuthorizedRoles(connect.getPoolConnexion(), idRoleFrom);
+        myAuthorizedRoles = userHelper.getMyAuthorizedRoles(connect.openConnexionPool(), idRoleFrom);
     }     
 
     /**
@@ -137,10 +137,10 @@ public class MyProjectBean implements Serializable {
      */
     private void getGroupsOfUser() {
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeGroupsOfUser = userHelper.getAllGroups(connect.getPoolConnexion());
+            listeGroupsOfUser = userHelper.getAllGroups(connect.openConnexionPool());
             return;
         }
-        listeGroupsOfUser = userHelper.getGroupsOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+        listeGroupsOfUser = userHelper.getGroupsOfUser(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
     }    
     
     public void setLists() {
@@ -183,7 +183,7 @@ public class MyProjectBean implements Serializable {
         
         int idGroup = Integer.parseInt(selectedProject);
         
-        listeThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idGroup, connect.getWorkLanguage());
+        listeThesoOfProject = userHelper.getThesaurusOfProject(connect.openConnexionPool(), idGroup, connect.getWorkLanguage());
     } 
     
     /**
@@ -197,11 +197,11 @@ public class MyProjectBean implements Serializable {
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeUser = userHelper.getUsersRolesByGroup(connect.getPoolConnexion(),
+            listeUser = userHelper.getUsersRolesByGroup(connect.openConnexionPool(),
                     idGroup, nodeUserRoleSuperAdmin.getIdRole());
         } else {
             if (nodeUserRoleOnThisGroup != null) {
-                listeUser = userHelper.getUsersRolesByGroup(connect.getPoolConnexion(),
+                listeUser = userHelper.getUsersRolesByGroup(connect.openConnexionPool(),
                         idGroup, nodeUserRoleOnThisGroup.getIdRole());
             } else {
                 if (listeUser != null) {
@@ -223,7 +223,7 @@ public class MyProjectBean implements Serializable {
         }
 
         int idGroup = Integer.parseInt(selectedProject);
-        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.getPoolConnexion(), idGroup);
+        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.openConnexionPool(), idGroup);
     }    
     
     /**
@@ -243,11 +243,11 @@ public class MyProjectBean implements Serializable {
         int idGroup = Integer.parseInt(selectedProject);
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             nodeUserRoleSuperAdmin = userHelper.getUserRoleForSuperAdmin(
-                    connect.getPoolConnexion());
+                    connect.openConnexionPool());
             return;
         }
         nodeUserRoleOnThisGroup = userHelper.getUserRoleOnThisGroup(
-                connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser(), idGroup);
+                connect.openConnexionPool(), currentUser.getNodeUser().getIdUser(), idGroup);
     } 
     
     
@@ -267,14 +267,14 @@ public class MyProjectBean implements Serializable {
             return false;
         }
         int idGroup = Integer.parseInt(selectedProject);
-        return userHelper.isAdminOnThisGroup(connect.getPoolConnexion(),
+        return userHelper.isAdminOnThisGroup(connect.openConnexionPool(),
                 currentUser.getNodeUser().getIdUser(), idGroup);
     }
     
     public String getSelectedProjectName() {
         if(selectedProject != null) 
             if(!selectedProject.isEmpty())
-                selectedProjectName = userHelper.getGroupName(connect.getPoolConnexion(), Integer.parseInt(selectedProject));
+                selectedProjectName = userHelper.getGroupName(connect.openConnexionPool(), Integer.parseInt(selectedProject));
             else
                 selectedProjectName = selectedProject;
         return selectedProjectName;

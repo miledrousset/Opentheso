@@ -42,15 +42,15 @@ public class PropositionsController {
     public ResponseEntity<Object> createProposition(@RequestHeader(value = "API-KEY") String apiKey,
                                                     @RequestBody PropositionFromApi proposition) {
 
-        var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);
+        var keyState = apiKeyHelper.checkApiKey(connect.openConnexionPool(), apiKey);
 
         if (keyState != ApiKeyState.VALID) {
             return apiKeyHelper.errorResponse(keyState);
         }
 
-        var userId = apiKeyHelper.getIdUser(connect.getPoolConnexion(), apiKey);
+        var userId = apiKeyHelper.getIdUser(connect.openConnexionPool(), apiKey);
 
-        propositionApiHelper.createProposition(connect.getPoolConnexion(), proposition, userId);
+        propositionApiHelper.createProposition(connect.openConnexionPool(), proposition, userId);
         return ResponseEntity.status(201).build();
     }
 }

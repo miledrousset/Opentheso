@@ -56,7 +56,7 @@ public class CorpusBean implements Serializable {
     }
 
     public void init() {
-        nodeCorpuses = corpusHelper.getAllCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        nodeCorpuses = corpusHelper.getAllCorpus(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
         nodeCorpusForEdit = new NodeCorpus();
         oldName = "";
     }
@@ -94,13 +94,13 @@ public class CorpusBean implements Serializable {
             return;
         }
 
-        if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+        if (corpusHelper.isCorpusExist(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(),
                 nodeCorpusForEdit.getCorpusName()) && !nodeCorpusForEdit.getCorpusName().equalsIgnoreCase(oldName)) {
             showMessage(FacesMessage.SEVERITY_INFO, "Ce corpus existe déjà, changez de nom !");
             return;
         }
 
-        if (!corpusHelper.updateCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), oldName, nodeCorpusForEdit)) {
+        if (!corpusHelper.updateCorpus(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), oldName, nodeCorpusForEdit)) {
             showMessage(FacesMessage.SEVERITY_INFO, "Erreur de modification de corpus !");
             return;
         }
@@ -145,12 +145,12 @@ public class CorpusBean implements Serializable {
             return;
         }
 
-        if (corpusHelper.isCorpusExist(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
+        if (corpusHelper.isCorpusExist(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Ce corpus existe déjà, changez de nom !");
             return;
         }
 
-        if (!corpusHelper.addNewCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit)) {
+        if (!corpusHelper.addNewCorpus(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit)) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de création du corpus !");
             return;
         }
@@ -175,7 +175,7 @@ public class CorpusBean implements Serializable {
             return;
         }
 
-        if (!corpusHelper.deleteCorpus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
+        if (!corpusHelper.deleteCorpus(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), nodeCorpusForEdit.getCorpusName())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression de corpus !");
             return;
         }

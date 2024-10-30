@@ -56,7 +56,7 @@ public class GroupController {
     public ResponseEntity<Object>  getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "Identifiant naan") @PathVariable("naan") String naan,
                                                      @Parameter(name = "ark", required = true, description = "ARK id") @PathVariable("ark") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.getPoolConnexion(), naan + "/" + arkId, HeaderHelper.removeCharset(APPLICATION_JSON_UTF_8));
+        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, HeaderHelper.removeCharset(APPLICATION_JSON_UTF_8));
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.requireNonNullElseGet(datas, () -> MessageHelper.emptyMessage(APPLICATION_JSON_UTF_8)));

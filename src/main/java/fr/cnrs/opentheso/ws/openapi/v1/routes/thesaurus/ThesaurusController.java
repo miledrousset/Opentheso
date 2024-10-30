@@ -50,7 +50,7 @@ public class ThesaurusController {
     )
     public ResponseEntity<Object>  getListAllPublicTheso() {
 
-        var listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), false);
+        var listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(connect.openConnexionPool(), false);
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -59,7 +59,7 @@ public class ThesaurusController {
             job.add("idTheso", idTheso);
             var jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            var nodeThesaurus = thesaurusHelper.getNodeThesaurus(connect.getPoolConnexion(), idTheso);
+            var nodeThesaurus = thesaurusHelper.getNodeThesaurus(connect.openConnexionPool(), idTheso);
             for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
                 var jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", thesaurus.getLanguage());

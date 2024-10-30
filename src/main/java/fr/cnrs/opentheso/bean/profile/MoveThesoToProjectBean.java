@@ -72,11 +72,11 @@ public class MoveThesoToProjectBean implements Serializable {
         ArrayList<NodeUserGroup> nodeProjects = null;
         if(currentUser.getNodeUser().isSuperAdmin()) {
             nodeProjects = userHelper.searchAllProject(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     projectName);            
         } else {
             nodeProjects = userHelper.searchMyProject(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     currentUser.getNodeUser().getIdUser(),
                     projectName);
         }
@@ -93,7 +93,7 @@ public class MoveThesoToProjectBean implements Serializable {
         }
 
         if(!userHelper.moveThesoToGroup(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 selectedThesoToMove.getId(),
                 Integer.parseInt(currentProject),
                 newProject.getIdGroup() )){
@@ -123,7 +123,7 @@ public class MoveThesoToProjectBean implements Serializable {
         }
 
         if(!userHelper.moveThesoToGroup(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 selectedThesoToMove.getId(),
                 Integer.parseInt(currentProject),
                 newProject.getIdGroup() )){

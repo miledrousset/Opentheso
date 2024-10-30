@@ -92,7 +92,7 @@ public class MyAccountBean implements Serializable {
         displayedKey = apiKeyHelper.generateApiKey("ot_", 64);
         FacesMessage msg;
         nodeUser.setApiKey(displayedKey);
-        if(apiKeyHelper.saveApiKey(connect.getPoolConnexion(), MD5Password.getEncodedPassword(displayedKey), nodeUser.getIdUser())){
+        if(apiKeyHelper.saveApiKey(connect.openConnexionPool(), MD5Password.getEncodedPassword(displayedKey), nodeUser.getIdUser())){
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La clé a bien été enregistrée.");
         } else {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de sauvegarde de la clé.");
@@ -118,7 +118,7 @@ public class MyAccountBean implements Serializable {
      * Initialise la liste des rôles et projets pour l'utilisateur.
      */
     private void initAllMyRoleProject() {
-        allMyRoleProject = userHelper.getUserRoleGroup(connect.getPoolConnexion(), nodeUser.getIdUser());
+        allMyRoleProject = userHelper.getUserRoleGroup(connect.openConnexionPool(), nodeUser.getIdUser());
     }
 
     public void updatePseudo() {
@@ -132,7 +132,7 @@ public class MyAccountBean implements Serializable {
             return;
         }
 
-        if (!userHelper.updatePseudo(connect.getPoolConnexion(), nodeUser.getIdUser(), nodeUser.getName())) {
+        if (!userHelper.updatePseudo(connect.openConnexionPool(), nodeUser.getIdUser(), nodeUser.getName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de pseudo !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -154,7 +154,7 @@ public class MyAccountBean implements Serializable {
     public void updateAlertEmail() {
         FacesMessage msg;
         if (!userHelper.setAlertMailForUser(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeUser.getIdUser(),
                 nodeUser.isAlertMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant le changement d'alertes !!!");
@@ -181,7 +181,7 @@ public class MyAccountBean implements Serializable {
         }
 
         if (!userHelper.updateMail(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeUser.getIdUser(),
                 nodeUser.getMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement d'Email !!!");
@@ -222,7 +222,7 @@ public class MyAccountBean implements Serializable {
             return;
         }
 
-        if (!userHelper.updatePwd(connect.getPoolConnexion(), nodeUser.getIdUser(),
+        if (!userHelper.updatePwd(connect.openConnexionPool(), nodeUser.getIdUser(),
                 MD5Password.getEncodedPassword(passWord2))) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de passe !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);

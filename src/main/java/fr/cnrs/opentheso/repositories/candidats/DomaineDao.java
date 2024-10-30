@@ -1,12 +1,9 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
 import com.zaxxer.hikari.HikariDataSource;
-
-import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 
 @Slf4j
@@ -26,20 +22,20 @@ import java.util.List;
 public class DomaineDao extends BasicDao {
 
     public void addNewDomaine(Connect connect, String idgroup, String idthesaurus, String idconcept) throws SQLException {
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
+        stmt = connect.openConnexionPool().getConnection().createStatement();
         executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
                 +idgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
         stmt.close();
     }
     
     public void deleteAllDomaine(Connect connect, String idThesaurus, String idConcept) throws SQLException {
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
+        stmt = connect.openConnexionPool().getConnection().createStatement();
         executDeleteRequest(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idConcept+"'  AND idthesaurus = '"+idThesaurus+"'");
         stmt.close();
     }
 
     public void deleteDomaine(Connect connect, String idThesaurus, String idConcept, String idGroupe) throws SQLException {
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
+        stmt = connect.openConnexionPool().getConnection().createStatement();
         executDeleteRequest(stmt,"DELETE FROM concept_group_concept " +
                 "WHERE idconcept = '"+idConcept+"' AND idthesaurus = '"+idThesaurus+"' AND idgroup='"+idGroupe+"'");
         stmt.close();
@@ -47,7 +43,7 @@ public class DomaineDao extends BasicDao {
 
     public void updateDomaine(Connect connect, String oldIdgroup, String newIdgroup, String idthesaurus, String idconcept) throws SQLException {
 
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
+        stmt = connect.openConnexionPool().getConnection().createStatement();
 
         if (!StringUtils.isEmpty(newIdgroup)) {
             executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"

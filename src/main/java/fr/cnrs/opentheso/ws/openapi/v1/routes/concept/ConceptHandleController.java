@@ -55,7 +55,7 @@ public class ConceptHandleController {
                                              @RequestParam(name = "idHandle") String idHandle,
                                              @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
-        var datas = restRDFHelper.exportConceptHdl(connect.getPoolConnexion(), handle + "/" + idHandle, acceptHeader);
+        var datas = restRDFHelper.exportConceptHdl(connect.openConnexionPool(), handle + "/" + idHandle, acceptHeader);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }    
 

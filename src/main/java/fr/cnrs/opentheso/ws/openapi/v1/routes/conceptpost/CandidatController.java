@@ -59,15 +59,15 @@ public class CandidatController {
     )
     public ResponseEntity addCandidate(@RequestHeader(value = "API-KEY") String apiKey, @RequestBody Candidate candidate) {
 
-        var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);
+        var keyState = apiKeyHelper.checkApiKey(connect.openConnexionPool(), apiKey);
 
         if (keyState != ApiKeyState.VALID){
             return ResponseEntity.badRequest().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body(apiKeyHelper.errorResponse(keyState));
         }
 
-        var userId = apiKeyHelper.getIdUser(connect.getPoolConnexion(), apiKey);
+        var userId = apiKeyHelper.getIdUser(connect.openConnexionPool(), apiKey);
 
-        if (!candidateHelper.saveCandidat(connect.getPoolConnexion(), candidate, userId)){
+        if (!candidateHelper.saveCandidat(connect.openConnexionPool(), candidate, userId)){
             return ResponseEntity.badRequest().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body("");
         }
 

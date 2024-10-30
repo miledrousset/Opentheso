@@ -79,7 +79,7 @@ public class ModifyUSerBean implements Serializable {
      * @param idUser
      */
     public void selectUser(int idUser) {
-        nodeUser = userHelper.getUser(connect.getPoolConnexion(), idUser);
+        nodeUser = userHelper.getUser(connect.openConnexionPool(), idUser);
         passWord1 = null;
         passWord2 = null;
     }
@@ -111,7 +111,7 @@ public class ModifyUSerBean implements Serializable {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur sélectionné !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
-        nodeUser = userHelper.getUser(connect.getPoolConnexion(), id);
+        nodeUser = userHelper.getUser(connect.openConnexionPool(), id);
         hasKey = hasKey();
         apiKeyExpireDate = nodeUser.getApiKeyExpireDate();
         keyNeverExpire = nodeUser.isKeyNeverExpire();
@@ -128,7 +128,7 @@ public class ModifyUSerBean implements Serializable {
             return;
         }
         
-        if(!userHelper.deleteUser(connect.getPoolConnexion(), nodeUser.getIdUser())){
+        if(!userHelper.deleteUser(connect.openConnexionPool(), nodeUser.getIdUser())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de suppression de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -151,7 +151,7 @@ public class ModifyUSerBean implements Serializable {
         }
 
         if(!userHelper.updateUser(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeUser.getIdUser(),
                 nodeUser.getName(),
                 nodeUser.getMail(),
@@ -186,7 +186,7 @@ public class ModifyUSerBean implements Serializable {
 
         nodeUser.setName(nodeUser.getName().trim());
         if(!userHelper.updateUser(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeUser.getIdUser(),
                 nodeUser.getName(),
                 nodeUser.getMail(),
@@ -222,7 +222,7 @@ public class ModifyUSerBean implements Serializable {
         }
 
         if(!userHelper.updatePwd(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeUser.getIdUser(),
                 MD5Password.getEncodedPassword(passWord2))){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de changement de passe !!!");
@@ -256,7 +256,7 @@ public class ModifyUSerBean implements Serializable {
         }
 
         // Mise à jour de l'utilisateur dans la base de données
-        userHelper.updateApiKeyInfos(nodeUser.getIdUser(), keyNeverExpireValue, apiKeyExpireDateValue, connect.getPoolConnexion());
+        userHelper.updateApiKeyInfos(nodeUser.getIdUser(), keyNeverExpireValue, apiKeyExpireDateValue, connect.openConnexionPool());
     }
 
     public NodeUser getNodeUser() {

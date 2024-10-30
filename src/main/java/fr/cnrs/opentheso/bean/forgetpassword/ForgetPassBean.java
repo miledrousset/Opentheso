@@ -39,11 +39,11 @@ public class ForgetPassBean implements Serializable {
             return;
         }
 
-        if (userHelper.isUserMailExist(connect.getPoolConnexion(), sendTo)) {
+        if (userHelper.isUserMailExist(connect.openConnexionPool(), sendTo)) {
             String password = toolsHelper.getNewId(10, false, false);
             String passwordMD5 = MD5Password.getEncodedPassword(password);
-            String pseudo = userHelper.getNameUser(connect.getPoolConnexion(), sendTo);
-            int idUser = userHelper.getIdUserFromMail(connect.getPoolConnexion(), sendTo);
+            String pseudo = userHelper.getNameUser(connect.openConnexionPool(), sendTo);
+            int idUser = userHelper.getIdUserFromMail(connect.openConnexionPool(), sendTo);
             if (idUser == -1) {
                 printMessage("Absence des préférences pour le serveur Mail");
                 return;
@@ -57,7 +57,7 @@ public class ForgetPassBean implements Serializable {
                 printMessage("Erreur d'envoie de mail, veuillez contacter l'administrateur");
                 return;
             }
-            if (!userHelper.updatePwd(connect.getPoolConnexion(), idUser, passwordMD5)) {
+            if (!userHelper.updatePwd(connect.openConnexionPool(), idUser, passwordMD5)) {
                 printMessage("Erreur base de données");
             }
         } else {

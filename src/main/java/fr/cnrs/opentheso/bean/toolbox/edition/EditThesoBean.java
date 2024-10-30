@@ -103,18 +103,18 @@ public class EditThesoBean implements Serializable {
         this.nodeIdValueOfTheso.setId(idTheso);
 
         // toutes les langues Iso
-        allLangs = languageHelper.getAllLanguages(connect.getPoolConnexion());
+        allLangs = languageHelper.getAllLanguages(connect.openConnexionPool());
 
         isPrivateTheso = thesaurusHelper.isThesoPrivate(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeIdValueOfTheso.getId());
         // langue par defaut
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeIdValueOfTheso.getId());
         preferredLang = nodePreference.getSourceLang();
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), preferredLang);        
+                connect.openConnexionPool(), nodeIdValueOfTheso.getId(), preferredLang);        
         selectedLang = null;
         langSelected = null;
         langSelected = new NodeLangTheso();
@@ -132,19 +132,19 @@ public class EditThesoBean implements Serializable {
         this.nodeIdValueOfTheso = nodeIdValueOfTheso;
 
         // toutes les langues Iso
-        allLangs = languageHelper.getAllLanguages(connect.getPoolConnexion());
+        allLangs = languageHelper.getAllLanguages(connect.openConnexionPool());
         // les langues du thésaurus
         isPrivateTheso = thesaurusHelper.isThesoPrivate(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeIdValueOfTheso.getId());
         // langue par defaut
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeIdValueOfTheso.getId());
         preferredLang = nodePreference.getSourceLang();
         
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), preferredLang);        
+                connect.openConnexionPool(), nodeIdValueOfTheso.getId(), preferredLang);        
         selectedLang = null;
         langSelected = null;
         langSelected = new NodeLangTheso();
@@ -174,7 +174,7 @@ public class EditThesoBean implements Serializable {
         }
         
         if (!preferencesHelper.setWorkLanguageOfTheso(
-                connect.getPoolConnexion(), preferredLang, nodeIdValueOfTheso.getId())) {
+                connect.openConnexionPool(), preferredLang, nodeIdValueOfTheso.getId())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification de la langue source !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -191,7 +191,7 @@ public class EditThesoBean implements Serializable {
     public void changeStatus() {
         FacesMessage msg;
         if (!accessThesaurusHelper.updateVisibility(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), isPrivateTheso)) {
+                connect.openConnexionPool(), nodeIdValueOfTheso.getId(), isPrivateTheso)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "La modification a échoué !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -233,7 +233,7 @@ public class EditThesoBean implements Serializable {
 
         Connection conn;
         try {
-            conn = connect.getPoolConnexion().getConnection();
+            conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
 
             Thesaurus thesaurus = new Thesaurus();
@@ -280,7 +280,7 @@ public class EditThesoBean implements Serializable {
         thesaurus.setId_thesaurus(nodeIdValueOfTheso.getId());
         thesaurus.setTitle(langSelected.getLabelTheso());
         thesaurus.setLanguage(NodeLangThesoSelected.getCode());
-        if (!thesaurusHelper.UpdateThesaurus(connect.getPoolConnexion(), thesaurus)) {
+        if (!thesaurusHelper.UpdateThesaurus(connect.openConnexionPool(), thesaurus)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -289,10 +289,10 @@ public class EditThesoBean implements Serializable {
         roleOnThesoBean.showListTheso(currentUser);
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Langue modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
-        String sourceLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+        String sourceLang = preferencesHelper.getWorkLanguageOfTheso(connect.openConnexionPool(), nodeIdValueOfTheso.getId());
         
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), sourceLang);
+                connect.openConnexionPool(), nodeIdValueOfTheso.getId(), sourceLang);
         
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -315,7 +315,7 @@ public class EditThesoBean implements Serializable {
         }
 
         if (!thesaurusHelper.deleteThesaurusTraduction(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeIdValueOfTheso.getId(),
                 idLang)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression de la langue !!!");

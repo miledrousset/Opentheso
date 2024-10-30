@@ -94,7 +94,7 @@ public class BroaderBean implements Serializable {
         List<NodeSearchMini> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && conceptBean.getSelectedLang() != null) {
             liste = searchHelper.searchAutoCompletionForRelation(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     value,
                     conceptBean.getSelectedLang(),
                     selectedTheso.getCurrentIdTheso(), true);
@@ -123,7 +123,7 @@ public class BroaderBean implements Serializable {
 
         /// vérifier la cohérence de la relation
         if (!validateActionHelper.isAddRelationBTValid(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 searchSelected.getIdConcept())) {
@@ -136,7 +136,7 @@ public class BroaderBean implements Serializable {
         }
 
         try {
-            Connection conn = connect.getPoolConnexion().getConnection();
+            Connection conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
             if (!relationsHelper.addRelationBT(
                     conn,
@@ -166,10 +166,10 @@ public class BroaderBean implements Serializable {
 
         // on vérifie si le concept qui a été ajouté était TopTerme, alors on le rend plus TopTerm pour éviter les boucles à l'infini
         if (conceptHelper.isTopConcept(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
-            if (!conceptHelper.setNotTopConcept(connect.getPoolConnexion(),
+            if (!conceptHelper.setNotTopConcept(connect.openConnexionPool(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
@@ -186,12 +186,12 @@ public class BroaderBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
@@ -233,7 +233,7 @@ public class BroaderBean implements Serializable {
             return;
         }
 
-        if (!relationsHelper.deleteRelationBT(connect.getPoolConnexion(),
+        if (!relationsHelper.deleteRelationBT(connect.openConnexionPool(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeBT.getIdConcept(),
@@ -247,11 +247,11 @@ public class BroaderBean implements Serializable {
         }
 
         // on vérifie si le concept en cours n'a plus de BT, on le rend TopTerme
-        if (!relationsHelper.isConceptHaveRelationBT(connect.getPoolConnexion(),
+        if (!relationsHelper.isConceptHaveRelationBT(connect.openConnexionPool(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso())) {
             if (!conceptHelper.setTopConcept(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !",
@@ -268,12 +268,12 @@ public class BroaderBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////          

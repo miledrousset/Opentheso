@@ -83,7 +83,7 @@ public class AddGroupBean implements Serializable {
         notation = "";
         definition = "";
         selectedGroupType = null;
-        listGroupType = groupHelper.getAllGroupType(connect.getPoolConnexion());
+        listGroupType = groupHelper.getAllGroupType(connect.openConnexionPool());
         if (!listGroupType.isEmpty()) {
             selectedGroupType = listGroupType.get(0).getLabel();
         }
@@ -131,7 +131,7 @@ public class AddGroupBean implements Serializable {
         if(notation == null || notation.isEmpty()){
         } else {
             if (groupHelper.isNotationExist(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     notation,
                     idTheso)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
@@ -140,7 +140,7 @@ public class AddGroupBean implements Serializable {
             }
         }
 
-        String idGroup = groupHelper.addGroup(connect.getPoolConnexion(),
+        String idGroup = groupHelper.addGroup(connect.openConnexionPool(),
                 nodeGroup,
                 idUser);
         if (idGroup == null) {
@@ -154,7 +154,7 @@ public class AddGroupBean implements Serializable {
 
         // ajout de la définition s'il elle est renseignée
         if(StringUtils.isNotEmpty(definition)) {
-            noteHelper.addNote(connect.getPoolConnexion(), idGroup, idLang, idTheso,
+            noteHelper.addNote(connect.openConnexionPool(), idGroup, idLang, idTheso,
                     definition, "definition", "",  idUser);
         }
 
@@ -192,7 +192,7 @@ public class AddGroupBean implements Serializable {
 
         groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-        if(!groupHelper.addIdArkGroup(connect.getPoolConnexion(), idTheso, idGroup, groupLabel)) {
+        if(!groupHelper.addIdArkGroup(connect.openConnexionPool(), idTheso, idGroup, groupLabel)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", groupHelper.getMessage());
@@ -258,7 +258,7 @@ public class AddGroupBean implements Serializable {
 
         groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-        String idSubGroup = groupHelper.addGroup(connect.getPoolConnexion(),
+        String idSubGroup = groupHelper.addGroup(connect.openConnexionPool(),
                 nodeGroup,
                 idUser);
         if (idSubGroup == null) {
@@ -267,7 +267,7 @@ public class AddGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.addSubGroup(connect.getPoolConnexion(), idGroupFather, idSubGroup, idTheso)) {
+        if (!groupHelper.addSubGroup(connect.openConnexionPool(), idGroupFather, idSubGroup, idTheso)) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                             titleGroup + " : Erreur de création"));

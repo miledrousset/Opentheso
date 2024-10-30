@@ -3019,7 +3019,7 @@ public class GroupHelper {
 
     public ArrayList<DomaineDto> getAllGroupsByThesaurusAndLang(Connect connect, String idThesaurus, String lang) {
         ArrayList<DomaineDto> domaines = new ArrayList<>();
-        try ( Statement stmt = connect.getPoolConnexion().getConnection().createStatement()) {
+        try ( Statement stmt = connect.openConnexionPool().getConnection().createStatement()) {
             stmt.executeQuery("SELECT idgroup, lexicalvalue FROM concept_group_label where idthesaurus = '"
                     + idThesaurus + "' AND lang = '" + lang.toLowerCase() + "'");
             try ( ResultSet resultSet = stmt.getResultSet()) {

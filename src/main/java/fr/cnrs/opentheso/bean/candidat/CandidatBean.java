@@ -220,8 +220,6 @@ public class CandidatBean implements Serializable {
         selectedCandidates = new ArrayList<>();
 
         getAllCandidatsByThesoAndLangue();
-        //getRejectCandidatByThesoAndLangue();
-        //getAcceptedCandidatByThesoAndLangue();
         tabViewIndexSelected = 0;
 
         alignementSelected = new NodeAlignment();
@@ -231,7 +229,7 @@ public class CandidatBean implements Serializable {
 
         try {
             languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                    connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+                    connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
             languagesOfTheso.forEach((nodeLang) -> {
                 selectedLanguages.add(nodeLang);
             });
@@ -292,7 +290,7 @@ public class CandidatBean implements Serializable {
         }
 
         for (CandidatDto selectedCandidate : selectedCandidates) {
-            if (!conceptHelper.deleteConcept(connect.getPoolConnexion(), selectedCandidate.getIdConcepte(),
+            if (!conceptHelper.deleteConcept(connect.openConnexionPool(), selectedCandidate.getIdConcepte(),
                     selectedCandidate.getIdThesaurus(), idUser)) {
                 showMessage(FacesMessage.SEVERITY_ERROR, "Erreur de suppression");
                 return;
@@ -412,7 +410,7 @@ public class CandidatBean implements Serializable {
 
     public void deleteAlignment(NodeAlignment nodeAlignment) {
 
-        if (!alignmentHelper.deleteAlignment(connect.getPoolConnexion(),
+        if (!alignmentHelper.deleteAlignment(connect.openConnexionPool(),
                 nodeAlignment.getId_alignement(),
                 selectedTheso.getCurrentIdTheso())) {
 
@@ -421,7 +419,7 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(),
+        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.openConnexionPool(),
                 candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
 
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Alignement supprimé avec succès");
@@ -576,13 +574,13 @@ public class CandidatBean implements Serializable {
         if (initialCandidat == null) {
 
             // en cas d'un nouveau candidat, verification dans les prefLabels
-            if (termHelper.isPrefLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
+            if (termHelper.isPrefLabelExist(connect.openConnexionPool(), candidatSelected.getNomPref().trim(),
                     selectedTheso.getCurrentIdTheso(), getIdLang())) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg3"));
                 return;
             }
             // verification dans les altLabels
-            if (termHelper.isAltLabelExist(connect.getPoolConnexion(), candidatSelected.getNomPref().trim(),
+            if (termHelper.isAltLabelExist(connect.openConnexionPool(), candidatSelected.getNomPref().trim(),
                     selectedTheso.getCurrentIdTheso(), getIdLang())) {
                 showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("candidat.save.msg4"));
                 return;
@@ -619,7 +617,7 @@ public class CandidatBean implements Serializable {
             candidatSelected.setIdTerm(candidatService.saveNewTerm(connect, terme, candidatSelected.getIdConcepte(),
                     candidatSelected.getUserId()));
 
-            noteHelper.addNote(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+            noteHelper.addNote(connect.openConnexionPool(), candidatSelected.getIdConcepte(),
                     selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso(),
                     definition, "definition", "", currentUser.getNodeUser().getIdUser());
 
@@ -627,7 +625,7 @@ public class CandidatBean implements Serializable {
 
         } else {
             if (!initialCandidat.getNomPref().equals(candidatSelected.getNomPref())) {
-                if (termHelper.isTermExistInThisLang(connect.getPoolConnexion(), candidatSelected.getIdTerm(), getIdLang(), candidatSelected.getIdThesaurus())) {
+                if (termHelper.isTermExistInThisLang(connect.openConnexionPool(), candidatSelected.getIdTerm(), getIdLang(), candidatSelected.getIdThesaurus())) {
                     candidatService.updateIntitule(connect, candidatSelected.getNomPref(), candidatSelected.getIdThesaurus(),
                             getIdLang(), candidatSelected.getIdTerm());
                 } else {
@@ -639,7 +637,7 @@ public class CandidatBean implements Serializable {
                     term.setSource("candidat");
                     term.setStatus("D");
                     term.setIdTerm(candidatSelected.getIdTerm());
-                    termeDao.addNewTerme(connect.getPoolConnexion(), term);
+                    termeDao.addNewTerme(connect.openConnexionPool(), term);
                 }
 
             }
@@ -650,14 +648,14 @@ public class CandidatBean implements Serializable {
                 .name(DCMIResource.CREATOR)
                 .value(currentUser.getNodeUser().getName())
                 .build();
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(), dcElement, candidatSelected.getIdConcepte(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(), dcElement, candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus());
         ///////////////        
 
         candidatService.updateDetailsCondidat(connect, candidatSelected, currentUser.getNodeUser().getIdUser());
 
         //getAllCandidatsByThesoAndLangue();
-        candidatSelected.setNodeNotes(new NoteDao().getNotesCandidat(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+        candidatSelected.setNodeNotes(new NoteDao().getNotesCandidat(connect.openConnexionPool(), candidatSelected.getIdConcepte(),
                 candidatSelected.getIdThesaurus()));
         definition = "";
         isNewCandidatActivate = false;
@@ -670,7 +668,7 @@ public class CandidatBean implements Serializable {
     public List<NodeIdValue> searchCollection(String enteredValue) {
 
         if (StringUtils.isNotEmpty(enteredValue)) {
-            allCollections = groupHelper.searchGroup(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+            allCollections = groupHelper.searchGroup(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), enteredValue);
             return createCollectionsFiltred(allCollections, candidatSelected.getCollections());
         } else {
@@ -775,7 +773,7 @@ public class CandidatBean implements Serializable {
     public List<NodeIdValue> searchTermeGenerique(String value) {
 
         if (StringUtils.isNotEmpty(value)) {
-            allTermesGenerique = searchHelper.searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+            allTermesGenerique = searchHelper.searchAutoCompletionForRelationIdValue(connect.openConnexionPool(), value,
                     selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
             return createCollectionsFiltred(allTermesGenerique, candidatSelected.getTermesGenerique());
         } else {
@@ -786,7 +784,7 @@ public class CandidatBean implements Serializable {
     public List<NodeIdValue> searchTermeAssocie(String value) {
 
         if (StringUtils.isNotEmpty(value)) {
-            AllTermesAssocies = searchHelper.searchAutoCompletionForRelationIdValue(connect.getPoolConnexion(), value,
+            AllTermesAssocies = searchHelper.searchAutoCompletionForRelationIdValue(connect.openConnexionPool(), value,
                     selectedTheso.getCurrentLang(), selectedTheso.getCurrentIdTheso());
             return createCollectionsFiltred(AllTermesAssocies, candidatSelected.getTermesAssocies());
         } else {
@@ -823,7 +821,7 @@ public class CandidatBean implements Serializable {
      * @return
      */
     public String getUserName(int idUser) {
-        return userHelper.getNameUser(connect.getPoolConnexion(), idUser);
+        return userHelper.getNameUser(connect.openConnexionPool(), idUser);
 
     }
 
@@ -832,7 +830,7 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        if (!candidateHelper.reactivateRejectedCandidat(connect.getPoolConnexion(),
+        if (!candidateHelper.reactivateRejectedCandidat(connect.openConnexionPool(),
                 candidatSelected.getIdThesaurus(),
                 candidatSelected.getIdConcepte())) {
             showMessage(FacesMessage.SEVERITY_ERROR, "l'action a échoué");
@@ -909,7 +907,7 @@ public class CandidatBean implements Serializable {
     public void removeSynonyme(String synonyme) {
         if (CollectionUtils.isNotEmpty(candidatSelected.getEmployePourList())) {
             try {
-                termeDao.deleteEMByIdTermAndLang(connect.getPoolConnexion(), candidatSelected.getIdTerm(),
+                termeDao.deleteEMByIdTermAndLang(connect.openConnexionPool(), candidatSelected.getIdTerm(),
                         candidatSelected.getIdThesaurus(), candidatSelected.getLang());
 
                 candidatSelected.getEmployePourList().remove(synonyme);
@@ -933,7 +931,7 @@ public class CandidatBean implements Serializable {
 
             relationDao.addRelationBT(connect, candidatSelected.getIdConcepte(), elementAdded.getId(), selectedTheso.getCurrentIdTheso());
 
-            candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(connect.getPoolConnexion(),
+            candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(connect.openConnexionPool(),
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
                     candidatSelected.getLang()));
 
@@ -947,10 +945,10 @@ public class CandidatBean implements Serializable {
     public void removeGenericTerm(NodeIdValue genericTerm) throws SQLException {
         if (CollectionUtils.isNotEmpty(candidatSelected.getTermesGenerique())) {
 
-            relationsHelper.deleteRelationBT(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+            relationsHelper.deleteRelationBT(connect.openConnexionPool(), candidatSelected.getIdConcepte(),
                     selectedTheso.getCurrentIdTheso(), genericTerm.getId(), currentUser.getNodeUser().getIdUser());
 
-            candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(connect.getPoolConnexion(),
+            candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(connect.openConnexionPool(),
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
                     candidatSelected.getLang()));
 
@@ -969,7 +967,7 @@ public class CandidatBean implements Serializable {
         } else {
             relationDao.addRelationRT(connect, candidatSelected.getIdConcepte(), event.getObject().getId(), selectedTheso.getCurrentIdTheso());
 
-            candidatSelected.setTermesAssocies(relationDao.getCandidatRelationsRT(connect.getPoolConnexion(),
+            candidatSelected.setTermesAssocies(relationDao.getCandidatRelationsRT(connect.openConnexionPool(),
                     candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
                     candidatSelected.getLang()));
 
@@ -981,10 +979,10 @@ public class CandidatBean implements Serializable {
 
     public void removeAssociesTerm(NodeIdValue associeTerm) throws SQLException {
 
-        relationsHelper.deleteRelationRT(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+        relationsHelper.deleteRelationRT(connect.openConnexionPool(), candidatSelected.getIdConcepte(),
                 selectedTheso.getCurrentIdTheso(), associeTerm.getId(), currentUser.getNodeUser().getIdUser());
 
-        candidatSelected.setTermesAssocies(relationDao.getCandidatRelationsRT(connect.getPoolConnexion(),
+        candidatSelected.setTermesAssocies(relationDao.getCandidatRelationsRT(connect.openConnexionPool(),
                 candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
                 candidatSelected.getLang()));
 
@@ -1055,11 +1053,11 @@ public class CandidatBean implements Serializable {
     }
 
     public void deleteAlignement() {
-        alignmentHelper.deleteAlignment(connect.getPoolConnexion(),
+        alignmentHelper.deleteAlignment(connect.openConnexionPool(),
                 alignementSelected.getId_alignement(),
                 selectedTheso.getCurrentIdTheso());
 
-        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(),
+        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.openConnexionPool(),
                 candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Alignement supprimé avec succès !");
@@ -1068,7 +1066,7 @@ public class CandidatBean implements Serializable {
     }
 
     public void updateAlignement() {
-        alignmentHelper.updateAlignment(connect.getPoolConnexion(),
+        alignmentHelper.updateAlignment(connect.openConnexionPool(),
                 alignementSelected.getId_alignement(),
                 alignementSelected.getConcept_target(),
                 alignementSelected.getThesaurus_target(),
@@ -1077,7 +1075,7 @@ public class CandidatBean implements Serializable {
                 candidatSelected.getIdConcepte(),
                 selectedTheso.getCurrentIdTheso());
 
-        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.getPoolConnexion(),
+        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.openConnexionPool(),
                 candidatSelected.getIdConcepte(), selectedTheso.getCurrentIdTheso()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Alignement mise à jour avec succès !");
@@ -1098,7 +1096,7 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        if (!imagesHelper.addExternalImage(connect.getPoolConnexion(),
+        if (!imagesHelper.addExternalImage(connect.openConnexionPool(),
                 candidatSelected.getIdConcepte(),
                 selectedTheso.getCurrentIdTheso(),
                 imageBean.getName(),
@@ -1110,7 +1108,7 @@ public class CandidatBean implements Serializable {
             return;
         }
 
-        candidatSelected.setImages(imagesHelper.getExternalImages(connect.getPoolConnexion(),
+        candidatSelected.setImages(imagesHelper.getExternalImages(connect.openConnexionPool(),
                 candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Image ajoutée avec succès");
@@ -1170,10 +1168,10 @@ public class CandidatBean implements Serializable {
 
     public void deleteImage(String imageUri) {
 
-        imagesHelper.deleteExternalImage(connect.getPoolConnexion(), candidatSelected.getIdConcepte(),
+        imagesHelper.deleteExternalImage(connect.openConnexionPool(), candidatSelected.getIdConcepte(),
                 selectedTheso.getSelectedIdTheso(), imageUri);
 
-        candidatSelected.setImages(imagesHelper.getExternalImages(connect.getPoolConnexion(),
+        candidatSelected.setImages(imagesHelper.getExternalImages(connect.openConnexionPool(),
                 candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
         showMessage(FacesMessage.SEVERITY_INFO, "Image supprimée avec succès");

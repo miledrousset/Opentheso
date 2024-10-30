@@ -138,12 +138,12 @@ public class RoleOnThesoBean implements Serializable {
             return;
         }
 
-        if (connect.getPoolConnexion() != null) {
-            nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        if (connect.openConnexionPool() != null) {
+            nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
             if (nodePreference == null) { // cas où il n'y a pas de préférence pour ce thésaurus, il faut les créer 
-                preferencesHelper.initPreferences(connect.getPoolConnexion(),
+                preferencesHelper.initPreferences(connect.openConnexionPool(),
                         selectedTheso.getCurrentIdTheso(), connect.getWorkLanguage());
-                nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+                nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
             }
             return;
         }
@@ -155,12 +155,12 @@ public class RoleOnThesoBean implements Serializable {
             return;
         }
 
-        if (connect.getPoolConnexion() != null) {
-            nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
+        if (connect.openConnexionPool() != null) {
+            nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), idTheso);
             if (nodePreference == null) { // cas où il n'y a pas de préférence pour ce thésaurus, il faut les créer 
-                preferencesHelper.initPreferences(connect.getPoolConnexion(),
+                preferencesHelper.initPreferences(connect.openConnexionPool(),
                         idTheso, connect.getWorkLanguage());
-                nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idTheso);
+                nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), idTheso);
             }
             return;
         }
@@ -197,24 +197,24 @@ public class RoleOnThesoBean implements Serializable {
         authorizedTheso = new ArrayList<>();
         if (currentUser.getNodeUser().isSuperAdmin()) {
             boolean withPrivateTheso = true;
-            authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), withPrivateTheso);
-            authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), withPrivateTheso);
+            authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.openConnexionPool(), withPrivateTheso);
+            authorizedThesoAsAdmin = thesaurusHelper.getAllIdOfThesaurus(connect.openConnexionPool(), withPrivateTheso);
 
         } else {
-            authorizedTheso = userHelper.getThesaurusOfUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            authorizedTheso = userHelper.getThesaurusOfUser(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
 
             // récupération de la liste des thésaurus pour les utilisateurs qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
-            List<String> listThesoTemp = userHelper.getListThesoLimitedRoleByUser(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            List<String> listThesoTemp = userHelper.getListThesoLimitedRoleByUser(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
             for (String idThesoTemp : listThesoTemp) {
                 if(!authorizedTheso.contains(idThesoTemp)) {
                     authorizedTheso.add(idThesoTemp);
                 }
             }
 
-            authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            authorizedThesoAsAdmin = userHelper.getThesaurusOfUserAsAdmin(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
             
             // récupération de la liste des thésaurus pour les utilisateurs avec les droits admin, mais qui n'ont pas des droits sur un projet, mais uniquement sur des thésaurus du projet
-            listThesoTemp = userHelper.getListThesoLimitedRoleByUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            listThesoTemp = userHelper.getListThesoLimitedRoleByUserAsAdmin(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
             for (String idThesoTemp : listThesoTemp) {
                 if(!authorizedThesoAsAdmin.contains(idThesoTemp)) {
                     authorizedThesoAsAdmin.add(idThesoTemp);
@@ -266,7 +266,7 @@ public class RoleOnThesoBean implements Serializable {
                 NodeIdValue nodeIdValue = new NodeIdValue();
                 nodeIdValue.setId(listTheso1.getId());
                 nodeIdValue.setValue(listTheso1.getValue());
-                nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), listTheso1.getId()));
+                nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.openConnexionPool(), listTheso1.getId()));
                 nodeListThesoAsAdmin.add(nodeIdValue);                
             }
         } else { // sinon, on prend les thésaurus où l'utilisateur a un role Admin 
@@ -276,7 +276,7 @@ public class RoleOnThesoBean implements Serializable {
                         NodeIdValue nodeIdValue = new NodeIdValue();
                         nodeIdValue.setId(nodeThesoRole.getIdTheso());
                         nodeIdValue.setValue(nodeThesoRole.getThesoName());
-                        nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), nodeThesoRole.getIdTheso()));
+                        nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.openConnexionPool(), nodeThesoRole.getIdTheso()));
                         nodeListThesoAsAdmin.add(nodeIdValue);
                     }
                 }
@@ -303,7 +303,7 @@ public class RoleOnThesoBean implements Serializable {
         listTheso = new ArrayList<>();
         
         for (String idTheso1 : authorizedTheso) {
-            String preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1);
+            String preferredIdLangOfTheso = preferencesHelper.getWorkLanguageOfTheso(connect.openConnexionPool(), idTheso1);
             if (StringUtils.isEmpty(preferredIdLangOfTheso)) {
                 preferredIdLangOfTheso = connect.getWorkLanguage().toLowerCase();
             }
@@ -311,14 +311,14 @@ public class RoleOnThesoBean implements Serializable {
             ThesoModel thesoModel = new ThesoModel();
             thesoModel.setId(idTheso1);
 
-            String title = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso1, preferredIdLangOfTheso);
+            String title = thesaurusHelper.getTitleOfThesaurus(connect.openConnexionPool(), idTheso1, preferredIdLangOfTheso);
             if (StringUtils.isEmpty(title)) {
                 thesoModel.setNom("(" + idTheso1 + ")");
             } else {
                 thesoModel.setNom(title + " (" + idTheso1 + ")");
             }
 
-            thesoModel.setDefaultLang(preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), idTheso1));
+            thesoModel.setDefaultLang(preferencesHelper.getWorkLanguageOfTheso(connect.openConnexionPool(), idTheso1));
             
             listTheso.add(thesoModel);
             
@@ -326,7 +326,7 @@ public class RoleOnThesoBean implements Serializable {
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso1);
             nodeIdValue.setValue(title);
-            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), idTheso1));
+            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(connect.openConnexionPool(), idTheso1));
             nodeListTheso.add(nodeIdValue);
         }
         
@@ -375,7 +375,7 @@ public class RoleOnThesoBean implements Serializable {
      */
     public void setPublicThesos(CurrentUser currentUser) {
         currentUser.initAllTheso();
-        authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.getPoolConnexion(), false);
+        authorizedTheso = thesaurusHelper.getAllIdOfThesaurus(connect.openConnexionPool(), false);
         addAuthorizedThesoToHM();
         setUserRoleOnThisTheso(currentUser);
     }
@@ -404,7 +404,7 @@ public class RoleOnThesoBean implements Serializable {
             isAdminOnThisTheso = false;
             return;
         }
-        int idGroup = userHelper.getGroupOfThisTheso(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        int idGroup = userHelper.getGroupOfThisTheso(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
         if (currentUser.getNodeUser().isSuperAdmin()) {
             nodeUserRoleGroup = getUserRoleOnThisGroup(-1, currentUser); // cas de superadmin, on a accès à tous les groupes
             setRole();
@@ -416,7 +416,7 @@ public class RoleOnThesoBean implements Serializable {
         if (ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
             setRole();
         } else {
-            nodeUserRoleGroup = userHelper.getUserRoleOnThisTheso(connect.getPoolConnexion(),
+            nodeUserRoleGroup = userHelper.getUserRoleOnThisTheso(connect.openConnexionPool(),
                     currentUser.getNodeUser().getIdUser(), idGroup, selectedTheso.getCurrentIdTheso());
             if(ObjectUtils.isNotEmpty(nodeUserRoleGroup)) {
                 setRole();
@@ -457,12 +457,12 @@ public class RoleOnThesoBean implements Serializable {
     private NodeUserRoleGroup getUserRoleOnThisGroup(int idGroup, CurrentUser currentUser) {
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
             return userHelper.getUserRoleForSuperAdmin(
-                    connect.getPoolConnexion());
+                    connect.openConnexionPool());
         }
         if (idGroup == -1) {
             return null;
         }
-        return userHelper.getUserRoleOnThisGroup(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser(), idGroup);
+        return userHelper.getUserRoleOnThisGroup(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser(), idGroup);
     }    
     
     /**
@@ -472,7 +472,7 @@ public class RoleOnThesoBean implements Serializable {
      */
     private void setUserRoleGroup(CurrentUser currentUser) {
         UserHelper currentUserHelper = userHelper;
-        ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = currentUserHelper.getUserRoleGroup(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+        ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = currentUserHelper.getUserRoleGroup(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
         for (NodeUserRoleGroup nodeUserRoleGroup1 : nodeUserRoleGroups) {
             if (nodeUserRoleGroup1.isAdmin()) {
                 isAdminOnThisTheso = true;
@@ -496,9 +496,9 @@ public class RoleOnThesoBean implements Serializable {
     
     
     public void showInfosOfTheso(String idTheso) {
-        int conceptsCount = statisticHelper.getNbCpt(connect.getPoolConnexion(), idTheso);
-        int candidatesCount = statisticHelper.getNbCandidate(connect.getPoolConnexion(), idTheso);        
-        int deprecatedsCount = statisticHelper.getNbOfDeprecatedConcepts(connect.getPoolConnexion(), idTheso);        
+        int conceptsCount = statisticHelper.getNbCpt(connect.openConnexionPool(), idTheso);
+        int candidatesCount = statisticHelper.getNbCandidate(connect.openConnexionPool(), idTheso);        
+        int deprecatedsCount = statisticHelper.getNbOfDeprecatedConcepts(connect.openConnexionPool(), idTheso);        
         
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("info"),
                 languageBean.getMsg("candidat.total_concepts") + " = " + conceptsCount + "\n" 
@@ -520,7 +520,7 @@ public class RoleOnThesoBean implements Serializable {
      * @param idTheso
      */
     public void accessAThesaurus(String idTheso) {
-        this.thesoInfos = accessThesaurusHelper.getAThesaurus(connect.getPoolConnexion(), idTheso, connect.getWorkLanguage());
+        this.thesoInfos = accessThesaurusHelper.getAThesaurus(connect.openConnexionPool(), idTheso, connect.getWorkLanguage());
     }
     
     public boolean alignementVisible(CurrentUser currentUser) {

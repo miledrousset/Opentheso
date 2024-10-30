@@ -107,11 +107,11 @@ public class DataGraphView implements Serializable {
      */
     public List<NodeSearchMini> getAutoComplete(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
-        String idLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), selectedIdTheso);
+        String idLang = preferencesHelper.getWorkLanguageOfTheso(connect.openConnexionPool(), selectedIdTheso);
         
         if (selectedIdTheso != null && idLang != null) {
             liste = searchHelper.searchAutoCompletionForRelation(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     value,
                     idLang,
                     selectedIdTheso, true);

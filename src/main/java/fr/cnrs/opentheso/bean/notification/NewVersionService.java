@@ -84,14 +84,14 @@ public class NewVersionService implements Serializable {
             return null;
         }
 
-        List<Release> releasesSaved = releaseRepository.getAllReleases(connect.getPoolConnexion());
+        List<Release> releasesSaved = releaseRepository.getAllReleases(connect.openConnexionPool());
 
         List<ReleaseDto> releases = new Gson().fromJson(GitHubClient.getResponse(GitHubClient.RELEASES_API_URL),
                 new TypeToken<List<ReleaseDto>>() {}.getType());
 
         if (CollectionUtils.isEmpty(releasesSaved)) {
             log.info("First project running ! Saving previous releases");
-            releaseRepository.saveAllReleases(connect.getPoolConnexion(), releases.stream()
+            releaseRepository.saveAllReleases(connect.openConnexionPool(), releases.stream()
                     .map(this::toRelease)
                     .collect(Collectors.toList()));
             log.info("All releases are saved in DB !");
@@ -112,7 +112,7 @@ public class NewVersionService implements Serializable {
                         .findFirst();
                 if (release.isPresent()) {
                     var newRelease = toRelease(release.get());
-                    releaseRepository.saveRelease(connect.getPoolConnexion(), newRelease);
+                    releaseRepository.saveRelease(connect.openConnexionPool(), newRelease);
                     log.info("Save latest release in DB !");
                     return newRelease;
                 } else {

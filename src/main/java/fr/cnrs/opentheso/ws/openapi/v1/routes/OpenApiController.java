@@ -67,7 +67,7 @@ public class OpenApiController {
     )
     public ResponseEntity<Object> testAuth(@RequestHeader(value = "API-KEY") String apiKey)  {
 
-        var keyState = apiKeyHelper.checkApiKey(connect.getPoolConnexion(), apiKey);
+        var keyState = apiKeyHelper.checkApiKey(connect.openConnexionPool(), apiKey);
         if (keyState != ApiKeyState.VALID) {
             return errorResponse(keyState);
         }
@@ -76,9 +76,9 @@ public class OpenApiController {
         builder.add("valid", true);
         builder.add("key", apiKey);
 
-        var userId = apiKeyHelper.getIdUser(connect.getPoolConnexion(), apiKey);
-        var userGroupId = userHelper.getUserGroupId(connect.getPoolConnexion(), userId, apiKey);
-        var roleId = userHelper.getRoleOnThisTheso(connect.getPoolConnexion(), userId, userGroupId.orElse(0), "th2");
+        var userId = apiKeyHelper.getIdUser(connect.openConnexionPool(), apiKey);
+        var userGroupId = userHelper.getUserGroupId(connect.openConnexionPool(), userId, apiKey);
+        var roleId = userHelper.getRoleOnThisTheso(connect.openConnexionPool(), userId, userGroupId.orElse(0), "th2");
         builder.add("Roles", roleId);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(builder.build().toString());

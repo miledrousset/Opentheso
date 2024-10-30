@@ -331,7 +331,7 @@ public class DragAndDrop implements Serializable {
                 return;                
             }
 
-            if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+            if(!facetHelper.addConceptToFacet(connect.openConnexionPool(),
                     idFacet,
                     selectedTheso.getCurrentIdTheso(),
                     ((TreeNodeData) dragNode.getData()).getNodeId())){
@@ -347,7 +347,7 @@ public class DragAndDrop implements Serializable {
             if(((TreeNodeData) dragNode.getData()).getNodeType().equalsIgnoreCase("facetmember")){
                 try {
                     String idFacetParent = ((TreeNodeData) dragNode.getData()).getIdFacetParent();
-                    if(!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                    if(!facetHelper.deleteConceptFromFacet(connect.openConnexionPool(),
                             idFacetParent,
                             ((TreeNodeData) dragNode.getData()).getNodeId(),
                             selectedTheso.getCurrentIdTheso())) {
@@ -458,7 +458,7 @@ public class DragAndDrop implements Serializable {
         isValidPaste = false;
 
         ArrayList<String> descendingConcepts = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
         if((descendingConcepts != null) && (!descendingConcepts.isEmpty())) {
@@ -469,7 +469,7 @@ public class DragAndDrop implements Serializable {
             }
         }
 
-        ArrayList<String> listBT = relationsHelper.getListIdOfBT(connect.getPoolConnexion(),
+        ArrayList<String> listBT = relationsHelper.getListIdOfBT(connect.openConnexionPool(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
         if((listBT != null) && (!listBT.isEmpty())) {
@@ -480,7 +480,7 @@ public class DragAndDrop implements Serializable {
             }
         }
         if(!validateActionHelper.isMoveConceptToConceptValid(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 nodeConceptDrop.getConcept().getIdConcept())) {
@@ -514,7 +514,7 @@ public class DragAndDrop implements Serializable {
                 isValidPaste = false;
                 return;
             }
-            facetHelper.updateFacetParent(connect.getPoolConnexion(),
+            facetHelper.updateFacetParent(connect.openConnexionPool(),
                     ((TreeNodeData) dropNode.getData()).getNodeId(),//termeParentAssocie.getId(),
                     ((TreeNodeData) dragNode.getData()).getNodeId(),//facetSelected.getIdFacet(),
                     selectedTheso.getCurrentIdTheso());
@@ -536,7 +536,7 @@ public class DragAndDrop implements Serializable {
             return;
         }
 
-        nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
+        nodeConceptDrag = conceptHelper.getConcept(connect.openConnexionPool(),
                 ((TreeNodeData) dragNode.getData()).getNodeId(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang(), -1, -1);
@@ -551,14 +551,14 @@ public class DragAndDrop implements Serializable {
             // déplacement à la racine
             isDropToRoot = true;
         } else {
-            nodeConceptDrop = conceptHelper.getConcept(connect.getPoolConnexion(),
+            nodeConceptDrop = conceptHelper.getConcept(connect.openConnexionPool(),
                     ((TreeNodeData) dropNode.getData()).getNodeId(),
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), -1, -1);
             /// Vérifier si le dépalcement est valide (controle des relations interdites)
             if(nodeConceptDrop != null) {
                 if(!validateActionHelper.isMoveConceptToConceptValid(
-                        connect.getPoolConnexion(),
+                        connect.openConnexionPool(),
                         selectedTheso.getCurrentIdTheso(),
                         nodeConceptDrag.getConcept().getIdConcept(),
                         nodeConceptDrop.getConcept().getIdConcept())) {
@@ -598,7 +598,7 @@ public class DragAndDrop implements Serializable {
                 return;
             }
 
-            if(!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+            if(!facetHelper.addConceptToFacet(connect.openConnexionPool(),
                     idFacet,
                     selectedTheso.getCurrentIdTheso(),
                     ((TreeNodeData) dragNode.getData()).getNodeId())){
@@ -614,7 +614,7 @@ public class DragAndDrop implements Serializable {
             if(((TreeNodeData) dragNode.getData()).getNodeType().equalsIgnoreCase("facetmember")){
                 try {
                     String idFacetParent = ((TreeNodeData) dragNode.getData()).getIdFacetParent();
-                    if(!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                    if(!facetHelper.deleteConceptFromFacet(connect.openConnexionPool(),
                             idFacetParent,
                             ((TreeNodeData) dragNode.getData()).getNodeId(),
                             selectedTheso.getCurrentIdTheso())) {
@@ -683,7 +683,7 @@ public class DragAndDrop implements Serializable {
                     isValidPaste = false;
                     return;
                 }
-                facetHelper.updateFacetParent(connect.getPoolConnexion(),
+                facetHelper.updateFacetParent(connect.openConnexionPool(),
                         ((TreeNodeData) dropNode.getData()).getNodeId(),
                         ((TreeNodeData) node.getData()).getNodeId(),
                         selectedTheso.getCurrentIdTheso());
@@ -699,7 +699,7 @@ public class DragAndDrop implements Serializable {
                 return;
             }
 
-            nodeConceptDrag = conceptHelper.getConcept(connect.getPoolConnexion(),
+            nodeConceptDrag = conceptHelper.getConcept(connect.openConnexionPool(),
                     ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), -1, -1);
 
@@ -718,13 +718,13 @@ public class DragAndDrop implements Serializable {
                 // déplacement à la racine
                 isDropToRoot = true;
             } else {
-                nodeConceptDrop = conceptHelper.getConcept(connect.getPoolConnexion(),
+                nodeConceptDrop = conceptHelper.getConcept(connect.openConnexionPool(),
                         ((TreeNodeData) dropNode.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                         selectedTheso.getCurrentLang(), -1, -1);
                 /// Vérifier si le dépalcement est valide (controle des relations interdites)
                 if (nodeConceptDrop != null) {
                     if (!validateActionHelper.isMoveConceptToConceptValid(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             selectedTheso.getCurrentIdTheso(),
                             nodeConceptDrag.getConcept().getIdConcept(),
                             nodeConceptDrop.getConcept().getIdConcept())) {
@@ -767,7 +767,7 @@ public class DragAndDrop implements Serializable {
                     return;
                 }
 
-                if (!facetHelper.addConceptToFacet(connect.getPoolConnexion(),
+                if (!facetHelper.addConceptToFacet(connect.openConnexionPool(),
                         idFacet,
                         selectedTheso.getCurrentIdTheso(),
                         ((TreeNodeData) node.getData()).getNodeId())) {
@@ -783,7 +783,7 @@ public class DragAndDrop implements Serializable {
                 if (((TreeNodeData) node.getData()).getNodeType().equalsIgnoreCase("facetmember")) {
                     try {
                         String idFacetParent = ((TreeNodeData) node.getData()).getIdFacetParent();
-                        if (!facetHelper.deleteConceptFromFacet(connect.getPoolConnexion(),
+                        if (!facetHelper.deleteConceptFromFacet(connect.openConnexionPool(),
                                 idFacetParent, ((TreeNodeData) node.getData()).getNodeId(),
                                 selectedTheso.getCurrentIdTheso())) {
 
@@ -842,7 +842,7 @@ public class DragAndDrop implements Serializable {
             
             /// Vérifier si le dépalcement est valide (controle des relations interdites)
             if(!validateActionHelper.isMoveConceptToConceptValid(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     selectedTheso.getCurrentIdTheso(),
                     nodeConceptDrag.getConcept().getIdConcept(),
                     nodeConceptDrop.getConcept().getIdConcept())) {
@@ -893,7 +893,7 @@ public class DragAndDrop implements Serializable {
 
         for (TreeNode node : nodesToConfirme) {
 
-            nodeConceptDrag = nodeConceptDrop = conceptHelper.getConcept(connect.getPoolConnexion(),
+            nodeConceptDrag = nodeConceptDrop = conceptHelper.getConcept(connect.openConnexionPool(),
                     ((TreeNodeData) node.getData()).getNodeId(), selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(), -1, -1);
 
@@ -1002,7 +1002,7 @@ public class DragAndDrop implements Serializable {
                     + " - Aucun parent n'est sélectionné pour déplacement");
             return false;
         }
-        if (!conceptHelper.moveBranchFromConceptToConcept(connect.getPoolConnexion(),
+        if (!conceptHelper.moveBranchFromConceptToConcept(connect.openConnexionPool(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 oldBtToDelete,
                 nodeConceptDrop.getConcept().getIdConcept(),
@@ -1027,7 +1027,7 @@ public class DragAndDrop implements Serializable {
         }
         // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
         if (oldBtToDelete.isEmpty()) {
-            if (!conceptHelper.setTopConcept(connect.getPoolConnexion(),
+            if (!conceptHelper.setTopConcept(connect.openConnexionPool(),
                     nodeConceptDrag.getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
@@ -1038,7 +1038,7 @@ public class DragAndDrop implements Serializable {
         }
 
         for (String oldIdBT : oldBtToDelete) {
-            if (!conceptHelper.moveBranchFromConceptToRoot(connect.getPoolConnexion(),
+            if (!conceptHelper.moveBranchFromConceptToRoot(connect.openConnexionPool(),
                     nodeConceptDrag.getConcept().getIdConcept(),
                     oldIdBT,
                     selectedTheso.getCurrentIdTheso(),
@@ -1053,7 +1053,7 @@ public class DragAndDrop implements Serializable {
 
     private void addAndCutGroupMultiple() {
         ArrayList<String> allId = conceptHelper.getIdsOfBranch(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeConceptDrop.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
         if( (allId == null) || (allId.isEmpty())) return;
@@ -1064,7 +1064,7 @@ public class DragAndDrop implements Serializable {
                     && nodeGroup.getNodeGroup().isSelected()) {
                 for (String idConcept : allId) {
                     groupHelper.deleteRelationConceptGroupConcept(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso(),
@@ -1075,7 +1075,7 @@ public class DragAndDrop implements Serializable {
                     && !nodeGroup.getNodeGroup().isSelected()) {
                 for (String idConcept : allId) {
                     groupHelper.addConceptGroupConcept(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso());
@@ -1087,7 +1087,7 @@ public class DragAndDrop implements Serializable {
                     && !nodeGroup.getNodeGroup().isSelected()) {
                 for (String idConcept : allId) {
                     groupHelper.deleteRelationConceptGroupConcept(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso(),
@@ -1098,7 +1098,7 @@ public class DragAndDrop implements Serializable {
                     && nodeGroup.getNodeGroup().isSelected()) {
                 for (String idConcept : allId) {
                     groupHelper.addConceptGroupConcept(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             nodeGroup.getNodeGroup().getConceptGroup().getIdgroup(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso());
@@ -1132,7 +1132,7 @@ public class DragAndDrop implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
         }
-        if (!conceptHelper.moveBranchFromConceptToConcept(connect.getPoolConnexion(),
+        if (!conceptHelper.moveBranchFromConceptToConcept(connect.openConnexionPool(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 oldBtToDelete,
                 nodeConceptDrop.getConcept().getIdConcept(),
@@ -1147,7 +1147,7 @@ public class DragAndDrop implements Serializable {
     
     private boolean moveFromRootToConcept() {
         FacesMessage msg;
-        if (!conceptHelper.moveBranchFromRootToConcept(connect.getPoolConnexion(),
+        if (!conceptHelper.moveBranchFromRootToConcept(connect.openConnexionPool(),
                 nodeConceptDrag.getConcept().getIdConcept(),
                 nodeConceptDrop.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
@@ -1168,7 +1168,7 @@ public class DragAndDrop implements Serializable {
         }
         // cas incohérent mais à corriger, c'est un concept qui est topTorm mais qui n'a pas l'info
         if (oldBtToDelete.isEmpty()) {
-            if (!conceptHelper.setTopConcept(connect.getPoolConnexion(),
+            if (!conceptHelper.setTopConcept(connect.openConnexionPool(),
                     nodeConceptDrag.getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Erreur pendant le déplacement dans la base de données ");
@@ -1179,7 +1179,7 @@ public class DragAndDrop implements Serializable {
         } 
         
         for (String oldIdBT : oldBtToDelete) {
-            if (!conceptHelper.moveBranchFromConceptToRoot(connect.getPoolConnexion(),
+            if (!conceptHelper.moveBranchFromConceptToRoot(connect.openConnexionPool(),
                     nodeConceptDrag.getConcept().getIdConcept(),
                     oldIdBT,
                     selectedTheso.getCurrentIdTheso(),
@@ -1194,11 +1194,11 @@ public class DragAndDrop implements Serializable {
 
     private void reloadConcept(){
         PrimeFaces pf = PrimeFaces.current();
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeConceptDrag.getConcept().getIdConcept(), currentUser.getNodeUser().getIdUser());  
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 nodeConceptDrag.getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 
@@ -1236,7 +1236,7 @@ public class DragAndDrop implements Serializable {
 
     private void addAndCutGroup() {
         ArrayList<String> allId = conceptHelper.getIdsOfBranch(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     nodeConceptDrag.getConcept().getIdConcept(),
                     selectedTheso.getCurrentIdTheso());
         if( (allId == null) || (allId.isEmpty())) return;         
@@ -1245,7 +1245,7 @@ public class DragAndDrop implements Serializable {
             if(nodeGroup.isSelected()) {
                 for (String idConcept : allId) {
                     groupHelper.deleteRelationConceptGroupConcept(
-                        connect.getPoolConnexion(),
+                        connect.openConnexionPool(),
                         nodeGroup.getConceptGroup().getIdgroup(),
                         idConcept,
                         selectedTheso.getCurrentIdTheso(),
@@ -1255,7 +1255,7 @@ public class DragAndDrop implements Serializable {
             if(!nodeGroup.isSelected()) {
                 for (String idConcept : allId) {
                     groupHelper.addConceptGroupConcept(
-                        connect.getPoolConnexion(),
+                        connect.openConnexionPool(),
                         nodeGroup.getConceptGroup().getIdgroup(),
                         idConcept,
                         selectedTheso.getCurrentIdTheso());      
@@ -1266,7 +1266,7 @@ public class DragAndDrop implements Serializable {
             if(!nodeGroup.isSelected()) {
                 for (String idConcept : allId) {
                     groupHelper.deleteRelationConceptGroupConcept(
-                        connect.getPoolConnexion(),
+                        connect.openConnexionPool(),
                         nodeGroup.getConceptGroup().getIdgroup(),
                         idConcept,
                         selectedTheso.getCurrentIdTheso(),
@@ -1276,7 +1276,7 @@ public class DragAndDrop implements Serializable {
             if(nodeGroup.isSelected()) {
                 for (String idConcept : allId) {
                     groupHelper.addConceptGroupConcept(
-                        connect.getPoolConnexion(),
+                        connect.openConnexionPool(),
                         nodeGroup.getConceptGroup().getIdgroup(),
                         idConcept,
                         selectedTheso.getCurrentIdTheso());      

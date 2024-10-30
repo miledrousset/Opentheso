@@ -91,8 +91,8 @@ public class NewUSerBean implements Serializable {
         nodeUser = new NodeUser();
         passWord1 = null;
         passWord2 = null;
-        nodeAllProjects = userHelper.getAllProject(connect.getPoolConnexion());
-        nodeAllRoles = userHelper.getAllRole(connect.getPoolConnexion());
+        nodeAllProjects = userHelper.getAllProject(connect.openConnexionPool());
+        nodeAllRoles = userHelper.getAllRole(connect.openConnexionPool());
         
         if(nodeAllProjects != null && !nodeAllProjects.isEmpty())
             selectedProject = "" + nodeAllProjects.get(0).getIdGroup();
@@ -136,13 +136,13 @@ public class NewUSerBean implements Serializable {
             return;              
         } 
 
-        if(userHelper.isMailExist(connect.getPoolConnexion(), nodeUser.getMail())) {
+        if(userHelper.isMailExist(connect.openConnexionPool(), nodeUser.getMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Email existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
         nodeUser.setName(nodeUser.getName().trim());
-        if(userHelper.isPseudoExist(connect.getPoolConnexion(), nodeUser.getName())) {
+        if(userHelper.isPseudoExist(connect.openConnexionPool(), nodeUser.getName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pseudo existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -165,7 +165,7 @@ public class NewUSerBean implements Serializable {
 
 
         if(!userHelper.addUser(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeUser.getName(),
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
@@ -175,7 +175,7 @@ public class NewUSerBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
-        int idUser = userHelper.getIdUser(connect.getPoolConnexion(), nodeUser.getName(), MD5Password.getEncodedPassword(passWord1));
+        int idUser = userHelper.getIdUser(connect.openConnexionPool(), nodeUser.getName(), MD5Password.getEncodedPassword(passWord1));
         if(idUser == -1) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -187,12 +187,12 @@ public class NewUSerBean implements Serializable {
                 
                 // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
                 if(limitOnTheso) {
-                    if(!userHelper.addUserRoleOnTheso(connect.getPoolConnexion(), idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
+                    if(!userHelper.addUserRoleOnTheso(connect.openConnexionPool(), idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
                         return;
                     }
                 } else {
                     if(!userHelper.addUserRoleOnGroup(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             idUser,
                             Integer.parseInt(selectedRole),
                             Integer.parseInt(selectedProject))) {
@@ -228,7 +228,7 @@ public class NewUSerBean implements Serializable {
             return;
         }
         if(idProject == -1) return;
-        listThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idProject, connect.getWorkLanguage());
+        listThesoOfProject = userHelper.getThesaurusOfProject(connect.openConnexionPool(), idProject, connect.getWorkLanguage());
     }
     
     public void addUser(){
@@ -262,13 +262,13 @@ public class NewUSerBean implements Serializable {
             return;              
         }
 
-        if(userHelper.isMailExist(connect.getPoolConnexion(), nodeUser.getMail())) {
+        if(userHelper.isMailExist(connect.openConnexionPool(), nodeUser.getMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Email existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
         nodeUser.setName(nodeUser.getName().trim());
-        if(userHelper.isPseudoExist(connect.getPoolConnexion(), nodeUser.getName())) {
+        if(userHelper.isPseudoExist(connect.openConnexionPool(), nodeUser.getName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pseudo existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -290,7 +290,7 @@ public class NewUSerBean implements Serializable {
         }        
         
         if(!userHelper.addUser(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeUser.getName(),
                 nodeUser.getMail(),
                 MD5Password.getEncodedPassword(passWord1),
@@ -300,7 +300,7 @@ public class NewUSerBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
-        int idUser = userHelper.getIdUser(connect.getPoolConnexion(), nodeUser.getName(), MD5Password.getEncodedPassword(passWord1));
+        int idUser = userHelper.getIdUser(connect.openConnexionPool(), nodeUser.getName(), MD5Password.getEncodedPassword(passWord1));
         if(idUser == -1) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -312,12 +312,12 @@ public class NewUSerBean implements Serializable {
                 
                 // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
                 if(limitOnTheso) {
-                    if(!userHelper.addUserRoleOnTheso(connect.getPoolConnexion(), idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
+                    if(!userHelper.addUserRoleOnTheso(connect.openConnexionPool(), idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
                         return;
                     }
                 } else {                
                     if(!userHelper.addUserRoleOnGroup(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             idUser,
                             Integer.parseInt(selectedRole),
                             Integer.parseInt(selectedProject))) {

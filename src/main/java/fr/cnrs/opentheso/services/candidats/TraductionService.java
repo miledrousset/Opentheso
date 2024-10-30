@@ -137,9 +137,8 @@ public class TraductionService implements Serializable {
      */
     public void deleteTraduction() {
         try {
-            termeDao.deleteTermByIdTermAndLang(candidatBean.getConnect().getPoolConnexion(),
-                    candidatBean.getCandidatSelected().getIdTerm(),
-                    langage,
+            termeDao.deleteTermByIdTermAndLang(candidatBean.getConnect().openConnexionPool(),
+                    candidatBean.getCandidatSelected().getIdTerm(), langage,
                     candidatBean.getCandidatSelected().getIdThesaurus());
             candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
             candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));
@@ -158,7 +157,7 @@ public class TraductionService implements Serializable {
      */
     public void updateTraduction() {
         try {
-            termeDao.updateIntitule(candidatBean.getConnect().getPoolConnexion(),
+            termeDao.updateIntitule(candidatBean.getConnect().openConnexionPool(),
                     traduction,
                     candidatBean.getCandidatSelected().getIdTerm(),
                     candidatBean.getCandidatSelected().getIdThesaurus(),
@@ -176,7 +175,7 @@ public class TraductionService implements Serializable {
     }
 
     public void addTraductionCandidat() {
-        if (termHelper.isTermExistIgnoreCase(candidatBean.getConnect().getPoolConnexion(), newTraduction,
+        if (termHelper.isTermExistIgnoreCase(candidatBean.getConnect().openConnexionPool(), newTraduction,
                 candidatBean.getCandidatSelected().getIdThesaurus(), newLangage)) {
             messages = new StringBuilder();
             messages.append("Un label existe dans le thésaurus pour : ").append(candidatBean.getCandidatSelected().getIdConcepte())
@@ -196,7 +195,7 @@ public class TraductionService implements Serializable {
         term.setIdTerm(candidatBean.getCandidatSelected().getIdTerm());
 
         try {
-            termeDao.addNewTerme(candidatBean.getConnect().getPoolConnexion(), term);
+            termeDao.addNewTerme(candidatBean.getConnect().openConnexionPool(), term);
             candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
             candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));
         } catch (SQLException | IOException ex) {

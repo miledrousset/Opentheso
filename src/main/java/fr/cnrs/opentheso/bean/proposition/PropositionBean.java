@@ -98,7 +98,7 @@ public class PropositionBean implements Serializable {
         this.propositionSelected = propositionDao;
 
         NodePreference preference = preferencesHelper.getThesaurusPreferences(
-                connect.getPoolConnexion(), propositionDao.getIdTheso());
+                connect.openConnexionPool(), propositionDao.getIdTheso());
         if (!preference.isSuggestion()) {
             showMessage(FacesMessage.SEVERITY_WARN,
                     languageBean.getMsg("rightbody.proposal.avertissement"));

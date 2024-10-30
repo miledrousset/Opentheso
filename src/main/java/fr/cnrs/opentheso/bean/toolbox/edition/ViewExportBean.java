@@ -122,7 +122,7 @@ public class ViewExportBean implements Serializable {
     
     
     public void init(NodeIdValue nodeIdValueOfTheso, String format) {
-        nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), nodeIdValueOfTheso.getId());
+        nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), nodeIdValueOfTheso.getId());
 
         selectedLang1_PDF = nodePreference.getSourceLang();
         selectedLang2_PDF = null;
@@ -140,12 +140,12 @@ public class ViewExportBean implements Serializable {
             idLang = connect.getWorkLanguage();
         }
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);        
+                connect.openConnexionPool(), nodeIdValueOfTheso.getId(), idLang);        
 
         types = Arrays.asList(languageBean.getMsg("export.hierarchical"), languageBean.getMsg("export.alphabetical"));//"Hiérarchique", "Alphabétique");
         typeSelected = types.get(0);
 
-        groupList = groupHelper.getListConceptGroup(connect.getPoolConnexion(), nodeIdValueOfTheso.getId(), idLang);
+        groupList = groupHelper.getListConceptGroup(connect.openConnexionPool(), nodeIdValueOfTheso.getId(), idLang);
 
         toogleFilterByGroup = false;
         toogleExportByGroup = false;

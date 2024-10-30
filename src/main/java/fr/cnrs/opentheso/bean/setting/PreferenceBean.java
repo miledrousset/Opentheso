@@ -77,7 +77,7 @@ public class PreferenceBean implements Serializable {
         nodePreference = roleOnThesoBean.getNodePreference();
         // les langues du thésaurus
         languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
+                connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
 
         uriType = "uri";
         if (nodePreference.isOriginalUriIsHandle()) {
@@ -98,17 +98,17 @@ public class PreferenceBean implements Serializable {
             case "ark":
                 nodePreference.setUseArkLocal(false);
                 nodePreference.setUseHandle(false);
-                preferencesHelper.setUseArk(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());                
+                preferencesHelper.setUseArk(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());                
                 break;
             case "arklocal":
                 nodePreference.setUseArk(false);
                 nodePreference.setUseHandle(false);  
-                preferencesHelper.setUseArkLocal(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());                 
+                preferencesHelper.setUseArkLocal(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());                 
                 break;
             case "handle":
                 nodePreference.setUseArk(false);
                 nodePreference.setUseArkLocal(false);      
-                preferencesHelper.setUseHandle(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());                 
+                preferencesHelper.setUseHandle(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());                 
                 break;                
             default:
                 break;
@@ -116,9 +116,9 @@ public class PreferenceBean implements Serializable {
     }
     
     public String getGoogleAnalytics() {
-        if(connect == null || connect.getPoolConnexion() == null) return "";
+        if(connect == null || connect.openConnexionPool() == null) return "";
         return preferencesHelper.getCodeGoogleAnalytics(
-                connect.getPoolConnexion());
+                connect.openConnexionPool());
     }
 
     public void savePreference() {
@@ -127,7 +127,7 @@ public class PreferenceBean implements Serializable {
 
         FacesMessage msg;
         
-        if (!preferencesHelper.updateAllPreferenceUser(connect.getPoolConnexion(),
+        if (!preferencesHelper.updateAllPreferenceUser(connect.openConnexionPool(),
                 nodePreference, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur d'enregistrement des préférences !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);

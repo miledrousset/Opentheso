@@ -93,9 +93,9 @@ public class GraphController {
 
         for (IdValuePair idValuePair : idValuePairs) {
             if(StringUtils.isEmpty(idValuePair.getIdConcept())){
-                graphD3jsHelper.getGraphByTheso(connect.getPoolConnexion(), idValuePair.getIdTheso(), lang);
+                graphD3jsHelper.getGraphByTheso(connect.openConnexionPool(), idValuePair.getIdTheso(), lang);
             } else {
-                graphD3jsHelper.getGraphByConcept(connect.getPoolConnexion(), idValuePair.getIdTheso(), idValuePair.getIdConcept(), lang);
+                graphD3jsHelper.getGraphByConcept(connect.openConnexionPool(), idValuePair.getIdTheso(), idValuePair.getIdConcept(), lang);
             }
         }
 

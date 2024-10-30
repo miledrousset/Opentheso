@@ -98,19 +98,19 @@ public class DeleteThesoBean implements Serializable {
      */
     public void deleteTheso(CurrentUser currentUser) throws IOException {
         if(idThesoToDelete == null) return;
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), idThesoToDelete);
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), idThesoToDelete);
         if(nodePreference != null) {
             // suppression des Identifiants Handle
             conceptHelper.setNodePreference(nodePreference);
             if(deletePerennialIdentifiers) {
-                conceptHelper.deleteAllIdHandle(connect.getPoolConnexion(), idThesoToDelete);
+                conceptHelper.deleteAllIdHandle(connect.openConnexionPool(), idThesoToDelete);
             }
         }
         FacesMessage msg;
         
         // supression des droits
         try {
-            try (Connection conn = connect.getPoolConnexion().getConnection()) {
+            try (Connection conn = connect.openConnexionPool().getConnection()) {
                 conn.setAutoCommit(false);
                 if(!userHelper.deleteThesoFromGroup(conn, idThesoToDelete)) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
@@ -126,7 +126,7 @@ public class DeleteThesoBean implements Serializable {
         }
         
         // suppression complète du thésaurus
-        if(!thesaurusHelper.deleteThesaurus(connect.getPoolConnexion(), idThesoToDelete)){
+        if(!thesaurusHelper.deleteThesaurus(connect.openConnexionPool(), idThesoToDelete)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;

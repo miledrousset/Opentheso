@@ -193,7 +193,7 @@ public class TraductionBean implements Serializable {
         }
 
         if (termHelper.isTermExistIgnoreCase(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 traductionValue,
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang)) {
@@ -201,7 +201,7 @@ public class TraductionBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        if (!termHelper.addTraduction(connect.getPoolConnexion(),
+        if (!termHelper.addTraduction(connect.openConnexionPool(),
                 traductionValue,
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedLang, "", "", selectedTheso.getCurrentIdTheso(), idUser)) {
@@ -215,11 +215,11 @@ public class TraductionBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 
@@ -250,7 +250,7 @@ public class TraductionBean implements Serializable {
         }
 
         if (termHelper.isTermExistIgnoreCase(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 traductionValue,
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang)) {
@@ -298,7 +298,7 @@ public class TraductionBean implements Serializable {
         }
 
         if (termHelper.isTermExistIgnoreCase(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 nodeTermTraduction.getLexicalValue(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeTermTraduction.getLang())) {
@@ -307,7 +307,7 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        if (!termHelper.updateTraduction(connect.getPoolConnexion(),
+        if (!termHelper.updateTraduction(connect.openConnexionPool(),
                 nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeTermTraduction.getLang(),
                 selectedTheso.getCurrentIdTheso(), idUser)) {
@@ -324,11 +324,11 @@ public class TraductionBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 
@@ -359,7 +359,7 @@ public class TraductionBean implements Serializable {
 
         // Rechercher dans la base s'il existe un label identique
         if (termHelper.isTermExistIgnoreCase(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 traductionPropBean.getLexicalValue(),
                 selectedTheso.getCurrentIdTheso(),
                 traductionPropBean.getLang())) {
@@ -421,7 +421,7 @@ public class TraductionBean implements Serializable {
             }
             if (toModify) {
                 if (termHelper.isTermExistIgnoreCase(
-                        connect.getPoolConnexion(),
+                        connect.openConnexionPool(),
                         nodeTermTraduction.getLexicalValue(),
                         selectedTheso.getCurrentIdTheso(),
                         nodeTermTraduction.getLang())) {
@@ -430,7 +430,7 @@ public class TraductionBean implements Serializable {
                     continue;
                 }
 
-                if (!termHelper.updateTraduction(connect.getPoolConnexion(),
+                if (!termHelper.updateTraduction(connect.openConnexionPool(),
                         nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
                         nodeTermTraduction.getLang(),
                         selectedTheso.getCurrentIdTheso(), idUser)) {
@@ -450,11 +450,11 @@ public class TraductionBean implements Serializable {
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     conceptBean.getSelectedLang(), currentUser);
 
-            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+            conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
             ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
             /////////////// 
@@ -488,7 +488,7 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        if (!termHelper.deleteTraductionOfTerm(connect.getPoolConnexion(),
+        if (!termHelper.deleteTraductionOfTerm(connect.openConnexionPool(),
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeTermTraduction.getLexicalValue(),
                 nodeTermTraduction.getLang(),
@@ -504,12 +504,12 @@ public class TraductionBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 

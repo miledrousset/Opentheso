@@ -179,25 +179,25 @@ public class SearchBean implements Serializable {
             }
 
             if (exactMatch) {
-                listResultAutoComplete = searchHelper.searchExactMatch(connect.getPoolConnexion(),
+                listResultAutoComplete = searchHelper.searchExactMatch(connect.openConnexionPool(),
                         value,
                         idLang,
                         selectedTheso.getCurrentIdTheso());
             }
             if (indexMatch) {
-                listResultAutoComplete = searchHelper.searchStartWith(connect.getPoolConnexion(),
+                listResultAutoComplete = searchHelper.searchStartWith(connect.openConnexionPool(),
                         value,
                         idLang,
                         selectedTheso.getCurrentIdTheso());
             }
 
             if (withId) {
-                listResultAutoComplete = searchHelper.searchByAllId(connect.getPoolConnexion(), value,
+                listResultAutoComplete = searchHelper.searchByAllId(connect.openConnexionPool(), value,
                         idLang, selectedTheso.getCurrentIdTheso());
             }                
                          
             if (!withId && !withNote && !indexMatch && !exactMatch) {
-                listResultAutoComplete = searchHelper.searchFullTextElastic(connect.getPoolConnexion(),
+                listResultAutoComplete = searchHelper.searchFullTextElastic(connect.openConnexionPool(),
                         value,
                         idLang,
                         selectedTheso.getCurrentIdTheso());
@@ -242,7 +242,7 @@ public class SearchBean implements Serializable {
 
             nodeConceptSearchs.add(
                     conceptHelper.getConceptForSearch(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso(),
                             selectedTheso.getCurrentLang())
@@ -349,22 +349,22 @@ public class SearchBean implements Serializable {
      */
     public String getThesoName(String idTheso, String idLang) {
 
-        return thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso, idLang);
+        return thesaurusHelper.getTitleOfThesaurus(connect.openConnexionPool(), idTheso, idLang);
     }
 
     private List<NodeConceptSearch> searchInThesaurus(String idTheso, String idLang) {
 
         List<String> nodeSearchsId;
         List<NodeConceptSearch> concepts = new ArrayList<>();
-        String thesaurusLabel = thesaurusHelper.getTitleOfThesaurus(connect.getPoolConnexion(), idTheso, idLang);
+        String thesaurusLabel = thesaurusHelper.getTitleOfThesaurus(connect.openConnexionPool(), idTheso, idLang);
         NodeConceptSearch nodeConceptSearch;
         if(searchValue == null)
             searchValue = "";
 
         if (withId) {
-            nodeSearchsId = searchHelper.searchForIds(connect.getPoolConnexion(), searchValue, idTheso);
+            nodeSearchsId = searchHelper.searchForIds(connect.openConnexionPool(), searchValue, idTheso);
             for (String idConcept : nodeSearchsId) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.openConnexionPool(),
                         idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
@@ -374,10 +374,10 @@ public class SearchBean implements Serializable {
         }
 
         if (withNote) {
-            nodeSearchsId = searchHelper.searchIdConceptFromNotes(connect.getPoolConnexion(), searchValue, idLang, idTheso);
+            nodeSearchsId = searchHelper.searchIdConceptFromNotes(connect.openConnexionPool(), searchValue, idLang, idTheso);
 
             for (String idConcept : nodeSearchsId) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.openConnexionPool(),
                         idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
@@ -387,11 +387,11 @@ public class SearchBean implements Serializable {
         }
 
         if (exactMatch) {
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchExactMatch(connect.getPoolConnexion(),
+            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchExactMatch(connect.openConnexionPool(),
                     searchValue, idLang, idTheso);
 
             for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.openConnexionPool(),
                         nodeSearchMini.getIdConcept(), idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
@@ -401,12 +401,12 @@ public class SearchBean implements Serializable {
         }
 
         if (indexMatch || searchValue.isEmpty()) {
-            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchStartWith(connect.getPoolConnexion(),
+            ArrayList<NodeSearchMini> nodeSearchMinis = searchHelper.searchStartWith(connect.openConnexionPool(),
                     searchValue,
                     idLang,
                     idTheso);
             for (NodeSearchMini nodeSearchMini : nodeSearchMinis) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.openConnexionPool(),
                         nodeSearchMini.getIdConcept(), idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
@@ -418,14 +418,14 @@ public class SearchBean implements Serializable {
 
         if (!withId && !withNote && !exactMatch && !indexMatch) {
             
-            ArrayList<String> listIds = searchHelper.searchFullTextElasticId(connect.getPoolConnexion(),
+            ArrayList<String> listIds = searchHelper.searchFullTextElasticId(connect.openConnexionPool(),
                         searchValue,
                         idLang,
                         idTheso);                    
             
             
             for (String idConcept : listIds) {
-                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+                nodeConceptSearch = conceptHelper.getConceptForSearch(connect.openConnexionPool(),
                         idConcept, idTheso, idLang);
                 if (nodeConceptSearch != null) {
                     nodeConceptSearch.setThesoName(thesaurusLabel);
@@ -495,10 +495,10 @@ public class SearchBean implements Serializable {
         }
 
         ArrayList<String> nodeSearchsId = searchHelper.searchAllPolyierarchy(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+                connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
-            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(connect.getPoolConnexion(),
+            nodeConceptSearchs.add(conceptHelper.getConceptForSearch(connect.openConnexionPool(),
                     idConcept, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
 
@@ -539,11 +539,11 @@ public class SearchBean implements Serializable {
         }
 
         ArrayList<String> nodeSearchsId = searchHelper.searchAllDeprecatedConcepts(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+                connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
             nodeConceptSearchs.add(conceptHelper.getConceptForSearch(
-                    connect.getPoolConnexion(), idConcept,
+                    connect.openConnexionPool(), idConcept,
                     selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
         }
 
@@ -584,12 +584,12 @@ public class SearchBean implements Serializable {
         }
 
         ArrayList<String> nodeSearchsId = searchHelper.searchConceptWithMultiGroup(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+                connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
             nodeConceptSearchs.add(
                     conceptHelper.getConceptForSearch(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso(),
                             selectedTheso.getCurrentLang()));
@@ -629,12 +629,12 @@ public class SearchBean implements Serializable {
         }
 
         ArrayList<String> nodeSearchsId = searchHelper.searchConceptWithoutGroup(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+                connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
 
         for (String idConcept : nodeSearchsId) {
             nodeConceptSearchs.add(
                     conceptHelper.getConceptForSearch(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso(),
                             selectedTheso.getCurrentLang()));
@@ -674,13 +674,13 @@ public class SearchBean implements Serializable {
         }
 
         ArrayList<String> nodeSearchLabels = searchHelper.searchConceptDuplicated(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+                connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang());
 
         for (String label : nodeSearchLabels) {
             nodeConceptSearchs.add(
                     conceptHelper.getConceptForSearchFromLabel(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             label,
                             selectedTheso.getCurrentIdTheso(),
                             selectedTheso.getCurrentLang()));
@@ -720,12 +720,12 @@ public class SearchBean implements Serializable {
             nodeConceptSearchs.clear();
         }
 
-        ArrayList<String> allIdConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+        ArrayList<String> allIdConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso());
 
         ArrayList<String> nodeSearchsId = new ArrayList<>();
         for (String idConcept : allIdConcepts) {
             if (searchHelper.isConceptHaveRTandBT(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     idConcept,
                     selectedTheso.getCurrentIdTheso())) {
                 nodeSearchsId.add(idConcept);
@@ -734,7 +734,7 @@ public class SearchBean implements Serializable {
         for (String idConcept : nodeSearchsId) {
             nodeConceptSearchs.add(
                     conceptHelper.getConceptForSearch(
-                            connect.getPoolConnexion(),
+                            connect.openConnexionPool(),
                             idConcept,
                             selectedTheso.getCurrentIdTheso(),
                             selectedTheso.getCurrentLang()));

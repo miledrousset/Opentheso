@@ -26,7 +26,7 @@ public class RelationDao extends BasicDao {
                     String idThesaurus, int idUser) {
         Connection conn = null;
         try {
-            conn = connect.getPoolConnexion().getConnection();
+            conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
 
             if (!relationsHelper.deleteAllRelationOfConcept(conn, idConceptSelected, idThesaurus, idUser)) {
@@ -55,7 +55,7 @@ public class RelationDao extends BasicDao {
     public void addRelationBT(Connect connect, String idConceptSelected, String idConceptdestination, String idThesaurus){
         
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
+            stmt = connect.openConnexionPool().getConnection().createStatement();
             executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
                     +idConceptSelected+"', '"+idThesaurus+"', 'BT', '"+idConceptdestination+"')");
             executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
@@ -72,7 +72,7 @@ public class RelationDao extends BasicDao {
             String idThesaurus){
         
         try {
-            stmt = connect.getPoolConnexion().getConnection().createStatement();
+            stmt = connect.openConnexionPool().getConnection().createStatement();
             executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
                     +idConceptSelected+"', '"+idThesaurus+"', 'RT', '"+idConceptdestination+"')");
             executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"

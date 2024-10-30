@@ -38,7 +38,7 @@ public class TermeDao extends BasicDao {
     public void addNewEmployePour(Connect connect, String intitule, String idThesaurus, String lang,
             String idTerm) throws SQLException{
 
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
+        stmt = connect.openConnexionPool().getConnection().createStatement();
         
         intitule = fr.cnrs.opentheso.utils.StringUtils.convertString(intitule);
         

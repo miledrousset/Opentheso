@@ -57,7 +57,7 @@ public class NotationBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         
         if(!notation.isEmpty()) {
-            if(conceptHelper.isNotationExist(connect.getPoolConnexion(),
+            if(conceptHelper.isNotationExist(connect.openConnexionPool(),
                     idTheso,
                     notation)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La notation existe déjà dans le thésaurus !!");
@@ -69,7 +69,7 @@ public class NotationBean implements Serializable {
             }
         }
         
-        if(!conceptHelper.updateNotation(connect.getPoolConnexion(),
+        if(!conceptHelper.updateNotation(connect.openConnexionPool(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 idTheso,
                 notation.trim())) {

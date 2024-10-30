@@ -95,8 +95,8 @@ public class FusionService implements Serializable {
 
         ArrayList<NodeEM> nodeEMsLocal;
 
-        importRdf4jHelper.setDs(connect.getPoolConnexion());
-        String workLang = preferencesHelper.getWorkLanguageOfTheso(connect.getPoolConnexion(), thesoSelected.getId());
+        importRdf4jHelper.setDs(connect.openConnexionPool());
+        String workLang = preferencesHelper.getWorkLanguageOfTheso(connect.openConnexionPool(), thesoSelected.getId());
 
         for (SKOSResource conceptSource : sourceSkos.getConceptList()) {
             if (!StringUtils.isEmpty(conceptSource.getIdentifier())) {
@@ -108,7 +108,7 @@ public class FusionService implements Serializable {
                 importRdf4jHelper.addRelation(acs, thesoSelected.getId());
 
                 // récupération du concept Local
-                NodeConcept conceptFound = conceptHelper.getConcept(connect.getPoolConnexion(),
+                NodeConcept conceptFound = conceptHelper.getConcept(connect.openConnexionPool(),
                         conceptSource.getIdentifier(),
                         thesoSelected.getId(),
                         workLang, -1, -1);
@@ -127,7 +127,7 @@ public class FusionService implements Serializable {
                     if (!CollectionUtils.isEmpty(acs.nodeAlignments)) {
                         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
                             if (!isAlignementExist(nodeAlignment, conceptFound.getNodeAlignments())) {
-                                alignmentHelper.addNewAlignment(connect.getPoolConnexion(),
+                                alignmentHelper.addNewAlignment(connect.openConnexionPool(),
                                         nodeAlignment.getId_author(),
                                         nodeAlignment.getConcept_target(),
                                         nodeAlignment.getThesaurus_target(),
@@ -144,7 +144,7 @@ public class FusionService implements Serializable {
                     // Traduction OK validée #MR
                     // Synonymes : NonPreferredTerms
                     if (!CollectionUtils.isEmpty(acs.nodeEMList)) {
-                        nodeEMsLocal = termHelper.getAllNonPreferredTerms(connect.getPoolConnexion(), conceptSource.getIdentifier(), conceptFound.getConcept().getIdThesaurus());
+                        nodeEMsLocal = termHelper.getAllNonPreferredTerms(connect.openConnexionPool(), conceptSource.getIdentifier(), conceptFound.getConcept().getIdThesaurus());
                         for (NodeEM nodeEM : acs.nodeEMList) {
                             if (!isSynonymeExist(nodeEM, nodeEMsLocal)) {
                                 Term term = new Term();
@@ -156,7 +156,7 @@ public class FusionService implements Serializable {
                                 term.setSource(nodeEM.getSource());
                                 term.setStatus(nodeEM.getStatus());
                                 term.setHidden(nodeEM.isHiden());
-                                termHelper.addNonPreferredTerm(connect.getPoolConnexion(), term,
+                                termHelper.addNonPreferredTerm(connect.openConnexionPool(), term,
                                         currentUser.getNodeUser().getIdUser());
                                 isUpdated = true;
                             }
@@ -173,14 +173,14 @@ public class FusionService implements Serializable {
                                 term.setLexicalValue(nodeTermTraduction.getLexicalValue());
                                 term.setLang(nodeTermTraduction.getLang());
                                 term.setIdThesaurus(conceptFound.getConcept().getIdThesaurus());
-                                if (termHelper.isTermExistInThisLang(connect.getPoolConnexion(),
+                                if (termHelper.isTermExistInThisLang(connect.openConnexionPool(),
                                                 term.getIdTerm(), nodeTermTraduction.getLang(),
                                                 term.getIdThesaurus())) {
-                                    termHelper.updateTermTraduction(connect.getPoolConnexion(),
+                                    termHelper.updateTermTraduction(connect.openConnexionPool(),
                                             term,
                                             currentUser.getNodeUser().getIdUser());
                                 } else {
-                                    termHelper.addTraduction(connect.getPoolConnexion(),
+                                    termHelper.addTraduction(connect.openConnexionPool(),
                                             nodeTermTraduction.getLexicalValue(),
                                             acs.nodeTerm.getIdTerm(),
                                             nodeTermTraduction.getLang(),
@@ -200,11 +200,11 @@ public class FusionService implements Serializable {
                         for (NodeNote nodeNote : acs.nodeNotes) {
                             /// détecter le type de note avant 
                             if (nodeNote.getNoteTypeCode().equalsIgnoreCase("definition")) {
-                                if (!noteHelper.isNoteExist(connect.getPoolConnexion(),
+                                if (!noteHelper.isNoteExist(connect.openConnexionPool(),
                                         acs.concept.getIdConcept(), 
                                         conceptFound.getConcept().getIdThesaurus(),
                                         nodeNote.getLang(), nodeNote.getLexicalValue(), "definition")) {
-                                    noteHelper.addNote(connect.getPoolConnexion(),
+                                    noteHelper.addNote(connect.openConnexionPool(),
                                             acs.concept.getIdConcept(),
                                             nodeNote.getLang(),
                                             conceptFound.getConcept().getIdThesaurus(),
@@ -232,7 +232,7 @@ public class FusionService implements Serializable {
         }
 
         importRdf4jHelper.addGroups(sourceSkos.getGroupList(), thesoSelected.getId());
-        importRdf4jHelper.addLangsToThesaurus(connect.getPoolConnexion(), thesoSelected.getId());
+        importRdf4jHelper.addLangsToThesaurus(connect.openConnexionPool(), thesoSelected.getId());
 
     }
 

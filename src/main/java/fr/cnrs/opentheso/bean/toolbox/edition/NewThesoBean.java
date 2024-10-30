@@ -90,14 +90,14 @@ public class NewThesoBean implements Serializable {
     }
 
     public void init() {
-        allLangs = languageHelper.getAllLanguages(connect.getPoolConnexion());
+        allLangs = languageHelper.getAllLanguages(connect.openConnexionPool());
         selectedLang = null;
         selectedProject = "";
         title = "";
         if (currentUser.getNodeUser().isSuperAdmin()) {
-            nodeProjects = userHelper.getAllProject(connect.getPoolConnexion());
+            nodeProjects = userHelper.getAllProject(connect.openConnexionPool());
         } else {
-            nodeProjects = userHelper.getProjectsOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());
+            nodeProjects = userHelper.getProjectsOfUserAsAdmin(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
             for (NodeUserGroup nodeUserProject : nodeProjects) {
                 selectedProject = "" + nodeUserProject.getIdGroup();
             }
@@ -130,7 +130,7 @@ public class NewThesoBean implements Serializable {
         }
         Connection conn;
         try {
-            conn = connect.getPoolConnexion().getConnection();
+            conn = connect.openConnexionPool().getConnection();
             conn.setAutoCommit(false);
             // création du thésaurus
             idNewTheso = thesaurusHelper.addThesaurusRollBack(conn);
@@ -176,14 +176,14 @@ public class NewThesoBean implements Serializable {
         NodePreference nodePreference = roleOnThesoBean.getNodePreference();
         if (nodePreference == null) {
             preferencesHelper.initPreferences(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     idNewTheso,
                     selectedLang);
         } else {
             nodePreference.setPreferredName(title);
             nodePreference.setSourceLang(selectedLang);
             preferencesHelper.addPreference(//updateAllPreferenceUser(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     nodePreference, idNewTheso);
         }
 

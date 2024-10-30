@@ -86,7 +86,7 @@ public class TreeConcepts implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(connect.getPoolConnexion(), idTheso, idLang, selectedTheso.isSortByNotation());
+        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(connect.openConnexionPool(), idTheso, idLang, selectedTheso.isSortByNotation());
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getLexicalValue(),
@@ -124,7 +124,7 @@ public class TreeConcepts implements Serializable {
     }
 
     private boolean addGroupsChild(TreeNode parent) {
-        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(connect.getPoolConnexion(),
+        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(connect.openConnexionPool(),
                 ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, selectedTheso.isSortByNotation());
 
         if (listeSubGroup == null) {
@@ -149,7 +149,7 @@ public class TreeConcepts implements Serializable {
         
         // il faut ici récupérer les Topterms de la collection #MR        
         ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListTopConceptsOfGroup(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), selectedTheso.isSortByNotation());
         
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {
@@ -162,7 +162,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeGroup.getId(), nodeGroup.getValue(), "", false, false,
                     true, false, "concept");
 
-            ArrayList<NodeNT> childs = relationsHelper.getListNT(connect.getPoolConnexion(), nodeGroup.getId(), idTheso, idLang, -1, -1);
+            ArrayList<NodeNT> childs = relationsHelper.getListNT(connect.openConnexionPool(), nodeGroup.getId(), idTheso, idLang, -1, -1);
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);
             } else {
@@ -176,7 +176,7 @@ public class TreeConcepts implements Serializable {
 
     private boolean addConceptSpecifique(TreeNode parent) {
 
-        ArrayList<NodeNT> ConceptsId = relationsHelper.getListNT(connect.getPoolConnexion(),
+        ArrayList<NodeNT> ConceptsId = relationsHelper.getListNT(connect.openConnexionPool(),
                 ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
 
         if (ConceptsId == null || ConceptsId.isEmpty()) {
@@ -188,7 +188,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeNT.getIdConcept(), nodeNT.getTitle(),"", false,
                     false, true, true,"concept" );
             
-            ArrayList<NodeNT> childs = relationsHelper.getListNT(connect.getPoolConnexion(), nodeNT.getIdConcept(),
+            ArrayList<NodeNT> childs = relationsHelper.getListNT(connect.openConnexionPool(), nodeNT.getIdConcept(),
                     idTheso, idLang, -1, -1);
 
             if (CollectionUtils.isEmpty(childs)) {

@@ -65,7 +65,7 @@ public class RemoveFromGroupBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
 
         if (!groupHelper.deleteRelationConceptGroupConcept(
-                connect.getPoolConnexion(),
+                connect.openConnexionPool(),
                 idGroup,
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),

@@ -109,7 +109,7 @@ public class ConcepThesoSearchController {
 
         var selectedMediaType = getMediaTypeFromRequest(acceptHeader);
 
-        datas = getDatas(connect.getPoolConnexion(), idTheso, lang, groups, q, acceptHeader, filter, match);
+        datas = getDatas(connect.openConnexionPool(), idTheso, lang, groups, q, acceptHeader, filter, match);
         return ResponseEntity.ok().contentType(selectedMediaType).body(datas);
     }
 
@@ -160,7 +160,7 @@ public class ConcepThesoSearchController {
         }
 
         var fullFormat = full ? "full" : null;
-        var datas = restRDFHelper.findDatasForWidget(connect.getPoolConnexion(), idTheso, lang, groups, q, HeaderHelper.removeCharset(fullFormat), exactMatch);
+        var datas = restRDFHelper.findDatasForWidget(connect.openConnexionPool(), idTheso, lang, groups, q, HeaderHelper.removeCharset(fullFormat), exactMatch);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)));
     }
 
@@ -168,7 +168,7 @@ public class ConcepThesoSearchController {
         String[] groups = new String[arkGroups.length];
         int i = 0;
         for (String arkGroup : arkGroups) {
-            groups[i] = groupHelper.getIdGroupFromArkId(connect.getPoolConnexion(), arkGroup, idTheso);
+            groups[i] = groupHelper.getIdGroupFromArkId(connect.openConnexionPool(), arkGroup, idTheso);
             i++;
         }
         return groups;

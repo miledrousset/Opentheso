@@ -70,7 +70,7 @@ public class AddConceptToGroupBean implements Serializable {
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && conceptView.getSelectedLang() != null) {
             liste = groupHelper.getAutoCompletionGroup(
-                    connect.getPoolConnexion(),
+                    connect.openConnexionPool(),
                     selectedTheso.getCurrentIdTheso(),
                     conceptView.getSelectedLang(),
                     value);
@@ -95,17 +95,17 @@ public class AddConceptToGroupBean implements Serializable {
         }
 
         // addConceptToGroup
-        if (!groupHelper.addConceptGroupConcept(connect.getPoolConnexion(), selectedNodeAutoCompletionGroup.getIdGroup(),
+        if (!groupHelper.addConceptGroupConcept(connect.openConnexionPool(), selectedNodeAutoCompletionGroup.getIdGroup(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
             var msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElmentHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElmentHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////

@@ -124,17 +124,17 @@ public class ProcessCandidateBean implements Serializable {
             return;
         }
         // envoie de mail au créateur du candidat si l'option mail est activée
-        NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
+        NodeUser nodeUser = userHelper.getUser(connect.openConnexionPool(), selectedCandidate.getCreatedById());
         if(nodeUser.isAlertMail())
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
         
         generateArk(nodePreference, selectedCandidate);
         
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate.getIdThesaurus(),
+        conceptHelper.updateDateOfConcept(connect.openConnexionPool(), selectedCandidate.getIdThesaurus(),
                 selectedCandidate.getIdConcepte(), idUser);
 
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 selectedCandidate.getIdConcepte(), selectedCandidate.getIdThesaurus());
         ///////////////             
@@ -162,7 +162,7 @@ public class ProcessCandidateBean implements Serializable {
 
             // création de l'identifiant Handle
             if (nodePreference.isUseHandle()) {
-                if (!conceptHelper.generateIdHandle(connect.getPoolConnexion(), selectedCandidateTemp.getIdConcepte(),
+                if (!conceptHelper.generateIdHandle(connect.openConnexionPool(), selectedCandidateTemp.getIdConcepte(),
                         selectedCandidateTemp.getIdThesaurus())) {
                     printErreur("La création Handle a échouée");
                     log.error("La création Handle a échoué");
@@ -170,7 +170,7 @@ public class ProcessCandidateBean implements Serializable {
             }     
             // serveur Ark
             if (nodePreference.isUseArk()) {
-                if (!conceptHelper.generateArkId(connect.getPoolConnexion(), 
+                if (!conceptHelper.generateArkId(connect.openConnexionPool(), 
                         selectedCandidateTemp.getIdThesaurus(), selectedCandidateTemp.getIdConcepte(),
                         selectedCandidateTemp.getLang())) {
                     log.error("La création Ark a échoué");
@@ -180,7 +180,7 @@ public class ProcessCandidateBean implements Serializable {
             if (nodePreference.isUseArkLocal()) {
                 ArrayList<String> idConcepts = new ArrayList<>();
                 idConcepts.add(selectedCandidateTemp.getIdConcepte());
-                if (!conceptHelper.generateArkIdLocal(connect.getPoolConnexion(),
+                if (!conceptHelper.generateArkIdLocal(connect.openConnexionPool(),
                         selectedCandidateTemp.getIdThesaurus(),
                         idConcepts)) {
                     printErreur("La création du Ark local a échoué");
@@ -203,7 +203,7 @@ public class ProcessCandidateBean implements Serializable {
 
         // envoie de mail au créateur du candidat si l'option mail est activée
 
-        NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
+        NodeUser nodeUser = userHelper.getUser(connect.openConnexionPool(), selectedCandidate.getCreatedById());
         if(nodeUser.isAlertMail())
             sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate);
 
@@ -240,17 +240,17 @@ public class ProcessCandidateBean implements Serializable {
                 printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
-            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate1.getIdThesaurus(),
+            conceptHelper.updateDateOfConcept(connect.openConnexionPool(), selectedCandidate1.getIdThesaurus(),
                     selectedCandidate1.getIdConcepte(), idUser);
             
             ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
             ///////////////              
             
             generateArk(nodePreference, selectedCandidate1);
-            nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
+            nodeUser = userHelper.getUser(connect.openConnexionPool(), selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
                 sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate1);
         }
@@ -282,13 +282,13 @@ public class ProcessCandidateBean implements Serializable {
                 printErreur("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
-            nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
+            nodeUser = userHelper.getUser(connect.openConnexionPool(), selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
                 sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);    
-            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate1.getIdThesaurus(),
+            conceptHelper.updateDateOfConcept(connect.openConnexionPool(), selectedCandidate1.getIdThesaurus(),
                     selectedCandidate1.getIdConcepte(), idUser); 
             ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
             ///////////////               

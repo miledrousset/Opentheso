@@ -60,7 +60,7 @@ public class ConceptController {
         var fullFormat = fullOption ? "full" : null;
 
         String[] idArks = q.split(",");
-        JsonArrayBuilder datas = restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), lang, idArks, fullFormat);
+        JsonArrayBuilder datas = restRDFHelper.findDatasForWidgetByArk(connect.openConnexionPool(), lang, idArks, fullFormat);
 
         return ResponseEntity.ok(datas.build());
     }
