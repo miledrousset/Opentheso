@@ -572,10 +572,10 @@ public class SelectedTheso implements Serializable {
     /**
      * Pour sélectionner un thésaurus ou un concept en passant par l'URL
      */
-    public void preRenderView(SelectedTheso selectedTheso) throws IOException {
+    public void preRenderView() throws IOException {
 
         roleOnThesoBean.setPublicThesos(currentUser);
-        selectedTheso.loadProject();
+        loadProject();
 
         if (idThesoFromUri == null) {
             isFromUrl = false;

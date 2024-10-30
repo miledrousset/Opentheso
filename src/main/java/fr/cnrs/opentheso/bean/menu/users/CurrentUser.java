@@ -131,8 +131,7 @@ public class CurrentUser implements Serializable {
 
         if ("-1".equals(selectedTheso.getProjectIdSelected())) {
             roleOnThesoBean.setPublicThesos(this);
-            if(StringUtils.isEmpty(selectedTheso.getCurrentIdTheso())){
-            } else {            
+            if(StringUtils.isNotEmpty(selectedTheso.getCurrentIdTheso())){
                 if (!thesaurusHelper.isThesoPrivate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso())) {
                     indexSetting.setSelectedTheso(true);
                 } else {
@@ -177,14 +176,11 @@ public class CurrentUser implements Serializable {
         if (!"index".equals(menuBean.getActivePageName())) {
             menuBean.redirectToThesaurus();
         } else {
-            PrimeFaces pf = PrimeFaces.current();
-            if (pf.isAjaxRequest()) {
-                pf.ajax().update("containerIndex:contentConcept");
-                pf.ajax().update("containerIndex:searchBar");
-                pf.ajax().update("containerIndex:header");
-                pf.ajax().update("menuBar");
-                pf.ajax().update("messageIndex");
-            }
+            PrimeFaces.current().ajax().update("containerIndex:contentConcept");
+            PrimeFaces.current().ajax().update("containerIndex:searchBar");
+            PrimeFaces.current().ajax().update("containerIndex:header");
+            PrimeFaces.current().ajax().update("menuBar");
+            PrimeFaces.current().ajax().update("messageIndex");
         }
     }
 
