@@ -434,13 +434,6 @@
                                          title="#{langueBean.getMsg('toolbox.newExportMethod')}" style="margin-left: 20px">
                             <p:fileDownload value="#{exportFileBean.exportNewGen()}" />
                         </p:commandButton>
-
-                        <p:commandButton value="#{langueBean.getMsg('export.toVirtuoso')}" ajax="false"
-                                         onclick="PrimeFaces.monitorDownload(start, stop);"
-                                         icon="fa fa-upload" styleClass="ui-button-success"
-                                         style="margin-left: 20px"
-                                         update="messageIndex" actionListener="#{exportFileBean.exportToVertuoso()}"
-                                         rendered="#{viewEditionBean.isViewImportVirtuoso()}" />
                     </div>
                 </div>
             </div>

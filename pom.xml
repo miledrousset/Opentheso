@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cnrs.opentheso</groupId>
     <artifactId>opentheso</artifactId>
-    <version>${pom.version}</version>
+    <version>${project.version}</version>
     <packaging>jar</packaging>
     <name>opentheso</name>
 
@@ -339,7 +339,7 @@
             <version>${openapi.version}</version>
         </dependency>
 
-        <dependency>
+ <!--       <dependency>
             <groupId>com.openlink.virtuoso</groupId>
             <artifactId>virt_jena3</artifactId>
             <version>${virt_jena3.version}</version>
@@ -350,7 +350,7 @@
             <artifactId>virtjdbc4</artifactId>
             <version>${virtjdbc4.version}</version>
         </dependency>
-
+-->
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
@@ -407,7 +407,7 @@
     </dependencies>
 
     <properties>
-        <pom.version>24.10.03</pom.version>
+        <project.version>24.10.03</project.version>
         <java.version>17</java.version>
         <poi.version>4.1.1</poi.version>
         <virtjdbc4.version>4.0</virtjdbc4.version>
