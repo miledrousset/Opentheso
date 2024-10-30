@@ -191,6 +191,11 @@ public class TraductionBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
+        if (selectedTheso.getCurrentIdTheso() == null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Aucun thésaurus sélectionné !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
 
         if (termHelper.isTermExistIgnoreCase(
                 connect.getPoolConnexion(),
@@ -203,7 +208,7 @@ public class TraductionBean implements Serializable {
         }
         if (!termHelper.addTraduction(connect.getPoolConnexion(),
                 traductionValue,
-                conceptBean.getNodeConcept().getTerm().getIdTerm(),
+                conceptBean.getNodeFullConcept().getPrefLabel().getIdTerm(),
                 selectedLang, "", "", selectedTheso.getCurrentIdTheso(), idUser)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur d'ajout de traduction !");
             FacesContext.getCurrentInstance().addMessage(null, msg);

@@ -53,10 +53,10 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 
 import org.primefaces.model.StreamedContent;
-import virtuoso.jena.driver.VirtGraph;
+/*import virtuoso.jena.driver.VirtGraph;
 import virtuoso.jena.driver.VirtuosoUpdateFactory;
 import virtuoso.jena.driver.VirtuosoUpdateRequest;
-
+*/
 /**
  *
  * @author miledrousset
@@ -169,42 +169,7 @@ public class ExportFileBean implements Serializable {
         return skosXmlDocument;
     }
 
-    public void exportToVertuoso() {
-        SKOSXmlDocument skosxd = getThesorusDatas(viewExportBean.getNodeIdValueOfTheso().getId(),
-                viewExportBean.getSelectedIdGroups());
 
-        if (skosxd == null) {
-            return;
-        }
-
-        if (viewEditionBean.isViewImportVirtuoso()) {
-
-            String msg = null;
-            if (StringUtils.isEmpty(viewEditionBean.getUrlServer())) {
-                msg = "L'URL du serveur Virtuoso est manquant !";
-            } else if (StringUtils.isEmpty(viewEditionBean.getLogin())) {
-                msg = "Le login pour se connecter au serveur Virtuoso est manquant !";
-            } else if (StringUtils.isEmpty(viewEditionBean.getPassword())) {
-                msg = "Le mot de passe pour se connecter au serveur Virtuoso est manquant !";
-            }
-
-            if (!StringUtils.isEmpty(msg)) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", msg));
-                PrimeFaces.current().ajax().update("messageIndex");
-                return;
-            }
-
-            boolean resultat = exportThesorusToVirtuoso(skosxd, viewEditionBean.getNomGraphe(), viewEditionBean.getUrlServer(),
-                    viewEditionBean.getLogin(), viewEditionBean.getPassword());
-
-            if (resultat) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "",
-                        "Exportation du thésaurus '" + viewExportBean.getNodeIdValueOfTheso().getId() + "' est terminée avec succès"));
-                PrimeFaces.current().ajax().update("messageIndex");
-            }
-
-        }
-    }
 
     private void createMatrice(String[][] tab, NodeTree concept) {
         tab[posX][posJ] = concept.getPreferredTerm();
@@ -975,45 +940,7 @@ public class ExportFileBean implements Serializable {
         return skosXmlDocument;
     }
 
-    private boolean exportThesorusToVirtuoso(SKOSXmlDocument skosxd, String nomGraphe, String url, String login, String password) {
 
-        VirtGraph virtGraph = null;
-        try {
-            virtGraph = new VirtGraph(nomGraphe, "jdbc:virtuoso://" + url, login, password);
-
-            VirtuosoUpdateRequest vur = VirtuosoUpdateFactory.create("CLEAR GRAPH <" + nomGraphe + ">", virtGraph);
-            vur.exec();
-
-            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                Rio.write(new WriteRdf4j(skosxd).getModel(), out, RDFFormat.RDFXML);
-                
-                Model model = ModelFactory.createDefaultModel();
-                model.read(new ByteArrayInputStream(out.toByteArray()), null);
-                StmtIterator iter = model.listStatements();
-                while (iter.hasNext()) {
-                    Statement stmt = iter.nextStatement();
-                    Resource subject = stmt.getSubject();
-                    Property predicate = stmt.getPredicate();
-                    RDFNode object = stmt.getObject();
-                //    Triple tri = new Triple(subject.asNode(), predicate.asNode(), object.asNode());
-                 //   virtGraph.add(tri);
-                }
-            }
-            virtGraph.close();
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-            return true;
-        } catch (IOException | NoSuchElementException | RDFHandlerException e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
-                    "Problème de communication avec le serveur Virtuoso !"));
-            PrimeFaces pf = PrimeFaces.current();
-            pf.ajax().update("messageIndex");
-            if (virtGraph != null) {
-                virtGraph.close();
-            }
-            PrimeFaces.current().executeScript("PF('waitDialog').hide();");
-            return false;
-        }
-    }
 
     private SKOSXmlDocument getThesorusDatas(String idTheso, List<String> selectedGroups) {
 

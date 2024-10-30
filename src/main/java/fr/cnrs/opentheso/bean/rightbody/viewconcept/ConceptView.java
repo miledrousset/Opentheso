@@ -478,6 +478,7 @@ public class ConceptView implements Serializable {
     }
     
     public boolean isHaveAlignment(){
+        if(nodeFullConcept == null) return false;
         return (CollectionUtils.isNotEmpty(nodeFullConcept.getExactMatchs()) || CollectionUtils.isNotEmpty(nodeFullConcept.getCloseMatchs())
                 || CollectionUtils.isNotEmpty(nodeFullConcept.getBroadMatchs()) || CollectionUtils.isNotEmpty(nodeFullConcept.getRelatedMatchs()) );
     }

@@ -112,6 +112,8 @@ public class Tree implements Serializable {
     private boolean manySiblings = false;
     @Autowired
     private DragAndDrop dragAndDrop;
+    @Autowired
+    private PrimeFaces primefaces;
 
     @PreDestroy
     public void destroy() {
@@ -259,6 +261,35 @@ public class Tree implements Serializable {
             }
         }
     }
+
+    public void reloadSelectedConcept(){
+        /*if (getSelectedNode() != null) {
+                getSelectedNode().getChildren().removeAll(getSelectedNode().getChildren());
+                expandTreeToPath(((TreeNodeData) getSelectedNode().getData()).getNodeId(),
+                        selectedTheso.getCurrentIdTheso(),
+                        selectedTheso.getCurrentLang());
+            PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
+       /*     TreeNode parent = getSelectedNode().getParent();
+            if (parent != null) {
+                parent.getChildren().remove(getSelectedNode());
+
+                if (PrimeFaces.current().isAjaxRequest()) {
+                    PrimeFaces.current().ajax().update("formLeftTab:tabTree:tree");
+                }
+            }
+        }*/
+        initialise(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        expandTreeToPath(
+                ((TreeNodeData) getSelectedNode().getData()).getNodeId(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang());
+        if (PrimeFaces.current().isAjaxRequest()) {
+            PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
+            PrimeFaces.current().ajax().update("containerIndex:languageSelect");
+        }
+    }
+
+
 
     public SelectedTheso getSelectedTheso() {
         return selectedTheso;

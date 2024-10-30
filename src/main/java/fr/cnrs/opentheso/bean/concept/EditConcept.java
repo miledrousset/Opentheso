@@ -31,6 +31,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
@@ -536,7 +537,7 @@ public class EditConcept implements Serializable {
             }
         }
 
-        if (!conceptView.getNodeConcept().getNodeBT().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(conceptView.getNodeConcept().getNodeBT())){// !conceptView.getNodeConcept().getNodeBT().isEmpty()) {
             conceptView.getConcept(idTheso, conceptView.getNodeConcept().getNodeBT().get(0).getIdConcept(),
                     selectedTheso.getCurrentLang(), currentUser);
         }

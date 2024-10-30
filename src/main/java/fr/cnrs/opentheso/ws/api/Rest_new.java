@@ -478,9 +478,10 @@ public class Rest_new {
         if(ArrayUtils.isEmpty(idArks)) {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(getJsonMessage("l'Id Ark est obligatoire"));
         } else {
+            JsonArrayBuilder datas = restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), idLang, idArks, format);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), idLang, idArks, format));
+                    .body(datas.build());
         }
     }
     

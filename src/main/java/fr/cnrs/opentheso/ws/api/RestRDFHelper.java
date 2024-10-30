@@ -873,7 +873,7 @@ public class RestRDFHelper {
         }
 
         if(idConcepts == null) return null;
-
+        exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
         for (String idConcept : idConcepts) {
             skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));

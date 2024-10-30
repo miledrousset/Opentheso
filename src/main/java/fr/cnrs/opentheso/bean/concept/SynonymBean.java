@@ -190,6 +190,69 @@ public class SynonymBean implements Serializable {
     }
 
     /**
+     * permet de modifier un synonyme
+     *
+     * @param nodeEMLocal
+     * @param idUser
+     */
+    public void updateSynonym(NodeEM nodeEMLocal, int idUser) {
+        FacesMessage msg;
+        PrimeFaces pf = PrimeFaces.current();
+        TermHelper termHelper = new TermHelper();
+
+        if (nodeEMLocal == null) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur !", " pas de sélection !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            if (pf.isAjaxRequest()) {
+                pf.ajax().update("messageIndex");
+            }
+            return;
+        }
+
+        // save de la valeur pour une modification forcée
+        this.nodeEM = nodeEMLocal;
+
+        if (!nodeEMLocal.getOldValue().equals(nodeEMLocal.getLexicalValue())) {
+            if (termHelper.isTermExist(connect.getPoolConnexion(),
+                    nodeEMLocal.getLexicalValue(),
+                    selectedTheso.getCurrentIdTheso(),
+                    nodeEMLocal.getLang())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                duplicate = true;
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
+                return;
+            }
+            if (termHelper.isAltLabelExist(connect.getPoolConnexion(),
+                    nodeEMLocal.getLexicalValue(),
+                    selectedTheso.getCurrentIdTheso(),
+                    nodeEMLocal.getLang())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                duplicate = true;
+                if (pf.isAjaxRequest()) {
+                    pf.ajax().update("messageIndex");
+                }
+                return;
+            }
+            updateSynonymForced(idUser);
+        } else {
+            if (nodeEMLocal.isOldHiden() != nodeEMLocal.isHiden()) {
+                updateStatus(nodeEMLocal, idUser);
+            }
+        }
+        reset();
+        prepareNodeEMForEdit();
+
+        if (pf.isAjaxRequest()) {
+            pf.ajax().update("messageIndex");
+            pf.ajax().update("containerIndex:formRightTab");
+        }
+    }
+
+    /**
      * permet de modifier un synonyme sans controle avec doublon
      *
      * @param idUser

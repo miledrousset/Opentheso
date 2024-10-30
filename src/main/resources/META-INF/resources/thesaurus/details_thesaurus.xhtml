@@ -71,7 +71,10 @@
                             <f:facet name="anchor">
                                 <i class="pi pi-sitemap" style="color: #f47b2a" size="s" />
                             </f:facet>
-                            <ui:include rendered="#{rightBodySetting.showConcept}" src="rightBodyView/concept.xhtml"/>
+                            <h:panelGroup rendered="#{conceptView.nodeFullConcept != null}">
+                                <ui:include rendered="#{rightBodySetting.showConcept}" src="rightBodyView/concept.xhtml"/>
+                            </h:panelGroup>
+
                         </p:tab>
 
                         <p:tab  id="viewTabGroup" title="#{langueBean.getMsg('leftbody.collection')}" >
