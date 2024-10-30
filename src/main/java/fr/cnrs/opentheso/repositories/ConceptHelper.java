@@ -6524,7 +6524,9 @@ public class ConceptHelper {
         return concept;
     }
     private Term getTermFromNFC(NodeFullConcept nodeFullConcept, String idTheso) {
+        if(nodeFullConcept.getPrefLabel() == null) return null;
         Term term = new Term();
+
         term.setIdTerm(nodeFullConcept.getPrefLabel().getIdTerm());
         term.setLexicalValue(nodeFullConcept.getPrefLabel().getLabel());
         term.setLang(nodeFullConcept.getPrefLabel().getIdLang());
