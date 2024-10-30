@@ -77,7 +77,7 @@
         <h:panelGroup rendered="#{roleOnTheso.nodePreference.suggestion}" >
             <div class="col-12" style="text-align: right; padding-top: 20px">
                 <p:commandButton icon="pi pi-send" value="#{langueBean.getMsg('rightbody.suggestImprovement')}"
-                                 actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeFullConcept.identifier, selectedTheso.currentLang, currentUser)}"
+                                 actionListener="#{propositionBean.switchToNouvelleProposition(conceptView.nodeConcept, currentUser)}"
                                  styleClass="ui-button-success"
                                  ajax="true" process="@this" update="containerIndex:formRightTab"/>
             </div>
