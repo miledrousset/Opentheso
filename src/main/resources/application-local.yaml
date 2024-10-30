@@ -56,9 +56,6 @@ logging:
 settings:
   timeout: 79
   workLanguage: fr
-  user: neo4j
-  password: neo4j1234
-  databaseName: neo4j
 
 smpt:
   protocol: smtp
@@ -67,7 +64,6 @@ smpt:
   authorization: false
   mailFrom: opentheso@mom.fr
   transportMail: smtp
-
 
 neo4j:
   serverName: localhost
