@@ -164,14 +164,6 @@ public class CurrentUser implements Serializable {
                 indexSetting.setProjectSelected(false);
             }
         }
-
-        if (propositionBean.isPropositionVisibleControle()) {
-            PrimeFaces.current().executeScript("disparaitre();");
-            propositionBean.setPropositionVisibleControle(false);
-            searchBean.setBarVisisble(false);
-            searchBean.setSearchResultVisible(false);
-            searchBean.setSearchVisibleControle(false);
-        }
         
         if (!"index".equals(menuBean.getActivePageName())) {
             menuBean.redirectToThesaurus();

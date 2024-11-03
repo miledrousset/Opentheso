@@ -904,3 +904,42 @@ body .ui-autocomplete .ui-autocomplete-multiple-container .ui-autocomplete-token
 .ui-autocomplete {
     width: 100%;
 }
+
+/* Bar de notification */
+.notification-bar {
+    display: block; /* Afficher la barre dès le début, mais hors écran */
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 20%;
+    background-color: white;
+    color: black;
+    border-radius: 5px 0 0 5px;
+    box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%); /* Commence hors de l'écran, à droite */
+    z-index: 1000;
+}
+
+.notification-bar button {
+    background-color: transparent;
+    color: #0f6848;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.toggle-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.toggle-btn:hover {
+    background-color: #0056b3;
+}

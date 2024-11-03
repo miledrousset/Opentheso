@@ -150,8 +150,7 @@
                                                          style="background: transparent; border-color: transparent; background-color: transparent; font-size: 12px;
                                                          padding-top: 2px; width: 100%; padding-left: 5px;">
                                             <p:ajax event="valueChange" listener="#{selectedTheso.changeLang()}"
-                                                    update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp 
-                                                    containerIndex:notificationPanel"/>
+                                                    update="containerIndex:contentConcept containerIndex:thesoSelect containerIndex:notificationProp resultSearchBar"/>
                                             <f:selectItems value="#{selectedTheso.nodeLangs}" var="lang" itemLabel="#{lang.value}" itemValue="#{lang.code}"/>
                                             <f:selectItem itemLabel="#{langueBean.getMsg('search.any_language')}" itemValue="all"/>
                                         </p:selectOneMenu>
@@ -204,7 +203,7 @@
 
                                         <p:commandLink id="applySearch" class="btn btn-base" actionListener="#{searchBean.applySearch()}"
                                                        ajax="true" process="@this" style="display: inline-block"
-                                                       update="containerIndex:notificationPanel messageIndex">
+                                                       update="resultSearchBar messageIndex">
                                             <i class="fas fa-search fa-1x" style="color: #f47b2a; font-size: 14px;"/>
                                         </p:commandLink>
                                     </div>
@@ -282,27 +281,27 @@
                               id="searchProgrammed" style="font-size: 12px; margin-top: -0.33rem;" icon="pi pi-align-justify">
 
                     <p:menuitem value="#{langueBean.getMsg('search.deprecated')}" action="#{searchBean.getAllDeprecatedConcepts()}"
-                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
+                                update="resultSearchBar messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_deprecated')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.polyhierarchy')}" action="#{searchBean.getAllPolyierarchy()}"
-                                update="containerIndex:notificationPanel containerIndex:choixPanel messageIndex containerIndex:contentConcept"
+                                update="resultSearchBar containerIndex:choixPanel messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_polyhierarchy')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.multiGroups')}" action="#{searchBean.searchConceptWithMultiGroup()}"
-                                update="containerIndex:notificationPanel  messageIndex containerIndex:contentConcept"
+                                update="resultSearchBar  messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_multiGroups')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.withoutGroups')}" action="#{searchBean.searchConceptWithoutGroup()}"
-                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
+                                update="resultSearchBar messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_withoutGroups')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.duplicates')}" action="#{searchBean.searchConceptDuplicated()}"
-                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
+                                update="resultSearchBar messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_duplicates')}"/>
 
                     <p:menuitem value="#{langueBean.getMsg('search.forbiddenRelationships')}" action="#{searchBean.searchConceptWithRTandBT()}"
-                                update="containerIndex:notificationPanel messageIndex containerIndex:contentConcept"
+                                update="resultSearchBar messageIndex containerIndex:contentConcept"
                                 title="#{langueBean.getMsg('search.tooltip_forbiddenRrelationships')}"/>
                 </p:menuButton>
                 <p:tooltip for="searchProgrammed" value="#{langueBean.getMsg('search.preprogrammedSearch')}" showDelay="1000" position="bottom"/>

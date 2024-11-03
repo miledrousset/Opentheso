@@ -98,10 +98,6 @@ public class SearchBean implements Serializable {
     private boolean indexMatch;
     private boolean withNote;
     private boolean withId;
-
-    private boolean searchResultVisible;
-    private boolean searchVisibleControle;
-    private boolean barVisisble;
     private boolean isSearchInSpecificTheso;
 
 
@@ -116,7 +112,6 @@ public class SearchBean implements Serializable {
         }
         searchSelected = null;
         searchValue = null;
-        searchResultVisible = false;
     }
 
     public void activateIndexMatch() {
@@ -295,7 +290,6 @@ public class SearchBean implements Serializable {
         }
 
         if (CollectionUtils.isNotEmpty(nodeConceptSearchs)) {
-        //    Collections.sort(nodeConceptSearchs);
             if (nodeConceptSearchs.size() == 1) {
                 conceptBean.getConcept(nodeConceptSearchs.get(0).getIdTheso(), nodeConceptSearchs.get(0).getIdConcept(),
                         nodeConceptSearchs.get(0).getCurrentLang(), currentUser);
@@ -307,19 +301,7 @@ public class SearchBean implements Serializable {
                 isSelectedItem = false;
             }
 
-            if (propositionBean.isPropositionVisibleControle()) {
-                PrimeFaces.current().executeScript("disparaitre();");
-                PrimeFaces.current().executeScript("afficher();");
-                barVisisble = true;
-                searchResultVisible = true;
-                searchVisibleControle = true;
-                propositionBean.setPropositionVisibleControle(false);
-            } else if (!barVisisble) {
-                searchResultVisible = true;
-                PrimeFaces.current().executeScript("afficher();");
-                barVisisble = true;
-                searchVisibleControle = true;
-            }
+            PrimeFaces.current().executeScript("showResultSearchBar();");
         } else {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Recherche de '" + searchValue + "' : Aucun resultat trouvée !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -328,7 +310,7 @@ public class SearchBean implements Serializable {
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
 
-        PrimeFaces.current().ajax().update("containerIndex:resultSearch");
+        PrimeFaces.current().ajax().update("resultSearchBar");
     }
 
     private String searchLangOfTheso(List<RoleOnThesoBean.ThesoModel> listTheso, String idTheso) {
@@ -438,51 +420,18 @@ public class SearchBean implements Serializable {
     }
 
     public void afficherResultatRecherche() {
-        if (propositionBean.isPropositionVisibleControle()) {
-            if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", languageBean.getMsg("search.doSearchBefore") + " !");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                PrimeFaces.current().ajax().update("messageIndex");
-                return;
-            }
-            PrimeFaces.current().executeScript("disparaitre();");
-            PrimeFaces.current().executeScript("afficher();");
-            barVisisble = true;
-            searchResultVisible = true;
-            searchVisibleControle = true;
-            propositionBean.setPropositionVisibleControle(false);
+        if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", languageBean.getMsg("search.doSearchBefore") + " !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
         } else {
-            if (barVisisble) {
-                PrimeFaces.current().executeScript("disparaitre();");
-                barVisisble = false;
-                searchVisibleControle = false;
-            } else {
-                if (CollectionUtils.isEmpty(nodeConceptSearchs)) {
-                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "", languageBean.getMsg("search.doSearchBefore") + " !");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    PrimeFaces.current().ajax().update("messageIndex");
-                } else {
-                    searchResultVisible = true;
-                    PrimeFaces.current().executeScript("afficher();");
-                    barVisisble = true;
-                    searchVisibleControle = true;
-                }
-            }
+            PrimeFaces.current().executeScript("showResultSearchBar();");
         }
     }
 
     public void setBarSearchStatus() {
-        if (barVisisble) {
-            PrimeFaces.current().executeScript("afficher();");
-        } else {
-            PrimeFaces.current().executeScript("disparaitre();");
-        }
+        PrimeFaces.current().executeScript("showResultSearchBar();");
     }
-    
-    public void managerSearchBar() {
-    //    PrimeFaces.current().executeScript("afficheSearchBar();");
-    }
-
 
     /**
      * permet de retourner la liste des concepts qui ont une poly-hiérarchie
@@ -523,8 +472,6 @@ public class SearchBean implements Serializable {
 
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
-
-        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -569,8 +516,6 @@ public class SearchBean implements Serializable {
 
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
-
-        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -614,8 +559,6 @@ public class SearchBean implements Serializable {
 
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
-
-        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -659,8 +602,6 @@ public class SearchBean implements Serializable {
 
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
-
-        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -705,8 +646,6 @@ public class SearchBean implements Serializable {
 
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
-
-        afficherResultatRechercheSpecific();
     }
 
     /**
@@ -759,8 +698,6 @@ public class SearchBean implements Serializable {
 
         rightBodySetting.setIndex("0");
         indexSetting.setIsValueSelected(true);
-
-        afficherResultatRechercheSpecific();
     }
 
     private void setViewsSearch() {
@@ -864,56 +801,12 @@ public class SearchBean implements Serializable {
         this.indexMatch = indexMatch;
     }
 
-    public boolean getSearchResultVisible() {
-        return searchResultVisible;
-    }
-
-    public String getResultSearchIcon() {
-        return searchResultVisible ? "fas fa-arrow-circle-right" : "fa fa-arrow-circle-left";
-    }
-
-    public void setSearchResultVisible(boolean searchResultVisible) {
-        this.searchResultVisible = searchResultVisible;
-    }
-
-    public boolean isSearchVisibleControle() {
-        return searchVisibleControle;
-    }
-
-    public void setSearchVisibleControle(boolean searchVisibleControle) {
-        this.searchVisibleControle = searchVisibleControle;
-    }
-
-    public boolean isBarVisisble() {
-        return barVisisble;
-    }
-
-    public void setBarVisisble(boolean barVisisble) {
-        this.barVisisble = barVisisble;
-    }
-
     public boolean isIsSearchInSpecificTheso() {
         return isSearchInSpecificTheso;
     }
 
     public void setIsSearchInSpecificTheso(boolean isSearchInSpecificTheso) {
         this.isSearchInSpecificTheso = isSearchInSpecificTheso;
-    }
-
-    private void afficherResultatRechercheSpecific() {
-        if (propositionBean.isPropositionVisibleControle()) {
-    //        PrimeFaces.current().executeScript("disparaitre();");
-        //    PrimeFaces.current().executeScript("afficher();");
-            barVisisble = true;
-            searchResultVisible = true;
-            searchVisibleControle = true;
-            propositionBean.setPropositionVisibleControle(false);
-        } else if (!barVisisble) {
-            searchResultVisible = true;
-        //    PrimeFaces.current().executeScript("afficher();");
-            barVisisble = true;
-            searchVisibleControle = true;
-        }
     }
 
 }

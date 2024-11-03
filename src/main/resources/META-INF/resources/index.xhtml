@@ -57,13 +57,19 @@
 
     <h:body id="page-top" onload="initMenu();" style="overflow-x: hidden;">
 
+        <h:panelGroup class="notification-bar" id="listPropositionsBar">
+            <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" class="card py-3"  />
+        </h:panelGroup>
+
+        <h:panelGroup class="notification-bar" id="resultSearchBar">
+            <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
+        </h:panelGroup>
+
         <ui:include src="dialog/new-version.xhtml" />
 
         <p:idleMonitor timeout="#{connect.timeout}">
             <p:ajax event="idle" listener="#{sessionControl.isTimeout}" />
         </p:idleMonitor>
-
-
 
         <p:growl id="messageIndex" globalOnly="true" showDetail="true" />
 
@@ -85,7 +91,7 @@
                             <div style="margin-top: 5px; margin-bottom: -5px; right: 0; margin-right: 11px; z-index: 11;">
                                 <p:commandButton icon="fa fa-list-ol" style="height: 25px;"
                                                  styleClass="ui-button-raised ui-button-success"
-                                                 update="messageIndex containerIndex:notificationPanel"
+                                                 update="messageIndex resultSearchBar"
                                                  actionListener="#{searchBean.afficherResultatRecherche()}" />
                             </div>
                         </h:panelGroup>
@@ -105,19 +111,6 @@
                         </p:panel>
 
                         <div id="contenuPrincipale" style="margin-top: -8px">
-
-                            <div id="notification" style="top: 57px; width: 15%; right: 0px; position: absolute;
-                            display: none; z-index: 10; margin-right:10px;" class="card py-3" >
-                                <h:panelGroup id="notificationPanel" >
-                                    <h:panelGroup id="sideBarSearch" rendered="#{searchBean.searchResultVisible}" >
-                                        <ui:include src="/thesaurus/rightBodyView/resultSearch.xhtml" class="card py-3" />
-                                    </h:panelGroup>
-
-                                    <h:panelGroup id="listNotification" rendered="#{!searchBean.searchResultVisible}" >
-                                        <ui:include src="/thesaurus/rightBodyView/proposition/listPropositions.xhtml" />
-                                    </h:panelGroup>
-                                </h:panelGroup>
-                            </div>
 
                             <h:panelGroup id="contentConcept">
                                 <h:panelGroup rendered="#{indexSetting.projectSelected}">
@@ -165,43 +158,24 @@
         <ui:include src="dialog/login/forgetPass.xhtml" />
 
         <script>
-            if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
-                update_page();
+            function showListPropositionsBar() {
+                const listPropositionsBar = document.getElementById("listPropositionsBar");
+                listPropositionsBar.style.transform = "translateX(0)"; // Glisse vers la gauche pour s'afficher
             }
 
-            var animated = false;
-
-            function afficheNotificationBar() {
-                if (animated) {
-                    afficher();
-                } else {
-                    afficher();
-                }
+            function hideListPropositionsBar() {
+                const listPropositionsBar = document.getElementById("listPropositionsBar");
+                listPropositionsBar.style.transform = "translateX(100%)"; // Glisse vers la droite pour se cacher
             }
 
-            function afficher() {
-
-                document.getElementById("notification").style.display = "block";
-
-                $('#notification').animate({width: '0', right: '0'}, 300, 'swing');
-                $('#notification').animate({width: '20%'}, 300, 'swing');
-                $('#notification').css("left", "");
-
-                $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
-                $('#contenuPrincipale').animate({width: '80%'}, 300, 'swing');
-                $('#contenuPrincipale').css("right", "");
-
-                animated = true;
+            function showResultSearchBar() {
+                const resultSearchBar = document.getElementById("resultSearchBar");
+                resultSearchBar.style.transform = "translateX(0)"; // Glisse vers la gauche pour s'afficher
             }
 
-            function disparaitre() {
-                $('#notification').animate({width: '0', right: '-40%'}, 300, 'swing');
-                $('#notification').animate({width: '0'}, 300, 'swing');
-                $('#notification').css("right", "");
-
-                $('#contenuPrincipale').animate({width: '100%', right: '0'}, 300, 'swing');
-
-                animated = false;
+            function hideResultSearchBar() {
+                const resultSearchBar = document.getElementById("resultSearchBar");
+                resultSearchBar.style.transform = "translateX(100%)"; // Glisse vers la droite pour se cacher
             }
         </script>
     </h:body>

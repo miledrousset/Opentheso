@@ -220,20 +220,13 @@ public class SelectedTheso implements Serializable {
         localUri = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath()+"/";  
         connect.setLocalUri(localUri);
         
-      //  currentUser.getUserPermissions();
-        
         thesoHaveActiveCorpus();
         
         viewEditorThesoHomeBean.reset();
         viewEditorHomeBean.reset();
         if (isUriRequest) {
             isUriRequest = false;
-            
-            if (searchBean.isBarVisisble()) {
-                searchBean.setNodeConceptSearchs(new ArrayList<>());
-                searchBean.setBarVisisble(false);
-                PrimeFaces.current().executeScript("disparaitre();");
-            }
+            searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
             return;
         }
@@ -260,13 +253,7 @@ public class SelectedTheso implements Serializable {
             for (RoleOnThesoBean.ThesoModel thesoModel : roleOnThesoBean.getListTheso()) {
                 roleOnThesoBean.getSelectedThesoForSearch().add(thesoModel.getId());
             }
-            
-            if (searchBean.isBarVisisble()) {
-                searchBean.setNodeConceptSearchs(new ArrayList<>());
-                searchBean.setBarVisisble(false);
-                PrimeFaces.current().executeScript("disparaitre();");
-            }
-
+            searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
             return;
         }
@@ -276,13 +263,8 @@ public class SelectedTheso implements Serializable {
             if (!selectedLang.equalsIgnoreCase(currentLang)) {
                 startNewLang();
             }
-            
-            if (searchBean.isBarVisisble()) {
-                searchBean.setNodeConceptSearchs(new ArrayList<>());
-                searchBean.setBarVisisble(false);
-                PrimeFaces.current().executeScript("disparaitre();");
-            }
-            
+
+            searchBean.setNodeConceptSearchs(new ArrayList<>());
             menuBean.redirectToThesaurus();
             return;
         }
@@ -304,13 +286,8 @@ public class SelectedTheso implements Serializable {
                 roleOnThesoBean.setSelectedThesoForSearch(Collections.singletonList(selectedIdTheso));
             }
         }
-        
-        if (searchBean.isBarVisisble()) {
-            searchBean.setNodeConceptSearchs(new ArrayList<>());
-            searchBean.setBarVisisble(false);
-            PrimeFaces.current().executeScript("disparaitre();");
-        }
 
+        searchBean.setNodeConceptSearchs(new ArrayList<>());
         indexSetting.setProjectSelected(false);
         menuBean.redirectToThesaurus();
     }
@@ -548,17 +525,9 @@ public class SelectedTheso implements Serializable {
         isActionFromConcept = false;
 
         searchBean.onSelectConcept(selectedIdTheso, tree.getIdConceptSelected(), selectedLang);
-        
-        PrimeFaces pf = PrimeFaces.current();
-        if (pf.isAjaxRequest()) {
-            pf.executeScript("srollToSelected()");
-        }
-        
-        if (searchBean.isBarVisisble()) {
-            searchBean.setNodeConceptSearchs(new ArrayList<>());
-            searchBean.setBarVisisble(false);
-            PrimeFaces.current().executeScript("disparaitre();");
-        }
+
+        PrimeFaces.current().executeScript("srollToSelected()");
+        searchBean.setNodeConceptSearchs(new ArrayList<>());
     }
 
     private String getIdLang() {
