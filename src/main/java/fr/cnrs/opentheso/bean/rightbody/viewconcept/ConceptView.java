@@ -285,10 +285,11 @@ public class ConceptView implements Serializable {
         }
         nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step + 1);
         if(nodeFullConcept == null) return;
-        if(currentUser.getNodeUser() != null) {
-            nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso);
-            if (nodeConcept == null) return;
-        }        
+
+        // méthode temporaire le temps de migrer vers NodeFullConcept
+        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso);
+        if (nodeConcept == null) return;
+
         searchedForCorpus = false;
 
         // permet de récupérer les qualificatifs
@@ -427,11 +428,10 @@ public class ConceptView implements Serializable {
 
         nodeFullConcept = conceptHelper.getConcept2(connect.getPoolConnexion(), idConcept, idTheso, idLang, offset, step+1);
         if(nodeFullConcept == null) return;
-        if(currentUser.getNodeUser() != null) {
-            //nodeConcept = conceptHelper.getConcept(connect.getPoolConnexion(), idConcept, idTheso, idLang,  step + 1, offset);
-            nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idConcept);
-            if (nodeConcept == null) return;
-        }
+
+        // méthode temporaire le temps de migrer vers NodeFullConcept
+        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idConcept);
+        if (nodeConcept == null) return;
 
         // permet de récupérer les qualificatifs
         if (roleOnThesoBean.getNodePreference().isUseCustomRelation()) {

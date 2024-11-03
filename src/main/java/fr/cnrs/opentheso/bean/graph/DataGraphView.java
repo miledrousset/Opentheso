@@ -23,6 +23,7 @@ import lombok.Data;
 import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.context.annotation.Lazy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -35,6 +36,7 @@ import org.apache.http.client.utils.URIBuilder;
 import java.net.URISyntaxException;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 
 /**
  *
@@ -85,9 +87,9 @@ public class DataGraphView implements Serializable {
     private String selectedIdTheso;
     private NodeSearchMini searchSelected;
 
-    public void initTest(String text){
+   /* public void initTest(String text){
         System.out.println("url : " + text);
-    }
+    }*/
 
     private Properties getPrefOfNeo4j(){
 
