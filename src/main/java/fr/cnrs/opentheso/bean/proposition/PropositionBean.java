@@ -235,7 +235,7 @@ public class PropositionBean implements Serializable {
             }
         }
 
-        //PrimeFaces.current().ajax().update("containerIndex:notificationPanel");
+        PrimeFaces.current().ajax().update("containerIndex:notificationPanel");
     }
 
     public void afficherListPropositions() {

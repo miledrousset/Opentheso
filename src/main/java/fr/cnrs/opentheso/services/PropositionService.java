@@ -277,8 +277,7 @@ public class PropositionService implements Serializable {
     }
 
     public int searchNbrNewProposition() {
-        return propositionHelper.searchNbrPorpositoinByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.ENVOYER.name());
+        return propositionHelper.searchNbrPorpositoinByStatus(connect.getPoolConnexion(), PropositionStatusEnum.ENVOYER.name());
     }
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
@@ -1000,19 +999,15 @@ public class PropositionService implements Serializable {
     public List<PropositionDao> searchAllPropositions(String idTheso) {
         List<PropositionDao> propositions = new ArrayList<>();
         propositions.addAll(searchPropositionsNonTraitter(idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.APPROUVER.name(), idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.REFUSER.name(), idTheso));
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(), PropositionStatusEnum.APPROUVER.name(), idTheso));
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(), PropositionStatusEnum.REFUSER.name(), idTheso));
         return propositions;
     }
 
     public List<PropositionDao> searchPropositionsNonTraitter(String idTheso) {
         List<PropositionDao> propositions = new ArrayList<>();
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.ENVOYER.name(), idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(),
-                PropositionStatusEnum.LU.name(), idTheso));
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(), PropositionStatusEnum.ENVOYER.name(), idTheso));
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.getPoolConnexion(), PropositionStatusEnum.LU.name(), idTheso));
         return propositions;
     }
 
