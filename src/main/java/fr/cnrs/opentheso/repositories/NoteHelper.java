@@ -318,6 +318,7 @@ public class NoteHelper {
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNoteTypeCode(resultSet.getString("notetypecode"));
                         nodeNote.setNoteSource(resultSet.getString("notesource"));
+                        nodeNote.setIdentifier(idConcept);
                     }
                 } 
             }
@@ -364,6 +365,7 @@ public class NoteHelper {
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNoteTypeCode(resultSet.getString("notetypecode"));
                         nodeNote.setNoteSource(resultSet.getString("notesource"));
+                        nodeNote.setIdentifier(identifier);
                         nodeNotes.add(nodeNote);
                     }
                 } 
@@ -406,6 +408,7 @@ public class NoteHelper {
                         nodeNote.setCreated(resultSet.getDate("created"));
                         nodeNote.setNoteTypeCode(resultSet.getString("notetypecode"));
                         nodeNote.setNoteSource(resultSet.getString("notesource"));
+                        nodeNote.setIdentifier(identifier);
                         nodeNotes.add(nodeNote);
                     }
                 }

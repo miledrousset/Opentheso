@@ -83,6 +83,7 @@ public class MoveConcept implements Serializable {
     
     private List<String> idConceptsToMove;
 
+
     public void initForCandidate(List idConcepts1, String idThesoFrom) {
         idConceptsToMove = new ArrayList<>();
         this.idConceptsToMove = idConcepts1;
@@ -228,7 +229,10 @@ public class MoveConcept implements Serializable {
         return nodeIdValues;
     }
 
-    public List<NodeSearchMini> getAutoComplet(String value) {
+    /// Cette focntion est nécessaire pour activer l'autocomplete
+    public void action(){}
+
+    public List<NodeSearchMini> searchConceptsAutoComplet(String value) {
         List<NodeSearchMini> liste = new ArrayList<>();
         if (!StringUtils.isEmpty(idThesoTo)) {
             liste = searchHelper.searchAutoCompletionForRelation(

@@ -29,6 +29,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
@@ -80,7 +81,8 @@ public class NoteBean implements Serializable {
     private NodeFacet nodeFacet;
     private NodeGroup nodeGroup;
     private NodeNote noteToEdit;
-    
+
+    ArrayList<NodeNote> nodeNotesByLanguage;
 
     @PreDestroy
     public void destroy() {
@@ -101,6 +103,7 @@ public class NoteBean implements Serializable {
         noteValue = null;
         selectedNodeNote = null;
         nodeGroup = null;
+        nodeNotesByLanguage = null;
     }
     
     /**
@@ -131,9 +134,54 @@ public class NoteBean implements Serializable {
         isFacetNote = false;
         isConceptNote = false;
         isGroupNote = false;    
-    }    
-    
-    
+    }
+
+    public void resetConcept(String idLang) {
+        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
+        nodeNotesByLanguage = new ArrayList<>();
+        setNotesByLang(noteTypes1, conceptBean.getNodeFullConcept().getIdentifier(), selectedTheso.getCurrentIdTheso(), idLang);
+        nodeLangs = selectedTheso.getNodeLangs();
+        selectedLang = idLang;
+        noteValue = "";
+        selectedTypeNote = null;
+        isFacetNote = false;
+        isConceptNote = true;
+        isGroupNote = false;
+    }
+
+    private void setNotesByLang( ArrayList<NoteHelper.NoteType> noteType, String idConcept, String idTheso, String idLang) {
+        boolean first = true;
+
+        for(NoteHelper.NoteType type : noteType){
+            NodeNote nodeNote = noteHelper.getNodeNote(connect.getPoolConnexion(), idConcept, idTheso, idLang, type.getCodeNote());
+            if(nodeNote == null){
+                nodeNote = new NodeNote();
+                nodeNote.setIdConcept(idConcept);
+                nodeNote.setLang(idLang);
+                nodeNote.setNoteTypeCode(type.getCodeNote());
+            }
+            if(first){
+                selectedNodeNote = nodeNote;
+                selectedTypeNote = nodeNote.getNoteTypeCode();
+                first = false;
+            }
+            nodeNotesByLanguage.add(nodeNote);
+        }
+        actionChangeType();
+    }
+
+    public void  actionChangeType(){
+        for(NodeNote nodeNote : nodeNotesByLanguage){
+            if(selectedTypeNote.equals(nodeNote.getNoteTypeCode())){
+                selectedNodeNote = nodeNote;
+            }
+        }
+    }
+
+    public void  actionChangeLang(String idLang){
+        resetConcept(idLang);
+    }
+
     public void reset() {
         ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
         filterNotesByUsage(noteTypes1);
@@ -150,7 +198,7 @@ public class NoteBean implements Serializable {
         ArrayList<NoteHelper.NoteType> noteTypes1 = noteHelper.getNotesType(connect.getPoolConnexion());
         return noteTypes1;
     }
-    
+
     private void filterNotesByUsage(ArrayList<NoteHelper.NoteType> noteTypes1){
         noteTypes = new ArrayList<>();
         for (NoteHelper.NoteType noteType : noteTypes1) {
@@ -239,6 +287,109 @@ public class NoteBean implements Serializable {
     }
 
     /**
+     * permet d'ajouter une note
+     */
+    public void addAndUpdateNote(int idUser) {
+        noteValue = "";
+        if (selectedNodeNote == null || selectedNodeNote.getLexicalValue().isEmpty()) {
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne doit pas être vide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+        noteValue = fr.cnrs.opentheso.utils.StringUtils.clearValue(selectedNodeNote.getLexicalValue());
+        noteValue = StringEscapeUtils.unescapeXml(selectedNodeNote.getLexicalValue());
+        if(StringUtils.isEmpty(selectedNodeNote.getIdentifier())){
+            // Ajout de Note
+            if (!addNoteNewVersion(selectedNodeNote, idUser)) {
+                printErreur();
+                return;
+            }
+        } else {
+            // update Note
+            updateNoteNewVersion(selectedNodeNote, idUser);
+        }
+        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+                selectedTheso.getCurrentIdTheso(),
+                selectedNodeNote.getIdentifier(), idUser);
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
+    }
+
+    /**
+     * Nouvelle version pour permettre de gérer le multilingue
+     */
+    private boolean addNoteNewVersion(NodeNote nodeNote, int idUser) {
+        if (noteHelper.isNoteExist(
+                connect.getPoolConnexion(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso(),
+                nodeNote.getLang(),
+                nodeNote.getLexicalValue(),
+                nodeNote.getNoteTypeCode())) {
+
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Cette note existe déjà !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return false;
+        }
+
+        if(!noteHelper.addNote(
+                connect.getPoolConnexion(),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                nodeNote.getLang(),
+                selectedTheso.getCurrentIdTheso(),
+                nodeNote.getLexicalValue(),
+                nodeNote.getNoteTypeCode(),
+                "",
+                idUser)){
+            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de création de note !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return false;
+        }
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        return true;
+    }
+
+    /**
+     * Nouvelle méthode pour modifier la note pour gérer le multilingue
+     */
+    public void updateNoteNewVersion(NodeNote nodeNote, int idUser) {
+        FacesMessage msg;
+        if(nodeNote.getLexicalValue().isEmpty()) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La note ne peut pas être vide !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            PrimeFaces.current().ajax().update("messageIndex");
+            return;
+        }
+        nodeNote.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.clearValue(nodeNote.getLexicalValue()));
+        nodeNote.setLexicalValue(StringEscapeUtils.unescapeXml(nodeNote.getLexicalValue()));
+
+        if (!noteHelper.updateNote(connect.getPoolConnexion(),
+                nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
+                nodeNote.getIdentifier(),
+                nodeNote.getLang(),
+                selectedTheso.getCurrentIdTheso(),
+                nodeNote.getLexicalValue(),
+                nodeNote.getNoteTypeCode(),
+                idUser)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de modification !");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            return;
+        }
+        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+                new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
+                conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+
+
+
+
+    /**
      * permet d'ajouter une note 
      */
     public void addNewNote(int idUser) {
@@ -285,11 +436,15 @@ public class NoteBean implements Serializable {
                 conceptBean.getSelectedLang(), currentUser);
 
         noteValue = "";
-        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
-        filterNotesByUsage(noteTypes1);
-        
+        refreshNoteType();
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note ajoutée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    // permet de filtrer les notes manquantes par langue pour ajouter des nouvelles notes
+    public void refreshNoteType(){
+        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
+        filterNotesByUsage(noteTypes1);
     }
     
     
