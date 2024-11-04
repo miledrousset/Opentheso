@@ -29,6 +29,22 @@
                 </div>
             </div>
 
+
+            <!-- Langue de la note -->
+            <div class="row" style="margin-top: 10px">
+                <div class="col-5">
+                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " />
+                </div>
+                <div class="col-7">
+                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}"
+                                     value="#{noteBean.selectedLang}" style="width: 100%;">
+                        <p:ajax event="valueChange" listener="#{noteBean.actionChangeLang(noteBean.selectedLang)}" update="groupNoteEditor listNoteTypes"/>
+                        <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}"
+                                        itemValue="#{lang.code}" />
+                    </p:selectOneMenu>
+                </div>
+            </div>
+
             <!-- type note -->
             <h:panelGroup id="listNoteTypes">
                 <div class="row" style="margin-top: 10px">
@@ -38,32 +54,18 @@
                     <div class="col-7">
                         <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.type_note')}" style="width: 100%;"
                                          value="#{noteBean.selectedTypeNote}">
-                            <f:selectItems value="#{noteBean.noteTypes}" var="typeNote"
-                                           itemLabel="#{typeNote.labelFr} (#{typeNote.labelEn})" itemValue="#{typeNote.codeNote}"/>
-                        </p:selectOneMenu>  
+                            <p:ajax event="valueChange" listener="#{noteBean.actionChangeType()}" update="groupNoteEditor"/>
+                            <f:selectItems value="#{noteBean.nodeNotesByLanguage}" var="note"
+                                           itemLabel="#{note.noteTypeCode}" itemValue="#{note.noteTypeCode}" actionListener="#{noteBean.actionSetNoteType(note)}"/>
+                        </p:selectOneMenu>
                     </div>
                 </div>
             </h:panelGroup>                
 
-            <!-- Langue de la note -->
-            <div class="row" style="margin-top: 10px">
-                <div class="col-5">
-                    <h:outputText value="#{langueBean.getMsg('candidat.language')} : " /> 
-                </div>
-                <div class="col-7">
-                    <p:selectOneMenu label="#{langueBean.getMsg('rightbody.conceptdialog.language')}" 
-                                     value="#{noteBean.selectedLang}" style="width: 100%;">
-                        <f:selectItems  value="#{noteBean.nodeLangs}" var="lang" itemLabel="#{lang.value}" 
-                                        itemValue="#{lang.code}" />
-                    </p:selectOneMenu>    
-                </div>
-            </div>
-            
-            
             <h:panelGroup id="groupNoteEditor">
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12">
-                        <p:textEditor widgetVar="NoteEditor2" value="#{noteBean.noteValue}" allowLinks="true" secure="false" height="200"
+                        <p:textEditor widgetVar="NoteEditor2" value="#{noteBean.selectedNodeNote.lexicalValue}" allowLinks="true" secure="false" height="200"
                                       placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />   
                     </div>
                 </div>            

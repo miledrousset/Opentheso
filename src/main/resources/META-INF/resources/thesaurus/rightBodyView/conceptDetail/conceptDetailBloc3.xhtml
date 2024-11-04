@@ -15,7 +15,7 @@
                             <p:menuButton rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}"
                                           icon="pi pi-cog" style="background: none; border: none; color: #000; box-shadow: none;">
                                 <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_note')}"
-                                            actionListener="#{noteBean.reset()}" update="containerIndex:idAddNote"
+                                            actionListener="#{noteBean.resetConcept(selectedTheso.currentLang)}" update="containerIndex:idAddNote"
                                             oncomplete="PF('addNote').show();" icon="fas fa-plus" />
                             </p:menuButton>
                         </h:panelGroup>
