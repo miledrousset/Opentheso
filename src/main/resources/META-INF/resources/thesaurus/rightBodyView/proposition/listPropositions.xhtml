@@ -4,10 +4,10 @@
              xmlns:ui="http://java.sun.com/jsf/facelets"
              xmlns:p="http://primefaces.org/ui">
 
-    <button onclick="hideListPropositionsBar()">Fermer</button>
+    <button onclick="hideListPropositionsBar()">Fermer →</button>
 
-    <h:form>
-        <p:scrollPanel id="listPropositionsPanel" style="border: none; padding-left: 10px; max-height: 90vh; overflow-y: auto;" mode="native">
+    <h:form id="listPropositionsPanel">
+        <p:scrollPanel style="border: none; padding-left: 10px; max-height: 90vh; overflow-y: auto;" mode="native">
 
             <div style="width: 100%; text-align: center;">
                 <p:selectOneButton value="#{propositionBean.showAllPropositions}" style="margin-bottom: 5px">
