@@ -73,13 +73,12 @@ public class PropositionBean implements Serializable {
     private String nom, email, commentaire, commentaireAdmin;
     private String message;
     private String actionNom;
+    private String filter2 = "3";
     private String showAllPropositions = "1";
-    private int nbrNewPropositions, filter2 = 1;
+    private int nbrNewPropositions;
 
     private PropositionDao propositionSelected;
     private List<PropositionDao> propositions;
-
-    private boolean propositionVisibleControle;
     private boolean prefTermeAccepted, varianteAccepted, traductionAccepted,
             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
             editorialNotesAccepted, examplesAccepted, historyAccepted;
@@ -98,11 +97,9 @@ public class PropositionBean implements Serializable {
 
         this.propositionSelected = propositionDao;
 
-        NodePreference preference = preferencesHelper.getThesaurusPreferences(
-                connect.getPoolConnexion(), propositionDao.getIdTheso());
+        NodePreference preference = preferencesHelper.getThesaurusPreferences(connect.getPoolConnexion(), propositionDao.getIdTheso());
         if (!preference.isSuggestion()) {
-            showMessage(FacesMessage.SEVERITY_WARN,
-                    languageBean.getMsg("rightbody.proposal.avertissement"));
+            showMessage(FacesMessage.SEVERITY_WARN, languageBean.getMsg("rightbody.proposal.avertissement"));
             return;
         }
 
@@ -126,6 +123,7 @@ public class PropositionBean implements Serializable {
 
         chercherProposition();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
+        PrimeFaces.current().ajax().update("containerIndex:notificationProp");
 
         varianteAccepted = false;
         traductionAccepted = false;
@@ -143,14 +141,11 @@ public class PropositionBean implements Serializable {
         checkSynonymPropositionStatus();
         checkTraductionPropositionStatus();
         checkNotePropositionStatus();
-
-        PrimeFaces.current().executeScript("afficheSearchBar()");
     }
 
     public void checkSynonymPropositionStatus() {
         for (SynonymPropBean synonymPropBean : proposition.getSynonymsProp()) {
-            if (synonymPropBean.isToAdd() || synonymPropBean.isToRemove()
-                    || synonymPropBean.isToUpdate()) {
+            if (synonymPropBean.isToAdd() || synonymPropBean.isToRemove() || synonymPropBean.isToUpdate()) {
                 varianteAccepted = true;
             }
         }
@@ -158,8 +153,7 @@ public class PropositionBean implements Serializable {
 
     public void checkTraductionPropositionStatus() {
         for (TraductionPropBean traductionPropBean : proposition.getTraductionsProp()) {
-            if (traductionPropBean.isToAdd() || traductionPropBean.isToRemove()
-                    || traductionPropBean.isToUpdate()) {
+            if (traductionPropBean.isToAdd() || traductionPropBean.isToRemove() || traductionPropBean.isToUpdate()) {
                 traductionAccepted = true;
             }
         }
@@ -215,37 +209,14 @@ public class PropositionBean implements Serializable {
     }
 
     public void afficherPropositionsNotification() {
-        afficherListPropositions();
-        if (searchBean.isSearchVisibleControle()) {
-            PrimeFaces.current().executeScript("disparaitre();");
-            PrimeFaces.current().executeScript("afficher();");
-            searchBean.setBarVisisble(true);
-            searchBean.setSearchResultVisible(false);
-            searchBean.setSearchVisibleControle(false);
-            propositionVisibleControle = true;
-        } else {
-            if (searchBean.isBarVisisble()) {
-                PrimeFaces.current().executeScript("disparaitre();");
-                searchBean.setBarVisisble(false);
-                propositionVisibleControle = false;
-            } else {
-                PrimeFaces.current().executeScript("afficher();");
-                searchBean.setBarVisisble(true);
-                propositionVisibleControle = true;
-            }
-        }
-
-        PrimeFaces.current().ajax().update("containerIndex:notificationPanel");
-    }
-
-    public void afficherListPropositions() {
+        filter2 = "3";
         chercherProposition();
-        searchBean.setSearchResultVisible(false);
+        PrimeFaces.current().ajax().update("listPropositionsPanel");
+        PrimeFaces.current().executeScript("showListPropositionsBar();");
     }
 
     public void chercherProposition() {
-        propositions = new ArrayList<>();
-        String idTheso = filter2 == 2 ? selectedTheso.getSelectedIdTheso() : "%";
+        String idTheso = "2".equals(filter2) ? selectedTheso.getSelectedIdTheso() : "%";
         switch (showAllPropositions) {
             case "1":
                 propositions = propositionService.searchPropositionsNonTraitter(idTheso);
@@ -260,6 +231,7 @@ public class PropositionBean implements Serializable {
 
     public void searchNewPropositions() {
         nbrNewPropositions = propositionService.searchNbrNewProposition();
+        PrimeFaces.current().ajax().update("containerIndex:notificationProp");
     }
 
     public void preparerConfirmationDialog(String action) {
@@ -322,6 +294,8 @@ public class PropositionBean implements Serializable {
 
         chercherProposition();
         nbrNewPropositions = propositionService.searchNbrNewProposition();
+        PrimeFaces.current().ajax().update("containerIndex:notificationProp");
+
 
         PrimeFaces.current().executeScript("PF('confirmDialog').hide();");
     }

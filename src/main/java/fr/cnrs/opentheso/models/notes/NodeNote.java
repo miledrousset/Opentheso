@@ -24,5 +24,6 @@ public class NodeNote implements Serializable {
     private int idUser;
     private String user;
     private boolean voted;
+    private String identifier;
     
 }

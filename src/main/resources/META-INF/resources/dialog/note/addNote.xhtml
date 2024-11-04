@@ -5,7 +5,7 @@
              xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="idAddNote" header="#{langueBean.getMsg('rightbody.concept.add_note')}" widgetVar="addNote" 
-              width="650" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
+              width="650" showEffect="fade" modal="true" resizable="true" position="top" style="margin-top: 30px" >
 
         <h:form id="addNoteForm" >  
             
@@ -65,7 +65,7 @@
             <h:panelGroup id="groupNoteEditor">
                 <div class="row" style="margin-top: 10px">
                     <div class="col-12">
-                        <p:textEditor widgetVar="NoteEditor2" value="#{noteBean.selectedNodeNote.lexicalValue}" allowLinks="true" secure="false" height="200"
+                        <p:textEditor widgetVar="NoteEditor2" value="#{noteBean.selectedNodeNote.lexicalValue}" allowLinks="true"  secure="false"
                                       placeholder="#{langueBean.getMsg('rightbody.conceptdialog.type_value')}" />   
                     </div>
                 </div>            
@@ -80,7 +80,7 @@
                 <p:commandButton id="addNoteBtn" value="#{langueBean.getMsg('btnValidate')}" icon="pi pi-check" 
                                  update="containerIndex:formRightTab listNoteTypes groupNoteEditor messageIndex" styleClass="ui-button-success" 
                                  ajax="true" process="@form"                              
-                                 actionListener="#{noteBean.addNewNote(currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{noteBean.addAndUpdateNote(currentUser.nodeUser.idUser)}"/>
             </div> 
         </h:form>
     </p:dialog>   
