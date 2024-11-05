@@ -209,7 +209,6 @@ public class PropositionBean implements Serializable {
     }
 
     public void afficherPropositionsNotification() {
-        filter2 = "3";
         chercherProposition();
         PrimeFaces.current().ajax().update("listPropositionsPanel");
         PrimeFaces.current().executeScript("showListPropositionsBar();");
