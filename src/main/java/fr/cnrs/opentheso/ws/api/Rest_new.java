@@ -343,7 +343,7 @@ public class Rest_new {
      */
     @GetMapping(value = "/search")
     public ResponseEntity<Object> searchRdf(@RequestParam("theso") String idTheso,
-                                    @RequestParam("idLang") String idLang,
+                                    @RequestParam(value = "idLang", required = false) String idLang,
                                     @RequestParam("q") String value,
                                     @RequestParam(value = "showLabels", required = false, defaultValue = "false") boolean showLabels,
                                     @RequestParam(value = "groups", required = false) String groups,

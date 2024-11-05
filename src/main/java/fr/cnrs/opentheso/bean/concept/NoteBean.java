@@ -1,5 +1,7 @@
 package fr.cnrs.opentheso.bean.concept;
 
+import fr.cnrs.opentheso.models.concept.NodeConcept;
+import fr.cnrs.opentheso.models.concept.NodeFullConcept;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.repositories.FacetHelper;
@@ -111,20 +113,28 @@ public class NoteBean implements Serializable {
      * @param nodeFacet 
      */
     public void resetForFacet(NodeFacet nodeFacet){
-        resetGroup();
+        resetNotes(nodeFacet.getIdFacet(), nodeFacet.getLang());
         setIsFacetNote();
         this.nodeFacet = nodeFacet;
     }
     
     /**
      * permet d'initialiser l'édition des notes pour les facettes
-     * @param nodeGroup 
      */
     public void resetForGroup(NodeGroup nodeGroup){
-        resetGroup();
+        resetNotes(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getIdLang());
         setIsGroupNote();
-        this.nodeGroup = nodeGroup;
-    }    
+//        this.nodeGroup = nodeGroup;
+    }
+
+    /**
+     * permet d'initialiser l'édition des notes pour les concepts
+     */
+    public void resetForConcept(String identifier, String idLang){
+        resetNotes(identifier, idLang);
+        setIsConceptNote();
+    }
+
     private void resetGroup() {
         noteTypes = noteHelper.getNotesType(connect.getPoolConnexion());
         nodeLangs = selectedTheso.getNodeLangs();
@@ -136,29 +146,26 @@ public class NoteBean implements Serializable {
         isGroupNote = false;    
     }
 
-    public void resetConcept(String idLang) {
+    private void resetNotes(String identifier, String idLang) {
         ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
         nodeNotesByLanguage = new ArrayList<>();
-        setNotesByLang(noteTypes1, conceptBean.getNodeFullConcept().getIdentifier(), selectedTheso.getCurrentIdTheso(), idLang);
+        setNotesByLang(noteTypes1, identifier, selectedTheso.getCurrentIdTheso(), idLang);
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = idLang;
         noteValue = "";
         selectedTypeNote = null;
-        isFacetNote = false;
-        isConceptNote = true;
-        isGroupNote = false;
     }
 
-    private void setNotesByLang( ArrayList<NoteHelper.NoteType> noteType, String idConcept, String idTheso, String idLang) {
+    private void setNotesByLang( ArrayList<NoteHelper.NoteType> noteType, String identifier, String idTheso, String idLang) {
         boolean first = true;
 
         for(NoteHelper.NoteType type : noteType){
-            NodeNote nodeNote = noteHelper.getNodeNote(connect.getPoolConnexion(), idConcept, idTheso, idLang, type.getCodeNote());
+            NodeNote nodeNote = noteHelper.getNodeNote(connect.getPoolConnexion(), identifier, idTheso, idLang, type.getCodeNote());
             if(nodeNote == null){
                 nodeNote = new NodeNote();
-                nodeNote.setIdConcept(idConcept);
                 nodeNote.setLang(idLang);
                 nodeNote.setNoteTypeCode(type.getCodeNote());
+                nodeNote.setIdentifier(identifier);
             }
             if(first){
                 selectedNodeNote = nodeNote;
@@ -179,111 +186,12 @@ public class NoteBean implements Serializable {
     }
 
     public void  actionChangeLang(String idLang){
-        resetConcept(idLang);
+        resetNotes(selectedNodeNote.getIdentifier(), idLang);
     }
 
-    public void reset() {
-        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
-        filterNotesByUsage(noteTypes1);
-        nodeLangs = selectedTheso.getNodeLangs();
-        selectedLang = selectedTheso.getSelectedLang();
-        noteValue = "";
-        selectedTypeNote = null;
-        isFacetNote = false;
-        isConceptNote = false;
-        isGroupNote = false;    
-    }
-    
     private ArrayList<NoteHelper.NoteType> findNoteTypes(){
         ArrayList<NoteHelper.NoteType> noteTypes1 = noteHelper.getNotesType(connect.getPoolConnexion());
         return noteTypes1;
-    }
-
-    private void filterNotesByUsage(ArrayList<NoteHelper.NoteType> noteTypes1){
-        noteTypes = new ArrayList<>();
-        for (NoteHelper.NoteType noteType : noteTypes1) {
-            switch (noteType.getCodeNote()) {
-                case "note":
-                    if(conceptBean.getNote() == null || conceptBean.getNote().getLexicalValue().isEmpty()) {
-                        noteTypes.add(noteType);
-                    }                     
-                    break;
-                case "definition":
-                    if(conceptBean.getDefinition() == null || conceptBean.getDefinition().getLexicalValue().isEmpty()) {
-                        noteTypes.add(noteType);
-                    }                     
-                    break;     
-                case "scopeNote":
-                    if(conceptBean.getScopeNote()== null || conceptBean.getScopeNote().getLexicalValue().isEmpty()) {
-                        noteTypes.add(noteType);
-                    }                     
-                    break;  
-                case "example":          
-                    if(conceptBean.getExample() == null || conceptBean.getExample().getLexicalValue().isEmpty()) {
-                        noteTypes.add(noteType);
-                    }                     
-                    break;                     
-                case "historyNote":
-                    if(conceptBean.getHistoryNote()== null || conceptBean.getHistoryNote().getLexicalValue().isEmpty()) {
-                        noteTypes.add(noteType);
-                    }                     
-                    break; 
-                case "editorialNote":
-                    if(conceptBean.getEditorialNote()== null || conceptBean.getEditorialNote().getLexicalValue().isEmpty()) {
-                        noteTypes.add(noteType);
-                    }                     
-                    break;                      
-                    
-                case "changeNote":
-                    if(conceptBean.getChangeNote() == null || conceptBean.getChangeNote().getLexicalValue().isEmpty()) {
-                        noteTypes.add(noteType);
-                    }                     
-                    break;                      
-                default:
-                    break;
-            }
-        }
-    }
-    
-    private void setIsFacetNote(){
-        isFacetNote = true;
-        isConceptNote = false;
-        isGroupNote = false;           
-    }
-    private void setIsConceptNote(){
-        isFacetNote = false;
-        isConceptNote = true;
-        isGroupNote = false;           
-    }    
-    private void setIsGroupNote(){
-        isFacetNote = false;
-        isConceptNote = false;
-        isGroupNote = true;           
-    }    
-    
-    public void initNoteProp(String noteType) {
-        reset();
-        setSelectedTypeNote(noteType);
-    }
-
-    public void infos() {
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    /**
-     * A chaque sélection de note pour modification ou suppression, on initialise cette note
-     */
-    public void initNodeToEdit(String identifier,String selectedTypeNote1) {
-        if (selectedTypeNote1 == null) {
-            return;
-        }
-        this.selectedTypeNote = selectedTypeNote1;
-        noteToEdit = noteHelper.getNodeNote(connect.getPoolConnexion(),
-                identifier,
-                selectedTheso.getCurrentIdTheso(),
-                selectedTheso.getCurrentLang(),
-                selectedTypeNote);
     }
 
     /**
@@ -299,15 +207,15 @@ public class NoteBean implements Serializable {
         }
         noteValue = fr.cnrs.opentheso.utils.StringUtils.clearValue(selectedNodeNote.getLexicalValue());
         noteValue = StringEscapeUtils.unescapeXml(selectedNodeNote.getLexicalValue());
-        if(StringUtils.isEmpty(selectedNodeNote.getIdentifier())){
+        if(noteHelper.isNoteExistInThatLang(connect.getPoolConnexion(), selectedNodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso(), selectedNodeNote.getLang(), selectedNodeNote.getNoteTypeCode())){
+            // update Note
+            updateNoteNewVersion(selectedNodeNote, idUser);
+        } else {
             // Ajout de Note
             if (!addNoteNewVersion(selectedNodeNote, idUser)) {
                 printErreur();
                 return;
             }
-        } else {
-            // update Note
-            updateNoteNewVersion(selectedNodeNote, idUser);
         }
         conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
@@ -323,20 +231,18 @@ public class NoteBean implements Serializable {
     private boolean addNoteNewVersion(NodeNote nodeNote, int idUser) {
         if (noteHelper.isNoteExist(
                 connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                nodeNote.getIdentifier(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLang(),
                 nodeNote.getLexicalValue(),
                 nodeNote.getNoteTypeCode())) {
-
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Cette note existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
         }
-
         if(!noteHelper.addNote(
                 connect.getPoolConnexion(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
+                nodeNote.getIdentifier(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
@@ -384,6 +290,145 @@ public class NoteBean implements Serializable {
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
+
+
+    private void setIsFacetNote(){
+        isFacetNote = true;
+        isConceptNote = false;
+        isGroupNote = false;
+    }
+    private void setIsConceptNote(){
+        isFacetNote = false;
+        isConceptNote = true;
+        isGroupNote = false;
+    }
+    private void setIsGroupNote(){
+        isFacetNote = false;
+        isConceptNote = false;
+        isGroupNote = true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void reset() {
+        ArrayList<NoteHelper.NoteType> noteTypes1 = findNoteTypes();
+        filterNotesByUsage(noteTypes1);
+        nodeLangs = selectedTheso.getNodeLangs();
+        selectedLang = selectedTheso.getSelectedLang();
+        noteValue = "";
+        selectedTypeNote = null;
+        isFacetNote = false;
+        isConceptNote = false;
+        isGroupNote = false;
+    }
+
+
+
+
+
+
+    private void filterNotesByUsage(ArrayList<NoteHelper.NoteType> noteTypes1){
+        noteTypes = new ArrayList<>();
+        for (NoteHelper.NoteType noteType : noteTypes1) {
+            switch (noteType.getCodeNote()) {
+                case "note":
+                    if(conceptBean.getNote() == null || conceptBean.getNote().getLexicalValue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;
+                case "definition":
+                    if(conceptBean.getDefinition() == null || conceptBean.getDefinition().getLexicalValue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;     
+                case "scopeNote":
+                    if(conceptBean.getScopeNote()== null || conceptBean.getScopeNote().getLexicalValue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;  
+                case "example":          
+                    if(conceptBean.getExample() == null || conceptBean.getExample().getLexicalValue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;                     
+                case "historyNote":
+                    if(conceptBean.getHistoryNote()== null || conceptBean.getHistoryNote().getLexicalValue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break; 
+                case "editorialNote":
+                    if(conceptBean.getEditorialNote()== null || conceptBean.getEditorialNote().getLexicalValue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;                      
+                    
+                case "changeNote":
+                    if(conceptBean.getChangeNote() == null || conceptBean.getChangeNote().getLexicalValue().isEmpty()) {
+                        noteTypes.add(noteType);
+                    }                     
+                    break;                      
+                default:
+                    break;
+            }
+        }
+    }
+    
+
+    
+    public void initNoteProp(String noteType) {
+        reset();
+        setSelectedTypeNote(noteType);
+    }
+
+    public void infos() {
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "info !", " rediger une aide ici pour Add Concept !");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    /**
+     * A chaque sélection de note pour modification ou suppression, on initialise cette note
+     */
+    public void initNodeToEdit(String identifier,String selectedTypeNote1) {
+        if (selectedTypeNote1 == null) {
+            return;
+        }
+        this.selectedTypeNote = selectedTypeNote1;
+        noteToEdit = noteHelper.getNodeNote(connect.getPoolConnexion(),
+                identifier,
+                selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentLang(),
+                selectedTypeNote);
+    }
+
 
 
 
@@ -696,7 +741,7 @@ public class NoteBean implements Serializable {
         FacesMessage msg;
         if (!noteHelper.updateNote(connect.getPoolConnexion(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                nodeFacet.getIdFacet(),
+                nodeNote.getIdentifier(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
@@ -709,25 +754,25 @@ public class NoteBean implements Serializable {
 
         facetHelper.updateDateOfFacet(connect.getPoolConnexion(),
                 selectedTheso.getCurrentIdTheso(),
-                nodeFacet.getIdFacet(), idUser);
+                nodeNote.getIdentifier(), idUser);
         ///// insert DcTermsData to add contributor
         dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                nodeFacet.getIdFacet(), selectedTheso.getCurrentIdTheso());
+                nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
         ///////////////  
-        editFacet.initEditFacet(nodeFacet.getIdFacet(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
+        editFacet.initEditFacet(nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);    
         
     }
     
-    // mise à jour des notes pour les facettes
+    // mise à jour des notes pour les collections
     private void updateGroupNote(NodeNote nodeNote, int idUser){
         FacesMessage msg;
         if (!noteHelper.updateNote(connect.getPoolConnexion(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
-                nodeGroup.getConceptGroup().getIdgroup(),
+                nodeNote.getIdentifier(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getLexicalValue(),
@@ -739,14 +784,14 @@ public class NoteBean implements Serializable {
         }
 
         groupHelper.updateModifiedDate(connect.getPoolConnexion(),
-                nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
+                nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
         
         ///// insert DcTermsData to add contributor
         dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
-                nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
+                nodeNote.getIdentifier(), selectedTheso.getCurrentIdTheso());
         ///////////////  
-        groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentLang());
+        groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeNote.getIdentifier(), selectedTheso.getCurrentLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);           
@@ -808,7 +853,7 @@ public class NoteBean implements Serializable {
         FacesMessage msg;
         if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
                 nodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
-                nodeGroup.getConceptGroup().getIdgroup(),
+                nodeNote.getIdentifier(),
                 nodeNote.getLang(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeNote.getNoteTypeCode(),
@@ -817,7 +862,7 @@ public class NoteBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeGroup.getConceptGroup().getIdgroup(), selectedTheso.getCurrentLang());
+        groupView.getGroup(selectedTheso.getCurrentIdTheso(),  nodeNote.getIdentifier(), selectedTheso.getCurrentLang());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "note supprimée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
