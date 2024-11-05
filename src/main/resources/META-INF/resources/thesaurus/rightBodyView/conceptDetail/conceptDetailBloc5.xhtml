@@ -8,59 +8,57 @@
         <div class="card mb-4 py-3 border-left-success" style="margin-top: 15px; margin: 20px;">
             <div class="list-group" style="margin-top: -10px; margin-bottom: -10px">
                 <!-- ligne Alignements -->
-                <h:panelGroup >
-                    <div class="list-group-item list-group-item-action">
-                        <div class="row" style="margin-left: 0px;">
-                            <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
-                                <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
-                                    <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;">
+                <div class="list-group-item list-group-item-action">
+                    <div class="row" style="margin-left: 0px;">
+                        <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (currentUser.hasRoleAsManager)}">
+                            <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1" >
+                                <p:menuButton icon="fas fa-cog" style="color: #F7A269; background: none; border: none; box-shadow: none;">
 
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}" 
-                                                    actionListener="#{alignmentManualBean.reset()}" oncomplete="PF('addManualAlignment').show();"
-                                                    icon="fas fa-pen" update="containerIndex:idAddManualAlignment" />                                      
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.add_alignment_manual')}"
+                                                actionListener="#{alignmentManualBean.reset()}" oncomplete="PF('addManualAlignment').show();"
+                                                icon="fas fa-pen" update="containerIndex:idAddManualAlignment" />
 
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_alignment')}" 
-                                                    action="#{alignmentManualBean.reset()}" oncomplete="PF('updateAlignment').show();"
-                                                    icon="fas fa-edit" update="containerIndex:idUpdateAlignment"
-                                                    disabled="#{!conceptView.haveAlignment}"/>
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.edit_alignment')}"
+                                                action="#{alignmentManualBean.reset()}" oncomplete="PF('updateAlignment').show();"
+                                                icon="fas fa-edit" update="containerIndex:idUpdateAlignment"
+                                                disabled="#{!conceptView.haveAlignment}"/>
 
-                                        <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_alignment')}" 
-                                                    actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso, 
+                                    <p:menuitem value="#{langueBean.getMsg('rightbody.concept.delete_alignment')}"
+                                                actionListener="#{alignmentBean.initAlignementByStep(selectedTheso.currentIdTheso,
                                                                       conceptView.nodeFullConcept.identifier, conceptView.selectedLang)}"
-                                                    oncomplete="PF('deleteAlignment').show();"
-                                                    update="containerIndex:idDeleteAlignment"
-                                                    icon="fas fa-minus" disabled="#{!conceptView.haveAlignment}" />                                        
-                                    </p:menuButton>
-                                </div>
-                            </h:panelGroup>
-                            <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" >                               
-
-                                <h:panelGroup rendered="#{!conceptView.haveAlignment}">
-                                    <h:outputText value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}" 
-                                                  style="font-size: 12px; color: grey; font-style: italic " />
-                                </h:panelGroup>
-
-                                <h:panelGroup rendered="#{conceptView.haveAlignment}">
-                                    <!-- Exact -->
-                                    <ui:repeat var="align" value="#{conceptView.nodeFullConcept.exactMatchs}" varStatus="aligStatus" >
-                                        <h:outputText value="#{langueBean.getMsg('alignment.exactMatch')} :  " style="font-size: 14px;color: #8f8f8f"/>
-                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                        <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
-                                        <br/>
-                                    </ui:repeat>
-                                    
-                                    <!-- Close -->
-                                    <ui:repeat var="align" value="#{conceptView.nodeFullConcept.closeMatchs}" varStatus="aligStatus" >
-                                        <h:outputText value="#{langueBean.getMsg('alignment.closeMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
-                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                        <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
-                                        <br/>
-                                    </ui:repeat>                                    
-                                </h:panelGroup>
+                                                oncomplete="PF('deleteAlignment').show();"
+                                                update="containerIndex:idDeleteAlignment"
+                                                icon="fas fa-minus" disabled="#{!conceptView.haveAlignment}" />
+                                </p:menuButton>
                             </div>
+                        </h:panelGroup>
+                        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-6" >
+
+                            <h:panelGroup rendered="#{!conceptView.haveAlignment}">
+                                <h:outputText value="....." title="#{langueBean.getMsg('rightbody.concept.no_value')}"
+                                              style="font-size: 12px; color: grey; font-style: italic " />
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{conceptView.haveAlignment}">
+                                <!-- Exact -->
+                                <ui:repeat var="align" value="#{conceptView.nodeFullConcept.exactMatchs}" varStatus="aligStatus" >
+                                    <h:outputText value="#{langueBean.getMsg('alignment.exactMatch')} :  " style="font-size: 14px;color: #8f8f8f"/>
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
+                                    <h:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <br/>
+                                </ui:repeat>
+
+                                <!-- Close -->
+                                <ui:repeat var="align" value="#{conceptView.nodeFullConcept.closeMatchs}" varStatus="aligStatus" >
+                                    <h:outputText value="#{langueBean.getMsg('alignment.closeMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
+                                    <h:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <br/>
+                                </ui:repeat>
+                            </h:panelGroup>
                         </div>
                     </div>
-                </h:panelGroup>
+                </div>
             </div>
         </div>
     </h:panelGroup>
@@ -98,82 +96,79 @@
                           margin-bottom: -5px; background-color: #CBD1DC; font-weight: 100"  />
             </h:panelGroup>
 
-            <h:form>
-                <div class="list-group-item list-group-item-action" style="margin-top: 10px;">
-                    <div class="row">
-                        <div class="col-xl-10 col-lg-10 col-md-10 col-sm-9">
+            <div class="list-group-item list-group-item-action" style="margin-top: 10px;">
+                <div class="row">
+                    <div class="col-xl-10 col-lg-10 col-md-10 col-sm-9">
 
-                            <!-- Id interne -->
-                            <div class="list-group-item list-group-item-action">
-                                <div class="row" style="margin-left: 0px;">
-                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
-                                        <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}"
-                                                      style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
-                                    </div>
-                                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="margin-left: 0px">
-                                        <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                        <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeFullConcept.identifier}&amp;idt=#{selectedTheso.currentIdTheso}"
-                                                value="#{conceptView.nodeFullConcept.identifier}" style="color: #164A78; font-size: 13px;">
-                                        </p:link>
-                                    </div>
+                        <!-- Id interne -->
+                        <div class="list-group-item list-group-item-action">
+                            <div class="row" style="margin-left: 0px;">
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align:left;">
+                                    <h:outputText value="#{langueBean.getMsg('rightbody.concept.internal_id')}"
+                                                  style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
+                                </div>
+                                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" style="margin-left: 0px">
+                                    <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
+                                    <p:link href="#{request.contextPath}/?idc=#{conceptView.nodeFullConcept.identifier}&amp;idt=#{selectedTheso.currentIdTheso}"
+                                            value="#{conceptView.nodeFullConcept.identifier}" style="color: #164A78; font-size: 13px;">
+                                    </p:link>
                                 </div>
                             </div>
-                            <!-- identifiants pérennes -->
-                            <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
+                        </div>
+                        <!-- identifiants pérennes -->
+                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
                                                       || roleOnTheso.nodePreference.originalUriIsDoi || conceptView.nodeFullConcept.uri != ''}">
-                                <div class="list-group-item list-group-item-action">
-                                    <div class="row" style="margin-left: 0px;">
-                                        <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
+                            <div class="list-group-item list-group-item-action">
+                                <div class="row" style="margin-left: 0px;">
+                                    <h:panelGroup rendered="#{roleOnTheso.nodePreference.originalUriIsArk || roleOnTheso.nodePreference.originalUriIsHandle
                                                                   || roleOnTheso.nodePreference.originalUriIsDoi}">
-                                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
-                                                <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}"
-                                                              style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
-                                            </div>
-                                            <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
-                                                <!-- Uri du concept -->
-                                                <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
-                                                <p:link href="#{conceptView.nodeFullConcept.uri}"
-                                                        value="#{conceptView.nodeFullConcept.uri}"
-                                                        style="color: #164A78; font-size: 13px;" target="_blank">
-                                                </p:link>
-                                            </div>
-                                        </h:panelGroup>
-                                    </div>
+                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                                            <h:outputText value="#{langueBean.getMsg('rightbody.concept.original_uri')}"
+                                                          style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
+                                        </div>
+                                        <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
+                                            <!-- Uri du concept -->
+                                            <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a; font-size: 13px;"/>
+                                            <h:link href="#{conceptView.nodeFullConcept.uri}" value="#{conceptView.nodeFullConcept.uri}"
+                                                    style="color: #164A78; font-size: 13px;" target="_blank">
+                                            </h:link>
+                                        </div>
+                                    </h:panelGroup>
                                 </div>
-                                <div class="list-group-item list-group-item-action">
-                                    <div class="row" style="margin-left: 0px;">
-                                        <!-- Affichage de l'identifiant pérenne -->
+                            </div>
+                            <div class="list-group-item list-group-item-action">
+                                <div class="row" style="margin-left: 0px;">
+                                    <!-- Affichage de l'identifiant pérenne -->
+                                    <div class="list-group-item list-group-item-action">
                                         <div class="list-group-item list-group-item-action">
-                                            <div class="list-group-item list-group-item-action">
-                                                <h:panelGroup rendered="#{conceptView.nodeFullConcept.permanentId != ''}">
-                                                    <div class="row" style="margin-left: 0px;">
-                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
-                                                            <h:outputText value="#{langueBean.getMsg('persistentIdentifier')}" style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
-                                                        </div>
-                                                        <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
-                                                            <h:outputText value="#{conceptView.nodeFullConcept.permanentId}" style="font-size: 12px;"/>
-                                                        </div>
+                                            <h:panelGroup rendered="#{conceptView.nodeFullConcept.permanentId != ''}">
+                                                <div class="row" style="margin-left: 0px;">
+                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-4 offset-xl-0 offset-lg-0 offset-md-0 offset-sm-0" style="text-align: left;">
+                                                        <h:outputText value="#{langueBean.getMsg('persistentIdentifier')}" style="font-size: 14px; font-weight: bold; color: #8f8f8f"/>
                                                     </div>
-                                                </h:panelGroup>
-                                            </div>
+                                                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-8" >
+                                                        <h:outputText value="#{conceptView.nodeFullConcept.permanentId}" style="font-size: 12px;"/>
+                                                    </div>
+                                                </div>
+                                            </h:panelGroup>
                                         </div>
                                     </div>
                                 </div>
-                            </h:panelGroup>
-
-                        </div>
-
-                        <div class="col-xl-1 col-lg-2 col-md-2 col-sm-2" style="text-align: left;">
-                            <!-- QrCode-->
-                            <div class="list-group-item list-group-item-action">
-                                <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeFullConcept.permanentId}"
-                                           rendered="#{conceptView.nodeFullConcept.permanentId != ''}"
-                                           type="qr" height="75px;"/>
                             </div>
+                        </h:panelGroup>
+
+                    </div>
+
+                    <div class="col-xl-1 col-lg-2 col-md-2 col-sm-2" style="text-align: left;">
+                        <!-- QrCode-->
+                        <div class="list-group-item list-group-item-action">
+                            <p:barcode value="#{roleOnTheso.nodePreference.originalUri}/#{conceptView.nodeFullConcept.permanentId}"
+                                       rendered="#{conceptView.nodeFullConcept.permanentId != ''}"
+                                       type="qr" height="75px;"/>
                         </div>
                     </div>
                 </div>
-            </h:form>
+            </div>
         </div>
     </div>
 </ui:fragment>
