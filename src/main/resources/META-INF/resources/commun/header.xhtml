@@ -54,9 +54,6 @@
             <p:tooltip value="#{langueBean.getMsg('menu.cleanSession')}" />
         </p:commandLink>
 
-
-        <p:commandLink id="show-notification-btn">Afficher la notification</p:commandLink>
-
         <!-- Topbar Navbar -->
         <ul class="navbar-nav ml-auto">
             <h:panelGroup rendered="#{(currentUser.nodeUser != null) and (roleOnTheso.isAdminOnThisTheso() or roleOnTheso.isSuperAdmin())}"
