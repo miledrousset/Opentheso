@@ -455,15 +455,20 @@ public class ExportHelper {
     }
 
     private void getLabels(String labelBrut, SKOSResource sKOSResource, int type) throws SQLException {
-        if("16238".equalsIgnoreCase(sKOSResource.getIdentifier())){
+    /*    if("16238".equalsIgnoreCase(sKOSResource.getIdentifier())){
             System.out.println("concept : " + sKOSResource.getIdentifier() + "  " + labelBrut);
-        }
+        }*/
         if (StringUtils.isNotEmpty(labelBrut)) {
             String[] tabs = labelBrut.split(SEPERATEUR);
 
             for (String tab : tabs) {
                 String[] element = tab.split(SUB_SEPERATEUR);
-                sKOSResource.addLabel(element[0], element[1], type);
+                try {
+                    sKOSResource.addLabel(element[0], element[1], type);
+                } catch (Exception e) {
+                    System.out.println("Erreur export Concept = " + sKOSResource.getIdentifier() + "  " + labelBrut );
+                }
+
             }
         }
     }

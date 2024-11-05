@@ -1069,6 +1069,7 @@ public class ExportFileBean implements Serializable {
         }
 
         var skosXmlDocument = new SKOSXmlDocument();
+        exportRdf4jHelperNew.setInfos(roleOnThesoBean.getNodePreference());
         skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(connect.getPoolConnexion(), idTheso, idConcept, false));
         
         WriteRdf4j writeRdf4j = new WriteRdf4j(skosXmlDocument);
