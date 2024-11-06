@@ -6361,6 +6361,8 @@ public class ConceptHelper {
                     conceptGroup.setIdthesaurus(idTheso);
                     //conceptGroup.setIdARk(collection.get);
                     conceptGroup.setIdtypecode("C");
+
+                    node.setConceptGroup(conceptGroup);
                     return node;
                 })
                 .collect(Collectors.toList());

@@ -430,7 +430,7 @@ public class ConceptView implements Serializable {
         if(nodeFullConcept == null) return;
 
         // méthode temporaire le temps de migrer vers NodeFullConcept
-        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idConcept);
+        nodeConcept = conceptHelper.getConceptFromNodeFullConcept(nodeFullConcept, idTheso);
         if (nodeConcept == null) return;
 
         // permet de récupérer les qualificatifs
