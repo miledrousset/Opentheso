@@ -269,19 +269,19 @@ public class PropositionBean implements Serializable {
                             prefTermeAccepted, varianteAccepted, traductionAccepted,
                             noteAccepted, definitionAccepted, changeNoteAccepted, scopeAccepted,
                             editorialNotesAccepted, examplesAccepted, historyAccepted);
-                    switchToConceptInglet();
+                    switchToConceptOnglet();
                     showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmIntegratedProposal") + " '"
                             + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") !");
                     break;
                 case "refuserProposition":
                     propositionService.refuserProposition(propositionSelected, commentaireAdmin);
-                    switchToConceptInglet();
+                    switchToConceptOnglet();
                     showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmProposalForConcept") + " '"
                             + propositionSelected.getNomConcept() + "' (" + propositionSelected.getIdTheso() + ") a été refusée avec succès !");
                     break;
                 case "supprimerProposition":
                     propositionService.supprimerPropostion(propositionSelected);
-                    switchToConceptInglet();
+                    switchToConceptOnglet();
                     showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmProposalForConcept") + " '" + propositionSelected.getNomConcept()
                             + "' (" + propositionSelected.getIdTheso() + ") " + languageBean.getMsg("rightbody.proposal.confirmProposalWasDeleted") + "!");
                     break;
@@ -346,13 +346,13 @@ public class PropositionBean implements Serializable {
         PrimeFaces.current().executeScript("PF('nouveauNomConcept').hiden();");
     }
 
-    private void switchToConceptInglet() {
+    private void switchToConceptOnglet() {
         rightBodySetting.setIndex("0");
         isRubriqueVisible = false;
     }
 
     public void annulerPropostion() {
-        switchToConceptInglet();
+        switchToConceptOnglet();
         proposition = null;
         nom = "";
         email = "";
@@ -386,7 +386,7 @@ public class PropositionBean implements Serializable {
             showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("rightbody.proposal.confirmProposalSent"));
         }
 
-        switchToConceptInglet();
+        switchToConceptOnglet();
     }
 
     private boolean isSynchroProPresent() {

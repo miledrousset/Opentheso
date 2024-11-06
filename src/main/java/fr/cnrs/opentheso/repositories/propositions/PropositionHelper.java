@@ -180,7 +180,7 @@ public class PropositionHelper {
         boolean updateStatus = false;
         try ( Connection conn = ds.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("UPDATE proposition_modification SET status = 'LU' WHERE id = " + propositionId);
+                stmt.executeUpdate("UPDATE proposition_modification SET status = 'LU' WHERE id = " + propositionId);
                 updateStatus = true;
             }
         } catch (SQLException sqle) {

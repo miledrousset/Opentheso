@@ -129,14 +129,9 @@ public class PropositionService implements Serializable {
                     + "(concept : <a href=\"" + getPath() + "/?idc=" + propositionDao.getIdConcept()
                     + "&idt=" + propositionDao.getIdTheso() + "\">" + proposition.getNomConcept().getLexicalValue() + "</a>). <br/><br/> Cordialement,<br/>"
                     + "L'équipe " + propositionDao.getThesoName() + ".<br/> <img src=\"" + getPath() + "/resources/img/icon_opentheso2.png\" height=\"106\"></body></html>";
-
-            if (!sendEmail(propositionDao.getEmail(), subject, contentFile)) {
-                showMessage(FacesMessage.SEVERITY_ERROR, "!! votre propostion n'a pas été envoyée !!");
-                return false;
-            }
+            sendEmail(propositionDao.getEmail(), subject, contentFile);
         } catch (Exception ex) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion n'a pas été envoyée !");
-            return false;
+            showMessage(FacesMessage.SEVERITY_WARN, "Erreur detectée pendant l'envoie du mail de notification! \n votre propostion a été enregistrée !");
         }
 
         int propositionID = propositionHelper.createNewProposition(connect.getPoolConnexion(), propositionDao);
