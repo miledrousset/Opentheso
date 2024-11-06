@@ -407,7 +407,7 @@
     </dependencies>
 
     <properties>
-        <project.version>24.10.03</project.version>
+        <project.version>24.11.01</project.version>
         <java.version>17</java.version>
         <poi.version>4.1.1</poi.version>
         <virtjdbc4.version>4.0</virtjdbc4.version>

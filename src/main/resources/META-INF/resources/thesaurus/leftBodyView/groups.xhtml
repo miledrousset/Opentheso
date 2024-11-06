@@ -16,7 +16,7 @@
             <p:commandButton id="groupMenuButton" type="button" icon="pi pi-align-justify"
                              style="width: 1.5rem; height: 1.5rem; margin-left: 5px; margin-right: 5px; background: white; color: #f47b2a; border: 1px solid #ffffff;"/>
 
-            <p:menu rendered="#{treeGroups.menuDisable()}" overlay="true" trigger="groupMenuButton" my="left top" at="left bottom">
+            <p:menu id="groupMenuButtonCollection" rendered="#{treeGroups.menuDisable()}" overlay="true" trigger="groupMenuButton" my="left top" at="left bottom">
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" ajax="true"
                             actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
@@ -59,7 +59,7 @@
             widgetVar="groupWidget">
 
         <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}" />
-        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex"/>
+        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formRightTab containerIndex:formLeftTab:tabTree:groupMenuButtonCollection"/>
 
         <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 13px; color: blue"/>

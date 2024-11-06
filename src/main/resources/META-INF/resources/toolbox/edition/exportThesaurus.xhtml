@@ -10,7 +10,7 @@
             font-size: 0.8rem;
         }
         body .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-items .ui-selectcheckboxmenu-item {
-            padding: 0rem;
+            padding: 0.1rem;
             padding-left: 10px;
             margin: 0;
             outline: 0 none;
@@ -114,8 +114,9 @@
                         <h:panelGroup rendered="#{viewExportBean.toogleFilterByGroup}" >
                             <div class="row" style="margin-top: 5px">
                                 <div class="col-3" />
-                                <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
-                                    <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; height: 28px; font-size: 12px;"
+                                <div class="col-5">
+                                    <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; font-size: 12px;"
+                                                          multiple="true"
                                                           filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
                                         <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
                                     </p:selectCheckboxMenu>
@@ -174,9 +175,10 @@
                             <h:panelGroup rendered="#{viewExportBean.toogleFilterByGroup}" >
                                 <div class="row" >
                                     <div class="col-3" />
-                                    <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
-                                        <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; height: 28px; font-size: 12px;"
-                                                              filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
+                                    <div class="col-5" >
+                                        <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; font-size: 12px;"
+                                                              multiple="true"
+                                                              filter="true" filterMatchMode="startsWith" panelStyle="width: 21rem; font-size: 12px;" scrollHeight="250" padding="1rem" >
                                             <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
                                         </p:selectCheckboxMenu>
                                     </div>
@@ -255,8 +257,9 @@
                             <h:panelGroup rendered="#{viewExportBean.toogleFilterByGroup}" >
                                 <div class="row" >
                                     <div class="col-3" />
-                                    <div class="col-5" rendered="#{viewExportBean.toogleFilterByGroup}">
-                                        <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; height: 28px; font-size: 12px;"
+                                    <div class="col-5" >
+                                        <p:selectCheckboxMenu value="#{viewExportBean.selectedIdGroups}" label="#{langueBean.getMsg('select')}" style="width: 100%; font-size: 12px;"
+                                                              multiple="true"
                                                               filter="true" filterMatchMode="startsWith" panelStyle="fontSize : 12px; width: 21rem; font-size: 12px;" scrollHeight="250" >
                                             <f:selectItems value="#{viewExportBean.groupList}" var="group" itemLabel="#{group.lexicalValue}" itemValue="#{group.conceptGroup.idgroup}"/>
                                         </p:selectCheckboxMenu>
@@ -375,47 +378,6 @@
                     </div>                    
 
                 </h:panelGroup>
-
-
-                <!-- export pour Virtuoso -->
-                <p:panel rendered="#{viewEditionBean.isViewImportVirtuoso()}" toggleable="true" closable="false"
-                         style="margin-bottom:10px; margin-top: 10px">
-                    <div class="row">
-                        <div class="col-3" style="text-align: right">
-                            <h:outputText value="#{langueBean.getMsg('graph')}" style="color: #000" />
-                        </div>
-                        <div class="col-5">
-                            <p:inputText id="graphe" type="text" value="#{viewEditionBean.nomGraphe}" style="width: 100%; color: #000" />
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 10px">
-                        <div class="col-3" style="text-align: right">
-                            <h:outputText value="#{langueBean.getMsg('server')}" style="color: #000" />
-                        </div>
-                        <div class="col-5">
-                            <p:inputText id="adresse" type="text" value="#{viewEditionBean.urlServer}" style="width: 100%; color: #000" />
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 10px">
-                        <div class="col-3" style="text-align: right">
-                            <h:outputText value="#{langueBean.getMsg('menu.username')}" style="color: #000" />
-                        </div>
-                        <div class="col-5">
-                            <p:inputText id="login" type="text" value="#{viewEditionBean.login}" style="width: 100%; color: #000" />
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 10px">
-                        <div class="col-3" style="text-align: right">
-                            <h:outputText value="#{langueBean.getMsg('menu.password')}" style="color: #000" />
-                        </div>
-                        <div class="col-5">
-                            <p:inputText id="password" type="text" value="#{viewEditionBean.password}" style="width: 100%; color: #000" />
-                        </div>
-                    </div>
-                </p:panel>
 
                 <div class="row" style="margin: 20px">
                     <div class="col-12" style="text-align: center">

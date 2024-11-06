@@ -6233,7 +6233,7 @@ public class ConceptHelper {
     public NodeConcept getConceptFromNodeFullConcept(NodeFullConcept nodeFullConcept, String idTheso) {
         NodeConcept nodeConcept = new NodeConcept();
         // récupération des BT
-        ArrayList<NodeBT> nodeListBT = getBTFromNFC(nodeFullConcept.getBroaders());
+        nodeConcept.setNodeBT(getBTFromNFC(nodeFullConcept.getBroaders()));
         //récupération du Concept
         nodeConcept.setConcept(getConceptFromNFC(nodeFullConcept, idTheso));
         //récupération du Terme

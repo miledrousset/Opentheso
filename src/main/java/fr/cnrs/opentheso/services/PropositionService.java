@@ -278,6 +278,9 @@ public class PropositionService implements Serializable {
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
         //return true;
         if (currentUser.getNodeUser() != null) {
+            if(!currentUser.getNodeUser().getMail().equalsIgnoreCase(emailDestination)) {
+                return mailBean.sendMail(emailDestination, subject, contentFile);
+            }
             if (currentUser.getNodeUser().isAlertMail()) {
                 return mailBean.sendMail(emailDestination, subject, contentFile);
             } else {
