@@ -6,10 +6,6 @@
 
     <p:dialog id="idModifyUser" header="#{langueBean.getMsg('profile.modify_user')}" widgetVar="modifyUser" 
               width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
-
-
-        <p:spacer height="20px;" />
         <h:form>
             <div class="row">
                 <!-- Nom Pseudo -->
@@ -20,7 +16,6 @@
                     <p:inputText value="#{modifyUSerBean.nodeUser.name}" />
                 </div>
             </div>
-            
             <div class="row" style="margin-top: 5px;">
                 <!-- Nom Pseudo -->
                 <div class="col-5" >
@@ -30,7 +25,6 @@
                     <p:inputText value="#{modifyUSerBean.nodeUser.mail}" />
                 </div>
             </div>            
-
             <!-- Alertes -->
             <div class="row" style="margin-top: 5px;">
                 <div class="col-5">
@@ -40,7 +34,6 @@
                     <p:toggleSwitch value="#{modifyUSerBean.nodeUser.alertMail}" />
                 </div>
             </div>
-
             <!-- Pour activer / désactiver le compte -->
             <div class="row" style="margin-top: 5px;">
                 <div class="col-5">
@@ -49,7 +42,6 @@
                 <div class="col-7">
                 </div>
             </div>
-
             <div class="row" style="margin-top: 5px;">
                 <div class="col-12" style="text-align: right" >
                     <p:commandButton value="#{langueBean.getMsg('apply')}"
@@ -60,10 +52,8 @@
                                      oncomplete="PF('modifyUser').hide();" />
                 </div>
             </div>
-            
-            <p:spacer height="20px;" />
             <p:separator title="-" />
-            
+
             <!-- Initialiser le passe de l'utilisateur -->
             <div class="row" style="margin-top: 5px; margin-top: 30px">
                 <div class="col-5">

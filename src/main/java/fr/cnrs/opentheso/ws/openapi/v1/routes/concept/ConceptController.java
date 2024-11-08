@@ -62,6 +62,6 @@ public class ConceptController {
         String[] idArks = q.split(",");
         JsonArrayBuilder datas = restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), lang, idArks, fullFormat);
 
-        return ResponseEntity.ok(datas.build());
+        return ResponseEntity.ok(datas.build().toString());
     }
 }

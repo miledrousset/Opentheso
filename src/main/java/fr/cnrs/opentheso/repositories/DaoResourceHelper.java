@@ -533,7 +533,7 @@ public class DaoResourceHelper {
                         nodeFullConcept.setNarrowMatchs(getAlignments(resultSet.getString("narrowMatch")));
 
                         // externalResources
-                        nodeFullConcept.setExternalResources(getExternalResources(resultSet.getString("externalResources")));
+                        nodeFullConcept.setExternalResources(getFromIdLabel(resultSet.getString("externalResources")));
                         
                         // GPS
                         nodeFullConcept.setGps(getGps(resultSet.getString("gpsData")));
@@ -633,7 +633,11 @@ public class DaoResourceHelper {
                     ConceptIdLabel membre = new ConceptIdLabel();
                     membre.setUri(element[0]);
                     membre.setIdentifier(element[1]);
-                    membre.setLabel(element[2]);
+                    if(StringUtils.isNotEmpty(element[2]) && !element[2].equalsIgnoreCase("null")) {
+                        membre.setLabel(element[2]);
+                    } else {
+                        membre.setLabel("");
+                    }
                     membres.add(membre);
                 } catch (Exception e) {
                 }

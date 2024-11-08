@@ -72,7 +72,7 @@ public class NodeFullConcept {
     private List<ResourceGPS> gps;
     
     // ExternalResources
-    private List<String> externalResources;
+    private List<ConceptIdLabel> externalResources;
 
     // images
     private List<ConceptImage> images;

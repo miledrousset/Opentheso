@@ -481,7 +481,7 @@ public class Rest_new {
             JsonArrayBuilder datas = restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), idLang, idArks, format);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(datas.build());
+                    .body(datas.build().toString());
         }
     }
     
@@ -1022,7 +1022,7 @@ public class Rest_new {
 ////////////////////////////////////////////////////////////////////////////////////
 
     // pour faire la redirection entre un IdArk et l'URL Opentheso
-    @GetMapping(value = "/{naan}/{idArk}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "ark:/{naan}/{idArk}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getUriFromArk(@PathVariable("naan") String naan,
                                            @PathVariable("idArk") String arkId) throws URISyntaxException {
 
@@ -1044,10 +1044,11 @@ public class Rest_new {
 ////////////////FIN traduire les URI ARK par Opentheso//////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
-    private String messageEmptyJson() {
+    private String messageEmptyJson()
+    {
         return "{}";
     }
-    
+
     private String getJsonMessage(String message){
         var job = Json.createObjectBuilder();
         job.add("message", message);

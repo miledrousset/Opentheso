@@ -6,11 +6,11 @@
         <div style="width: 50%;" />
 
         <div style="width: 75%; text-align: right;">
-            <p:commandLink action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar"
-                           ajax="true" process="@form"
-                           title="#{langueBean.getMsg('tree.relaod')}">
-                <i class="fas fa-refresh" style=" color: #F47B2A; margin-right: 20px; font-size: 14px; " />
-            </p:commandLink>
+            <p:commandButton icon="fas fa-refresh" styleClass="rounded-button ui-button-flat"
+                             ajax="true" process="@form" title="#{langueBean.getMsg('tree.relaod')}"
+                             action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar"
+                             style="color: #f47b2a;"
+            />
 
             <!-- ajout des collections et sous collections -->
             <p:commandButton id="groupMenuButton" type="button" icon="pi pi-align-justify"

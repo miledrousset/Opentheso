@@ -74,7 +74,8 @@
             //    window.alert(baseUrl + 'api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language);
                 
                 dataLoading({
-                    url: baseUrl + 'api/graph?theso=' + idTheso + '&amp;id=' + idConcept + '&amp;lang=' + language
+                    //openapi/v1/concept/th10/6267/graph/?lang=fr
+                    url: baseUrl + 'openapi/v1/concept/' + idTheso + '/' + idConcept + '/graph/?lang=' + language
                 });
             </script>
             

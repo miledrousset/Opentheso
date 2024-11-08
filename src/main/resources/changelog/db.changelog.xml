@@ -118,4 +118,13 @@
     <changeSet id="24.11.03" author="Miled">
         <sqlFile path="../changelog/v24.11/24-11_03.sql" relativeToChangelogFile="true" splitStatements="false"/>
     </changeSet>
+    <changeSet id="24.11.04" author="Miled">
+        <sqlFile path="../changelog/v24.11/24-11_04.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
+    <changeSet id="24.11.05" author="Miled">
+        <sqlFile path="../changelog/v24.11/24-11_05.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
+    <changeSet id="24.11.06" author="Miled">
+        <sqlFile path="../changelog/v24.11/24-11_06.sql" relativeToChangelogFile="true" splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>

@@ -286,6 +286,7 @@ public class Tree implements Serializable {
         if (PrimeFaces.current().isAjaxRequest()) {
             PrimeFaces.current().ajax().update("containerIndex:formLeftTab:tabTree:tree");
             PrimeFaces.current().ajax().update("containerIndex:languageSelect");
+            PrimeFaces.current().executeScript("srollToSelected()");
         }
     }
 

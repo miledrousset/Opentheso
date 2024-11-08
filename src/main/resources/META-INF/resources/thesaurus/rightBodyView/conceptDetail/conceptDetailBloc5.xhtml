@@ -44,7 +44,7 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.exactMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.exactMatch')} :  " style="font-size: 14px;color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <h:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
                                     <br/>
                                 </ui:repeat>
 
@@ -52,7 +52,7 @@
                                 <ui:repeat var="align" value="#{conceptView.nodeFullConcept.closeMatchs}" varStatus="aligStatus" >
                                     <h:outputText value="#{langueBean.getMsg('alignment.closeMatch')} :  " style="font-size: 14px; color: #8f8f8f"/>
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <h:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
+                                    <p:link href="#{align}" value="#{align}" target="_blank" style="font-size: 14px; color: #164A78;" />
                                     <br/>
                                 </ui:repeat>
                             </h:panelGroup>
