@@ -14,8 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-
-import jakarta.annotation.PreDestroy;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -129,25 +129,35 @@ public class DiscussionService implements Serializable {
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());
 
-        
-        //// envoie de mail aux participants à la discussion
-        String subject = "Nouveau message module candidat";
-        String message = "Vous avez participé à la discussion pour ce candidat "
-                + candidatBean.getCandidatSelected().getNomPref() + ", " 
-                + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
-                + ". Sachez qu’un nouveau message a été posté.";
-        
-        setListUsersForMail();
-        if(CollectionUtils.isNotEmpty(nodeUsers)) {
-            nodeUsers.stream()
-                    .filter(NodeUser::isAlertMail)
-                    .forEach(user -> mailBean.sendMail(user.getMail(), subject,  message));
-        }
+        sendNotificationMail();
 
         reloadMessage();
 
         candidatBean.setMessage("");
         candidatBean.showMessage(FacesMessage.SEVERITY_INFO, langueBean.getMsg("candidat.send_message.msg2"));
+    }
+
+    private void sendNotificationMail() {
+
+        // Envoi de mail aux participants à la discussion
+        String subject = "Nouveau message module candidat";
+        String message = "Vous avez participé à la discussion pour ce candidat "
+                + candidatBean.getCandidatSelected().getNomPref() + ", "
+                + " id= " + candidatBean.getCandidatSelected().getIdConcepte()
+                + ". Sachez qu’un nouveau message a été posté.";
+
+        // Exécution asynchrone de la méthode setListUsersForMail
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(() -> {
+            setListUsersForMail();
+            if(CollectionUtils.isNotEmpty(nodeUsers)) {
+                nodeUsers.stream()
+                        .filter(NodeUser::isAlertMail)
+                        .forEach(user -> mailBean.sendMail(user.getMail(), subject,  message));
+            }
+        });
+        executorService.shutdown();
+
     }
      
 
@@ -172,10 +182,7 @@ public class DiscussionService implements Serializable {
 
     public void sendInvitation() {
         Properties props = getPrefMail();
-        if (props == null) {
-            candidatBean.showMessage(FacesMessage.SEVERITY_WARN, "Absence des préférences pour le serveur Mail");
-            return;
-        }
+
         if (StringUtils.isEmpty(email)) {
             candidatBean.showMessage(FacesMessage.SEVERITY_WARN, langueBean.getMsg("candidat.send_message.msg3"));
         } else if (!EmailUtils.isValidEmailAddress(email)) {
