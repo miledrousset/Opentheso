@@ -33,6 +33,11 @@
                     <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.uri_externalresource')}">
                         <p:inputText value="#{resources.uri}" style="width: 100%;"/>            
                     </p:column>
+
+                    <p:column headerText="#{langueBean.getMsg('rightbody.conceptdialog.description')}">
+                        <p:inputText value="#{resources.imageName}" style="width: 100%;"/>
+                    </p:column>
+
                     <p:column width="60" headerText="#{langueBean.getMsg('profile.action')}" style="color: black">
                         <p:commandLink style="color: #F7A269;" update="containerIndex:formRightTab messageIndex" ajax="true" process="@form"
                                        action="#{externalResources.updateExternalResource(resources, currentUser.nodeUser.idUser)}" >

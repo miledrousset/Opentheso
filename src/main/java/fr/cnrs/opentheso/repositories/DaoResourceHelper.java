@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -460,7 +461,7 @@ public class DaoResourceHelper {
                         + "prefLabel_trad varchar, altLabel_trad varchar, hiddenLabel_trad varchar, definition text, example text, editorialNote text, changeNote text,"
                         + "scopeNote text, note text, historyNote text, notation varchar, narrower text, broader text, related text, exactMatch text, "
                         + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, gpsData text,"
-                        + " membre text, created timestamp with time zone, modified timestamp with time zone, images text, creator text, contributor text,"
+                        + " membre text, created date, modified date, images text, creator text, contributor text,"
                         + "replaces text, replaced_by text, facets text, externalResources text, conceptType text);"
                 );
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -532,7 +533,7 @@ public class DaoResourceHelper {
                         nodeFullConcept.setNarrowMatchs(getAlignments(resultSet.getString("narrowMatch")));
 
                         // externalResources
-                        nodeFullConcept.setExternalResources(getExternalResources(resultSet.getString("externalResources")));
+                        nodeFullConcept.setExternalResources(getFromIdLabel(resultSet.getString("externalResources")));
                         
                         // GPS
                         nodeFullConcept.setGps(getGps(resultSet.getString("gpsData")));
@@ -632,7 +633,11 @@ public class DaoResourceHelper {
                     ConceptIdLabel membre = new ConceptIdLabel();
                     membre.setUri(element[0]);
                     membre.setIdentifier(element[1]);
-                    membre.setLabel(element[2]);
+                    if(StringUtils.isNotEmpty(element[2]) && !element[2].equalsIgnoreCase("null")) {
+                        membre.setLabel(element[2]);
+                    } else {
+                        membre.setLabel("");
+                    }
                     membres.add(membre);
                 } catch (Exception e) {
                 }

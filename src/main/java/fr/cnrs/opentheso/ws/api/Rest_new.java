@@ -249,13 +249,13 @@ public class Rest_new {
                 .body(restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, CustomMediaType.APPLICATION_RDF));
     }
 
-    //Produire du Json
-    @GetMapping(value = "/{idTheso}.{idConcept}", produces = JSON_FORMAT_LONG)
+    //Produire du RDF par defaut
+    @GetMapping(value = "/{idTheso}.{idConcept}", produces = CustomMediaType.APPLICATION_RDF_UTF_8)
     public ResponseEntity<Object> getJsonFromIdConcept__(@PathVariable("idTheso") String idTheso, @PathVariable("idConcept") String idConcept) {
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(JSON_FORMAT_LONG))
-                .body(restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, JSON_FORMAT));
+                .contentType(MediaType.parseMediaType(CustomMediaType.APPLICATION_RDF_UTF_8))
+                .body(restRDFHelper.exportConceptFromId(connect.getPoolConnexion(), idConcept, idTheso, CustomMediaType.APPLICATION_RDF_UTF_8));
     }
 
     //Produire du Json
@@ -384,7 +384,9 @@ public class Rest_new {
             if (value.contains("notation:")) {
                 filter = "notation:";
             }
-            return ResponseEntity.ok(getDatas(idTheso, idLang, groupList, value, FORMAT_MAP.getOrDefault(format, JSON_FORMAT), filter, match));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(FORMAT_MAP.getOrDefault(format, JSON_FORMAT)))//CustomMediaType.APPLICATION_RDF_UTF_8))
+                    .body(getDatas(idTheso, idLang, groupList, value, FORMAT_MAP.getOrDefault(format, JSON_FORMAT), filter, match));
         }
     }
 
@@ -415,7 +417,7 @@ public class Rest_new {
      * "http://193.48.140.131:8083/opentheso/api/searchwidget?q=or&lang=fr&theso=TH_1"
      */
     @GetMapping(value = "/searchwidget", produces = JSON_FORMAT_LONG)
-    public ResponseEntity<Object> searchJsonForWidget(@RequestParam(value = "lang") String idLang,
+    public ResponseEntity<Object> searchJsonForWidget(@RequestParam(required = false, value = "lang") String idLang,
                                               @RequestParam(value = "theso") String idTheso,
                                               @RequestParam(required = false, value = "group") String groupValue,
                                               @RequestParam(required = false, value = "arkgroup") String arkGroupValue ,
@@ -481,7 +483,7 @@ public class Rest_new {
             JsonArrayBuilder datas = restRDFHelper.findDatasForWidgetByArk(connect.getPoolConnexion(), idLang, idArks, format);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(datas.build());
+                    .body(datas.build().toString());
         }
     }
     
@@ -502,7 +504,7 @@ public class Rest_new {
     @GetMapping(value = "/autocomplete/{value}", produces = JSON_FORMAT_LONG)
     public ResponseEntity<Object> searchAutocomplete(@PathVariable("value") String value,
                                              @RequestParam(value = "theso") String idTheso,
-                                             @RequestParam(value = "lang") String idLang,
+                                             @RequestParam(value = "lang", required = false) String idLang,
                                              @RequestParam(value = "group", required = false) String group,
                                              @RequestParam(value = "format", required = false) String format) {
 
@@ -537,7 +539,7 @@ public class Rest_new {
     @GetMapping(value = "/autocomplete", produces = JSON_FORMAT_LONG)
     public ResponseEntity<Object> searchAutocomplete2(@RequestParam(value = "value") String value,
                                         @RequestParam(value = "theso") String idTheso,
-                                        @RequestParam(value = "lang") String idLang,
+                                        @RequestParam(value = "lang", required = false) String idLang,
                                         @RequestParam(value = "group", required = false) String group,
                                         @RequestParam(value = "format", required = false) String format) {
         String [] groups = null;
@@ -624,7 +626,7 @@ public class Rest_new {
         if (way.equalsIgnoreCase("down")) {
             return restRDFHelper.brancheOfConceptsDown(connect.getPoolConnexion(), idConcept, idTheso, format);
         }
-        return null;
+        return "";
     }
 
     //Pour retourner une branche complète à partir d'un identifiant d'un groupe
@@ -1022,7 +1024,7 @@ public class Rest_new {
 ////////////////////////////////////////////////////////////////////////////////////
 
     // pour faire la redirection entre un IdArk et l'URL Opentheso
-    @GetMapping(value = "/{naan}/{idArk}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "ark:/{naan}/{idArk}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getUriFromArk(@PathVariable("naan") String naan,
                                            @PathVariable("idArk") String arkId) throws URISyntaxException {
 
@@ -1044,10 +1046,11 @@ public class Rest_new {
 ////////////////FIN traduire les URI ARK par Opentheso//////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
 
-    private String messageEmptyJson() {
+    private String messageEmptyJson()
+    {
         return "{}";
     }
-    
+
     private String getJsonMessage(String message){
         var job = Json.createObjectBuilder();
         job.add("message", message);

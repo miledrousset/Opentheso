@@ -6,17 +6,17 @@
         <div style="width: 50%;" />
 
         <div style="width: 75%; text-align: right;">
-            <p:commandLink action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar"
-                           ajax="true" process="@form"
-                           title="#{langueBean.getMsg('tree.relaod')}">
-                <i class="fas fa-refresh" style=" color: #F47B2A; margin-right: 20px; font-size: 14px; " />
-            </p:commandLink>
+            <p:commandButton icon="fas fa-refresh" styleClass="rounded-button ui-button-flat"
+                             ajax="true" process="@form" title="#{langueBean.getMsg('tree.relaod')}"
+                             action="#{selectedTheso.reloadGroups()}" update="containerIndex menuBar"
+                             style="color: #f47b2a;"
+            />
 
             <!-- ajout des collections et sous collections -->
             <p:commandButton id="groupMenuButton" type="button" icon="pi pi-align-justify"
                              style="width: 1.5rem; height: 1.5rem; margin-left: 5px; margin-right: 5px; background: white; color: #f47b2a; border: 1px solid #ffffff;"/>
 
-            <p:menu rendered="#{treeGroups.menuDisable()}" overlay="true" trigger="groupMenuButton" my="left top" at="left bottom">
+            <p:menu id="groupMenuButtonCollection" rendered="#{treeGroups.menuDisable()}" overlay="true" trigger="groupMenuButton" my="left top" at="left bottom">
 
                 <p:menuitem value="#{langueBean.getMsg('leftbody.group.addGroup')}" ajax="true"
                             actionListener="#{addGroupBean.init()}" icon="fas fa-layer-group" process="@this"
@@ -59,7 +59,7 @@
             widgetVar="groupWidget">
 
         <p:ajax event="expand" listener="#{treeGroups.onNodeExpand}" />
-        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex"/>
+        <p:ajax event="select" listener="#{treeGroups.onNodeSelect}" update="containerIndex:formRightTab containerIndex:formLeftTab:tabTree:groupMenuButtonCollection"/>
 
         <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder" >
             <h:outputText title="#{node.nodeId}" value="#{node.notation} " style="font-size: 13px; color: blue"/>

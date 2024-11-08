@@ -94,9 +94,6 @@
                                         actionListener="#{viewExportBean.init(listTheso, 'deprecated')}"
                                         action="#{viewEditionBean.setIsViewExportCSV(true)}" />
 
-                            <p:menuitem value="#{langueBean.getMsg('toolbox.virtuoso')}" actionListener="#{viewExportBean.init(listTheso, 'RDF')}"
-                                        action="#{viewEditionBean.setIsViewExportVirtuoso(true)}" update="containerIndex"
-                                        title="#{langueBean.getMsg('toolbox.virtuosoTooltip')}" icon="fas fa-upload"/>
                         </p:menuButton>
                     </p:column>
 

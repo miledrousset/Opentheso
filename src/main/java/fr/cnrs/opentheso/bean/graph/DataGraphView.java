@@ -153,16 +153,17 @@ public class DataGraphView implements Serializable {
         if (view == null) {
             return null;
         }
-
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-
-        String opethesoUrl = context.getRequestScheme() + "://" + context.getRequestServerName()
-                + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
-                + context.getApplicationContextPath();
-        System.out.println("URL = " + opethesoUrl);
-
+        String opethesoUrl;
+        if(context.getRequestServerName().equals("localhost")){
+            opethesoUrl = "http://" + context.getRequestServerName()
+                    + (Objects.equals(context.getRequestServerName(), "localhost") ? ":" + context.getRequestServerPort() : "")
+                    + context.getApplicationContextPath();
+        } else {
+            opethesoUrl = "https://" + context.getRequestServerName()
+                    + context.getApplicationContextPath();
+        }
         final String baseDataURL = opethesoUrl + "/openapi/v1/graph/getData";
-
         // Utilisation de URIBuilder pour construire l'URL
         URIBuilder uriBuilder = new URIBuilder(baseDataURL);
         uriBuilder.addParameter("lang", "fr");
@@ -181,17 +182,7 @@ public class DataGraphView implements Serializable {
 
         redirectUrlBuilder.addParameter("dataUrl", urlString);
 
-        System.out.println("dataURL : " + urlString);
-
         redirectUrlBuilder.addParameter("format", "opentheso");
-
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
-        String scheme = request.getScheme(); // Cela retourne "http" ou "https"
-        System.out.println("context : " + scheme);
-        System.out.println("context : " + request.getRequestURI());
-        System.out.println("context : " + request.getContextPath());
-
         return redirectUrlBuilder.build().toString();
     }
 

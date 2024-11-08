@@ -66,11 +66,10 @@
                                     </h:panelGroup>
 
                                     <i class="pi pi-link" style="margin-right: 5px; color: #f47b2a;font-size: 14px;"/>
-                                    <p:link  href="#{resources}"
-                                            value="#{resources}"
-                                            target="_blank" style="font-size: 14px; color: #164A78;" >
-                                        <i class="pi pi-link" />
+                                    <p:link  href="#{resources.uri}" value="#{resources.uri}" target="_blank" style="font-size: 14px; color: #164A78;" >
                                     </p:link>
+                                    <h:outputText rendered="#{resources.label != ''}" value=" (#{resources.label})"  style="font-size: 14px;"/>
+
                                     <br/>
                                 </ui:repeat>
                             </div>

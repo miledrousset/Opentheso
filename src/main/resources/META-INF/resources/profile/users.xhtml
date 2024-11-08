@@ -307,9 +307,7 @@
         <!-- Modifier un utilisateur -->
         <p:dialog id="idModifyUser2" header="#{langueBean.getMsg('profile.modify_user')}" widgetVar="modifyUser2" 
                   width="450" showEffect="fade" modal="true" resizable="false" position="top" style="margin-top: 30px" >
-
-            <p:spacer height="20px;" />
-            <h:form id="modifyUser2Form"> 
+            <h:form id="modifyUser2Form">
                 <div class="row">
                     <!-- Nom Pseudo -->
                     <div class="col-5" style="text-align: right">
@@ -350,8 +348,6 @@
                                          oncomplete="PF('modifyUser2').hide();" />
                     </div>
                 </div>
-
-                <p:spacer height="20px;" />
                 <p:separator title="-" />
 
                 <!-- Initialiser le passe de l'utilisateur -->
@@ -383,10 +379,7 @@
                         </p:commandButton>
                     </div>
                 </div>
-
-                <p:spacer height="20px;" />
                 <p:separator title="-" />
-
                 <h:panelGroup id="userKey">
                     <div class="row" style="margin-top: 5px;">
                         <div class="col-5" style="text-align: right">

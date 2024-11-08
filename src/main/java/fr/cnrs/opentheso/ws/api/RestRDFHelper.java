@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.cnrs.opentheso.bean.leftbody.viewliste.ListIndex;
 import fr.cnrs.opentheso.models.skosapi.SKOSXmlDocument;
 import jakarta.json.JsonArray;
 
@@ -626,6 +627,7 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         var skosXmlDocument = new SKOSXmlDocument();
         skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
@@ -764,7 +766,7 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-
+        exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
         skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
         return new WriteRdf4j(skosXmlDocument);
@@ -1067,8 +1069,8 @@ public class RestRDFHelper {
 
             var paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
-                var element = pathHelper.getPathWithLabelAsJson(ds, paths, idTheso, lang, format);
-                jsonArrayBuilder.add(element);
+                var element = pathHelper.getPathWithLabelAsJson(ds, paths, jsonArrayBuilder, idTheso, lang, format);
+               // jsonArrayBuilder.add(element);
             }
         }
 
@@ -1136,11 +1138,11 @@ public class RestRDFHelper {
             return null;
         }
 
-        var jsonArrayBuilder = Json.createArrayBuilder();
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         for (String idConcept : nodeIds) {
             var paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (CollectionUtils.isNotEmpty(paths)) {
-                jsonArrayBuilder.add(pathHelper.getPathWithLabelAsJson(ds, paths, idTheso, lang, format));
+                pathHelper.getPathWithLabelAsJson(ds, paths, jsonArrayBuilder, idTheso, lang, format);
             }
         }
         return jsonArrayBuilder != null ? jsonArrayBuilder.build().toString() : null;
@@ -1163,7 +1165,7 @@ public class RestRDFHelper {
         WriteRdf4j writeRdf4j = brancheOfConceptsTop__(ds,
                 idConcept, idTheso);
         if (writeRdf4j == null) {
-            return null;
+            return messageEmptyRdfXml();
         }
 
         ByteArrayOutputStream out;
@@ -1186,6 +1188,9 @@ public class RestRDFHelper {
             String idConcept, String idTheso) {
 
         if (idConcept == null || idTheso == null) {
+            return null;
+        }
+        if(!conceptHelper.isIdExiste(ds, idConcept, idTheso)) {
             return null;
         }
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
@@ -1225,7 +1230,7 @@ public class RestRDFHelper {
         WriteRdf4j writeRdf4j = brancheOfConceptsDown__(ds,
                 idConcept, idTheso);
         if (writeRdf4j == null) {
-            return null;
+            return messageEmptyRdfXml();
         }
 
         ByteArrayOutputStream out;
@@ -1248,6 +1253,9 @@ public class RestRDFHelper {
             String idConcept, String idTheso) {
 
         if (idConcept == null || idTheso == null) {
+            return null;
+        }
+        if(!conceptHelper.isIdExiste(ds, idConcept, idTheso)) {
             return null;
         }
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
@@ -1365,7 +1373,7 @@ public class RestRDFHelper {
         for (String idConcept : branchs) {
             paths = pathHelper.getPathOfConcept(ds, idConcept, idTheso);
             if (paths != null && !paths.isEmpty()) {
-                jsonArrayBuilder.add(pathHelper.getPathWithLabelAsJson(ds, paths, idTheso, lang, null));
+                pathHelper.getPathWithLabelAsJson(ds, paths, jsonArrayBuilder, idTheso, lang, null);
             }
         }
         if (jsonArrayBuilder != null) {
@@ -1708,5 +1716,12 @@ public class RestRDFHelper {
             return uri;
         }
         return idConcept;
+    }
+
+    private String messageEmptyRdfXml()
+    {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                "</rdf:RDF>";
     }
 }

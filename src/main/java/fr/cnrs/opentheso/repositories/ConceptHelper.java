@@ -6233,7 +6233,7 @@ public class ConceptHelper {
     public NodeConcept getConceptFromNodeFullConcept(NodeFullConcept nodeFullConcept, String idTheso) {
         NodeConcept nodeConcept = new NodeConcept();
         // récupération des BT
-        ArrayList<NodeBT> nodeListBT = getBTFromNFC(nodeFullConcept.getBroaders());
+        nodeConcept.setNodeBT(getBTFromNFC(nodeFullConcept.getBroaders()));
         //récupération du Concept
         nodeConcept.setConcept(getConceptFromNFC(nodeFullConcept, idTheso));
         //récupération du Terme
@@ -6289,14 +6289,15 @@ public class ConceptHelper {
                 .collect(Collectors.toList());
     }
     private List<NodeImage> getExternalResourcesFromNFC(NodeFullConcept nodeFullConcept, String idTheso){
-        List<String> resources = nodeFullConcept.getExternalResources();
+        List<ConceptIdLabel> resources = nodeFullConcept.getExternalResources();
         if(resources == null) return Collections.emptyList();
         return resources.stream()
                 .map(resource -> {
                     NodeImage node = new NodeImage();
                     node.setIdConcept(nodeFullConcept.getIdentifier());
                     node.setIdThesaurus(idTheso);
-                    node.setUri(resource);
+                    node.setUri(resource.getUri());
+                    node.setImageName(resource.getLabel());
                     return node;
                 })
                 .collect(Collectors.toList());
