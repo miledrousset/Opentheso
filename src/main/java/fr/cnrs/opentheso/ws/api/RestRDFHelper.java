@@ -627,6 +627,7 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
+        exportRdf4jHelperNew.setInfos(nodePreference);
 
         var skosXmlDocument = new SKOSXmlDocument();
         skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
@@ -765,7 +766,7 @@ public class RestRDFHelper {
         if (nodePreference == null) {
             return null;
         }
-
+        exportRdf4jHelperNew.setInfos(nodePreference);
         var skosXmlDocument = new SKOSXmlDocument();
         skosXmlDocument.addconcept(exportRdf4jHelperNew.exportConceptV2(ds, idTheso, idConcept, false));
         return new WriteRdf4j(skosXmlDocument);
@@ -1164,7 +1165,7 @@ public class RestRDFHelper {
         WriteRdf4j writeRdf4j = brancheOfConceptsTop__(ds,
                 idConcept, idTheso);
         if (writeRdf4j == null) {
-            return null;
+            return messageEmptyRdfXml();
         }
 
         ByteArrayOutputStream out;
@@ -1187,6 +1188,9 @@ public class RestRDFHelper {
             String idConcept, String idTheso) {
 
         if (idConcept == null || idTheso == null) {
+            return null;
+        }
+        if(!conceptHelper.isIdExiste(ds, idConcept, idTheso)) {
             return null;
         }
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
@@ -1226,7 +1230,7 @@ public class RestRDFHelper {
         WriteRdf4j writeRdf4j = brancheOfConceptsDown__(ds,
                 idConcept, idTheso);
         if (writeRdf4j == null) {
-            return null;
+            return messageEmptyRdfXml();
         }
 
         ByteArrayOutputStream out;
@@ -1249,6 +1253,9 @@ public class RestRDFHelper {
             String idConcept, String idTheso) {
 
         if (idConcept == null || idTheso == null) {
+            return null;
+        }
+        if(!conceptHelper.isIdExiste(ds, idConcept, idTheso)) {
             return null;
         }
         NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
@@ -1709,5 +1716,12 @@ public class RestRDFHelper {
             return uri;
         }
         return idConcept;
+    }
+
+    private String messageEmptyRdfXml()
+    {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+                "</rdf:RDF>";
     }
 }
