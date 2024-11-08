@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.graph;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.GraphD3jsHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.IdValuePair;
 
@@ -35,9 +34,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Graphe", description = "Actions pour récupérer les données au format graphe")
 public class GraphController {
-
-    @Autowired
-    private Connect connect;
 
     @Autowired
     private GraphD3jsHelper graphD3jsHelper;
@@ -93,9 +89,9 @@ public class GraphController {
 
         for (IdValuePair idValuePair : idValuePairs) {
             if(StringUtils.isEmpty(idValuePair.getIdConcept())){
-                graphD3jsHelper.getGraphByTheso(connect.openConnexionPool(), idValuePair.getIdTheso(), lang);
+                graphD3jsHelper.getGraphByTheso(idValuePair.getIdTheso(), lang);
             } else {
-                graphD3jsHelper.getGraphByConcept(connect.openConnexionPool(), idValuePair.getIdTheso(), idValuePair.getIdConcept(), lang);
+                graphD3jsHelper.getGraphByConcept(idValuePair.getIdTheso(), idValuePair.getIdConcept(), lang);
             }
         }
 

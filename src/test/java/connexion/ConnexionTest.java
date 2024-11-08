@@ -6,7 +6,7 @@
 package connexion;
 
 import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+
 
 /**
  *
@@ -24,7 +24,7 @@ public class ConnexionTest {
         config.setMinimumIdle(1);
         config.setMaximumPoolSize(100);
         config.setConnectionTestQuery("SELECT 1");
-        config.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
+        config.setDataSourceClassName("org.postgresql.dataSource.PGSimpleDataSource");
 
         // Pactols2
         config.addDataSourceProperty("user", "opentheso");

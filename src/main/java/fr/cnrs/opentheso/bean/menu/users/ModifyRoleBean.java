@@ -27,7 +27,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class ModifyRoleBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private MyProjectBean myProjectBean;
 
     @Autowired
@@ -87,7 +87,7 @@ public class ModifyRoleBean implements Serializable {
      * @param selectedProject
      */
     public void selectUser(int idUser, int roleOfSelectedUser, String selectedProject) {
-        nodeSelectedUser = userHelper.getUser(connect.openConnexionPool(), idUser);
+        nodeSelectedUser = userHelper.getUser(idUser);
         this.selectedProject = selectedProject;
 
         this.roleOfSelectedUser = "" + roleOfSelectedUser;
@@ -112,7 +112,7 @@ public class ModifyRoleBean implements Serializable {
         limitOnTheso = true;
         myAuthorizedRolesLimited = null;
         selectedThesos = new ArrayList<>();
-        ArrayList<NodeUserRole> nodeUserRoles = userHelper.getListRoleByThesoLimited(connect.openConnexionPool(), Integer.parseInt(selectedProject), selectedNodeUserRole.getIdUser());
+        ArrayList<NodeUserRole> nodeUserRoles = userHelper.getListRoleByThesoLimited(Integer.parseInt(selectedProject), selectedNodeUserRole.getIdUser());
         for (NodeUserRole nodeUserRole1 : nodeUserRoles) {
             selectedThesos.add(nodeUserRole1.getIdTheso());
         }
@@ -130,7 +130,7 @@ public class ModifyRoleBean implements Serializable {
 
         int idGroup = Integer.parseInt(selectedProject);
         if (selectedNodeUserRole != null) {
-            listeLimitedThesoRoleForUser = userHelper.getAllRolesThesosByUserGroupLimited(connect.openConnexionPool(),
+            listeLimitedThesoRoleForUser = userHelper.getAllRolesThesosByUserGroupLimited(
                     idGroup, selectedNodeUserRole.getIdUser());
         } else {
             if (listeLimitedThesoRoleForUser != null) {
@@ -142,7 +142,7 @@ public class ModifyRoleBean implements Serializable {
             idThesosTemp.add(nodeThesoRole.getIdTheso());
         }
 
-        ArrayList<NodeIdValue> allThesoOfProject = userHelper.getThesaurusOfProject(connect.openConnexionPool(), idGroup, connect.getWorkLanguage());
+        ArrayList<NodeIdValue> allThesoOfProject = userHelper.getThesaurusOfProject(idGroup, workLanguage);
         for (NodeIdValue nodeIdValue : allThesoOfProject) {
             if(!idThesosTemp.contains(nodeIdValue.getId())){
                 NodeThesoRole nodeThesoRole = new NodeThesoRole();
@@ -179,7 +179,7 @@ public class ModifyRoleBean implements Serializable {
         }
         
         // suppression de tous les rôles
-        if(!userHelper.deleteAllUserRoleOnTheso(connect.openConnexionPool(), selectedNodeUserRole.getIdUser(), Integer.parseInt(selectedProject))){
+        if(!userHelper.deleteAllUserRoleOnTheso(selectedNodeUserRole.getIdUser(), Integer.parseInt(selectedProject))){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;                   
@@ -190,7 +190,7 @@ public class ModifyRoleBean implements Serializable {
             // ajout des rôles pour l'utilisateur sur les thésaurus
             for (NodeThesoRole nodeThesoRole : listeLimitedThesoRoleForUser) {
                 if(nodeThesoRole.getIdRole() != -1) {
-                    if(!userHelper.addUserRoleOnThisTheso(connect.openConnexionPool(), 
+                    if(!userHelper.addUserRoleOnThisTheso(
                             selectedNodeUserRole.getIdUser(), nodeThesoRole.getIdRole(),
                             Integer.parseInt(selectedProject), nodeThesoRole.getIdTheso())){
                         return;
@@ -200,7 +200,7 @@ public class ModifyRoleBean implements Serializable {
             myProjectBean.setSelectedIndex("2");
         } else {
             if(!userHelper.addUserRoleOnGroup(
-                    connect.openConnexionPool(),
+                    
                     nodeSelectedUser.getIdUser(),
                     Integer.parseInt(roleOfSelectedUser),
                     Integer.parseInt(selectedProject))) {
@@ -230,12 +230,12 @@ public class ModifyRoleBean implements Serializable {
 
         // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
         if(limitOnTheso) {
-            if(!userHelper.deleteAllUserRoleOnTheso(connect.openConnexionPool(), selectedNodeUserRole.getIdUser(), Integer.parseInt(selectedProject))){
+            if(!userHelper.deleteAllUserRoleOnTheso(selectedNodeUserRole.getIdUser(), Integer.parseInt(selectedProject))){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification des rôles !!!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;                    
             }
-            if(!userHelper.addUserRoleOnTheso(connect.openConnexionPool(), 
+            if(!userHelper.addUserRoleOnTheso(
                     selectedNodeUserRole.getIdUser(), Integer.parseInt(roleOfSelectedUser),
                     Integer.parseInt(selectedProject), selectedThesos)){
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la modification des rôles !!!");
@@ -244,7 +244,7 @@ public class ModifyRoleBean implements Serializable {
             }
         } else {
             if(!userHelper.updateUserRoleOnGroup(
-                    connect.openConnexionPool(),
+                    
                     nodeSelectedUser.getIdUser(),
                     Integer.parseInt(roleOfSelectedUser),
                     Integer.parseInt(selectedProject))) {
@@ -271,7 +271,7 @@ public class ModifyRoleBean implements Serializable {
             return;              
         }
 
-        if(!userHelper.deleteUserRoleOnTheso(connect.openConnexionPool(),
+        if(!userHelper.deleteUserRoleOnTheso(
                 selectedNodeUserRole.getIdUser(),
                 selectedNodeUserRole.getIdRole(),
                 Integer.parseInt(selectedProject),
@@ -287,7 +287,7 @@ public class ModifyRoleBean implements Serializable {
     }      
     
     private void initAllMyRoleProject(){
-        allMyRoleProject = userHelper.getUserRoleGroup(connect.openConnexionPool(), nodeSelectedUser.getIdUser());
+        allMyRoleProject = userHelper.getUserRoleGroup(nodeSelectedUser.getIdUser());
     }
    
     public void toogleLimitTheso(){
@@ -300,7 +300,7 @@ public class ModifyRoleBean implements Serializable {
             return;
         }
         if(idProject == -1) return;
-        listThesoOfProject = userHelper.getThesaurusOfProject(connect.openConnexionPool(), idProject, connect.getWorkLanguage());
+        listThesoOfProject = userHelper.getThesaurusOfProject(idProject, workLanguage);
     }  
     
     /**
@@ -317,7 +317,7 @@ public class ModifyRoleBean implements Serializable {
 
         // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
         if(limitOnTheso) {
-            if(!userHelper.addUserRoleOnTheso(connect.openConnexionPool(), 
+            if(!userHelper.addUserRoleOnTheso(
                     nodeSelectedUser.getIdUser(), Integer.parseInt(roleOfSelectedUser),
                     Integer.parseInt(selectedProject), selectedThesos)){
                 return;
@@ -325,7 +325,7 @@ public class ModifyRoleBean implements Serializable {
             myProjectBean.setSelectedIndex("2");
         } else {
             if(!userHelper.updateUserRoleOnGroup(
-                    connect.openConnexionPool(),
+                    
                     nodeSelectedUser.getIdUser(),
                     Integer.parseInt(roleOfSelectedUser),
                     Integer.parseInt(selectedProject))) {
@@ -356,7 +356,7 @@ public class ModifyRoleBean implements Serializable {
         }
 
         if(!userHelper.deleteRoleOnGroup(
-                connect.openConnexionPool(),
+                
                 nodeSelectedUser.getIdUser(),
                 Integer.parseInt(selectedProject))) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de suppression de l'utilisateur du projet !!!");
@@ -382,7 +382,7 @@ public class ModifyRoleBean implements Serializable {
         }
 
         if(!userHelper.addUserRoleOnGroup(
-                connect.openConnexionPool(),
+                
                 selectedUser.getIdUser(),
                 Integer.parseInt(roleOfSelectedUser),
                 Integer.parseInt(selectedProject))) {
@@ -404,7 +404,7 @@ public class ModifyRoleBean implements Serializable {
     }      
 
     public ArrayList<NodeUser> autoCompleteUser(String userName) {
-        ArrayList <NodeUser> nodeUsers = userHelper.searchUser(connect.openConnexionPool(), userName);
+        ArrayList <NodeUser> nodeUsers = userHelper.searchUser(userName);
         return nodeUsers;
     }
 }

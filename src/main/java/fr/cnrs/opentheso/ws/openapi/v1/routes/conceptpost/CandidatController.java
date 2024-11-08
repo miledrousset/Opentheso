@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost;
 
 import fr.cnrs.opentheso.repositories.CandidateHelper;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,9 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CandidatController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private CandidateHelper candidateHelper;
 
     @Autowired
@@ -59,15 +55,15 @@ public class CandidatController {
     )
     public ResponseEntity addCandidate(@RequestHeader(value = "API-KEY") String apiKey, @RequestBody Candidate candidate) {
 
-        var keyState = apiKeyHelper.checkApiKey(connect.openConnexionPool(), apiKey);
+        var keyState = apiKeyHelper.checkApiKey(apiKey);
 
         if (keyState != ApiKeyState.VALID){
             return ResponseEntity.badRequest().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body(apiKeyHelper.errorResponse(keyState));
         }
 
-        var userId = apiKeyHelper.getIdUser(connect.openConnexionPool(), apiKey);
+        var userId = apiKeyHelper.getIdUser(apiKey);
 
-        if (!candidateHelper.saveCandidat(connect.openConnexionPool(), candidate, userId)){
+        if (!candidateHelper.saveCandidat(candidate, userId)){
             return ResponseEntity.badRequest().contentType(org.springframework.http.MediaType.APPLICATION_JSON).body("");
         }
 

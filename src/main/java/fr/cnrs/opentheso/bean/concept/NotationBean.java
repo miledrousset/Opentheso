@@ -28,7 +28,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class NotationBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private Tree tree;
@@ -57,7 +57,7 @@ public class NotationBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
         
         if(!notation.isEmpty()) {
-            if(conceptHelper.isNotationExist(connect.openConnexionPool(),
+            if(conceptHelper.isNotationExist(
                     idTheso,
                     notation)) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La notation existe déjà dans le thésaurus !!");
@@ -69,10 +69,7 @@ public class NotationBean implements Serializable {
             }
         }
         
-        if(!conceptHelper.updateNotation(connect.openConnexionPool(),
-                conceptBean.getNodeConcept().getConcept().getIdConcept(),
-                idTheso,
-                notation.trim())) {
+        if(!conceptHelper.updateNotation(conceptBean.getNodeConcept().getConcept().getIdConcept(), idTheso, notation.trim())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de cohérence de BDD !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {

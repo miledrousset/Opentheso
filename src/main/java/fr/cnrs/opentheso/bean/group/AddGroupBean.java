@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.models.notes.NodeNote;
@@ -13,7 +12,6 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -35,7 +33,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddGroupBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private LeftBodySetting leftBodySetting;
     @Autowired @Lazy private RoleOnThesoBean roleOnThesoBean;
     @Autowired @Lazy private TreeGroups treeGroups;
@@ -61,29 +59,13 @@ public class AddGroupBean implements Serializable {
     private ArrayList<NodeNote> examples;
     private ArrayList<NodeNote> historyNotes;
 
-    @PreDestroy
-    public void destroy(){
-        clear();
-    }
-    public void clear(){
-        selectedGroupType = null;
-        titleGroup = null;
-        titleGroup = null;
-        if(listGroupType!= null){
-            listGroupType.clear();
-            listGroupType = null;
-        }
-    }
-
-    public AddGroupBean() {
-    }
 
     public void init() {
         titleGroup = "";
         notation = "";
         definition = "";
         selectedGroupType = null;
-        listGroupType = groupHelper.getAllGroupType(connect.openConnexionPool());
+        listGroupType = groupHelper.getAllGroupType();
         if (!listGroupType.isEmpty()) {
             selectedGroupType = listGroupType.get(0).getLabel();
         }
@@ -131,7 +113,7 @@ public class AddGroupBean implements Serializable {
         if(notation == null || notation.isEmpty()){
         } else {
             if (groupHelper.isNotationExist(
-                    connect.openConnexionPool(),
+                    
                     notation,
                     idTheso)) {
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
@@ -140,7 +122,7 @@ public class AddGroupBean implements Serializable {
             }
         }
 
-        String idGroup = groupHelper.addGroup(connect.openConnexionPool(),
+        String idGroup = groupHelper.addGroup(
                 nodeGroup,
                 idUser);
         if (idGroup == null) {
@@ -154,7 +136,7 @@ public class AddGroupBean implements Serializable {
 
         // ajout de la définition s'il elle est renseignée
         if(StringUtils.isNotEmpty(definition)) {
-            noteHelper.addNote(connect.openConnexionPool(), idGroup, idLang, idTheso,
+            noteHelper.addNote(idGroup, idLang, idTheso,
                     definition, "definition", "",  idUser);
         }
 
@@ -192,7 +174,7 @@ public class AddGroupBean implements Serializable {
 
         groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-        if(!groupHelper.addIdArkGroup(connect.openConnexionPool(), idTheso, idGroup, groupLabel)) {
+        if(!groupHelper.addIdArkGroup(idTheso, idGroup, groupLabel)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "La génération de Ark a échoué !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", groupHelper.getMessage());
@@ -258,7 +240,7 @@ public class AddGroupBean implements Serializable {
 
         groupHelper.setNodePreference(roleOnThesoBean.getNodePreference());
 
-        String idSubGroup = groupHelper.addGroup(connect.openConnexionPool(),
+        String idSubGroup = groupHelper.addGroup(
                 nodeGroup,
                 idUser);
         if (idSubGroup == null) {
@@ -267,7 +249,7 @@ public class AddGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.addSubGroup(connect.openConnexionPool(), idGroupFather, idSubGroup, idTheso)) {
+        if (!groupHelper.addSubGroup(idGroupFather, idSubGroup, idTheso)) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "",
                             titleGroup + " : Erreur de création"));

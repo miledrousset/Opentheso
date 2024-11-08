@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
 @SessionScoped
 public class SynonymBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private PropositionBean propositionBean;
@@ -95,7 +95,7 @@ public class SynonymBean implements Serializable {
     public void reset() {
         hidden = false;
         selectedLang = conceptBean.getSelectedLang();
-        nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), selectedLang);
+        nodeLangs = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), selectedLang);
 
         nodeEMs = conceptBean.getNodeConcept().getNodeEM();
         
@@ -141,11 +141,11 @@ public class SynonymBean implements Serializable {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
         String idTerm = termHelper.getIdTermOfConcept(
-                connect.openConnexionPool(),
+                
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
-        if (!termHelper.addNonPreferredTerm(connect.openConnexionPool(),
+        if (!termHelper.addNonPreferredTerm(
                 idTerm,
                 value,
                 selectedLang,
@@ -168,12 +168,12 @@ public class SynonymBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////
@@ -198,7 +198,7 @@ public class SynonymBean implements Serializable {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
         duplicate = false;
-        if (!termHelper.updateTermSynonyme(connect.openConnexionPool(),
+        if (!termHelper.updateTermSynonyme(
                 nodeEM.getOldValue(), nodeEM.getLexicalValue(),
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeEM.getLang(),
@@ -217,11 +217,11 @@ public class SynonymBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
@@ -265,7 +265,7 @@ public class SynonymBean implements Serializable {
             return;
         }
 
-        if (termHelper.isTermExist(connect.openConnexionPool(),
+        if (termHelper.isTermExist(
                 value,
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang)) {
@@ -277,7 +277,7 @@ public class SynonymBean implements Serializable {
             }
             return;
         }
-        if (termHelper.isAltLabelExist(connect.openConnexionPool(),
+        if (termHelper.isAltLabelExist(
                 value,
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang)) {
@@ -311,7 +311,7 @@ public class SynonymBean implements Serializable {
             return;
         }
 
-        if (termHelper.isTermExist(connect.openConnexionPool(), value,
+        if (termHelper.isTermExist(value,
                 selectedTheso.getCurrentIdTheso(), conceptBean.getSelectedLang())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -319,7 +319,7 @@ public class SynonymBean implements Serializable {
             return;
         }
 
-        if (termHelper.isAltLabelExist(connect.openConnexionPool(), value,
+        if (termHelper.isAltLabelExist(value,
                 selectedTheso.getCurrentIdTheso(), conceptBean.getSelectedLang())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " Un label identique existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -365,7 +365,7 @@ public class SynonymBean implements Serializable {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
-        if (!termHelper.updateStatus(connect.openConnexionPool(),
+        if (!termHelper.updateStatus(
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeEM.getLexicalValue(),
                 nodeEM.getLang(),
@@ -384,12 +384,12 @@ public class SynonymBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
@@ -422,7 +422,7 @@ public class SynonymBean implements Serializable {
             this.nodeEM = nodeEM1;
 
             if (!nodeEM1.getOldValue().equals(nodeEM1.getLexicalValue())) {
-                if (termHelper.isTermExist(connect.openConnexionPool(),
+                if (termHelper.isTermExist(
                         nodeEM1.getLexicalValue(),
                         selectedTheso.getCurrentIdTheso(),
                         nodeEM1.getLang())) {
@@ -432,7 +432,7 @@ public class SynonymBean implements Serializable {
                     PrimeFaces.current().ajax().update("messageIndex");
                     return;
                 }
-                if (termHelper.isAltLabelExist(connect.openConnexionPool(),
+                if (termHelper.isAltLabelExist(
                         nodeEM1.getLexicalValue(),
                         selectedTheso.getCurrentIdTheso(),
                         nodeEM1.getLang())) {
@@ -465,7 +465,7 @@ public class SynonymBean implements Serializable {
         for (int i = 0; i < propositionBean.getProposition().getSynonymsProp().size(); i++) {
             if (!propositionBean.getProposition().getSynonymsProp().get(i).getOldValue()
                     .equals(propositionBean.getProposition().getSynonymsProp().get(i).getLexicalValue())) {
-                if (termHelper.isTermExist(connect.openConnexionPool(),
+                if (termHelper.isTermExist(
                         propositionBean.getProposition().getSynonymsProp().get(i).getLexicalValue(),
                         selectedTheso.getCurrentIdTheso(),
                         propositionBean.getProposition().getSynonymsProp().get(i).getLang())) {
@@ -474,7 +474,7 @@ public class SynonymBean implements Serializable {
                     PrimeFaces.current().ajax().update("messageIndex");
                     return;
                 }
-                if (termHelper.isAltLabelExist(connect.openConnexionPool(),
+                if (termHelper.isAltLabelExist(
                         propositionBean.getProposition().getSynonymsProp().get(i).getLexicalValue(),
                         selectedTheso.getCurrentIdTheso(),
                         propositionBean.getProposition().getSynonymsProp().get(i).getLang())) {
@@ -520,7 +520,7 @@ public class SynonymBean implements Serializable {
         }
 
         if (!synonymPropBean.getOldValue().equals(synonymPropBean.getLexicalValue())) {
-            if (termHelper.isTermExist(connect.openConnexionPool(),
+            if (termHelper.isTermExist(
                     synonymPropBean.getLexicalValue(),
                     selectedTheso.getCurrentIdTheso(),
                     synonymPropBean.getLang())) {
@@ -530,7 +530,7 @@ public class SynonymBean implements Serializable {
                 return;
             }
 
-            if (termHelper.isAltLabelExist(connect.openConnexionPool(),
+            if (termHelper.isAltLabelExist(
                     synonymPropBean.getLexicalValue(),
                     selectedTheso.getCurrentIdTheso(),
                     synonymPropBean.getLang())) {
@@ -570,7 +570,7 @@ public class SynonymBean implements Serializable {
             PrimeFaces.current().ajax().update("messageIndex");
             return;
         }
-        if (!termHelper.deleteNonPreferedTerm(connect.openConnexionPool(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
+        if (!termHelper.deleteNonPreferedTerm(conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeEM.getLang(), nodeEM.getLexicalValue(), selectedTheso.getCurrentIdTheso(), idUser)) {
 
             var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La suppression a échoué !");
@@ -584,12 +584,12 @@ public class SynonymBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////

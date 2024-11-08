@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.concept;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import fr.cnrs.opentheso.entites.Gps;
@@ -22,7 +21,7 @@ import org.primefaces.PrimeFaces;
 @Named(value = "gpsBean")
 public class GpsBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private SelectedTheso selectedTheso;
 
@@ -34,10 +33,10 @@ public class GpsBean implements Serializable {
 
     public void addNewCoordinateGps() {
 
-        gpsHelper.saveNewGps(connect.openConnexionPool(), gpsSelected);
+        gpsHelper.saveNewGps(gpsSelected);
 
         conceptView.getNodeConcept().setNodeGps(gpsHelper.getGpsByConceptAndThesorus(
-                connect.openConnexionPool(),
+                
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
@@ -56,7 +55,7 @@ public class GpsBean implements Serializable {
      */
     public void updateCoordinateGps(Gps gps) {
 
-        gpsHelper.saveNewGps(connect.openConnexionPool(), Gps.builder()
+        gpsHelper.saveNewGps(Gps.builder()
                 .idConcept(conceptView.getNodeConcept().getConcept().getIdConcept())
                 .idTheso(selectedTheso.getCurrentIdTheso())
                 .latitude(gps.getLatitude())
@@ -64,7 +63,7 @@ public class GpsBean implements Serializable {
                 .build());
 
         conceptView.getNodeConcept().setNodeGps(gpsHelper.getGpsByConceptAndThesorus(
-                connect.openConnexionPool(),
+                
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()));
 
@@ -86,7 +85,7 @@ public class GpsBean implements Serializable {
 
         if(gps == null) return;
 
-        gpsHelper.removeGps(connect.openConnexionPool(), gps);
+        gpsHelper.removeGps(gps);
 
         conceptView.createMap(selectedTheso.getCurrentIdTheso());
 

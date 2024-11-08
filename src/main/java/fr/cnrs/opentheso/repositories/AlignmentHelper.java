@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,13 +18,19 @@ import fr.cnrs.opentheso.models.alignment.AlignementSource;
 import fr.cnrs.opentheso.utils.StringUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Data
 @Slf4j
 @Service
 public class AlignmentHelper {
+
+    @Autowired
+    private DataSource dataSource;
 
     private String message = "";
 
@@ -39,16 +44,16 @@ public class AlignmentHelper {
     /**
      * cette fonction permet de récupérer le concept aligné avec Ontome
      *
-     * @param ds
+     *
      * @param idTheso
      * @param cidocClass
      * @return
      */
-    public ArrayList<NodeIdValue> getLinkedConceptsWithOntome(HikariDataSource ds, String idTheso, String cidocClass) {
+    public ArrayList<NodeIdValue> getLinkedConceptsWithOntome(String idTheso, String cidocClass) {
 
         ArrayList<NodeIdValue> listAlignementsOntome = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select alignement.internal_id_concept, alignement.uri_target"
                         + " from alignement"
@@ -81,15 +86,15 @@ public class AlignmentHelper {
     /**
      * cette fonction permet de récupérer les alignements avec Ontome
      *
-     * @param ds
+     * 
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeIdValue> getAllLinkedConceptsWithOntome(HikariDataSource ds, String idTheso) {
+    public ArrayList<NodeIdValue> getAllLinkedConceptsWithOntome(String idTheso) {
 
         ArrayList<NodeIdValue> listAlignementsOntome = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select alignement.internal_id_concept, alignement.uri_target"
                         + " from alignement"
@@ -122,15 +127,15 @@ public class AlignmentHelper {
      * cette fonction permet de récupérer les informations de la table des
      * sources d'alignement
      *
-     * @param ds
+     * 
      * @param idTheso
      * @return
      */
-    public ArrayList<NodeSelectedAlignment> getSelectedAlignementOfThisTheso(HikariDataSource ds, String idTheso) {
+    public ArrayList<NodeSelectedAlignment> getSelectedAlignementOfThisTheso(String idTheso) {
 
         ArrayList<NodeSelectedAlignment> listAlignementSourceSelected = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select alignement_source.source, alignement_source.description, id_alignement_source"
                         + " from thesaurus_alignement_source, alignement_source"
@@ -158,14 +163,14 @@ public class AlignmentHelper {
     /**
      * Permet de retourner les types d'alignement
      *
-     * @param ds
+     * 
      * @return #MR
      */
-    public ArrayList<NodeAlignmentType> getAlignmentsType(HikariDataSource ds) {
+    public ArrayList<NodeAlignmentType> getAlignmentsType () {
 
         ArrayList<NodeAlignmentType> nodeAlignmentTypes = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
 
                 String query = "select * from alignement_type";
@@ -191,14 +196,14 @@ public class AlignmentHelper {
     /**
      * permet de modifier un alignement
      */
-    public boolean updateAlignment(HikariDataSource ds, int idAlignment, String conceptTarget, String thesaurusTarget,
+    public boolean updateAlignment(int idAlignment, String conceptTarget, String thesaurusTarget,
                                    String uriTarget, int idTypeAlignment, String idConcept, String idThesaurus) {
 
         boolean status = false;
         uriTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(uriTarget);
         conceptTarget = fr.cnrs.opentheso.utils.StringUtils.convertString(conceptTarget);
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "UPDATE alignement set concept_target = '" + conceptTarget + "',"
                         + " modified = current_date,"
@@ -221,11 +226,11 @@ public class AlignmentHelper {
     /**
      * Permet de savoir si le concept 'id_concept' a déjà une alignement ou pas
      */
-    public boolean isExistsAlignement(HikariDataSource ds, String id_Theso, String id_Concept, int alignement_id_type, String urlTarget) {
+    public boolean isExistsAlignement(String id_Theso, String id_Concept, int alignement_id_type, String urlTarget) {
         
         urlTarget = StringUtils.addQuotes(urlTarget);
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "SELECT internal_id_concept from alignement"
                         + " where internal_id_concept = '" + id_Concept + "'"
@@ -247,7 +252,7 @@ public class AlignmentHelper {
     /**
      * Permet de savoir si on a besoin de faire un update ou un insert dans la BDD
      */
-    public boolean addNewAlignment(HikariDataSource ds,
+    public boolean addNewAlignment(
             int author,
             String conceptTarget, String thesaurusTarget,
             String uriTarget, int idTypeAlignment,
@@ -255,12 +260,12 @@ public class AlignmentHelper {
         
         thesaurusTarget = StringUtils.convertString(thesaurusTarget);
 
-        if (!isExistsAlignement(ds, idThesaurus, idConcept, idTypeAlignment, uriTarget)) {
+        if (!isExistsAlignement(idThesaurus, idConcept, idTypeAlignment, uriTarget)) {
             message = "";
-            return addNewAlignement2(ds, author, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
+            return addNewAlignement2(author, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
                     idConcept, idThesaurus, id_alignement_source);
         } else {
-            return updateAlignment(ds, idTypeAlignment, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
+            return updateAlignment(idTypeAlignment, conceptTarget, thesaurusTarget, uriTarget, idTypeAlignment,
                     idConcept, idThesaurus);
         }
     }
@@ -268,7 +273,7 @@ public class AlignmentHelper {
     /**
      * Cette fonction permet d'ajouter un nouvel alignement sur un thésaurus distant pour ce concept
      */
-    private boolean addNewAlignement2(HikariDataSource ds,
+    private boolean addNewAlignement2(
             int author,
             String conceptTarget, String thesaurusTarget,
             String uriTarget, int idTypeAlignment,
@@ -281,7 +286,7 @@ public class AlignmentHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -326,17 +331,17 @@ public class AlignmentHelper {
      * Cette fonction permet d'ajouter un nouvel alignement sur un thésaurus
      * distant pour ce concept, utilisée uniquement pour les imports
      *
-     * @param ds
+     * 
      * @param nodeAlignment
      *
      * @return
      */
-    public boolean addNewAlignment(HikariDataSource ds, NodeAlignment nodeAlignment) {
+    public boolean addNewAlignment(NodeAlignment nodeAlignment) {
 
         nodeAlignment.setConcept_target(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeAlignment.getConcept_target()));
         nodeAlignment.setUri_target(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeAlignment.getUri_target()));
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into alignement "
                         + "(author, concept_target, thesaurus_target,"
@@ -363,10 +368,10 @@ public class AlignmentHelper {
     /**
      * Cette focntion permet de supprimer un alignement
      */
-    public boolean deleteAlignment(HikariDataSource ds, int idAlignment, String idThesaurus) {
+    public boolean deleteAlignment(int idAlignment, String idThesaurus) {
 
         boolean status = false;
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             try (Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("delete from alignement where id = " + idAlignment + " and internal_id_thesaurus = '" + idThesaurus + "'");
                 status = true;
@@ -380,10 +385,10 @@ public class AlignmentHelper {
     /**
      * Cette focntion permet de supprimer un alignement
      */
-    public boolean deleteAlignment(HikariDataSource ds, String idConcept, String idThesaurus, String uri) {
+    public boolean deleteAlignment(String idConcept, String idThesaurus, String uri) {
 
         boolean status = false;
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             try (Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("delete from alignement where internal_id_concept = '" + idConcept + "' and internal_id_thesaurus = '"+idThesaurus+"' and uri_target = '" + uri + "'");
                 status = true;
@@ -397,10 +402,10 @@ public class AlignmentHelper {
     /**
      * Cette focntion permet de supprimer un alignement par URI
      */
-    public boolean deleteAlignmentByUri(HikariDataSource ds,
+    public boolean deleteAlignmentByUri(
             String uri, String idConcept, String idThesaurus) {
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from alignement "
                         + " where uri_target = '" + uri + "'"
@@ -417,25 +422,20 @@ public class AlignmentHelper {
     /**
      * Cette focntion permet de supprimer tous les aligenements d'un concept
      */
-    public boolean deleteAlignmentOfConcept(Connection conn, String idConcept, String idThesaurus) {
+    public boolean deleteAlignmentOfConcept(String idConcept, String idThesaurus) {
 
-        Statement stmt;
-        boolean status = false;
-
-        try {
-            stmt = conn.createStatement();
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             String query = "delete from alignement "
                     + " where internal_id_concept = '" + idConcept + "'"
                     + " and internal_id_thesaurus = '" + idThesaurus + "'";
 
             stmt.executeUpdate(query);
-            status = true;
-            stmt.close();
+            return true;
         } catch (SQLException sqle) {
             // Log exception
             log.error("Error while deleting alignment from thesaurus with idConcept : " + idConcept, sqle);
+            return false;
         }
-        return status;
     }
 
 //        exactMatch   = 1;
@@ -448,17 +448,17 @@ public class AlignmentHelper {
      * type
      *
      *
-     * @param ds
+     * 
      * @param idConcept
      * @param idThesaurus
      * @param type
      * @return
      */
-    public boolean deleteAlignmentOfConceptByType(HikariDataSource ds,
+    public boolean deleteAlignmentOfConceptByType(
             String idConcept, String idThesaurus, int type) {
 
         boolean status = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             // Get connection from pool
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from alignement "
@@ -479,16 +479,16 @@ public class AlignmentHelper {
      * Cette fonction permet de retourner la liste des alignements pour un
      * concept
      *
-     * @param ds
+     * 
      * @param idConcept
      * @param idThesaurus
      * @return Objet class #MR
      */
-    public ArrayList<NodeAlignmentSmall> getAllAlignmentOfConceptNew(HikariDataSource ds, String idConcept, String idThesaurus) {
+    public ArrayList<NodeAlignmentSmall> getAllAlignmentOfConceptNew(String idConcept, String idThesaurus) {
 
         ArrayList<NodeAlignmentSmall> nodeAlignmentList = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "SELECT uri_target, alignement_id_type"
                         + " FROM alignement"
@@ -515,17 +515,17 @@ public class AlignmentHelper {
      * Cette fonction permet de retourner la liste des alignements pour un
      * concept
      *
-     * @param ds
+     * 
      * @param idConcept
      * @param idThesaurus
      * @return Objet class
      */
-    public ArrayList<NodeAlignment> getAllAlignmentOfConcept(HikariDataSource ds,
+    public ArrayList<NodeAlignment> getAllAlignmentOfConcept(
             String idConcept, String idThesaurus) {
 
         ArrayList<NodeAlignment> nodeAlignmentList = null;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "SELECT alignement.id, created, modified, author, thesaurus_target, concept_target, uri_target,"
                         + " alignement_id_type, internal_id_thesaurus, internal_id_concept, id_alignement_source,"
@@ -566,14 +566,14 @@ public class AlignmentHelper {
     /**
      * Retourne la liste des types d'alignements sous forme de MAP (id + Nom)
      *
-     * @param ds
+     * 
      * @return
      */
-    public HashMap<String, String> getAlignmentType(HikariDataSource ds) {
+    public HashMap<String, String> getAlignmentType () {
 
         HashMap<String, String> map = new HashMap<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "select id, label_skos from alignement_type";
                 stmt.executeQuery(query);
@@ -595,15 +595,15 @@ public class AlignmentHelper {
      * cette fonction permet de récupérer les informations de la table des
      * sources d'alignement
      *
-     * @param ds
+     * 
      * @param id_theso
      * @return
      */
-    public ArrayList<AlignementSource> getAlignementSource(HikariDataSource ds, String id_theso) {
+    public ArrayList<AlignementSource> getAlignementSource(String id_theso) {
 
         ArrayList<AlignementSource> alignementSources = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "select "
                         + " alignement_source.gps,"
@@ -636,11 +636,11 @@ public class AlignmentHelper {
         return alignementSources;
     }
 
-    public ArrayList<AlignementSource> getAlignementSourceSAdmin(HikariDataSource ds) {
+    public ArrayList<AlignementSource> getAlignementSourceSAdmin () {
 
         ArrayList<AlignementSource> alignementSources = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "select  * from alignement_source order by id desc";
                 try (ResultSet resultSet = stmt.executeQuery(query)) {
@@ -668,26 +668,26 @@ public class AlignmentHelper {
      * Si currentIdTheso =null, on associe pas la source au thésaurus, sinon, on
      * l'associe automatiquement au thésaurus en cours
      *
-     * @param ds
+     * 
      * @param alignement
      * @param id_user
      * @param currentIdTheso
      * @return
      */
-    public boolean addNewAlignmentSource(HikariDataSource ds, AlignementSource alignement, int id_user, String currentIdTheso) {
+    public boolean addNewAlignmentSource(AlignementSource alignement, int id_user, String currentIdTheso) {
         int id_alignement;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
-            if (!insertAlignementSource(conn, alignement, id_user)) {
+            if (!insertAlignementSource(alignement, id_user)) {
                 conn.rollback();
                 conn.close();
                 return false;
             }
             if (currentIdTheso != null) {
-                id_alignement = getId_Alignement(conn, alignement.getSource());
-                if (!insertSourceAlignementToTheso(conn, currentIdTheso, id_alignement)) {
+                id_alignement = getId_Alignement(alignement.getSource());
+                if (!insertSourceAlignementToTheso(currentIdTheso, id_alignement)) {
                     conn.rollback();
                     conn.close();
                     return false;
@@ -702,27 +702,25 @@ public class AlignmentHelper {
         }
     }
 
-    public int getId_Alignement(Connection conn, String source) {
-        int id_alignement = 0;
-        try (Statement stmt = conn.createStatement()) {
-            String query = "Select id from alignement_source "
-                    + " where source = '" + source + "'";
-
-            try (ResultSet rs = stmt.executeQuery(query)) {
+    public int getId_Alignement(String source) {
+        try (var connexion = dataSource.getConnection();
+             var stmt = connexion.createStatement()) {
+            try (ResultSet rs = stmt.executeQuery("Select id from alignement_source where source = '" + source + "'")) {
                 if (rs.next()) {
-                    id_alignement = rs.getInt("id");
+                    return rs.getInt("id");
                 }
+                return 0;
             }
         } catch (SQLException sqle) {
             log.error("Error while insert new Alignement : ", sqle);
         }
-        return id_alignement;
+        return 0;
     }
 
-    private boolean insertAlignementSource(Connection conn, AlignementSource alig, int id_user) {
+    private boolean insertAlignementSource(AlignementSource alig, int id_user) {
 
         boolean status = false;
-        try (Statement stmt = conn.createStatement()) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             String query = "Insert into alignement_source (source,requete,type_rqt,"
                     + "alignement_format, id_user, description) values('"
                     + alig.getSource() + "','"
@@ -742,14 +740,14 @@ public class AlignmentHelper {
 
     /**
      *
-     * @param ds
+     * 
      * @param alignementSource
      * 
      * @return
      */
-    public boolean updateAlignmentSource(HikariDataSource ds, 
+    public boolean updateAlignmentSource(
             AlignementSource alignementSource) {
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "update alignement_source set "
                         + "source ='" + alignementSource.getSource()
@@ -767,14 +765,14 @@ public class AlignmentHelper {
     
     /**
      *
-     * @param ds
+     * 
      * @param id
      * 
      * @return
      */
-    public boolean deleteAlignmentSource(HikariDataSource ds, 
+    public boolean deleteAlignmentSource(
             int id) {
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "delete from alignement_source "
                         + " where id = " + id ;
@@ -791,17 +789,17 @@ public class AlignmentHelper {
      * permet d'ajouter une source d'alignement à un ou plusieurs thésaurus on
      * supprime d'abord les anciennes valeurs, puis on ajoute les nouvelles
      *
-     * @param ds
+     * 
      * @param idTheso
      * @param idAlignement
      * @return
      */
-    public boolean addSourceAlignementToTheso(HikariDataSource ds, String idTheso, int idAlignement) {
+    public boolean addSourceAlignementToTheso(String idTheso, int idAlignement) {
         boolean status = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
-            if (!insertSourceAlignementToTheso(conn, idTheso, idAlignement)) {
+            if (!insertSourceAlignementToTheso(idTheso, idAlignement)) {
                 conn.rollback();
                 conn.close();
                 return false;
@@ -819,10 +817,10 @@ public class AlignmentHelper {
     /**
      * Permet d'effacer le alignement "idAlignement" du theso "idTheso"
      */
-    public boolean deleteSourceAlignementFromTheso(Connection conn, String idTheso, int idAlignement) {
+    public boolean deleteSourceAlignementFromTheso(String idTheso, int idAlignement) {
 
         boolean status = false;
-        try (Statement stmt = conn.createStatement()) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.executeUpdate("delete from thesaurus_alignement_source"
                     + " where id_alignement_source = " + idAlignement
                     + " and id_thesaurus = '" + idTheso + "'");
@@ -836,31 +834,29 @@ public class AlignmentHelper {
     /**
      * Permet de ajouté un alignement a un theso
      *
-     * @param conn
      * @param idTheso
      * @param idAlignement
      * @return
      */
-    private boolean insertSourceAlignementToTheso(Connection conn, String idTheso, int idAlignement) {
-        boolean status = false;
-        try (Statement stmt = conn.createStatement()) {
+    private boolean insertSourceAlignementToTheso(String idTheso, int idAlignement) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             String query = "Insert into thesaurus_alignement_source"
                     + "(id_thesaurus, id_alignement_source) values("
                     + "'" + idTheso + "',"
                     + idAlignement + ")";
             stmt.executeUpdate(query);
-            status = true;
+            return true;
         } catch (SQLException sqle) {
             log.error("Error while insert new Alignement to theasurus : " + idTheso + " id_alignement : " + idAlignement, sqle);
+            return false;
         }
-        return status;
     }
 
-    public boolean updateAlignmentUrlStatut(HikariDataSource ds, int idAlignment, boolean newStatut,
+    public boolean updateAlignmentUrlStatut(int idAlignment, boolean newStatut,
                                             String idConcept, String idThesaurus) {
 
         boolean status = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 String query = "UPDATE alignement set url_available = " + newStatut
                         + " WHERE internal_id_thesaurus = '" + idThesaurus + "'"

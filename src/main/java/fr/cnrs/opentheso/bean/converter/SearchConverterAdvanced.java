@@ -25,9 +25,9 @@ public class SearchConverterAdvanced implements Converter{
         if(o == null) {
             return null;
         } else {
-            if( ((NodeSearchMini)o).isGroup())
+            if(((NodeSearchMini)o).isGroup())
                 return ((NodeSearchMini)o).getIdConcept() + "####" + "isGroup";
-            if( ((NodeSearchMini)o).isFacet())
+            if(((NodeSearchMini)o).isFacet())
                 return ((NodeSearchMini)o).getIdConcept() + "####" + "isFacet";            
             return ((NodeSearchMini)o).getIdConcept();
         }

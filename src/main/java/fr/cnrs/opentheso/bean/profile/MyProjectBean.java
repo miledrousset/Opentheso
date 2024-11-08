@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Lazy;
 @SessionScoped
 public class MyProjectBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private CurrentUser currentUser;
 
     @Autowired
@@ -102,7 +102,7 @@ public class MyProjectBean implements Serializable {
     private void initMyAuthorizedRoleOnThisGroup(){
         if(selectedProject.isEmpty()) return;
         myRoleOnThisProject = userHelper.getUserRoleOnThisGroup(
-                connect.openConnexionPool(),
+                
                 currentUser.getNodeUser().getIdUser(),
                 Integer.parseInt(selectedProject));
     }    
@@ -129,7 +129,7 @@ public class MyProjectBean implements Serializable {
                 idRoleFrom = 4; // l'utilisateur est Contributeur / user       
             }
         }
-        myAuthorizedRoles = userHelper.getMyAuthorizedRoles(connect.openConnexionPool(), idRoleFrom);
+        myAuthorizedRoles = userHelper.getMyAuthorizedRoles(idRoleFrom);
     }     
 
     /**
@@ -137,10 +137,10 @@ public class MyProjectBean implements Serializable {
      */
     private void getGroupsOfUser() {
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeGroupsOfUser = userHelper.getAllGroups(connect.openConnexionPool());
+            listeGroupsOfUser = userHelper.getAllGroups();
             return;
         }
-        listeGroupsOfUser = userHelper.getGroupsOfUser(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());
+        listeGroupsOfUser = userHelper.getGroupsOfUser(currentUser.getNodeUser().getIdUser());
     }    
     
     public void setLists() {
@@ -183,7 +183,7 @@ public class MyProjectBean implements Serializable {
         
         int idGroup = Integer.parseInt(selectedProject);
         
-        listeThesoOfProject = userHelper.getThesaurusOfProject(connect.openConnexionPool(), idGroup, connect.getWorkLanguage());
+        listeThesoOfProject = userHelper.getThesaurusOfProject(idGroup, workLanguage);
     } 
     
     /**
@@ -197,11 +197,11 @@ public class MyProjectBean implements Serializable {
         int idGroup = Integer.parseInt(selectedProject);
         setUserRoleOnThisGroup();
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeUser = userHelper.getUsersRolesByGroup(connect.openConnexionPool(),
+            listeUser = userHelper.getUsersRolesByGroup(
                     idGroup, nodeUserRoleSuperAdmin.getIdRole());
         } else {
             if (nodeUserRoleOnThisGroup != null) {
-                listeUser = userHelper.getUsersRolesByGroup(connect.openConnexionPool(),
+                listeUser = userHelper.getUsersRolesByGroup(
                         idGroup, nodeUserRoleOnThisGroup.getIdRole());
             } else {
                 if (listeUser != null) {
@@ -223,7 +223,7 @@ public class MyProjectBean implements Serializable {
         }
 
         int idGroup = Integer.parseInt(selectedProject);
-        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(connect.openConnexionPool(), idGroup);
+        listeUserLimitedRole = userHelper.getAllUsersRolesLimitedByTheso(idGroup);
     }    
     
     /**
@@ -242,12 +242,11 @@ public class MyProjectBean implements Serializable {
         }
         int idGroup = Integer.parseInt(selectedProject);
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            nodeUserRoleSuperAdmin = userHelper.getUserRoleForSuperAdmin(
-                    connect.openConnexionPool());
+            nodeUserRoleSuperAdmin = userHelper.getUserRoleForSuperAdmin();
             return;
         }
         nodeUserRoleOnThisGroup = userHelper.getUserRoleOnThisGroup(
-                connect.openConnexionPool(), currentUser.getNodeUser().getIdUser(), idGroup);
+                 currentUser.getNodeUser().getIdUser(), idGroup);
     } 
     
     
@@ -267,14 +266,14 @@ public class MyProjectBean implements Serializable {
             return false;
         }
         int idGroup = Integer.parseInt(selectedProject);
-        return userHelper.isAdminOnThisGroup(connect.openConnexionPool(),
+        return userHelper.isAdminOnThisGroup(
                 currentUser.getNodeUser().getIdUser(), idGroup);
     }
     
     public String getSelectedProjectName() {
         if(selectedProject != null) 
             if(!selectedProject.isEmpty())
-                selectedProjectName = userHelper.getGroupName(connect.openConnexionPool(), Integer.parseInt(selectedProject));
+                selectedProjectName = userHelper.getGroupName(Integer.parseInt(selectedProject));
             else
                 selectedProjectName = selectedProject;
         return selectedProjectName;

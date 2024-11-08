@@ -32,7 +32,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class ExternalResources implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CurrentUser currentUser;
@@ -113,7 +113,7 @@ public class ExternalResources implements Serializable {
             return;            
         }
 
-        if(!externalResourcesHelper.addExternalResource(connect.openConnexionPool(),
+        if(!externalResourcesHelper.addExternalResource(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 description,
@@ -126,12 +126,12 @@ public class ExternalResources implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////        
@@ -167,7 +167,7 @@ public class ExternalResources implements Serializable {
         }
 
         if(!externalResourcesHelper.setExternalResourceUri(
-                connect.openConnexionPool(),
+                
                 selectedTheso.getCurrentIdTheso(),               
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 nodeImage.getOldUri(),
@@ -182,11 +182,11 @@ public class ExternalResources implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser); 
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         
@@ -216,7 +216,7 @@ public class ExternalResources implements Serializable {
         }
 
         if(!externalResourcesHelper.deleteExternalResource(
-                connect.openConnexionPool(),
+                
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeImage.getUri())) {
@@ -228,11 +228,11 @@ public class ExternalResources implements Serializable {
         conceptBean.getConcept(selectedTheso.getCurrentIdTheso(), conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(), 
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);  
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////         

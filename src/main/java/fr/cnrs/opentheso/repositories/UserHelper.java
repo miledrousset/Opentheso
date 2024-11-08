@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 
 import java.sql.*;
@@ -27,10 +27,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
+
 @Data
 @Slf4j
 @Service
 public class UserHelper {
+
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     private ThesaurusHelper thesaurusHelper;
@@ -41,9 +46,9 @@ public class UserHelper {
     /**
      * cette fonction permet de retourner tous les roles
      */
-    public ArrayList<NodeUserRoleGroup> getAllRole(HikariDataSource ds) {
+    public ArrayList<NodeUserRoleGroup> getAllRole () {
         ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = new ArrayList<>();
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT "
                         + "  roles.id, "
@@ -68,16 +73,16 @@ public class UserHelper {
     /**
      * permet de rechercher un utilisateur avec son nom
      *
-     * @param ds
+     * 
      * @param userName
      * @return
      */
-    public ArrayList<NodeUser> searchUser(HikariDataSource ds, String userName) {
+    public ArrayList<NodeUser> searchUser(String userName) {
 
         ArrayList<NodeUser> nodeUsers = new ArrayList<>();
         userName = fr.cnrs.opentheso.utils.StringUtils.convertString(userName);
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_user, username from users where username ilike '%"
                         + userName + "%' order by username");
@@ -104,16 +109,16 @@ public class UserHelper {
      * permet de rechercher les projets dont je suis Admin pour depalcer les
      * thésaurus
      *
-     * @param ds
+     * 
      * @param idUser
      * @param projectName
      * @return
      */
-    public ArrayList<NodeUserGroup> searchMyProject(HikariDataSource ds, int idUser, String projectName) {
+    public ArrayList<NodeUserGroup> searchMyProject(int idUser, String projectName) {
 
         ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 try (ResultSet resultSet = stmt.executeQuery("SELECT user_group_label.id_group, user_group_label.label_group "
                         + "FROM user_role_group, user_group_label "
@@ -140,15 +145,15 @@ public class UserHelper {
      * permet de rechercher les projets pour le SuperAdmin pour depalcer les
      * thésaurus
      *
-     * @param ds
+     * 
      * @param projectName
      * @return
      */
     public ArrayList<NodeUserGroup> searchAllProject(
-            HikariDataSource ds, String projectName) {
+            String projectName) {
         ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT "
                         + " user_group_label.id_group,"
@@ -176,7 +181,7 @@ public class UserHelper {
     /**
      * Cette fonction permet d'ajouter un nouvel utilisateur sans le role
      *
-     * @param ds
+     * 
      * @param userName
      * @param mail
      * @param password
@@ -184,7 +189,7 @@ public class UserHelper {
      * @param alertMail
      * @return #MR
      */
-    public boolean addUser(HikariDataSource ds,
+    public boolean addUser(
             String userName, String mail,
             String password, boolean isSuperAdmin,
             boolean alertMail) {
@@ -193,7 +198,7 @@ public class UserHelper {
 
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into users"
                         + "(username,password,active,mail,"
@@ -220,15 +225,15 @@ public class UserHelper {
      * mot de passe est faux, on retourne (-1) sinon, on retourne l'ID de
      * l'utilisateur de retourner l'identifiant
      *
-     * @param ds
+     * 
      * @param login
      * @param pwd
      * @return
      */
-    public int getIdUser(HikariDataSource ds, String login, String pwd) {
+    public int getIdUser(String login, String pwd) {
         int idUser = -1;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '"
                         + login + "' AND password='" + pwd + "'");
@@ -249,13 +254,13 @@ public class UserHelper {
      * l'ulisateur existe ou si le mot de passe est faux, on retourne (-1)
      * sinon, on retourne l'ID de l'utilisateur de retourner l'identifiant
      *
-     * @param ds
+     * 
      * @param mail
      * @return
      */
-    public int getIdUserFromMail(HikariDataSource ds, String mail) {
+    public int getIdUserFromMail(String mail) {
         int idUser = -1;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_user FROM users WHERE mail ilike '"
                         + mail + "'");
@@ -276,13 +281,13 @@ public class UserHelper {
      * l'ulisateur existe ou si le mot de passe est faux, on retourne (-1)
      * sinon, on retourne l'ID de l'utilisateur de retourner l'identifiant
      *
-     * @param ds
+     * 
      * @param pseudo
      * @return
      */
-    public int getIdUserFromPseudo(HikariDataSource ds, String pseudo) {
+    public int getIdUserFromPseudo(String pseudo) {
         int idUser = -1;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '"
                         + pseudo + "'");
@@ -301,13 +306,13 @@ public class UserHelper {
     /**
      * cette fonction permet de retourner les informations de l'utilisateur
      *
-     * @param ds
+     * 
      * @param idUser
      * @return #MR
      */
-    public NodeUser getUser(HikariDataSource ds, int idUser) {
+    public NodeUser getUser(int idUser) {
         NodeUser nodeUser = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + "  users.id_user,"
@@ -355,14 +360,14 @@ public class UserHelper {
      * cette fonction permet de retourner le nom d'un groupe
      *
      *
-     * @param ds
+     * 
      * @param projectName
      * @return
      */
-    public int getThisProjectId(HikariDataSource ds, String projectName) {
+    public int getThisProjectId(String projectName) {
         int projectId = -1;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + "  user_group_label.id_group"
@@ -397,15 +402,15 @@ public class UserHelper {
      * cette fonction permet de retourner le nom d'un groupe
      *
      *
-     * @param ds
+     * 
      * @param idGroup
      * @return
      */
     public String getGroupName(
-            HikariDataSource ds, int idGroup) {
+            int idGroup) {
         String groupLabel = null;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + "  user_group_label.label_group"
@@ -429,15 +434,15 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des groupes d'un utilisateur
      *
      *
-     * @param ds
+     * 
      * @param idUser
      * @return
      */
     public Map<String, String> getGroupsOfUser(
-            HikariDataSource ds, int idUser) {
+            int idUser) {
         HashMap<String, String> listGroup = new LinkedHashMap();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + "  user_group_label.id_group,"
@@ -476,16 +481,16 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des projets d'un utilisateur
      *
      *
-     * @param ds
+     * 
      * @param idUser
      * @return
      * #MR
      */
     public List<UserGroupLabel> getProjectOfUser(
-            HikariDataSource ds, int idUser) {
+            int idUser) {
         List<UserGroupLabel> userGroupLabels = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT DISTINCT user_group_label.id_group, user_group_label.label_group"
                         + " FROM user_role_group, user_group_label"
@@ -529,14 +534,13 @@ public class UserHelper {
      * MAP c'est pour le SuperAdmin
      *
      *
-     * @param ds
+     * 
      * @return
      */
-    public Map<String, String> getAllGroups(
-            HikariDataSource ds) {
+    public Map<String, String> getAllGroups() {
         HashMap<String, String> sortedHashMap = new LinkedHashMap();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT  user_group_label.id_group,  user_group_label.label_group FROM user_group_label order by label_group");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -556,14 +560,13 @@ public class UserHelper {
      * format Objet pour la gestion
      *
      *
-     * @param ds
+     * 
      * @return
      */
-    public ArrayList<NodeUserGroup> getAllProject(
-            HikariDataSource ds) {
+    public ArrayList<NodeUserGroup> getAllProject() {
         ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT user_group_label.id_group, user_group_label.label_group FROM user_group_label order by label_group");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -585,15 +588,15 @@ public class UserHelper {
      * retourne la liste de tous les projets où l'utilisateur a des droits Admin
      * dessus
      *
-     * @param ds
+     * 
      * @param idUser
      * @return
      */
     public ArrayList<NodeUserGroup> getProjectsOfUserAsAdmin(
-            HikariDataSource ds, int idUser) {
+            int idUser) {
         ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + " user_group_label.id_group, user_group_label.label_group"
@@ -624,15 +627,15 @@ public class UserHelper {
     /**
      * retourne la liste de tous les projets où l'utilisateur a des droits
      *
-     * @param ds
+     * 
      * @param idUser
      * @return
      */
     public ArrayList<NodeUserGroup> getProjectsOfUser(
-            HikariDataSource ds, int idUser) {
+            int idUser) {
         ArrayList<NodeUserGroup> nodeUserGroups = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + "  user_group_label.id_group,"
@@ -661,45 +664,45 @@ public class UserHelper {
     /**
      * permet de retourner la liste des thésaurus pour un projet
      *
-     * @param ds
+     * 
      * @param idProject
      * @param idLang
      * @return
      */
     public ArrayList<NodeIdValue> getThesaurusOfProject(
-            HikariDataSource ds,
+            
             int idProject,
             String idLang) {
 
-        ArrayList<String> listIdTheso = getIdThesaurusOfProject(ds, idProject);
+        ArrayList<String> listIdTheso = getIdThesaurusOfProject(idProject);
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         String idLangTemp;
         String title;
         for (String idTheso : listIdTheso) {
-            idLangTemp = preferencesHelper.getWorkLanguageOfTheso(ds, idTheso);
+            idLangTemp = preferencesHelper.getWorkLanguageOfTheso(idTheso);
             if (StringUtils.isEmpty(idLangTemp)) {
                 idLangTemp = idLang;
             }
-            title = thesaurusHelper.getTitleOfThesaurus(ds, idTheso, idLangTemp);
+            title = thesaurusHelper.getTitleOfThesaurus(idTheso, idLangTemp);
 
             NodeIdValue nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso);
             nodeIdValue.setValue(title);
             nodeIdValues.add(nodeIdValue);
-            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(ds, idTheso));
+            nodeIdValue.setStatus(thesaurusHelper.isThesoPrivate(idTheso));
         }
         return nodeIdValues;
     }
 
     /**
      *
-     * @param ds
+     * 
      * @param idProject
      * @return
      */
-    private ArrayList<String> getIdThesaurusOfProject(HikariDataSource ds, int idProject) {
+    private ArrayList<String> getIdThesaurusOfProject(int idProject) {
         ArrayList<String> nodeIdTheso = new ArrayList<>();
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT user_group_thesaurus.id_thesaurus"
                         + " FROM user_group_thesaurus"
@@ -717,20 +720,20 @@ public class UserHelper {
         return nodeIdTheso;
     }
 
-    public List<NodeIdValue> getThesaurusOfProject(HikariDataSource ds, int idProject, String idLang, boolean isPrivate) {
+    public List<NodeIdValue> getThesaurusOfProject(int idProject, String idLang, boolean isPrivate) {
 
-        ArrayList<String> listIdTheso = getIdThesaurusOfProjectWithVisibility(ds, idProject, isPrivate);
+        ArrayList<String> listIdTheso = getIdThesaurusOfProjectWithVisibility(idProject, isPrivate);
 
         if (CollectionUtils.isNotEmpty(listIdTheso)) {
             return listIdTheso.stream().map(idTheso -> {
-                String idLangTemp = preferencesHelper.getWorkLanguageOfTheso(ds, idTheso);
+                String idLangTemp = preferencesHelper.getWorkLanguageOfTheso(idTheso);
                 if (StringUtils.isEmpty(idLangTemp)) {
                     idLangTemp = idLang;
                 }
 
                 NodeIdValue nodeIdValue = new NodeIdValue();
                 nodeIdValue.setId(idTheso);
-                nodeIdValue.setValue(thesaurusHelper.getTitleOfThesaurus(ds, idTheso, idLangTemp));
+                nodeIdValue.setValue(thesaurusHelper.getTitleOfThesaurus(idTheso, idLangTemp));
                 return nodeIdValue;
             }).collect(Collectors.toList());
         } else {
@@ -738,9 +741,9 @@ public class UserHelper {
         }
     }
 
-    private ArrayList<String> getIdThesaurusOfProjectWithVisibility(HikariDataSource ds, int idProject, boolean isPrivate) {
+    private ArrayList<String> getIdThesaurusOfProjectWithVisibility(int idProject, boolean isPrivate) {
         ArrayList<String> nodeIdTheso = new ArrayList<>();
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT the.id_thesaurus "
                         + "FROM user_group_thesaurus, thesaurus the "
@@ -763,15 +766,15 @@ public class UserHelper {
      * permet de retourner la liste des thésaurus pour un groupe pour un
      * affichage IHM
      *
-     * @param ds
+     * 
      * @param idGroup
      * @param idLang
      * @return
      */
-    public Map<String, String> getThesaurusLabelsOfGroup(HikariDataSource ds, int idGroup,
+    public Map<String, String> getThesaurusLabelsOfGroup(int idGroup,
             String idLang) {
         Map<String, String> listThesos = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT distinct"
                         + "  thesaurus_label.title,"
@@ -799,13 +802,13 @@ public class UserHelper {
     /**
      * permet de retourner la liste de tous les utilisateurs
      *
-     * @param ds
+     * 
      * @return
      */
-    public ArrayList<NodeUser> getAllUsers(HikariDataSource ds) {
+    public ArrayList<NodeUser> getAllUsers () {
         ArrayList<NodeUser> nodeUsers = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM users order by f_unaccent(lower(username))");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -830,14 +833,14 @@ public class UserHelper {
      * utilisateur l'utilisateur peut faire partie de plusieurs groupes, donc on
      * retourne la liste de tous ces thésaurus dans différents groupes
      *
-     * @param ds
+     * 
      * @param idUser
      * @return #MR
      */
-    public List<String> getThesaurusOfUser(HikariDataSource ds, int idUser) {
+    public List<String> getThesaurusOfUser(int idUser) {
         List<String> nodeUserGroupThesauruses = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT distinct"
                         + " user_group_thesaurus.id_thesaurus"
@@ -866,14 +869,14 @@ public class UserHelper {
      * plusieurs groupes, donc on retourne la liste de tous ces thésaurus de
      * différents groupes
      *
-     * @param ds
+     * 
      * @param idUser
      * @return #MR
      */
-    public List<String> getThesaurusOfUserAsAdmin(HikariDataSource ds, int idUser) {
+    public List<String> getThesaurusOfUserAsAdmin(int idUser) {
         List<String> nodeUserGroupThesauruses = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + " user_group_thesaurus.id_thesaurus"
@@ -902,14 +905,14 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des thésaurus et les groupes
      * correspondants (uniquement les thésaurus qui font partie d'un groupe
      *
-     * @param ds
+     * 
      * @param idLangSource
      * @return #MR
      */
-    public ArrayList<NodeUserGroupThesaurus> getAllGroupTheso(HikariDataSource ds, String idLangSource) {
+    public ArrayList<NodeUserGroupThesaurus> getAllGroupTheso(String idLangSource) {
         ArrayList<NodeUserGroupThesaurus> nodeUserGroupThesauruses = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT "
                         + "  user_group_label.label_group,"
@@ -951,15 +954,15 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des thésaurus qui
      * n'apprtiennent à aucun groupe
      *
-     * @param ds
+     * 
      * @param idLangSource
      * @return #MR
      */
-    public ArrayList<NodeUserGroupThesaurus> getAllThesoWithoutGroup(HikariDataSource ds, String idLangSource) {
+    public ArrayList<NodeUserGroupThesaurus> getAllThesoWithoutGroup(String idLangSource) {
         /// fonction prête à intégrer        
         ArrayList<NodeUserGroupThesaurus> nodeUserGroupThesauruses = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT thesaurus_label.id_thesaurus, thesaurus_label.title, thesaurus.private "
                         + " FROM  thesaurus_label, thesaurus"
@@ -992,14 +995,14 @@ public class UserHelper {
      * groupes correspondants on ignore les superAdmin et les utilisateurs sans
      * groupes.
      *
-     * @param ds
+     * 
      * @param idLangSource
      * @return #MR
      */
-    public ArrayList<NodeUserGroupUser> getAllGroupUser(HikariDataSource ds, String idLangSource) {
+    public ArrayList<NodeUserGroupUser> getAllGroupUser(String idLangSource) {
         ArrayList<NodeUserGroupUser> nodeUserGroupUsers = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + " users.username,"
@@ -1040,14 +1043,14 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des utilisateurs qui n'ont
      * aucun groupe et qui ne sont pas des superAdmin.
      *
-     * @param ds
+     * 
      * @param idLangSource
      * @return #MR
      */
-    public ArrayList<NodeUserGroupUser> getAllGroupUserWithoutGroup(HikariDataSource ds, String idLangSource) {
+    public ArrayList<NodeUserGroupUser> getAllGroupUserWithoutGroup(String idLangSource) {
         ArrayList<NodeUserGroupUser> nodeUserGroupUsers = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + " users.username,"
@@ -1081,13 +1084,13 @@ public class UserHelper {
     /**
      * permet de retourner la liste de tous les utilisateurs qui sont SuperAdmin
      *
-     * @param ds
+     * 
      * @return
      */
-    public ArrayList<NodeUserGroupUser> getAllUsersSuperadmin(HikariDataSource ds) {
+    public ArrayList<NodeUserGroupUser> getAllUsersSuperadmin () {
         ArrayList<NodeUserGroupUser> nodeUserGroupUsers = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_user, username FROM users where issuperadmin = true order by f_unaccent(lower(username))");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -1113,16 +1116,16 @@ public class UserHelper {
      * permet de créer un groupe ou projet pour regrouper les utilisateurs et
      * les thésaurus
      *
-     * @param ds
+     * 
      * @param userGroupName
      * @return
      */
-    public boolean addNewProject(HikariDataSource ds,
+    public boolean addNewProject(
             String userGroupName) {
         boolean status = false;
         userGroupName = fr.cnrs.opentheso.utils.StringUtils.convertString(userGroupName);
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into user_group_label"
                         + "(label_group)"
@@ -1139,14 +1142,14 @@ public class UserHelper {
     /**
      * permet de savoir si le groupe ou projet existe déja
      *
-     * @param ds
+     * 
      * @param userGroupName
      * @return
      */
-    public boolean isUserGroupExist(HikariDataSource ds, String userGroupName) {
+    public boolean isUserGroupExist(String userGroupName) {
         boolean existe = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_group FROM user_group_label WHERE label_group ilike '" + userGroupName + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -1164,7 +1167,7 @@ public class UserHelper {
     /**
      * permet de mettre à jour les alertes et activer/désactiver l'utilisateur e
      *
-     * @param ds
+     * 
      * @param idUser
      * @param name
      * @param email
@@ -1172,7 +1175,7 @@ public class UserHelper {
      * @param isIsAlertMail
      * @return
      */
-    public boolean updateUser(HikariDataSource ds,
+    public boolean updateUser(
             int idUser,
             String name,
             String email,
@@ -1180,7 +1183,7 @@ public class UserHelper {
             boolean isIsAlertMail) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE users set alertmail = " + isIsAlertMail
                         + ", username = '" + name + "'"
@@ -1195,9 +1198,8 @@ public class UserHelper {
         return status;
     }
 
-    public boolean setIsSuperAdmin(Connection conn,
-            int idUser, boolean isSuperAdmin) {
-        try (Statement stmt = conn.createStatement()) {
+    public boolean setIsSuperAdmin(int idUser, boolean isSuperAdmin) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.executeUpdate("UPDATE users set "
                     + " issuperadmin = " + isSuperAdmin
                     + " WHERE id_user = " + idUser);
@@ -1209,89 +1211,28 @@ public class UserHelper {
     }
 
     /**
-     * permet de supprimer les roles d'un utilisateur sur les groupes cas où
-     * l'utilisateur passe en superAdmin, plus besoin de rôles
-     *
-     * @param conn
-     * @param idUser
-     * @return
-     */
-    public boolean deleteRolesOfUser(Connection conn, int idUser) {
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("delete from user_role_group where"
-                    + " id_user =" + idUser);
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
-    /**
-     * cette fonction permet de retourner les utilisateurs avec role SuperAdmin
-     *
-     *
-     * @param ds
-     * @return
-     */
-    public ArrayList<NodeUserRole> getListOfSuperAdmin(
-            HikariDataSource ds) {
-        ArrayList<NodeUserRole> nodeUserRoles = null;
-
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT "
-                        + "  users.id_user,"
-                        + "  users.username,"
-                        + " users.active"
-                        + " FROM "
-                        + "  users"
-                        + " WHERE"
-                        + "  users.issuperadmin = true"
-                        + " ORDER BY"
-                        + "  LOWER(users.username)");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    nodeUserRoles = new ArrayList<>();
-                    while (resultSet.next()) {
-                        NodeUserRole nodeUserRole = new NodeUserRole();
-                        nodeUserRole.setIdUser(resultSet.getInt("id_user"));
-                        nodeUserRole.setUserName(resultSet.getString("username"));
-                        nodeUserRole.setIdRole(1);
-                        nodeUserRole.setRoleName("SuperAdmin");
-                        nodeUserRole.setActive(resultSet.getBoolean("active"));
-                        nodeUserRoles.add(nodeUserRole);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UserHelper.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return nodeUserRoles;
-    }
-
-    /**
      * pemret de modifier le role de l'utilisateur sur un groupe
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idRole
      * @param idGroup
      * @return
      */
-    public boolean updateUserRoleOnGroup(HikariDataSource ds,
-            int idUser, int idRole, int idGroup) {
+    public boolean updateUserRoleOnGroup(int idUser, int idRole, int idGroup) {
+
         boolean status = false;
         boolean isSuperAdmin = false;
 
         if (idRole == 1) {
             isSuperAdmin = true;
         }
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
             /// si le role devient SuperAdmin, alors on supprime les roles sur les groupes
             if (isSuperAdmin) {
-                if (!deleteRoleOnGroup(conn, idUser, idGroup)) {
+                if (!deleteRoleOnGroup(idUser, idGroup)) {
                     conn.rollback();
                     return false;
                 }
@@ -1302,7 +1243,7 @@ public class UserHelper {
                     return false;
                 }
             }
-            if (!setIsSuperAdmin(conn, idUser, isSuperAdmin)) {
+            if (!setIsSuperAdmin(idUser, isSuperAdmin)) {
                 conn.rollback();
                 return false;
             }
@@ -1333,13 +1274,13 @@ public class UserHelper {
      * l'utilisateur change de role (SuperAdmin -> en Admin, on met à jour son
      * status dans la table Users (isSuperadmin = false)
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idRole
      * @param idGroup
      * @return
      */
-    public boolean addUserRoleOnGroup(HikariDataSource ds,
+    public boolean addUserRoleOnGroup(
             int idUser, int idRole, int idGroup) {
         boolean status = false;
         boolean isSuperAdmin = false;
@@ -1347,12 +1288,12 @@ public class UserHelper {
         if (idRole == 1) {
             isSuperAdmin = true;
         }
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
             /// si le role devient SuperAdmin, alors on supprime les roles sur les groupes
             if (isSuperAdmin) {
-                if (!deleteRoleOnGroup(conn, idUser, idGroup)) {
+                if (!deleteRoleOnGroup(idUser, idGroup)) {
                     conn.rollback();
                     return false;
                 }
@@ -1363,7 +1304,7 @@ public class UserHelper {
                     return false;
                 }
             }
-            if (!setIsSuperAdmin(conn, idUser, isSuperAdmin)) {
+            if (!setIsSuperAdmin(idUser, isSuperAdmin)) {
                 conn.rollback();
                 return false;
             }
@@ -1380,18 +1321,17 @@ public class UserHelper {
      * l'utilisateur d'un projet a un rôle uniquement à une partie des thésaurus
      * du projet
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idRole
      * @param idProject
      * @param idTheso
      * @return
      */
-    public boolean deleteUserRoleOnTheso(HikariDataSource ds,
-            int idUser, int idRole, int idProject, String idTheso) {
+    public boolean deleteUserRoleOnTheso(int idUser, int idRole, int idProject, String idTheso) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from user_role_only_on "
                         + " where "
@@ -1416,16 +1356,16 @@ public class UserHelper {
      * d'un projet cas des rôles uniquement à une partie des thésaurus du projet
      * à appliquer avent update
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idProject
      * @return
      */
-    public boolean deleteAllUserRoleOnTheso(HikariDataSource ds,
+    public boolean deleteAllUserRoleOnTheso(
             int idUser, int idProject) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from user_role_only_on "
                         + " where "
@@ -1446,21 +1386,19 @@ public class UserHelper {
      * ne donne pas accès à l'utilisateur à un projet, mais uniquement à une
      * partie des thésaurus du projet
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idRole
      * @param idProject
      * @param idTheso
      * @return
      */
-    public boolean addUserRoleOnThisTheso(HikariDataSource ds,
-            int idUser, int idRole, int idProject, String idTheso) {
+    public boolean addUserRoleOnThisTheso(int idUser, int idRole, int idProject, String idTheso) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
-            if (!addUserRoleOnTheso_(conn,
-                    idUser, idRole, idTheso, idProject)) {
+            if (!addUserRoleOnTheso_(idUser, idRole, idTheso, idProject)) {
                 conn.rollback();
                 return false;
             }
@@ -1477,27 +1415,25 @@ public class UserHelper {
      * où on ne donne pas accès à l'utilisateur à un projet, mais uniquement à
      * une partie des thésaurus du projet
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idRole
      * @param idProject
      * @param idThesos
      * @return
      */
-    public boolean addUserRoleOnTheso(HikariDataSource ds,
-            int idUser, int idRole, int idProject, List<String> idThesos) {
+    public boolean addUserRoleOnTheso(int idUser, int idRole, int idProject, List<String> idThesos) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
             /// On supprime d'abord le rôle de l'utilisateur sur le groupe
-            if (!deleteRoleOnGroup(conn, idUser, idProject)) {
+            if (!deleteRoleOnGroup(idUser, idProject)) {
                 conn.rollback();
                 return false;
             }
             for (String idTheso : idThesos) {
-                if (!addUserRoleOnTheso_(conn,
-                        idUser, idRole, idTheso, idProject)) {
+                if (!addUserRoleOnTheso_(idUser, idRole, idTheso, idProject)) {
                     conn.rollback();
                     return false;
                 }
@@ -1510,10 +1446,9 @@ public class UserHelper {
         return status;
     }
 
-    private boolean addUserRoleOnTheso_(Connection conn,
-            int idUser, int idRole, String idTheso, int idProject) {
+    private boolean addUserRoleOnTheso_(int idUser, int idRole, String idTheso, int idProject) {
 
-        try (Statement stmt = conn.createStatement()) {
+        try (var conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("insert into user_role_only_on (id_user, id_role, id_theso, id_group)"
                     + " values("
                     + idUser + ","
@@ -1546,25 +1481,23 @@ public class UserHelper {
     /**
      * Permet de passer un thésaurus d'un groupe à un autre
      *
-     * @param ds
+     * 
      * @param idTheso
-     * @param oldGroup
      * @param newGroup
      * @return #MR
      */
-    public boolean moveThesoToGroup(HikariDataSource ds,
-            String idTheso, int oldGroup, int newGroup) {
+    public boolean moveThesoToGroup(String idTheso, int newGroup) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
 
-            if (!deleteThesoFromGroup(conn, idTheso/*, oldGroup*/)) {
+            if (!deleteThesoFromGroup(idTheso)) {
                 conn.rollback();
                 conn.close();
                 return false;
             }
-            if (!moveThesoToGroupRollBack(conn, idTheso, newGroup)) {
+            if (!moveThesoToGroupRollBack(idTheso, newGroup)) {
                 conn.rollback();
                 conn.close();
                 return false;
@@ -1577,9 +1510,8 @@ public class UserHelper {
         return status;
     }
 
-    private boolean moveThesoToGroupRollBack(Connection conn,
-            String idTheso, int newGroup) {
-        try (Statement stmt = conn.createStatement()) {
+    private boolean moveThesoToGroupRollBack(String idTheso, int newGroup) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.executeUpdate("insert into user_group_thesaurus(id_group, id_thesaurus)"
                     + " values('"
                     + newGroup + "',"
@@ -1594,13 +1526,11 @@ public class UserHelper {
     /**
      * permet de supprimer l'appartenance d'un thesaurus à un groupe/projet
      *
-     * @param conn
      * @param idTheso
      * @return #MR
      */
-    public boolean deleteThesoFromGroup(Connection conn,
-            String idTheso) {
-        try (Statement stmt = conn.createStatement()) {
+    public boolean deleteThesoFromGroup(String idTheso) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.executeUpdate("delete from user_group_thesaurus where"
                     + " id_thesaurus ='" + idTheso + "'");
             return true;
@@ -1613,13 +1543,12 @@ public class UserHelper {
     /**
      * permet d'ajouter un thesaurus à un groupe/projet
      *
-     * @param conn
      * @param idTheso
      * @param idGroup
      * @return #MR
      */
-    public boolean addThesoToGroup(Connection conn, String idTheso, int idGroup) {
-        try (Statement stmt = conn.createStatement()) {
+    public boolean addThesoToGroup(String idTheso, int idGroup) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.executeUpdate("insert into user_group_thesaurus (id_group, id_thesaurus) values ("
                     + idGroup + ",'" + idTheso + "')");
             return true;
@@ -1632,13 +1561,13 @@ public class UserHelper {
     /**
      * permet de supprimer cet utilisateur
      *
-     * @param ds
+     * 
      * @param idUser
      * @return
      */
-    public boolean deleteUser(HikariDataSource ds, int idUser) {
+    public boolean deleteUser(int idUser) {
         boolean status = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from users where"
                         + " id_user =" + idUser);
@@ -1656,14 +1585,14 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des groupes - roles pour un
      * un utilisateur
      *
-     * @param ds
+     * 
      * @param idUser
      * @return #MR
      */
-    public ArrayList<NodeUserRoleGroup> getUserRoleGroup(HikariDataSource ds, int idUser) {
+    public ArrayList<NodeUserRoleGroup> getUserRoleGroup(int idUser) {
         ArrayList<NodeUserRoleGroup> nodeUserRoleGroups = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT "
                         + "  user_role_group.id_role,"
@@ -1682,7 +1611,7 @@ public class UserHelper {
                         nodeUserRoleGroup.setRoleName(resultSet.getString("name"));
                         nodeUserRoleGroup.setIdGroup(resultSet.getInt("id_group"));
                         nodeUserRoleGroup.setGroupName(resultSet.getString("label_group"));
-                        //   nodeUserRoleGroup.setNodeUserGroupThesauruses(getUserThesaurusOfGroup(ds, resultSet.getInt("id_group")));
+                        //   nodeUserRoleGroup.setNodeUserGroupThesauruses(getUserThesaurusOfGroup(resultSet.getInt("id_group")));
 
                         if (resultSet.getInt("id_role") == 2) {
                             nodeUserRoleGroup.setAdmin(true);
@@ -1707,14 +1636,14 @@ public class UserHelper {
     /**
      * permet de retourner le groupe à lequel le thesaurus appartient
      *
-     * @param ds
+     * 
      * @param idTheso
      * @return
      */
-    public int getGroupOfThisTheso(HikariDataSource ds, String idTheso) {
+    public int getGroupOfThisTheso(String idTheso) {
         int idGroup = -1;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT user_group_thesaurus.id_group"
                         + " FROM user_group_thesaurus"
@@ -1736,13 +1665,13 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des utilisateurs qui
      * n'appartiennent à aucun groupe donc aucun role défini
      *
-     * @param ds
+     * 
      * @return
      */
-    public ArrayList<NodeUserRole> getUsersWithoutGroup(HikariDataSource ds) {
+    public ArrayList<NodeUserRole> getUsersWithoutGroup () {
         ArrayList<NodeUserRole> listUser = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT users.id_user, users.username, users.active"
                         + " FROM users where users.issuperadmin!=true and users.id_user not in "
@@ -1770,17 +1699,17 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des roles/thesos pour un un
      * utilisateur et un groupe pour les droits limités
      *
-     * @param ds
+     * 
      * @param idGroup
      * @param idUser
      * @return
      */
-    public ArrayList<NodeThesoRole> getAllRolesThesosByUserGroupLimited(HikariDataSource ds,
+    public ArrayList<NodeThesoRole> getAllRolesThesosByUserGroupLimited(
             int idGroup, int idUser) {
         ArrayList<NodeThesoRole> nodeThesoRoles = new ArrayList<>();
         String idLang;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT roles.name, roles.id, user_role_only_on.id_theso"
                         + " FROM roles, user_role_only_on "
@@ -1797,8 +1726,8 @@ public class UserHelper {
                         nodeThesoRole.setIdRole(resultSet.getInt("id"));
                         nodeThesoRole.setRoleName(resultSet.getString("name"));
                         nodeThesoRole.setIdTheso(resultSet.getString("id_theso"));
-                        idLang = preferencesHelper.getWorkLanguageOfTheso(ds, nodeThesoRole.getIdTheso());
-                        nodeThesoRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(ds, nodeThesoRole.getIdTheso(), idLang));
+                        idLang = preferencesHelper.getWorkLanguageOfTheso(nodeThesoRole.getIdTheso());
+                        nodeThesoRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(nodeThesoRole.getIdTheso(), idLang));
                         nodeThesoRoles.add(nodeThesoRole);
                     }
                 }
@@ -1813,27 +1742,27 @@ public class UserHelper {
      * cette fonction permet de retourner la liste des roles/thesos pour un un
      * utilisateur et un groupe
      *
-     * @param ds
+     * 
      * @param idGroup
      * @param idUser
      * @return
      */
-    public ArrayList<NodeThesoRole> getAllRolesThesosByUserGroup(HikariDataSource ds,
+    public ArrayList<NodeThesoRole> getAllRolesThesosByUserGroup(
             int idGroup, int idUser) {
         ArrayList<NodeThesoRole> nodeThesoRoles = new ArrayList<>();
         String idLang;
         int idRole;
 
-        ArrayList<String> listThesos = getIdThesaurusOfProject(ds, idGroup);
+        ArrayList<String> listThesos = getIdThesaurusOfProject(idGroup);
         for (String idTheso : listThesos) {
-            idRole = getRoleOnThisTheso(ds, idUser, idGroup, idTheso);
+            idRole = getRoleOnThisTheso(idUser, idGroup, idTheso);
             if (idRole != -1) {
                 NodeThesoRole nodeThesoRole = new NodeThesoRole();
                 nodeThesoRole.setIdRole(idRole);
                 nodeThesoRole.setRoleName(getRoleName(idRole));
                 nodeThesoRole.setIdTheso(idTheso);
-                idLang = preferencesHelper.getWorkLanguageOfTheso(ds, idTheso);
-                nodeThesoRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(ds, idTheso, idLang));
+                idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+                nodeThesoRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(idTheso, idLang));
                 nodeThesoRoles.add(nodeThesoRole);
             }
         }
@@ -1845,16 +1774,16 @@ public class UserHelper {
      * groupe avec un role limité sur des thésaurus du group/projet en cours
      *
      *
-     * @param ds
+     * 
      * @param idGroup
      * @return
      */
-    public ArrayList<NodeUserRole> getAllUsersRolesLimitedByTheso(HikariDataSource ds,
+    public ArrayList<NodeUserRole> getAllUsersRolesLimitedByTheso(
             int idGroup) {
         ArrayList<NodeUserRole> listUser = new ArrayList<>();
         String idLang;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT users.id_user, users.username, users.active, roles.name, roles.id, user_role_only_on.id_theso"
                         + " FROM"
@@ -1877,8 +1806,8 @@ public class UserHelper {
                         nodeUserRole.setIdRole(resultSet.getInt("id"));
                         nodeUserRole.setRoleName(resultSet.getString("name"));
                         nodeUserRole.setIdTheso(resultSet.getString("id_theso"));
-                        idLang = preferencesHelper.getWorkLanguageOfTheso(ds, nodeUserRole.getIdTheso());
-                        nodeUserRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(ds, nodeUserRole.getIdTheso(), idLang));
+                        idLang = preferencesHelper.getWorkLanguageOfTheso(nodeUserRole.getIdTheso());
+                        nodeUserRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(nodeUserRole.getIdTheso(), idLang));
                         listUser.add(nodeUserRole);
                     }
                 }
@@ -1894,15 +1823,15 @@ public class UserHelper {
      * groupe avec un role limité sur des thésaurus du group/projet en cours
      *
      *
-     * @param ds
+     * 
      * @param idUser
      * @return
      */
-    public List<String> getListThesoLimitedRoleByUser(HikariDataSource ds,
+    public List<String> getListThesoLimitedRoleByUser(
             int idUser) {
         List<String> listThesos = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT user_role_only_on.id_theso"
                         + " FROM"
@@ -1927,15 +1856,15 @@ public class UserHelper {
      * groupe avec un role limité sur des thésaurus du group/projet en cours
      *
      *
-     * @param ds
+     * 
      * @param idUser
      * @return
      */
-    public List<String> getListThesoLimitedRoleByUserAsAdmin(HikariDataSource ds,
+    public List<String> getListThesoLimitedRoleByUserAsAdmin(
             int idUser) {
         List<String> listThesos = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT user_role_only_on.id_theso"
                         + " FROM"
@@ -1961,17 +1890,17 @@ public class UserHelper {
      * groupe avec un role limité sur des thésaurus du group/projet en cours
      *
      *
-     * @param ds
+     * 
      * @param idGroup
      * @param idUser
      * @return
      */
-    public ArrayList<NodeUserRole> getListRoleByThesoLimited(HikariDataSource ds, int idGroup, int idUser) {
+    public ArrayList<NodeUserRole> getListRoleByThesoLimited(int idGroup, int idUser) {
 
         ArrayList<NodeUserRole> listUser = new ArrayList<>();
         String idLang;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT user_role_only_on.id_theso, roles.name, roles.id "
                         + " FROM user_role_only_on, roles "
@@ -1988,8 +1917,8 @@ public class UserHelper {
                         nodeUserRole.setIdRole(resultSet.getInt("id"));
                         nodeUserRole.setRoleName(resultSet.getString("name"));
                         nodeUserRole.setIdTheso(resultSet.getString("id_theso"));
-                        idLang = preferencesHelper.getWorkLanguageOfTheso(ds, nodeUserRole.getIdTheso());
-                        nodeUserRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(ds, nodeUserRole.getIdTheso(), idLang));
+                        idLang = preferencesHelper.getWorkLanguageOfTheso(nodeUserRole.getIdTheso());
+                        nodeUserRole.setThesoName(thesaurusHelper.getTitleOfThesaurus(nodeUserRole.getIdTheso(), idLang));
                         listUser.add(nodeUserRole);
                     }
                 }
@@ -2005,16 +1934,16 @@ public class UserHelper {
      * groupe avec un role égale ou inférieur au role de l'utilisateur en cours
      *
      *
-     * @param ds
+     * 
      * @param idGroup
      * @param idRole
      * @return
      */
-    public ArrayList<NodeUserRole> getUsersRolesByGroup(HikariDataSource ds,
+    public ArrayList<NodeUserRole> getUsersRolesByGroup(
             int idGroup, int idRole) {
         ArrayList<NodeUserRole> listUser = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT"
                         + "  users.id_user,"
@@ -2055,16 +1984,16 @@ public class UserHelper {
      * cette fonction permet de retourner le role de l'utilisateur sur ce groupe
      *
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idGroup
      * @return
      */
     public NodeUserRoleGroup getUserRoleOnThisGroup(
-            HikariDataSource ds, int idUser, int idGroup) {
+            int idUser, int idGroup) {
         NodeUserRoleGroup nodeUserRoleGroup = null;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT \n"
                         + "  roles.id, \n"
@@ -2124,16 +2053,16 @@ public class UserHelper {
      * cette fonction permet de retourner le role de l'utilisateur sur ce
      * thésaurus
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idGroup
      * @param idTheso
      * @return
      */
-    public int getRoleOnThisTheso(HikariDataSource ds, int idUser, int idGroup, String idTheso) {
+    public int getRoleOnThisTheso(int idUser, int idGroup, String idTheso) {
         int idRole = -1;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT user_role_only_on.id_role"
                         + " FROM  "
@@ -2177,17 +2106,17 @@ public class UserHelper {
      * cette fonction permet de retourner le role de l'utilisateur sur ce
      * thésaurus
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idGroup
      * @param idTheso
      * @return
      */
     public NodeUserRoleGroup getUserRoleOnThisTheso(
-            HikariDataSource ds, int idUser, int idGroup, String idTheso) {
+            int idUser, int idGroup, String idTheso) {
         NodeUserRoleGroup nodeUserRoleGroup = null;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT user_role_only_on.id_role"
                         + " FROM  "
@@ -2215,13 +2144,12 @@ public class UserHelper {
      * cette fonction permet de retourner le role du superAdmin
      *
      *
-     * @param ds
+     * 
      * @return
      */
-    public NodeUserRoleGroup getUserRoleForSuperAdmin(
-            HikariDataSource ds) {
+    public NodeUserRoleGroup getUserRoleForSuperAdmin() {
         NodeUserRoleGroup nodeUserRoleGroup = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT "
                         + "  roles.id, "
@@ -2269,15 +2197,15 @@ public class UserHelper {
     /**
      * permet de supprimer le role d'un utilisateur sur ce groupe
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idGroup
      * @return
      */
-    public boolean deleteRoleOnGroup(HikariDataSource ds,
+    public boolean deleteRoleOnGroup(
             int idUser, int idGroup) {
         boolean status = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from user_role_group where"
                         + " id_user =" + idUser
@@ -2293,17 +2221,17 @@ public class UserHelper {
     /**
      * permet de supprimer le Projet ou groupe
      *
-     * @param ds
+     * 
      * @param idGroup
      * @return
      */
-    public boolean deleteProjectGroup(HikariDataSource ds,
+    public boolean deleteProjectGroup(
             int idGroup) {
         Statement stmt;
         boolean status = false;
         Connection conn = null;
         try {
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             conn.setAutoCommit(false);
             try {
                 stmt = conn.createStatement();
@@ -2351,17 +2279,17 @@ public class UserHelper {
      * cette fonction permet de retourner le role de l'utilisateur sur ce groupe
      *
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idGroup
      * @return
      */
     public NodeUserRoleGroup getUserRoleOnThisGroupForSuperAdmin(
-            HikariDataSource ds, int idUser, int idGroup) {
+            int idUser, int idGroup) {
 
         NodeUserRoleGroup nodeUserRoleGroup = null;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT "
                         + "  roles.id, "
@@ -2390,9 +2318,9 @@ public class UserHelper {
         return nodeUserRoleGroup;
     }
 
-    public boolean isUserMailExist(HikariDataSource ds, String mail) {
+    public boolean isUserMailExist(String mail) {
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT mail FROM users WHERE mail ilike '" + mail + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -2411,14 +2339,14 @@ public class UserHelper {
     /**
      * permet de retourner le pseudo de l'utilisateur d'après son Email
      *
-     * @param ds
+     * 
      * @param email
      * @return
      */
-    public String getNameUser(HikariDataSource ds, String email) {
+    public String getNameUser(String email) {
         String name = "";
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT username from users "
                         + " WHERE mail ilike '" + email + "'");
@@ -2438,15 +2366,15 @@ public class UserHelper {
      * Cette fonction permet de récupérer l'Id de l'utilisateur d'après son
      * Login et son passe
      *
-     * @param ds
+     * 
      * @param login
      * @param pwd
      * @return
      */
-    public boolean isUserExist(HikariDataSource ds, String login, String pwd) {
+    public boolean isUserExist(String login, String pwd) {
         boolean existe = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_user FROM users WHERE username ilike '" + login + "' AND password='" + pwd + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -2461,10 +2389,10 @@ public class UserHelper {
         return existe;
     }
 
-    public boolean updatePwd(HikariDataSource ds, int idUser, String newPwd) {
+    public boolean updatePwd(int idUser, String newPwd) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE users set password = '" + newPwd
                         + "' WHERE id_user = " + idUser);
@@ -2476,10 +2404,10 @@ public class UserHelper {
         return status;
     }
 
-    public boolean updatePseudo(HikariDataSource ds, int idUser, String pseudo) {
+    public boolean updatePseudo(int idUser, String pseudo) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE users set username = '" + pseudo
                         + "' WHERE id_user = " + idUser);
@@ -2494,14 +2422,14 @@ public class UserHelper {
     /**
      * permet de retourner le nom de l'utilisateur
      *
-     * @param ds
+     * 
      * @param userId
      * @return
      */
-    public String getNameUser(HikariDataSource ds, int userId) {
+    public String getNameUser(int userId) {
         String name = "";
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT username from users "
                         + " WHERE id_user =" + userId);
@@ -2523,16 +2451,16 @@ public class UserHelper {
     /**
      * permet de renommer un projet
      *
-     * @param ds
+     * 
      * @param newValue
      * @param idProject
      * @return
      */
-    public boolean updateProject(HikariDataSource ds,
+    public boolean updateProject(
             String newValue, int idProject) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE user_group_label set label_group = '" + newValue
                         + "' WHERE id_group = " + idProject);
@@ -2544,10 +2472,10 @@ public class UserHelper {
         return status;
     }
 
-    public boolean updateMail(HikariDataSource ds, int idUser, String newMail) {
+    public boolean updateMail(int idUser, String newMail) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE users set mail = '" + newMail
                         + "' WHERE id_user = " + idUser);
@@ -2562,15 +2490,15 @@ public class UserHelper {
     /**
      * permet de mette à jour le status des alertes mail pour l'utilisateur
      *
-     * @param ds
+     * 
      * @param idUser
      * @param alertMail
      * @return #MR
      */
-    public boolean setAlertMailForUser(HikariDataSource ds, int idUser, boolean alertMail) {
+    public boolean setAlertMailForUser(int idUser, boolean alertMail) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE users set alertmail = " + alertMail
                         + " WHERE id_user = " + idUser);
@@ -2585,14 +2513,14 @@ public class UserHelper {
     /**
      * Cette fonction permet de savoir si le Pseudo existe
      *
-     * @param ds
+     * 
      * @param pseudo
      * @return
      */
-    public boolean isPseudoExist(HikariDataSource ds, String pseudo) {
+    public boolean isPseudoExist(String pseudo) {
         boolean existe = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT id_user FROM users WHERE username='" + pseudo + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -2607,10 +2535,10 @@ public class UserHelper {
         return existe;
     }
 
-    public boolean isMailExist(HikariDataSource ds, String mail) {
+    public boolean isMailExist(String mail) {
         boolean status = false;
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT mail FROM users WHERE mail ilike '" + mail + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -2630,15 +2558,15 @@ public class UserHelper {
     /**
      * Permet de savoir si l'utilisateur a un droit d'admin sur le groupe
      *
-     * @param ds
+     * 
      * @param idUser
      * @param idGroup
      * @return
      */
-    public boolean isAdminOnThisGroup(HikariDataSource ds,
+    public boolean isAdminOnThisGroup(
             int idUser, int idGroup) {
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT "
                         + "  user_role_group.id_user"
@@ -2666,15 +2594,15 @@ public class UserHelper {
      * utilisateur (c'est la liste qu'un utilisateur a le droit d'attribué à un
      * nouvel utilisateur)
      *
-     * @param ds
+     * 
      * @param idRoleFrom
      * @return
      */
-    public ArrayList<Map.Entry<String, String>> getAuthorizedRoles(HikariDataSource ds,
+    public ArrayList<Map.Entry<String, String>> getAuthorizedRoles(
             int idRoleFrom) {
         Map map = new HashMap();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id, name from roles "
                         + " where id >= " + idRoleFrom);
@@ -2696,15 +2624,15 @@ public class UserHelper {
      * utilisateur (c'est la liste qu'un utilisateur a le droit d'attribué à un
      * nouvel utilisateur)
      *
-     * @param ds
+     * 
      * @param myIdRole
      * @return
      */
-    public ArrayList<NodeIdValue> getMyAuthorizedRoles(HikariDataSource ds,
+    public ArrayList<NodeIdValue> getMyAuthorizedRoles(
             int myIdRole) {
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id, name from roles "
                         + " where id >= " + myIdRole);
@@ -2727,16 +2655,16 @@ public class UserHelper {
      * Cette fonction permet de retourner la liste des projets dont
      * l'utilisateur est admin ou SuperAdmin
      *
-     * @param ds
+     * 
      * @param idUser
      * @return
      */
     public ArrayList<NodeIdValue> getMyAuthorizedProjects(
-            HikariDataSource ds,
+            
             int idUser) {
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select user_group_label.id_group, user_group_label.label_group"
                         + " from user_role_group, user_group_label"
@@ -2768,9 +2696,9 @@ public class UserHelper {
     ////////////////////////////////////////////////////////////////////
 
 
-    public Optional<Integer> getUserGroupId (HikariDataSource ds, int userId, String thesoId){
-        try (Connection connection = ds.getConnection()){
-            try( PreparedStatement stmt = connection.prepareStatement("SELECT user_role_group.id_group " +
+    public Optional<Integer> getUserGroupId (int userId, String thesoId){
+        try (Connection connection = dataSource.getConnection()){
+            try(PreparedStatement stmt = connection.prepareStatement("SELECT user_role_group.id_group " +
                     "FROM user_role_group  " +
                     "JOIN user_group_thesaurus user_group_thesaurus ON user_role_group.id_group = user_group_thesaurus.id_group " +
                     "WHERE user_role_group.id_user = ? " +
@@ -2793,9 +2721,8 @@ public class UserHelper {
      * @param userId
      * @param keyNeverExpire
      * @param apiKeyExpireDate
-     * @param dataSource
      */
-    public void updateApiKeyInfos(int userId, Boolean keyNeverExpire, LocalDate apiKeyExpireDate, HikariDataSource dataSource) {
+    public void updateApiKeyInfos(int userId, Boolean keyNeverExpire, LocalDate apiKeyExpireDate) {
         String sql = "UPDATE users SET key_never_expire = ?, key_expires_at = ? WHERE id_user = ?";
 
         try (Connection conn = dataSource.getConnection();

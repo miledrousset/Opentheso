@@ -15,7 +15,6 @@ import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.index.IndexSetting;
 import fr.cnrs.opentheso.bean.leftbody.viewtree.Tree;
 import fr.cnrs.opentheso.bean.mail.MailBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
@@ -55,9 +54,6 @@ public class PropositionService implements Serializable {
 
     @Autowired @Lazy
     private Tree tree;
-
-    @Autowired @Lazy
-    private Connect connect;
 
     @Autowired @Lazy
     private ConceptView conceptView;
@@ -102,7 +98,7 @@ public class PropositionService implements Serializable {
 
     public boolean envoyerProposition(Proposition proposition, String nom, String email, String commentaire) {
 
-        if (propositionHelper.searchPropositionByEmailAndConceptAndLang(connect.openConnexionPool(), email,
+        if (propositionHelper.searchPropositionByEmailAndConceptAndLang(email,
                 proposition.getConceptID(), selectedTheso.getCurrentLang()) != null) {
             showMessage(FacesMessage.SEVERITY_WARN, "Vous avez déjà une proposition pour le même concept en cours de etraitement !");
             return false;
@@ -117,7 +113,7 @@ public class PropositionService implements Serializable {
         propositionDao.setIdTheso(selectedTheso.getCurrentIdTheso());
         propositionDao.setLang(selectedTheso.getCurrentLang());
         propositionDao.setStatus(PropositionStatusEnum.ENVOYER.name());
-        propositionDao.setThesoName(thesaurusHelper.getTitleOfThesaurus(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
+        propositionDao.setThesoName(thesaurusHelper.getTitleOfThesaurus(selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang()));
 
         try {
             String subject = "[Opentheso] Confirmation de l'envoi de votre proposition";
@@ -139,7 +135,7 @@ public class PropositionService implements Serializable {
             return false;
         }
 
-        int propositionID = propositionHelper.createNewProposition(connect.openConnexionPool(), propositionDao);
+        int propositionID = propositionHelper.createNewProposition(propositionDao);
 
         if (propositionID == -1) {
             showMessage(FacesMessage.SEVERITY_WARN, "Erreur pendant l'enregistrement de la proposition !");
@@ -154,7 +150,7 @@ public class PropositionService implements Serializable {
             propositionDetail.setLang(selectedTheso.getCurrentLang());
             propositionDetail.setValue(proposition.getNomConceptProp());
             propositionDetail.setOldValue(proposition.getNomConcept().getLexicalValue());
-            propositionDetailHelper.createNewPropositionDetail(connect.openConnexionPool(), propositionDetail);
+            propositionDetailHelper.createNewPropositionDetail(propositionDetail);
         }
 
         if (!CollectionUtils.isEmpty(proposition.getSynonymsProp())) {
@@ -179,7 +175,7 @@ public class PropositionService implements Serializable {
                     propositionDetail.setStatus(synonymProp.getStatus());
                     propositionDetail.setHiden(synonymProp.isHiden());
                     propositionDetail.setIdTerm(synonymProp.getIdTerm());
-                    propositionDetailHelper.createNewPropositionDetail(connect.openConnexionPool(), propositionDetail);
+                    propositionDetailHelper.createNewPropositionDetail(propositionDetail);
                 }
             }
         }
@@ -206,7 +202,7 @@ public class PropositionService implements Serializable {
                     propositionDetail.setLang(traductionProp.getLang());
                     propositionDetail.setValue(traductionProp.getLexicalValue());
                     propositionDetail.setIdTerm(traductionProp.getIdTerm());
-                    propositionDetailHelper.createNewPropositionDetail(connect.openConnexionPool(), propositionDetail);
+                    propositionDetailHelper.createNewPropositionDetail(propositionDetail);
                 }
             }
         }
@@ -263,7 +259,7 @@ public class PropositionService implements Serializable {
             propositionDetail.setLang(note.getLang());
             propositionDetail.setValue(note.getLexicalValue());
             propositionDetail.setIdTerm(note.getIdTerm());
-            propositionDetailHelper.createNewPropositionDetail(connect.openConnexionPool(), propositionDetail);
+            propositionDetailHelper.createNewPropositionDetail(propositionDetail);
         }
     }
 
@@ -277,8 +273,7 @@ public class PropositionService implements Serializable {
     }
 
     public int searchNbrNewProposition() {
-        return propositionHelper.searchNbrPorpositoinByStatus(connect.openConnexionPool(),
-                PropositionStatusEnum.ENVOYER.name());
+        return propositionHelper.searchNbrPorpositoinByStatus(PropositionStatusEnum.ENVOYER.name());
     }
 
     public boolean sendEmail(String emailDestination, String subject, String contentFile) throws IOException {
@@ -295,7 +290,7 @@ public class PropositionService implements Serializable {
 
     public void refuserProposition(PropositionDao propositionSelected, String commentaireAdmin) {
 
-        propositionHelper.updateStatusProposition(connect.openConnexionPool(),
+        propositionHelper.updateStatusProposition(
                 PropositionStatusEnum.REFUSER.name(),
                 currentUser.getNodeUser().getName(),
                 DATE_FORMAT.format(new Date()),
@@ -322,8 +317,8 @@ public class PropositionService implements Serializable {
 
     public void supprimerPropostion(PropositionDao propositionSelected) {
 
-        propositionDetailHelper.supprimerPropositionDetails(connect.openConnexionPool(), propositionSelected.getId());
-        propositionHelper.supprimerProposition(connect.openConnexionPool(), propositionSelected.getId());
+        propositionDetailHelper.supprimerPropositionDetails(propositionSelected.getId());
+        propositionHelper.supprimerProposition(propositionSelected.getId());
     }
 
     public void insertProposition(Proposition proposition, PropositionDao propositionSelected,
@@ -332,12 +327,12 @@ public class PropositionService implements Serializable {
                                   boolean editorialNotesAccepted, boolean examplesAccepted, boolean historyAccepted) throws IOException {
 
         if (prefTermeAccepted && proposition.isUpdateNomConcept()) {
-            Term term = termHelper.getThisTerm(connect.openConnexionPool(),
+            Term term = termHelper.getThisTerm(
                     propositionSelected.getIdConcept(),
                     propositionSelected.getIdTheso(),
                     propositionSelected.getLang());
             term.setLexicalValue(proposition.getNomConceptProp());
-            termHelper.updateTermTraduction(connect.openConnexionPool(), term, currentUser.getNodeUser().getIdUser());
+            termHelper.updateTermTraduction(term, currentUser.getNodeUser().getIdUser());
 
             tree.reset();
             tree.initialise(propositionSelected.getIdTheso(), propositionSelected.getLang());
@@ -353,11 +348,11 @@ public class PropositionService implements Serializable {
                 if (synonymPropBean.isToAdd()) {
 
                     String idTerm = termHelper.getIdTermOfConcept(
-                            connect.openConnexionPool(),
+                            
                             propositionSelected.getIdConcept(),
                             propositionSelected.getIdTheso());
 
-                    if (!termHelper.addNonPreferredTerm(connect.openConnexionPool(),
+                    if (!termHelper.addNonPreferredTerm(
                             idTerm,
                             synonymPropBean.getLexicalValue(),
                             synonymPropBean.getLang().toLowerCase(),
@@ -372,7 +367,7 @@ public class PropositionService implements Serializable {
                     }
                 } else if (synonymPropBean.isToRemove()) {
 
-                    if (!termHelper.deleteNonPreferedTerm(connect.openConnexionPool(),
+                    if (!termHelper.deleteNonPreferedTerm(
                             synonymPropBean.getIdTerm(),
                             synonymPropBean.getLang().toLowerCase(),
                             synonymPropBean.getLexicalValue(),
@@ -384,7 +379,7 @@ public class PropositionService implements Serializable {
                     }
                 } else if (synonymPropBean.isToUpdate()) {
 
-                    if (!termHelper.updateTermSynonyme(connect.openConnexionPool(),
+                    if (!termHelper.updateTermSynonyme(
                             synonymPropBean.getOldValue(),
                             synonymPropBean.getLexicalValue(),
                             synonymPropBean.getIdTerm(),
@@ -403,7 +398,7 @@ public class PropositionService implements Serializable {
         if (traductionAccepted && CollectionUtils.isNotEmpty(proposition.getTraductionsProp())) {
             for (TraductionPropBean traductionProp : proposition.getTraductionsProp()) {
                 if (traductionProp.isToAdd()) {
-                    if (!termHelper.addTraduction(connect.openConnexionPool(),
+                    if (!termHelper.addTraduction(
                             traductionProp.getLexicalValue(),
                             traductionProp.getIdTerm(),
                             traductionProp.getLang(),
@@ -415,7 +410,7 @@ public class PropositionService implements Serializable {
                         return;
                     }
                 } else if (traductionProp.isToRemove()) {
-                    if (!termHelper.deleteTraductionOfTerm(connect.openConnexionPool(),
+                    if (!termHelper.deleteTraductionOfTerm(
                             traductionProp.getIdTerm(),
                             traductionProp.getLexicalValue(),
                             traductionProp.getLang(),
@@ -426,7 +421,7 @@ public class PropositionService implements Serializable {
                         return;
                     }
                 } else if (traductionProp.isToUpdate()) {
-                    if (!termHelper.updateTraduction(connect.openConnexionPool(),
+                    if (!termHelper.updateTraduction(
                             traductionProp.getLexicalValue(),
                             traductionProp.getIdTerm(),
                             traductionProp.getLang(),
@@ -519,18 +514,18 @@ public class PropositionService implements Serializable {
 
         }
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 propositionSelected.getIdTheso(),
                 propositionSelected.getLang(),
                 currentUser.getNodeUser().getIdUser());
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 propositionSelected.getIdConcept(), propositionSelected.getIdTheso());
         ///////////////  
 
-        propositionHelper.updateStatusProposition(connect.openConnexionPool(),
+        propositionHelper.updateStatusProposition(
                 PropositionStatusEnum.APPROUVER.name(),
                 currentUser.getNodeUser().getName(),
                 DATE_FORMAT.format(new Date()),
@@ -560,7 +555,7 @@ public class PropositionService implements Serializable {
     }
 
     private void deleteNote(NotePropBean notePropBean) {
-        if (!noteHelper.deleteThisNote(connect.openConnexionPool(),
+        if (!noteHelper.deleteThisNote(
                 notePropBean.getIdNote(),
                 notePropBean.getIdConcept(),
                 notePropBean.getLang(),
@@ -575,7 +570,7 @@ public class PropositionService implements Serializable {
     }
 
     private void updateNote(NotePropBean notePropBean) {
-        if (!noteHelper.updateNote(connect.openConnexionPool(),
+        if (!noteHelper.updateNote(
                 notePropBean.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique  
                 notePropBean.getIdConcept(),
                 notePropBean.getLang(),
@@ -591,7 +586,7 @@ public class PropositionService implements Serializable {
 
     private void addNewNote(NotePropBean notePropBean, String typeNote) {
         if (!noteHelper.addNote(
-                connect.openConnexionPool(),
+                
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 notePropBean.getLang(),
                 selectedTheso.getCurrentIdTheso(),
@@ -607,18 +602,18 @@ public class PropositionService implements Serializable {
     public boolean updateNomConcept(String newConceptName) {
 
         // vérification si le term à ajouter existe déjà, s oui, on a l'Id, sinon, on a Null
-        String idTerm = termHelper.isTermEqualTo(connect.openConnexionPool(),
+        String idTerm = termHelper.isTermEqualTo(
                 newConceptName, selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
 
         if (idTerm != null) {
-            String label = termHelper.getLexicalValue(connect.openConnexionPool(), idTerm,
+            String label = termHelper.getLexicalValue(idTerm,
                     selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang());
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", label + " : existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return false;
         }
 
-        if (termHelper.isAltLabelExist(connect.openConnexionPool(), idTerm,
+        if (termHelper.isAltLabelExist(idTerm,
                 selectedTheso.getCurrentIdTheso(), selectedTheso.getSelectedLang())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Attention!", " un synonyme existe déjà !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -690,7 +685,7 @@ public class PropositionService implements Serializable {
     }
 
     public void preparerPropositionSelect(Proposition proposition, PropositionDao propositionDao) {
-        List<PropositionDetailDao> propositionDetails = propositionDetailHelper.getPropositionDetail(connect.openConnexionPool(), propositionDao.getId());
+        List<PropositionDetailDao> propositionDetails = propositionDetailHelper.getPropositionDetail(propositionDao.getId());
 
         proposition.setConceptID(conceptView.getNodeConcept().getConcept().getIdConcept());
         proposition.setNomConceptProp(null);
@@ -956,7 +951,7 @@ public class PropositionService implements Serializable {
         }
 
         if (propositionDao.getStatus().equals(PropositionStatusEnum.ENVOYER.name())) {
-            propositionHelper.setLuStatusProposition(connect.openConnexionPool(), propositionDao.getId());
+            propositionHelper.setLuStatusProposition(propositionDao.getId());
         }
     }
 
@@ -1000,24 +995,24 @@ public class PropositionService implements Serializable {
     public List<PropositionDao> searchAllPropositions(String idTheso) {
         List<PropositionDao> propositions = new ArrayList<>();
         propositions.addAll(searchPropositionsNonTraitter(idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.openConnexionPool(),
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(
                 PropositionStatusEnum.APPROUVER.name(), idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.openConnexionPool(),
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(
                 PropositionStatusEnum.REFUSER.name(), idTheso));
         return propositions;
     }
 
     public List<PropositionDao> searchPropositionsNonTraitter(String idTheso) {
         List<PropositionDao> propositions = new ArrayList<>();
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.openConnexionPool(),
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(
                 PropositionStatusEnum.ENVOYER.name(), idTheso));
-        propositions.addAll(propositionHelper.getAllPropositionByStatus(connect.openConnexionPool(),
+        propositions.addAll(propositionHelper.getAllPropositionByStatus(
                 PropositionStatusEnum.LU.name(), idTheso));
         return propositions;
     }
 
     public List<PropositionDao> searchOldPropositions(String idTheso) {
-        return propositionHelper.getOldPropositionByStatus(connect.openConnexionPool(), idTheso);
+        return propositionHelper.getOldPropositionByStatus(idTheso);
     }
 
 }

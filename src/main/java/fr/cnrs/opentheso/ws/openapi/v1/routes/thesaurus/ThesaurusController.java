@@ -33,9 +33,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 public class ThesaurusController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private ThesaurusHelper thesaurusHelper;
 
 
@@ -50,7 +47,7 @@ public class ThesaurusController {
     )
     public ResponseEntity<Object>  getListAllPublicTheso() {
 
-        var listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(connect.openConnexionPool(), false);
+        var listPublicTheso = thesaurusHelper.getAllIdOfThesaurus(false);
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -59,7 +56,7 @@ public class ThesaurusController {
             job.add("idTheso", idTheso);
             var jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            var nodeThesaurus = thesaurusHelper.getNodeThesaurus(connect.openConnexionPool(), idTheso);
+            var nodeThesaurus = thesaurusHelper.getNodeThesaurus(idTheso);
             for (Thesaurus thesaurus : nodeThesaurus.getListThesaurusTraduction()) {
                 var jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", thesaurus.getLanguage());

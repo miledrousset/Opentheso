@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Lazy;
 @SessionScoped
 public class showVoteNote implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private SelectedTheso selectedTheso;
 
     @Autowired
@@ -77,16 +77,16 @@ public class showVoteNote implements Serializable {
         userName = selectedCandidate.getCreatedBy();
         candidat = selectedCandidate.getNomPref();
 
-        ArrayList<NodeVote> nodeVotes = candidatDao.getAllVoteNotes(connect.openConnexionPool(), idCandidate, selectedTheso.getCurrentIdTheso());
+        ArrayList<NodeVote> nodeVotes = candidatDao.getAllVoteNotes(idCandidate, selectedTheso.getCurrentIdTheso());
         
         for (NodeVote nodeVote : nodeVotes) {
             NodeTabVote nodeTabVote = new NodeTabVote();
             nodeTabVote.setIdUser(nodeVote.getIdUser());
-            nodeTabVote.setUserName(userHelper.getNameUser(connect.openConnexionPool(), nodeVote.getIdUser()));
+            nodeTabVote.setUserName(userHelper.getNameUser(nodeVote.getIdUser()));
             
             /// pour récupérer les notes
             try {
-                nodeNote = noteHelper.getNoteByIdNote(connect.openConnexionPool(), Integer.parseInt(nodeVote.getIdNote()));
+                nodeNote = noteHelper.getNoteByIdNote(Integer.parseInt(nodeVote.getIdNote()));
                 nodeTabVote.setTypeNote(nodeNote.getNoteTypeCode());
                 nodeTabVote.setNoteValue(nodeNote.getLexicalValue());
             } catch (Exception e) {

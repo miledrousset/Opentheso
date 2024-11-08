@@ -46,7 +46,7 @@ public class NodeConceptSearch implements Comparable {
         if(nodeConceptGroup != null)
             nodeConceptGroup.clear();
         if(dupplicateWithIds != null)
-            dupplicateWithIds.clear();
+            dupplicateWithIdataSource.clear();
     }
 
     @Override

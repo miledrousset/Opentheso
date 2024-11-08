@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.group.NodeGroup;
@@ -10,8 +10,10 @@ import java.sql.ResultSet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -19,29 +21,33 @@ import java.util.ArrayList;
 
 @Slf4j
 @Service
-public class DomaineDao extends BasicDao {
+public class DomaineDao {
 
-    public void addNewDomaine(Connect connect, String idgroup, String idthesaurus, String idconcept) throws SQLException {
+    @Autowired
+    private DataSource dataSource;
+
+
+    public void addNewDomaine(String idgroup, String idthesaurus, String idconcept) {
         stmt = connect.openConnexionPool().getConnection().createStatement();
         executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
                 +idgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
         stmt.close();
     }
     
-    public void deleteAllDomaine(Connect connect, String idThesaurus, String idConcept) throws SQLException {
+    public void deleteAllDomaine(String idThesaurus, String idConcept) {
         stmt = connect.openConnexionPool().getConnection().createStatement();
         executDeleteRequest(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idConcept+"'  AND idthesaurus = '"+idThesaurus+"'");
         stmt.close();
     }
 
-    public void deleteDomaine(Connect connect, String idThesaurus, String idConcept, String idGroupe) throws SQLException {
+    public void deleteDomaine(String idThesaurus, String idConcept, String idGroupe) throws SQLException {
         stmt = connect.openConnexionPool().getConnection().createStatement();
         executDeleteRequest(stmt,"DELETE FROM concept_group_concept " +
                 "WHERE idconcept = '"+idConcept+"' AND idthesaurus = '"+idThesaurus+"' AND idgroup='"+idGroupe+"'");
         stmt.close();
     }
 
-    public void updateDomaine(Connect connect, String oldIdgroup, String newIdgroup, String idthesaurus, String idconcept) throws SQLException {
+    public void updateDomaine(String oldIdgroup, String newIdgroup, String idthesaurus, String idconcept) throws SQLException {
 
         stmt = connect.openConnexionPool().getConnection().createStatement();
 
@@ -56,10 +62,10 @@ public class DomaineDao extends BasicDao {
         stmt.close();
     }
 
-    public ArrayList<NodeIdValue> getDomaineCandidatByConceptAndThesaurusAndLang(HikariDataSource hikariDataSource, String idconcept,
+    public ArrayList<NodeIdValue> getDomaineCandidatByConceptAndThesaurusAndLang(String idconcept,
                                                               String idThesaurus, String lang) {
 
-        ArrayList<NodeGroup> nodeGroups = getListGroupOfConcept(hikariDataSource, idThesaurus, idconcept, lang);
+        ArrayList<NodeGroup> nodeGroups = getListGroupOfConcept(idThesaurus, idconcept, lang);
         
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         for (NodeGroup nodeGroup : nodeGroups) {
@@ -71,39 +77,22 @@ public class DomaineDao extends BasicDao {
         return nodeIdValues;
     }
 
-    public ArrayList<NodeGroup> getListGroupOfConcept(HikariDataSource ds, String idThesaurus, String idConcept, String idLang) {
+    public ArrayList<NodeGroup> getListGroupOfConcept(String idThesaurus, String idConcept, String idLang) {
 
-        Connection conn;
-        Statement stmt;
         ResultSet resultSet = null;
         ArrayList<NodeGroup> nodeGroups = new ArrayList<>();
 
-        try {
-            // Get connection from pool
-            conn = ds.getConnection();
-            try {
-                stmt = conn.createStatement();
-                try {
-                    String query = "select idgroup from concept_group_concept where idthesaurus = '" + idThesaurus + "'"
-                            + " and idconcept = '" + idConcept + "'";
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()){
+            String query = "select idgroup from concept_group_concept where idthesaurus = '" + idThesaurus + "'"
+                    + " and idconcept = '" + idConcept + "'";
 
-                    stmt.executeQuery(query);
-                    resultSet = stmt.getResultSet();
-                    while (resultSet.next()) {
-                        NodeGroup nodeGroup = getThisConceptGroup(ds, resultSet.getString("idgroup"), idThesaurus, idLang);
-                        if (nodeGroup != null) {
-                            nodeGroups.add(nodeGroup);
-                        }
-                    }
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                    stmt.close();
+            stmt.executeQuery(query);
+            resultSet = stmt.getResultSet();
+            while (resultSet.next()) {
+                NodeGroup nodeGroup = getThisConceptGroup(resultSet.getString("idgroup"), idThesaurus, idLang);
+                if (nodeGroup != null) {
+                    nodeGroups.add(nodeGroup);
                 }
-            } finally {
-                conn.close();
             }
         } catch (SQLException sqle) {
             // Log exception
@@ -112,12 +101,12 @@ public class DomaineDao extends BasicDao {
         return nodeGroups;
     }
 
-    public NodeGroup getThisConceptGroup(HikariDataSource ds,
+    public NodeGroup getThisConceptGroup(
                                          String idConceptGroup, String idThesaurus, String idLang) {
 
         NodeGroup nodeConceptGroup = null;
         ConceptGroup conceptGroup = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * from concept_group where "
                         + " LOWER(idgroup) = '" + idConceptGroup.toLowerCase() + "'"

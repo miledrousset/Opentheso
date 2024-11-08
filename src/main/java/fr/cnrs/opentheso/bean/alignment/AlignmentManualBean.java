@@ -33,7 +33,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AlignmentManualBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+
     @Autowired @Lazy private AlignmentBean alignmentBean;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private SelectedTheso selectedTheso;
@@ -59,7 +59,7 @@ public class AlignmentManualBean implements Serializable {
     @PreDestroy
     public void destroy(){
         clear();
-        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.openConnexionPool());
+        nodeAlignmentTypes = alignmentHelper.getAlignmentsType();
     }  
     public void clear(){
         if(nodeAlignmentTypes!= null){
@@ -74,7 +74,7 @@ public class AlignmentManualBean implements Serializable {
     }
 
     public void reset() {
-        nodeAlignmentTypes = alignmentHelper.getAlignmentsType(connect.openConnexionPool());
+        nodeAlignmentTypes = alignmentHelper.getAlignmentsType();
         manualAlignmentSource = "";
         manualAlignmentUri = "";
         manualAlignmentType = -1;
@@ -89,7 +89,7 @@ public class AlignmentManualBean implements Serializable {
         
         if(nodeAlignment == null) return;
 
-        if(!alignmentHelper.deleteAlignment(connect.openConnexionPool(), nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
+        if(!alignmentHelper.deleteAlignment(nodeAlignment.getId_alignement(), selectedTheso.getCurrentIdTheso())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " Erreur de suppression !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;            
@@ -117,7 +117,7 @@ public class AlignmentManualBean implements Serializable {
 
         FacesMessage msg;
 
-        if(!alignmentHelper.updateAlignment(connect.openConnexionPool(),
+        if(!alignmentHelper.updateAlignment(
                 alignmentBean.getAlignementElementSelected().getIdAlignment(),
                 alignmentBean.getAlignementElementSelected().getConceptTarget(),
                 alignmentBean.getAlignementElementSelected().getThesaurus_target(),
@@ -151,7 +151,7 @@ public class AlignmentManualBean implements Serializable {
 
         if(nodeAlignment == null) return;
 
-        if(!new AlignmentHelper().updateAlignment(connect.openConnexionPool(),
+        if(!new AlignmentHelper().updateAlignment(
                 nodeAlignment.getId_alignement(),
                 nodeAlignment.getConcept_target(),
                 nodeAlignment.getThesaurus_target(),
@@ -182,7 +182,7 @@ public class AlignmentManualBean implements Serializable {
     }
 
     public void updateAlignementFromConceptInterface(){
-        if(!alignmentHelper.updateAlignment(connect.openConnexionPool(),
+        if(!alignmentHelper.updateAlignment(
                 alignmentBean.getAlignementElementSelected().getIdAlignment(),
                 alignmentBean.getAlignementElementSelected().getConceptTarget(),
                 alignmentBean.getAlignementElementSelected().getThesaurus_target(),
@@ -234,7 +234,7 @@ public class AlignmentManualBean implements Serializable {
         }
 
         if(!alignmentHelper.addNewAlignment(
-                connect.openConnexionPool(),
+                
                 currentUser.getNodeUser().getIdUser(),
                 "",
                 manualAlignmentSource,
@@ -254,7 +254,7 @@ public class AlignmentManualBean implements Serializable {
             conceptView.getConcept(selectedTheso.getCurrentIdTheso(), conceptView.getNodeConcept().getConcept().getIdConcept(),
                     conceptView.getSelectedLang(), currentUser);
         } else {
-            candidatBean.getCandidatSelected().setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.openConnexionPool(),
+            candidatBean.getCandidatSelected().setAlignments(alignmentHelper.getAllAlignmentOfConcept(
                     idConcept, selectedTheso.getCurrentIdTheso()));
         }
 
@@ -278,11 +278,11 @@ public class AlignmentManualBean implements Serializable {
      */
     private void updateDateOfConcept(String idTheso, String idConcept, int idUser) {
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 idTheso,
                 idConcept, idUser);      
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 idConcept, idTheso);
         ///////////////        

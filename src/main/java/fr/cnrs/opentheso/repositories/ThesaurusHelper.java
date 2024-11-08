@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,11 +20,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
+
 
 @Slf4j
 @Data
 @Service
 public class ThesaurusHelper {
+
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     private ToolsHelper toolsHelper;
@@ -39,42 +43,39 @@ public class ThesaurusHelper {
      * Cette fonction permet de récupérer l'identifiant du thésaurus d'après
      * l'idArk
     */
-    public String getIdThesaurusFromArkId(HikariDataSource ds, String arkId) {
-        String idThesaurus = null;
-      //  arkId = StringUtils.replaceOnce(arkId, "-", "");
-        try (Connection conn = ds.getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select id_thesaurus from thesaurus REPLACE(concept.id_ark, '-', '') = REPLACE('" + arkId + "', '-', '')");
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        idThesaurus = resultSet.getString("id_thesaurus");
-                    }
+    public String getIdThesaurusFromArkId(String arkId) {
+
+        try (var conn = dataSource.getConnection();
+             var stmt = conn.createStatement()) {
+            stmt.executeQuery("select id_thesaurus from thesaurus REPLACE(concept.id_ark, '-', '') = REPLACE('" + arkId + "', '-', '')");
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("id_thesaurus");
                 }
+                return null;
             }
         } catch (SQLException sqle) {
             log.error("Error while getting idThesaurus by idArk : " + arkId, sqle);
+            return null;
         }
-        return idThesaurus;
     }  
     
     /**
      * Retourne la liste de tous les thésaurus dans la langue source de chaque thésaurus
      * avec l'option de récupération de thésaurus privés ou pas.
-     * @param ds
      * @param withPrivateTheso
      * @return 
      */
-    public ArrayList<NodeIdValue> getAllTheso(HikariDataSource ds, boolean withPrivateTheso) {
+    public ArrayList<NodeIdValue> getAllTheso(boolean withPrivateTheso) {
 
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
 
-        List<String> tabIdThesaurus = getAllIdOfThesaurus(ds, withPrivateTheso);
-        String idLang;
+        List<String> tabIdThesaurus = getAllIdOfThesaurus(withPrivateTheso);
         for (String idTheso : tabIdThesaurus) {
-            idLang = preferencesHelper.getWorkLanguageOfTheso(ds, idTheso);
-            NodeIdValue nodeIdValue = new NodeIdValue();
+            var idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
+            var nodeIdValue = new NodeIdValue();
             nodeIdValue.setId(idTheso);
-            nodeIdValue.setValue(getTitleOfThesaurus(ds, idTheso, idLang));
+            nodeIdValue.setValue(getTitleOfThesaurus(idTheso, idLang));
             nodeIdValues.add(nodeIdValue);
         }
         return nodeIdValues;
@@ -82,31 +83,26 @@ public class ThesaurusHelper {
 
     /**
      * permet de savoir si le thésaurus est public ou privé
-     * @param ds
-     * @param idTheso
-     * @return 
      */
-    public boolean isThesoPrivate(HikariDataSource ds, String idTheso) {
-        boolean status = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select private from thesaurus where id_thesaurus = '" + idTheso + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        status = resultSet.getBoolean("private");
-                    }
-                }
+    public boolean isThesoPrivate(String idTheso) {
+
+        try (var conn = dataSource.getConnection();
+             var stmt = conn.createStatement()) {
+
+            stmt.executeQuery("select private from thesaurus where id_thesaurus = '" + idTheso + "'");
+            ResultSet resultSet = stmt.getResultSet();
+            if (resultSet.next()) {
+                return resultSet.getBoolean("private");
             }
+            return false;
         } catch (SQLException sqle) {
             log.error("Error while asking if theso is private : " + idTheso, sqle);
+            return false;
         }
-        return status;
     }
 
     /**
-     * Permet de créer un nouveau Thésaurus. Retourne l'identifiant du thésaurus
-     * ou null
-     *
+     * Permet de créer un nouveau Thésaurus. Retourne l'identifiant du thésaurus ou null
      * @param conn
      * @return String Id du thésaurus rajouté
      */
@@ -115,20 +111,20 @@ public class ThesaurusHelper {
         String idThesaurus = null;
         String idArk = "";
 
-        try ( Statement stmt = conn.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
             if (identifierType.equalsIgnoreCase("1")) { // identifiants types alphanumérique
                 idThesaurus = toolsHelper.getNewId(10, false, false);
-                while (isThesaurusExiste(conn, idThesaurus)) {
+                while (isThesaurusExiste(idThesaurus)) {
                     idThesaurus = toolsHelper.getNewId(10, false, false);
                 }
             } else {
               //  stmt.executeQuery("select max(id) from thesaurus");
                 stmt.execute("SELECT last_value FROM thesaurus_id_seq");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     resultSet.next();
                     int idNumeriqueThesaurus = resultSet.getInt(1);
                     idThesaurus = "th" + ++idNumeriqueThesaurus;
-                    while (isThesaurusExiste(conn, idThesaurus)) {
+                    while (isThesaurusExiste(idThesaurus)) {
                         idThesaurus = "th" + ++idNumeriqueThesaurus;
                     }
                 }
@@ -148,14 +144,13 @@ public class ThesaurusHelper {
      * Permet de rajouter une traduction à un Thésaurus existant suivant un l'id
      * du thésaurus et la langue retourne yes or No si l'opération a réussie ou
      * non
-     * @param conn
      * @param thesaurus
      * @return 
      */
-    public boolean addThesaurusTraductionRollBack(Connection conn, Thesaurus thesaurus) {
+    public boolean addThesaurusTraductionRollBack(Thesaurus thesaurus) {
 
         thesaurus = addQuotes(thesaurus);
-        try ( Statement stmt = conn.createStatement()) {
+        try (var conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into thesaurus_label (id_thesaurus, contributor, coverage,"
                     + " creator, created, modified, description, format,lang, publisher, relation,"
                     + " rights, source, subject, title, type) values ('" + thesaurus.getId_thesaurus() + "', '"
@@ -177,19 +172,16 @@ public class ThesaurusHelper {
     }
 
     /**
-     * Cette focntion permet de nettoyer un thésaurus des espaces et des null 
-     * @param ds
+     * Cette focntion permet de nettoyer un thésaurus des espaces et des null
      * @param idTheso
      * @return 
      */
-    public boolean cleaningTheso(HikariDataSource ds, String idTheso) {
+    public boolean cleaningTheso(String idTheso) {
         boolean status = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate("delete from term where id_term = ''"
-                        + " and id_thesaurus = '" + idTheso + "'");
-                stmt.executeUpdate("delete from concept_group_label where idgroup = ''"
-                        + " and idthesaurus = '" + idTheso + "'");
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("delete from term where id_term = '' and id_thesaurus = '" + idTheso + "'");
+                stmt.executeUpdate("delete from concept_group_label where idgroup = '' and idthesaurus = '" + idTheso + "'");
                 stmt.executeUpdate("UPDATE concept_group SET notation = '' WHERE notation ilike 'null'");
                 stmt.executeUpdate("UPDATE concept_group SET idtypecode = 'MT' WHERE idtypecode ilike 'null'");
                 stmt.executeUpdate("UPDATE concept SET notation = '' WHERE notation ilike 'null'");   
@@ -205,16 +197,15 @@ public class ThesaurusHelper {
      * Permet de rajouter une traduction à un Thésaurus existant suivant un l'id
      * du thésaurus et la langue retourne yes or No si l'opération a réussie ou
      * non
-     * @param ds
      * @param thesaurus
      * @return 
      */
-    public boolean addThesaurusTraduction(HikariDataSource ds, Thesaurus thesaurus) {
+    public boolean addThesaurusTraduction(Thesaurus thesaurus) {
 
         thesaurus = addQuotes(thesaurus);
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into thesaurus_label (id_thesaurus,"
                         + " contributor, coverage,"
                         + " creator, created, modified, description,"
@@ -249,23 +240,22 @@ public class ThesaurusHelper {
     /**
      * Permet de retourner un thésaurus par identifiant et par langue / ou null
      * si rien cette fonction ne retourne pas les détails et les traductions
-     * @param ds
      * @param idThesaurus
      * @param idLang
      * @return 
      */
-    public Thesaurus getThisThesaurus(HikariDataSource ds, String idThesaurus, String idLang) {
+    public Thesaurus getThisThesaurus(String idThesaurus, String idLang) {
         idLang = idLang.trim();
         Thesaurus thesaurus = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
 
                 stmt.executeQuery("select * from thesaurus, thesaurus_label where"
                         + " thesaurus.id_thesaurus = thesaurus_label.id_thesaurus"
                         + " and thesaurus_label.id_thesaurus = '" + idThesaurus + "'"
                         + " and thesaurus_label.lang = '" + idLang + "'");
 
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         if (resultSet.getString("lang") != null) {
                             thesaurus = new Thesaurus();
@@ -298,18 +288,17 @@ public class ThesaurusHelper {
 
     /**
      * Permet de retourner le titre du thésaurus par identifiant et par langue
-     * @param ds
      * @param idThesaurus
      * @param idLang
      * @return 
      */
-    public String getTitleOfThesaurus(HikariDataSource ds, String idThesaurus, String idLang) {
+    public String getTitleOfThesaurus(String idThesaurus, String idLang) {
         String title = "";
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select title from thesaurus_label where id_thesaurus = '"
                         + idThesaurus + "' and lang = '" + idLang + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         title = resultSet.getString("title");
                     }
@@ -322,23 +311,21 @@ public class ThesaurusHelper {
     }
 
     /**
-     * Permet de retourner un thésaurus par identifiant sous forme de
-     * NodeThesaurus avec les traductions
-     * @param ds
+     * Permet de retourner un thésaurus par identifiant sous forme de NodeThesaurus avec les traductions
      * @param idThesaurus
      * @return 
      */
-    public NodeThesaurus getNodeThesaurus(HikariDataSource ds, String idThesaurus) {
+    public NodeThesaurus getNodeThesaurus(String idThesaurus) {
 
-        ArrayList<Languages_iso639> listLangTheso = getLanguagesOfThesaurus(ds, idThesaurus);
+        ArrayList<Languages_iso639> listLangTheso = getLanguagesOfThesaurus(idThesaurus);
         NodeThesaurus nodeThesaurus = new NodeThesaurus();
         ArrayList<Thesaurus> thesaurusTraductionsList = new ArrayList<>();
 
-        if(!isThesaurusExiste(ds, idThesaurus)){
+        if(!isThesaurusExiste(idThesaurus)){
             return null;
         }
         for (int i = 0; i < listLangTheso.size(); i++) {
-            Thesaurus thesaurus = getThisThesaurus(ds, idThesaurus, listLangTheso.get(i).getId_iso639_1());
+            Thesaurus thesaurus = getThisThesaurus(idThesaurus, listLangTheso.get(i).getId_iso639_1());
             if (thesaurus != null) {
                 thesaurusTraductionsList.add(thesaurus);
             }
@@ -350,22 +337,21 @@ public class ThesaurusHelper {
 
     /**
      * Retourne la liste des Ids des thésaurus existants
-     * @param ds
      * @param withPrivateTheso
      * @return 
      */
-    public List<String> getAllIdOfThesaurus(HikariDataSource ds, boolean withPrivateTheso) {
+    public List<String> getAllIdOfThesaurus(boolean withPrivateTheso) {
 
         List<String> tabIdThesaurus = new ArrayList();
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 String query;
                 if (withPrivateTheso) {
                     query = "select id_thesaurus from thesaurus order by id desc";
                 } else { // uniquement pour les SuperAdmin
                     query = "select id_thesaurus from thesaurus where thesaurus.private != true order by id desc";
                 }
-                try ( ResultSet resultSet = stmt.executeQuery(query)) {
+                try (ResultSet resultSet = stmt.executeQuery(query)) {
                     while (resultSet.next()) {
                         tabIdThesaurus.add(resultSet.getString("id_thesaurus"));
                     }
@@ -379,18 +365,16 @@ public class ThesaurusHelper {
     }
 
     /**
-     * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une
-     * chaine vide
-     * @param ds
+     * Cette fonction permet de récupérer l'identifiant Ark sinon renvoie un une chaine vide
      * @param idThesaurus
      * @return 
      */
-    public String getIdArkOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    public String getIdArkOfThesaurus(String idThesaurus) {
         String ark = "";
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_ark from thesaurus where id_thesaurus = '" + idThesaurus + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         ark = resultSet.getString("id_ark");
                     }
@@ -403,21 +387,19 @@ public class ThesaurusHelper {
     }
 
     /**
-     * Retourne la liste des traductions d'un thesaurus sous forme de ArrayList
-     * avec le code iso de la langue
-     * @param ds
+     * Retourne la liste des traductions d'un thesaurus sous forme de ArrayList avec le code iso de la langue
      * @param idThesaurus
      * @return 
      */
-    public List<String> getIsoLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    public List<String> getIsoLanguagesOfThesaurus(String idThesaurus) {
 
         ArrayList<String> idLang = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT languages_iso639.iso639_1 FROM thesaurus_label,"
                         + " languages_iso639 WHERE thesaurus_label.lang = languages_iso639.iso639_1 AND"
                         + " thesaurus_label.id_thesaurus = '" + idThesaurus + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         idLang.add(resultSet.getString("iso639_1").trim());
                     }
@@ -433,15 +415,14 @@ public class ThesaurusHelper {
     /**
      * Retourne la liste des traductions d'un thesaurus sous forme de ArrayList
      * d'Objet Languages_iso639
-     * @param ds
      * @param idThesaurus
      * @return 
      */
-    public ArrayList<Languages_iso639> getLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    public ArrayList<Languages_iso639> getLanguagesOfThesaurus(String idThesaurus) {
 
         ArrayList<Languages_iso639> lang = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT DISTINCT languages_iso639.iso639_1, "
                         + " languages_iso639.iso639_2, "
                         + " languages_iso639.english_name, "
@@ -453,7 +434,7 @@ public class ThesaurusHelper {
                         + " WHERE"
                         + " thesaurus_label.lang = languages_iso639.iso639_1 AND"
                         + " thesaurus_label.lang = languages_iso639.iso639_1;");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet != null) {
                         lang = new ArrayList<>();
                         while (resultSet.next()) {
@@ -478,45 +459,39 @@ public class ThesaurusHelper {
     /**
     * Cette fonction permet de retourner toutes les langues utilisées par les
     * Concepts d'un thésaurus (sous forme de NodeLang, un objet complet)
-    * @param ds
     * @param idThesaurus
      * @param idLang
     * @return 
     */
-    public ArrayList<NodeLangTheso> getAllUsedLanguagesOfThesaurusNode(HikariDataSource ds,
-            String idThesaurus, String idLang) {
+    public ArrayList<NodeLangTheso> getAllUsedLanguagesOfThesaurusNode(String idThesaurus, String idLang) {
 
         if(idLang == null || idLang.isEmpty())
             idLang = "fr";
         ArrayList<NodeLangTheso> nodeLangs = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                    stmt.executeQuery("SELECT code_pays, iso639_1, french_name, english_name, title "
-                            + " FROM thesaurus_label, languages_iso639 "
-                            + " WHERE thesaurus_label.lang = languages_iso639.iso639_1 "
-                            + " AND thesaurus_label.id_thesaurus = '" + idThesaurus + "'"
-                            + " order by languages_iso639.french_name");
-
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    int i = 0;
-                    while (resultSet.next()) {
-                        NodeLangTheso nodeLang = new NodeLangTheso();
-                        nodeLang.setId("" + i);
-                        nodeLang.setCodeFlag(resultSet.getString("code_pays"));
-                        nodeLang.setCode(resultSet.getString("iso639_1"));
-                        if(idLang.equalsIgnoreCase("fr"))
-                            nodeLang.setValue(resultSet.getString("french_name"));
-                        else
-                            nodeLang.setValue(resultSet.getString("english_name"));
-                        nodeLang.setLabelTheso(resultSet.getString("title"));
-                        nodeLangs.add(nodeLang);
-                        i++;
-                    }
+        try (var connection = dataSource.getConnection(); var stmt = connection.createStatement()) {
+            stmt.executeQuery("SELECT code_pays, iso639_1, french_name, english_name, title "
+                    + " FROM thesaurus_label, languages_iso639 "
+                    + " WHERE thesaurus_label.lang = languages_iso639.iso639_1 "
+                    + " AND thesaurus_label.id_thesaurus = '" + idThesaurus + "'"
+                    + " order by languages_iso639.french_name");
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                int i = 0;
+                while (resultSet.next()) {
+                    NodeLangTheso nodeLang = new NodeLangTheso();
+                    nodeLang.setId("" + i);
+                    nodeLang.setCodeFlag(resultSet.getString("code_pays"));
+                    nodeLang.setCode(resultSet.getString("iso639_1"));
+                    if(idLang.equalsIgnoreCase("fr"))
+                        nodeLang.setValue(resultSet.getString("french_name"));
+                    else
+                        nodeLang.setValue(resultSet.getString("english_name"));
+                    nodeLang.setLabelTheso(resultSet.getString("title"));
+                    nodeLangs.add(nodeLang);
+                    i++;
                 }
             }
         } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while getting All Used languages of Concepts of thesaurus  : " + idThesaurus, sqle);
         }
         return nodeLangs;
@@ -526,17 +501,16 @@ public class ThesaurusHelper {
      * Cette fonction permet de retourner toutes les langues utilisées par les
      * Concepts d'un thésaurus !!! seulement les code iso des langues sert
      * essentiellement à l'import
-     * @param ds
      * @param idThesaurus
      * @return 
      */
-    public ArrayList<String> getAllUsedLanguagesOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    public ArrayList<String> getAllUsedLanguagesOfThesaurus(String idThesaurus) {
 
         ArrayList<String> tabIdLang = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select distinct lang from term where id_thesaurus = '" + idThesaurus + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         tabIdLang.add(resultSet.getString("lang"));
                     }
@@ -551,19 +525,18 @@ public class ThesaurusHelper {
 
     /**
      * Cette fonction permet de savoir si le terme existe ou non
-     * @param ds
      * @param idThesaurus
      * @param idLang
      * @return 
      */
-    public boolean isLanguageExistOfThesaurus(HikariDataSource ds, String idThesaurus, String idLang) {
+    public boolean isLanguageExistOfThesaurus(String idThesaurus, String idLang) {
 
         boolean existe = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_thesaurus from thesaurus_label where id_thesaurus ='"
                         + idThesaurus + "' and lang = '" + idLang + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     resultSet.next();
                     if (resultSet.getRow() == 0) {
                         existe = false;
@@ -581,46 +554,21 @@ public class ThesaurusHelper {
 
     /**
      * Cette fonction permet de savoir si le thesaurus existe ou non
-     * @param ds
      * @param idThesaurus
      * @return 
      */
-    public boolean isThesaurusExiste(HikariDataSource ds, String idThesaurus) {
+    public boolean isThesaurusExiste(String idThesaurus) {
         boolean existe = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_thesaurus from thesaurus where id_thesaurus = '" + idThesaurus + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         existe = resultSet.getRow() != 0;
                     }
                 }
             }
         } catch (SQLException sqle) {
-            log.error("Error while asking if thesaurus exist : " + idThesaurus, sqle);
-        }
-        return existe;
-    }
-
-    /**
-     * Cette fonction permet de savoir si le thesaurus existe ou non
-     * @param conn
-     * @param idThesaurus
-     * @return 
-     */
-    public boolean isThesaurusExiste(Connection conn, String idThesaurus) {
-        boolean existe = false;
-
-        try ( Statement stmt = conn.createStatement()) {
-            stmt.executeQuery("select id_thesaurus from thesaurus where id_thesaurus = '"
-                    + idThesaurus + "'");
-            try ( ResultSet resultSet = stmt.getResultSet()) {
-                if (resultSet.next()) {
-                    existe = resultSet.getRow() != 0;
-                }
-            }
-        } catch (SQLException sqle) {
-            // Log exception
             log.error("Error while asking if thesaurus exist : " + idThesaurus, sqle);
         }
         return existe;
@@ -650,13 +598,11 @@ public class ThesaurusHelper {
     }
 
     /**
-     * Permet de mettre à jour un thésaurus suivant un identifiant et une langue
-     * donnés
-     * @param ds
+     * Permet de mettre à jour un thésaurus suivant un identifiant et une langue donnés
      * @param thesaurus
      * @return 
      */
-    public boolean UpdateThesaurus(HikariDataSource ds, Thesaurus thesaurus) {
+    public boolean UpdateThesaurus(Thesaurus thesaurus) {
 
         boolean status = false;
 
@@ -666,8 +612,8 @@ public class ThesaurusHelper {
          * On met à jour tous les chmamps saufs l'idThesaurus, la date de
          * creation en utilisant et la langue
          */
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE thesaurus_label "
                         + "set contributor='" + thesaurus.getContributor() + "',"
                         + " coverage='" + thesaurus.getCoverage() + "',"
@@ -696,15 +642,14 @@ public class ThesaurusHelper {
 
     /**
      * Permet de supprimer un thésaurus
-     * @param ds
      * @param idThesaurus
      * @return 
      */
-    public boolean deleteThesaurus(HikariDataSource ds, String idThesaurus) {
+    public boolean deleteThesaurus(String idThesaurus) {
         idThesaurus = StringUtils.convertString(idThesaurus);
         boolean state = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from thesaurus where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from thesaurus_label where id_thesaurus = '" + idThesaurus + "';"
                         + "delete from thesaurus_array where id_thesaurus = '" + idThesaurus + "';"
@@ -756,18 +701,17 @@ public class ThesaurusHelper {
 
     /**
      * Permet de supprimer une traduction d'un thésaurus
-     * @param ds
      * @param idThesaurus
      * @param id_lang
      * @return 
      */
-    public boolean deleteThesaurusTraduction(HikariDataSource ds, String idThesaurus, String id_lang) {
+    public boolean deleteThesaurusTraduction(String idThesaurus, String id_lang) {
 
         idThesaurus = StringUtils.convertString(idThesaurus);
         boolean state = false;
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from thesaurus_label where id_thesaurus = '"
                         + idThesaurus + "' and lang = '" + id_lang + "'");
                 state = true;

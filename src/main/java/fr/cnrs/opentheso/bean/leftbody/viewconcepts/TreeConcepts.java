@@ -10,7 +10,6 @@ import fr.cnrs.opentheso.models.terms.NodeNT;
 import fr.cnrs.opentheso.models.group.NodeGroup;
 import fr.cnrs.opentheso.bean.leftbody.DataService;
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
@@ -40,7 +39,7 @@ import jakarta.annotation.PreDestroy;
 @SessionScoped
 public class TreeConcepts implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private RightBodySetting rightBodySetting;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private ConceptView conceptView;
@@ -86,7 +85,7 @@ public class TreeConcepts implements Serializable {
     private boolean addFirstNodes() {
 
         // liste des groupes de premier niveau
-        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(connect.openConnexionPool(), idTheso, idLang, selectedTheso.isSortByNotation());
+        List<NodeGroup> racineNode = groupHelper.getListRootConceptGroup(idTheso, idLang, selectedTheso.isSortByNotation());
 
         for (NodeGroup nodeGroup : racineNode) {
             TreeNodeData data = new TreeNodeData(nodeGroup.getConceptGroup().getIdgroup(), nodeGroup.getLexicalValue(),
@@ -124,7 +123,7 @@ public class TreeConcepts implements Serializable {
     }
 
     private boolean addGroupsChild(TreeNode parent) {
-        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(connect.openConnexionPool(),
+        ArrayList<NodeGroup> listeSubGroup = groupHelper.getListChildsOfGroup(
                 ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, selectedTheso.isSortByNotation());
 
         if (listeSubGroup == null) {
@@ -149,7 +148,7 @@ public class TreeConcepts implements Serializable {
         
         // il faut ici récupérer les Topterms de la collection #MR        
         ArrayList<NodeIdValue> listeConceptsOfGroup = conceptHelper.getListTopConceptsOfGroup(
-                connect.openConnexionPool(),
+                
                 idTheso, idLang, ((TreeNodeData) parent.getData()).getNodeId(), selectedTheso.isSortByNotation());
         
         if (listeConceptsOfGroup == null || listeConceptsOfGroup.isEmpty()) {
@@ -162,7 +161,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeGroup.getId(), nodeGroup.getValue(), "", false, false,
                     true, false, "concept");
 
-            ArrayList<NodeNT> childs = relationsHelper.getListNT(connect.openConnexionPool(), nodeGroup.getId(), idTheso, idLang, -1, -1);
+            ArrayList<NodeNT> childs = relationsHelper.getListNT(nodeGroup.getId(), idTheso, idLang, -1, -1);
             if (CollectionUtils.isEmpty(childs)) {
                 new DefaultTreeNode("file", data, parent);
             } else {
@@ -176,7 +175,7 @@ public class TreeConcepts implements Serializable {
 
     private boolean addConceptSpecifique(TreeNode parent) {
 
-        ArrayList<NodeNT> ConceptsId = relationsHelper.getListNT(connect.openConnexionPool(),
+        ArrayList<NodeNT> ConceptsId = relationsHelper.getListNT(
                 ((TreeNodeData) parent.getData()).getNodeId(), idTheso, idLang, -1, -1);
 
         if (ConceptsId == null || ConceptsId.isEmpty()) {
@@ -188,7 +187,7 @@ public class TreeConcepts implements Serializable {
             TreeNodeData data = new TreeNodeData(nodeNT.getIdConcept(), nodeNT.getTitle(),"", false,
                     false, true, true,"concept" );
             
-            ArrayList<NodeNT> childs = relationsHelper.getListNT(connect.openConnexionPool(), nodeNT.getIdConcept(),
+            ArrayList<NodeNT> childs = relationsHelper.getListNT(nodeNT.getIdConcept(),
                     idTheso, idLang, -1, -1);
 
             if (CollectionUtils.isEmpty(childs)) {

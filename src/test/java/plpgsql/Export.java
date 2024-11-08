@@ -1,7 +1,7 @@
 
 package plpgsql;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.DaoResourceHelper;
@@ -40,7 +40,7 @@ public class Export {
 
         DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
         System.out.println("Commence ");
-        List<NodeConceptGraph> listChilds = daoResourceHelper.getConceptsNTForGraph(ds, idTheso, idConcept, idLang);
+        List<NodeConceptGraph> listChilds = daoResourceHelper.getConceptsNTForGraph(idTheso, idConcept, idLang);
         
     }
   
@@ -58,7 +58,7 @@ public class Export {
         String baseUrl = "http://opentheso2.mom.fr";
 
         System.out.println("start at =  " + LocalDateTime.now());
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM opentheso_get_concepts('" + idTheso + "', '" + baseUrl + "')"
                 + " as x(URI text, TYPE varchar, LOCAL_URI text, IDENTIFIER varchar, ARK_ID varchar, "
@@ -68,7 +68,7 @@ public class Export {
                 + " membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
                 + " replaces text, replaced_by text, facets text, externalResources text);");
                 
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         System.out.println("resultat en " + new Date().getTime());
                     }   
@@ -91,7 +91,7 @@ public class Export {
   
         System.out.println("start at =  " + LocalDateTime.now());
         for (int i = 0; i < 1000; i++) {
-            try (Connection conn = ds.getConnection()) {
+            try (Connection conn = dataSource.getConnection()) {
                 try (Statement stmt = conn.createStatement()) {
 
        //             for (String idConcept : idConcepts) {
@@ -103,7 +103,7 @@ public class Export {
                             + " membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
                             + " replaces text, replaced_by text, facets text, externalResources text);");
 
-                        try ( ResultSet resultSet = stmt.getResultSet()) {
+                        try (ResultSet resultSet = stmt.getResultSet()) {
                             while (resultSet.next()) {
                               //  System.out.println(resultSet.getString("identifier"));
                             }   
@@ -121,7 +121,7 @@ public class Export {
         
         System.out.println("start NodeConcept at =  " + LocalDateTime.now());    
         for (int i = 0; i < 1000; i++) {
-            new ConceptHelper().getConceptForExport(ds, idConcept, idTheso, false);
+            new ConceptHelper().getConceptForExport(idConcept, idTheso, false);
         }
 
 
@@ -140,7 +140,7 @@ public class Export {
         String idLang = "fr";
         
         DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
-        NodeFullConcept nodeFullConcept = daoResourceHelper.getFullConcept(ds, idTheso, idConcept, idLang, -1, -1);
+        NodeFullConcept nodeFullConcept = daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, -1, -1);
     }
     
     @Test
@@ -154,7 +154,7 @@ public class Export {
         
         DaoResourceHelper daoResourceHelper = new DaoResourceHelper();
         System.out.println("start");
-        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(ds, idTheso, idConcept, idLang, false);
+        List<NodeConceptTree> nodeConceptTrees = daoResourceHelper.getConceptsNTForTree(idTheso, idConcept, idLang, false);
         System.out.println("stop");
     }    
     
@@ -168,7 +168,7 @@ public class Export {
         String idConcept = "38553";
         String idLang = "fr";
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from opentheso_get_concept('" + idTheso + "', '" + idConcept + "', '" + idLang + "')" +
                     "as x(URI text, conceptType varchar, localUri text, identifier varchar, permalinkId varchar," +
@@ -180,7 +180,7 @@ public class Export {
                     "replaces text, replaced_by text, facets text, externalResources text);"
                 );
 
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         System.out.println("##############################################");
                         System.out.println("##############################################");                        
@@ -262,18 +262,18 @@ public class Export {
         String idTheso = "th133";
         
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
+        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(idTheso);
         String resultat;
         System.out.println("total = " + idConcepts.size());
         System.out.println("start at =  " + LocalDateTime.now());
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 
                 for (String idConcept : idConcepts) {
                     stmt.executeQuery("SELECT * FROM opentheso_get_note_concept('" + idTheso + "', '" + idConcept + "')");
 
-                    try ( ResultSet resultSet = stmt.getResultSet()) {
+                    try (ResultSet resultSet = stmt.getResultSet()) {
                         while (resultSet.next()) {
                             resultat = resultSet.getString("note_lexicalvalue");
                         }   
@@ -294,18 +294,18 @@ public class Export {
         String idTheso = "th133";
         
         ConceptHelper conceptHelper = new ConceptHelper();
-        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(ds, idTheso);
+        ArrayList<String> idConcepts =  conceptHelper.getAllIdConceptOfThesaurus(idTheso);
         String resultat;
         System.out.println("total = " + idConcepts.size());
         System.out.println("start at =  " + LocalDateTime.now());
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 
                 for (String idConcept : idConcepts) {
                     stmt.executeQuery("SELECT * FROM opentheso_get_traductions('" + idTheso + "', '" + idConcept + "')");
 
-                    try ( ResultSet resultSet = stmt.getResultSet()) {
+                    try (ResultSet resultSet = stmt.getResultSet()) {
                         while (resultSet.next()) {
                             resultat = resultSet.getString("term_lexicalValue");
                         }   

@@ -28,7 +28,7 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class CopyAndPasteBetweenTheso implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CurrentUser currentUser;
@@ -96,7 +96,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         // aprsè l'initialisation du conceptBean, cette variable est aussi initialisée
         // pour éviter cela, on construi un nouvel objet
         nodeConceptDrag = conceptHelper.getConcept(
-                connect.openConnexionPool(),
+                
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getTerm().getLang(), -1, -1);
@@ -107,7 +107,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
         }
 
         conceptsToCopy = conceptHelper.getIdsOfBranch(
-                connect.openConnexionPool(),
+                
                 nodeConceptDrag.getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso()); 
         
@@ -129,7 +129,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
 
         // on vérifie si les ids des concepts à copier n'existent pas déjà dans le thésaurus cible.
         for (String idConcept : conceptsToCopy) {
-            if(conceptHelper.isIdExiste(connect.openConnexionPool(), idConcept, selectedTheso.getCurrentIdTheso())) {
+            if(conceptHelper.isIdExiste(idConcept, selectedTheso.getCurrentIdTheso())) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "L'identifiant " + idConcept + " existe déjà dans le thésaurus cible, c'est interdit !!! ");
                 FacesContext.getCurrentInstance().addMessage(null, msg);            
                 return;                
@@ -188,7 +188,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
             return false;
         }
 
-        if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(connect.openConnexionPool(),
+        if(!copyAndPasteBetweenThesoHelper.pasteBranchLikeNT(
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     idThesoOrigin,
@@ -204,7 +204,7 @@ public class CopyAndPasteBetweenTheso implements Serializable {
     private boolean copyToRoot(){
         // cas de déplacement d'un concept/branche d'un autre thésaurus à la racine
         
-            if(!copyAndPasteBetweenThesoHelper.pasteBranchToRoot(connect.openConnexionPool(),
+            if(!copyAndPasteBetweenThesoHelper.pasteBranchToRoot(
                     selectedTheso.getCurrentIdTheso(),
 
                     idThesoOrigin,

@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.imports.AddConceptsStruct;
 import fr.cnrs.opentheso.services.imports.rdf4j.ImportRdf4jHelper;
@@ -27,6 +26,7 @@ import org.primefaces.event.FileUploadEvent;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.springframework.stereotype.Service;
@@ -41,9 +41,6 @@ import java.util.List;
 @Named
 @Service
 public class FusionService implements Serializable {
-
-    @Autowired @Lazy
-    private Connect connect;
 
     @Autowired @Lazy
     private CurrentUser currentUser;
@@ -65,6 +62,9 @@ public class FusionService implements Serializable {
 
     @Autowired
     private PreferencesHelper preferencesHelper;
+
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
 
 
     private SKOSXmlDocument sourceSkos;
@@ -95,8 +95,7 @@ public class FusionService implements Serializable {
 
         ArrayList<NodeEM> nodeEMsLocal;
 
-        importRdf4jHelper.setDs(connect.openConnexionPool());
-        String workLang = preferencesHelper.getWorkLanguageOfTheso(connect.openConnexionPool(), thesoSelected.getId());
+        String workLang = preferencesHelper.getWorkLanguageOfTheso(thesoSelected.getId());
 
         for (SKOSResource conceptSource : sourceSkos.getConceptList()) {
             if (!StringUtils.isEmpty(conceptSource.getIdentifier())) {
@@ -108,7 +107,7 @@ public class FusionService implements Serializable {
                 importRdf4jHelper.addRelation(acs, thesoSelected.getId());
 
                 // récupération du concept Local
-                NodeConcept conceptFound = conceptHelper.getConcept(connect.openConnexionPool(),
+                NodeConcept conceptFound = conceptHelper.getConcept(
                         conceptSource.getIdentifier(),
                         thesoSelected.getId(),
                         workLang, -1, -1);
@@ -127,7 +126,7 @@ public class FusionService implements Serializable {
                     if (!CollectionUtils.isEmpty(acs.nodeAlignments)) {
                         for (NodeAlignment nodeAlignment : acs.nodeAlignments) {
                             if (!isAlignementExist(nodeAlignment, conceptFound.getNodeAlignments())) {
-                                alignmentHelper.addNewAlignment(connect.openConnexionPool(),
+                                alignmentHelper.addNewAlignment(
                                         nodeAlignment.getId_author(),
                                         nodeAlignment.getConcept_target(),
                                         nodeAlignment.getThesaurus_target(),
@@ -144,7 +143,7 @@ public class FusionService implements Serializable {
                     // Traduction OK validée #MR
                     // Synonymes : NonPreferredTerms
                     if (!CollectionUtils.isEmpty(acs.nodeEMList)) {
-                        nodeEMsLocal = termHelper.getAllNonPreferredTerms(connect.openConnexionPool(), conceptSource.getIdentifier(), conceptFound.getConcept().getIdThesaurus());
+                        nodeEMsLocal = termHelper.getAllNonPreferredTerms(conceptSource.getIdentifier(), conceptFound.getConcept().getIdThesaurus());
                         for (NodeEM nodeEM : acs.nodeEMList) {
                             if (!isSynonymeExist(nodeEM, nodeEMsLocal)) {
                                 Term term = new Term();
@@ -156,7 +155,7 @@ public class FusionService implements Serializable {
                                 term.setSource(nodeEM.getSource());
                                 term.setStatus(nodeEM.getStatus());
                                 term.setHidden(nodeEM.isHiden());
-                                termHelper.addNonPreferredTerm(connect.openConnexionPool(), term,
+                                termHelper.addNonPreferredTerm(term,
                                         currentUser.getNodeUser().getIdUser());
                                 isUpdated = true;
                             }
@@ -173,14 +172,14 @@ public class FusionService implements Serializable {
                                 term.setLexicalValue(nodeTermTraduction.getLexicalValue());
                                 term.setLang(nodeTermTraduction.getLang());
                                 term.setIdThesaurus(conceptFound.getConcept().getIdThesaurus());
-                                if (termHelper.isTermExistInThisLang(connect.openConnexionPool(),
+                                if (termHelper.isTermExistInThisLang(
                                                 term.getIdTerm(), nodeTermTraduction.getLang(),
                                                 term.getIdThesaurus())) {
-                                    termHelper.updateTermTraduction(connect.openConnexionPool(),
+                                    termHelper.updateTermTraduction(
                                             term,
                                             currentUser.getNodeUser().getIdUser());
                                 } else {
-                                    termHelper.addTraduction(connect.openConnexionPool(),
+                                    termHelper.addTraduction(
                                             nodeTermTraduction.getLexicalValue(),
                                             acs.nodeTerm.getIdTerm(),
                                             nodeTermTraduction.getLang(),
@@ -200,11 +199,11 @@ public class FusionService implements Serializable {
                         for (NodeNote nodeNote : acs.nodeNotes) {
                             /// détecter le type de note avant 
                             if (nodeNote.getNoteTypeCode().equalsIgnoreCase("definition")) {
-                                if (!noteHelper.isNoteExist(connect.openConnexionPool(),
+                                if (!noteHelper.isNoteExist(
                                         acs.concept.getIdConcept(), 
                                         conceptFound.getConcept().getIdThesaurus(),
                                         nodeNote.getLang(), nodeNote.getLexicalValue(), "definition")) {
-                                    noteHelper.addNote(connect.openConnexionPool(),
+                                    noteHelper.addNote(
                                             acs.concept.getIdConcept(),
                                             nodeNote.getLang(),
                                             conceptFound.getConcept().getIdThesaurus(),
@@ -232,7 +231,7 @@ public class FusionService implements Serializable {
         }
 
         importRdf4jHelper.addGroups(sourceSkos.getGroupList(), thesoSelected.getId());
-        importRdf4jHelper.addLangsToThesaurus(connect.openConnexionPool(), thesoSelected.getId());
+        importRdf4jHelper.addLangsToThesaurus(thesoSelected.getId());
 
     }
 
@@ -296,7 +295,7 @@ public class FusionService implements Serializable {
 
     public void importTheso(FileUploadEvent event) {
         try (InputStream is = event.getFile().getInputStream()) {
-            sourceSkos = new ReadRDF4JNewGen().readRdfFlux(is, RDFFormat.RDFXML, connect.getWorkLanguage());
+            sourceSkos = new ReadRDF4JNewGen().readRdfFlux(is, RDFFormat.RDFXML, workLanguage);
             total = sourceSkos.getConceptList().size();
             uri = sourceSkos.getTitle();
             loadDone = true;

@@ -1,6 +1,6 @@
 package search;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
@@ -26,8 +26,8 @@ public class Search {
 
         System.out.println("Avant  : " + LocalTime.now());
         for(int i=0; i<1000; i++){
-            nodeSearchMinis = searchHelper.searchExactMatch(ds, "amphore", "fr", "TH_1");
-            //nodeSearchMinis = searchHelper.searchFullTextElastic(ds, "amphore", "fr", "TH_1");
+            nodeSearchMinis = searchHelper.searchExactMatch("amphore", "fr", "TH_1");
+            //nodeSearchMinis = searchHelper.searchFullTextElastic("amphore", "fr", "TH_1");
         }
         System.out.println("Après  : " + LocalTime.now());
     }

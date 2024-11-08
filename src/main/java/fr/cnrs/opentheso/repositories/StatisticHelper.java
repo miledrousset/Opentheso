@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,7 +10,10 @@ import java.util.List;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Data
@@ -19,12 +21,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class StatisticHelper {
 
+    @Autowired
+    private DataSource dataSource;
+
     private int nombreConcept = 0;
 
     
-    public int getNbAlignWikidata(HikariDataSource ds, String idThesaurus, String idGroup) {
+    public int getNbAlignWikidata(String idThesaurus, String idGroup) {
         int count = 0;
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             try (Statement stmt = conn.createStatement()){
                 if(idGroup == null || idGroup.isEmpty()){
                     stmt.executeQuery("select count(alignement.internal_id_concept) from alignement " +
@@ -46,7 +51,7 @@ public class StatisticHelper {
                         " and" +
                         " uri_target like '%wikidata.org%'");                    
                 }
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
                     }
@@ -59,9 +64,9 @@ public class StatisticHelper {
         return count;
     }
     
-    public int getNbAlign(HikariDataSource ds, String idThesaurus, String idGroup) {
+    public int getNbAlign(String idThesaurus, String idGroup) {
         int count = 0;
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             try (Statement stmt = conn.createStatement()){
                 if(idGroup == null || idGroup.isEmpty()) {
                     stmt.executeQuery("select count(alignement.internal_id_concept)" +
@@ -81,7 +86,7 @@ public class StatisticHelper {
                         " and" +
                         " concept_group_concept.idthesaurus = '" + idThesaurus + "'");
                 }
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         count = resultSet.getInt(1);
                     }
@@ -96,7 +101,7 @@ public class StatisticHelper {
     
     /**
      * méthode pour récupérer tous les concepts modifiés triés par date décroissant
-     * @param ds
+     * 
      * @param idThesaurus
      * @param idLang
      * @param limit
@@ -104,7 +109,7 @@ public class StatisticHelper {
      * #MR
      */
     public List<ConceptStatisticData> getStatConcept(
-            HikariDataSource ds,
+            
             String idThesaurus, String idLang, int limit) {
         Connection conn;
         Statement stmt;
@@ -113,7 +118,7 @@ public class StatisticHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -162,7 +167,7 @@ public class StatisticHelper {
     /**
      * méthode pour récupérer tous les concepts modifiés triés par date décroissant
      * avec filtre par collection
-     * @param ds
+     * 
      * @param idThesaurus
      * @param idGroup
      * @param idLang
@@ -171,7 +176,7 @@ public class StatisticHelper {
      * #MR
      */
     public List<ConceptStatisticData> getStatConceptLimitCollection(
-            HikariDataSource ds,
+            
             String idThesaurus, String idGroup, String idLang, int limit) {
         Connection conn;
         Statement stmt;
@@ -180,7 +185,7 @@ public class StatisticHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -235,7 +240,7 @@ public class StatisticHelper {
     /**
      * méthode pour récupérer tous les concepts modifiés triés par date décroissant
      * avec filtre par collection et par date debut et fin
-     * @param ds
+     * 
      * @param idThesaurus
      * @param idGroup
      * @param idLang
@@ -246,7 +251,7 @@ public class StatisticHelper {
      * #MR
      */
     public List<ConceptStatisticData> getStatConceptByDateAndCollection(
-            HikariDataSource ds,
+            
             String idThesaurus, String idGroup, String idLang,
             String dateDebut, String datefin, int limit) {
         Connection conn;
@@ -259,7 +264,7 @@ public class StatisticHelper {
         }
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -345,12 +350,12 @@ public class StatisticHelper {
      * Cette fonction permet de récupérer le nombre des concepts suivant l'id du
      * Concept-Père et le thésaurus
      *
-     * @param ds
+     * 
      * @param idConcept
      * @param idThesaurus
      * @return Objet Array String
      */
-    public int getChildrenCountOfConcept(HikariDataSource ds,
+    public int getChildrenCountOfConcept(
             String idConcept, String idThesaurus) {
 
         Connection conn;
@@ -360,7 +365,7 @@ public class StatisticHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -390,15 +395,15 @@ public class StatisticHelper {
     /**
      * Retourne le nombre de concepts sans les candidtas ni les concepts dépréciés 
      * 
-     * @param ds
+     * 
      * @param idThesaurus
      * @return 
      */
-    public int getNbCpt(HikariDataSource ds, String idThesaurus) {
+    public int getNbCpt(String idThesaurus) {
         int count = 0;
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery( "SELECT count(id_concept) FROM concept WHERE"
+                stmt.executeQuery("SELECT count(id_concept) FROM concept WHERE"
                             + " id_thesaurus = '" + idThesaurus + "' and status not in ('CA', 'DEP')");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if(resultSet.next()) {
@@ -416,15 +421,15 @@ public class StatisticHelper {
     /**
      * Retourne le nombre de candidats
      * 
-     * @param ds
+     * 
      * @param idThesaurus
      * @return 
      */
-    public int getNbCandidate(HikariDataSource ds, String idThesaurus) {
+    public int getNbCandidate(String idThesaurus) {
         int count = 0;
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery( "SELECT count(id_concept) FROM concept WHERE"
+                stmt.executeQuery("SELECT count(id_concept) FROM concept WHERE"
                             + " id_thesaurus = '" + idThesaurus + "' and status = 'CA'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if(resultSet.next()) {
@@ -442,15 +447,15 @@ public class StatisticHelper {
     /**
      * Retourne le nombre de concepts dépréciés
      * 
-     * @param ds
+     * 
      * @param idThesaurus
      * @return 
      */
-    public int getNbOfDeprecatedConcepts(HikariDataSource ds, String idThesaurus) {
+    public int getNbOfDeprecatedConcepts(String idThesaurus) {
         int count = 0;
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery( "SELECT count(id_concept) FROM concept WHERE"
+                stmt.executeQuery("SELECT count(id_concept) FROM concept WHERE"
                             + " id_thesaurus = '" + idThesaurus + "' and status = 'DEP'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
                     if(resultSet.next()) {
@@ -465,14 +470,14 @@ public class StatisticHelper {
         return count;
     }
 
-    public int getNbSynonymesByGroup(HikariDataSource ds, String idThesaurus, String idGroup, String idLang) {
+    public int getNbSynonymesByGroup(String idThesaurus, String idGroup, String idLang) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
         int count = 0;
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -506,14 +511,14 @@ public class StatisticHelper {
         return count;
     }    
     
-    public int getNbDesSynonimeSansGroup(HikariDataSource ds, String idThesaurus, String idLang) {
+    public int getNbDesSynonimeSansGroup(String idThesaurus, String idLang) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
         int count = 0;
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -549,20 +554,20 @@ public class StatisticHelper {
 
     /**
      * Retourne le nombre des traductions filtré par groupe
-     * @param ds
+     * 
      * @param idThesaurus
      * @param idGroup
      * @param langue
      * @return 
      */
-    public int getNbTradOfGroup(HikariDataSource ds, String idThesaurus, String idGroup, String langue) {
+    public int getNbTradOfGroup(String idThesaurus, String idGroup, String langue) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
         int count = 0;
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -610,14 +615,14 @@ public class StatisticHelper {
         return count;
     }
     
-    public int getNbTradWithoutGroup(HikariDataSource ds, String idThesaurus, String idLang) {
+    public int getNbTradWithoutGroup(String idThesaurus, String idLang) {
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
         int count = 0;
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {

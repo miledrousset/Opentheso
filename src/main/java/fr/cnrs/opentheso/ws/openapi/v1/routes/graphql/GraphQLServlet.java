@@ -38,9 +38,6 @@ public class GraphQLServlet {
     @Autowired
     private DaoResourceHelper daoResourceHelper;
 
-    @Autowired
-    private Connect connect;
-
     private GraphQL graphQL;
     private final Gson gson = new Gson();
 
@@ -78,7 +75,7 @@ public class GraphQLServlet {
                             String idTheso = env.getArgument("idTheso");
                             String idConcept = env.getArgument("idConcept");
                             String idLang = env.getArgument("idLang");
-                            return daoResourceHelper.getFullConcept(connect.openConnexionPool(), idTheso, idConcept, idLang, -1, -1);
+                            return daoResourceHelper.getFullConcept(idTheso, idConcept, idLang, -1, -1);
                         })
                 )
                 .field(GraphQLFieldDefinition.newFieldDefinition()
@@ -94,10 +91,10 @@ public class GraphQLServlet {
                             List<String> idGroupsList = env.getArgument("idGroups");
                             String idTheso = env.getArgument("idTheso");
                             String[] idGroups = idGroupsList != null ? idGroupsList.toArray(new String[0]) : null;
-                            List<String> autoCompletions = searchHelper.searchAutoCompletionWSForWidget(connect.openConnexionPool(), value, idLang, idGroups, idTheso);
+                            List<String> autoCompletions = searchHelper.searchAutoCompletionWSForWidget(value, idLang, idGroups, idTheso);
                             List<Object> fullConcepts = new ArrayList<>();
                             for (String autoCompletion : autoCompletions) {
-                                fullConcepts.add(daoResourceHelper.getFullConcept(connect.openConnexionPool(), idTheso, autoCompletion, idLang, -1, -1));
+                                fullConcepts.add(daoResourceHelper.getFullConcept(idTheso, autoCompletion, idLang, -1, -1));
                             }
                             return fullConcepts;
                         })

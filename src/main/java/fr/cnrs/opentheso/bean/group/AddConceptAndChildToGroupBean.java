@@ -38,8 +38,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 public class AddConceptAndChildToGroupBean implements Serializable {
 
     @Autowired @Lazy
-    private Connect connect;
-    @Autowired @Lazy
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
     private ConceptView conceptView;
@@ -84,7 +82,7 @@ public class AddConceptAndChildToGroupBean implements Serializable {
         selectedNodeAutoCompletionGroup = new NodeAutoCompletion();
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
-            liste = groupHelper.getAutoCompletionGroup(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(),
+            liste = groupHelper.getAutoCompletionGroup(selectedTheso.getCurrentIdTheso(),
                     conceptView.getSelectedLang(), value);
         }
         return liste;
@@ -106,15 +104,15 @@ public class AddConceptAndChildToGroupBean implements Serializable {
         }
 
         ArrayList<String> allId  = conceptHelper.getIdsOfBranch(
-                connect.openConnexionPool(),
+                
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
-        if( (allId == null) || (allId.isEmpty())) return;
+        if((allId == null) || (allId.isEmpty())) return;
 
         // addConceptToGroup
         for (String idConcept : allId) {
-            if (!groupHelper.addConceptGroupConcept(connect.openConnexionPool(),
+            if (!groupHelper.addConceptGroupConcept(
                     selectedNodeAutoCompletionGroup.getIdGroup(),
                     idConcept,
                     selectedTheso.getCurrentIdTheso())) {
@@ -124,12 +122,12 @@ public class AddConceptAndChildToGroupBean implements Serializable {
             }
         }
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
 
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////

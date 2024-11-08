@@ -21,7 +21,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/opentheso2
     password: postgres
     username: postgres
-    dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
+    dataSourceClassName: org.postgresql.dataSource.PGSimpleDataSource
     maxPoolSize: 1000
     minIdle: 1
     idleTimeout: 30000

@@ -5,10 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import java.net.URI;
 import java.net.URISyntaxException;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.UriInfo;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SelectTheso {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private PreferencesHelper preferencesHelper;
 
     // Cette fonction permet de se diriger vers le bon thésaurus en passant par son nom VIA REST ceci permet de gérer
@@ -43,7 +37,7 @@ public class SelectTheso {
        HttpServletRequest request
     ) throws URISyntaxException {
 
-        var idTheso = preferencesHelper.getIdThesaurusFromName(connect.openConnexionPool(), name);
+        var idTheso = preferencesHelper.getIdThesaurusFromName(name);
         // Récupération de l'URL de la requête
         String requestUrl = request.getRequestURL().toString();
         //  String newUrl = StringUtils.substringAfter(requestUrl, "openapi");/?idt=th739

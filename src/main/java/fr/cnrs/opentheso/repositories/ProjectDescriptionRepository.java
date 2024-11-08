@@ -1,9 +1,10 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.entites.ProjectDescription;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,8 +16,12 @@ import java.util.logging.Logger;
 @Service
 public class ProjectDescriptionRepository {
 
-    public void saveProjectDescription(HikariDataSource ds, ProjectDescription projectDescription) {
-        try ( Connection conn = ds.getConnection()) {
+    @Autowired
+    private DataSource dataSource;
+
+
+    public void saveProjectDescription(ProjectDescription projectDescription) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into project_description (id_group, lang, description) values ('"
                         + projectDescription.getIdGroup() + "', '" + projectDescription.getLang() + "', '" + projectDescription.getDescription() + "')");
@@ -26,14 +31,14 @@ public class ProjectDescriptionRepository {
         }
     }
 
-    public ProjectDescription getProjectDescription(HikariDataSource ds, String idGroup, String lang) {
+    public ProjectDescription getProjectDescription(String idGroup, String lang) {
         ProjectDescription projectDescription = null;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM project_description projectDesc "
                         + "WHERE projectDesc.id_group = '" + idGroup + "' "
                         + "AND projectDesc.lang = '" + lang + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         projectDescription = new ProjectDescription();
                         projectDescription.setId(resultSet.getInt("id"));
@@ -49,8 +54,8 @@ public class ProjectDescriptionRepository {
         return projectDescription;
     }
 
-    public void removeProjectDescription(HikariDataSource ds, ProjectDescription projectDescription) {
-        try ( Connection conn = ds.getConnection()) {
+    public void removeProjectDescription(ProjectDescription projectDescription) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from project_description where id = " + projectDescription.getId());
             }
@@ -59,9 +64,9 @@ public class ProjectDescriptionRepository {
         }
     }
 
-    public void updateProjectDescription(HikariDataSource ds, ProjectDescription projectDescription) {
+    public void updateProjectDescription(ProjectDescription projectDescription) {
 
-        try ( Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE project_description set lang = '" + projectDescription.getLang() + "', description = '"
                         + projectDescription.getDescription() + "' WHERE id = " + projectDescription.getId());

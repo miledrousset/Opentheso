@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUser;
 
@@ -8,6 +7,7 @@ import fr.cnrs.opentheso.models.candidats.MessageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,19 +22,21 @@ import java.util.List;
 public class MessageCandidatHelper {
 
     @Autowired
+    private DataSource dataSource;
+
+    @Autowired
     private UserHelper userHelper;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    public void addNewMessage(HikariDataSource hikariDataSource, String msg,
+    public void addNewMessage(String msg,
             int idUser, String idConcept, String idThesaurus) {
-        addNewMessage(hikariDataSource, msg, idUser, idConcept, idThesaurus, sdf.format(new Date()));
+        addNewMessage(msg, idUser, idConcept, idThesaurus, sdf.format(new Date()));
     }
 
-    public void addNewMessage(HikariDataSource hikariDataSource, String msg,
-                              int idUser, String idConcept, String idThesaurus, String date) {
+    public void addNewMessage(String msg, int idUser, String idConcept, String idThesaurus, String date) {
         msg = fr.cnrs.opentheso.utils.StringUtils.convertString(msg);
-        try (Connection connection = hikariDataSource.getConnection()){
+        try (Connection connection = dataSource.getConnection()){
             try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(new StringBuffer("INSERT INTO candidat_messages(value, id_user, date, id_concept, id_thesaurus) ")
                     .append("VALUES ('").append(msg).append("', ").append(idUser).append(", '")
@@ -44,9 +46,9 @@ public class MessageCandidatHelper {
         } catch (Exception e) {}
     }
 
-    public List<MessageDto> getAllMessagesByCandidat(HikariDataSource hikariDataSource, String idConcept, String idTheso) {
+    public List<MessageDto> getAllMessagesByCandidat(String idConcept, String idTheso) {
         List<MessageDto> messages = new ArrayList<>();
-        try (Connection connection = hikariDataSource.getConnection()){
+        try (Connection connection = dataSource.getConnection()){
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeQuery("SELECT * FROM candidat_messages WHERE id_concept = '"+idConcept+"' AND id_thesaurus = '"+idTheso+"'");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -65,10 +67,10 @@ public class MessageCandidatHelper {
         return messages;
     }
 
-    public List<MessageDto> getAllMessagesByCandidat(HikariDataSource hikariDataSource, String idconcept, String idThesaurus, int userId) {
+    public List<MessageDto> getAllMessagesByCandidat(String idconcept, String idThesaurus, int userId) {
         
         List<MessageDto> messages = new ArrayList<>();
-        try (Connection connection = hikariDataSource.getConnection()){
+        try (Connection connection = dataSource.getConnection()){
             try (Statement stmt = connection.createStatement()) {
                 stmt.executeQuery(new StringBuffer("SELECT users.id_user, users.username, cand.value, cand.date FROM candidat_messages cand, users ")
                     .append("WHERE id_concept = '").append(idconcept).append("' AND id_thesaurus = '")
@@ -92,9 +94,9 @@ public class MessageCandidatHelper {
         return messages;
     }
 
-    public List<NodeUser> getParticipantsByCandidat(HikariDataSource hikariDataSource, String candidatId, String thesaurusId) {
+    public List<NodeUser> getParticipantsByCandidat(String candidatId, String thesaurusId) {
         List<Integer> participants = new ArrayList<>();
-        try (Connection connection = hikariDataSource.getConnection()){
+        try (Connection connection = dataSource.getConnection()){
             try (Statement stmt = connection.createStatement()) {
             stmt.executeQuery(new StringBuffer("SELECT DISTINCT users.id_user FROM candidat_messages msg, users users ")
                     .append("WHERE msg.id_user = users.id_user AND msg.id_concept = '")
@@ -112,7 +114,7 @@ public class MessageCandidatHelper {
 
         List<NodeUser> nodeUsers = new ArrayList<>();
         for (int idUser : participants) {
-            NodeUser nodeUser = userHelper.getUser(hikariDataSource, idUser);
+            NodeUser nodeUser = userHelper.getUser(idUser);
             nodeUsers.add(nodeUser);
         }
         return nodeUsers;

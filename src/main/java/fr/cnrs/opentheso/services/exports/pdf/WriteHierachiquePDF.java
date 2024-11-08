@@ -6,7 +6,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.Anchor;
 import com.itextpdf.text.Paragraph;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.exports.UriHelper;
@@ -70,21 +70,21 @@ public class WriteHierachiquePDF {
         this.uriHelper = uriHelper;
     }
 
-    public void writeHierachiquePDF(HikariDataSource hikariDataSource, ArrayList<Paragraph> paragraphs,
+    public void writeHierachiquePDF(ArrayList<Paragraph> paragraphs,
                               ArrayList<Paragraph> paragraphTradList, String codeLanguage1, String codeLanguage2) {
 
-        traitement(hikariDataSource, paragraphs, codeLanguage1, codeLanguage2, false, notes);
+        traitement(paragraphs, codeLanguage1, codeLanguage2, false, notes);
 
         if (StringUtils.isNotEmpty(codeLanguage2)) {
-            traitement(hikariDataSource, paragraphTradList, codeLanguage2, codeLanguage1, true, notesTraduction);
+            traitement(paragraphTradList, codeLanguage2, codeLanguage1, true, notesTraduction);
         }
     }
 
-    private void traitement(HikariDataSource hikariDataSource, ArrayList<Paragraph> paragraphs, String codeLanguage1,
+    private void traitement(ArrayList<Paragraph> paragraphs, String codeLanguage1,
                             String codeLanguage2, boolean isTrad, HashMap<String, ArrayList<String>> idToDoc) {
 
         System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
-        Collections.sort(concepts, sortForHiera(hikariDataSource, isTrad, codeLanguage1, codeLanguage2, labels,
+        Collections.sort(concepts, sortForHiera(isTrad, codeLanguage1, codeLanguage2, labels,
                 idToChildId, idToDoc, matchs, gps, images, resourceChecked, notesDiff));
 
         for (SKOSResource concept : concepts) {

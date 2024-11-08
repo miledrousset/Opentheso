@@ -145,7 +145,7 @@ public class CsvReadHelper {
                     }
                 } catch (Exception e) {
                 }                
-                nodeDeprecateds.add(nodeDeprecated);
+                nodeDeprecatedataSource.add(nodeDeprecated);
             }
             return true;
         } catch (IOException ex) {
@@ -1708,7 +1708,7 @@ public class CsvReadHelper {
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
-                        conceptObject.relateds.add(value1.trim());
+                        conceptObject.relatedataSource.add(value1.trim());
                     }
                 }
             } catch (Exception e) {
@@ -1722,7 +1722,7 @@ public class CsvReadHelper {
                 values = value.split("##");
                 for (String value1 : values) {
                     if (!value1.isEmpty()) {
-                        conceptObject.relateds.add(getId(value1.trim()));
+                        conceptObject.relatedataSource.add(getId(value1.trim()));
                     }
                 }
             } catch (Exception e) {
@@ -2225,7 +2225,7 @@ public class CsvReadHelper {
                 narrowers.clear();
             }
             if (relateds != null) {
-                relateds.clear();
+                relatedataSource.clear();
             }
             if(customRelations != null)
                 customRelations.clear();

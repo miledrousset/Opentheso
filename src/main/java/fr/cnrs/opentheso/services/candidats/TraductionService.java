@@ -8,20 +8,15 @@ import fr.cnrs.opentheso.repositories.candidats.TermeDao;
 import fr.cnrs.opentheso.models.candidats.TraductionDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import java.io.IOException;
 
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
 
 
@@ -136,16 +131,10 @@ public class TraductionService implements Serializable {
      * permet de supprimer une tradcution #MR
      */
     public void deleteTraduction() {
-        try {
-            termeDao.deleteTermByIdTermAndLang(candidatBean.getConnect().openConnexionPool(),
-                    candidatBean.getCandidatSelected().getIdTerm(), langage,
-                    candidatBean.getCandidatSelected().getIdThesaurus());
-            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
-        }
+        termeDao.deleteTermByIdTermAndLang(candidatBean.getCandidatSelected().getIdTerm(), langage,
+                candidatBean.getCandidatSelected().getIdThesaurus());
+        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg2"));
 
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
@@ -156,18 +145,10 @@ public class TraductionService implements Serializable {
      * permet de modifier une traduction #MR
      */
     public void updateTraduction() {
-        try {
-            termeDao.updateIntitule(candidatBean.getConnect().openConnexionPool(),
-                    traduction,
-                    candidatBean.getCandidatSelected().getIdTerm(),
-                    candidatBean.getCandidatSelected().getIdThesaurus(),
-                    langage);
-            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg3"));
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
-        }
+        termeDao.updateIntitule(traduction, candidatBean.getCandidatSelected().getIdTerm(),
+                candidatBean.getCandidatSelected().getIdThesaurus(), langage);
+        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg3"));
 
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");
@@ -175,8 +156,7 @@ public class TraductionService implements Serializable {
     }
 
     public void addTraductionCandidat() {
-        if (termHelper.isTermExistIgnoreCase(candidatBean.getConnect().openConnexionPool(), newTraduction,
-                candidatBean.getCandidatSelected().getIdThesaurus(), newLangage)) {
+        if (termHelper.isTermExistIgnoreCase(newTraduction, candidatBean.getCandidatSelected().getIdThesaurus(), newLangage)) {
             messages = new StringBuilder();
             messages.append("Un label existe dans le thésaurus pour : ").append(candidatBean.getCandidatSelected().getIdConcepte())
                     .append("#").append(newTraduction).append(" (").append(langage).append(")");
@@ -194,17 +174,9 @@ public class TraductionService implements Serializable {
         term.setCreator(candidatBean.getCandidatSelected().getUserId());
         term.setIdTerm(candidatBean.getCandidatSelected().getIdTerm());
 
-        try {
-            termeDao.addNewTerme(candidatBean.getConnect().openConnexionPool(), term);
-            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));
-        } catch (SQLException | IOException ex) {
-            Logger.getLogger(TraductionService.class.getName()).log(Level.SEVERE, null, ex);
-            candidatBean.showMessage(FacesMessage.SEVERITY_INFO, ex.getMessage());
-
-            messages.append("erreur pour :").append(newTraduction).append(" (").append(langage).append(")");
-            messages.append('\n');
-        }
+        termeDao.addNewTerme(term);
+        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
+        candidatBean.showMessage(FacesMessage.SEVERITY_INFO, languageBean.getMsg("candidat.traduction.msg1"));
 
         PrimeFaces pf = PrimeFaces.current();
         pf.ajax().update("messageIndex");

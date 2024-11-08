@@ -4,7 +4,7 @@ import fr.cnrs.opentheso.bean.candidat.CandidatBean;
 import fr.cnrs.opentheso.bean.graph.DataGraphView;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
-import fr.cnrs.opentheso.bean.menu.users.NewUSerBean;
+import fr.cnrs.opentheso.bean.menu.users.NewUserBean;
 import fr.cnrs.opentheso.bean.profile.MyAccountBean;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
@@ -60,7 +60,7 @@ public class MenuBean implements Serializable {
     private StatistiqueBean statistiqueBean;
     
     @Autowired @Lazy
-    private NewUSerBean newUSerBean;
+    private NewUserBean newUSerBean;
     
     @Autowired @Lazy 
     private SelectedTheso selectedTheso;
@@ -118,9 +118,6 @@ public class MenuBean implements Serializable {
         activePageName = "graph";
         notificationPannelVisible = false;
         dataGraphView.init();
-    //    candidatBean.initCandidatModule();
-    //    propositionBean.searchNewPropositions();
-    //    propositionBean.setRubriqueVisible(false);
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.redirect(context.getRequestContextPath() + "/graphview/graph.xhtml");
     }    

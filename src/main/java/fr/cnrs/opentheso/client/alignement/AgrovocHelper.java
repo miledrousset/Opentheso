@@ -90,7 +90,7 @@ public class AgrovocHelper {
             while ((output = br.readLine()) != null) {
                 records += output;
             }
-            byte[] bytes = records.getBytes();
+            byte[] bytes = recordataSource.getBytes();
             records = new String(bytes, Charset.forName("UTF-8"));
             conn.disconnect();
             listeAlign = getValues(value, records, idC, idTheso, source);

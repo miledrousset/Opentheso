@@ -33,8 +33,6 @@ import org.primefaces.event.SelectEvent;
 public class ListIndex implements Serializable {
 
     @Autowired @Lazy
-    private Connect connect;
-    @Autowired @Lazy
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
     private CurrentUser currentUser;
@@ -85,7 +83,7 @@ public class ListIndex implements Serializable {
         }
 
         nodeIdValues = searchHelper.searchTermForIndex(
-                connect.openConnexionPool(),
+                
                 searchValue,
                 idLang, idTheso,
                 permuted, withAltLabel);

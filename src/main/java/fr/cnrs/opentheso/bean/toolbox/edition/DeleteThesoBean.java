@@ -12,7 +12,6 @@ import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.IOException;
@@ -36,9 +35,6 @@ import org.primefaces.PrimeFaces;
 @Named(value = "deleteThesoBean")
 @SessionScoped
 public class DeleteThesoBean implements Serializable {
-    
-    @Autowired @Lazy 
-    private Connect connect;
     
     @Autowired @Lazy 
     private SelectedTheso selectedTheso;
@@ -98,12 +94,12 @@ public class DeleteThesoBean implements Serializable {
      */
     public void deleteTheso(CurrentUser currentUser) throws IOException {
         if(idThesoToDelete == null) return;
-        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(connect.openConnexionPool(), idThesoToDelete);
+        NodePreference nodePreference = preferencesHelper.getThesaurusPreferences(idThesoToDelete);
         if(nodePreference != null) {
             // suppression des Identifiants Handle
             conceptHelper.setNodePreference(nodePreference);
             if(deletePerennialIdentifiers) {
-                conceptHelper.deleteAllIdHandle(connect.openConnexionPool(), idThesoToDelete);
+                conceptHelper.deleteAllIdHandle(idThesoToDelete);
             }
         }
         FacesMessage msg;
@@ -112,7 +108,7 @@ public class DeleteThesoBean implements Serializable {
         try {
             try (Connection conn = connect.openConnexionPool().getConnection()) {
                 conn.setAutoCommit(false);
-                if(!userHelper.deleteThesoFromGroup(conn, idThesoToDelete)) {
+                if(!userHelper.deleteThesoFromGroup(idThesoToDelete)) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     conn.rollback();
@@ -126,7 +122,7 @@ public class DeleteThesoBean implements Serializable {
         }
         
         // suppression complète du thésaurus
-        if(!thesaurusHelper.deleteThesaurus(connect.openConnexionPool(), idThesoToDelete)){
+        if(!thesaurusHelper.deleteThesaurus(idThesoToDelete)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur", "Erreur pendant la suppression !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;

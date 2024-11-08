@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 import fr.cnrs.opentheso.models.skosapi.SKOSGPSCoordinates;
 import fr.cnrs.opentheso.models.skosapi.SKOSProperty;
@@ -19,16 +18,18 @@ import java.util.List;
 import jakarta.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
-
-
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 
 
 @Service
 public class ExportHelper {
+
+    @Autowired
+    private DataSource dataSource;
 
     private final static String SEPERATEUR = "##";
     private final static String SUB_SEPERATEUR = "@@";
@@ -40,47 +41,45 @@ public class ExportHelper {
     private FacetHelper facetHelper;
 
     
-    public List<SKOSResource> getAllFacettes(HikariDataSource ds, String idTheso, String baseUrl, 
+    public List<SKOSResource> getAllFacettes(String idTheso, String baseUrl, 
             String originalUri, NodePreference nodePreference) throws Exception {
         
         List<SKOSResource> facettes = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("select * FROM opentheso_get_facettes('" + idTheso + "', '" + baseUrl + "') as (id_facet VARCHAR, "
-                        + "lexicalValue VARCHAR, created timestamp with time zone, modified timestamp with time zone, "
-                        + "lang VARCHAR, id_concept_parent VARCHAR, uri_value VARCHAR, "
-                        + "definition text, example text, editorialNote text, changeNote text, "
-                        + " secopeNote text, note text, historyNote text "
-                        + ")");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
-                    while (resultSet.next()) {
-                        SKOSResource sKOSResource = new SKOSResource(getUriForFacette(resultSet.getString("id_facet"), 
-                                idTheso, originalUri), SKOSProperty.FACET);
-                        
-                        sKOSResource.addRelation(resultSet.getString("id_facet"), resultSet.getString("uri_value"), SKOSProperty.SUPER_ORDINATE);
-                        sKOSResource.setIdentifier(resultSet.getString("id_facet"));
-                        List<String> members = facetHelper.getAllMembersOfFacet(ds, resultSet.getString("id_facet"), idTheso);
-                        for (String idConcept : members) {
-                            NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(ds, idConcept, idTheso);
-                            sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(idTheso, originalUri, 
-                                    idConcept, nodePreference, nodeUri),  SKOSProperty.MEMBER);
-                        }
-        
-                        sKOSResource.addLabel(resultSet.getString("lexicalValue"), resultSet.getString("lang"), SKOSProperty.PREF_LABEL);
-                        sKOSResource.addDate(resultSet.getString("created"), SKOSProperty.CREATED);
-                        sKOSResource.addDate(resultSet.getString("modified"), SKOSProperty.MODIFIED);
-        
-                        addDocumentation(resultSet.getString("definition"), sKOSResource, SKOSProperty.DEFINITION);
-                        addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.NOTE);
-                        addDocumentation(resultSet.getString("editorialNote"), sKOSResource, SKOSProperty.EDITORIAL_NOTE);
-                        addDocumentation(resultSet.getString("secopeNote"), sKOSResource, SKOSProperty.SCOPE_NOTE);
-                        addDocumentation(resultSet.getString("historyNote"), sKOSResource, SKOSProperty.HISTORY_NOTE);
-                        addDocumentation(resultSet.getString("example"), sKOSResource, SKOSProperty.EXAMPLE);
-                        addDocumentation(resultSet.getString("changeNote"), sKOSResource, SKOSProperty.CHANGE_NOTE);                        
-                        
-                        facettes.add(sKOSResource);
+        try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
+            stmt.executeQuery("select * FROM opentheso_get_facettes('" + idTheso + "', '" + baseUrl + "') as (id_facet VARCHAR, "
+                    + "lexicalValue VARCHAR, created timestamp with time zone, modified timestamp with time zone, "
+                    + "lang VARCHAR, id_concept_parent VARCHAR, uri_value VARCHAR, "
+                    + "definition text, example text, editorialNote text, changeNote text, "
+                    + " secopeNote text, note text, historyNote text "
+                    + ")");
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                while (resultSet.next()) {
+                    SKOSResource sKOSResource = new SKOSResource(getUriForFacette(resultSet.getString("id_facet"),
+                            idTheso, originalUri), SKOSProperty.FACET);
+
+                    sKOSResource.addRelation(resultSet.getString("id_facet"), resultSet.getString("uri_value"), SKOSProperty.SUPER_ORDINATE);
+                    sKOSResource.setIdentifier(resultSet.getString("id_facet"));
+                    List<String> members = facetHelper.getAllMembersOfFacet(resultSet.getString("id_facet"), idTheso);
+                    for (String idConcept : members) {
+                        NodeUri nodeUri = conceptHelper.getNodeUriOfConcept(idConcept, idTheso);
+                        sKOSResource.addRelation(nodeUri.getIdConcept(), getUriFromNodeUri(idTheso, originalUri,
+                                idConcept, nodePreference, nodeUri),  SKOSProperty.MEMBER);
                     }
+
+                    sKOSResource.addLabel(resultSet.getString("lexicalValue"), resultSet.getString("lang"), SKOSProperty.PREF_LABEL);
+                    sKOSResource.addDate(resultSet.getString("created"), SKOSProperty.CREATED);
+                    sKOSResource.addDate(resultSet.getString("modified"), SKOSProperty.MODIFIED);
+
+                    addDocumentation(resultSet.getString("definition"), sKOSResource, SKOSProperty.DEFINITION);
+                    addDocumentation(resultSet.getString("note"), sKOSResource, SKOSProperty.NOTE);
+                    addDocumentation(resultSet.getString("editorialNote"), sKOSResource, SKOSProperty.EDITORIAL_NOTE);
+                    addDocumentation(resultSet.getString("secopeNote"), sKOSResource, SKOSProperty.SCOPE_NOTE);
+                    addDocumentation(resultSet.getString("historyNote"), sKOSResource, SKOSProperty.HISTORY_NOTE);
+                    addDocumentation(resultSet.getString("example"), sKOSResource, SKOSProperty.EXAMPLE);
+                    addDocumentation(resultSet.getString("changeNote"), sKOSResource, SKOSProperty.CHANGE_NOTE);
+
+                    facettes.add(sKOSResource);
                 }
             }
         }
@@ -95,14 +94,13 @@ public class ExportHelper {
         }
         String path = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("origin");
         path = path + FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
-        
         return path + "/?idf=" + idFacet + "&idt=" +idTheso;
     }
 
     /**
      * Nouvelle version pour récupérer un thésaurus entier en utilisant les 
      * requêtes plpgsql 
-     * @param ds
+     * 
      * @param idTheso
      * @param baseUrl
      * @param idGroup
@@ -111,17 +109,17 @@ public class ExportHelper {
      * @return
      * @throws Exception 
      */
-    public List<SKOSResource> getAllConcepts(HikariDataSource ds, String idTheso,
-            String baseUrl, String idGroup, String originalUri, NodePreference nodePreference, boolean filterHtmlCharacter) throws Exception {
+    public List<SKOSResource> getAllConcepts(String idTheso, String baseUrl, String idGroup, String originalUri,
+                                             NodePreference nodePreference, boolean filterHtmlCharacter) throws Exception {
 
         List<SKOSResource> concepts = new ArrayList<>();
         String [] contributors;
         String note;
         
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery(getSQLRequest(idTheso, baseUrl, idGroup));
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         SKOSResource sKOSResource = new SKOSResource();
                         sKOSResource.setProperty(SKOSProperty.CONCEPT);
@@ -306,23 +304,6 @@ public class ExportHelper {
                 + "closeMatch text, broadMatch text, relatedMatch text, narrowMatch text, gpsData text, "
                 + "membre text, created timestamp with time zone, modified timestamp with time zone, img text, creator text, contributor text, "
                 + "replaces text, replaced_by text, facets text, externalResources text);";
-    }
-
-    private ArrayList<String> getPathFromArray(ArrayList<ArrayList<String>> paths) {
-        String pathFromArray = "";
-        ArrayList<String> allPath = new ArrayList<>();
-        for (ArrayList<String> path : paths) {
-            for (String string1 : path) {
-                if (pathFromArray.isEmpty()) {
-                    pathFromArray = string1;
-                } else {
-                    pathFromArray = pathFromArray + SEPERATEUR + string1;
-                }
-            }
-            allPath.add(pathFromArray);
-            pathFromArray = "";
-        }
-        return allPath;
     }
 
     private void addImages(SKOSResource resource, String textBrut) {

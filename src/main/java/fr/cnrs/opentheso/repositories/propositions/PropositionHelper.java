@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.repositories.propositions;
 import fr.cnrs.opentheso.utils.StringUtils;
 import fr.cnrs.opentheso.models.propositions.PropositionDao;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,26 +11,32 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class PropositionHelper {
 
-    public List<PropositionDao> getAllPropositionByStatus(HikariDataSource ds, String status, String idTheso) {
+    @Autowired
+    private DataSource dataSource;
+
+    public List<PropositionDao> getAllPropositionByStatus(String status, String idTheso) {
 
         List<PropositionDao> propositions = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT pro.*, term.lexical_value, code_pays " 
                         + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
                         + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus "
                         + "LEFT JOIN languages_iso639 ON iso639_1 = term.lang "
                         + "WHERE term.id_thesaurus like '" + idTheso + "' "
                         + "AND pro.status = '" + status + "' ORDER BY pro.id DESC");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         propositions.add(toPropositionDao(resultSet));
                     }
@@ -44,19 +49,19 @@ public class PropositionHelper {
         return propositions;
     }
 
-    public List<PropositionDao> getOldPropositionByStatus(HikariDataSource ds, String idTheso) {
+    public List<PropositionDao> getOldPropositionByStatus(String idTheso) {
 
         List<PropositionDao> propositions = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT pro.*, term.lexical_value, code_pays "
                         + "FROM proposition_modification pro LEFT JOIN preferred_term pre ON pro.id_concept = pre.id_concept AND pro.id_theso = pre.id_thesaurus " 
                         + "LEFT JOIN term ON pre.id_term = term.id_term AND pro.lang = term.lang AND pro.id_theso = term.id_thesaurus " 
                         + "LEFT JOIN languages_iso639 ON iso639_1 = term.lang "
                         + "WHERE term.id_thesaurus like '" + idTheso + "' "
                         + "AND pro.status NOT IN ('LU', 'ENVOYER') ORDER BY pro.id DESC");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         propositions.add(toPropositionDao(resultSet));
                     }
@@ -69,11 +74,11 @@ public class PropositionHelper {
         return propositions;
     }
 
-    public PropositionDao searchPropositionByEmailAndConceptAndLang(HikariDataSource ds, String email, 
+    public PropositionDao searchPropositionByEmailAndConceptAndLang(String email, 
             String conceptID, String lang) {
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT DISTINCT pro.*, term.lexical_value "
                         + "FROM proposition_modification pro, preferred_term pre, term "
                         + "WHERE pro.id_concept = pre.id_concept "
@@ -82,7 +87,7 @@ public class PropositionHelper {
                         + "AND pro.id_concept = '" + conceptID + "' "
                         + "AND pro.lang = '" + lang + "'" 
                         + "AND pro.status IN ('ENVOYER', 'LU')");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         return toPropositionDao(resultSet);
                     } else {
@@ -97,12 +102,12 @@ public class PropositionHelper {
         return null;
     }
 
-    public int searchNbrPorpositoinByStatus(HikariDataSource ds, String status) {
+    public int searchNbrPorpositoinByStatus(String status) {
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select count(*) AS nbr from proposition_modification WHERE status = '" + status + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         return resultSet.getInt("nbr");
                     } else {
@@ -135,10 +140,10 @@ public class PropositionHelper {
         return proposition;
     }
 
-    public int createNewProposition(HikariDataSource ds, PropositionDao proposition) {
+    public int createNewProposition(PropositionDao proposition) {
         proposition.setCommentaire(StringUtils.convertString(proposition.getCommentaire()));
         try {
-            PreparedStatement ps = ds.getConnection().prepareStatement("Insert into proposition_modification "
+            PreparedStatement ps = dataSource.getConnection().prepareStatement("Insert into proposition_modification "
                     + "(id_concept, id_theso, lang, status, date, nom, email, commentaire) values ('"
                     + proposition.getIdConcept() + "','" + proposition.getIdTheso()
                     + "','" + proposition.getLang() + "', '" + proposition.getStatus() + "'" + ",'"
@@ -160,12 +165,12 @@ public class PropositionHelper {
         }
     }
 
-    public boolean updateStatusProposition(HikariDataSource ds, String status, String approuvePar, String approuveDate, int propositionId, String adminComment) {
+    public boolean updateStatusProposition(String status, String approuvePar, String approuveDate, int propositionId, String adminComment) {
         boolean updateStatus = false;
         
         adminComment = StringUtils.convertString(adminComment);
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("UPDATE proposition_modification SET status = '" + status + "', approuve_par = '" 
                         + approuvePar + "', approuve_date = 'now()', admin_comment = '" + adminComment + "' WHERE id = " + propositionId);
                 updateStatus = true;
@@ -176,10 +181,10 @@ public class PropositionHelper {
         return updateStatus;
     }
 
-    public boolean setLuStatusProposition(HikariDataSource ds, int propositionId) {
+    public boolean setLuStatusProposition(int propositionId) {
         boolean updateStatus = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("UPDATE proposition_modification SET status = 'LU' WHERE id = " + propositionId);
                 updateStatus = true;
             }
@@ -189,10 +194,10 @@ public class PropositionHelper {
         return updateStatus;
     }
 
-    public boolean supprimerProposition(HikariDataSource ds, int propositionID) {
+    public boolean supprimerProposition(int propositionID) {
         boolean status = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.execute("DELETE FROM proposition_modification WHERE id = " + propositionID);
                 status = true;
             }

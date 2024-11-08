@@ -6,7 +6,6 @@ import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.mail.MailBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.utils.EmailUtils;
 
 import java.io.Serializable;
@@ -14,8 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-
-import jakarta.annotation.PreDestroy;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -45,9 +42,6 @@ public class DiscussionService implements Serializable {
 
     @Autowired @Lazy
     private LanguageBean langueBean;
-
-    @Autowired @Lazy
-    private Connect connect;
 
     @Autowired @Lazy
     private LanguageBean languageBean;
@@ -100,7 +94,7 @@ public class DiscussionService implements Serializable {
     
     private void setListUsersForMail(){
         nodeUsers = messageCandidatHelper.getParticipantsByCandidat(
-                connect.openConnexionPool(),
+                
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());        
     }
@@ -123,7 +117,7 @@ public class DiscussionService implements Serializable {
         messageDto.setNom(candidatBean.getCurrentUser().getUsername().toUpperCase());
         messageDto.setMsg(candidatBean.getMessage());
 
-        messageCandidatHelper.addNewMessage(connect.openConnexionPool(),
+        messageCandidatHelper.addNewMessage(
                 candidatBean.getMessage(),
                 candidatBean.getCurrentUser().getNodeUser().getIdUser(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
@@ -153,7 +147,7 @@ public class DiscussionService implements Serializable {
 
     public void reloadMessage() {
         candidatBean.getCandidatSelected().setMessages(messageCandidatHelper.getAllMessagesByCandidat(
-                connect.openConnexionPool(),
+                
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus(),
                 candidatBean.getCurrentUser().getNodeUser().getIdUser()));

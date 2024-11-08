@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.api;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestGroup {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private RestRDFHelper restRDFHelper;
 
     /*
@@ -42,7 +38,7 @@ public class RestGroup {
     public ResponseEntity<Object> getSkosFromArk__(@PathVariable("naan") String naan,
                                            @PathVariable("idArk") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, "application/rdf+xml");
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, "application/rdf+xml");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(datas);
     }    
 
@@ -51,7 +47,7 @@ public class RestGroup {
     public ResponseEntity<Object> getSkosFromArk(@PathVariable("naan") String naan,
                                          @PathVariable("idArk") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, "application/rdf+xml");
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, "application/rdf+xml");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(datas);
     }
     
@@ -60,7 +56,7 @@ public class RestGroup {
     public ResponseEntity<Object> getJsonFromArk__(@PathVariable("naan") String naan,
                                            @PathVariable("idArk") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, "application/json");
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, "application/json");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }    
     
@@ -69,7 +65,7 @@ public class RestGroup {
     public ResponseEntity<Object> getJsonFromArk(@PathVariable("naan") String naan,
                                          @PathVariable("idArk") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, "application/json");
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, "application/json");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
     
@@ -78,7 +74,7 @@ public class RestGroup {
     public ResponseEntity<Object> getJsonldFromArk__(@PathVariable("naan") String naan,
                                              @PathVariable("idArk") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, "application/ld+json");
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, "application/ld+json");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }
     
@@ -87,7 +83,7 @@ public class RestGroup {
     public ResponseEntity<Object> getJsonldFromArk(@PathVariable("naan") String naan,
                                            @PathVariable("idArk") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, "application/ld+json");
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, "application/ld+json");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(datas);
     }    
     
@@ -96,7 +92,7 @@ public class RestGroup {
     public ResponseEntity<Object> getTurtleFromArk__(@PathVariable("naan") String naan,
                                              @PathVariable("idArk") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, "text/turtle");
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, "text/turtle");
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(datas);
     }    
     
@@ -105,7 +101,7 @@ public class RestGroup {
     public ResponseEntity<Object> getTurtleFromArk(@PathVariable("naan") String naan,
                                            @PathVariable("idArk") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, "text/turtle");
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, "text/turtle");
         return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(datas);
     }
 
@@ -117,7 +113,7 @@ public class RestGroup {
     public ResponseEntity<Object> searchJsonLd(@RequestParam("theso") String idTheso,
                                        @RequestParam("id") String idGroup) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), idTheso, idGroup, "application/rdf+xml");
+        var datas = restRDFHelper.exportGroup(idTheso, idGroup, "application/rdf+xml");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(datas);
     }
 }

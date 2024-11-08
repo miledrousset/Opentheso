@@ -3,7 +3,6 @@ package fr.cnrs.opentheso.bean.profile;
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.primefaces.PrimeFaces;
@@ -21,7 +19,7 @@ import org.primefaces.PrimeFaces;
 @Named(value = "moveThesoToProjectBean")
 @SessionScoped
 public class MoveThesoToProjectBean implements Serializable {
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private CurrentUser currentUser;
     @Autowired @Lazy private SuperAdminBean superAdminBean;
@@ -72,11 +70,11 @@ public class MoveThesoToProjectBean implements Serializable {
         ArrayList<NodeUserGroup> nodeProjects = null;
         if(currentUser.getNodeUser().isSuperAdmin()) {
             nodeProjects = userHelper.searchAllProject(
-                    connect.openConnexionPool(),
+                    
                     projectName);            
         } else {
             nodeProjects = userHelper.searchMyProject(
-                    connect.openConnexionPool(),
+                    
                     currentUser.getNodeUser().getIdUser(),
                     projectName);
         }
@@ -92,11 +90,7 @@ public class MoveThesoToProjectBean implements Serializable {
             return;              
         }
 
-        if(!userHelper.moveThesoToGroup(
-                connect.openConnexionPool(),
-                selectedThesoToMove.getId(),
-                Integer.parseInt(currentProject),
-                newProject.getIdGroup() )){
+        if(!userHelper.moveThesoToGroup(selectedThesoToMove.getId(), newProject.getIdGroup() )){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de déplacement !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -122,11 +116,7 @@ public class MoveThesoToProjectBean implements Serializable {
             return;              
         }
 
-        if(!userHelper.moveThesoToGroup(
-                connect.openConnexionPool(),
-                selectedThesoToMove.getId(),
-                Integer.parseInt(currentProject),
-                newProject.getIdGroup() )){
+        if(!userHelper.moveThesoToGroup(selectedThesoToMove.getId(), newProject.getIdGroup() )){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de déplacement !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             

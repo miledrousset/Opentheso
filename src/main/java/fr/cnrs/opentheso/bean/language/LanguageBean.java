@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.language;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.models.candidats.LanguageEnum;
 import java.io.Serializable;
 import java.util.Locale;
@@ -9,8 +8,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Value;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 
@@ -20,8 +18,8 @@ public class LanguageBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Autowired @Lazy
-    private Connect connect;
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
 
     private String currentBundle;
     private String idLangue;
@@ -34,8 +32,8 @@ public class LanguageBean implements Serializable {
 
     @PostConstruct
     public void InitLanguageBean() {
-        currentBundle = "langue_" + connect.getWorkLanguage();
-        idLangue = connect.getWorkLanguage().toUpperCase();
+        currentBundle = "langue_" + workLanguage;
+        idLangue = workLanguage.toUpperCase();
     }
 
     public void changeLangue(String l) {

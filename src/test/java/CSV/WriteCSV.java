@@ -5,7 +5,7 @@
  */
 package CSV;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import java.io.FileNotFoundException;
@@ -84,7 +84,7 @@ public class WriteCSV {
         }        
         
         
-        try ( Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             CSVParser cSVParser = readFileCsv();
             if (cSVParser == null) {
                 return;
@@ -113,12 +113,12 @@ public class WriteCSV {
                 } catch (Exception e) {
                     continue;
                 }
-                ids = getArksFromArkeo(conn, nodeIdValue.getValue());
+                ids = getArksFromArkeo(nodeIdValue.getValue());
                 ArrayList<Object> recordCsv = new ArrayList<>();
-                if(!ids.isEmpty()) {
-                    if(ids.size() == 1) {
-                        recordCsv.add(ids.get(0));
-                        recordCsv.add(ids.get(0));
+                if(!idataSource.isEmpty()) {
+                    if(idataSource.size() == 1) {
+                        recordCsv.add(idataSource.get(0));
+                        recordCsv.add(idataSource.get(0));
                         // colonne bon
                         // colonne bon
                     } else {
@@ -130,7 +130,7 @@ public class WriteCSV {
                             }
                         }
                     }
-                    if(!isConceptExist(conn, nodeIdValue.getValue())){
+                    if(!isConceptExist(nodeIdValue.getValue())){
                         recordCsv.add("deleted");
                         recordCsv.add(record.get("vv"));
                         recordCsv.add(nodeIdValue.getValue());
@@ -152,13 +152,13 @@ public class WriteCSV {
         }
     }
 
-    private ArrayList<String> getArksFromArkeo(Connection conn, String idConcept) {
+    private ArrayList<String> getArksFromArkeo(String idConcept) {
         ArrayList<String> arks = new ArrayList<>();
-        try ( Statement stmt = conn.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select ark_id from test"
                     + " where "
                     + " url ilike '%idc=" + idConcept + "&%'");
-            try ( ResultSet resultSet = stmt.getResultSet()) {
+            try (ResultSet resultSet = stmt.getResultSet()) {
                 while (resultSet.next()) {
                     arks.add(resultSet.getString("ark_id"));
                 }
@@ -169,13 +169,13 @@ public class WriteCSV {
         return arks;
     }
     
-    private boolean isConceptExist(Connection conn, String idConcept) {
+    private boolean isConceptExist(String idConcept) {
         boolean exist = false;
-        try ( Statement stmt = conn.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeQuery("select id_concept from test2"
                     + " where "
                     + " id_concept =  '" + idConcept + "'");
-            try ( ResultSet resultSet = stmt.getResultSet()) {
+            try (ResultSet resultSet = stmt.getResultSet()) {
                 if (resultSet.next()) {
                     exist = resultSet.getRow() != 0;
                 }

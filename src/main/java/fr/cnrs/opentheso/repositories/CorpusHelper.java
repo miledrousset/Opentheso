@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.nodes.NodeCorpus;
 
 import java.sql.Connection;
@@ -11,22 +10,26 @@ import java.util.ArrayList;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class CorpusHelper {
 
-    public ArrayList<NodeCorpus> getAllCorpus(HikariDataSource ds, String idTheso) {
+    @Autowired
+    private DataSource dataSource;
+
+    public ArrayList<NodeCorpus> getAllCorpus(String idTheso) {
         ArrayList<NodeCorpus> nodeCorpuses = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select corpus_name, uri_count, uri_link, active,only_uri_link from corpus_link where id_theso = '" + idTheso + "' order by sort");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     while (resultSet.next()) {
                         NodeCorpus nodeCorpus = new NodeCorpus();
                         nodeCorpus.setCorpusName(resultSet.getString("corpus_name"));
@@ -44,15 +47,15 @@ public class CorpusHelper {
         return nodeCorpuses;
     }
 
-    public ArrayList<NodeCorpus> getAllActiveCorpus(HikariDataSource ds, String idTheso) {
+    public ArrayList<NodeCorpus> getAllActiveCorpus(String idTheso) {
         ArrayList<NodeCorpus> nodeCorpuses = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 String query = "select corpus_name, uri_count, uri_link, active, only_uri_link from corpus_link"
                         + " where id_theso = '" + idTheso + "'"
                         + " and active = true order by sort";
                 stmt.executeQuery(query);
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
 
                     while (resultSet.next()) {
                         NodeCorpus nodeCorpus = new NodeCorpus();
@@ -71,14 +74,14 @@ public class CorpusHelper {
         return nodeCorpuses;
     }
     
-    public boolean isHaveActiveCorpus(HikariDataSource ds, String idTheso) {
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+    public boolean isHaveActiveCorpus(String idTheso) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 String query = "select corpus_name from corpus_link"
                         + " where id_theso = '" + idTheso + "'"
                         + " and active = true";
                 stmt.executeQuery(query);
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if(resultSet.next()) {
                         return true;
                     }
@@ -93,13 +96,13 @@ public class CorpusHelper {
     /**
      * permet de mettre à jour un corpus
      * 
-     * @param ds
+     * 
      * @param idTheso
      * @param oldName
      * @param nodeCorpus
      * @return 
      */
-    public boolean updateCorpus(HikariDataSource ds, String idTheso, String oldName, NodeCorpus nodeCorpus) {
+    public boolean updateCorpus(String idTheso, String oldName, NodeCorpus nodeCorpus) {
 
         boolean status = false;
         oldName = fr.cnrs.opentheso.utils.StringUtils.convertString(oldName);
@@ -108,8 +111,8 @@ public class CorpusHelper {
         if (StringUtils.isEmpty(nodeCorpus.getUriCount())) 
             nodeCorpus.setUriCount("");
         
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE corpus_link set corpus_name = '" + nodeCorpus.getCorpusName()
                         + "' ,uri_count = '" + nodeCorpus.getUriCount() + "' ,uri_link = '" + nodeCorpus.getUriLink()
                         + "' ,active = " + nodeCorpus.isActive() + ", only_uri_link = " + nodeCorpus.isOnlyUriLink()
@@ -126,18 +129,18 @@ public class CorpusHelper {
     /**
      * permet de savoir si le nom du corpus exite ou non
      * 
-     * @param ds
+     * 
      * @param idTheso
      * @param nodeCorpus
      * @return 
      */
-    public boolean addNewCorpus(HikariDataSource ds, String idTheso, NodeCorpus nodeCorpus) {
+    public boolean addNewCorpus(String idTheso, NodeCorpus nodeCorpus) {
         boolean status = false;
         nodeCorpus.setCorpusName(fr.cnrs.opentheso.utils.StringUtils.convertString(nodeCorpus.getCorpusName()));
         if (StringUtils.isEmpty(nodeCorpus.getUriCount())) 
             nodeCorpus.setUriCount("");
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("insert into corpus_link (id_theso, corpus_name, uri_count, uri_link, active, only_uri_link) values "
                         + " ('" + idTheso + "','" + nodeCorpus.getCorpusName() + "','" + nodeCorpus.getUriCount()
                         + "','" + nodeCorpus.getUriLink() + "'," + nodeCorpus.isActive()
@@ -155,11 +158,11 @@ public class CorpusHelper {
     /**
      * permet de suprimer un corpus
      */
-    public boolean deleteCorpus(HikariDataSource ds, String idTheso, String name) {
+    public boolean deleteCorpus(String idTheso, String name) {
         boolean status = false;
 
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("delete from corpus_link where id_theso = '" + idTheso
                         + "' and corpus_name = '" + name + "'");
                 status = true;
@@ -173,13 +176,13 @@ public class CorpusHelper {
     /**
      * permet de savoir si le nom du corpus exite ou non
      */
-    public boolean isCorpusExist(HikariDataSource ds, String idTheso, String name) {
+    public boolean isCorpusExist(String idTheso, String name) {
         boolean exist = false;
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_theso from corpus_link where id_theso = '"
                         + idTheso + "' AND corpus_name = '" + name + "'");
-                try ( ResultSet resultSet = stmt.getResultSet()) {
+                try (ResultSet resultSet = stmt.getResultSet()) {
                     if (resultSet.next()) {
                         exist = resultSet.getRow() != 0;
                     }

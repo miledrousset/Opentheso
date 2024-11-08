@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,15 +8,21 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class HistoryHelper {
 
+    @Autowired
+    private DataSource dataSource;
+
     
-    public ArrayList<HistoryValue> getLabelHistory(HikariDataSource ds, String idTerm, String idTheso){
+    public ArrayList<HistoryValue> getLabelHistory(String idTerm, String idTheso){
         Connection conn;
         Statement stmt;
         ResultSet resultSet;
@@ -25,7 +30,7 @@ public class HistoryHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -60,7 +65,7 @@ public class HistoryHelper {
         return historyValues;
     }
     
-    public ArrayList<HistoryValue> getSynonymHistory(HikariDataSource ds,
+    public ArrayList<HistoryValue> getSynonymHistory(
             String idTerm, String idTheso){
         Connection conn;
         Statement stmt;
@@ -69,7 +74,7 @@ public class HistoryHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -104,7 +109,7 @@ public class HistoryHelper {
         return historyValues;
     }    
     
-     public ArrayList<HistoryValue> getRelationsHistory(HikariDataSource ds,
+     public ArrayList<HistoryValue> getRelationsHistory(
             String idConcept, String idTheso){
         Connection conn;
         Statement stmt;
@@ -113,7 +118,7 @@ public class HistoryHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -149,7 +154,7 @@ public class HistoryHelper {
         return historyValues;
     }  
     
-     public ArrayList<HistoryValue> getNotesHistory(HikariDataSource ds,
+     public ArrayList<HistoryValue> getNotesHistory(
             String idConcept, String idTerm, String idTheso){
         Connection conn;
         Statement stmt;
@@ -158,7 +163,7 @@ public class HistoryHelper {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {

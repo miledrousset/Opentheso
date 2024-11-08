@@ -5,7 +5,6 @@
  */
 package fr.cnrs.opentheso.bean.group;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -36,7 +35,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AddConceptToGroupBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private CurrentUser currentUser;
@@ -70,7 +68,7 @@ public class AddConceptToGroupBean implements Serializable {
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && conceptView.getSelectedLang() != null) {
             liste = groupHelper.getAutoCompletionGroup(
-                    connect.openConnexionPool(),
+                    
                     selectedTheso.getCurrentIdTheso(),
                     conceptView.getSelectedLang(),
                     value);
@@ -95,17 +93,17 @@ public class AddConceptToGroupBean implements Serializable {
         }
 
         // addConceptToGroup
-        if (!groupHelper.addConceptGroupConcept(connect.openConnexionPool(), selectedNodeAutoCompletionGroup.getIdGroup(),
+        if (!groupHelper.addConceptGroupConcept(selectedNodeAutoCompletionGroup.getIdGroup(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso())) {
             var msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        conceptHelper.updateDateOfConcept(connect.openConnexionPool(), selectedTheso.getCurrentIdTheso(),
+        conceptHelper.updateDateOfConcept(selectedTheso.getCurrentIdTheso(),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElmentHelper.addDcElementConcept(connect.openConnexionPool(),
+        dcElmentHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptView.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         ///////////////

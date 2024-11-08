@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.concept.NodePath;
 import fr.cnrs.opentheso.models.concept.Path;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
@@ -46,16 +45,16 @@ public class PathHelper {
     /**
      * methode pour retrouver tous les chemins vers la racine exemple de retour
      */   
-    public List<String> getGraphOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+    public List<String> getGraphOfConcept(String idConcept, String idThesaurus) {
         message = null; 
         List<String> path = new ArrayList<>();
-        getGraph(ds, idConcept, idThesaurus, path);
+        getGraph(idConcept, idThesaurus, path);
         return path;
     }
 
-    private void getGraph(HikariDataSource ds, String idConcept, String idThesaurus, List<String> path){
+    private void getGraph(String idConcept, String idThesaurus, List<String> path){
 
-        ArrayList<String> idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
+        ArrayList<String> idBTs = relationsHelper.getListIdBT(idConcept, idThesaurus);
         if(idBTs == null || idBTs.isEmpty()){
             if(!path.contains(idConcept)) {
                 path.add(idConcept);
@@ -64,7 +63,7 @@ public class PathHelper {
             for (String idBT : idBTs) {
                 if(!path.contains(idConcept + "##" + idBT) && !path.contains(idBT + "##" + idConcept)) {
                     path.add(idConcept + "##" + idBT);
-                    getGraph(ds, idBT, idThesaurus, path);
+                    getGraph(idBT, idThesaurus, path);
                 }
             }       
         }
@@ -136,7 +135,7 @@ public class PathHelper {
         return topTerms;
     }
     
-    public List<List<NodePath>> getPathWithLabel2(HikariDataSource ds, List<List<String>> paths,
+    public List<List<NodePath>> getPathWithLabel2(List<List<String>> paths,
             String idTheso, String idLang) {
         
         ArrayList<List<NodePath>> pathLabel1 = new ArrayList<>();
@@ -149,7 +148,7 @@ public class PathHelper {
             for (String idConcept : path) {
                 NodePath nodePath = new NodePath();
                 nodePath.setIdConcept(idConcept);
-                label = conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
+                label = conceptHelper.getLexicalValueOfConcept(idConcept, idTheso, idLang);
                 if(label.isEmpty())
                     label = "("+ idConcept+")";
                 nodePath.setTitle(label);
@@ -162,13 +161,13 @@ public class PathHelper {
         return pathLabel1;
     }
     
-    public JsonArrayBuilder getPathWithLabelAsJson(HikariDataSource ds, List<Path> paths, String idTheso, String idLang, String format) {
+    public JsonArrayBuilder getPathWithLabelAsJson(List<Path> paths, String idTheso, String idLang, String format) {
 
         String label;
         int i = 0;
          
         if(idLang == null || idLang.isEmpty()) {
-            idLang = preferencesHelper.getWorkLanguageOfTheso(ds, idTheso);
+            idLang = preferencesHelper.getWorkLanguageOfTheso(idTheso);
         }
 
         var jsonArrayBuilder = Json.createArrayBuilder();
@@ -177,18 +176,18 @@ public class PathHelper {
             for (String idConcept : path1.getPath()) {
                 JsonObjectBuilder job = Json.createObjectBuilder();
 
-                label = conceptHelper.getLexicalValueOfConcept(ds, idConcept, idTheso, idLang);
+                label = conceptHelper.getLexicalValueOfConcept(idConcept, idTheso, idLang);
                 if(label.isEmpty())
                     label = "("+ idConcept+")";
                 job.add("id", idConcept);
-                job.add("arkId", conceptHelper.getIdArkOfConcept(ds, idConcept, idTheso));
+                job.add("arkId", conceptHelper.getIdArkOfConcept(idConcept, idTheso));
                 job.add("label", label);
                 
                 
                 if(format != null && format.equalsIgnoreCase("full")) {
                     if(i++ == path1.getPath().size() - 1){
                         // synonymes
-                        ArrayList<String> altLabels = termHelper.getNonPreferredTermsLabel(ds, idConcept, idTheso, idLang);
+                        ArrayList<String> altLabels = termHelper.getNonPreferredTermsLabel(idConcept, idTheso, idLang);
                         
                         JsonArrayBuilder jsonArrayBuilderAltLabels = Json.createArrayBuilder();
                         for (String altLabel : altLabels) {
@@ -198,7 +197,7 @@ public class PathHelper {
                             job.add("altLabel", jsonArrayBuilderAltLabels.build());  
                         
                         // défintion
-                        ArrayList<String> definitions = noteHelper.getDefinition(ds, idConcept, idTheso, idLang);
+                        ArrayList<String> definitions = noteHelper.getDefinition(idConcept, idTheso, idLang);
                         JsonArrayBuilder jsonArrayBuilderDefinitions = Json.createArrayBuilder();
                         for (String def : definitions) {
                             jsonArrayBuilderDefinitions.add(def);
@@ -207,7 +206,7 @@ public class PathHelper {
                             job.add("definition", jsonArrayBuilderDefinitions.build());      
                         
                         // note d'application
-                        ArrayList<String> scopeNotes = noteHelper.getScopeNote(ds, idConcept, idTheso, idLang);
+                        ArrayList<String> scopeNotes = noteHelper.getScopeNote(idConcept, idTheso, idLang);
                         JsonArrayBuilder jsonArrayBuilderScopeNotes = Json.createArrayBuilder();
                         for (String scope : scopeNotes) {
                             jsonArrayBuilderScopeNotes.add(scope);
@@ -216,7 +215,7 @@ public class PathHelper {
                             job.add("scopeNote", jsonArrayBuilderScopeNotes.build());
                         
                         // traductions
-                        ArrayList<NodeTermTraduction> traductions = termHelper.getTraductionsOfConcept(ds, idConcept, idTheso, idLang);
+                        ArrayList<NodeTermTraduction> traductions = termHelper.getTraductionsOfConcept(idConcept, idTheso, idLang);
 
                         JsonObjectBuilder jobTrad = Json.createObjectBuilder();
                         for (NodeTermTraduction trad : traductions) {
@@ -238,7 +237,7 @@ public class PathHelper {
         return jsonArrayBuilder;
     }
     
-    public ArrayList<Path> getPathOfConcept(HikariDataSource ds,
+    public ArrayList<Path> getPathOfConcept(
             String idConcept, String idThesaurus) {
         message = null;
         ArrayList<Path> allPaths = new ArrayList<>();
@@ -246,7 +245,7 @@ public class PathHelper {
         path.add(idConcept);
         
         ArrayList<String> firstPath = new ArrayList<>();
-        allPaths = getPathOfConcept(ds, idConcept,
+        allPaths = getPathOfConcept(idConcept,
                 idThesaurus,
                 firstPath,
                 path, allPaths);
@@ -260,7 +259,7 @@ public class PathHelper {
      * plusieurs têtes en remontant, alors on construit à chaque fois un chemin
      * complet.
      *
-     * @param ds
+     * 
      * @param idConcept
      * @param idThesaurus
      * @param firstPath
@@ -270,11 +269,11 @@ public class PathHelper {
      * il faut trouver le path qui correspond au microthesaurus en cours pour
      * l'afficher en premier
      */
-    private ArrayList<Path> getPathOfConcept(HikariDataSource ds, String idConcept, String idThesaurus,
+    private ArrayList<Path> getPathOfConcept(String idConcept, String idThesaurus,
                                              ArrayList<String> firstPath, ArrayList<String> path, ArrayList<Path> allPaths) {
 
 
-        ArrayList<String> idBTs = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
+        ArrayList<String> idBTs = relationsHelper.getListIdBT(idConcept, idThesaurus);
         if(idBTs == null) return null;
         if (idBTs.size() > 1) {
           //  Collections.reverse(path);
@@ -309,7 +308,7 @@ public class PathHelper {
         for (String idBT : idBTs) {
             if(!path.contains(idBT)){
                 path.add(idBT);
-                getPathOfConcept(ds, idBT, idThesaurus, firstPath, path, allPaths);
+                getPathOfConcept(idBT, idThesaurus, firstPath, path, allPaths);
             } else {
                 message = "!! Attention, erreur de boucle détectée, vérifier le concept  :" + idBT;
                 message = message + "  ___ et le chemin " + path;
@@ -363,19 +362,19 @@ public class PathHelper {
 
     /**
      * permet de rtourner le chemin vers le groupe sélectionné
-     * @param ds
+     * 
      * @param idGroup
      * @param idThesaurus
      * @return 
      */
-    public ArrayList<String> getPathOfGroup(HikariDataSource ds,
+    public ArrayList<String> getPathOfGroup(
             String idGroup, String idThesaurus) {
 
         ArrayList<String> path = new ArrayList<>();
         path.add(idGroup);
         
 
-        path = getPathOfGroup(ds, idGroup,
+        path = getPathOfGroup(idGroup,
                 idThesaurus, path);
 
         return path;
@@ -387,7 +386,7 @@ public class PathHelper {
      * plusieurs têtes en remontant, alors on construit à chaque fois un chemin
      * complet.
      *
-     * @param ds
+     * 
      * @param idGroup
      * @param idThesaurus
      * @param path
@@ -396,15 +395,15 @@ public class PathHelper {
      * il faut trouver le path qui correspond au microthesaurus en cours pour
      * l'afficher en premier
      */
-    private ArrayList<String> getPathOfGroup(HikariDataSource ds,
+    private ArrayList<String> getPathOfGroup(
             String idGroup, String idThesaurus,
             ArrayList<String> path) {
 
-        String idGroupParent = groupHelper.getIdFather(ds, idGroup, idThesaurus);
+        String idGroupParent = groupHelper.getIdFather(idGroup, idThesaurus);
         if(idGroupParent == null) return path;
 
         path.add(0,idGroupParent);
-        getPathOfGroup(ds, idGroupParent, idThesaurus, path);
+        getPathOfGroup(idGroupParent, idThesaurus, path);
         
         return path;
     }

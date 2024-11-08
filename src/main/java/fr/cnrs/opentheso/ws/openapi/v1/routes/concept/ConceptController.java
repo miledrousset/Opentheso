@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,9 +32,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 public class ConceptController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private RestRDFHelper restRDFHelper;
 
 
@@ -60,7 +56,7 @@ public class ConceptController {
         var fullFormat = fullOption ? "full" : null;
 
         String[] idArks = q.split(",");
-        JsonArrayBuilder datas = restRDFHelper.findDatasForWidgetByArk(connect.openConnexionPool(), lang, idArks, fullFormat);
+        JsonArrayBuilder datas = restRDFHelper.findDatasForWidgetByArk(lang, idArks, fullFormat);
 
         return ResponseEntity.ok(datas.build());
     }

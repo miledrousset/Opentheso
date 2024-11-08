@@ -5,7 +5,7 @@
  */
 package notes;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import connexion.ConnexionTest;
 import org.junit.jupiter.api.Test;
 

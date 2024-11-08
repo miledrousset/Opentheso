@@ -1,35 +1,34 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.repositories.RelationsHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Connection;
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @Service
-public class RelationDao extends BasicDao {
+public class RelationDao {
 
     @Autowired
     private RelationsHelper relationsHelper;
 
+    @Autowired
+    private DataSource dataSource;
 
 
-    public boolean deleteAllRelations(Connect connect, String idConceptSelected, 
-                    String idThesaurus, int idUser) {
-        Connection conn = null;
-        try {
-            conn = connect.openConnexionPool().getConnection();
+
+    public boolean deleteAllRelations(String idConceptSelected, String idThesaurus) {
+        try (var conn = dataSource.getConnection()){
             conn.setAutoCommit(false);
 
-            if (!relationsHelper.deleteAllRelationOfConcept(conn, idConceptSelected, idThesaurus, idUser)) {
+            if (!relationsHelper.deleteAllRelationOfConcept(idConceptSelected, idThesaurus)) {
                 conn.rollback();
                 conn.close();
                 return false;
@@ -37,56 +36,39 @@ public class RelationDao extends BasicDao {
             conn.commit();
             conn.close();
             return true;
-
         } catch (SQLException ex) {
-            LOG.error(ex);
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                    conn.close();
-                } catch (SQLException ex1) {
-                     LOG.error(ex1);
-                }
-            }
+            log.error(ex.toString());
             return false;
         }        
     }  
     
-    public void addRelationBT(Connect connect, String idConceptSelected, String idConceptdestination, String idThesaurus){
-        
-        try {
-            stmt = connect.openConnexionPool().getConnection().createStatement();
-            executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
+    public void addRelationBT(String idConceptSelected, String idConceptdestination, String idThesaurus){
+
+        try (var connexion = dataSource.getConnection(); var statement = connexion.createStatement()) {
+            statement.executeUpdate("INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
                     +idConceptSelected+"', '"+idThesaurus+"', 'BT', '"+idConceptdestination+"')");
-            executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
-                    +idConceptdestination+"', '"+idThesaurus+"', 'NT', '"+idConceptSelected+"')");            
-            stmt.close();
+            statement.executeUpdate("INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
+                    +idConceptdestination+"', '"+idThesaurus+"', 'NT', '"+idConceptSelected+"')");
         } catch (SQLException e) {
-            LOG.error(e);
+            log.error(e.toString());
         }    
     }
     
-    public void addRelationRT(Connect connect,
-            String idConceptSelected,
-            String idConceptdestination,
-            String idThesaurus){
+    public void addRelationRT(String idConceptSelected, String idConceptdestination, String idThesaurus){
         
-        try {
-            stmt = connect.openConnexionPool().getConnection().createStatement();
-            executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
+        try (var connexion = dataSource.getConnection(); var statement = connexion.createStatement()){
+            statement.executeUpdate("INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
                     +idConceptSelected+"', '"+idThesaurus+"', 'RT', '"+idConceptdestination+"')");
-            executInsertRequest(stmt, "INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
-                    +idConceptdestination+"', '"+idThesaurus+"', 'RT', '"+idConceptSelected+"')");            
-            stmt.close();
+            statement.executeUpdate("INSERT INTO hierarchical_relationship(id_concept1, id_thesaurus, role, id_concept2) VALUES ('"
+                    +idConceptdestination+"', '"+idThesaurus+"', 'RT', '"+idConceptSelected+"')");
         } catch (SQLException e) {
-            LOG.error(e);
+            log.error(e.toString());
         }    
     }
     
-    public List<NodeIdValue> getCandidatRelationsBT(HikariDataSource hikariDataSource,
-                                                    String idConceptSelected, String idThesaurus, String lang) throws SQLException {
+    public List<NodeIdValue> getCandidatRelationsBT(String idConceptSelected, String idThesaurus, String lang) {
         
-        var nodeBTs = relationsHelper.getListBT(hikariDataSource, idConceptSelected, idThesaurus, lang);
+        var nodeBTs = relationsHelper.getListBT(idConceptSelected, idThesaurus, lang);
         
         if(CollectionUtils.isNotEmpty(nodeBTs)) {
             return nodeBTs.stream()
@@ -99,10 +81,9 @@ public class RelationDao extends BasicDao {
         return List.of();
     } 
     
-    public List<NodeIdValue> getCandidatRelationsRT(HikariDataSource hikariDataSource, String idConceptSelected,
-            String idThesaurus, String lang) throws SQLException {
+    public List<NodeIdValue> getCandidatRelationsRT(String idConceptSelected, String idThesaurus, String lang) {
         
-        var nodeRTs = relationsHelper.getListRT(hikariDataSource, idConceptSelected, idThesaurus, lang);
+        var nodeRTs = relationsHelper.getListRT(idConceptSelected, idThesaurus, lang);
         
         if(CollectionUtils.isNotEmpty(nodeRTs)) {
             return nodeRTs.stream()

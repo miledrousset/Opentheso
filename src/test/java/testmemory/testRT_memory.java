@@ -5,7 +5,7 @@
  */
 package testmemory;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.models.search.NodeSearchMini;
 import java.sql.Connection;
@@ -43,14 +43,14 @@ public class testRT_memory {
         List<NodeSearchMini> liste ;
         for (int i = 0; i < 10000; i++) {
             liste  = new ArrayList<>();
-            liste = searchValue__(ds, value, idLang, idTheso, liste);
+            liste = searchValue__(value, idLang, idTheso, liste);
             liste.clear();
             liste = null;
         }
         String o = "";
     }
 
-    private List<NodeSearchMini> searchValue__(HikariDataSource ds, String value, String idLang, String idTheso, List<NodeSearchMini> liste) {
+    private List<NodeSearchMini> searchValue__(String value, String idLang, String idTheso, List<NodeSearchMini> liste) {
         
      //   SearchHelper searchHelper = new SearchHelper();
         //liste = 
@@ -67,14 +67,14 @@ public class testRT_memory {
      * Cette fonction permet de récupérer une liste de termes pour
      * l'autocomplétion pour créer des relations entre les concepts
      *
-     * @param ds
+     * 
      * @param value
      * @param idTheso
      * @param idLang
      * @return #MR
      */
     public List<NodeSearchMini> searchAutoCompletionForRelation(
-            HikariDataSource ds,
+            
             String value,
             String idLang,
             String idTheso,
@@ -89,7 +89,7 @@ public class testRT_memory {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {

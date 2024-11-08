@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.MessageHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
@@ -38,9 +37,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.APPLICATION_JS
 public class GroupController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private RestRDFHelper restRDFHelper;
 
 
@@ -56,7 +52,7 @@ public class GroupController {
     public ResponseEntity<Object>  getGroupIdFromArk(@Parameter(name = "naan", required = true, description = "Identifiant naan") @PathVariable("naan") String naan,
                                                      @Parameter(name = "ark", required = true, description = "ARK id") @PathVariable("ark") String arkId) {
 
-        var datas = restRDFHelper.exportGroup(connect.openConnexionPool(), naan + "/" + arkId, HeaderHelper.removeCharset(APPLICATION_JSON_UTF_8));
+        var datas = restRDFHelper.exportGroup(naan + "/" + arkId, HeaderHelper.removeCharset(APPLICATION_JSON_UTF_8));
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Objects.requireNonNullElseGet(datas, () -> MessageHelper.emptyMessage(APPLICATION_JSON_UTF_8)));

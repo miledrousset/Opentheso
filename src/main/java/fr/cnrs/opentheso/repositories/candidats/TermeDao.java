@@ -1,9 +1,8 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.terms.Term;
 import fr.cnrs.opentheso.models.terms.NodeEM;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+import fr.cnrs.opentheso.utils.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +16,12 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class TermeDao extends BasicDao {
+public class TermeDao {
 
 
-    public void addNewTerme(HikariDataSource hikariDataSource, Term term) throws SQLException {
+    public void addNewTerme(Term term) {
 
-        term.setLexicalValue(fr.cnrs.opentheso.utils.StringUtils.convertString(term.getLexicalValue()));
+        term.setLexicalValue(StringUtils.convertString(term.getLexicalValue()));
         try {
             openDataBase(hikariDataSource);
             stmt.executeUpdate("INSERT INTO term (id_term, lexical_value, lang, id_thesaurus, status, contributor, creator) VALUES ('"
@@ -35,7 +34,7 @@ public class TermeDao extends BasicDao {
         }
     }
     
-    public void addNewEmployePour(Connect connect, String intitule, String idThesaurus, String lang,
+    public void addNewEmployePour(String intitule, String idThesaurus, String lang,
             String idTerm) throws SQLException{
 
         stmt = connect.openConnexionPool().getConnection().createStatement();
@@ -52,8 +51,7 @@ public class TermeDao extends BasicDao {
     /**
      * Permet de supprimer une traduction
      */
-    public void deleteTermByIdTermAndLang(HikariDataSource hikariDataSource,
-            String idTerm, String lang, String idTheso) throws SQLException {
+    public void deleteTermByIdTermAndLang(String idTerm, String lang, String idTheso) {
         try {
             openDataBase(hikariDataSource);
             stmt.executeUpdate("DELETE FROM term WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'"
@@ -65,8 +63,7 @@ public class TermeDao extends BasicDao {
         }
     }
 
-    public void updateIntitule(HikariDataSource hikariDataSource, String intitule, String idTerm, String idThesaurus,
-                               String lang) throws SQLException {
+    public void updateIntitule(String intitule, String idTerm, String idThesaurus, String lang) {
 
         try {
             intitule = fr.cnrs.opentheso.utils.StringUtils.convertString(intitule);
@@ -85,9 +82,9 @@ public class TermeDao extends BasicDao {
     /**
      * Permet de récupérer les temes non préférés ou synonymes
      */
-    public List<String> getEmployePour(HikariDataSource ds, String idConcept, String idTheso, String idLang){
+    public List<String> getEmployePour(String idConcept, String idTheso, String idLang){
 
-        List<NodeEM> nodeEMs = getNonPreferredTerms(ds, idConcept, idTheso, idLang);
+        List<NodeEM> nodeEMs = getNonPreferredTerms(idConcept, idTheso, idLang);
         if(CollectionUtils.isNotEmpty(nodeEMs)) {
             return nodeEMs.stream().map(NodeEM::getLexicalValue).collect(Collectors.toList());
         } else {
@@ -95,12 +92,12 @@ public class TermeDao extends BasicDao {
         }
     }
 
-    private List<NodeEM> getNonPreferredTerms(HikariDataSource ds, String idConcept, String idThesaurus, String idLang) {
+    private List<NodeEM> getNonPreferredTerms(String idConcept, String idThesaurus, String idLang) {
 
         ArrayList<NodeEM> nodeEMList = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()){
-                stmt.executeQuery( "SELECT lexical_value, created, modified, source, status, hiden " +
+                stmt.executeQuery("SELECT lexical_value, created, modified, source, status, hiden " +
                         " FROM non_preferred_term, preferred_term " +
                         " WHERE " +
                         " non_preferred_term.id_term = preferred_term.id_term" +
@@ -135,8 +132,7 @@ public class TermeDao extends BasicDao {
     /**
      * Permet de supprimer un synonymes
      */
-    public void deleteEMByIdTermAndLang(HikariDataSource hikariDataSource, String idTerm, String idTheso,
-                                        String lang) throws SQLException {
+    public void deleteEMByIdTermAndLang(String idTerm, String idTheso, String lang) {
         try {
             openDataBase(hikariDataSource);
             stmt.executeUpdate("DELETE FROM non_preferred_term WHERE id_term = '"+idTerm+"' AND lang = '"+lang+"'"

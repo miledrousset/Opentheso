@@ -1,12 +1,9 @@
 package fr.cnrs.opentheso.services.graphs;
 
-import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.models.graphs.GraphObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -23,20 +20,19 @@ import org.springframework.context.annotation.Lazy;
 import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- *
- * @author miledrousset
- */
+import javax.sql.DataSource;
+
+
+@Slf4j
 @Named
 @SessionScoped
 public class GraphService implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    @Autowired
+    private DataSource dataSource;
+
     @Autowired @Lazy
     private CurrentUser currentUser;
-
-    private final Log LOG = LogFactory.getLog(GraphService.class);
 
 
     /**
@@ -48,9 +44,8 @@ public class GraphService implements Serializable {
         if (currentUser == null || currentUser.getNodeUser().getIdUser() == -1) {
             return null;
         }
-        HikariDataSource ds = connect.openConnexionPool();
         Map<Integer, GraphObject> graphviews = new HashMap();
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from graph_view"
                         + " where "
@@ -71,8 +66,9 @@ public class GraphService implements Serializable {
         }
         return graphviews;
     }
+
     private void setObject(GraphObject graphObject) {
-        try (Connection conn = connect.openConnexionPool().getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from graph_view_exported_concept_branch"
                         + " where "
@@ -90,16 +86,13 @@ public class GraphService implements Serializable {
         } catch (SQLException e) {
 
         }
-    }    
-    
-    
+    }
 
     public GraphObject getView(String id) {
-        HikariDataSource ds = connect.openConnexionPool();
         GraphObject view = null;
-        try {
-            Connection con = ds.getConnection();
-            PreparedStatement stmt = con.prepareStatement("SELECT * FROM public.graph_view as view_data LEFT JOIN  public.graph_view_exported_concept_branch as view_concepts ON view_data.id = view_concepts.graph_view_id WHERE view_data.id = ?");
+        var sql = "SELECT * FROM public.graph_view as view_data LEFT JOIN  public.graph_view_exported_concept_branch as view_concepts ON view_data.id = view_concepts.graph_view_id WHERE view_data.id = ?";
+        try (Connection conn = dataSource.getConnection();
+            var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, Integer.parseInt(id));
             ResultSet resultView = stmt.executeQuery();
 
@@ -116,48 +109,31 @@ public class GraphService implements Serializable {
                     view.getExportedData().add(new ImmutablePair<>(thesaurusId, conceptId));
                 }
             }
-            ds.close();
         } catch (SQLException e) {
-            LOG.error(e);
-            System.err.println("Error >>> " + e);
-            if (!ds.isClosed()) {
-                ds.close();
-            }
+            log.error(e.toString());
         }
 
         return view;
     }
 
     public void deleteView(String id) {
-        HikariDataSource ds = connect.openConnexionPool();
-        boolean result = false;
         try {
-            Connection con = ds.getConnection();
+            Connection con = dataSource.getConnection();
             PreparedStatement stmt1 = con.prepareStatement("DELETE from public.graph_view WHERE id= ?");
             stmt1.setInt(1, Integer.parseInt(id));
 
             PreparedStatement stmt2 = con.prepareStatement("DELETE from public.graph_view_exported_concept_branch WHERE graph_view_id= ?");
             stmt2.setInt(1, Integer.parseInt(id));
-
-            int res1 = stmt1.executeUpdate();
-            int res2 = stmt2.executeUpdate();
-
-            ds.close();
         } catch (SQLException e) {
-            LOG.error(e);
+            log.error(e.toString());
             System.err.println("Error >>> " + e);
-            if (!ds.isClosed()) {
-                ds.close();
-            }
         }
     }
 
     public boolean saveView(GraphObject view) {
-        HikariDataSource ds = connect.openConnexionPool();
         boolean result = false;
-        try {
-            Connection con = ds.getConnection();
-            PreparedStatement stmt = con.prepareStatement("UPDATE public.graph_view SET name = ?, description = ? WHERE id = ?");
+        var sql = "UPDATE public.graph_view SET name = ?, description = ? WHERE id = ?";
+        try (var con = dataSource.getConnection(); var stmt = con.prepareStatement(sql)){
             stmt.setString(1, view.getName());
             stmt.setString(2, view.getDescription());
             stmt.setInt(3, view.getId());
@@ -165,39 +141,26 @@ public class GraphService implements Serializable {
             if (queryResult > 0) {
                 result = true;
             }
-            ds.close();
         } catch (SQLException e) {
-            LOG.error(e);
-            System.err.println("Error >>> " + e);
-            if (!ds.isClosed()) {
-                ds.close();
-            }
+            log.error(e.toString());
         }
 
         return result;
     }
 
     public int createView(GraphObject view) {
-        HikariDataSource ds = connect.openConnexionPool();
         int id = -1;
-        try {
-            Connection con = ds.getConnection();
-            PreparedStatement stmt = con.prepareStatement("INSERT INTO public.graph_view (name, description, id_user) VALUES (?, ?, ?) returning id;");
+        var sql = "INSERT INTO public.graph_view (name, description, id_user) VALUES (?, ?, ?) returning id;";
+        try (var con = dataSource.getConnection(); var stmt = con.prepareStatement(sql)){
             stmt.setString(1, view.getName());
             stmt.setString(2, view.getDescription());
             stmt.setInt(3, currentUser.getNodeUser().getIdUser());
             ResultSet result = stmt.executeQuery();
             if (result.next()) {
                 id = result.getInt("id");
-              
             }
-            ds.close();
         } catch (SQLException e) {
-            LOG.error(e);
-            System.err.println("Error >>> " + e);
-            if (!ds.isClosed()) {
-                ds.close();
-            }
+            log.error(e.toString());
         }
 
         return id;
@@ -212,8 +175,7 @@ public class GraphService implements Serializable {
     public int addDataToView(int selectedViewId, ImmutablePair<String, String> tuple) {
         int id = -1;
         String concept = tuple.right == null ? null : "'" + tuple.right + "'";
-        try (Connection conn = connect.openConnexionPool().getConnection()){
-            try(Statement stmt = conn.createStatement()){
+        try (var con = dataSource.getConnection(); var stmt = con.createStatement()){
                 stmt.executeQuery("INSERT INTO graph_view_exported_concept_branch (graph_view_id, top_concept_id, top_concept_thesaurus_id) "
                         + " VALUES (" 
                         + selectedViewId
@@ -225,10 +187,8 @@ public class GraphService implements Serializable {
                         id = resultSet.getInt("id");
                     }
                 }
-            }
         } catch (SQLException e) {
-            LOG.error(e);
-            System.err.println("Error >>> " + e);
+            log.error(e.toString());
         }
         return id;
     }
@@ -241,31 +201,28 @@ public class GraphService implements Serializable {
      * @return 
      */
     public boolean isExistDatas(int viewId, String idTheso, String idConcept) {
-        try (Connection conn = connect.openConnexionPool().getConnection()) {
-            try (Statement stmt = conn.createStatement()) {
-
-                if (StringUtils.isEmpty(idConcept)) {
-                    stmt.executeQuery("select id from graph_view_exported_concept_branch"
-                            + " where "
-                            + " graph_view_id = " + viewId
-                            + " and"
-                            + " top_concept_id ISNULL"
-                            + " and top_concept_thesaurus_id = '" + idTheso + "'"
-                    );
-                } else {
-                    stmt.executeQuery("select id from graph_view_exported_concept_branch"
-                            + " where "
-                            + " graph_view_id = " + viewId
-                            + " and"
-                            + " top_concept_id = '" + idConcept + "'"
-                            + " and top_concept_thesaurus_id = '" + idTheso + "'"
-                    );
-                }
-                try (ResultSet resultSet = stmt.getResultSet()) {
-                    if (resultSet.next()) {
-                        resultSet.getInt("id");
-                        return true;
-                    }
+        try (var con = dataSource.getConnection(); var stmt = con.createStatement()){
+            if (StringUtils.isEmpty(idConcept)) {
+                stmt.executeQuery("select id from graph_view_exported_concept_branch"
+                        + " where "
+                        + " graph_view_id = " + viewId
+                        + " and"
+                        + " top_concept_id ISNULL"
+                        + " and top_concept_thesaurus_id = '" + idTheso + "'"
+                );
+            } else {
+                stmt.executeQuery("select id from graph_view_exported_concept_branch"
+                        + " where "
+                        + " graph_view_id = " + viewId
+                        + " and"
+                        + " top_concept_id = '" + idConcept + "'"
+                        + " and top_concept_thesaurus_id = '" + idTheso + "'"
+                );
+            }
+            try (ResultSet resultSet = stmt.getResultSet()) {
+                if (resultSet.next()) {
+                    resultSet.getInt("id");
+                    return true;
                 }
             }
         } catch (SQLException ex) {
@@ -275,9 +232,8 @@ public class GraphService implements Serializable {
     }
 
     public void removeDataFromView(int selectedViewId, ImmutablePair<String, String> tuple) {
-        HikariDataSource ds = connect.openConnexionPool();
         try {
-            Connection con = ds.getConnection();
+            Connection con = dataSource.getConnection();
             PreparedStatement stmt;
             if (tuple.right == null) {
                 stmt = con.prepareStatement("DELETE FROM public.graph_view_exported_concept_branch WHERE graph_view_id = ? AND top_concept_thesaurus_id = ?");
@@ -290,13 +246,8 @@ public class GraphService implements Serializable {
                 stmt.setString(3, tuple.left);
             }
             stmt.executeUpdate();
-            ds.close();
         } catch (SQLException e) {
-            LOG.error(e);
-            System.err.println("Error >>> " + e);
-            if (!ds.isClosed()) {
-                ds.close();
-            }
+            log.error(e.toString());
         }
     }
 }

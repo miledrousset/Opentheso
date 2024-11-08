@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
 import fr.cnrs.opentheso.repositories.PropositionApiHelper;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.models.propositions.PropositionFromApi;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.ApiKeyState;
@@ -29,9 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PropositionsController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private ApiKeyHelper apiKeyHelper;
 
     @Autowired
@@ -42,15 +38,15 @@ public class PropositionsController {
     public ResponseEntity<Object> createProposition(@RequestHeader(value = "API-KEY") String apiKey,
                                                     @RequestBody PropositionFromApi proposition) {
 
-        var keyState = apiKeyHelper.checkApiKey(connect.openConnexionPool(), apiKey);
+        var keyState = apiKeyHelper.checkApiKey(apiKey);
 
         if (keyState != ApiKeyState.VALID) {
             return apiKeyHelper.errorResponse(keyState);
         }
 
-        var userId = apiKeyHelper.getIdUser(connect.openConnexionPool(), apiKey);
+        var userId = apiKeyHelper.getIdUser(apiKey);
 
-        propositionApiHelper.createProposition(connect.openConnexionPool(), proposition, userId);
+        propositionApiHelper.createProposition(proposition, userId);
         return ResponseEntity.status(201).build();
     }
 }

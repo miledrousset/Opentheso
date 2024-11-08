@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Lazy;
 @SessionScoped
 public class GroupView implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+
     @Autowired @Lazy private IndexSetting indexSetting;     
     @Autowired @Lazy private ViewEditorThesoHomeBean viewEditorThesoHomeBean;
     @Autowired @Lazy private ViewEditorHomeBean viewEditorHomeBean;
@@ -94,16 +94,16 @@ public class GroupView implements Serializable {
      */
     public void getGroup(String idTheso, String idGroup, String idLang) {
 
-        nodeGroup = groupHelper.getThisConceptGroup(connect.openConnexionPool(), idGroup, idTheso, idLang);
+        nodeGroup = groupHelper.getThisConceptGroup(idGroup, idTheso, idLang);
         
-        nodeGroupTraductions = groupHelper.getGroupTraduction(connect.openConnexionPool(), idGroup, idTheso, idLang);
+        nodeGroupTraductions = groupHelper.getGroupTraduction(idGroup, idTheso, idLang);
         nodeGroupType = groupHelper.getGroupType(
-                connect.openConnexionPool(), nodeGroup.getConceptGroup().getIdtypecode());
+                 nodeGroup.getConceptGroup().getIdtypecode());
 
-        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotes(connect.openConnexionPool(), idGroup, idTheso, idLang);
+        ArrayList<NodeNote> nodeNotes = noteHelper.getListNotes(idGroup, idTheso, idLang);
         setAllNotes(nodeNotes);
 
-        count = conceptHelper.getCountOfConceptsOfGroup(connect.openConnexionPool(), idTheso, idGroup);
+        count = conceptHelper.getCountOfConceptsOfGroup(idTheso, idGroup);
         indexSetting.setIsValueSelected(true);
         viewEditorHomeBean.reset();
         viewEditorThesoHomeBean.reset();

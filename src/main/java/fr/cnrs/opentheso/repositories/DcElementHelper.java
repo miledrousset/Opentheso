@@ -1,9 +1,10 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.nodes.DcElement;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,10 +18,13 @@ import java.util.logging.Logger;
 @Service
 public class DcElementHelper {
 
+    @Autowired
+    private DataSource dataSource;
 
-    public ArrayList<DcElement> getDcElementOfConcept(HikariDataSource ds, String idTheso, String idConcept){
+
+    public ArrayList<DcElement> getDcElementOfConcept(String idTheso, String idConcept){
         ArrayList<DcElement> dcElements = null;
-        try(Connection conn = ds.getConnection()){
+        try(Connection conn = dataSource.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeQuery("select name, value, language, data_type from concept_dcterms "
                     + " where id_concept = '" + idConcept + "'"
@@ -43,9 +47,9 @@ public class DcElementHelper {
         return dcElements;
     }
     
-    public boolean addDcElementConcept(HikariDataSource ds, DcElement dcElement, String idConcept, String idTheso) {
+    public boolean addDcElementConcept(DcElement dcElement, String idConcept, String idTheso) {
         dcElement.setValue(fr.cnrs.opentheso.utils.StringUtils.convertString(dcElement.getValue()));
-        try(Connection conn = ds.getConnection()){
+        try(Connection conn = dataSource.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("insert into concept_dcterms "
                     + " (id_concept, id_thesaurus, name, value, language, data_type) "
@@ -66,9 +70,9 @@ public class DcElementHelper {
         return false;
     }
     
-    public int addDcElementThesaurus(HikariDataSource ds, DcElement dcElement, String idTheso) {
+    public int addDcElementThesaurus(DcElement dcElement, String idTheso) {
         dcElement.setValue(fr.cnrs.opentheso.utils.StringUtils.convertString(dcElement.getValue()));
-        try(Connection conn = ds.getConnection()){
+        try(Connection conn = dataSource.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeQuery("insert into thesaurus_dcterms "
                     + " (id_thesaurus, name, value, language, data_type) "
@@ -92,9 +96,9 @@ public class DcElementHelper {
         return -1;
     }    
     
-    public boolean updateDcElementThesaurus(HikariDataSource ds, DcElement dcElement, String idTheso) {
+    public boolean updateDcElementThesaurus(DcElement dcElement, String idTheso) {
         dcElement.setValue(fr.cnrs.opentheso.utils.StringUtils.convertString(dcElement.getValue()));
-        try(Connection conn = ds.getConnection()){
+        try(Connection conn = dataSource.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("update thesaurus_dcterms "
                     + " set "
@@ -114,8 +118,8 @@ public class DcElementHelper {
         return false;
     }
     
-    public boolean deleteDcElementThesaurus(HikariDataSource ds, DcElement dcElement, String idTheso) {
-        try(Connection conn = ds.getConnection()){
+    public boolean deleteDcElementThesaurus(DcElement dcElement, String idTheso) {
+        try(Connection conn = dataSource.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeUpdate("delete from thesaurus_dcterms "
                     + " where "
@@ -130,9 +134,9 @@ public class DcElementHelper {
         return false;
     }    
     
-    public List<DcElement> getDcElementOfThesaurus(HikariDataSource ds, String idTheso){
+    public List<DcElement> getDcElementOfThesaurus(String idTheso){
         List<DcElement> dcElements = null;
-        try(Connection conn = ds.getConnection()){
+        try(Connection conn = dataSource.getConnection()){
             try(Statement stmt = conn.createStatement()){
                 stmt.executeQuery("select id, name, value, language, data_type from thesaurus_dcterms "
                     + " where "

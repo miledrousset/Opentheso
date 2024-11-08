@@ -5,7 +5,7 @@
  */
 package querysql;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.models.concept.Concept;
 import java.sql.Connection;
@@ -35,12 +35,12 @@ public class testConnectDeconnect {
         HikariDataSource ds = connexionTest.getConnexionPool();    
         Concept concept;
         for (int i = 0; i < 1000000; i++) {
-            concept = getThisConceptTest(ds, "293300", "th19");            
+            concept = getThisConceptTest("293300", "th19");            
         }
     }
-    private Concept getThisConceptTest(HikariDataSource ds, String idConcept, String idThesaurus) {
+    private Concept getThisConceptTest(String idConcept, String idThesaurus) {
         Concept concept = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from concept where id_thesaurus = '" + idThesaurus + "'"
                         + " and id_concept = '" + idConcept + "'");
@@ -86,14 +86,14 @@ public class testConnectDeconnect {
         concept.setModified(new java.util.Date());
         
         for (int i = 0; i < 10000; i++) {
-            insert(ds, concept);
+            insert(concept);
         }
         
     }   
-    private void insert(HikariDataSource ds, Concept concept) {
+    private void insert(Concept concept) {
         
-        try ( Connection conn = ds.getConnection()) {
-            try ( Statement stmt = conn.createStatement()) {
+        try (Connection conn = dataSource.getConnection()) {
+            try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into concept "
                             + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi)"
                             + " values ("
@@ -132,18 +132,18 @@ public class testConnectDeconnect {
         concept.setModified(new java.util.Date());
         
         for (int i = 0; i < 10000; i++) {
-            insertWithAutocommitFalse(ds, concept);
+            insertWithAutocommitFalse(concept);
         }
         
     }   
-    private void insertWithAutocommitFalse(HikariDataSource ds, Concept concept) {
-        try ( Connection conn = ds.getConnection()) {
+    private void insertWithAutocommitFalse(Concept concept) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
-            if(step1(conn, concept)){
+            if(step1(concept)){
                 conn.rollback();
 //                conn.close();
             }
-            if(step2(conn, concept)) {
+            if(step2(concept)) {
                 conn.rollback();
 //                conn.close();
             } else
@@ -153,9 +153,9 @@ public class testConnectDeconnect {
             System.err.println(sqle);
         }
     }       
-    private boolean step1(Connection conn, Concept concept) {
+    private boolean step1(Concept concept) {
         boolean status = false;
-        try ( Statement stmt = conn.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into concept "
                         + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi)"
                         + " values ("
@@ -176,9 +176,9 @@ public class testConnectDeconnect {
         }
         return status;
     }  
-    private boolean step2(Connection conn, Concept concept) {
+    private boolean step2(Concept concept) {
         boolean status = false;
-        try ( Statement stmt = conn.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("Insert into concept "
                         + "(id_concept, id_thesaurus, id_ark, created, modified, status, notation, top_concept, id_handle, id_doi)"
                         + " values ("

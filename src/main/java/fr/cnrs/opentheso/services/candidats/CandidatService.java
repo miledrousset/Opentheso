@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.services.candidats;
 
-import com.zaxxer.hikari.HikariDataSource;
+
 import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.concept.Concept;
 import fr.cnrs.opentheso.models.terms.Term;
@@ -48,6 +48,9 @@ public class CandidatService implements Serializable {
     private ImagesHelper imagesHelper;
 
     @Autowired
+    private NoteDao noteDao;
+
+    @Autowired
     private CandidatDao candidatDao;
 
     @Autowired
@@ -75,170 +78,95 @@ public class CandidatService implements Serializable {
     /**
      * Permet de récupérer la liste des candidats qui sont en attente
      */
-    public List<CandidatDto> getCandidatsByStatus(Connect connect, String idThesaurus, String lang, int etat) {
-        List<CandidatDto> candidatList = new ArrayList<>();
-        try (HikariDataSource connection = connect.openConnexionPool()) {
-            candidatList = candidatDao.getCandidatsByStatus(connection, idThesaurus, lang, etat);
-            candidatList.forEach(candidatDto -> {
-                candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(connection, candidatDto.getIdConcepte(), idThesaurus));
-                candidatDto.setNbrDemande(candidatDao.searchDemandeCount(connection, candidatDto.getIdConcepte(), idThesaurus));
-                candidatDto.setNbrVote(candidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel()));
-                candidatDto.setNbrNoteVote(candidatDao.searchVoteCount(connection, candidatDto.getIdConcepte(), idThesaurus, VoteType.NOTE.getLabel()));
-                candidatDto.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connection, candidatDto.getIdConcepte(), idThesaurus));
-            });
-            connection.close();
-        } catch (SQLException sqle) {
-            log.error(sqle.toString());
-        }
+    public List<CandidatDto> getCandidatsByStatus(String idThesaurus, String lang, int etat) {
+
+        List<CandidatDto> candidatList = candidatDao.getCandidatsByStatus(idThesaurus, lang, etat);
+        candidatList.forEach(candidatDto -> {
+            candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(candidatDto.getIdConcepte(), idThesaurus));
+            candidatDto.setNbrDemande(candidatDao.searchDemandeCount(candidatDto.getIdConcepte(), idThesaurus));
+            candidatDto.setNbrVote(candidatDao.searchVoteCount(candidatDto.getIdConcepte(), idThesaurus, VoteType.CANDIDAT.getLabel()));
+            candidatDto.setNbrNoteVote(candidatDao.searchVoteCount(candidatDto.getIdConcepte(), idThesaurus, VoteType.NOTE.getLabel()));
+            candidatDto.setAlignments(alignmentHelper.getAllAlignmentOfConcept(candidatDto.getIdConcepte(), idThesaurus));
+        });
         return candidatList;
     }    
     
     /**
      * Permet de chercher des candidats
      */
-    public List<CandidatDto> searchCandidats(Connect connect, String value,
+    public List<CandidatDto> searchCandidats(String value,
             String idThesaurus, String lang, int etat, String statut) {
-        List<CandidatDto> temps = new ArrayList<>();
-        HikariDataSource ds = connect.openConnexionPool();
-        try {
-            temps = candidatDao.searchCandidatsByValue(ds, value, idThesaurus, lang, etat, statut);
-            temps.forEach(candidatDto -> {
-                try {
-                    candidatDto.setStatut(candidatDao.searchCondidatStatus(ds, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus()));
-                    candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(ds, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus()));
-                    candidatDto.setNbrDemande(candidatDao.searchDemandeCount(ds, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus()));
-                    candidatDto.setNbrVote(candidatDao.searchVoteCount(ds, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus(), VoteType.CANDIDAT.getLabel()));
-                    candidatDto.setNbrNoteVote(candidatDao.searchVoteCount(ds, candidatDto.getIdConcepte(),
-                            candidatDto.getIdThesaurus(), VoteType.NOTE.getLabel()));
-                } catch (SQLException ex) {
-                    Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
-            ds.close();
-        } catch (SQLException sqle) {
-            log.error(sqle.toString());
-            System.err.println("Error >>> " + sqle);
-            if (!ds.isClosed()) {
-                ds.close();
+        List<CandidatDto> temps = candidatDao.searchCandidatsByValue(value, idThesaurus, lang, etat, statut);
+        temps.forEach(candidatDto -> {
+            try {
+                candidatDto.setStatut(candidatDao.searchCondidatStatus(candidatDto.getIdConcepte(),
+                        candidatDto.getIdThesaurus()));
+                candidatDto.setNbrParticipant(candidatDao.searchParticipantCount(candidatDto.getIdConcepte(),
+                        candidatDto.getIdThesaurus()));
+                candidatDto.setNbrDemande(candidatDao.searchDemandeCount(candidatDto.getIdConcepte(),
+                        candidatDto.getIdThesaurus()));
+                candidatDto.setNbrVote(candidatDao.searchVoteCount(candidatDto.getIdConcepte(),
+                        candidatDto.getIdThesaurus(), VoteType.CANDIDAT.getLabel()));
+                candidatDto.setNbrNoteVote(candidatDao.searchVoteCount(candidatDto.getIdConcepte(),
+                        candidatDto.getIdThesaurus(), VoteType.NOTE.getLabel()));
+            } catch (SQLException ex) {
+                Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        });
         return temps;
     }
 
-    public String saveNewCondidat(Connect connect, Concept concept) throws SQLException {
+    public String saveNewCondidat(Concept concept) throws SQLException {
 
-        Connection conn = null;
-        String idNewCondidat = null;
-        try {
-            conn = connect.openConnexionPool().getConnection();
-            conn.setAutoCommit(false);
-            idNewCondidat = conceptHelper.addConceptInTable(conn, concept, concept.getIdUser());
-            if (idNewCondidat == null) {
-                conn.rollback();
-                conn.close();
-                return null;
-            }
-            conn.commit();
-            conn.close();
-        } catch (SQLException ex) {
-            try {
-                Logger.getLogger(ConceptHelper.class.getName()).log(Level.SEVERE, null, ex);
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex1) {
-            }
-        }            
-
-        candidatDao.setStatutForCandidat(connect.openConnexionPool(), 1, idNewCondidat, concept.getIdThesaurus(),
-                concept.getIdUser() + "");
+        String idNewCondidat = conceptHelper.addConceptInTable(concept, concept.getIdUser());
+        candidatDao.setStatutForCandidat(1, idNewCondidat, concept.getIdThesaurus(), concept.getIdUser() + "");
         return idNewCondidat;
     }
 
-    public String saveNewTerm(Connect connect, Term term, String idConcept, int idUser) throws SQLException {
+    public String saveNewTerm(Term term, String idConcept, int idUser) throws SQLException {
 
-        Connection conn = null;
-        String idTerm = null;
-        try {
-            conn = connect.openConnexionPool().getConnection();
-            conn.setAutoCommit(false);
-            idTerm = termHelper.addTerm(connect.openConnexionPool().getConnection(), term,
-                idConcept, idUser);
-            if (idTerm == null) {
-                conn.rollback();
-                conn.close();
-                return null;
-            }   
-            conn.commit();
-            conn.close();            
-        } catch (SQLException ex) {
-            try {
-                log.error(ex.toString());
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex1) {
-            }
-        }  
-        return idTerm;
+        return termHelper.addTerm(term, idConcept, idUser);
     }
 
-    public void updateIntitule(Connect connect, String intitule, String idThesaurus, String lang, String idTerm) throws SQLException {
-        termeDao.updateIntitule(connect.openConnexionPool(),
-                intitule, idTerm, idThesaurus, lang);
+    public void updateIntitule(String intitule, String idThesaurus, String lang, String idTerm) throws SQLException {
+        termeDao.updateIntitule(intitule, idTerm, idThesaurus, lang);
     }
 
-    public void updateDetailsCondidat(Connect connect, CandidatDto candidatSelected, int idUser) throws SQLException {
+    public void updateDetailsCondidat(CandidatDto candidatSelected) {
 
         //update domaine
-        domaineDao.deleteAllDomaine(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
+        domaineDao.deleteAllDomaine(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
         
         for (NodeIdValue collection : candidatSelected.getCollections()) {
-            domaineDao.addNewDomaine(
-                    connect, collection.getId(),
-                    candidatSelected.getIdThesaurus(),
-                    candidatSelected.getIdConcepte());
+            domaineDao.addNewDomaine(collection.getId(), candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte());
         }
 
         // gestion des relations
 
-        relationDao.deleteAllRelations(connect, candidatSelected.getIdConcepte(),
-                candidatSelected.getIdThesaurus(), idUser);
+        relationDao.deleteAllRelations(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus());
 
         //update terme générique
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesGenerique())) {
             candidatSelected.getTermesGenerique().stream().forEach(nodeBT -> {
-                relationDao.addRelationBT(connect,
-                        candidatSelected.getIdConcepte(),
-                        nodeBT.getId(),
-                        candidatSelected.getIdThesaurus());
+                relationDao.addRelationBT(candidatSelected.getIdConcepte(), nodeBT.getId(), candidatSelected.getIdThesaurus());
             });
         }
 
         //update terme associés
         if (!CollectionUtils.isEmpty(candidatSelected.getTermesAssocies())) {
             candidatSelected.getTermesAssocies().stream().forEach(nodeRT -> {
-                relationDao.addRelationRT(connect,
-                        candidatSelected.getIdConcepte(),
-                        nodeRT.getId(),
-                        candidatSelected.getIdThesaurus());
+                relationDao.addRelationRT(candidatSelected.getIdConcepte(), nodeRT.getId(), candidatSelected.getIdThesaurus());
             });
         }
 
         // Employé pour
-        termeDao.deleteEMByIdTermAndLang(connect.openConnexionPool(), candidatSelected.getIdTerm(),
+        termeDao.deleteEMByIdTermAndLang(candidatSelected.getIdTerm(),
                 candidatSelected.getIdThesaurus(), candidatSelected.getLang());
         
         if(!candidatSelected.getEmployePourList().isEmpty()) {
             candidatSelected.getEmployePourList().stream().forEach(employe -> {
                 try {
-                    termeDao.addNewEmployePour(connect,
-                            employe, candidatSelected.getIdThesaurus(),
-                            candidatSelected.getLang(),
+                    termeDao.addNewEmployePour(employe, candidatSelected.getIdThesaurus(), candidatSelected.getLang(),
                             candidatSelected.getIdTerm());
                 } catch (SQLException ex) {
                     Logger.getLogger(CandidatService.class.getName()).log(Level.SEVERE, null, ex);
@@ -247,102 +175,86 @@ public class CandidatService implements Serializable {
         }
     }
 
-    public void getCandidatDetails(Connect connect, CandidatDto candidatSelected, String idThesaurus) {
+    public void getCandidatDetails(CandidatDto candidatSelected, String idThesaurus) {
 
-        try (HikariDataSource connection = connect.openConnexionPool()){
-            candidatSelected.setIdTerm(termHelper.getIdTermOfConcept(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
-            
-            candidatSelected.setCollections(domaineDao.getDomaineCandidatByConceptAndThesaurusAndLang(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
+        candidatSelected.setIdTerm(termHelper.getIdTermOfConcept(candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
 
-            candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
-                    candidatSelected.getLang()));
+        candidatSelected.setCollections(domaineDao.getDomaineCandidatByConceptAndThesaurusAndLang(
+                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 
-            candidatSelected.setTermesAssocies(relationDao.getCandidatRelationsRT(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
-                    candidatSelected.getLang()));
+        candidatSelected.setTermesGenerique(relationDao.getCandidatRelationsBT(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 
-            candidatSelected.setEmployePourList(termeDao.getEmployePour(connection,
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(),
-                    candidatSelected.getLang()));
-             
-            candidatSelected.setNodeNotes(new NoteDao().getNotesCandidat(connection, candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus()));
+        candidatSelected.setTermesAssocies(relationDao.getCandidatRelationsRT(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
 
-            candidatSelected.getNodeNotes().forEach(note -> {
-                try {
-                    note.setVoted(getVote(connect, candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
+        candidatSelected.setEmployePourList(termeDao.getEmployePour(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), candidatSelected.getLang()));
+
+        candidatSelected.setNodeNotes(noteDao.getNotesCandidat(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus()));
+
+        candidatSelected.getNodeNotes().forEach(note -> {
+            try {
+                note.setVoted(getVote(candidatSelected.getIdThesaurus(), candidatSelected.getIdConcepte(),
                         candidatSelected.getUserId(), note.getIdNote()+"", VoteType.NOTE));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            });
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
 
-            candidatSelected.setTraductions(termHelper.getTraductionsOfConcept(connection, candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
-                    term -> new TraductionDto(term.getLang(),
-                            term.getLexicalValue(), term.getCodePays())).collect(Collectors.toList()));
+        candidatSelected.setTraductions(termHelper.getTraductionsOfConcept(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), candidatSelected.getLang()).stream().map(
+                term -> new TraductionDto(term.getLang(),
+                        term.getLexicalValue(), term.getCodePays())).collect(Collectors.toList()));
 
-            candidatSelected.setMessages(messageCandidatHelper.getAllMessagesByCandidat(connection, candidatSelected.getIdConcepte(),
-                    candidatSelected.getIdThesaurus(), candidatSelected.getUserId()));
+        candidatSelected.setMessages(messageCandidatHelper.getAllMessagesByCandidat(candidatSelected.getIdConcepte(),
+                candidatSelected.getIdThesaurus(), candidatSelected.getUserId()));
 
-            candidatSelected.setVoted(candidatDao.getVote(connection, candidatSelected.getUserId(),
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), null, 
-                    VoteType.CANDIDAT.getLabel()));
+        candidatSelected.setVoted(candidatDao.getVote(candidatSelected.getUserId(),
+                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus(), null,
+                VoteType.CANDIDAT.getLabel()));
 
-            candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(connect.openConnexionPool(),
-                    candidatSelected.getIdConcepte(), idThesaurus));
+        candidatSelected.setAlignments(alignmentHelper.getAllAlignmentOfConcept(
+                candidatSelected.getIdConcepte(), idThesaurus));
 
-            candidatSelected.setImages(imagesHelper.getExternalImages(connect.openConnexionPool(),
-                    candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
-
-            connect.openConnexionPool().getConnection().close();
-        } catch (SQLException e) {
-            log.error(e.toString());
-        }
+        candidatSelected.setImages(imagesHelper.getExternalImages(
+                candidatSelected.getIdConcepte(), candidatSelected.getIdThesaurus()));
     }
 
 
 ///////// ajouté par Miled
-    public void addVote(Connect connect, String idThesaurus, String idConcept, int idUser,
-            String idNote, VoteType voteType) throws SQLException {
-        candidatDao.addVote(connect.openConnexionPool(), idThesaurus, idConcept, idUser, idNote,
-                voteType.getLabel());
+    public void addVote(String idThesaurus, String idConcept, int idUser, String idNote, VoteType voteType) throws SQLException {
+        candidatDao.addVote(idThesaurus, idConcept, idUser, idNote, voteType.getLabel());
     }
 
-    public boolean getVote(Connect connect, String idThesaurus, String idConcept, int idUser, String idNote,
-            VoteType voteType) throws SQLException {
-        return candidatDao.getVote(connect.openConnexionPool(), idUser, idConcept, idThesaurus,
-                idNote, voteType.getLabel());
+    public boolean getVote(String idThesaurus, String idConcept, int idUser, String idNote, VoteType voteType) throws SQLException {
+        return candidatDao.getVote(idUser, idConcept, idThesaurus, idNote, voteType.getLabel());
     }
 
-    public void removeVote(Connect connect, String idThesaurus, String idConcept, int idUser, String idNote,
-            VoteType voteType) throws SQLException {
-        candidatDao.removeVote(connect.openConnexionPool(), idThesaurus, idConcept, idUser, idNote,
-                voteType.getLabel());
+    public void removeVote(String idThesaurus, String idConcept, int idUser, String idNote, VoteType voteType) throws SQLException {
+        candidatDao.removeVote(idThesaurus, idConcept, idUser, idNote, voteType.getLabel());
     }
     
-    public boolean insertCandidate(Connect connect, CandidatDto candidatDto, String adminMessage, int idUser) {
-        return candidatDao.insertCandidate(connect.openConnexionPool(), candidatDto, adminMessage, idUser);
+    public boolean insertCandidate(CandidatDto candidatDto, String adminMessage, int idUser) {
+        return candidatDao.insertCandidate(candidatDto, adminMessage, idUser);
     }
     
-    public boolean rejectCandidate(Connect connect, CandidatDto candidatDto, String adminMessage, int idUser) {
-        return candidatDao.rejectCandidate(connect.openConnexionPool(), candidatDto, adminMessage, idUser);
+    public boolean rejectCandidate(CandidatDto candidatDto, String adminMessage, int idUser) {
+        return candidatDao.rejectCandidate(candidatDto, adminMessage, idUser);
     }     
     
     /**
      * permet de récupérer les anciens candidats saisies dans l'ancien module uniquement les candidats qui étatient en attente
      */    
-    public String getOldCandidates(Connect connect, String idTheso, int idUser, NodePreference nodePreference) {
+    public String getOldCandidates(String idTheso, int idUser, NodePreference nodePreference) {
 
         StringBuilder messages = new StringBuilder();
         
         //// récupération des anciens candidats
         ArrayList<NodeCandidateOld> nodeCandidateOlds;
         try {
-            nodeCandidateOlds = candidatDao.getCandidatesIdFromOldModule(connect.openConnexionPool(), idTheso);
+            nodeCandidateOlds = candidatDao.getCandidatesIdFromOldModule(idTheso);
         } catch (SQLException e) {
             messages.append("Erreur : ").append(e.getMessage());
             return messages.toString();
@@ -355,10 +267,10 @@ public class CandidatService implements Serializable {
             try {
                 nodeCandidateOld.setNodeTraductions(
                     candidatDao.getCandidatesTraductionsFromOldModule(
-                            connect.openConnexionPool(), nodeCandidateOld.getIdCandidate(), idTheso));
+                             nodeCandidateOld.getIdCandidate(), idTheso));
                 nodeCandidateOld.setNodePropositions(
                     candidatDao.getCandidatesMessagesFromOldModule(
-                            connect.openConnexionPool(), nodeCandidateOld.getIdCandidate(), idTheso));
+                             nodeCandidateOld.getIdCandidate(), idTheso));
             } catch (SQLException e) {
                 messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
                 System.out.println(messages.toString());
@@ -377,7 +289,7 @@ public class CandidatService implements Serializable {
             // ajout du candidat s'il n'existe pas dans le thésaurus en vérifiant langue par langue
             for (NodeTraductionCandidat nodeTraduction : nodeCandidateOld.getNodeTraductions()) {
                 // en cas d'un nouveau candidat, verification dans les prefLabels
-                if (termHelper.isPrefLabelExist(connect.openConnexionPool(),
+                if (termHelper.isPrefLabelExist(
                         nodeTraduction.getTitle().trim(),
                         idTheso,
                         nodeTraduction.getIdLang())) {
@@ -399,7 +311,7 @@ public class CandidatService implements Serializable {
                 conceptHelper.setNodePreference(nodePreference);
 
                 try {
-                    idNewConcept = saveNewCondidat(connect, concept);
+                    idNewConcept = saveNewCondidat(concept);
                 } catch (SQLException e) {
                     messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
                     System.out.println(messages.toString());
@@ -419,7 +331,7 @@ public class CandidatService implements Serializable {
                         terme.setSource("candidat");
                         terme.setStatus("D");
                         try {
-                            idNewTerm = saveNewTerm(connect, terme, idNewConcept, idUser);                            
+                            idNewTerm = saveNewTerm(terme, idNewConcept, idUser);
                         } catch (SQLException e) {
                             messages.append("Erreur : ").append(nodeCandidateOld.getIdCandidate());
                             System.out.println(messages.toString());                            
@@ -428,7 +340,7 @@ public class CandidatService implements Serializable {
                         first = false;
                     } else {
                         // ajout des traductions
-                        if(!termHelper.addTraduction(connect.openConnexionPool(),
+                        if(!termHelper.addTraduction(
                                 nodeTraduction.getTitle(),
                                 idNewTerm,
                                 nodeTraduction.getIdLang(),
@@ -443,7 +355,7 @@ public class CandidatService implements Serializable {
                 first = true;
                 // ajout des messages  
                 for (NodeProposition nodeProposition : nodeCandidateOld.getNodePropositions()) {
-                    messageCandidatHelper.addNewMessage(connect.openConnexionPool(),
+                    messageCandidatHelper.addNewMessage(
                             nodeProposition.getNote(),
                             nodeProposition.getIdUser(),
                             idNewConcept,

@@ -1,8 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.repositories.GroupHelper;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.HeaderHelper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,9 +30,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 @CrossOrigin(methods = { RequestMethod.GET })
 @Tag(name = "Concept", description = "Contient toutes les actions disponibles sur les concepts.")
 public class ConcepThesoSearchController {
-
-    @Autowired
-    private Connect connect;
 
     @Autowired
     private GroupHelper groupHelper;
@@ -109,7 +104,7 @@ public class ConcepThesoSearchController {
 
         var selectedMediaType = getMediaTypeFromRequest(acceptHeader);
 
-        datas = getDatas(connect.openConnexionPool(), idTheso, lang, groups, q, acceptHeader, filter, match);
+        datas = getDatas(idTheso, lang, groups, q, acceptHeader, filter, match);
         return ResponseEntity.ok().contentType(selectedMediaType).body(datas);
     }
 
@@ -160,7 +155,7 @@ public class ConcepThesoSearchController {
         }
 
         var fullFormat = full ? "full" : null;
-        var datas = restRDFHelper.findDatasForWidget(connect.openConnexionPool(), idTheso, lang, groups, q, HeaderHelper.removeCharset(fullFormat), exactMatch);
+        var datas = restRDFHelper.findDatasForWidget(idTheso, lang, groups, q, HeaderHelper.removeCharset(fullFormat), exactMatch);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(Objects.requireNonNullElseGet(datas, () -> emptyMessage(APPLICATION_JSON_UTF_8)));
     }
 
@@ -168,13 +163,13 @@ public class ConcepThesoSearchController {
         String[] groups = new String[arkGroups.length];
         int i = 0;
         for (String arkGroup : arkGroups) {
-            groups[i] = groupHelper.getIdGroupFromArkId(connect.openConnexionPool(), arkGroup, idTheso);
+            groups[i] = groupHelper.getIdGroupFromArkId(arkGroup, idTheso);
             i++;
         }
         return groups;
     }
 
-    private String getDatas(HikariDataSource ds,
+    private String getDatas(
                                    String idTheso, String idLang,
                                    String [] groups,
                                    String value,
@@ -183,9 +178,9 @@ public class ConcepThesoSearchController {
 
         format = HeaderHelper.removeCharset(format);
         if (filter != null && filter.equalsIgnoreCase("notation:")) {
-            return restRDFHelper.findNotation(ds, idTheso, value, format);
+            return restRDFHelper.findNotation(idTheso, value, format);
         }
-        return restRDFHelper.findConcepts(ds, idTheso, idLang, groups, value, format, match);
+        return restRDFHelper.findConcepts(idTheso, idLang, groups, value, format, match);
     }
 }
 

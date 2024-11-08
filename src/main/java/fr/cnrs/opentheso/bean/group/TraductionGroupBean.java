@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.group;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
 import java.io.Serializable;
@@ -33,8 +27,6 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class TraductionGroupBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
     @Autowired @Lazy
     private GroupView groupView;
     @Autowired @Lazy
@@ -139,7 +131,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(connect.openConnexionPool(),
+        if (groupHelper.isDomainExist(
                 traductionValue,
                 selectedLang,
                 selectedTheso.getCurrentIdTheso())) {
@@ -151,7 +143,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.addGroupTraduction(connect.openConnexionPool(),
+        if (!groupHelper.addGroupTraduction(
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),
                 selectedTheso.getCurrentIdTheso(),
                 selectedLang,
@@ -163,7 +155,7 @@ public class TraductionGroupBean implements Serializable {
             }
             return;
         }
-        groupHelper.updateModifiedDate(connect.openConnexionPool(), groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
+        groupHelper.updateModifiedDate(groupView.getNodeGroup().getConceptGroup().getIdgroup(), selectedTheso.getCurrentIdTheso());
 
         groupView.getGroup(selectedTheso.getCurrentIdTheso(),
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),
@@ -199,7 +191,7 @@ public class TraductionGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(connect.openConnexionPool(),
+        if (groupHelper.isDomainExist(
                 nodeGroupTraductions.getTitle(),
                 nodeGroupTraductions.getIdLang(),
                 selectedTheso.getCurrentIdTheso())) {
@@ -212,7 +204,7 @@ public class TraductionGroupBean implements Serializable {
         }
 
         if (!groupHelper.renameGroup(
-                connect.openConnexionPool(),
+                
                 nodeGroupTraductions.getTitle(),
                 nodeGroupTraductions.getIdLang(),
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),
@@ -261,7 +253,7 @@ public class TraductionGroupBean implements Serializable {
         }
 
         if (!groupHelper.deleteGroupTraduction(
-                connect.openConnexionPool(),
+                
                 groupView.getNodeGroup().getConceptGroup().getIdgroup(),
                 selectedTheso.getCurrentIdTheso(),
                 nodeGroupTraductions.getIdLang())) {

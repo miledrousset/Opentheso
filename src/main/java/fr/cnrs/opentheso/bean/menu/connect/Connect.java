@@ -1,16 +1,13 @@
 package fr.cnrs.opentheso.bean.menu.connect;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import java.io.Serializable;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import javax.sql.DataSource;
 
 
 @Slf4j
@@ -60,27 +57,17 @@ public class Connect implements Serializable{
     }
 
     @Bean
-    public HikariDataSource openConnexionPool() {
-        Properties props = new Properties();
-        props.setProperty("dataSourceClassName", dataSourceClassName);
-        props.setProperty("dataSource.user", username);
-        props.setProperty("dataSource.password", password);
-
-        // Regex pour capturer le serveur, le port et le nom de la base de données
-        Matcher matcher = Pattern.compile("jdbc:postgresql://([^:]+):(\\d+)/(.+)").matcher(databaseUrl);
-        matcher.matches();
-        props.setProperty("dataSource.databaseName", matcher.group(3));
-        props.setProperty("dataSource.serverName", matcher.group(1));
-        props.setProperty("dataSource.portNumber", matcher.group(2));
-
-        HikariConfig config = new HikariConfig(props);
-        config.setMinimumIdle(minIdle);
-        config.setMaximumPoolSize(maxPoolSize);
-        config.setIdleTimeout(idleTimeout);
-        config.setConnectionTimeout(connectionTimeout);
-        config.setAutoCommit(true);
-
-        return new HikariDataSource(config);
+    public DataSource openConnexionPool() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(databaseUrl);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        dataSource.setDriverClassName(dataSourceClassName);
+        dataSource.setMaximumPoolSize(maxPoolSize);
+        dataSource.setMinimumIdle(minIdle);
+        dataSource.setIdleTimeout(idleTimeout);
+        dataSource.setMaxLifetime(1800000);
+        return dataSource;
     }
 
     public String status(){

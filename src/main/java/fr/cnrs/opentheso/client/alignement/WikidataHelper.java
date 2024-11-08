@@ -10,9 +10,7 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 
-
 import java.util.Collections;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -165,7 +163,7 @@ public class WikidataHelper {
         SPARQLRepository repo = new SPARQLRepository(sparqlEndpoint);
 
         String userAgent = "opentheso";
-        repo.setAdditionalHttpHeaders( Collections.singletonMap("User-Agent", userAgent ) );
+        repo.setAdditionalHttpHeaders(Collections.singletonMap("User-Agent", userAgent ) );
         
         
         List<Map<String, String>> resultsList = new ArrayList<>();

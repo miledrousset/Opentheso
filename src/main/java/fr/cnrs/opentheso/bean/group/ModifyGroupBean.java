@@ -2,7 +2,6 @@ package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bean.leftbody.TreeNodeData;
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewgroup.GroupView;
@@ -35,8 +34,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ModifyGroupBean implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
     @Autowired @Lazy
     private TreeGroups treeGroups;
     @Autowired @Lazy
@@ -85,7 +82,7 @@ public class ModifyGroupBean implements Serializable {
         notation = groupView.getNodeGroup().getConceptGroup().getNotation();
         selectedGroupType = groupView.getNodeGroup().getConceptGroup().getIdtypecode();
 
-        listGroupType = groupHelper.getAllGroupType(connect.openConnexionPool());
+        listGroupType = groupHelper.getAllGroupType();
     }
 
     public void infos() {
@@ -101,11 +98,11 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        String idParent = groupHelper.getIdFather(connect.openConnexionPool(), idGroup, selectedTheso.getCurrentIdTheso());
+        String idParent = groupHelper.getIdFather(idGroup, selectedTheso.getCurrentIdTheso());
 
         if(isMoveToRoot()) {
             if(!StringUtils.isEmpty(idParent)) {
-                if(!groupHelper.removeGroupFromGroup(connect.openConnexionPool(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
+                if(!groupHelper.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso())){
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     return;
@@ -130,7 +127,7 @@ public class ModifyGroupBean implements Serializable {
             }
 
             /// contrôle si le groupe est à déplacer dans la même hiérarchie, c'est interdit
-            if(groupHelper.isMoveToDescending(connect.openConnexionPool(),
+            if(groupHelper.isMoveToDescending(
                     idGroup, selectedNodeAutoCompletionGroup.getIdGroup(), selectedTheso.getCurrentIdTheso())){
                 FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Déplacement impossible !");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -145,13 +142,13 @@ public class ModifyGroupBean implements Serializable {
                     return;
                 }
 
-                if(!groupHelper.removeGroupFromGroup(connect.openConnexionPool(), idGroup, idParent, selectedTheso.getCurrentIdTheso())){
+                if(!groupHelper.removeGroupFromGroup(idGroup, idParent, selectedTheso.getCurrentIdTheso())){
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", " Erreur !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     return;
                 }
             }
-            groupHelper.addSubGroup(connect.openConnexionPool(),
+            groupHelper.addSubGroup(
                     selectedNodeAutoCompletionGroup.getIdGroup(), idGroup, selectedTheso.getCurrentIdTheso());
         }
 
@@ -172,7 +169,7 @@ public class ModifyGroupBean implements Serializable {
         List<NodeAutoCompletion> liste = new ArrayList<>();
         if (selectedTheso.getCurrentIdTheso() != null && selectedTheso.getCurrentLang() != null) {
             liste = groupHelper.getAutoCompletionGroup(
-                    connect.openConnexionPool(),
+                    
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(),
                     value);
@@ -198,7 +195,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (groupHelper.isDomainExist(connect.openConnexionPool(),
+        if (groupHelper.isDomainExist(
                 titleGroup,
                 selectedTheso.getCurrentIdTheso(),
                 selectedTheso.getCurrentLang())) {
@@ -209,9 +206,9 @@ public class ModifyGroupBean implements Serializable {
             }
             return;
         }
-        if(groupHelper.isHaveTraduction(connect.openConnexionPool(), idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
+        if(groupHelper.isHaveTraduction(idGroup, selectedTheso.getCurrentIdTheso(), selectedTheso.getCurrentLang())){
             if (!groupHelper.renameGroup(
-                    connect.openConnexionPool(),
+                    
                     titleGroup,
                     selectedTheso.getCurrentLang(),
                     idGroup,
@@ -226,7 +223,7 @@ public class ModifyGroupBean implements Serializable {
             }
         } else {
             if (!groupHelper.addGroupTraduction(
-                    connect.openConnexionPool(),
+                    
                     idGroup,
                     selectedTheso.getCurrentIdTheso(),
                     selectedTheso.getCurrentLang(),
@@ -279,7 +276,7 @@ public class ModifyGroupBean implements Serializable {
         }
 
         if (groupHelper.isNotationExist(
-                connect.openConnexionPool(),
+                
                 notation,
                 selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, " ", " La notation existe déjà !");
@@ -290,7 +287,7 @@ public class ModifyGroupBean implements Serializable {
             return;
         }
 
-        if (!groupHelper.setNotationOfGroup(connect.openConnexionPool(),
+        if (!groupHelper.setNotationOfGroup(
                 notation,
                 idGroup,
                 selectedTheso.getCurrentIdTheso())) {
@@ -339,7 +336,7 @@ public class ModifyGroupBean implements Serializable {
         }
 
         if (!groupHelper.updateTypeGroup(
-                connect.openConnexionPool(),
+                
                 selectedGroupType,
                 selectedTheso.getCurrentIdTheso(),
                 idGroup)) {

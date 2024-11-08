@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.concept;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,9 +29,6 @@ import static fr.cnrs.opentheso.ws.openapi.helper.CustomMediaType.*;
 public class ConceptHandleController {
 
     @Autowired
-    private Connect connect;
-
-    @Autowired
     private RestRDFHelper restRDFHelper;
 
 
@@ -55,7 +51,7 @@ public class ConceptHandleController {
                                              @RequestParam(name = "idHandle") String idHandle,
                                              @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
-        var datas = restRDFHelper.exportConceptHdl(connect.openConnexionPool(), handle + "/" + idHandle, acceptHeader);
+        var datas = restRDFHelper.exportConceptHdl(handle + "/" + idHandle, acceptHeader);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }    
 

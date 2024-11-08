@@ -27,7 +27,7 @@ import org.primefaces.PrimeFaces;
 @Named(value = "newProjectBean")
 @SessionScoped
 public class NewProjectBean implements Serializable {
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private CurrentUser currentUser;
 
@@ -60,10 +60,10 @@ public class NewProjectBean implements Serializable {
     public void init() {
         projectName = null;
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeProjectOfUser = userHelper.getAllProject(connect.openConnexionPool());
+            listeProjectOfUser = userHelper.getAllProject();
             return;
         }
-        listeProjectOfUser = userHelper.getProjectsOfUserAsAdmin(connect.openConnexionPool(), currentUser.getNodeUser().getIdUser());        
+        listeProjectOfUser = userHelper.getProjectsOfUserAsAdmin(currentUser.getNodeUser().getIdUser());        
     }   
     
     /**
@@ -81,14 +81,14 @@ public class NewProjectBean implements Serializable {
         }
         
         if(userHelper.isUserGroupExist(
-                connect.openConnexionPool(),
+                
                 projectName)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ce nom de projet existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }        
         if(!userHelper.addNewProject(
-                connect.openConnexionPool(),
+                
                 projectName)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -99,14 +99,14 @@ public class NewProjectBean implements Serializable {
         if(!currentUser.getNodeUser().isSuperAdmin()){
             if(currentUser.getAllAuthorizedProjectAsAdmin() != null && !currentUser.getAllAuthorizedProjectAsAdmin().isEmpty()) {
                 // on donne le droit admin pour l'utilisateur courant sur ce groupe
-                int projectId = userHelper.getThisProjectId(connect.openConnexionPool(), projectName);
+                int projectId = userHelper.getThisProjectId(projectName);
                 if(projectId == -1) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur interne BDD !!!");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     return;   
                 }
                 if(!userHelper.addUserRoleOnGroup(
-                        connect.openConnexionPool(),
+                        
                         currentUser.getNodeUser().getIdUser(),
                         2,
                         projectId)) {
@@ -136,7 +136,7 @@ public class NewProjectBean implements Serializable {
         }
         
         if(userHelper.isUserGroupExist(
-                connect.openConnexionPool(),
+                
                 nodeUserGroup.getGroupName())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ce nom de projet existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -144,7 +144,7 @@ public class NewProjectBean implements Serializable {
             return;             
         }          
         if(!userHelper.updateProject(
-                connect.openConnexionPool(),
+                
                 nodeUserGroup.getGroupName(),
                 nodeUserGroup.getIdGroup())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de modification !!!");
@@ -171,7 +171,7 @@ public class NewProjectBean implements Serializable {
     public void deleteProject(NodeUserGroup nodeUserGroup) {
         FacesMessage msg;
 
-        if (!userHelper.deleteProjectGroup(connect.openConnexionPool(), nodeUserGroup.getIdGroup())) {
+        if (!userHelper.deleteProjectGroup(nodeUserGroup.getIdGroup())) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur :", nodeUserGroup.getGroupName()));
             return;

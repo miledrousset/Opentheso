@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.group;
 
 import fr.cnrs.opentheso.bean.leftbody.viewgroups.TreeGroups;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -11,12 +10,8 @@ import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import jakarta.inject.Named;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -33,9 +28,6 @@ import org.primefaces.model.TreeNode;
 @Named(value = "removeConceptAndChildFromGroupBean")
 @SessionScoped
 public class RemoveConceptAndChildFromGroupBean implements Serializable {
-
-    @Autowired @Lazy
-    private Connect connect;
 
     @Autowired @Lazy
     private CurrentUser currentUser;
@@ -81,15 +73,15 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
         PrimeFaces pf = PrimeFaces.current();
 
         ArrayList<String> allId  = conceptHelper.getIdsOfBranch(
-                connect.openConnexionPool(),
+                
                 conceptView.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());
 
-        if( (allId == null) || (allId.isEmpty())) return;
+        if((allId == null) || (allId.isEmpty())) return;
 
         for (String idConcept : allId) {
             if (!groupHelper.deleteRelationConceptGroupConcept(
-                    connect.openConnexionPool(),
+                    
                     idGroup,
                     idConcept,
                     selectedTheso.getCurrentIdTheso(),
@@ -119,28 +111,18 @@ public class RemoveConceptAndChildFromGroupBean implements Serializable {
 
     public void deleteGroup(String idGroup, int idUser){
         FacesMessage msg;
-        try {
-            Connection conn = connect.openConnexionPool().getConnection();
-            conn.setAutoCommit(false);
-            if(!groupHelper.deleteConceptGroupRollBack(conn, idGroup, selectedTheso.getCurrentIdTheso(), idUser)) {
-                conn.rollback();
-                conn.close();
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de la collection !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                return;
-            }
-            conn.commit();
-            conn.close();
-            if(!groupHelper.removeAllConceptsFromThisGroup(connect.openConnexionPool(), idGroup, selectedTheso.getCurrentIdTheso())){
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de l'appartenance des concepts à la collection !!");
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
-
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "La collection a bien été supprimée");
+        if(!groupHelper.deleteConceptGroupRollBack(idGroup, selectedTheso.getCurrentIdTheso(), idUser)) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de la collection !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-        } catch (SQLException ex) {
-            Logger.getLogger(RemoveConceptAndChildFromGroupBean.class.getName()).log(Level.SEVERE, null, ex);
+            return;
         }
+        if(!groupHelper.removeAllConceptsFromThisGroup(idGroup, selectedTheso.getCurrentIdTheso())){
+            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur!", "Erreur lors de la suppression de l'appartenance des concepts à la collection !!");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "La collection a bien été supprimée");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
         PrimeFaces pf = PrimeFaces.current();
         if (treeGroups.getSelectedNode() != null) {
             TreeNode parent = treeGroups.getSelectedNode().getParent();

@@ -1,35 +1,36 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import fr.cnrs.opentheso.models.thesaurus.Thesaurus;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class AccessThesaurusHelper {
+
+    @Autowired
+    private DataSource dataSource;
     
     /**
-     * permet de mettre à jour la visibilité du thésaurus en publique ou privé 
-     * 
-     * @param ds
+     * permet de mettre à jour la visibilité du thésaurus en publique ou privé
      * @param idTheso
      * @param isPrivate
      * @return 
      * #MR
      */
-    public boolean updateVisibility(HikariDataSource ds, String idTheso, boolean isPrivate) {
+    public boolean updateVisibility(String idTheso, boolean isPrivate) {
         
         Statement stmt = null;
         boolean status = false;
         try {
-            Connection conn = ds.getConnection();
+            Connection conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 String query = "UPDATE thesaurus SET private = " +  isPrivate + " WHERE id_thesaurus='" + idTheso + "'";
@@ -49,47 +50,44 @@ public class AccessThesaurusHelper {
      * Fonction getAThesaurus
      * #JM
      * permet de récupérer un thésaurus d'après son identifiant
-     * @param ds
      * @param idTheso
      * @param idLang
      * @return 
      */
-    public Thesaurus getAThesaurus(HikariDataSource ds, String idTheso,String idLang){
+    public Thesaurus getAThesaurus(String idTheso,String idLang){
         
-        Thesaurus th =new Thesaurus();
-        
-        try (Connection conn=ds.getConnection()) {
-            
-            try (PreparedStatement stmt = conn.prepareStatement("SELECT *  FROM thesaurus INNER JOIN thesaurus_label ON thesaurus.id_thesaurus=thesaurus_label.id_thesaurus WHERE thesaurus.id_thesaurus=? AND lang=?")) {
-                
-                stmt.setString(1,idTheso);
-                stmt.setString(2,idLang);
+        var th = new Thesaurus();
+        var sql = "SELECT *  FROM thesaurus INNER JOIN thesaurus_label ON thesaurus.id_thesaurus=thesaurus_label.id_thesaurus WHERE thesaurus.id_thesaurus=? AND lang=?";
 
-                try (ResultSet rs=stmt.executeQuery()) {
-                    if(rs.next()){
-                        th.setContributor(rs.getString("contributor"));
-                        th.setCoverage(rs.getString("coverage"));
-                        th.setCreated(rs.getDate("created"));
-                        th.setCreator(rs.getString("creator"));
-                        th.setDescription(rs.getString("description"));
-                        th.setFormat(rs.getString("format"));
-                        th.setId_ark(rs.getString("id_ark"));
-                        th.setId_thesaurus(rs.getString("id_thesaurus"));
-                        th.setLanguage(rs.getString("lang"));
-                        th.setModified(rs.getDate("modified"));
-                        th.setPublisher(rs.getString("publisher"));
-                        th.setRelation(rs.getString("relation"));
-                        th.setRights(rs.getString("rights"));
-                        th.setSource(rs.getString("source"));
-                        th.setSubject(rs.getString("subject"));
-                        th.setTitle(rs.getString("title"));
-                        th.setType(rs.getString("type"));
-                        th.setPrivateTheso(rs.getBoolean("private"));
+        try (var connexion = dataSource.getConnection();
+             var stmt = connexion.prepareStatement(sql)) {
 
-                    } else{
-                        log.error("la requete n'a pas trouver de thesaurus associé à l'idenitifiant");
-                    }
-                }
+            stmt.setString(1, idTheso);
+            stmt.setString(2, idLang);
+
+            var rs = stmt.executeQuery();
+            if(rs.next()){
+                th.setContributor(rs.getString("contributor"));
+                th.setCoverage(rs.getString("coverage"));
+                th.setCreated(rs.getDate("created"));
+                th.setCreator(rs.getString("creator"));
+                th.setDescription(rs.getString("description"));
+                th.setFormat(rs.getString("format"));
+                th.setId_ark(rs.getString("id_ark"));
+                th.setId_thesaurus(rs.getString("id_thesaurus"));
+                th.setLanguage(rs.getString("lang"));
+                th.setModified(rs.getDate("modified"));
+                th.setPublisher(rs.getString("publisher"));
+                th.setRelation(rs.getString("relation"));
+                th.setRights(rs.getString("rights"));
+                th.setSource(rs.getString("source"));
+                th.setSubject(rs.getString("subject"));
+                th.setTitle(rs.getString("title"));
+                th.setType(rs.getString("type"));
+                th.setPrivateTheso(rs.getBoolean("private"));
+
+            } else{
+                log.error("la requete n'a pas trouver de thesaurus associé à l'idenitifiant");
             }
         }
         catch(SQLException e){
