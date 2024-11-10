@@ -1,7 +1,5 @@
 package fr.cnrs.opentheso.repositories.propositions;
 
-import com.zaxxer.hikari.HikariDataSource;
-
 import fr.cnrs.opentheso.models.propositions.PropositionDetailDao;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,23 +7,27 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import fr.cnrs.opentheso.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class PropositionDetailHelper {
 
-    public List<PropositionDetailDao> getPropositionDetail(HikariDataSource ds, int propositionId) {
+    @Autowired
+    private DataSource dataSource;
+
+
+    public List<PropositionDetailDao> getPropositionDetail(int propositionId) {
 
         List<PropositionDetailDao> propositionDetails = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from proposition_modification_detail where id_proposition = " + propositionId);
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -52,11 +54,11 @@ public class PropositionDetailHelper {
         return propositionDetails;
     }
 
-    public boolean createNewPropositionDetail(HikariDataSource ds, PropositionDetailDao propositionDetail) {
+    public boolean createNewPropositionDetail(PropositionDetailDao propositionDetail) {
         
         propositionDetail.setValue(StringUtils.convertString(propositionDetail.getValue()));
         propositionDetail.setOldValue(StringUtils.convertString(propositionDetail.getOldValue()));
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("INSERT INTO public.proposition_modification_detail(id_proposition, categorie, value, old_value, action, lang, hiden, status, id_term) "
                         + "VALUES (" + propositionDetail.getIdProposition() + ", '" + propositionDetail.getCategorie()
@@ -71,9 +73,9 @@ public class PropositionDetailHelper {
         }
     }
 
-    public boolean supprimerPropositionDetails(HikariDataSource ds, int propositionID) {
+    public boolean supprimerPropositionDetails(int propositionID) {
         boolean status = false;
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.execute("DELETE FROM proposition_modification_detail WHERE id_proposition = " + propositionID);
                 status = true;

@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.ws.openapi.v1.routes.group;
 
 import fr.cnrs.opentheso.repositories.GroupHelper;
 import fr.cnrs.opentheso.models.group.NodeGroupTraductions;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.ws.api.RestRDFHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -62,14 +62,14 @@ public class GroupThesoController {
 
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(connect.getPoolConnexion(), idTheso);
+        List<String> listIdGroupOfTheso = groupHelper.getListIdOfGroup(idTheso);
 
         for (String idGroup : listIdGroupOfTheso) {
             JsonObjectBuilder job = Json.createObjectBuilder();
             job.add("idGroup", idGroup);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeGroupTraductions = groupHelper.getAllGroupTraduction(connect.getPoolConnexion(), idGroup, idTheso);
+            nodeGroupTraductions = groupHelper.getAllGroupTraduction(idGroup, idTheso);
             for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", nodeGroupTraduction.getIdLang());
@@ -107,7 +107,7 @@ public class GroupThesoController {
             @RequestHeader(value = "accept", required = false) String acceptHeader) {
 
 
-        var datas = restRDFHelper.exportGroup(connect.getPoolConnexion(), idTheso, idGroup, removeCharset(acceptHeader));
+        var datas = restRDFHelper.exportGroup(idTheso, idGroup, removeCharset(acceptHeader));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 
@@ -131,14 +131,14 @@ public class GroupThesoController {
 
         ArrayList<NodeGroupTraductions> nodeGroupTraductions;
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        List<String> listIdSubGroupOfTheso = groupHelper.getListGroupChildIdOfGroup(connect.getPoolConnexion(), idGroup, idTheso);
+        List<String> listIdSubGroupOfTheso = groupHelper.getListGroupChildIdOfGroup(idGroup, idTheso);
 
         for (String idSubGroup : listIdSubGroupOfTheso) {
             JsonObjectBuilder job = Json.createObjectBuilder();
             job.add("idGroup", idSubGroup);
             JsonArrayBuilder jsonArrayBuilderLang = Json.createArrayBuilder();
 
-            nodeGroupTraductions = groupHelper.getAllGroupTraduction(connect.getPoolConnexion(), idSubGroup, idTheso);
+            nodeGroupTraductions = groupHelper.getAllGroupTraduction(idSubGroup, idTheso);
             for (NodeGroupTraductions nodeGroupTraduction : nodeGroupTraductions) {
                 JsonObjectBuilder jobLang = Json.createObjectBuilder();
                 jobLang.add("lang", nodeGroupTraduction.getIdLang());
@@ -182,7 +182,7 @@ public class GroupThesoController {
             return ResponseEntity.badRequest().contentType(MediaType.parseMediaType(acceptHeader)).body("No group id");
         }
         
-        var datas = restRDFHelper.brancheOfGroup(connect.getPoolConnexion(), groups, idTheso, removeCharset(acceptHeader));
+        var datas = restRDFHelper.brancheOfGroup(groups, idTheso, removeCharset(acceptHeader));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }
 
@@ -211,7 +211,7 @@ public class GroupThesoController {
             return ResponseEntity.badRequest().contentType(MediaType.parseMediaType(acceptHeader)).body("No group id");
         }
 
-        var datas = restRDFHelper.brancheOfGroupAsTree(connect.getPoolConnexion(), groups, idTheso, lang);
+        var datas = restRDFHelper.brancheOfGroupAsTree(groups, idTheso, lang);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(acceptHeader)).body(datas);
     }    
     

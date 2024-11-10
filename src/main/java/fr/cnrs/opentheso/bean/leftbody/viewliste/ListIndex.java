@@ -9,7 +9,6 @@ import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.repositories.SearchHelper;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.bean.leftbody.LeftBodySetting;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
 import fr.cnrs.opentheso.bean.rightbody.RightBodySetting;
@@ -32,8 +31,7 @@ import org.primefaces.event.SelectEvent;
 @SessionScoped
 public class ListIndex implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    
     @Autowired @Lazy
     private SelectedTheso selectedTheso;
     @Autowired @Lazy
@@ -84,11 +82,7 @@ public class ListIndex implements Serializable {
             return;
         }
 
-        nodeIdValues = searchHelper.searchTermForIndex(
-                connect.getPoolConnexion(),
-                searchValue,
-                idLang, idTheso,
-                permuted, withAltLabel);
+        nodeIdValues = searchHelper.searchTermForIndex(searchValue, idLang, idTheso, permuted, withAltLabel);
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {

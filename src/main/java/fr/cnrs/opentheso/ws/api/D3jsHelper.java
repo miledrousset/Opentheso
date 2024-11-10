@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.ws.api;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
@@ -36,7 +35,7 @@ public class D3jsHelper {
     private int count = 0;
     private NodePreference nodePreference;
 
-    public String findDatasForGraph__(HikariDataSource ds, String idConcept, String idTheso, String idLang) {
+    public String findDatasForGraph__(String idConcept, String idTheso, String idLang) {
 
         if(StringUtils.isEmpty(idTheso)) {
             return null;
@@ -45,7 +44,7 @@ public class D3jsHelper {
         if(StringUtils.isEmpty(idLang)) {
             return null;
         }
-        nodePreference = preferencesHelper.getThesaurusPreferences(ds, idTheso);
+        nodePreference = preferencesHelper.getThesaurusPreferences(idTheso);
         if (nodePreference == null) {
             return null;
         }
@@ -54,9 +53,9 @@ public class D3jsHelper {
         
         // cas où on affiche tout le thésaurus
         if(StringUtils.isEmpty(idConcept)){
-            nodeConceptGraphs_childs = daoResourceHelper.getConceptsTTForGraph(ds, idTheso, idLang);
+            nodeConceptGraphs_childs = daoResourceHelper.getConceptsTTForGraph(idTheso, idLang);
         } else {
-            nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(ds, idTheso, idConcept, idLang);
+            nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(idTheso, idConcept, idLang);
         }
         
         if(nodeConceptGraphs_childs == null || nodeConceptGraphs_childs.isEmpty())
@@ -68,19 +67,19 @@ public class D3jsHelper {
         }
         
         NodeJsonD3js nodeJsonD3js = new NodeJsonD3js();
-        nodeJsonD3js.setNodeDatas(getRootNode(ds, idTheso, idLang, idConcept, nodeConceptGraphs_childs));            
+        nodeJsonD3js.setNodeDatas(getRootNode(idTheso, idLang, idConcept, nodeConceptGraphs_childs));            
 
         return getJsonFromNodeJsonD3js(nodeJsonD3js);
     }
 
-    private NodeDatas getRootNode(HikariDataSource ds, String idTheso, String idLang,
+    private NodeDatas getRootNode(String idTheso, String idLang,
             String idTopConcept,  List<NodeConceptGraph> nodeConceptGraphs_childs){
         
         NodeDatas nodeDatas;
         if(StringUtils.isEmpty(idTopConcept)){
-            nodeDatas = getTopNodeDatasForTheso(ds, idTheso, idLang);
+            nodeDatas = getTopNodeDatasForTheso(idTheso, idLang);
         } else {
-            nodeDatas = getTopNodeDatas(ds, idTopConcept, idTheso, idLang);
+            nodeDatas = getTopNodeDatas(idTopConcept, idTheso, idLang);
         }
 
         //Children
@@ -91,19 +90,19 @@ public class D3jsHelper {
 
         // boucle récursive pour récupérer les fils
         for (NodeConceptGraph nodeConceptGraph : nodeConceptGraphs_childs) {
-            childrens.add(getNode(ds, nodeConceptGraph, idTheso, idLang));
+            childrens.add(getNode(nodeConceptGraph, idTheso, idLang));
         }
         nodeDatas.setChildrens(childrens);
         return nodeDatas;
     }
 
-    private NodeDatas getNode(HikariDataSource ds, NodeConceptGraph nodeConceptGraph, String idTheso, String idLang){
+    private NodeDatas getNode(NodeConceptGraph nodeConceptGraph, String idTheso, String idLang){
         NodeDatas nodeDatas = getNodeDatas(nodeConceptGraph);
         count++;
         //Children
         List<NodeDatas> childrens = new ArrayList<>();
         if(count < 3000) {
-            List<NodeConceptGraph> nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(ds, idTheso, nodeConceptGraph.getIdConcept(), idLang);
+            List<NodeConceptGraph> nodeConceptGraphs_childs = daoResourceHelper.getConceptsNTForGraph(idTheso, nodeConceptGraph.getIdConcept(), idLang);
             
             if(nodeConceptGraphs_childs != null && !nodeConceptGraphs_childs.isEmpty()) {            
                 /// limitation des frères à 2000
@@ -111,7 +110,7 @@ public class D3jsHelper {
                     nodeConceptGraphs_childs = nodeConceptGraphs_childs.subList(0, 2001);
                 }            
                 for (NodeConceptGraph nodeConceptGraph1 : nodeConceptGraphs_childs) {
-                    childrens.add(getNode(ds, nodeConceptGraph1, idTheso, idLang));
+                    childrens.add(getNode(nodeConceptGraph1, idTheso, idLang));
                     count++;
                     nodeDatas.setChildrens(childrens);
                 }
@@ -216,21 +215,21 @@ public class D3jsHelper {
     }    
 
 
-    private NodeDatas getTopNodeDatas(HikariDataSource ds, String idConcept, String idTheso, String idLang){
+    private NodeDatas getTopNodeDatas(String idConcept, String idTheso, String idLang){
 
         conceptHelper.setNodePreference(nodePreference);
 
-        NodeDatas nodeDatas = conceptHelper.getConceptForGraph(ds, idConcept, idTheso, idLang);
-        if(conceptHelper.haveChildren(ds, idTheso, idConcept)) {
+        NodeDatas nodeDatas = conceptHelper.getConceptForGraph(idConcept, idTheso, idLang);
+        if(conceptHelper.haveChildren(idTheso, idConcept)) {
             nodeDatas.setType("type2");
         } else
             nodeDatas.setType("type3");
         return nodeDatas;
     }
     
-    private NodeDatas getTopNodeDatasForTheso(HikariDataSource ds, String idTheso, String idLang){
+    private NodeDatas getTopNodeDatasForTheso(String idTheso, String idLang){
 
-        String title = thesaurusHelper.getTitleOfThesaurus(ds, idTheso, idLang);
+        String title = thesaurusHelper.getTitleOfThesaurus(idTheso, idLang);
         NodeDatas nodeDatas = new NodeDatas();
         
         nodeDatas.setType("type2");

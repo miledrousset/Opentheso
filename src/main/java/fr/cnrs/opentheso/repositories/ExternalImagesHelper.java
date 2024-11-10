@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,21 +8,27 @@ import java.util.ArrayList;
 import fr.cnrs.opentheso.models.nodes.NodeImage;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class ExternalImagesHelper {
 
+    @Autowired
+    private DataSource dataSource;
+
     /**
      * Permet d'ajouter un lien vers une image externe lien de type URI
     */ 
-    public boolean addExternalImage(HikariDataSource ds, String idConcept, String idThesausus,
+    public boolean addExternalImage(String idConcept, String idThesausus,
             String imageName, String copyRight, String uri, String creator) {
 
         copyRight = fr.cnrs.opentheso.utils.StringUtils.convertString(copyRight);
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into external_images (id_concept, id_thesaurus, image_name, "
                         + "image_copyright, external_uri, image_creator) values ('"
@@ -46,11 +51,11 @@ public class ExternalImagesHelper {
      * Permet de récupérer les URI des images distantes qui sont liées au
      * concept
      */
-    public ArrayList<NodeImage> getExternalImages(HikariDataSource ds, String idConcept, String idThesausus) {
+    public ArrayList<NodeImage> getExternalImages(String idConcept, String idThesausus) {
 
         ArrayList<NodeImage> nodeImageList = null;
 
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from external_images where id_concept = '"
                         + idConcept + "' and id_thesaurus = '" + idThesausus + "'");

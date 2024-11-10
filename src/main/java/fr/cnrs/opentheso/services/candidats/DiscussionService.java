@@ -6,7 +6,7 @@ import fr.cnrs.opentheso.repositories.candidats.MessageCandidatHelper;
 import fr.cnrs.opentheso.models.candidats.MessageDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
 import fr.cnrs.opentheso.bean.mail.MailBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.utils.EmailUtils;
 
 import java.io.Serializable;
@@ -46,8 +46,7 @@ public class DiscussionService implements Serializable {
     @Autowired @Lazy
     private LanguageBean langueBean;
 
-    @Autowired @Lazy
-    private Connect connect;
+    
 
     @Autowired @Lazy
     private LanguageBean languageBean;
@@ -99,9 +98,7 @@ public class DiscussionService implements Serializable {
     }
     
     private void setListUsersForMail(){
-        nodeUsers = messageCandidatHelper.getParticipantsByCandidat(
-                connect.getPoolConnexion(),
-                candidatBean.getCandidatSelected().getIdConcepte(),
+        nodeUsers = messageCandidatHelper.getParticipantsByCandidat(candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus());        
     }
             
@@ -123,7 +120,7 @@ public class DiscussionService implements Serializable {
         messageDto.setNom(candidatBean.getCurrentUser().getUsername().toUpperCase());
         messageDto.setMsg(candidatBean.getMessage());
 
-        messageCandidatHelper.addNewMessage(connect.getPoolConnexion(),
+        messageCandidatHelper.addNewMessage(
                 candidatBean.getMessage(),
                 candidatBean.getCurrentUser().getNodeUser().getIdUser(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
@@ -163,7 +160,6 @@ public class DiscussionService implements Serializable {
 
     public void reloadMessage() {
         candidatBean.getCandidatSelected().setMessages(messageCandidatHelper.getAllMessagesByCandidat(
-                connect.getPoolConnexion(),
                 candidatBean.getCandidatSelected().getIdConcepte(),
                 candidatBean.getCandidatSelected().getIdThesaurus(),
                 candidatBean.getCurrentUser().getNodeUser().getIdUser()));

@@ -1,69 +1,59 @@
 package fr.cnrs.opentheso.repositories.candidats;
 
-import com.zaxxer.hikari.HikariDataSource;
-
-import fr.cnrs.opentheso.models.concept.NodeUri;
 import fr.cnrs.opentheso.models.group.ConceptGroup;
 import fr.cnrs.opentheso.models.nodes.NodeIdValue;
 import fr.cnrs.opentheso.models.group.NodeGroup;
-import fr.cnrs.opentheso.models.candidats.DomaineDto;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 
 @Slf4j
 @Service
-public class DomaineDao extends BasicDao {
+public class DomaineDao {
 
-    public void addNewDomaine(Connect connect, String idgroup, String idthesaurus, String idconcept) throws SQLException {
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
-        executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
-                +idgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
-        stmt.close();
+    @Autowired
+    private DataSource dataSource;
+
+
+    public void addNewDomaine(String idgroup, String idthesaurus, String idconcept) {
+        try (var connect = dataSource.getConnection(); var stmt = connect.createStatement()){
+            stmt.executeUpdate("INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
+                    +idgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
+        } catch (SQLException e) {
+            log.error(e.toString());
+        }
     }
     
-    public void deleteAllDomaine(Connect connect, String idThesaurus, String idConcept) throws SQLException {
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
-        executDeleteRequest(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idConcept+"'  AND idthesaurus = '"+idThesaurus+"'");
-        stmt.close();
-    }
-
-    public void deleteDomaine(Connect connect, String idThesaurus, String idConcept, String idGroupe) throws SQLException {
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
-        executDeleteRequest(stmt,"DELETE FROM concept_group_concept " +
-                "WHERE idconcept = '"+idConcept+"' AND idthesaurus = '"+idThesaurus+"' AND idgroup='"+idGroupe+"'");
-        stmt.close();
-    }
-
-    public void updateDomaine(Connect connect, String oldIdgroup, String newIdgroup, String idthesaurus, String idconcept) throws SQLException {
-
-        stmt = connect.getPoolConnexion().getConnection().createStatement();
-
-        if (!StringUtils.isEmpty(newIdgroup)) {
-            executInsertRequest(stmt,"INSERT INTO concept_group_concept(idgroup, idthesaurus, idconcept) VALUES ('"
-                    +newIdgroup+"', '"+idthesaurus+"', '"+idconcept+"')");
-        } else {
-            executDeleteRequest(stmt,"DELETE FROM concept_group_concept WHERE idconcept = '"+idconcept+"' AND idgroup = '"
-                    +oldIdgroup+"' AND idthesaurus = '"+idthesaurus+"'");
+    public void deleteAllDomaine(String idThesaurus, String idConcept) {
+        try (var connect = dataSource.getConnection(); var stmt = connect.createStatement()){
+            stmt.executeUpdate("DELETE FROM concept_group_concept WHERE idconcept = '"+idConcept+"'  AND idthesaurus = '"+idThesaurus+"'");
+        } catch (SQLException e) {
+            log.error(e.toString());
         }
-
-        stmt.close();
     }
 
-    public ArrayList<NodeIdValue> getDomaineCandidatByConceptAndThesaurusAndLang(HikariDataSource hikariDataSource, String idconcept,
-                                                              String idThesaurus, String lang) {
+    public void deleteDomaine(String idThesaurus, String idConcept, String idGroupe) {
 
-        ArrayList<NodeGroup> nodeGroups = getListGroupOfConcept(hikariDataSource, idThesaurus, idconcept, lang);
+        try (var connect = dataSource.getConnection(); var stmt = connect.createStatement()){
+            stmt.executeUpdate("DELETE FROM concept_group_concept " +
+                    "WHERE idconcept = '"+idConcept+"' AND idthesaurus = '"+idThesaurus+"' AND idgroup='"+idGroupe+"'");
+        } catch (SQLException e) {
+            log.error(e.toString());
+        }
+    }
+
+    public ArrayList<NodeIdValue> getDomaineCandidatByConceptAndThesaurusAndLang(String idconcept, String idThesaurus, String lang) {
+
+        ArrayList<NodeGroup> nodeGroups = getListGroupOfConcept(idThesaurus, idconcept, lang);
         
         ArrayList<NodeIdValue> nodeIdValues = new ArrayList<>();
         for (NodeGroup nodeGroup : nodeGroups) {
@@ -75,7 +65,7 @@ public class DomaineDao extends BasicDao {
         return nodeIdValues;
     }
 
-    public ArrayList<NodeGroup> getListGroupOfConcept(HikariDataSource ds, String idThesaurus, String idConcept, String idLang) {
+    public ArrayList<NodeGroup> getListGroupOfConcept(String idThesaurus, String idConcept, String idLang) {
 
         Connection conn;
         Statement stmt;
@@ -84,7 +74,7 @@ public class DomaineDao extends BasicDao {
 
         try {
             // Get connection from pool
-            conn = ds.getConnection();
+            conn = dataSource.getConnection();
             try {
                 stmt = conn.createStatement();
                 try {
@@ -94,7 +84,7 @@ public class DomaineDao extends BasicDao {
                     stmt.executeQuery(query);
                     resultSet = stmt.getResultSet();
                     while (resultSet.next()) {
-                        NodeGroup nodeGroup = getThisConceptGroup(ds, resultSet.getString("idgroup"), idThesaurus, idLang);
+                        NodeGroup nodeGroup = getThisConceptGroup(resultSet.getString("idgroup"), idThesaurus, idLang);
                         if (nodeGroup != null) {
                             nodeGroups.add(nodeGroup);
                         }
@@ -116,15 +106,13 @@ public class DomaineDao extends BasicDao {
         return nodeGroups;
     }
 
-    public NodeGroup getThisConceptGroup(HikariDataSource ds,
-                                         String idConceptGroup, String idThesaurus, String idLang) {
+    public NodeGroup getThisConceptGroup(String idConceptGroup, String idThesaurus, String idLang) {
 
         NodeGroup nodeConceptGroup = null;
         ConceptGroup conceptGroup = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.executeQuery("SELECT * from concept_group where "
-                        + " LOWER(idgroup) = '" + idConceptGroup.toLowerCase() + "'"
+                stmt.executeQuery("SELECT * from concept_group where LOWER(idgroup) = '" + idConceptGroup.toLowerCase() + "'"
                         + " and idthesaurus = '" + idThesaurus + "'");
                 try (ResultSet resultSet = stmt.getResultSet()){
                     if (resultSet.next()) {

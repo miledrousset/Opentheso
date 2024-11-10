@@ -1,7 +1,6 @@
 package fr.cnrs.opentheso.bean.concept;
 
 import fr.cnrs.opentheso.repositories.HistoryHelper;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
 import java.io.Serializable;
@@ -21,7 +20,7 @@ import org.springframework.context.annotation.Lazy;
 @SessionScoped
 public class HistoryBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
 
@@ -57,16 +56,16 @@ public class HistoryBean implements Serializable {
     }
 
     public void reset() {
-        historyLabels = historyHelper.getLabelHistory(connect.getPoolConnexion(),
+        historyLabels = historyHelper.getLabelHistory(
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedTheso.getCurrentIdTheso());
-        historySynonyms = historyHelper.getSynonymHistory(connect.getPoolConnexion(),
+        historySynonyms = historyHelper.getSynonymHistory(
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedTheso.getCurrentIdTheso());
-        historyRelations = historyHelper.getRelationsHistory(connect.getPoolConnexion(),
+        historyRelations = historyHelper.getRelationsHistory(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 selectedTheso.getCurrentIdTheso());        
-        historyNotes = historyHelper.getNotesHistory(connect.getPoolConnexion(),
+        historyNotes = historyHelper.getNotesHistory(
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 selectedTheso.getCurrentIdTheso());             

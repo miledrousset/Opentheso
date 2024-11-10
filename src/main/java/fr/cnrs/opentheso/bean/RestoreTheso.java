@@ -7,7 +7,7 @@ import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.repositories.ToolsHelper;
 import fr.cnrs.opentheso.utils.DateUtils;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +29,7 @@ import lombok.Data;
 import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 
 
 @Data
@@ -36,8 +37,8 @@ import org.apache.commons.lang3.StringUtils;
 @RequestScoped
 public class RestoreTheso implements Serializable {
 
-    @Autowired
-    private Connect connect;
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
 
     @Autowired
     private ConceptHelper conceptHelper;
@@ -72,7 +73,7 @@ public class RestoreTheso implements Serializable {
         ArrayList<String> conceptIds;
 
         FacesContext fc = FacesContext.getCurrentInstance();
-        conceptIds = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        conceptIds = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
 
         Writer writeFile;
         try {
@@ -159,13 +160,13 @@ public class RestoreTheso implements Serializable {
 
         // supprimer le concept qui ont une relation vers un groupe vide
         // liste des concepts de la table concept-group-concept qui ont une relation vers un groupe qui n'existe plus
-        if(!groupHelper.deleteConceptsWithEmptyRelation(connect.getPoolConnexion(), idTheso)) {
+        if(!groupHelper.deleteConceptsWithEmptyRelation(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations vides"));
         }
-        if(!groupHelper.deleteConceptsHavingRelationShipWithDeletedGroup(connect.getPoolConnexion(), idTheso)) {
+        if(!groupHelper.deleteConceptsHavingRelationShipWithDeletedGroup(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations interdites"));
         }
-        if(!groupHelper.deleteConceptsHavingRelationShipWithDeletedConcept(connect.getPoolConnexion(), idTheso)) {
+        if(!groupHelper.deleteConceptsHavingRelationShipWithDeletedConcept(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des relations interdites"));
         }
 
@@ -185,10 +186,10 @@ public class RestoreTheso implements Serializable {
             return;
         }
 
-        ArrayList<String> listIds = conceptHelper.getIdsOfBranchWithoutLoop(connect.getPoolConnexion(), idConcept, idTheso);
+        ArrayList<String> listIds = conceptHelper.getIdsOfBranchWithoutLoop(idConcept, idTheso);
 
         for (String id : listIds) {
-            toolsHelper.removeLoopRelation(connect.getPoolConnexion(), idTheso, id);
+            toolsHelper.removeLoopRelation(idTheso, id);
         }
         fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Correction terminée"));
 
@@ -200,7 +201,7 @@ public class RestoreTheso implements Serializable {
 
         FacesContext fc = FacesContext.getCurrentInstance();
         // nettoyage des null et d'espaces
-        if (!thesaurusHelper.cleaningTheso(connect.getPoolConnexion(), idTheso)) {
+        if (!thesaurusHelper.cleaningTheso(idTheso)) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la suppression des espaces et des null"));
             return;
         }
@@ -231,48 +232,48 @@ public class RestoreTheso implements Serializable {
     }
 
     private boolean reorganizingTopTerm(String idTheso) {
-        return toolsHelper.reorganizingTopTerm(connect.getPoolConnexion(), idTheso);
+        return toolsHelper.reorganizingTopTerm(idTheso);
     }
     private boolean reorganizingTheso(String idTheso) {
-        return toolsHelper.reorganizingTheso(connect.getPoolConnexion(), idTheso);
+        return toolsHelper.reorganizingTheso(idTheso);
     }
 
     private boolean removeTopTermForConceptWithBT(String idTheso){
-        return toolsHelper.removeTopTermForConceptWithBT(connect.getPoolConnexion(), idTheso);
+        return toolsHelper.removeTopTermForConceptWithBT(idTheso);
     }
 
     private boolean removeSameRelations(String idTheso) {
-        if(!toolsHelper.removeSameRelations(connect.getPoolConnexion(), "BT", idTheso))
+        if(!toolsHelper.removeSameRelations("BT", idTheso))
             return false;
-        if(!toolsHelper.removeSameRelations(connect.getPoolConnexion(), "NT", idTheso))
+        if(!toolsHelper.removeSameRelations("NT", idTheso))
             return false;
-        return toolsHelper.removeSameRelations(connect.getPoolConnexion(), "RT", idTheso);
+        return toolsHelper.removeSameRelations("RT", idTheso);
     }
 
     public void switchRolesFromTermToConcept(String idTheso) {
 
-        String lang = connect.getWorkLanguage();
+        String lang = workLanguage;
 
         String idTerm;
         int idCreator;
         int idContributor;
-        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
 
         for (String idConcept : allConcepts) {
-            if(!conceptHelper.isHaveCreator(connect.getPoolConnexion(), idTheso, idConcept)) {
-                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
+            if(!conceptHelper.isHaveCreator(idTheso, idConcept)) {
+                idTerm = termHelper.getIdTermOfConcept(idConcept, idTheso);
                 if(idTerm != null) {
-                    idCreator = termHelper.getCreator(connect.getPoolConnexion(), idTheso, idTerm, lang);
+                    idCreator = termHelper.getCreator(idTheso, idTerm, lang);
                     if(idCreator != -1)
-                        conceptHelper.setCreator(connect.getPoolConnexion(), idTheso, idConcept, idCreator);
+                        conceptHelper.setCreator(idTheso, idConcept, idCreator);
                 }
             }
-            if(!conceptHelper.isHaveContributor(connect.getPoolConnexion(), idTheso, idConcept)) {
-                idTerm = termHelper.getIdTermOfConcept(connect.getPoolConnexion(), idConcept, idTheso);
+            if(!conceptHelper.isHaveContributor(idTheso, idConcept)) {
+                idTerm = termHelper.getIdTermOfConcept(idConcept, idTheso);
                 if(idTerm != null) {
-                    idContributor = termHelper.getContributor(connect.getPoolConnexion(), idTheso, idTerm, lang);
+                    idContributor = termHelper.getContributor(idTheso, idTerm, lang);
                     if(idContributor != -1)
-                        conceptHelper.setContributor(connect.getPoolConnexion(), idTheso, idConcept, idContributor);
+                        conceptHelper.setContributor(idTheso, idConcept, idContributor);
                 }
             }
         }
@@ -297,16 +298,16 @@ public class RestoreTheso implements Serializable {
         else
             prefix = prefix.trim();
 
-        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
 
         for (String conceptId : allConcepts) {
             if(!overwrite) {
-                if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), idTheso, conceptId)) {
-                    conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso, naan + "/" + prefix + conceptId);
+                if(!conceptHelper.isHaveIdArk(idTheso, conceptId)) {
+                    conceptHelper.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + prefix + conceptId);
                     count++;
                 }
             } else {
-                conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso, naan + "/" + prefix + conceptId);
+                conceptHelper.updateArkIdOfConcept(conceptId, idTheso, naan + "/" + prefix + conceptId);
                 count++;
             }
         }
@@ -332,22 +333,22 @@ public class RestoreTheso implements Serializable {
             return;
         }
 
-        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(connect.getPoolConnexion(), idTheso);
+        ArrayList<String> allConcepts = conceptHelper.getAllIdConceptOfThesaurus(idTheso);
 
         String idArk;
 
         for (String conceptId : allConcepts) {
             if(!overwriteLocalArk) {
-                if(!conceptHelper.isHaveIdArk(connect.getPoolConnexion(), idTheso, conceptId)) {
+                if(!conceptHelper.isHaveIdArk(idTheso, conceptId)) {
                     idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
-                    conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
+                    conceptHelper.updateArkIdOfConcept(conceptId, idTheso,
                             nodePreference.getNaanArkLocal() + "/" +
                                     nodePreference.getPrefixArkLocal() + idArk);
                     count++;
                 }
             } else {
                 idArk = toolsHelper.getNewId(nodePreference.getSizeIdArkLocal(), nodePreference.isUppercase_for_ark(), true);
-                conceptHelper.updateArkIdOfConcept(connect.getPoolConnexion(), conceptId, idTheso,
+                conceptHelper.updateArkIdOfConcept(conceptId, idTheso,
                         nodePreference.getNaanArkLocal() + "/" +
                                 nodePreference.getPrefixArkLocal() + idArk);
                 count++;

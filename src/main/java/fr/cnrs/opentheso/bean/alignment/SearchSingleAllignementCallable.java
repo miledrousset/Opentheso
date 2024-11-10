@@ -1,8 +1,5 @@
 package fr.cnrs.opentheso.bean.alignment;
 
-import com.zaxxer.hikari.HikariDataSource;
-import fr.cnrs.opentheso.repositories.NoteHelper;
-import fr.cnrs.opentheso.repositories.TermHelper;
 import fr.cnrs.opentheso.models.alignment.AlignementSource;
 import fr.cnrs.opentheso.models.alignment.NodeAlignment;
 import fr.cnrs.opentheso.models.alignment.SelectedResource;
@@ -20,6 +17,7 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -34,7 +32,7 @@ import java.util.concurrent.Callable;
 public class SearchSingleAllignementCallable implements Callable<NodeAlignment> {
 
     private AlignementSource alignementSource;
-    private HikariDataSource connection;
+    private DataSource connection;
     private NodeAlignment nodeAlignment;
     private List<String> thesaurusLangs;
     private List<String> allLangsTheso;
@@ -45,7 +43,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
 
     public SearchSingleAllignementCallable(AlignementSource alignementSource,
                                            NodeAlignment nodeAlignment,
-                                           HikariDataSource connection,
+                                           DataSource connection,
                                            List<String> thesaurusLangs,
                                            List<String> allLangsTheso,
                                            String idCurrentLang,
@@ -97,7 +95,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         }
     }
 
-    private void loadGeoNameDatas(HikariDataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
+    private void loadGeoNameDatas(DataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
                                   String idTheso, String idConcept) {
 
         GeoNamesHelper geoNamesHelper = new GeoNamesHelper();
@@ -118,7 +116,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         }
     }
 
-    private void loadAgrovocDatas(HikariDataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
+    private void loadAgrovocDatas(DataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
                                   String idTheso, String idConcept, String idLang) {
 
         AgrovocHelper agrovocHelper = new AgrovocHelper();
@@ -139,7 +137,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         }
     }
 
-    private void loadGemeDatas(HikariDataSource connection, AlignementSource alignementSource, NodeAlignment nodeAlignment,
+    private void loadGemeDatas(DataSource connection, AlignementSource alignementSource, NodeAlignment nodeAlignment,
                                List<String> thesaurusLangs, List<String> allLangTheso, String idTheso, String idConcept) {
 
         List<String> sourceToDisableTraduction = List.of("IdRefPersonnes", "Pactols");
@@ -168,7 +166,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         }
     }
 
-    private void loadWikiDatas(HikariDataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
+    private void loadWikiDatas(DataSource connection, NodeAlignment nodeAlignment, List<String> thesaurusLangs,
                                List<String> allLangTheso, String idTheso, String idConcept) {
 
         WikidataHelper wikidataHelper = new WikidataHelper();
@@ -193,7 +191,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
 
 
     private List<SelectedResource> searchTraductions(List<SelectedResource> traductionsoOfAlignmentTemp,
-                                                     HikariDataSource connection, String idConcept, String idTheso) {
+                                                     DataSource connection, String idConcept, String idTheso) {
 
         List<SelectedResource> selectedTraductionsList = new ArrayList<>();
         List<NodeTermTraduction> termTraductions = getAllTraductionsOfConcept(connection, idConcept, idTheso);
@@ -220,11 +218,11 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         return selectedTraductionsList;
     }
 
-    private ArrayList<NodeTermTraduction> getAllTraductionsOfConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+    private ArrayList<NodeTermTraduction> getAllTraductionsOfConcept(DataSource dataSource, String idConcept, String idThesaurus) {
 
         ArrayList<NodeTermTraduction> nodeTraductionsList = new ArrayList<>();
 
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT term.id_term, term.lexical_value, term.lang FROM"
                         + " term, preferred_term WHERE term.id_term = preferred_term.id_term"
@@ -248,7 +246,7 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
     }
 
     private List<SelectedResource> searchDefinitions(List<SelectedResource> definitionOfAlignmentTemp,
-                                                     HikariDataSource connection, String idConcept, String idTheso) {
+                                                     DataSource connection, String idConcept, String idTheso) {
 
         List<SelectedResource> selectedDefinitionsList = new ArrayList<>();
 
@@ -276,11 +274,11 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         return selectedDefinitionsList;
     }
 
-    private ArrayList<NodeNote> getListNotesAllLang(HikariDataSource ds, String identifier, String idThesaurus) {
+    private ArrayList<NodeNote> getListNotesAllLang(DataSource dataSource, String identifier, String idThesaurus) {
 
         ArrayList<NodeNote> nodeNotes = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT note.id, note.notetypecode, note.lexicalvalue, note.created, note.modified, note.lang, note.notesource"
                         + " FROM note"
@@ -308,8 +306,8 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         return nodeNotes;
     }
 
-    private List<SelectedResource> searchImages(List<SelectedResource> imagesOfAlignmentTemp,
-                                                HikariDataSource connection, String idConcept, String idTheso) {
+    private List<SelectedResource> searchImages(List<SelectedResource> imagesOfAlignmentTemp, DataSource connection,
+                                                String idConcept, String idTheso) {
 
         List<NodeImage> images = getExternalImages(connection, idConcept, idTheso);
         List<SelectedResource> selectedImages = new ArrayList<>();
@@ -336,11 +334,11 @@ public class SearchSingleAllignementCallable implements Callable<NodeAlignment> 
         return selectedImages;
     }
 
-    private ArrayList<NodeImage> getExternalImages(HikariDataSource ds, String idConcept, String idThesausus) {
+    private ArrayList<NodeImage> getExternalImages(DataSource dataSource, String idConcept, String idThesausus) {
 
         ArrayList<NodeImage> nodeImageList = null;
 
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select * from external_images where id_concept = '"
                         + idConcept + "' and id_thesaurus = '" + idThesausus + "'");

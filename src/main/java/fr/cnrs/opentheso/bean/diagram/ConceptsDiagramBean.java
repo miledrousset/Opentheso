@@ -3,7 +3,7 @@ package fr.cnrs.opentheso.bean.diagram;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
 import fr.cnrs.opentheso.models.concept.NodeConcept;
 import fr.cnrs.opentheso.models.concept.NodeConceptTree;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 
 import org.abego.treelayout.TreeLayout;
@@ -45,7 +45,7 @@ public class ConceptsDiagramBean implements Serializable {
     private final float GAP_BETWEEN_NODES = 3.1f;
     private final float GAP_BETWEEN_LEVELS = 4;
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private SelectedTheso selectedTheso;
 
     @Autowired
@@ -92,7 +92,7 @@ public class ConceptsDiagramBean implements Serializable {
      */
     public void init(String conceptId, String idTheso, String idLang) {
 
-        nodeConceptSelected = conceptHelper.getConcept(connect.getPoolConnexion(), conceptId, idTheso, idLang, -1, -1);
+        nodeConceptSelected = conceptHelper.getConcept(conceptId, idTheso, idLang, -1, -1);
         elementSelected = nodeConceptSelected.getTerm().getLexicalValue();
         TextInBox root = new TextInBox(nodeConceptSelected.getTerm().getLexicalValue(),
                 WIDTH_ELEMENT, HEIGHT_ELEMENT);
@@ -137,10 +137,10 @@ public class ConceptsDiagramBean implements Serializable {
             } else {
                 root.addEndPoint(createEndPoint(EndPointAnchor.TOP));
 
-                String idConcept = conceptHelper.getConceptIdFromPrefLabel(connect.getPoolConnexion(), elements.get(i).name,
+                String idConcept = conceptHelper.getConceptIdFromPrefLabel(elements.get(i).name,
                         selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
 
-                ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(connect.getPoolConnexion(),
+                ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(
                         idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
 
                 if (!CollectionUtils.isEmpty(childs)) {
@@ -346,10 +346,10 @@ public class ConceptsDiagramBean implements Serializable {
 
         if (parentElement != null) {
             
-            String idConcept = conceptHelper.getConceptIdFromPrefLabel(connect.getPoolConnexion(), elementSelected,
+            String idConcept = conceptHelper.getConceptIdFromPrefLabel(elementSelected,
                     selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang());
             
-            nodeConceptSelected = conceptHelper.getConcept(connect.getPoolConnexion(), 
+            nodeConceptSelected = conceptHelper.getConcept(
                     idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), -1, -1);
 
             List<TextInBox> temp = defaultTreeForTreeLayout.getChildrenList(parentElement);
@@ -358,7 +358,7 @@ public class ConceptsDiagramBean implements Serializable {
                 return;
             }
             
-            ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(connect.getPoolConnexion(),
+            ArrayList<NodeConceptTree> childs = conceptHelper.getListConcepts(
                     idConcept, selectedTheso.getSelectedIdTheso(), selectedTheso.getCurrentLang(), selectedTheso.isSortByNotation());
 
             if (CollectionUtils.isEmpty(childs)) {

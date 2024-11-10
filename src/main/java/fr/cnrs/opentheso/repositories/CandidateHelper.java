@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Candidate;
 import fr.cnrs.opentheso.ws.openapi.v1.routes.conceptpost.Element;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +7,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,14 +23,17 @@ import java.sql.Timestamp;
 public class CandidateHelper {
 
     @Autowired
+    private DataSource dataSource;
+
+    @Autowired
     private ConceptHelper conceptHelper;
 
 
     /**
      * permet de réactiver un candidat s'il a été rejeté
      */
-    public boolean reactivateRejectedCandidat (HikariDataSource ds, String idTheso, String idCandidat){
-        try (Connection conn = ds.getConnection()) {
+    public boolean reactivateRejectedCandidat (String idTheso, String idCandidat){
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("update candidat_status set id_status = 1" +
                         " WHERE id_concept = '" + idCandidat + "' and id_thesaurus = '" + idTheso + "'");
@@ -43,9 +47,9 @@ public class CandidateHelper {
 
 
     //Sauvegarde un candidat en base à partir d'un JSON
-    public boolean saveCandidat (HikariDataSource ds, Candidate candidate, int userId) {
+    public boolean saveCandidat (Candidate candidate, int userId) {
 
-        try (Connection conn = ds.getConnection()){
+        try (Connection conn = dataSource.getConnection()){
             conn.setAutoCommit(false);
 
             var idTerm = conceptHelper.getNumericConceptId(conn);

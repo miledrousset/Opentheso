@@ -8,7 +8,6 @@ import fr.cnrs.opentheso.repositories.DcElementHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.terms.NodeTermTraduction;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.proposition.PropositionBean;
@@ -34,7 +33,6 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class TraductionBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private PropositionBean propositionBean;
     @Autowired @Lazy private ConceptView conceptBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
@@ -197,16 +195,12 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        if (termHelper.isTermExistIgnoreCase(
-                connect.getPoolConnexion(),
-                traductionValue,
-                selectedTheso.getCurrentIdTheso(),
-                selectedLang)) {
+        if (termHelper.isTermExistIgnoreCase(traductionValue, selectedTheso.getCurrentIdTheso(), selectedLang)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
-        if (!termHelper.addTraduction(connect.getPoolConnexion(),
+        if (!termHelper.addTraduction(
                 traductionValue,
                 conceptBean.getNodeFullConcept().getPrefLabel().getIdTerm(),
                 selectedLang, "", "", selectedTheso.getCurrentIdTheso(), idUser)) {
@@ -220,11 +214,11 @@ public class TraductionBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 
@@ -254,11 +248,7 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        if (termHelper.isTermExistIgnoreCase(
-                connect.getPoolConnexion(),
-                traductionValue,
-                selectedTheso.getCurrentIdTheso(),
-                selectedLang)) {
+        if (termHelper.isTermExistIgnoreCase(traductionValue, selectedTheso.getCurrentIdTheso(), selectedLang)) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
@@ -302,17 +292,14 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        if (termHelper.isTermExistIgnoreCase(
-                connect.getPoolConnexion(),
-                nodeTermTraduction.getLexicalValue(),
-                selectedTheso.getCurrentIdTheso(),
+        if (termHelper.isTermExistIgnoreCase(nodeTermTraduction.getLexicalValue(), selectedTheso.getCurrentIdTheso(),
                 nodeTermTraduction.getLang())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;
         }
 
-        if (!termHelper.updateTraduction(connect.getPoolConnexion(),
+        if (!termHelper.updateTraduction(
                 nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeTermTraduction.getLang(),
                 selectedTheso.getCurrentIdTheso(), idUser)) {
@@ -329,11 +316,11 @@ public class TraductionBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 
@@ -363,10 +350,7 @@ public class TraductionBean implements Serializable {
         }
 
         // Rechercher dans la base s'il existe un label identique
-        if (termHelper.isTermExistIgnoreCase(
-                connect.getPoolConnexion(),
-                traductionPropBean.getLexicalValue(),
-                selectedTheso.getCurrentIdTheso(),
+        if (termHelper.isTermExistIgnoreCase(traductionPropBean.getLexicalValue(), selectedTheso.getCurrentIdTheso(),
                 traductionPropBean.getLang())) {
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", "Un label identique existe dans cette langue !");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -425,20 +409,15 @@ public class TraductionBean implements Serializable {
                 }
             }
             if (toModify) {
-                if (termHelper.isTermExistIgnoreCase(
-                        connect.getPoolConnexion(),
-                        nodeTermTraduction.getLexicalValue(),
-                        selectedTheso.getCurrentIdTheso(),
+                if (termHelper.isTermExistIgnoreCase(nodeTermTraduction.getLexicalValue(), selectedTheso.getCurrentIdTheso(),
                         nodeTermTraduction.getLang())) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " un label identique existe dans cette langue : " + nodeTermTraduction.getLang());
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     continue;
                 }
 
-                if (!termHelper.updateTraduction(connect.getPoolConnexion(),
-                        nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
-                        nodeTermTraduction.getLang(),
-                        selectedTheso.getCurrentIdTheso(), idUser)) {
+                if (!termHelper.updateTraduction(nodeTermTraduction.getLexicalValue(), conceptBean.getNodeConcept().getTerm().getIdTerm(),
+                        nodeTermTraduction.getLang(), selectedTheso.getCurrentIdTheso(), idUser)) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur !", " La modification a échoué !");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     if (pf.isAjaxRequest()) {
@@ -455,11 +434,11 @@ public class TraductionBean implements Serializable {
                     conceptBean.getNodeConcept().getConcept().getIdConcept(),
                     conceptBean.getSelectedLang(), currentUser);
 
-            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+            conceptHelper.updateDateOfConcept(
                     selectedTheso.getCurrentIdTheso(),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
             ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
             /////////////// 
@@ -493,7 +472,7 @@ public class TraductionBean implements Serializable {
             return;
         }
 
-        if (!termHelper.deleteTraductionOfTerm(connect.getPoolConnexion(),
+        if (!termHelper.deleteTraductionOfTerm(
                 conceptBean.getNodeConcept().getTerm().getIdTerm(),
                 nodeTermTraduction.getLexicalValue(),
                 nodeTermTraduction.getLang(),
@@ -509,12 +488,12 @@ public class TraductionBean implements Serializable {
                 conceptBean.getNodeConcept().getConcept().getIdConcept(),
                 conceptBean.getSelectedLang(), currentUser);
 
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(),
+        conceptHelper.updateDateOfConcept(
                 selectedTheso.getCurrentIdTheso(),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), idUser);
         ///// insert DcTermsData to add contributor
 
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 conceptBean.getNodeConcept().getConcept().getIdConcept(), selectedTheso.getCurrentIdTheso());
         /////////////// 

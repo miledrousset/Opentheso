@@ -3,13 +3,9 @@ package fr.cnrs.opentheso.bean.candidat;
 import fr.cnrs.opentheso.repositories.NoteHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.notes.NodeNote;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -28,7 +24,6 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class NoteBeanCandidat implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
     @Autowired @Lazy private NoteBeanCandidat noteBeanCandidat;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private CandidatBean candidatBean;
@@ -70,7 +65,7 @@ public class NoteBeanCandidat implements Serializable {
 
     public void reset() {
         visible = true;
-        noteTypes = noteHelper.getNotesType(connect.getPoolConnexion());
+        noteTypes = noteHelper.getNotesType();
         nodeLangs = selectedTheso.getNodeLangs();
         selectedLang = candidatBean.getCandidatSelected().getLang();
         noteValue = "";
@@ -124,11 +119,7 @@ public class NoteBeanCandidat implements Serializable {
         }        
         reset();
 
-        try {          
-            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
-        } catch (IOException ex) {
-            Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
 
         PrimeFaces pf = PrimeFaces.current();
         if (pf.isAjaxRequest()) {
@@ -145,7 +136,7 @@ public class NoteBeanCandidat implements Serializable {
 
         FacesMessage msg;        
 
-        if (!noteHelper.updateNote(connect.getPoolConnexion(),
+        if (!noteHelper.updateNote(
                 selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 selectedNodeNote.getIdConcept(),
                 selectedNodeNote.getLang(),
@@ -159,11 +150,8 @@ public class NoteBeanCandidat implements Serializable {
         }
         reset();
         setVisible(false);
-        try {          
-            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
-        } catch (IOException ex) {
-            Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
 
         msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "info", "Note modifiée avec succès");
         FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -173,7 +161,7 @@ public class NoteBeanCandidat implements Serializable {
     public void deleteNote(int idUser) {
         FacesMessage msg;
 
-        if (!noteHelper.deleteThisNote(connect.getPoolConnexion(),
+        if (!noteHelper.deleteThisNote(
                 selectedNodeNote.getIdNote(), /// c'est l'id qui va permettre de supprimer la note, les autres informations sont destinées pour l'historique
                 selectedNodeNote.getIdConcept(),
                 selectedNodeNote.getLang(),
@@ -185,15 +173,12 @@ public class NoteBeanCandidat implements Serializable {
             return;
         }
 
-        noteHelper.deleteVoteByNoteId(connect.getPoolConnexion(), selectedNodeNote.getIdNote(), selectedTheso.getCurrentIdTheso(),
+        noteHelper.deleteVoteByNoteId(selectedNodeNote.getIdNote(), selectedTheso.getCurrentIdTheso(),
                 selectedNodeNote.getIdConcept());
 
         reset();
-        try {          
-            candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
-        } catch (IOException ex) {
-            Logger.getLogger(NoteBeanCandidat.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+        candidatBean.showCandidatSelected(candidatBean.getCandidatSelected());
 
         noteBeanCandidat.setVisible(false);
 
@@ -208,15 +193,8 @@ public class NoteBeanCandidat implements Serializable {
     }
 
     private boolean addNote(int idUser) {
-        return noteHelper.addNote(
-                connect.getPoolConnexion(),
-                candidatBean.getCandidatSelected().getIdConcepte(),
-                selectedLang,
-                selectedTheso.getCurrentIdTheso(),
-                noteValue,
-                selectedTypeNote,
-                "",
-                idUser);
+        return noteHelper.addNote(candidatBean.getCandidatSelected().getIdConcepte(), selectedLang, selectedTheso.getCurrentIdTheso(),
+                noteValue, selectedTypeNote, "", idUser);
     }
 
     private void printErreur() {

@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,14 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 import fr.cnrs.opentheso.models.languages.Languages_iso639;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class LanguageHelper {
+
+    @Autowired
+    private DataSource dataSource;
     
     
     public String normalizeIdLang(String idLang){
@@ -36,13 +39,12 @@ public class LanguageHelper {
     /**
      * Permet de retourner le code du drapeau d'un pays à partir du code de la langue
      *
-     * @param ds le pool de connexion
      * @param idLang
      * @return Objet Class Thesaurus
      */
-    public String getFlagFromIdLang(HikariDataSource ds, String idLang) {
+    public String getFlagFromIdLang(String idLang) {
         String flag = "";
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select code_pays from languages_iso639 where iso639_1 = '" + idLang + "'");
                 try ( ResultSet resultSet = stmt.getResultSet()) {
@@ -57,10 +59,10 @@ public class LanguageHelper {
         return flag;
     }
 
-    public List<Languages_iso639> getLanguagesByProject(HikariDataSource ds, String idProject) {
+    public List<Languages_iso639> getLanguagesByProject(String idProject) {
 
         List<Languages_iso639> language = null;
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select lang.* from languages_iso639 lang, project_description pro " +
                         "where lang.iso639_1 = pro.lang and pro.id_group = '"+idProject+"'");
@@ -90,12 +92,11 @@ public class LanguageHelper {
      * Permet de retourner un ArrayList d'Objet Languages_iso639 de toute la table
      * Language_iso639 c'est la liste des langues ISO639 / ou null si rien
      *
-     * @param ds le pool de connexion
      * @return Objet Class Thesaurus
      */
-    public ArrayList<Languages_iso639> getAllLanguages(HikariDataSource ds) {
+    public ArrayList<Languages_iso639> getAllLanguages() {
         ArrayList<Languages_iso639> language = new ArrayList<>();
-        try ( Connection conn = ds.getConnection()) {
+        try ( Connection conn = dataSource.getConnection()) {
             try ( Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select distinct * from languages_iso639 ORDER BY iso639_1");
                 try ( ResultSet resultSet = stmt.getResultSet()) {

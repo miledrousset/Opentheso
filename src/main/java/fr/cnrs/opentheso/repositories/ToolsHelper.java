@@ -7,19 +7,21 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.relations.HierarchicalRelationship;
 import fr.cnrs.opentheso.models.relations.NodeRelation;
 import fr.cnrs.opentheso.utils.NoIdCheckDigit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import javax.sql.DataSource;
 
 
 @Slf4j
 @Service
 public class ToolsHelper {
+
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     private RelationsHelper relationsHelper;
@@ -50,18 +52,17 @@ public class ToolsHelper {
      * Permet de supprimer les relations en boucle qui sont interdites (100 ->
      * BT -> 100) ou (100 -> NT -> 100)ou (100 -> RT -> 100) c'est incohérent et
      * ca provoque une boucle à l'infini
-     * @param ds
      * @param role
      * @param idThesaurus
      * @return
      */
-    public boolean removeSameRelations(HikariDataSource ds, String role, String idThesaurus) {
+    public boolean removeSameRelations(String role, String idThesaurus) {
 
         // récupération des relations en Loop
-        ArrayList<HierarchicalRelationship> tabRelations = relationsHelper.getListLoopRelations(ds, role, idThesaurus);
+        ArrayList<HierarchicalRelationship> tabRelations = relationsHelper.getListLoopRelations(role, idThesaurus);
         if (!tabRelations.isEmpty()) {
             for (HierarchicalRelationship relation : tabRelations) {
-                relationsHelper.deleteThisRelation(ds, relation.getIdConcept1(), idThesaurus,
+                relationsHelper.deleteThisRelation(relation.getIdConcept1(), idThesaurus,
                         role, relation.getIdConcept2());
             }
         }
@@ -72,23 +73,23 @@ public class ToolsHelper {
      * Fonction qui permet de restructurer le thésaurus en ajoutant les NT et les BT qui manquent
      * elle permet aussi de sortir les termes orphelins si nécessaire
      */
-    public boolean reorganizingTheso(HikariDataSource ds, String idThesaurus) {
+    public boolean reorganizingTheso(String idThesaurus) {
 
         ArrayList<String> idBT;
         ArrayList<String> idConcept1WhereIsNT;
 
         // récupération de tous les Id concepts du thésaurus
-        ArrayList<String> tabIdConcept = getAllIdConceptOfThesaurus(ds, idThesaurus);
+        ArrayList<String> tabIdConcept = getAllIdConceptOfThesaurus(idThesaurus);
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
             for (String idConcept : tabIdConcept) {
-                idBT = relationsHelper.getListIdBT(ds, idConcept, idThesaurus);
-                idConcept1WhereIsNT = relationsHelper.getListIdWhichHaveNt(ds, idConcept, idThesaurus);
+                idBT = relationsHelper.getListIdBT(idConcept, idThesaurus);
+                idConcept1WhereIsNT = relationsHelper.getListIdWhichHaveNt(idConcept, idThesaurus);
                 if (idBT.isEmpty() && idConcept1WhereIsNT.isEmpty()) {
-                    if (!isTopConcept(ds, idConcept, idThesaurus)) {
+                    if (!isTopConcept(idConcept, idThesaurus)) {
                         // le concept est orphelin
-                        setTopConcept(ds, idConcept, idThesaurus);
+                        setTopConcept(idConcept, idThesaurus);
                     }
                 } else {
                     if (!(idBT.containsAll(idConcept1WhereIsNT))) {
@@ -128,11 +129,11 @@ public class ToolsHelper {
         return false;
     }
 
-    private ArrayList<String> getAllIdConceptOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    private ArrayList<String> getAllIdConceptOfThesaurus(String idThesaurus) {
 
         ArrayList<String> tabIdConcept = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept from concept where id_thesaurus = '"
                         + idThesaurus + "' and concept.status != 'CA'");
@@ -150,25 +151,24 @@ public class ToolsHelper {
 
     /**
      * Permet de supprimer le status TopTerm pour les concepts qui ont une relation BT
-     * @param ds
      * @param idThesaurus
      * @return
      */
-    public boolean removeTopTermForConceptWithBT(HikariDataSource ds, String idThesaurus) {
+    public boolean removeTopTermForConceptWithBT(String idThesaurus) {
 
         // récupération de tous les Id TT du thésaurus
-        ArrayList<String> tabIdTT = getAllTopTermOfThesaurus(ds, idThesaurus);
+        ArrayList<String> tabIdTT = getAllTopTermOfThesaurus(idThesaurus);
         for (String idConcept : tabIdTT) {
-            if(relationsHelper.isConceptHaveRelationBT(ds, idConcept, idThesaurus)){
-                setNotTopConcept(ds, idConcept, idThesaurus);
+            if(relationsHelper.isConceptHaveRelationBT(idConcept, idThesaurus)){
+                setNotTopConcept(idConcept, idThesaurus);
             }
         }
         return true;
     }
 
-    public boolean setNotTopConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+    public boolean setNotTopConcept(String idConcept, String idThesaurus) {
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE concept set top_concept = false WHERE id_concept ='" + idConcept
                         + "' AND id_thesaurus='" + idThesaurus + "'");
@@ -180,11 +180,11 @@ public class ToolsHelper {
         return false;
     }
 
-    public ArrayList<String> getAllTopTermOfThesaurus(HikariDataSource ds, String idThesaurus) {
+    public ArrayList<String> getAllTopTermOfThesaurus(String idThesaurus) {
 
         ArrayList<String> listIdOfTopConcept = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select id_concept from concept where id_thesaurus = '"
                         + idThesaurus + "' and top_concept = true and status != 'CA'");
@@ -203,23 +203,22 @@ public class ToolsHelper {
     /**
      * Permet de detecter les concepts qui n'ont pas de BT,
      * puis vérifier qu'ils ont l'info de TopTerme
-     * @param ds
      * @param idThesaurus
      * @return
      */
-    public boolean reorganizingTopTerm(HikariDataSource ds, String idThesaurus) {
+    public boolean reorganizingTopTerm(String idThesaurus) {
 
         // récupération des TopTerms en tenant compte des éventuelles erreurs donc par déduction
-        ArrayList<String> listIds = relationsHelper.getListIdOfTopTermForRepair(ds, idThesaurus);
+        ArrayList<String> listIds = relationsHelper.getListIdOfTopTermForRepair(idThesaurus);
 
         for (String idConcept : listIds) {
-            setTopConcept(ds, idConcept, idThesaurus);
+            setTopConcept(idConcept, idThesaurus);
         }
         return true;
     }
 
-    private boolean setTopConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
-        try (Connection conn = ds.getConnection()) {
+    private boolean setTopConcept(String idConcept, String idThesaurus) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("UPDATE concept set top_concept = true WHERE id_concept ='"
                         + idConcept + "' AND id_thesaurus='" + idThesaurus + "'");
@@ -231,9 +230,9 @@ public class ToolsHelper {
         return false;
     }
 
-    private boolean isTopConcept(HikariDataSource ds, String idConcept, String idThesaurus) {
+    private boolean isTopConcept(String idConcept, String idThesaurus) {
         boolean existe = false;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("select top_concept from concept where id_concept = '" + idConcept
                         + "' and id_thesaurus = '" + idThesaurus + "'");
@@ -252,12 +251,12 @@ public class ToolsHelper {
     /**
      * permet de supprimer la relation en boucle de type (a -> BT -> b et b -> BT -> a )
      */
-    public boolean removeLoopRelation(HikariDataSource ds, String idTheso, String idConcept) {
+    public boolean removeLoopRelation(String idTheso, String idConcept) {
 
-        NodeRelation nodeRelation = relationsHelper.getLoopRelation(ds, idTheso, idConcept);
+        NodeRelation nodeRelation = relationsHelper.getLoopRelation(idTheso, idConcept);
         if(nodeRelation!= null){
-            relationsHelper.deleteThisRelation(ds, nodeRelation.getIdConcept2(), idTheso, "BT", nodeRelation.getIdConcept1());
-            relationsHelper.deleteThisRelation(ds, nodeRelation.getIdConcept1(), idTheso, "NT", nodeRelation.getIdConcept2());
+            relationsHelper.deleteThisRelation(nodeRelation.getIdConcept2(), idTheso, "BT", nodeRelation.getIdConcept1());
+            relationsHelper.deleteThisRelation(nodeRelation.getIdConcept1(), idTheso, "NT", nodeRelation.getIdConcept2());
         }
         return true;
     }

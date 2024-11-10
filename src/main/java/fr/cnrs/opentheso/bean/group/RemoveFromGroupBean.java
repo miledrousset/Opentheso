@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.bean.group;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.bean.rightbody.viewconcept.ConceptView;
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemoveFromGroupBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private ConceptView conceptView;
     @Autowired @Lazy private CurrentUser currentUser;
@@ -64,12 +64,8 @@ public class RemoveFromGroupBean implements Serializable {
         FacesMessage msg;
         PrimeFaces pf = PrimeFaces.current();
 
-        if (!groupHelper.deleteRelationConceptGroupConcept(
-                connect.getPoolConnexion(),
-                idGroup,
-                conceptView.getNodeConcept().getConcept().getIdConcept(),
-                selectedTheso.getCurrentIdTheso(),
-                idUser)) {
+        if (!groupHelper.deleteRelationConceptGroupConcept(idGroup, conceptView.getNodeConcept().getConcept().getIdConcept(),
+                selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Erreur!", "Erreur de bases de données !!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             if (pf.isAjaxRequest()) {

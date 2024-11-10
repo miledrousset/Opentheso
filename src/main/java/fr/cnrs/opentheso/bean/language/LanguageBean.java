@@ -1,6 +1,5 @@
 package fr.cnrs.opentheso.bean.language;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.models.candidats.LanguageEnum;
 import java.io.Serializable;
 import java.util.Locale;
@@ -9,19 +8,19 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.Data;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
+import org.springframework.beans.factory.annotation.Value;
 
+
+@Data
 @Named(value = "langueBean")
 @SessionScoped
 public class LanguageBean implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    @Autowired @Lazy
-    private Connect connect;
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
 
     private String currentBundle;
     private String idLangue;
@@ -34,8 +33,8 @@ public class LanguageBean implements Serializable {
 
     @PostConstruct
     public void InitLanguageBean() {
-        currentBundle = "langue_" + connect.getWorkLanguage();
-        idLangue = connect.getWorkLanguage().toUpperCase();
+        currentBundle = "langue_" + workLanguage;
+        idLangue = workLanguage.toUpperCase();
     }
 
     public void changeLangue(String l) {
@@ -56,22 +55,6 @@ public class LanguageBean implements Serializable {
 
     public String getMsg(String msg) {
         return getBundleLangue(currentBundle).getString(msg);
-    }
-
-    public String getIdLangue() {
-        return idLangue.toLowerCase();
-    }
-
-    public void setIdLangue(String idLangue) {
-        this.idLangue = idLangue;
-    }
-
-    public String getCurrentBundle() {
-        return currentBundle;
-    }
-
-    public void setCurrentBundle(String currentBundle) {
-        this.currentBundle = currentBundle;
     }
 
 }

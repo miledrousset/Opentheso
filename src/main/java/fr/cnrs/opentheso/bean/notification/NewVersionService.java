@@ -26,8 +26,7 @@ import fr.cnrs.opentheso.models.releases.TagDto;
 import fr.cnrs.opentheso.repositories.ReleaseRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.entites.Release;
 
 
@@ -37,8 +36,7 @@ import fr.cnrs.opentheso.entites.Release;
 @Named(value = "newVersionBean")
 public class NewVersionService implements Serializable {
 
-    @Autowired @Lazy
-    private Connect connect;
+    
 
     @Autowired
     private ReleaseRepository releaseRepository;
@@ -84,14 +82,14 @@ public class NewVersionService implements Serializable {
             return null;
         }
 
-        List<Release> releasesSaved = releaseRepository.getAllReleases(connect.getPoolConnexion());
+        List<Release> releasesSaved = releaseRepository.getAllReleases();
 
         List<ReleaseDto> releases = new Gson().fromJson(GitHubClient.getResponse(GitHubClient.RELEASES_API_URL),
                 new TypeToken<List<ReleaseDto>>() {}.getType());
 
         if (CollectionUtils.isEmpty(releasesSaved)) {
             log.info("First project running ! Saving previous releases");
-            releaseRepository.saveAllReleases(connect.getPoolConnexion(), releases.stream()
+            releaseRepository.saveAllReleases(releases.stream()
                     .map(this::toRelease)
                     .collect(Collectors.toList()));
             log.info("All releases are saved in DB !");
@@ -112,7 +110,7 @@ public class NewVersionService implements Serializable {
                         .findFirst();
                 if (release.isPresent()) {
                     var newRelease = toRelease(release.get());
-                    releaseRepository.saveRelease(connect.getPoolConnexion(), newRelease);
+                    releaseRepository.saveRelease(newRelease);
                     log.info("Save latest release in DB !");
                     return newRelease;
                 } else {

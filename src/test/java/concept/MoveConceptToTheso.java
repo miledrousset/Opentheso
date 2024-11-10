@@ -4,6 +4,7 @@
  */
 package concept;
 
+
 import com.zaxxer.hikari.HikariDataSource;
 import connexion.ConnexionTest;
 import fr.cnrs.opentheso.repositories.ConceptHelper;
@@ -27,6 +28,6 @@ public class MoveConceptToTheso {
         ConnexionTest connexionTest = new ConnexionTest();
         HikariDataSource ds = connexionTest.getConnexionPool();
         ConceptHelper conceptHelper = new ConceptHelper();
-        conceptHelper.moveConceptToAnotherTheso(ds, idConceptToMove, idThesoFrom, idThesoTarget);
+        conceptHelper.moveConceptToAnotherTheso(idConceptToMove, idThesoFrom, idThesoTarget);
     }
 }

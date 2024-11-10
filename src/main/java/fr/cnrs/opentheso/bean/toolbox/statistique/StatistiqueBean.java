@@ -7,7 +7,6 @@ import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.candidats.DomaineDto;
 import fr.cnrs.opentheso.bean.language.LanguageBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.services.exports.csv.StatistiquesRapportCSV;
 
@@ -38,8 +37,7 @@ import org.primefaces.model.charts.donut.DonutChartModel;
 @Named(value = "statistiqueBean")
 @SessionScoped
 public class StatistiqueBean implements Serializable {
-
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private LanguageBean languageBean;
 
@@ -175,10 +173,9 @@ public class StatistiqueBean implements Serializable {
     }
     
     private void initChamps() {
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getSelectedIdTheso(), languageBean.getIdLangue());
 
-        groupList = groupHelper.getAllGroupsByThesaurusAndLang(connect, selectedTheso.getSelectedIdTheso(),
+        groupList = groupHelper.getAllGroupsByThesaurusAndLang(selectedTheso.getSelectedIdTheso(),
                 languageBean.getIdLangue());
     }
 
@@ -236,15 +233,15 @@ public class StatistiqueBean implements Serializable {
 
         if ("0".equals(selectedStatistiqueTypeCode)) {
 
-            genericStatistiques = statistiqueService.searchAllCollectionsByThesaurus(connect, selectedTheso.getCurrentIdTheso(), selectedLanguage);
+            genericStatistiques = statistiqueService.searchAllCollectionsByThesaurus(selectedTheso.getCurrentIdTheso(), selectedLanguage);
 
-            nbrCanceptByThes = statisticHelper.getNbCpt(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            nbrCanceptByThes = statisticHelper.getNbCpt(selectedTheso.getCurrentIdTheso());
             
-            nbrCandidateByThes = statisticHelper.getNbCandidate(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
-            nbrDeprecatedByThes = statisticHelper.getNbOfDeprecatedConcepts(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            nbrCandidateByThes = statisticHelper.getNbCandidate(selectedTheso.getCurrentIdTheso());
+            nbrDeprecatedByThes = statisticHelper.getNbOfDeprecatedConcepts(selectedTheso.getCurrentIdTheso());
             
 
-            derniereModification = conceptHelper.getLastModification(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso());
+            derniereModification = conceptHelper.getLastModification(selectedTheso.getCurrentIdTheso());
 
             genericTypeVisible = true;
             conceptTypeVisible = false;
@@ -268,7 +265,7 @@ public class StatistiqueBean implements Serializable {
 
     public void getStatisticByConcept() {
         conceptStatistic = statistiqueService.searchAllConceptsByThesaurus(this,
-                connect, selectedTheso.getCurrentIdTheso(),
+                selectedTheso.getCurrentIdTheso(),
                 selectedLanguage, dateDebut, dateFin,
                 searchGroupIdFromLabel(selectedCollection), nbrResultat);
     }

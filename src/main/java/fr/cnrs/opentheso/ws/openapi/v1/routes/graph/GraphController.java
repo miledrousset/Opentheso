@@ -1,6 +1,6 @@
 package fr.cnrs.opentheso.ws.openapi.v1.routes.graph;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.GraphD3jsHelper;
 import fr.cnrs.opentheso.ws.openapi.helper.d3jsgraph.IdValuePair;
 
@@ -93,9 +93,9 @@ public class GraphController {
 
         for (IdValuePair idValuePair : idValuePairs) {
             if(StringUtils.isEmpty(idValuePair.getIdConcept())){
-                graphD3jsHelper.getGraphByTheso(connect.getPoolConnexion(), idValuePair.getIdTheso(), lang);
+                graphD3jsHelper.getGraphByTheso(idValuePair.getIdTheso(), lang);
             } else {
-                graphD3jsHelper.getGraphByConcept(connect.getPoolConnexion(), idValuePair.getIdTheso(), idValuePair.getIdConcept(), lang);
+                graphD3jsHelper.getGraphByConcept(idValuePair.getIdTheso(), idValuePair.getIdConcept(), lang);
             }
         }
 

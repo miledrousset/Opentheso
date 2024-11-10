@@ -1,12 +1,13 @@
 package fr.cnrs.opentheso.repositories;
 
-import com.zaxxer.hikari.HikariDataSource;
 import fr.cnrs.opentheso.models.releases.ReleaseDto;
 import fr.cnrs.opentheso.entites.Release;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,9 +24,12 @@ import java.util.logging.Logger;
 @Service
 public class ReleaseRepository {
 
+    @Autowired
+    private DataSource dataSource;
 
-    public void saveRelease(HikariDataSource ds, Release release) {
-        try ( Connection conn = ds.getConnection()) {
+
+    public void saveRelease(Release release) {
+        try ( Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("Insert into releases (version, url, date, description) values ('"
                         + release.getVersion() + "', '" + release.getUrl() + "', " + release.getDate() + ", '" + release.getDescription() + "')");
@@ -35,18 +39,18 @@ public class ReleaseRepository {
         }
     }
 
-    public void saveAllReleases(HikariDataSource ds, List<Release> releases) {
+    public void saveAllReleases(List<Release> releases) {
         for (Release release : releases) {
-            if (ObjectUtils.isEmpty(getReleaseByVersion(ds, release.getVersion()))) {
-                saveRelease(ds, release);
+            if (ObjectUtils.isEmpty(getReleaseByVersion(release.getVersion()))) {
+                saveRelease(release);
             }
         }
     }
 
-    public List<Release> getAllReleases(HikariDataSource ds) {
+    public List<Release> getAllReleases() {
         List<Release> allReleases = new ArrayList<>();
 
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM releases");
                 try (ResultSet resultSet = stmt.getResultSet()) {
@@ -70,10 +74,10 @@ public class ReleaseRepository {
         return allReleases;
     }
 
-    public Release getReleaseByVersion(HikariDataSource ds, String version) {
+    public Release getReleaseByVersion(String version) {
 
         Release release = null;
-        try (Connection conn = ds.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeQuery("SELECT * FROM releases WHERE version = '" + version + "'");
                 try (ResultSet resultSet = stmt.getResultSet()) {

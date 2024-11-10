@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.setting;
 
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 import fr.cnrs.opentheso.repositories.ThesaurusHelper;
 import fr.cnrs.opentheso.models.thesaurus.NodeLangTheso;
 import fr.cnrs.opentheso.models.nodes.NodePreference;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.menu.theso.RoleOnThesoBean;
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import jakarta.inject.Named;
@@ -30,9 +24,6 @@ import org.primefaces.PrimeFaces;
 @Named(value = "preferenceBean")
 @SessionScoped
 public class PreferenceBean implements Serializable {
-
-    @Autowired @Lazy
-    private Connect connect;
 
     @Autowired @Lazy
     private RoleOnThesoBean roleOnThesoBean;
@@ -76,8 +67,7 @@ public class PreferenceBean implements Serializable {
         }
         nodePreference = roleOnThesoBean.getNodePreference();
         // les langues du thésaurus
-        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(
-                connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
+        languagesOfTheso = thesaurusHelper.getAllUsedLanguagesOfThesaurusNode(selectedTheso.getCurrentIdTheso(), nodePreference.getSourceLang());
 
         uriType = "uri";
         if (nodePreference.isOriginalUriIsHandle()) {
@@ -98,17 +88,17 @@ public class PreferenceBean implements Serializable {
             case "ark":
                 nodePreference.setUseArkLocal(false);
                 nodePreference.setUseHandle(false);
-                preferencesHelper.setUseArk(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());                
+                preferencesHelper.setUseArk(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArk());                
                 break;
             case "arklocal":
                 nodePreference.setUseArk(false);
                 nodePreference.setUseHandle(false);  
-                preferencesHelper.setUseArkLocal(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());                 
+                preferencesHelper.setUseArkLocal(selectedTheso.getCurrentIdTheso(), nodePreference.isUseArkLocal());                 
                 break;
             case "handle":
                 nodePreference.setUseArk(false);
                 nodePreference.setUseArkLocal(false);      
-                preferencesHelper.setUseHandle(connect.getPoolConnexion(), selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());                 
+                preferencesHelper.setUseHandle(selectedTheso.getCurrentIdTheso(), nodePreference.isUseHandle());                 
                 break;                
             default:
                 break;
@@ -116,9 +106,7 @@ public class PreferenceBean implements Serializable {
     }
     
     public String getGoogleAnalytics() {
-        if(connect == null || connect.getPoolConnexion() == null) return "";
-        return preferencesHelper.getCodeGoogleAnalytics(
-                connect.getPoolConnexion());
+        return preferencesHelper.getCodeGoogleAnalytics();
     }
 
     public void savePreference() {
@@ -127,7 +115,7 @@ public class PreferenceBean implements Serializable {
 
         FacesMessage msg;
         
-        if (!preferencesHelper.updateAllPreferenceUser(connect.getPoolConnexion(),
+        if (!preferencesHelper.updateAllPreferenceUser(
                 nodePreference, selectedTheso.getCurrentIdTheso())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur d'enregistrement des préférences !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);

@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.profile;
 
 import fr.cnrs.opentheso.repositories.UserHelper;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
@@ -27,7 +22,7 @@ import org.primefaces.PrimeFaces;
 @Named(value = "newProjectBean")
 @SessionScoped
 public class NewProjectBean implements Serializable {
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private MyProjectBean myProjectBean;
     @Autowired @Lazy private CurrentUser currentUser;
 
@@ -60,10 +55,10 @@ public class NewProjectBean implements Serializable {
     public void init() {
         projectName = null;
         if (currentUser.getNodeUser().isSuperAdmin()) {// l'utilisateur est superAdmin
-            listeProjectOfUser = userHelper.getAllProject(connect.getPoolConnexion());
+            listeProjectOfUser = userHelper.getAllProject();
             return;
         }
-        listeProjectOfUser = userHelper.getProjectsOfUserAsAdmin(connect.getPoolConnexion(), currentUser.getNodeUser().getIdUser());        
+        listeProjectOfUser = userHelper.getProjectsOfUserAsAdmin(currentUser.getNodeUser().getIdUser());        
     }   
     
     /**
@@ -80,16 +75,12 @@ public class NewProjectBean implements Serializable {
             return;              
         }
         
-        if(userHelper.isUserGroupExist(
-                connect.getPoolConnexion(),
-                projectName)){
+        if(userHelper.isUserGroupExist(projectName)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ce nom de projet existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }        
-        if(!userHelper.addNewProject(
-                connect.getPoolConnexion(),
-                projectName)){
+        if(!userHelper.addNewProject(projectName)){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -99,15 +90,13 @@ public class NewProjectBean implements Serializable {
         if(!currentUser.getNodeUser().isSuperAdmin()){
             if(currentUser.getAllAuthorizedProjectAsAdmin() != null && !currentUser.getAllAuthorizedProjectAsAdmin().isEmpty()) {
                 // on donne le droit admin pour l'utilisateur courant sur ce groupe
-                int projectId = userHelper.getThisProjectId(connect.getPoolConnexion(), projectName);
+                int projectId = userHelper.getThisProjectId(projectName);
                 if(projectId == -1) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur interne BDD !!!");
                     FacesContext.getCurrentInstance().addMessage(null, msg);
                     return;   
                 }
-                if(!userHelper.addUserRoleOnGroup(
-                        connect.getPoolConnexion(),
-                        currentUser.getNodeUser().getIdUser(),
+                if(!userHelper.addUserRoleOnGroup(currentUser.getNodeUser().getIdUser(),
                         2,
                         projectId)) {
                     msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de création de rôle !!!");
@@ -135,18 +124,13 @@ public class NewProjectBean implements Serializable {
             return;              
         }
         
-        if(userHelper.isUserGroupExist(
-                connect.getPoolConnexion(),
-                nodeUserGroup.getGroupName())){
+        if(userHelper.isUserGroupExist(nodeUserGroup.getGroupName())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ce nom de projet existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             init();
             return;             
         }          
-        if(!userHelper.updateProject(
-                connect.getPoolConnexion(),
-                nodeUserGroup.getGroupName(),
-                nodeUserGroup.getIdGroup())){
+        if(!userHelper.updateProject(nodeUserGroup.getGroupName(), nodeUserGroup.getIdGroup())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur de modification !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -171,7 +155,7 @@ public class NewProjectBean implements Serializable {
     public void deleteProject(NodeUserGroup nodeUserGroup) {
         FacesMessage msg;
 
-        if (!userHelper.deleteProjectGroup(connect.getPoolConnexion(), nodeUserGroup.getIdGroup())) {
+        if (!userHelper.deleteProjectGroup(nodeUserGroup.getIdGroup())) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erreur :", nodeUserGroup.getGroupName()));
             return;

@@ -12,7 +12,7 @@ import fr.cnrs.opentheso.models.candidats.NodeVote;
 import fr.cnrs.opentheso.models.notes.NodeNote;
 import fr.cnrs.opentheso.repositories.candidats.CandidatDao;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Lazy;
 @SessionScoped
 public class showVoteNote implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private SelectedTheso selectedTheso;
 
     @Autowired
@@ -77,16 +77,16 @@ public class showVoteNote implements Serializable {
         userName = selectedCandidate.getCreatedBy();
         candidat = selectedCandidate.getNomPref();
 
-        ArrayList<NodeVote> nodeVotes = candidatDao.getAllVoteNotes(connect.getPoolConnexion(), idCandidate, selectedTheso.getCurrentIdTheso());
+        ArrayList<NodeVote> nodeVotes = candidatDao.getAllVoteNotes(idCandidate, selectedTheso.getCurrentIdTheso());
         
         for (NodeVote nodeVote : nodeVotes) {
             NodeTabVote nodeTabVote = new NodeTabVote();
             nodeTabVote.setIdUser(nodeVote.getIdUser());
-            nodeTabVote.setUserName(userHelper.getNameUser(connect.getPoolConnexion(), nodeVote.getIdUser()));
+            nodeTabVote.setUserName(userHelper.getNameUser(nodeVote.getIdUser()));
             
             /// pour récupérer les notes
             try {
-                nodeNote = noteHelper.getNoteByIdNote(connect.getPoolConnexion(), Integer.parseInt(nodeVote.getIdNote()));
+                nodeNote = noteHelper.getNoteByIdNote(Integer.parseInt(nodeVote.getIdNote()));
                 nodeTabVote.setTypeNote(nodeNote.getNoteTypeCode());
                 nodeTabVote.setNoteValue(nodeNote.getLexicalValue());
             } catch (Exception e) {

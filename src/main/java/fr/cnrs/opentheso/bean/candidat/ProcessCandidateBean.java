@@ -9,7 +9,7 @@ import fr.cnrs.opentheso.models.nodes.NodePreference;
 import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.candidats.CandidatDto;
 import fr.cnrs.opentheso.bean.mail.MailBean;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.bean.menu.theso.SelectedTheso;
 import fr.cnrs.opentheso.bean.menu.users.CurrentUser;
 import fr.cnrs.opentheso.services.candidats.CandidatService;
@@ -41,7 +41,7 @@ import org.primefaces.model.StreamedContent;
 @SessionScoped
 public class ProcessCandidateBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
+    
     @Autowired @Lazy private CandidatBean candidatBean;
     @Autowired @Lazy private SelectedTheso selectedTheso;
     @Autowired @Lazy private MailBean mailBean;  
@@ -119,22 +119,22 @@ public class ProcessCandidateBean implements Serializable {
             return;
         }
 
-        if (!candidatService.insertCandidate(connect, selectedCandidate, adminMessage, idUser)) {
+        if (!candidatService.insertCandidate(selectedCandidate, adminMessage, idUser)) {
             printErreur("Erreur d'insertion");
             return;
         }
         // envoie de mail au créateur du candidat si l'option mail est activée
-        NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
+        NodeUser nodeUser = userHelper.getUser(selectedCandidate.getCreatedById());
         if(nodeUser.isAlertMail())
             sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate);
         
         generateArk(nodePreference, selectedCandidate);
         
-        conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate.getIdThesaurus(),
+        conceptHelper.updateDateOfConcept(selectedCandidate.getIdThesaurus(),
                 selectedCandidate.getIdConcepte(), idUser);
 
         ///// insert DcTermsData to add contributor
-        dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+        dcElementHelper.addDcElementConcept(
                 new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                 selectedCandidate.getIdConcepte(), selectedCandidate.getIdThesaurus());
         ///////////////             
@@ -162,15 +162,14 @@ public class ProcessCandidateBean implements Serializable {
 
             // création de l'identifiant Handle
             if (nodePreference.isUseHandle()) {
-                if (!conceptHelper.generateIdHandle(connect.getPoolConnexion(), selectedCandidateTemp.getIdConcepte(),
-                        selectedCandidateTemp.getIdThesaurus())) {
+                if (!conceptHelper.generateIdHandle(selectedCandidateTemp.getIdConcepte(), selectedCandidateTemp.getIdThesaurus())) {
                     printErreur("La création Handle a échouée");
                     log.error("La création Handle a échoué");
                 }
             }     
             // serveur Ark
             if (nodePreference.isUseArk()) {
-                if (!conceptHelper.generateArkId(connect.getPoolConnexion(), 
+                if (!conceptHelper.generateArkId(
                         selectedCandidateTemp.getIdThesaurus(), selectedCandidateTemp.getIdConcepte(),
                         selectedCandidateTemp.getLang())) {
                     log.error("La création Ark a échoué");
@@ -180,7 +179,7 @@ public class ProcessCandidateBean implements Serializable {
             if (nodePreference.isUseArkLocal()) {
                 ArrayList<String> idConcepts = new ArrayList<>();
                 idConcepts.add(selectedCandidateTemp.getIdConcepte());
-                if (!conceptHelper.generateArkIdLocal(connect.getPoolConnexion(),
+                if (!conceptHelper.generateArkIdLocal(
                         selectedCandidateTemp.getIdThesaurus(),
                         idConcepts)) {
                     printErreur("La création du Ark local a échoué");
@@ -196,14 +195,14 @@ public class ProcessCandidateBean implements Serializable {
             return;
         }
 
-        if (!candidatService.rejectCandidate(connect, selectedCandidate, adminMessage, idUser)) {
+        if (!candidatService.rejectCandidate(selectedCandidate, adminMessage, idUser)) {
             printErreur("Erreur d'insertion");
             return;
         }
 
         // envoie de mail au créateur du candidat si l'option mail est activée
 
-        NodeUser nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate.getCreatedById());
+        NodeUser nodeUser = userHelper.getUser(selectedCandidate.getCreatedById());
         if(nodeUser.isAlertMail())
             sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate);
 
@@ -236,21 +235,21 @@ public class ProcessCandidateBean implements Serializable {
         
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
             selectedCandidate1 = candidatBean.getAllInfosOfCandidate(selectedCandidate1);
-            if (!candidatService.insertCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
+            if (!candidatService.insertCandidate(selectedCandidate1, adminMessage, idUser)) {
                 printErreur("Erreur d'insertion pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
-            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate1.getIdThesaurus(),
+            conceptHelper.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),
                     selectedCandidate1.getIdConcepte(), idUser);
             
             ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
             ///////////////              
             
             generateArk(nodePreference, selectedCandidate1);
-            nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
+            nodeUser = userHelper.getUser(selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
                 sendMailCandidateAccepted(nodeUser.getMail(), selectedCandidate1);
         }
@@ -278,17 +277,17 @@ public class ProcessCandidateBean implements Serializable {
         
         for (CandidatDto selectedCandidate1 : candidatBean.getSelectedCandidates()) {
             selectedCandidate1 = candidatBean.getAllInfosOfCandidate(selectedCandidate1);
-            if (!candidatService.rejectCandidate(connect, selectedCandidate1, adminMessage, idUser)) {
+            if (!candidatService.rejectCandidate(selectedCandidate1, adminMessage, idUser)) {
                 printErreur("Erreur pour le candidat : " + selectedCandidate1.getNomPref() + "(" + selectedCandidate1.getIdConcepte() + ")");
                 return;
             }
-            nodeUser = userHelper.getUser(connect.getPoolConnexion(), selectedCandidate1.getCreatedById());
+            nodeUser = userHelper.getUser(selectedCandidate1.getCreatedById());
             if(nodeUser.isAlertMail())
                 sendMailCandidateRejected(nodeUser.getMail(), selectedCandidate1);    
-            conceptHelper.updateDateOfConcept(connect.getPoolConnexion(), selectedCandidate1.getIdThesaurus(),
+            conceptHelper.updateDateOfConcept(selectedCandidate1.getIdThesaurus(),
                     selectedCandidate1.getIdConcepte(), idUser); 
             ///// insert DcTermsData to add contributor
-            dcElementHelper.addDcElementConcept(connect.getPoolConnexion(),
+            dcElementHelper.addDcElementConcept(
                     new DcElement(DCMIResource.CONTRIBUTOR, currentUser.getNodeUser().getName(), null, null),
                     selectedCandidate1.getIdConcepte(), selectedCandidate1.getIdThesaurus());
             ///////////////               

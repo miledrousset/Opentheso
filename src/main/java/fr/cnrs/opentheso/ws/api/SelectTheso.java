@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
+
 import fr.cnrs.opentheso.repositories.PreferencesHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class SelectTheso {
        HttpServletRequest request
     ) throws URISyntaxException {
 
-        var idTheso = preferencesHelper.getIdThesaurusFromName(connect.getPoolConnexion(), name);
+        var idTheso = preferencesHelper.getIdThesaurusFromName(name);
         // Récupération de l'URL de la requête
         String requestUrl = request.getRequestURL().toString();
         //  String newUrl = StringUtils.substringAfter(requestUrl, "openapi");/?idt=th739

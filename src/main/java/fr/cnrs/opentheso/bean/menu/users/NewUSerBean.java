@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.cnrs.opentheso.bean.menu.users;
 
 import fr.cnrs.opentheso.repositories.UserHelper;
@@ -11,7 +6,6 @@ import fr.cnrs.opentheso.models.users.NodeUser;
 import fr.cnrs.opentheso.models.users.NodeUserGroup;
 import fr.cnrs.opentheso.models.users.NodeUserRoleGroup;
 import fr.cnrs.opentheso.utils.MD5Password;
-import fr.cnrs.opentheso.bean.menu.connect.Connect;
 import fr.cnrs.opentheso.bean.profile.MyProjectBean;
 import fr.cnrs.opentheso.bean.profile.SuperAdminBean;
 import jakarta.inject.Named;
@@ -23,6 +17,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import liquibase.util.StringUtil;
 import org.primefaces.PrimeFaces;
@@ -35,9 +30,14 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class NewUSerBean implements Serializable {
 
-    @Autowired @Lazy private Connect connect;
-    @Autowired @Lazy private MyProjectBean myProjectBean;
-    @Autowired @Lazy private SuperAdminBean superAdminBean;
+    @Value("${settings.workLanguage:fr}")
+    private String workLanguage;
+
+    @Autowired @Lazy
+    private MyProjectBean myProjectBean;
+
+    @Autowired @Lazy
+    private SuperAdminBean superAdminBean;
 
     @Autowired
     private UserHelper userHelper;
@@ -91,8 +91,8 @@ public class NewUSerBean implements Serializable {
         nodeUser = new NodeUser();
         passWord1 = null;
         passWord2 = null;
-        nodeAllProjects = userHelper.getAllProject(connect.getPoolConnexion());
-        nodeAllRoles = userHelper.getAllRole(connect.getPoolConnexion());
+        nodeAllProjects = userHelper.getAllProject();
+        nodeAllRoles = userHelper.getAllRole();
         
         if(nodeAllProjects != null && !nodeAllProjects.isEmpty())
             selectedProject = "" + nodeAllProjects.get(0).getIdGroup();
@@ -106,44 +106,43 @@ public class NewUSerBean implements Serializable {
     }       
     
     public void addNewUserBySuperAdmin(){
-        FacesMessage msg;
         
         if(nodeUser== null ) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur à ajouter !!!");
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "pas d'utilisateur à ajouter !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }
 
         if(nodeUser.getName().isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le pseudo est obligatoire !!!");
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Le pseudo est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }        
         
         if(passWord1 == null || passWord1.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }
         if(passWord2 == null || passWord2.isEmpty()) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Un mot de passe est obligatoire !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         }   
         if(!passWord1.equals(passWord2)) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Mot de passe non identique !!!");
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Mot de passe non identique !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;              
         } 
 
-        if(userHelper.isMailExist(connect.getPoolConnexion(), nodeUser.getMail())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Email existe déjà !!!");
+        if(userHelper.isMailExist(nodeUser.getMail())) {
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Email existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
         nodeUser.setName(nodeUser.getName().trim());
-        if(userHelper.isPseudoExist(connect.getPoolConnexion(), nodeUser.getName())) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pseudo existe déjà !!!");
+        if(userHelper.isPseudoExist(nodeUser.getName())) {
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pseudo existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }        
@@ -157,27 +156,22 @@ public class NewUSerBean implements Serializable {
                 if(role == 1)
                     nodeUser.setSuperAdmin(true);
             } catch (Exception e) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
+                var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Role non reconnu !!!");
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 return;
             }
         }
 
 
-        if(!userHelper.addUser(
-                connect.getPoolConnexion(),
-                nodeUser.getName(),
-                nodeUser.getMail(),
-                MD5Password.getEncodedPassword(passWord1),
-                nodeUser.isSuperAdmin(),
-                nodeUser.isAlertMail())){
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
+        if(!userHelper.addUser(nodeUser.getName(), nodeUser.getMail(), MD5Password.getEncodedPassword(passWord1),
+                nodeUser.isSuperAdmin(), nodeUser.isAlertMail())){
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
-        int idUser = userHelper.getIdUser(connect.getPoolConnexion(), nodeUser.getName(), MD5Password.getEncodedPassword(passWord1));
+        int idUser = userHelper.getIdUser(nodeUser.getName(), MD5Password.getEncodedPassword(passWord1));
         if(idUser == -1) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
+            var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;                
         }
@@ -187,22 +181,18 @@ public class NewUSerBean implements Serializable {
                 
                 // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
                 if(limitOnTheso) {
-                    if(!userHelper.addUserRoleOnTheso(connect.getPoolConnexion(), idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
+                    if(!userHelper.addUserRoleOnTheso(idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
                         return;
                     }
                 } else {
-                    if(!userHelper.addUserRoleOnGroup(
-                            connect.getPoolConnexion(),
-                            idUser,
-                            Integer.parseInt(selectedRole),
-                            Integer.parseInt(selectedProject))) {
-                        msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant l'ajout des droits !!!");
+                    if(!userHelper.addUserRoleOnGroup(idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject))) {
+                        var msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant l'ajout des droits !!!");
                         FacesContext.getCurrentInstance().addMessage(null, msg);
                         return;                       
                     }
                 }
         }
-        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Utilisateur créé avec succès !!!");
+        var msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Utilisateur créé avec succès !!!");
         FacesContext.getCurrentInstance().addMessage(null, msg);        
         
         superAdminBean.init();
@@ -228,7 +218,7 @@ public class NewUSerBean implements Serializable {
             return;
         }
         if(idProject == -1) return;
-        listThesoOfProject = userHelper.getThesaurusOfProject(connect.getPoolConnexion(), idProject, connect.getWorkLanguage());
+        listThesoOfProject = userHelper.getThesaurusOfProject(idProject, workLanguage);
     }
     
     public void addUser(){
@@ -262,13 +252,13 @@ public class NewUSerBean implements Serializable {
             return;              
         }
 
-        if(userHelper.isMailExist(connect.getPoolConnexion(), nodeUser.getMail())) {
+        if(userHelper.isMailExist(nodeUser.getMail())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Email existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
         nodeUser.setName(nodeUser.getName().trim());
-        if(userHelper.isPseudoExist(connect.getPoolConnexion(), nodeUser.getName())) {
+        if(userHelper.isPseudoExist(nodeUser.getName())) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Pseudo existe déjà !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
@@ -289,18 +279,13 @@ public class NewUSerBean implements Serializable {
             }
         }        
         
-        if(!userHelper.addUser(
-                connect.getPoolConnexion(),
-                nodeUser.getName(),
-                nodeUser.getMail(),
-                MD5Password.getEncodedPassword(passWord1),
-                 nodeUser.isSuperAdmin(),
-                nodeUser.isAlertMail())){
+        if(!userHelper.addUser(nodeUser.getName(), nodeUser.getMail(), MD5Password.getEncodedPassword(passWord1),
+                nodeUser.isSuperAdmin(), nodeUser.isAlertMail())){
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
             return;             
         }
-        int idUser = userHelper.getIdUser(connect.getPoolConnexion(), nodeUser.getName(), MD5Password.getEncodedPassword(passWord1));
+        int idUser = userHelper.getIdUser(nodeUser.getName(), MD5Password.getEncodedPassword(passWord1));
         if(idUser == -1) {
             msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant la création de l'utilisateur !!!");
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -312,15 +297,11 @@ public class NewUSerBean implements Serializable {
                 
                 // contrôle si le role est uniquement sur une liste des thésaurus ou le projet entier 
                 if(limitOnTheso) {
-                    if(!userHelper.addUserRoleOnTheso(connect.getPoolConnexion(), idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
+                    if(!userHelper.addUserRoleOnTheso(idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject), selectedThesos)){
                         return;
                     }
                 } else {                
-                    if(!userHelper.addUserRoleOnGroup(
-                            connect.getPoolConnexion(),
-                            idUser,
-                            Integer.parseInt(selectedRole),
-                            Integer.parseInt(selectedProject))) {
+                    if(!userHelper.addUserRoleOnGroup(idUser, Integer.parseInt(selectedRole), Integer.parseInt(selectedProject))) {
                         msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Erreur pendant l'ajout des droits !!!");
                         FacesContext.getCurrentInstance().addMessage(null, msg);
                         return;                       

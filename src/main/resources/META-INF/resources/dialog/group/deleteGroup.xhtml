@@ -22,7 +22,7 @@
             <div style="width: 100%; text-align: right; margin-top: 10px; margin-bottom: 5px;">
                 <p:commandButton class="btn btn-danger" title="#{langueBean.getMsg('btnValidate')}" process="@this" 
                                  update="containerIndex messageIndex" oncomplete="PF('deleteGroup').hide();"
-                                 actionListener="#{removeConceptAndChildFromGroupBean.deleteGroup(treeGroups.selectedNodeId, currentUser.nodeUser.idUser)}"/>
+                                 actionListener="#{removeConceptAndChildFromGroupBean.deleteGroup(treeGroups.selectedNodeId)}"/>
             </div>
     </p:dialog>   
 </ui:fragment>
